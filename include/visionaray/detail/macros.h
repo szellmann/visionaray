@@ -1,0 +1,67 @@
+// This file is distributed under the MIT license.
+// See the LICENSE file for details.
+
+#pragma once
+
+#ifndef VSNRAY_MACROS_H
+#define VSNRAY_MACROS_H
+
+#include "compiler.h"
+
+
+/*! Align data on X-byte boundaries
+ */
+#if defined(_MSC_VER)
+#define VSNRAY_ALIGN(X) __declspec(align(X))
+#else
+#define VSNRAY_ALIGN(X) __attribute__((aligned(X)))
+#endif
+
+
+/*! Force function inlining
+ */
+#if VSNRAY_CXX_INTEL
+#define VSNRAY_FORCE_INLINE __forceinline
+#elif VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
+#define VSNRAY_FORCE_INLINE inline __attribute((always_inline))
+#elif VSNRAY_CXX_MSVC
+#define VSNRAY_FORCE_INLINE __forceinline
+#else
+#define VSNRAY_FORCE_INLINE inline
+#endif
+
+
+/*! mark CPU and GPU functions
+ */
+#ifdef __CUDACC__
+#define VSNRAY_FUNC __device__ __host__
+#define VSNRAY_GPU_FUNC __device__
+#define VSNRAY_CPU_FUNC __host__
+#else
+#define VSNRAY_FUNC
+#define VSNRAY_GPU_FUNC
+#define VSNRAY_CPU_FUNC
+#endif // __CUDACC__
+
+
+/*! mark functions that are not expected to throw an exception
+ */
+#define VSNRAY_NOEXCEPT throw()
+
+
+/*! Place in private section of class to disallow copying and assignment
+ */
+#define VSNRAY_NOT_COPYABLE(T)                                      \
+  T(T const& rhs);                                                  \
+  T& operator=(T const& rhs);
+
+
+
+/*! Verbose way to say that a parameter is not used intentionally
+ */
+#define VSNRAY_UNUSED(x) ((void)(x))
+
+
+#endif // VSNRAY_MACROS_H
+
+

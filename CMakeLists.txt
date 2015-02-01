@@ -1,0 +1,29 @@
+project(visionaray)
+
+
+cmake_minimum_required(VERSION 2.8)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+    "${PROJECT_SOURCE_DIR}/cmake"
+    "${PROJECT_SOURCE_DIR}/cmake/modules"
+)
+
+include(VisionarayAddTarget)
+include(VisionarayUseFramework)
+include(VisionarayUsePackage)
+
+
+#---------------------------------------------------------------------------------------------------
+# Visionaray Options
+#
+
+option(VSNRAY_ENABLE_WARNINGS "Enable all warnings" ON)
+option(VSNRAY_ENABLE_PEDANTIC "Compile with pedantic enabled (Ignored if warnings are disabled)" ON)
+
+#---------------------------------------------------------------------------------------------------
+# All VSNRAY_* options have to be specified before this include
+#
+
+include(VisionarayHandleOptions)
+
+add_subdirectory(src)
