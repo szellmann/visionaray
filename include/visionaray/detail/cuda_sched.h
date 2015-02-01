@@ -15,7 +15,7 @@ class cuda_sched
 public:
 
     template <typename K, typename SP>
-    void frame(K kernel, SP sched_params, unsigned frame_num);
+    void frame(K kernel, SP sched_params, unsigned frame_num = 0);
 
 };
 
