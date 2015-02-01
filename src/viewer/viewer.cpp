@@ -143,7 +143,7 @@ struct configuration
 configuration config;
 
 void render_hud()
-{glColor3f(0, 0, 0);
+{
 
     auto w = rend->w;
     auto h = rend->h;
@@ -369,7 +369,7 @@ void display_func()
         typedef simple::kernel<internal_color_type, decltype(kparams)> kernel_type;
         kernel_type kernel;
         kernel.params = kparams;
-        rend->sched_gpu.frame(kernel, sparams, ++rend->frame);
+        rend->sched_gpu.frame(kernel, sparams /*, ++rend->frame*/ );
 
         err = cudaFree( device_bvh_pointers );if (err != cudaSuccess) throw std::runtime_error("free?");
 #endif
@@ -402,7 +402,7 @@ void display_func()
         typedef simple::kernel<internal_color_type, decltype(kparams)> kernel_type;
         kernel_type kernel;
         kernel.params = kparams;
-        rend->sched_cpu.frame(kernel, sparams, ++rend->frame);
+        rend->sched_cpu.frame(kernel, sparams /*, ++rend->frame*/ );
 #endif
     }
 
