@@ -6,8 +6,12 @@
 #ifndef VSNRAY_SCHED_H
 #define VSNRAY_SCHED_H
 
+#include "camera.h"
+
 namespace visionaray
 {
+
+class render_target;
 
 //-------------------------------------------------------------------------------------------------
 // Pixel sampler tags for use in scheduler params

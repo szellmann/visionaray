@@ -8,6 +8,7 @@
 
 #include <chrono>
 
+#include <visionaray/mc.h>
 #include <visionaray/scheduler.h>
 
 #include "macros.h"
