@@ -11,6 +11,8 @@
 
 #include <GL/glew.h>
 
+#include <visionaray/detail/platform.h>
+
 #if defined(VSNRAY_OS_DARWIN)
 
 #include <AvailabilityMacros.h>

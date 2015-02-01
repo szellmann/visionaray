@@ -6,6 +6,8 @@
 #ifndef VSNRAY_DETAIL_SEMAPHORE_H
 #define VSNRAY_DETAIL_SEMAPHORE_H
 
+#include "platform.h"
+
 #if defined(VSNRAY_OS_WIN32) || defined(VSNRAY_OS_DARWIN)
 #define VSNRAY_DETAIL_SEMAPHORE_USE_STD 1
 #endif
@@ -16,8 +18,6 @@
 #else
 #include <semaphore.h>
 #endif
-
-#include "platform.h"
 
 namespace visionaray
 {

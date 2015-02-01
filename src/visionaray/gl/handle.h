@@ -6,13 +6,13 @@
 #ifndef VSNRAY_GL_HANDLE_H
 #define VSNRAY_GL_HANDLE_H
 
+#include <visionaray/detail/macros.h>
+
 #if defined(VSNRAY_OS_DARWIN)
 #include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
 #endif
-
-#include <visionaray/detail/macros.h>
 
 namespace visionaray
 {

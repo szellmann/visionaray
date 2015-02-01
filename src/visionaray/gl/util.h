@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include <visionaray/detail/platform.h>
+
 #ifdef _WIN32
 #include <windows.h> // APIENTRY
 #endif
@@ -18,7 +20,6 @@
 #include <GL/gl.h>
 #endif
 
-#include <visionaray/detail/platform.h>
 #include <visionaray/math/forward.h>
 
 

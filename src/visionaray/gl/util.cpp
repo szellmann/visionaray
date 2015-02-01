@@ -7,13 +7,14 @@
 #include <iostream>
 #include <ostream>
 
+#include <visionaray/detail/platform.h>
+
 #ifdef VSNRAY_OS_WIN32
 #include <windows.h>
 #endif
 
 #include "GL/glew.h"
 
-#include <visionaray/detail/platform.h>
 #include <visionaray/math/math.h>
 
 #include "util.h"

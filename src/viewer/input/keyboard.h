@@ -9,13 +9,13 @@
 #include <cassert>
 #include <bitset>
 
+#include <visionaray/detail/platform.h>
+
 #if defined(VSNRAY_OS_DARWIN)
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
-
-#include <visionaray/detail/platform.h>
 
 
 namespace visionaray
