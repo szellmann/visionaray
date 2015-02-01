@@ -34,6 +34,25 @@ Additionally, in order to compile the viewer application, the following packages
 - [Libjpeg][7] (optional)
 
 
+
+Building the Visionaray library and viewer application
+------------------------------------------------------
+
+### Linux and Mac OS X
+
+It is strongly recommended that you do a "release build" because otherwise the CPU code path will be "sluggish".
+It is also recommended to supply an architecture flag that corresponds to the CPU architecture you are targeting.
+Please ensure that you have C++11 support activated.
+
+```Shell
+cd visionaray
+mkdir build
+cd build
+
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1"
+make
+```
+
 License
 -------
 
