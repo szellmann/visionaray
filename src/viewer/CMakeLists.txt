@@ -1,7 +1,7 @@
 find_package(Boost REQUIRED COMPONENTS chrono filesystem system thread)
 find_package(CUDA)
 find_package(GLEW REQUIRED)
-find_package(GLUT)
+find_package(GLUT REQUIRED)
 find_package(JPEG)
 find_package(OpenGL REQUIRED)
 
