@@ -18,9 +18,23 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 set(VIEWER_HEADERS
+
+    input/exception.h
+    input/keyboard.h
+    input/mouse.h
+
+    manip/arcball_manipulator.h
+    manip/camera_manipulator.h
+    manip/pan_manipulator.h
+    manip/zoom_manipulator.h
+
+    default_scenes.h
+    image.h
     jpeg_image.h
     obj_loader.h
+    render_bvh.h
     timer.h
+
 )
 
 set(VIEWER_SOURCES
