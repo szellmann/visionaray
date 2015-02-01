@@ -1,7 +1,7 @@
 find_package(Boost REQUIRED)
 find_package(CUDA)
-find_package(GLEW)
-find_package(OpenGL)
+find_package(GLEW REQUIRED)
+find_package(OpenGL REQUIRED)
 
 visionaray_use_package(Boost)
 visionaray_use_package(CUDA)
