@@ -7,6 +7,7 @@
 #define VSNRAY_GL_HANDLE_H
 
 #include <visionaray/detail/macros.h>
+#include <visionaray/detail/platform.h>
 
 #if defined(VSNRAY_OS_DARWIN)
 #include <OpenGL/gl.h>

@@ -6,7 +6,13 @@
 #ifndef VSNRAY_VIEWER_RENDER_BVH_H
 #define VSNRAY_VIEWER_RENDER_BVH_H
 
+#include <visionaray/detail/platform.h>
+
+#if defined(VSNRAY_OS_DARWIN)
+#include <OpenGL/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 #include <visionaray/bvh.h>
 
