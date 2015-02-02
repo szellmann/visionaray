@@ -294,7 +294,7 @@ inline R uniform_ray_gen(unsigned x, unsigned y, Mat4 const& inv_view_matrix, Ma
 {
     typedef typename R::scalar_type scalar_type;
     return ray_gen<R>(pixel<scalar_type>().x(x), pixel<scalar_type>().y(y), inv_view_matrix, inv_proj_matrix, viewport);
-};
+}
 
 template <typename R, typename Mat4, typename V, typename S>
 VSNRAY_FUNC
