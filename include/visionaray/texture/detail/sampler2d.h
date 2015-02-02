@@ -71,7 +71,7 @@ inline ReturnT linear(TexelT const* tex, vector<2, FloatT> coord, vector<2, Floa
     auto p1 = lerp(samples[0], samples[1], uv[0]);
     auto p2 = lerp(samples[2], samples[3], uv[0]);
 
-    return vector<3, unsigned char>(lerp(p1, p2, uv[1]));
+    return ReturnT(lerp(p1, p2, uv[1]));
 
 }
 
