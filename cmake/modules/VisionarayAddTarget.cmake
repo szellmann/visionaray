@@ -3,7 +3,7 @@ macro(visionaray_link_libraries)
 endmacro()
 
 function(visionaray_cuda_compile outfiles)
-    if(NOT CUDA_FOUND)
+    if(NOT CUDA_FOUND OR NOT VSNRAY_ENABLE_CUDA)
         return()
     endif()
 

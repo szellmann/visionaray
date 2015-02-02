@@ -1,12 +1,16 @@
 find_package(Boost REQUIRED COMPONENTS chrono filesystem system thread)
+if (VSNRAY_ENABLE_CUDA)
 find_package(CUDA)
+endif()
 find_package(GLEW REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(JPEG)
 find_package(OpenGL REQUIRED)
 
 visionaray_use_package(Boost)
+if (VSNRAY_ENABLE_CUDA)
 visionaray_use_package(CUDA)
+endif()
 visionaray_use_package(GLEW)
 visionaray_use_package(GLUT)
 visionaray_use_package(JPEG)
@@ -49,7 +53,7 @@ set(VIEWER_SOURCES
 
 )
 
-if(CUDA_FOUND)
+if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     visionaray_cuda_compile(VIEWER_CUDA_SOURCES
         viewer.cu
     )
