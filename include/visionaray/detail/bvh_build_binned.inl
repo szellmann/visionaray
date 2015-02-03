@@ -377,11 +377,11 @@ bvh<P> build(P const* primitives, size_t num_prims)
 #ifdef BVH_WITH_GATHER
     for (size_t i = 0; i < num_prims; ++i)
     {
-        result.prim_indices_ptr()[i] = ptr[i].idx;
+        result.prim_indices()[i] = ptr[i].idx;
     }
 #else
     // TODO!!!!!
-    auto tmp = const_cast<P*>(result.primitives);
+    auto tmp = const_cast<P*>(result.primitives());
     for (size_t i = 0; i < num_prims; ++i)
     {
         tmp[i] = primitives[ptr[i].idx];

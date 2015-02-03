@@ -12,6 +12,7 @@
 
 #ifdef __CUDACC__
 #include <cuda.h>
+#include <thrust/copy.h>
 #include <thrust/device_vector.h>
 #endif
 
@@ -79,33 +80,26 @@ public:
         , nodes_(node_vector_type(2 * num_prims - 1))
     {
         VSNRAY_UNUSED(prims);
-        primitives = new P[num_prims];
+        primitives_ = new P[num_prims];
     }
 
    ~bvh()
     {
         // FIXME:
-        delete[] primitives;
+        delete[] primitives_;
     }
 #endif
 
-    P const* primmitives() const { return primitives_; }
-    P* primitives() { return primitives_; }
+    P const* primitives() const { return primitives_; }
 
     bvh_node const* nodes() const { return nodes_.data(); }
     bvh_node* nodes() { return nodes_.data(); }
-
-    bvh_node const* nodes_ptr() const { return nodes_.data(); }
-    bvh_node* nodes_ptr() { return nodes_.data(); }
 
     node_vector_type const& nodes_vector() const { return nodes_; }
     node_vector_type& nodes_vector() { return nodes_; }
 
     unsigned const* prim_indices() const { return prim_indices_.data(); }
     unsigned* prim_indices() { return prim_indices_.data(); }
-
-    unsigned const* prim_indices_ptr() const { return prim_indices_.data(); }
-    unsigned* prim_indices_ptr() { return prim_indices_.data(); }
 
     idx_vector_type const& prim_indices_vector() const { return prim_indices_; }
     idx_vector_type& prim_indices_vector() { return prim_indices_; }
@@ -134,7 +128,16 @@ class kernel_device_vector
 {
 public:
 
+    typedef typename thrust::device_vector<T>::size_type    size_type;
+    typedef typename thrust::device_vector<T>::iterator     iterator;
+
     kernel_device_vector() = default;
+
+    explicit kernel_device_vector(size_type n)
+        : vector_(n)
+    {
+        ptr_ = thrust::raw_pointer_cast(vector_.data());
+    }
 
     template <typename U, typename Alloc>
     /* implicit */ kernel_device_vector(std::vector<U, Alloc> const& host_vec)
@@ -143,6 +146,9 @@ public:
     {
         ptr_ = thrust::raw_pointer_cast(vector_.data());
     }
+
+    iterator begin() { return vector_.begin(); }
+    iterator end()   { return vector_.end(); }
 
     VSNRAY_GPU_FUNC T const* data() const { return ptr_; }
     VSNRAY_GPU_FUNC T*       data()       { return ptr_; }
@@ -168,34 +174,11 @@ class device_bvh
 public:
 
     device_bvh(bvh<P> const& host_bvh)
+        : primitives_(host_bvh.num_prims)
     {
-        cudaError_t err = cudaSuccess;
-        err = cudaMalloc( &primitives, host_bvh.num_prims * sizeof(P) );
-        if (err != cudaSuccess)
-        {
-            throw std::runtime_error(std::string("malloc error") + std::to_string(__LINE__));
-        }
-
-        err = cudaMemcpy( primitives, host_bvh.primitives, host_bvh.num_prims * sizeof(P),
-            cudaMemcpyHostToDevice );
-        if (err != cudaSuccess)
-        {
-            throw std::runtime_error("memcpy error");
-        }
-
+        thrust::copy(host_bvh.primitives(), host_bvh.primitives() + host_bvh.num_prims, primitives_.begin());
         nodes_ = host_bvh.nodes_vector();
         prim_indices_ = host_bvh.prim_indices_vector();
-    }
-
-    ~device_bvh()
-    {
-        cudaError_t err = cudaSuccess;
-        err = cudaFree(primitives);
-        if (err != cudaSuccess)
-        {
-
-        }
-
     }
 
     VSNRAY_GPU_FUNC P const*        primitives() const      { return primitives_.data(); }

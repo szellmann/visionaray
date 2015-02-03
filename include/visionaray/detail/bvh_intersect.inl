@@ -47,9 +47,9 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
             {
 // TODO: use templates
 #ifdef BVH_WITH_GATHER
-                auto prim = b.primitives[b.prim_indices()[i]];
+                auto prim = b.primitives()[b.prim_indices()[i]];
 #else
-                auto prim = b.primitives[i];
+                auto prim = b.primitives()[i];
 #endif
 
                 auto hr  = intersect(ray, prim);
