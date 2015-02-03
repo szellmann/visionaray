@@ -175,10 +175,10 @@ public:
 
     device_bvh(bvh<P> const& host_bvh)
         : primitives_(host_bvh.num_prims)
+        , nodes_(host_bvh.nodes_vector())
+        , prim_indices_(host_bvh.prim_indices_vector())
     {
         thrust::copy(host_bvh.primitives(), host_bvh.primitives() + host_bvh.num_prims, primitives_.begin());
-        nodes_ = host_bvh.nodes_vector();
-        prim_indices_ = host_bvh.prim_indices_vector();
     }
 
     VSNRAY_GPU_FUNC P const*        primitives() const      { return primitives_.data(); }
