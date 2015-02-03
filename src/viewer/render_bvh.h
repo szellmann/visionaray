@@ -67,8 +67,8 @@ void render(aabb const& box)
 
 } // detail
 
-template <typename P>
-void render(bvh<P> const& b)
+template <template <typename> class B, typename P>
+void render(B<P> const& b)
 {
 
     for (auto const& n : b.nodes_vector())

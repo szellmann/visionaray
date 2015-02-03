@@ -18,6 +18,7 @@
 
 #include "detail/aligned_vector.h"
 #include "math/math.h"
+#include "tags.h"
 
 namespace visionaray
 {
@@ -60,19 +61,9 @@ public:
 
     typedef std::size_t size_type;
     typedef aligned_vector<bvh_node> node_vector_type;
-    typedef aligned_vector<unsigned> idx_vector_type;
 
-#ifdef BVH_WITH_GATHER
-    explicit bvh(P const* prims, size_t num_prims)
-        : primitives_(prims)
-        , num_prims_(num_prims)
-        , nodes_(node_vector_type(2 * num_prims - 1))
-        , prim_indices_(idx_vector_type(num_prims))
-    {
-    }
-#else
     // TODO!!!!!
-    explicit bvh(P const* prims, size_t num_prims)
+    explicit bvh(P const* prims, size_t num_prims) // TODO: bvh c'tor does not require prims
         : primitives_(0)
         , num_prims_(num_prims)
         , nodes_(node_vector_type(2 * num_prims - 1))
@@ -86,7 +77,46 @@ public:
         // FIXME:
         delete[] primitives_;
     }
-#endif
+
+    P const& primitive(size_t i) const { return primitives_[i]; }
+
+    P const* primitives() const { return primitives_; }
+    P* primitives() { return primitives_; }
+    size_type num_prims() const { return num_prims_; }
+
+    bvh_node const* nodes() const { return nodes_.data(); }
+    bvh_node* nodes() { return nodes_.data(); }
+
+    node_vector_type const& nodes_vector() const { return nodes_; }
+    node_vector_type& nodes_vector() { return nodes_; }
+
+private:
+
+    P* primitives_;
+    size_type num_prims_;
+    node_vector_type nodes_;
+
+};
+
+
+template <typename P>
+class indexed_bvh
+{
+public:
+
+    typedef std::size_t size_type;
+    typedef aligned_vector<bvh_node> node_vector_type;
+    typedef aligned_vector<unsigned> idx_vector_type;
+
+    explicit indexed_bvh(P const* prims, size_t num_prims)
+        : primitives_(prims)
+        , num_prims_(num_prims)
+        , nodes_(node_vector_type(2 * num_prims - 1))
+        , prim_indices_(idx_vector_type(num_prims))
+    {
+    }
+
+    P const& primitive(size_t i) const { return primitives_[prim_indices()[i]]; }
 
     P const* primitives() const { return primitives_; }
     size_type num_prims() const { return num_prims_; }
@@ -111,7 +141,6 @@ private:
     idx_vector_type  prim_indices_;
 
 };
-
 
 #ifdef __CUDACC__
 
@@ -163,7 +192,7 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
-// BVH for traversal on a CUDA device. Can only be edited on the device.
+// BVHs for traversal on a CUDA device. Can only be edited on the device.
 // Can only be constructed from a host BVH, is not copyable or copy assignable
 //
 
@@ -175,24 +204,56 @@ public:
     device_bvh(bvh<P> const& host_bvh)
         : primitives_(host_bvh.num_prims())
         , nodes_(host_bvh.nodes_vector())
-        , prim_indices_(host_bvh.prim_indices_vector())
     {
         thrust::copy(host_bvh.primitives(), host_bvh.primitives() + host_bvh.num_prims(), primitives_.begin());
     }
 
-    VSNRAY_GPU_FUNC P const*        primitives() const      { return primitives_.data(); }
-    VSNRAY_GPU_FUNC P*              primitives()            { return primitives_.data(); }
+    VSNRAY_GPU_FUNC P const&        primitive(size_t i) const   { return primitives_.data()[i]; }
 
-    VSNRAY_GPU_FUNC bvh_node const* nodes() const           { return nodes_.data(); }
-    VSNRAY_GPU_FUNC bvh_node*       nodes()                 { return nodes_.data(); }
+    VSNRAY_GPU_FUNC P const*        primitives() const          { return primitives_.data(); }
+    VSNRAY_GPU_FUNC P*              primitives()                { return primitives_.data(); }
 
-    VSNRAY_GPU_FUNC unsigned const* prim_indices() const    { return prim_indices_.data(); }
-    VSNRAY_GPU_FUNC unsigned*       prim_indices()          { return prim_indices_.data(); }
+    VSNRAY_GPU_FUNC bvh_node const* nodes() const               { return nodes_.data(); }
+    VSNRAY_GPU_FUNC bvh_node*       nodes()                     { return nodes_.data(); }
 
 private:
 
     VSNRAY_NOT_COPYABLE(device_bvh)
     device_bvh& operator=(bvh<P> const& host_bvh);
+
+    detail::kernel_device_vector<P>         primitives_;
+    detail::kernel_device_vector<bvh_node>  nodes_;
+
+};
+
+template <typename P>
+class indexed_device_bvh
+{
+public:
+
+    indexed_device_bvh(indexed_bvh<P> const& host_bvh)
+        : primitives_(host_bvh.num_prims())
+        , nodes_(host_bvh.nodes_vector())
+        , prim_indices_(host_bvh.prim_indices_vector())
+    {
+        thrust::copy(host_bvh.primitives(), host_bvh.primitives() + host_bvh.num_prims(), primitives_.begin());
+    }
+
+    VSNRAY_GPU_FUNC P const&        primitive(size_t i) const   { return primitives_.data()[prim_indices()[i]]; }
+
+    VSNRAY_GPU_FUNC P const*        primitives() const          { return primitives_.data(); }
+    VSNRAY_GPU_FUNC P*              primitives()                { return primitives_.data(); }
+
+    VSNRAY_GPU_FUNC bvh_node const* nodes() const               { return nodes_.data(); }
+    VSNRAY_GPU_FUNC bvh_node*       nodes()                     { return nodes_.data(); }
+
+    VSNRAY_GPU_FUNC unsigned const* prim_indices() const        { return prim_indices_.data(); }
+    VSNRAY_GPU_FUNC unsigned*       prim_indices()              { return prim_indices_.data(); }
+
+private:
+
+    VSNRAY_NOT_COPYABLE(indexed_device_bvh)
+    indexed_device_bvh& operator=(bvh<P> const& host_bvh);
 
     detail::kernel_device_vector<P>         primitives_;
     detail::kernel_device_vector<bvh_node>  nodes_;
@@ -208,7 +269,17 @@ private:
 //
 
 template <typename P /* primitive type */>
-bvh<P> build(P const* primitives, size_t num_prims);
+bvh<P> build(P const* primitives, size_t num_prims, bvh_tag);
+
+template <typename P>
+indexed_bvh<P> build(P const* primitives, size_t num_prims, indexed_bvh_tag);
+
+template <typename P>
+auto build(P const* primitives, size_t num_prims)
+    -> decltype( build(primitives, num_prims, bvh_tag()) )
+{
+    return build(primitives, num_prims, bvh_tag());
+}
 
 template <typename T, typename B>
 VSNRAY_FUNC

@@ -166,22 +166,48 @@ unsigned bin_id(vec3 const& centroid, cartesian_axis<3> const& axis, float k0, f
     return k1 * (centroid[axis] - k0);
 }
 
-} // detail
+
+//-------------------------------------------------------------------------------------------------
+// Data for building a BVH that is associated with a single primitive
+
+struct prim_data
+{
+    unsigned idx;
+    aabb bbox;
+    vec3 centroid;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+//
+//
 
 template <typename P>
-bvh<P> build(P const* primitives, size_t num_prims)
+void finalize_build(indexed_bvh<P>& b, prim_data const* ptr, P const* primitives, size_t num_prims)
+{
+    VSNRAY_UNUSED(primitives);
+
+    for (size_t i = 0; i < num_prims; ++i)
+    {
+        b.prim_indices()[i] = ptr[i].idx;
+    }
+}
+
+template <typename P>
+void finalize_build(bvh<P>& b, prim_data const* ptr, P const* primitives, size_t num_prims)
+{
+    for (size_t i = 0; i < num_prims; ++i)
+    {
+        b.primitives()[i] = primitives[ptr[i].idx];
+    }
+}
+
+
+template <typename B, typename P>
+B build(P const* primitives, size_t num_prims)
 {
 
-    using namespace detail;
-
-    bvh<P> result(primitives, num_prims);
-
-    struct prim_data
-    {
-        unsigned idx;
-        aabb bbox;
-        vec3 centroid;
-    };
+    B result(primitives, num_prims);
 
     aligned_vector<prim_data, 64> data(num_prims);
 
@@ -373,20 +399,7 @@ bvh<P> build(P const* primitives, size_t num_prims)
         }
     }
 
-// TODO: use templates
-#ifdef BVH_WITH_GATHER
-    for (size_t i = 0; i < num_prims; ++i)
-    {
-        result.prim_indices()[i] = ptr[i].idx;
-    }
-#else
-    // TODO!!!!!
-    auto tmp = const_cast<P*>(result.primitives());
-    for (size_t i = 0; i < num_prims; ++i)
-    {
-        tmp[i] = primitives[ptr[i].idx];
-    }
-#endif
+    finalize_build(result, ptr, primitives, num_prims);
 
     // FIXME: this returns a copy!
     // w/o return value optimization, delete[] in d'tor will be called!
@@ -394,6 +407,19 @@ bvh<P> build(P const* primitives, size_t num_prims)
 
 }
 
+} // detail
+
+template <typename P>
+bvh<P> build(P const* primitives, size_t num_prims, bvh_tag)
+{
+    return detail::build<bvh<P>>(primitives, num_prims);
+}
+
+template <typename P>
+indexed_bvh<P> build(P const* primitives, size_t num_prims, indexed_bvh_tag)
+{
+    return detail::build<indexed_bvh<P>>(primitives, num_prims);
+}
 
 } // visionaray
 

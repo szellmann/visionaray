@@ -45,12 +45,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
 
             for (auto i = begin; i != end; ++i)
             {
-// TODO: use templates
-#ifdef BVH_WITH_GATHER
-                auto prim = b.primitives()[b.prim_indices()[i]];
-#else
-                auto prim = b.primitives()[i];
-#endif
+                auto prim = b.primitive(i);
 
                 auto hr  = intersect(ray, prim);
                 auto closer = hr.hit & ( hr.t >= T(0.0) && hr.t < result.t );

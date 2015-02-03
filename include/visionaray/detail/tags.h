@@ -6,6 +6,11 @@
 #ifndef VSNRAY_DETAIL_TAGS_H
 #define VSNRAY_DETAIL_TAGS_H
 
+
+//-------------------------------------------------------------------------------------------------
+// Tags for internal use
+//
+
 namespace visionaray
 {
 namespace detail
