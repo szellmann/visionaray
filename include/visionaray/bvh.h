@@ -62,12 +62,10 @@ public:
     typedef aligned_vector<bvh_node> node_vector_type;
     typedef aligned_vector<unsigned> idx_vector_type;
 
-    size_type num_prims;
-
 #ifdef BVH_WITH_GATHER
     explicit bvh(P const* prims, size_t num_prims)
         : primitives_(prims)
-        , num_prims(num_prims)
+        , num_prims_(num_prims)
         , nodes_(node_vector_type(2 * num_prims - 1))
         , prim_indices_(idx_vector_type(num_prims))
     {
@@ -76,7 +74,7 @@ public:
     // TODO!!!!!
     explicit bvh(P const* prims, size_t num_prims)
         : primitives_(0)
-        , num_prims(num_prims)
+        , num_prims_(num_prims)
         , nodes_(node_vector_type(2 * num_prims - 1))
     {
         VSNRAY_UNUSED(prims);
@@ -91,6 +89,7 @@ public:
 #endif
 
     P const* primitives() const { return primitives_; }
+    size_type num_prims() const { return num_prims_; }
 
     bvh_node const* nodes() const { return nodes_.data(); }
     bvh_node* nodes() { return nodes_.data(); }
@@ -107,6 +106,7 @@ public:
 private:
 
     P const* primitives_;
+    size_type num_prims_;
     node_vector_type nodes_;
     idx_vector_type  prim_indices_;
 
@@ -173,11 +173,11 @@ class device_bvh
 public:
 
     device_bvh(bvh<P> const& host_bvh)
-        : primitives_(host_bvh.num_prims)
+        : primitives_(host_bvh.num_prims())
         , nodes_(host_bvh.nodes_vector())
         , prim_indices_(host_bvh.prim_indices_vector())
     {
-        thrust::copy(host_bvh.primitives(), host_bvh.primitives() + host_bvh.num_prims, primitives_.begin());
+        thrust::copy(host_bvh.primitives(), host_bvh.primitives() + host_bvh.num_prims(), primitives_.begin());
     }
 
     VSNRAY_GPU_FUNC P const*        primitives() const      { return primitives_.data(); }
