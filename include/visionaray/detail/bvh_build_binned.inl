@@ -401,8 +401,6 @@ B build(P const* primitives, size_t num_prims)
 
     finalize_build(result, ptr, primitives, num_prims);
 
-    // FIXME: this returns a copy!
-    // w/o return value optimization, delete[] in d'tor will be called!
     return result;
 
 }

@@ -60,40 +60,33 @@ class bvh
 public:
 
     typedef std::size_t size_type;
+    typedef aligned_vector<P>        prim_vector_type;
     typedef aligned_vector<bvh_node> node_vector_type;
 
-    // TODO!!!!!
     explicit bvh(P const* prims, size_t num_prims) // TODO: bvh c'tor does not require prims
-        : primitives_(0)
-        , num_prims_(num_prims)
+        : primitives_(num_prims)
         , nodes_(node_vector_type(2 * num_prims - 1))
     {
         VSNRAY_UNUSED(prims);
-        primitives_ = new P[num_prims];
     }
 
-   ~bvh()
-    {
-        // FIXME:
-        delete[] primitives_;
-    }
+    P const&                primitive(size_t i) const   { return primitives()[i]; }
 
-    P const& primitive(size_t i) const { return primitives_[i]; }
+    P const*                primitives() const          { return primitives_.data(); }
+    P*                      primitives()                { return primitives_.data(); }
 
-    P const* primitives() const { return primitives_; }
-    P* primitives() { return primitives_; }
-    size_type num_prims() const { return num_prims_; }
+    prim_vector_type const& prim_vector() const         { return primitives_; }
+    prim_vector_type&       prim_vector()               { return primitives_; }
 
-    bvh_node const* nodes() const { return nodes_.data(); }
-    bvh_node* nodes() { return nodes_.data(); }
+    bvh_node const*         nodes() const               { return nodes_.data(); }
+    bvh_node*               nodes()                     { return nodes_.data(); }
 
-    node_vector_type const& nodes_vector() const { return nodes_; }
-    node_vector_type& nodes_vector() { return nodes_; }
+    node_vector_type const& nodes_vector() const        { return nodes_; }
+    node_vector_type&       nodes_vector()              { return nodes_; }
 
 private:
 
-    P* primitives_;
-    size_type num_prims_;
+    prim_vector_type primitives_;
     node_vector_type nodes_;
 
 };
@@ -202,10 +195,10 @@ class device_bvh
 public:
 
     device_bvh(bvh<P> const& host_bvh)
-        : primitives_(host_bvh.num_prims())
+        : primitives_(host_bvh.prim_vector().size())
         , nodes_(host_bvh.nodes_vector())
     {
-        thrust::copy(host_bvh.primitives(), host_bvh.primitives() + host_bvh.num_prims(), primitives_.begin());
+        thrust::copy(host_bvh.primitives(), host_bvh.primitives() + host_bvh.prim_vector().size(), primitives_.begin());
     }
 
     VSNRAY_GPU_FUNC P const&        primitive(size_t i) const   { return primitives_.data()[i]; }
