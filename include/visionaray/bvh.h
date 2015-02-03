@@ -61,12 +61,11 @@ public:
     typedef aligned_vector<bvh_node> node_vector_type;
     typedef aligned_vector<unsigned> idx_vector_type;
 
-    P const* primitives;
     size_type num_prims;
 
 #ifdef BVH_WITH_GATHER
     explicit bvh(P const* prims, size_t num_prims)
-        : primitives(prims)
+        : primitives_(prims)
         , num_prims(num_prims)
         , nodes_(node_vector_type(2 * num_prims - 1))
         , prim_indices_(idx_vector_type(num_prims))
@@ -75,7 +74,7 @@ public:
 #else
     // TODO!!!!!
     explicit bvh(P const* prims, size_t num_prims)
-        : primitives(0)
+        : primitives_(0)
         , num_prims(num_prims)
         , nodes_(node_vector_type(2 * num_prims - 1))
     {
@@ -89,6 +88,9 @@ public:
         delete[] primitives;
     }
 #endif
+
+    P const* primmitives() const { return primitives_; }
+    P* primitives() { return primitives_; }
 
     bvh_node const* nodes() const { return nodes_.data(); }
     bvh_node* nodes() { return nodes_.data(); }
@@ -110,6 +112,7 @@ public:
 
 private:
 
+    P const* primitives_;
     node_vector_type nodes_;
     idx_vector_type  prim_indices_;
 
@@ -164,8 +167,6 @@ class device_bvh
 {
 public:
 
-    P* primitives;
-
     device_bvh(bvh<P> const& host_bvh)
     {
         cudaError_t err = cudaSuccess;
@@ -197,19 +198,23 @@ public:
 
     }
 
-    VSNRAY_GPU_FUNC bvh_node const* nodes() const            { return nodes_.data(); }
-    VSNRAY_GPU_FUNC bvh_node*       nodes()                  { return nodes_.data(); }
+    VSNRAY_GPU_FUNC P const*        primitives() const      { return primitives_.data(); }
+    VSNRAY_GPU_FUNC P*              primitives()            { return primitives_.data(); }
 
-    VSNRAY_GPU_FUNC unsigned const* prim_indices() const     { return prim_indices_.data(); }
-    VSNRAY_GPU_FUNC unsigned*       prim_indices()           { return prim_indices_.data(); }
+    VSNRAY_GPU_FUNC bvh_node const* nodes() const           { return nodes_.data(); }
+    VSNRAY_GPU_FUNC bvh_node*       nodes()                 { return nodes_.data(); }
+
+    VSNRAY_GPU_FUNC unsigned const* prim_indices() const    { return prim_indices_.data(); }
+    VSNRAY_GPU_FUNC unsigned*       prim_indices()          { return prim_indices_.data(); }
 
 private:
 
     VSNRAY_NOT_COPYABLE(device_bvh)
     device_bvh& operator=(bvh<P> const& host_bvh);
 
-    detail::kernel_device_vector<bvh_node> nodes_;
-    detail::kernel_device_vector<unsigned> prim_indices_;
+    detail::kernel_device_vector<P>         primitives_;
+    detail::kernel_device_vector<bvh_node>  nodes_;
+    detail::kernel_device_vector<unsigned>  prim_indices_;
 
 };
 
