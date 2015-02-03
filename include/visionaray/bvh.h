@@ -131,10 +131,9 @@ public:
     typedef typename thrust::device_vector<T>::size_type    size_type;
     typedef typename thrust::device_vector<T>::iterator     iterator;
 
-    kernel_device_vector() = default;
-
     explicit kernel_device_vector(size_type n)
         : vector_(n)
+        , ptr_(0)
     {
         ptr_ = thrust::raw_pointer_cast(vector_.data());
     }
