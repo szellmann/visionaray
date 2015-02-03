@@ -12,6 +12,7 @@
 
 #ifdef __CUDACC__
 #include <cuda.h>
+#include <thrust/device_vector.h>
 #endif
 
 #include "detail/aligned_vector.h"
@@ -116,6 +117,42 @@ private:
 
 #ifdef __CUDACC__
 
+namespace detail
+{
+
+//-------------------------------------------------------------------------------------------------
+// Wraps a thrust::device_vector and a raw pointer. The latter is accessible from a CUDA kernel.
+// Does only implement the vector interface needed in this scope
+//
+
+template <typename T>
+class kernel_device_vector
+{
+public:
+
+    kernel_device_vector() = default;
+
+    template <typename U, typename Alloc>
+    /* implicit */ kernel_device_vector(std::vector<U, Alloc> const& host_vec)
+        : vector_(host_vec)
+        , ptr_(0)
+    {
+        ptr_ = thrust::raw_pointer_cast(vector_.data());
+    }
+
+    VSNRAY_GPU_FUNC T const* data() const { return ptr_; }
+    VSNRAY_GPU_FUNC T*       data()       { return ptr_; }
+
+private:
+
+    thrust::device_vector<T> vector_;
+    T* ptr_;
+
+};
+
+} // detail
+
+
 //-------------------------------------------------------------------------------------------------
 // BVH for traversal on a CUDA device. Can only be edited on the device.
 // Can only be constructed from a host BVH, is not copyable or copy assignable
@@ -137,18 +174,6 @@ public:
             throw std::runtime_error(std::string("malloc error") + std::to_string(__LINE__));
         }
 
-        err = cudaMalloc( &nodes_, host_bvh.nodes_vector().size() * sizeof(bvh_node) );
-        if (err != cudaSuccess)
-        {
-            throw std::runtime_error(std::string("malloc error") + std::to_string(__LINE__));
-        }
-
-        err = cudaMalloc( &prim_indices_, host_bvh.prim_indices_vector().size() * sizeof(unsigned) );
-        if (err != cudaSuccess)
-        {
-            throw std::runtime_error(std::string("malloc error")  + std::to_string(__LINE__));
-        }
-
         err = cudaMemcpy( primitives, host_bvh.primitives, host_bvh.num_prims * sizeof(P),
             cudaMemcpyHostToDevice );
         if (err != cudaSuccess)
@@ -156,19 +181,8 @@ public:
             throw std::runtime_error("memcpy error");
         }
 
-        err = cudaMemcpy( nodes_, host_bvh.nodes(), host_bvh.nodes_vector().size() * sizeof(bvh_node),
-            cudaMemcpyHostToDevice );
-        if (err != cudaSuccess)
-        {
-            throw std::runtime_error("memcpy error");
-        }
-
-        err = cudaMemcpy( prim_indices_, host_bvh.prim_indices(), host_bvh.prim_indices_vector().size() * sizeof(unsigned),
-            cudaMemcpyHostToDevice );
-        if (err != cudaSuccess)
-        {
-            throw std::runtime_error("memcpy error");
-        }
+        nodes_ = host_bvh.nodes_vector();
+        prim_indices_ = host_bvh.prim_indices_vector();
     }
 
     ~device_bvh()
@@ -180,38 +194,21 @@ public:
 
         }
 
-        err = cudaFree(nodes_);
-        if (err != cudaSuccess)
-        {
-
-        }
-
-        err = cudaFree(prim_indices_);
-        if (err != cudaSuccess)
-        {
-
-        }
     }
 
-    VSNRAY_GPU_FUNC bvh_node const* nodes() const            { return nodes_; }
-    VSNRAY_GPU_FUNC bvh_node*       nodes()                  { return nodes_; }
+    VSNRAY_GPU_FUNC bvh_node const* nodes() const            { return nodes_.data(); }
+    VSNRAY_GPU_FUNC bvh_node*       nodes()                  { return nodes_.data(); }
 
-    VSNRAY_GPU_FUNC bvh_node const* nodes_ptr() const        { return nodes_; }
-    VSNRAY_GPU_FUNC bvh_node*       nodes_ptr()              { return nodes_; }
-
-    VSNRAY_GPU_FUNC unsigned const* prim_indices() const     { return prim_indices_; }
-    VSNRAY_GPU_FUNC unsigned*       prim_indices()           { return prim_indices_; }
-
-    VSNRAY_GPU_FUNC unsigned const* prim_indices_ptr() const { return prim_indices_; }
-    VSNRAY_GPU_FUNC unsigned*       prim_indices_ptr()       { return prim_indices_; }
+    VSNRAY_GPU_FUNC unsigned const* prim_indices() const     { return prim_indices_.data(); }
+    VSNRAY_GPU_FUNC unsigned*       prim_indices()           { return prim_indices_.data(); }
 
 private:
 
     VSNRAY_NOT_COPYABLE(device_bvh)
     device_bvh& operator=(bvh<P> const& host_bvh);
 
-    bvh_node* nodes_;
-    unsigned* prim_indices_;
+    detail::kernel_device_vector<bvh_node> nodes_;
+    detail::kernel_device_vector<unsigned> prim_indices_;
 
 };
 
