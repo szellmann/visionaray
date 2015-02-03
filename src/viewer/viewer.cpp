@@ -332,6 +332,8 @@ void display_func()
     if (config.dev_type == configuration::GPU)
     {
 #ifdef __CUDACC__
+        namespace algorithm = simple;
+
         typedef vector<4, float> color_type;
 
         typedef decltype(scene.primitives)::value_type  primitive_type;
@@ -348,13 +350,13 @@ void display_func()
         static thrust::device_vector<normal_type>   const device_normals    = normals;
         static thrust::device_vector<material_type> const device_materials  = materials;
 
-        sched_params<color_type, simple::pixel_sampler_type> sparams
+        sched_params<color_type, algorithm::pixel_sampler_type> sparams
         {
             *rend->cam,
             &rend->device_rt
         };
 
-        auto kparams = simple::make_params
+        auto kparams = algorithm::make_params
         (
             device_bvh_pointers,
             device_bvh_pointers + 1,
@@ -366,7 +368,7 @@ void display_func()
 
         typedef vector<4, renderer::scalar_type_gpu> internal_color_type;
 
-        typedef simple::kernel<internal_color_type, decltype(kparams)> kernel_type;
+        typedef algorithm::kernel<internal_color_type, decltype(kparams)> kernel_type;
         kernel_type kernel;
         kernel.params = kparams;
         rend->sched_gpu.frame(kernel, sparams /*, ++rend->frame*/ );
@@ -377,15 +379,17 @@ void display_func()
     else if (config.dev_type == configuration::CPU)
     {
 #ifndef __CUDA_ARCH__
+        namespace algorithm = simple;
+
         typedef vector<4, float> color_type;
 
-        sched_params<color_type, simple::pixel_sampler_type> sparams
+        sched_params<color_type, algorithm::pixel_sampler_type> sparams
         {
             *rend->cam,
             &rend->rt
         };
 
-        auto kparams = simple::make_params
+        auto kparams = algorithm::make_params
         (
             &host_bvh,
             &host_bvh + 1,
@@ -399,7 +403,7 @@ void display_func()
 
         typedef vector<4, renderer::scalar_type_cpu> internal_color_type;
 
-        typedef simple::kernel<internal_color_type, decltype(kparams)> kernel_type;
+        typedef algorithm::kernel<internal_color_type, decltype(kparams)> kernel_type;
         kernel_type kernel;
         kernel.params = kparams;
         rend->sched_cpu.frame(kernel, sparams /*, ++rend->frame*/ );
