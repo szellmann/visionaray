@@ -80,6 +80,7 @@ public:
         , nodes_(node_vector_type(2 * num_prims - 1))
     {
         VSNRAY_UNUSED(prims);
+        primitives = new P[num_prims];
     }
 
    ~bvh()

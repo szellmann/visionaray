@@ -381,7 +381,6 @@ bvh<P> build(P const* primitives, size_t num_prims)
     }
 #else
     // TODO!!!!!
-    result.primitives = new P[num_prims];
     auto tmp = const_cast<P*>(result.primitives);
     for (size_t i = 0; i < num_prims; ++i)
     {
