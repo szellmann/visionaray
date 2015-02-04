@@ -155,17 +155,48 @@ public:
 
     explicit kernel_device_vector(size_type n)
         : vector_(n)
-        , ptr_(0)
+        , ptr_(thrust::raw_pointer_cast(vector_.data()))
     {
-        ptr_ = thrust::raw_pointer_cast(vector_.data());
     }
 
     template <typename U, typename Alloc>
     /* implicit */ kernel_device_vector(std::vector<U, Alloc> const& host_vec)
         : vector_(host_vec)
-        , ptr_(0)
+        , ptr_(thrust::raw_pointer_cast(vector_.data()))
     {
-        ptr_ = thrust::raw_pointer_cast(vector_.data());
+    }
+
+    kernel_device_vector(kernel_device_vector const& rhs)
+        : vector_(rhs.vector_)
+        , ptr_(thrust::raw_pointer_cast(vector_.data()))
+    {
+    }
+
+    kernel_device_vector& operator=(kernel_device_vector const& rhs)
+    {
+        this->vector_ = rhs.vector_;
+        this->ptr_ = thrust::raw_pointer_cast(this->vector_.data());
+
+        return *this;
+    }
+
+    kernel_device_vector(kernel_device_vector&& rhs)
+        : vector_(std::move(rhs.vector_))
+        , ptr_(thrust::raw_pointer_cast(vector_.data()))
+    {
+        rhs.vector_ = {}; // construct new empty vector so that .data() below is valid
+        rhs.ptr_ = thrust::raw_pointer_cast(rhs.vector_.data());
+    }
+
+    kernel_device_vector& operator=(kernel_device_vector&& rhs)
+    {
+        this->vector_ = std::move(rhs.vector_);
+        this->ptr_ = thrust::raw_pointer_cast(this->vector_.data());
+
+        rhs.vector_ = {}; // construct new empty vector so that .data() below is valid
+        rhs.ptr_ = thrust::raw_pointer_cast(rhs.vector_.data());
+
+        return *this;
     }
 
     iterator begin() { return vector_.begin(); }
@@ -177,7 +208,7 @@ public:
 private:
 
     thrust::device_vector<T> vector_;
-    T* ptr_;
+    T* ptr_; // = vector_.data()
 
 };
 
@@ -210,13 +241,8 @@ public:
     VSNRAY_GPU_FUNC bvh_node*       nodes()                     { return nodes_.data(); }
 
 private:
-
-    VSNRAY_NOT_COPYABLE(device_bvh)
-    device_bvh& operator=(bvh<P> const& host_bvh);
-
     detail::kernel_device_vector<P>         primitives_;
     detail::kernel_device_vector<bvh_node>  nodes_;
-
 };
 
 template <typename P>
@@ -244,9 +270,6 @@ public:
     VSNRAY_GPU_FUNC unsigned*       prim_indices()              { return prim_indices_.data(); }
 
 private:
-
-    VSNRAY_NOT_COPYABLE(indexed_device_bvh)
-    indexed_device_bvh& operator=(bvh<P> const& host_bvh);
 
     detail::kernel_device_vector<P>         primitives_;
     detail::kernel_device_vector<bvh_node>  nodes_;
