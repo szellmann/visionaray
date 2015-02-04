@@ -227,12 +227,14 @@ private:
     specular<T>     specular_brdf_;
 
     template <typename SR, typename VecT>
+    VSNRAY_FUNC
     VecT cd(SR const& sr, VecT const& wo, VecT const& wi) const
     {
         return diffuse_brdf_.f(sr.normal, wo, wi);
     }
 
     template <typename L, typename C, typename VecT>
+    VSNRAY_FUNC
     VecT cd(shade_record<L, C, typename VecT::value_type> const& sr, VecT const& wo, VecT const& wi) const
     {
         return VecT(sr.cd) * diffuse_brdf_.f(sr.normal, wo, wi);

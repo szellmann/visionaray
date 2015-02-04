@@ -99,6 +99,7 @@ namespace detail
 {
 
 template <typename Params, typename T>
+VSNRAY_FUNC
 inline auto make_shade_record(has_textures_tag)
     -> shade_record<typename Params::light_type, vector<3, T>, T>
 {
@@ -106,6 +107,7 @@ inline auto make_shade_record(has_textures_tag)
 }
 
 template <typename Params, typename T>
+VSNRAY_FUNC
 inline auto make_shade_record(has_no_textures_tag)
     -> shade_record<typename Params::light_type, T>
 {
@@ -115,6 +117,7 @@ inline auto make_shade_record(has_no_textures_tag)
 } // detail
 
 template <typename Params, typename T>
+VSNRAY_FUNC
 inline auto make_shade_record()
     -> decltype( detail::make_shade_record<Params, T>(detail::has_textures<Params>{}) )
 {

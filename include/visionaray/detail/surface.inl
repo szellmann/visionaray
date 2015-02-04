@@ -35,6 +35,7 @@ inline surface<M> get_surface
 }
 
 template <typename R, typename N, typename TC, typename M, typename T>
+VSNRAY_FUNC
 inline surface<M, vector<3, float>> get_surface
 (
     N const* normals,
@@ -128,6 +129,7 @@ inline surface<M> get_surface
 //
 
 template <template <typename> class B, typename N, template <typename> class M, typename R>
+VSNRAY_FUNC
 inline surface<M<typename R::scalar_type>> get_surface
 (
     B<basic_triangle<3, float>> const* tree,
@@ -141,6 +143,7 @@ inline surface<M<typename R::scalar_type>> get_surface
 }
 
 template <template <typename> class B, typename N, typename TC, template <typename> class M, typename T, typename R>
+VSNRAY_FUNC
 inline surface<M<typename R::scalar_type>, vector<3, typename R::scalar_type>> get_surface
 (
     B<basic_triangle<3, float>> const* tree,
@@ -462,6 +465,7 @@ inline surface<M<simd::float8>> get_surface
 //
 
 template <typename Params, typename HR>
+VSNRAY_FUNC
 inline auto get_surface(Params const& p, HR const& hr, detail::has_no_textures_tag)
     -> decltype( get_surface(p.prims.begin, p.normals, p.materials, hr) )
 {
@@ -469,6 +473,7 @@ inline auto get_surface(Params const& p, HR const& hr, detail::has_no_textures_t
 }
 
 template <typename Params, typename HR>
+VSNRAY_FUNC
 inline auto get_surface(Params const& p, HR const& hr, detail::has_textures_tag)
     -> decltype( get_surface(p.prims.begin, p.normals, p.tex_coords, p.materials, p.textures, hr) )
 {
@@ -476,6 +481,7 @@ inline auto get_surface(Params const& p, HR const& hr, detail::has_textures_tag)
 }
 
 template <typename Params, typename HR>
+VSNRAY_FUNC
 inline auto get_surface(Params const& p, HR const& hr)
     -> decltype( get_surface(p, hr, detail::has_textures<Params>{}) )
 {
@@ -496,6 +502,7 @@ inline bool has_emissive_material(surface<M> const& surf)
 }
 
 template <typename T>
+VSNRAY_FUNC
 inline bool has_emissive_material(surface<emissive<T>> const& surf)
 {
     VSNRAY_UNUSED(surf);
