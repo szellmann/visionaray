@@ -401,7 +401,7 @@ B build(P const* primitives, size_t num_prims)
 
     finalize_build(result, ptr, primitives, num_prims);
 
-    return std::move(result);
+    return result;
 
 }
 
@@ -410,13 +410,13 @@ B build(P const* primitives, size_t num_prims)
 template <typename P>
 bvh<P> build(P const* primitives, size_t num_prims, bvh_tag)
 {
-    return std::move(detail::build<bvh<P>>(primitives, num_prims));
+    return detail::build<bvh<P>>(primitives, num_prims);
 }
 
 template <typename P>
 indexed_bvh<P> build(P const* primitives, size_t num_prims, indexed_bvh_tag)
 {
-    return std::move(detail::build<indexed_bvh<P>>(primitives, num_prims));
+    return detail::build<indexed_bvh<P>>(primitives, num_prims);
 }
 
 } // visionaray
