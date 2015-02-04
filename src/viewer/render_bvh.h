@@ -18,63 +18,62 @@
 
 namespace visionaray
 {
-namespace detail
-{
-
-void render(aabb const& box)
-{
-    glBegin(GL_LINES);
-
-        glVertex3f(box.min.x, box.min.y, box.min.z);
-        glVertex3f(box.max.x, box.min.y, box.min.z);
-
-        glVertex3f(box.max.x, box.min.y, box.min.z);
-        glVertex3f(box.max.x, box.max.y, box.min.z);
-
-        glVertex3f(box.max.x, box.max.y, box.min.z);
-        glVertex3f(box.min.x, box.max.y, box.min.z);
-
-        glVertex3f(box.min.x, box.max.y, box.min.z);
-        glVertex3f(box.min.x, box.min.y, box.min.z);
-
-        glVertex3f(box.min.x, box.min.y, box.max.z);
-        glVertex3f(box.max.x, box.min.y, box.max.z);
-
-        glVertex3f(box.max.x, box.min.y, box.max.z);
-        glVertex3f(box.max.x, box.max.y, box.max.z);
-
-        glVertex3f(box.max.x, box.max.y, box.max.z);
-        glVertex3f(box.min.x, box.max.y, box.max.z);
-
-        glVertex3f(box.min.x, box.max.y, box.max.z);
-        glVertex3f(box.min.x, box.min.y, box.max.z);
-
-
-        glVertex3f(box.min.x, box.min.y, box.min.z);
-        glVertex3f(box.min.x, box.min.y, box.max.z);
-
-        glVertex3f(box.max.x, box.min.y, box.min.z);
-        glVertex3f(box.max.x, box.min.y, box.max.z);
-
-        glVertex3f(box.max.x, box.max.y, box.min.z);
-        glVertex3f(box.max.x, box.max.y, box.max.z);
-
-        glVertex3f(box.min.x, box.max.y, box.min.z);
-        glVertex3f(box.min.x, box.max.y, box.max.z);
-
-    glEnd();
-}
-
-} // detail
 
 template <template <typename> class B, typename P>
 void render(B<P> const& b)
 {
 
+    std::vector<float> vertices;
     for (auto const& n : b.nodes_vector())
     {
-        detail::render(n.bbox);
+        auto box = n.bbox;
+
+        auto ilist =
+        {
+            box.min.x, box.min.y, box.min.z,
+            box.max.x, box.min.y, box.min.z,
+
+            box.max.x, box.min.y, box.min.z,
+            box.max.x, box.max.y, box.min.z,
+
+            box.max.x, box.max.y, box.min.z,
+            box.min.x, box.max.y, box.min.z,
+
+            box.min.x, box.max.y, box.min.z,
+            box.min.x, box.min.y, box.min.z,
+
+            box.min.x, box.min.y, box.max.z,
+            box.max.x, box.min.y, box.max.z,
+
+            box.max.x, box.min.y, box.max.z,
+            box.max.x, box.max.y, box.max.z,
+
+            box.max.x, box.max.y, box.max.z,
+            box.min.x, box.max.y, box.max.z,
+
+            box.min.x, box.max.y, box.max.z,
+            box.min.x, box.min.y, box.max.z,
+
+            box.min.x, box.min.y, box.min.z,
+            box.min.x, box.min.y, box.max.z,
+
+            box.max.x, box.min.y, box.min.z,
+            box.max.x, box.min.y, box.max.z,
+
+            box.max.x, box.max.y, box.min.z,
+            box.max.x, box.max.y, box.max.z,
+
+            box.min.x, box.max.y, box.min.z,
+            box.min.x, box.max.y, box.max.z
+        };
+
+        vertices.insert(vertices.end(), ilist.begin(), ilist.end());
     }
+
+    glVertexPointer(3, GL_FLOAT, 0, vertices.data());
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glDrawArrays(GL_LINES, 0, vertices.size() / 3);
+    glDisableClientState(GL_VERTEX_ARRAY);
 
 }
 
