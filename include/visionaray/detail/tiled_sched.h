@@ -31,8 +31,6 @@ private:
 
     void render_loop();
 
-    VSNRAY_NOT_COPYABLE(tiled_sched)
-
 };
 
 } // visionaray
