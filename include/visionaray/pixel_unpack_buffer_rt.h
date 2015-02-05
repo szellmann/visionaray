@@ -18,7 +18,7 @@ class pixel_unpack_buffer_rt : public render_target
 {
 public:
 
-    typedef pixel_traits<PF_RGBA8>          color_traits;
+    typedef pixel_traits<PF_RGBA32F>        color_traits;
     typedef pixel_traits<PF_UNSPECIFIED>    depth_traits;
     typedef typename color_traits::type     color_type;
     typedef aligned_vector<uint8_t>         buffer_type;
