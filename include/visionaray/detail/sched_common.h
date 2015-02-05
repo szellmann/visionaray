@@ -96,10 +96,9 @@ struct color_access
     VSNRAY_FUNC
     static void blend(int x, int y, recti const& viewport, input_color const& color, output_color* buffer, T sfactor, T dfactor)
     {
-        convert<color_traits::format()> cv;
-        auto dst = cv( get(x, y, viewport, buffer) );
+        auto dst = get(x, y, viewport, buffer);
         dst = color * sfactor + dst * dfactor;
-        store(x, y, viewport, cv(dst), buffer);
+        store(x, y, viewport, dst, buffer);
     }
 
     VSNRAY_FUNC
