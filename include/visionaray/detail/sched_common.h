@@ -11,6 +11,7 @@
 #include <visionaray/mc.h>
 #include <visionaray/scheduler.h>
 
+#include "color_conversion.h"
 #include "macros.h"
 
 namespace visionaray
@@ -77,38 +78,42 @@ struct pixel<simd::float8>
 // color access
 //
 
-template <typename CO /* output color */, typename CI /* input color */>
+template <typename CT /* output color traits */, typename CI /* input color */>
 struct color_access
 {
-    typedef CO output_color;
+    typedef CT color_traits;
+    typedef typename CT::type output_color;
     typedef CI input_color;
 
     VSNRAY_FUNC
     static void store(int x, int y, recti const& viewport, input_color const& color, output_color* buffer)
     {
-        buffer[y * viewport.w + x] = color;
+        convert<color_traits::format()> cv;
+        buffer[y * viewport.w + x] = cv(color);
     }
 
     template <typename T>
     VSNRAY_FUNC
     static void blend(int x, int y, recti const& viewport, input_color const& color, output_color* buffer, T sfactor, T dfactor)
     {
-        auto dst = get(x, y, viewport, buffer);
+        convert<color_traits::format()> cv;
+        auto dst = cv( get(x, y, viewport, buffer) );
         dst = color * sfactor + dst * dfactor;
-        store(x, y, viewport, dst, buffer);
+        store(x, y, viewport, cv(dst), buffer);
     }
 
     VSNRAY_FUNC
     static input_color get(int x, int y, recti const& viewport, output_color* buffer)
     {
-        return buffer[y * viewport.w + x];
+        convert<color_traits::format()> cv;
+        return cv( buffer[y * viewport.w + x] );
     }
 };
 
-template <>
-struct color_access<vector<4, float>, vector<4, simd::float4>>
+template <typename CT>
+struct color_access<CT, vector<4, simd::float4>>
 {
-    typedef vector<4, float> output_color;
+    typedef typename CT::type output_color;
     typedef vector<4, simd::float4> input_color;
 
     VSNRAY_CPU_FUNC
@@ -322,7 +327,7 @@ inline R jittered_ray_gen(unsigned x, unsigned y, Mat4 const& inv_view_matrix, M
 // Simple uniform pixel sampler
 //
 
-template <typename R, typename Mat4, typename V, typename C, typename K>
+template <typename R, typename CT, typename Mat4, typename V, typename C, typename K>
 VSNRAY_FUNC
 inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_matrix, Mat4 inv_proj_matrix,
     V viewport, C* color_buffer, K kernel, pixel_sampler::uniform_type)
@@ -330,12 +335,11 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_m
     VSNRAY_UNUSED(frame);
 
     typedef typename R::scalar_type     scalar_type;
-    typedef C                           color_type;
     typedef vector<4, scalar_type>      vec4_type;
 
     auto r = uniform_ray_gen<R>(x, y, inv_view_matrix, inv_proj_matrix, viewport);
     auto color = kernel(r);
-    color_access<color_type, vec4_type>::store(x, y, viewport, color, color_buffer);
+    color_access<CT, vec4_type>::store(x, y, viewport, color, color_buffer);
 }
 
 
@@ -343,7 +347,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_m
 // Jittered pixel sampler, sampler is passed to kernel
 //
 
-template <typename R, typename Mat4, typename V, typename C, typename K>
+template <typename R, typename CT, typename Mat4, typename V, typename C, typename K>
 VSNRAY_FUNC
 inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_matrix, Mat4 inv_proj_matrix,
     V viewport, C* color_buffer, K kernel, pixel_sampler::jittered_type)
@@ -358,7 +362,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_m
     auto s      = gen(x, y, viewport);
     auto r = jittered_ray_gen<R>(x, y, inv_view_matrix, inv_proj_matrix, viewport, s);
     auto color = kernel(r, s);
-    color_access<color_type, vec4_type>::store(x, y, viewport, color, color_buffer);
+    color_access<CT, vec4_type>::store(x, y, viewport, color, color_buffer);
 }
 
 
@@ -366,7 +370,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_m
 // Jittered pixel sampler, result is blended on top of color buffer, sampler is passed to kernel
 //
 
-template <typename R, typename Mat4, typename V, typename C, typename K>
+template <typename R, typename CT, typename Mat4, typename V, typename C, typename K>
 VSNRAY_FUNC
 inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_matrix, Mat4 inv_proj_matrix,
     V viewport, C* color_buffer, K kernel, pixel_sampler::jittered_blend_type)
@@ -382,9 +386,9 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_m
     auto alpha = scalar_type(1.0) / scalar_type(frame);
     if (frame <= 1)
     {//TODO: clear method in render target?
-        color_access<color_type, vec4_type>::store(x, y, viewport, vec4_type(0.0, 0.0, 0.0, 0.0), color_buffer);
+        color_access<CT, vec4_type>::store(x, y, viewport, vec4_type(0.0, 0.0, 0.0, 0.0), color_buffer);
     }
-    color_access<color_type, vec4_type>::blend(x, y, viewport, color, color_buffer,
+    color_access<CT, vec4_type>::blend(x, y, viewport, color, color_buffer,
         alpha, scalar_type(1.0) - alpha);
 }
 
@@ -393,7 +397,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_m
 // TODO: blend several samples at once
 //
 
-template <typename R, typename Mat4, typename V, typename C, typename K>
+template <typename R, typename CT, typename Mat4, typename V, typename C, typename K>
 VSNRAY_FUNC
 inline void sample_pixel_XXX(unsigned x, unsigned y, Mat4 inv_view_matrix, Mat4 inv_proj_matrix,
     V viewport, C* color_buffer, K kernel)
@@ -409,10 +413,10 @@ inline void sample_pixel_XXX(unsigned x, unsigned y, Mat4 inv_view_matrix, Mat4 
     {
         auto r     = jittered_ray_gen<R>(x, y, inv_view_matrix, inv_proj_matrix, viewport, s);
         auto src   = kernel(r, s);
-        auto dst   = i == 0 ? vec4_type(0.0, 0.0, 0.0, 1.0) : color_access<color_type, vec4_type>::get(x, y, viewport, color_buffer);
+        auto dst   = i == 0 ? vec4_type(0.0, 0.0, 0.0, 1.0) : color_access<CT, vec4_type>::get(x, y, viewport, color_buffer);
         auto alpha = 1.0f - static_cast<float>(i) / spp;
         dst = dst * scalar_type(1 - alpha) + src * scalar_type(alpha);
-        color_access<color_type, vec4_type>::store(x, y, viewport, dst, color_buffer);
+        color_access<CT, vec4_type>::store(x, y, viewport, dst, color_buffer);
     }
 }
 

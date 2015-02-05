@@ -21,12 +21,6 @@ namespace visionaray
 
 struct pixel_unpack_buffer_rt::impl
 {
-    impl(pixel_format cf, pixel_format df)
-        : color_format(cf)
-        , depth_format(df)
-    {
-    }
-
     cuda::graphics_resource resource;
     gl::buffer              buffer;
     gl::texture             texture;
@@ -34,8 +28,8 @@ struct pixel_unpack_buffer_rt::impl
     pixel_format            depth_format;
 };
 
-pixel_unpack_buffer_rt::pixel_unpack_buffer_rt(pixel_format cf, pixel_format df)
-    : impl_(new impl(cf, df))
+pixel_unpack_buffer_rt::pixel_unpack_buffer_rt()
+    : impl_(new impl())
 {
     cudaError_t err = cudaSuccess;
 
@@ -88,7 +82,7 @@ void pixel_unpack_buffer_rt::begin_frame_impl()
 
 void pixel_unpack_buffer_rt::end_frame_impl()
 {
-    pixel_format_info cinfo = map_pixel_format(impl_->color_format);
+    pixel_format_info cinfo = map_pixel_format(color_traits::format());
 
     impl_->resource.unmap();
 
@@ -101,7 +95,7 @@ void pixel_unpack_buffer_rt::end_frame_impl()
 
 void pixel_unpack_buffer_rt::resize_impl(size_t w, size_t h)
 {
-    pixel_format_info cinfo = map_pixel_format(impl_->color_format);
+    pixel_format_info cinfo = map_pixel_format(color_traits::format());
 
     // gl texture
     impl_->texture.reset( gl::create_texture() );

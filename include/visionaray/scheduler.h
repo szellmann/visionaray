@@ -29,14 +29,15 @@ struct jittered_blend_type {};
 // Param structs for different pixel sampling strategies
 //
 
-template <typename C, typename PxSamplerT = pixel_sampler::uniform_type>
+template <typename RT, typename PxSamplerT = pixel_sampler::uniform_type>
 struct sched_params
 {
-    typedef C color_type;
-    typedef PxSamplerT pixel_sampler_type;
+    typedef RT                          rt_type;
+    typedef typename RT::color_traits   color_traits;
+    typedef PxSamplerT                  pixel_sampler_type;
 
-    camera cam;
-    render_target* rt;
+    camera const& cam;
+    RT& rt;
 };
 
 } // visionaray

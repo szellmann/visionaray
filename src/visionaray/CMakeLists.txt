@@ -115,7 +115,9 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/gpu_buffer_rt.h
     ${HEADER_DIR}/material.h
     ${HEADER_DIR}/mc.h
+    ${HEADER_DIR}/norm.h
     ${HEADER_DIR}/pixel_format.h
+    ${HEADER_DIR}/pixel_traits.h
     ${HEADER_DIR}/pixel_unpack_buffer_rt.h
     ${HEADER_DIR}/point_light.h
     ${HEADER_DIR}/render_target.h

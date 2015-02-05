@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "detail/aligned_vector.h"
-#include "pixel_format.h"
+#include "pixel_traits.h"
 
 namespace visionaray
 {
@@ -66,9 +66,10 @@ class cpu_buffer_rt : public render_target
 {
 public:
 
-    typedef aligned_vector<uint8_t> buffer_type;
-
-    cpu_buffer_rt(pixel_format cf, pixel_format df);
+    typedef pixel_traits<PF_RGBA32F>        color_traits;
+    typedef pixel_traits<PF_UNSPECIFIED>    depth_traits;
+    typedef typename color_traits::type     color_type;
+    typedef aligned_vector<uint8_t>         buffer_type;
 
     void* color();
     void* depth();
@@ -80,9 +81,6 @@ private:
 
     buffer_type color_buffer_;
     buffer_type depth_buffer_;
-
-    pixel_format color_format_;
-    pixel_format depth_format_;
 
     void begin_frame_impl();
     void end_frame_impl();

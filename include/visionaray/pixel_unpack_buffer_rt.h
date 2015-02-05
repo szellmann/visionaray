@@ -18,7 +18,12 @@ class pixel_unpack_buffer_rt : public render_target
 {
 public:
 
-    pixel_unpack_buffer_rt(pixel_format cf, pixel_format df);
+    typedef pixel_traits<PF_RGBA8>          color_traits;
+    typedef pixel_traits<PF_UNSPECIFIED>    depth_traits;
+    typedef typename color_traits::type     color_type;
+    typedef aligned_vector<uint8_t>         buffer_type;
+
+    pixel_unpack_buffer_rt();
    ~pixel_unpack_buffer_rt();
 
     void* color();
@@ -28,8 +33,6 @@ public:
     void const* depth() const;
 
 private:
-
-    VSNRAY_NOT_COPYABLE(pixel_unpack_buffer_rt)
 
     struct impl;
     std::unique_ptr<impl> impl_;

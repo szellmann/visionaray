@@ -329,6 +329,20 @@ inline vector<4, T> select(M const& m, vector<4, T> const& u, vector<4, T> const
     );
 }
 
+template <typename T>
+MATH_FUNC
+inline vector<4, T> min(vector<4, T> const& u, vector<4, T> const& v)
+{
+    return vector<4, T>( min(u.x, v.x), min(u.y, v.y), min(u.z, v.z), min(u.w, v.w) );
+}
+
+template <typename T>
+MATH_FUNC
+inline vector<4, T> max(vector<4, T> const& u, vector<4, T> const& v)
+{
+    return vector<4, T>( max(u.x, v.x), max(u.y, v.y), max(u.z, v.z), max(u.w, v.w) );
+}
+
 
 } // MATH_NAMESPACE
 

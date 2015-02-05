@@ -11,7 +11,7 @@ namespace visionaray
 namespace detail
 {
 
-template <typename R, typename PxSamplerT, typename MT, typename V, typename C, typename K>
+template <typename R, typename CT, typename PxSamplerT, typename MT, typename V, typename C, typename K>
 __global__ void render(MT inv_view_matrix, MT inv_proj_matrix, V viewport,
     C* color_buffer, K kernel, unsigned frame)
 {
@@ -23,7 +23,7 @@ __global__ void render(MT inv_view_matrix, MT inv_proj_matrix, V viewport,
         return;
     }
 
-    sample_pixel<R>(x, y, frame, inv_view_matrix, inv_proj_matrix, viewport, color_buffer, kernel, PxSamplerT());
+    sample_pixel<R, CT>(x, y, frame, inv_view_matrix, inv_proj_matrix, viewport, color_buffer, kernel, PxSamplerT());
 }
 
 } // detail
@@ -34,10 +34,11 @@ template <typename R>
 template <typename K, typename SP>
 void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
-    sched_params.rt->begin_frame();
+    sched_params.rt.begin_frame();
 
-    typedef typename SP::color_type color_type;
-    color_type* color_buffer    = static_cast<color_type*>(sched_params.rt->color());
+    typedef typename SP::color_traits   color_traits;
+    typedef typename color_traits::type color_type;
+    color_type* color_buffer    = static_cast<color_type*>(sched_params.rt.color());
     auto inv_view_matrix        = inverse(sched_params.cam.get_view_matrix());
     auto inv_proj_matrix        = inverse(sched_params.cam.get_proj_matrix());
     auto viewport               = sched_params.cam.get_viewport();
@@ -48,7 +49,7 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
         detail::div_up(viewport.w, block_size.x),
         detail::div_up(viewport.h, block_size.y)
     );
-    detail::render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>
+    detail::render<R, color_traits, typename SP::pixel_sampler_type><<<grid_size, block_size>>>
     (
         inv_view_matrix,
         inv_proj_matrix,
@@ -61,7 +62,7 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     cudaPeekAtLastError();
     cudaDeviceSynchronize();
 
-    sched_params.rt->end_frame();
+    sched_params.rt.end_frame();
 }
 
 } // visionaray

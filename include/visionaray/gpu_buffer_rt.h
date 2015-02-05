@@ -50,7 +50,15 @@ public:
 
     operator cpu_buffer_rt() const
     {
-        cpu_buffer_rt rt(color_format_, depth_format_);
+        cpu_buffer_rt rt;
+
+        // TODO
+        assert
+        (
+            cpu_buffer_rt::color_traits::format() == PF_RGBA32F
+         && cpu_buffer_rt::depth_traits::format() == PF_UNSPECIFIED
+        );
+
         rt.resize( width(), height() );
 
         thrust::copy( color_buffer_.begin(), color_buffer_.end(), static_cast<uint8_t*>(rt.color()) );

@@ -81,10 +81,6 @@ struct renderer
         : w(800)
         , h(800)
         , frame(0)
-        , rt(visionaray::PF_RGBA32F, visionaray::PF_UNSPECIFIED)
-#ifdef __CUDACC__
-        , device_rt(visionaray::PF_RGBA32F, visionaray::PF_UNSPECIFIED)
-#endif
         , down_button(mouse::NoButton)
     {
     }
@@ -350,10 +346,10 @@ void display_func()
         static thrust::device_vector<normal_type>   const device_normals    = normals;
         static thrust::device_vector<material_type> const device_materials  = materials;
 
-        sched_params<color_type, algorithm::pixel_sampler_type> sparams
+        sched_params<pixel_unpack_buffer_rt, algorithm::pixel_sampler_type> sparams
         {
             *rend->cam,
-            &rend->device_rt
+            rend->device_rt
         };
 
         auto kparams = algorithm::make_params
@@ -383,10 +379,10 @@ void display_func()
 
         typedef vector<4, float> color_type;
 
-        sched_params<color_type, algorithm::pixel_sampler_type> sparams
+        sched_params<cpu_buffer_rt, algorithm::pixel_sampler_type> sparams
         {
             *rend->cam,
-            &rend->rt
+            rend->rt
         };
 
         auto kparams = algorithm::make_params
