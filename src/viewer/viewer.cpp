@@ -146,8 +146,8 @@ void render_hud()
 
     int x = visionaray::clamp( rend->motion_pos.x, 0, w - 1 );
     int y = visionaray::clamp( rend->motion_pos.y, 0, h - 1 );
-    vec4* color = static_cast<vec4*>(rend->rt.color());
-    vec4 rgba = color[(h - 1 - y) * w + x];
+    auto color = static_cast<decltype(rend->rt)::color_type const*>(rend->rt.color());
+    auto rgba = color[(h - 1 - y) * w + x];
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
