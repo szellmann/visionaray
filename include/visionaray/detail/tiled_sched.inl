@@ -77,7 +77,7 @@ tiled_sched<R>::tiled_sched()
 {
     for (unsigned i = 0; i < 8; ++i)
     {
-        impl_->threads.push_back( std::thread(&tiled_sched::render_loop, this) );
+        impl_->threads.emplace_back([this](){ render_loop(); });
     }
 }
 
