@@ -88,7 +88,7 @@ struct color_access
     VSNRAY_FUNC
     static void store(int x, int y, recti const& viewport, input_color const& color, output_color* buffer)
     {
-        convert<color_traits::format()> cv;
+        convert<color_traits::format> cv;
         buffer[y * viewport.w + x] = cv(color);
     }
 
@@ -104,7 +104,7 @@ struct color_access
     VSNRAY_FUNC
     static input_color get(int x, int y, recti const& viewport, output_color* buffer)
     {
-        convert<color_traits::format()> cv;
+        convert<color_traits::format> cv;
         return cv( buffer[y * viewport.w + x] );
     }
 };

@@ -52,11 +52,11 @@ public:
         rt.resize( width(), height() );
 
         // TODO: make render targets templates!
-        // This won't compile if cpu_buffer_rt::XXX_traits::format()
-        //      != gpu_buffer_rt::XXX_traits::format()
+        // This won't compile if cpu_buffer_rt::XXX_traits::format
+        //      != gpu_buffer_rt::XXX_traits::format
         thrust::copy( color_buffer_.begin(), color_buffer_.end(), rt.color() );
 
-        if (depth_traits::format() != PF_UNSPECIFIED)
+        if (depth_traits::format != PF_UNSPECIFIED)
         {
             thrust::copy( depth_buffer_.begin(), depth_buffer_.end(), rt.depth() );
         }
@@ -74,12 +74,12 @@ private:
 
     void resize_impl(size_t w, size_t h)
     {
-        pixel_format_info cinfo = map_pixel_format(color_traits::format());
+        pixel_format_info cinfo = map_pixel_format(color_traits::format);
         color_buffer_.resize( w * h * cinfo.size );
 
-        if (depth_traits::format() != PF_UNSPECIFIED)
+        if (depth_traits::format != PF_UNSPECIFIED)
         {
-            pixel_format_info dinfo = map_pixel_format(depth_traits::format());
+            pixel_format_info dinfo = map_pixel_format(depth_traits::format);
             depth_buffer_.resize( w * h * dinfo.size );
         }
     }
