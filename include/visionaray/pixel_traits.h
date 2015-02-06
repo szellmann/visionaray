@@ -23,7 +23,7 @@ template <>
 struct pixel_traits<PF_UNSPECIFIED>
 {
     VSNRAY_FUNC constexpr static pixel_format format() { return PF_UNSPECIFIED; }
-    /* Note: no type! */
+    typedef struct {} type;
 };
 
 template <>

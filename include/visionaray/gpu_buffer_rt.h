@@ -61,11 +61,11 @@ public:
 
         rt.resize( width(), height() );
 
-        thrust::copy( color_buffer_.begin(), color_buffer_.end(), static_cast<uint8_t*>(rt.color()) );
+        thrust::copy( color_buffer_.begin(), color_buffer_.end(), reinterpret_cast<uint8_t*>(rt.color()) );
 
         if (depth_format_ != PF_UNSPECIFIED)
         {
-            thrust::copy( depth_buffer_.begin(), depth_buffer_.end(), static_cast<uint8_t*>(rt.depth()) );
+            thrust::copy( depth_buffer_.begin(), depth_buffer_.end(), reinterpret_cast<uint8_t*>(rt.depth()) );
         }
 
         return rt;

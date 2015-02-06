@@ -21,16 +21,16 @@ public:
     typedef pixel_traits<PF_RGBA32F>        color_traits;
     typedef pixel_traits<PF_UNSPECIFIED>    depth_traits;
     typedef typename color_traits::type     color_type;
-    typedef aligned_vector<uint8_t>         buffer_type;
+    typedef typename depth_traits::type     depth_type;
 
     pixel_unpack_buffer_rt();
    ~pixel_unpack_buffer_rt();
 
-    void* color();
-    void* depth();
+    color_type* color();
+    depth_type* depth();
 
-    void const* color() const;
-    void const* depth() const;
+    color_type const* color() const;
+    depth_type const* depth() const;
 
 private:
 

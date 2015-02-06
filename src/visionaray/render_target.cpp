@@ -11,29 +11,31 @@
 namespace visionaray
 {
 
+using color_type = cpu_buffer_rt::color_type;
+using depth_type = cpu_buffer_rt::depth_type;
 
 //-------------------------------------------------------------------------------------------------
 // cpu_buffer_rt
 //
 
-void* cpu_buffer_rt::color()
+color_type* cpu_buffer_rt::color()
 {
-    return reinterpret_cast<void*>( color_buffer_.data() );
+    return color_buffer_.data();
 }
 
-void* cpu_buffer_rt::depth()
+depth_type* cpu_buffer_rt::depth()
 {
-    return reinterpret_cast<void*>( depth_buffer_.data() );
+    return depth_buffer_.data();
 }
 
-void const* cpu_buffer_rt::color() const
+color_type const* cpu_buffer_rt::color() const
 {
-    return reinterpret_cast<void const*>( color_buffer_.data() );
+    return color_buffer_.data();
 }
 
-void const* cpu_buffer_rt::depth() const
+depth_type const* cpu_buffer_rt::depth() const
 {
-    return reinterpret_cast<void const*>( depth_buffer_.data() );
+    return depth_buffer_.data();
 }
 
 void cpu_buffer_rt::begin_frame_impl()

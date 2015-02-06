@@ -19,6 +19,9 @@
 namespace visionaray
 {
 
+using color_type = pixel_unpack_buffer_rt::color_type;
+using depth_type = pixel_unpack_buffer_rt::depth_type;
+
 struct pixel_unpack_buffer_rt::impl
 {
     cuda::graphics_resource resource;
@@ -52,22 +55,22 @@ pixel_unpack_buffer_rt::~pixel_unpack_buffer_rt()
 {
 }
 
-void* pixel_unpack_buffer_rt::color()
+color_type* pixel_unpack_buffer_rt::color()
 {
-    return impl_->resource.dev_ptr();
+    return static_cast<color_type*>(impl_->resource.dev_ptr());
 }
 
-void* pixel_unpack_buffer_rt::depth()
+depth_type* pixel_unpack_buffer_rt::depth()
 {
     throw std::runtime_error("not implemented yet");
 }
 
-void const* pixel_unpack_buffer_rt::color() const
+color_type const* pixel_unpack_buffer_rt::color() const
 {
-    return impl_->resource.dev_ptr();
+    return static_cast<color_type const*>(impl_->resource.dev_ptr());
 }
 
-void const* pixel_unpack_buffer_rt::depth() const
+depth_type const* pixel_unpack_buffer_rt::depth() const
 {
     throw std::runtime_error("not implemented yet");
 }
