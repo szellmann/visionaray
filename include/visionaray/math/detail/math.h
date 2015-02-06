@@ -47,6 +47,13 @@ inline T clamp(T const& x, T const& a, T const& b)
 
 template <typename T>
 MATH_FUNC
+inline T saturate(T const& x)
+{
+    return max(T(0.0), min(x, T(1.0)));
+}
+
+template <typename T>
+MATH_FUNC
 inline T lerp(T a, T b, T x)
 {
     return a + x * (b - a);
