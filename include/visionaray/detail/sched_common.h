@@ -157,10 +157,10 @@ struct color_access<CT, vector<4, simd::float4>>
 };
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-template <>
-struct color_access<vector<4, float>, vector<4, simd::float8>>
+template <typename CT>
+struct color_access<CT, vector<4, simd::float8>>
 {
-    typedef vector<4, float> output_color;
+    typedef typename CT::type output_color;
     typedef vector<4, simd::float8> input_color;
 
     VSNRAY_CPU_FUNC
