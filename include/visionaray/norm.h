@@ -30,14 +30,14 @@ VSNRAY_FUNC
 inline uint32_t float_to_unorm(float f)
 {
     f = saturate(f);
-    return static_cast<uint32_t>(f * ((2 << (Bits - 1)) - 1));
+    return static_cast<uint32_t>(f * ((1 << Bits) - 1));
 }
 
 template <unsigned Bits>
 VSNRAY_FUNC
 inline float unorm_to_float(uint32_t u)
 {
-    return static_cast<float>(u) / ((2 << (Bits - 1)) - 1);
+    return static_cast<float>(u) / ((1 << Bits) - 1);
 }
 
 } // detail
