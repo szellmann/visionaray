@@ -330,8 +330,6 @@ void display_func()
 #ifdef __CUDACC__
         namespace algorithm = simple;
 
-        typedef vector<4, float> color_type;
-
         typedef decltype(scene.primitives)::value_type  primitive_type;
         typedef decltype(scene.normals)::value_type     normal_type;
         typedef decltype(scene.materials)::value_type   material_type;
