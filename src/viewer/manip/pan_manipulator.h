@@ -20,7 +20,7 @@ class pan_manipulator : public camera_manipulator
 {
 public:
 
-    pan_manipulator(std::shared_ptr<camera> const& cam, mouse::buttons buttons);
+    pan_manipulator(camera& cam, mouse::buttons buttons);
    ~pan_manipulator();
 
     void handle_mouse_down(mouse_event const& event);

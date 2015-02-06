@@ -6,8 +6,6 @@
 #ifndef VSNRAY_ZOOM_MANIPULATOR_H
 #define VSNRAY_ZOOM_MANIPULATOR_H
 
-#include <memory>
-
 #include <visionaray/math/math.h>
 
 #include "camera_manipulator.h"
@@ -26,7 +24,7 @@ class zoom_manipulator : public camera_manipulator
 {
 public:
 
-    zoom_manipulator(std::shared_ptr<camera> const& cam, mouse::buttons buttons);
+    zoom_manipulator(camera& cam, mouse::buttons buttons);
    ~zoom_manipulator();
 
     void handle_mouse_down(mouse_event const& event);

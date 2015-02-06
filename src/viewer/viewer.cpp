@@ -97,7 +97,7 @@ struct renderer
     cuda_sched<ray_type_gpu>    sched_gpu;
     pixel_unpack_buffer_rt      device_rt;
 #endif
-    shared_ptr<camera>          cam;
+    camera                      cam;
     manipulators                manips;
 
     mouse::button down_button;
@@ -314,7 +314,7 @@ void display_func()
     visionaray::aligned_vector<light_type> lights
     {
 //        light_type{vec3(0.0, 1.0, 1.0)}
-        light_type{rend->cam->eye() - rend->cam->center()}
+        light_type{rend->cam.eye() - rend->cam.center()}
     };
 
 #ifdef __CUDACC__
@@ -346,7 +346,7 @@ void display_func()
 
         sched_params<pixel_unpack_buffer_rt, algorithm::pixel_sampler_type> sparams
         {
-            *rend->cam,
+            rend->cam,
             rend->device_rt
         };
 
@@ -379,7 +379,7 @@ void display_func()
 
         sched_params<cpu_buffer_rt, algorithm::pixel_sampler_type> sparams
         {
-            *rend->cam,
+            rend->cam,
             rend->rt
         };
 
@@ -438,11 +438,11 @@ void display_func()
     {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
-        glLoadMatrixf(rend->cam->get_proj_matrix().data());
+        glLoadMatrixf(rend->cam.get_proj_matrix().data());
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
-        glLoadMatrixf(rend->cam->get_view_matrix().data());
+        glLoadMatrixf(rend->cam.get_view_matrix().data());
 
         render(host_bvh);
 
@@ -537,9 +537,9 @@ void reshape_func(int w, int h)
     rend->frame = 0;
 
     glViewport(0, 0, w, h);
-    rend->cam->set_viewport(0, 0, w, h);
+    rend->cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
-    rend->cam->perspective(45.0f * visionaray::constants::pi<float>() / 180.0f, aspect, 0.001f, 1000.0f);
+    rend->cam.perspective(45.0f * visionaray::constants::pi<float>() / 180.0f, aspect, 0.001f, 1000.0f);
     rend->rt.resize(w, h);
 #ifdef __CUDACC__
     rend->device_rt.resize(w, h);
@@ -588,10 +588,9 @@ int main(int argc, char** argv)
     {
     }
 
-    rend->cam= make_shared<visionaray::camera>();
     float aspect = rend->w / static_cast<float>(rend->h);
-    rend->cam->perspective(45.0f * visionaray::constants::pi<float>() / 180.0f, aspect, 0.001f, 1000.0f);
-    rend->cam->view_all( rend->scene.bbox );
+    rend->cam.perspective(45.0f * visionaray::constants::pi<float>() / 180.0f, aspect, 0.001f, 1000.0f);
+    rend->cam.view_all( rend->scene.bbox );
     rend->manips.push_back( make_shared<visionaray::arcball_manipulator>(rend->cam, mouse::Left) );
     rend->manips.push_back( make_shared<visionaray::pan_manipulator>(rend->cam, mouse::Middle) );
     rend->manips.push_back( make_shared<visionaray::zoom_manipulator>(rend->cam, mouse::Right) );

@@ -6,8 +6,6 @@
 #ifndef VSNRAY_CAMERA_MANIPULATOR_H
 #define VSNRAY_CAMERA_MANIPULATOR_H
 
-#include <memory>
-
 #include <visionaray/detail/macros.h>
 #include <visionaray/math/math.h>
 
@@ -27,7 +25,7 @@ class camera_manipulator
 {
 public:
 
-    camera_manipulator(std::shared_ptr<camera> const& cam) : camera_(cam) {}
+    camera_manipulator(camera& cam) : camera_(cam) {}
     virtual ~camera_manipulator() {}
 
     virtual void handle_key_press(key_event const& event)     { VSNRAY_UNUSED(event); }
@@ -39,7 +37,7 @@ public:
 
 protected:
 
-    std::shared_ptr<camera> camera_;
+    camera& camera_;
 
 };
 
@@ -48,7 +46,7 @@ class fp_manipulator : public camera_manipulator
 {
 public:
 
-    fp_manipulator(std::shared_ptr<camera> const& cam);
+    fp_manipulator(camera& cam);
    ~fp_manipulator();
 
     void handle_key_press(key_event const& event);

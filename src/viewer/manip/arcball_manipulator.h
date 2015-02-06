@@ -6,8 +6,6 @@
 #ifndef VSNRAY_ARCBALL_MANIPULATOR_H
 #define VSNRAY_ARCBALL_MANIPULATOR_H
 
-#include <memory>
-
 #include <visionaray/math/math.h>
 
 #include "camera_manipulator.h"
@@ -26,7 +24,7 @@ class arcball_manipulator : public camera_manipulator
 {
 public:
 
-    arcball_manipulator(std::shared_ptr<camera> const& cam, mouse::buttons buttons);
+    arcball_manipulator(camera& cam, mouse::buttons buttons);
    ~arcball_manipulator();
 
     void handle_mouse_down(mouse_event const& event);

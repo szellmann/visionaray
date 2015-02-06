@@ -28,7 +28,7 @@ quat quat_from_sphere_coords(vec3 const& from, vec3 const& to)
 }
 
 
-arcball_manipulator::arcball_manipulator(shared_ptr<camera> const& cam, mouse::buttons buttons)
+arcball_manipulator::arcball_manipulator(camera& cam, mouse::buttons buttons)
     : camera_manipulator(cam)
     , buttons_(buttons)
     , radius_(1.0f)
@@ -95,15 +95,15 @@ void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event
 
             mat4 rotation_matrix = rotation(conjugate(rotation_));
 
-            vec4 eye4(0, 0, camera_->distance(), 1.0);
+            vec4 eye4(0, 0, camera_.distance(), 1.0);
             eye4 = rotation_matrix * eye4;
             vec3 eye = vec3(eye4[0], eye4[1], eye4[2]);
-            eye += camera_->center();
+            eye += camera_.center();
 
             vec4 up4 = rotation_matrix(1);
             vec3 up(up4[0], up4[1], up4[2]);
 
-            camera_->look_at(eye, camera_->center(), up);
+            camera_.look_at(eye, camera_.center(), up);
 
         }
         else
@@ -113,7 +113,7 @@ void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event
 
             mat4 model = rotation(rotation_);
             VSNRAY_UNUSED(model);
-            //camera_->set_model_matrix(model);
+            //camera_.set_model_matrix(model);
 
         }
 
@@ -129,8 +129,8 @@ vec3 arcball_manipulator::to_sphere_coords(int x, int y)
 
     vec3 v(0.0f);
 
-    int width  = camera_->get_viewport().w;
-    int height = camera_->get_viewport().h;
+    int width  = camera_.get_viewport().w;
+    int height = camera_.get_viewport().h;
 
 #if 0
 

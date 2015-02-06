@@ -9,7 +9,7 @@
 using namespace visionaray;
 
 
-pan_manipulator::pan_manipulator(std::shared_ptr<camera> const& cam, mouse::buttons buttons)
+pan_manipulator::pan_manipulator(camera& cam, mouse::buttons buttons)
     : camera_manipulator(cam)
     , buttons_(buttons)
     , dragging_(false)
@@ -62,17 +62,17 @@ void pan_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
     if (event.get_buttons() & buttons_)
     {
 
-        auto w  =  camera_->get_viewport().w;
-        auto h  =  camera_->get_viewport().h;
+        auto w  =  camera_.get_viewport().w;
+        auto h  =  camera_.get_viewport().h;
         auto dx =  static_cast<float>(last_pos_.x - event.get_pos().x) / w;
         auto dy = -static_cast<float>(last_pos_.y - event.get_pos().y) / h;
-        auto s  = 2.0f * camera_->distance();
-        auto zaxis = normalize( camera_->eye() - camera_->center() );
-        auto yaxis = camera_->up();
+        auto s  = 2.0f * camera_.distance();
+        auto zaxis = normalize( camera_.eye() - camera_.center() );
+        auto yaxis = camera_.up();
         auto xaxis = cross( yaxis, zaxis );
         vec3 d  =  (dx * s) * xaxis + (dy * s) * yaxis;
         
-        camera_->look_at( camera_->eye() + d, camera_->center() + d, camera_->up() );
+        camera_.look_at( camera_.eye() + d, camera_.center() + d, camera_.up() );
 
         last_pos_ = event.get_pos();
 

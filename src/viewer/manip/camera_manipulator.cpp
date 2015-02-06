@@ -13,7 +13,7 @@ using std::shared_ptr;
 using namespace visionaray;
 
 
-fp_manipulator::fp_manipulator(shared_ptr<camera> const& cam)
+fp_manipulator::fp_manipulator(camera& cam)
     : camera_manipulator(cam)
 {
 }
