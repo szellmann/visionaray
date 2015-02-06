@@ -53,7 +53,6 @@ struct convert<PF_RGBA8>
     VSNRAY_FUNC
     inline internal_type operator()(vec4 const& color) const
     {
-        // TODO: is this the right place for clamping?
         return internal_type(clamp(color, vec4(0.0), vec4(1.0)));
     }
 
@@ -70,8 +69,6 @@ struct convert<PF_RGBA32F>
     VSNRAY_FUNC
     inline vec4 operator()(vec4 const& color) const
     {
-        // TODO: if we clamp in convert<PF_RGBA8>::operator(),
-        // should we clamp here, too?
         return vec4(color);
     }
 };
