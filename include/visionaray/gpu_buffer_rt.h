@@ -20,52 +20,45 @@ class gpu_buffer_rt : public render_target
 {
 public:
 
-    typedef thrust::device_vector<uint8_t> buffer_type;
+    typedef pixel_traits<PF_RGBA32F>        color_traits;
+    typedef pixel_traits<PF_UNSPECIFIED>    depth_traits;
+    typedef typename color_traits::type     color_type;
+    typedef typename depth_traits::type     depth_type;
 
-    gpu_buffer_rt(pixel_format cf, pixel_format df)
-        : color_format_(cf)
-        , depth_format_(df)
+    color_type* color()
     {
+        return thrust::raw_pointer_cast(color_buffer_.data());
     }
 
-    void* color()
+    depth_type* depth()
     {
-        return static_cast<void*>( thrust::raw_pointer_cast(color_buffer_.data()) );
+        return thrust::raw_pointer_cast(depth_buffer_.data());
     }
 
-    void* depth()
+    color_type const* color() const
     {
-        return static_cast<void*>( thrust::raw_pointer_cast(depth_buffer_.data()) );
+        return thrust::raw_pointer_cast(color_buffer_.data());
     }
 
-    void const* color() const
+    depth_type const* depth() const
     {
-        return static_cast<void const*>( thrust::raw_pointer_cast(color_buffer_.data()) );
-    }
-
-    void const* depth() const
-    {
-        return static_cast<void const*>( thrust::raw_pointer_cast(depth_buffer_.data()) );
+        return thrust::raw_pointer_cast(depth_buffer_.data());
     }
 
     operator cpu_buffer_rt() const
     {
         cpu_buffer_rt rt;
 
-        // TODO
-        assert
-        (
-            cpu_buffer_rt::color_traits::format() == PF_RGBA32F
-         && cpu_buffer_rt::depth_traits::format() == PF_UNSPECIFIED
-        );
-
         rt.resize( width(), height() );
 
-        thrust::copy( color_buffer_.begin(), color_buffer_.end(), reinterpret_cast<uint8_t*>(rt.color()) );
+        // TODO: make render targets templates!
+        // This won't compile if cpu_buffer_rt::XXX_traits::format()
+        //      != gpu_buffer_rt::XXX_traits::format()
+        thrust::copy( color_buffer_.begin(), color_buffer_.end(), rt.color() );
 
-        if (depth_format_ != PF_UNSPECIFIED)
+        if (depth_traits::format() != PF_UNSPECIFIED)
         {
-            thrust::copy( depth_buffer_.begin(), depth_buffer_.end(), reinterpret_cast<uint8_t*>(rt.depth()) );
+            thrust::copy( depth_buffer_.begin(), depth_buffer_.end(), rt.depth() );
         }
 
         return rt;
@@ -73,25 +66,20 @@ public:
 
 private:
 
-    VSNRAY_NOT_COPYABLE(gpu_buffer_rt)
-
-    buffer_type color_buffer_;
-    buffer_type depth_buffer_;
-
-    pixel_format color_format_;
-    pixel_format depth_format_;
+    thrust::device_vector<color_type> color_buffer_;
+    thrust::device_vector<depth_type> depth_buffer_;
 
     void begin_frame_impl() {}
     void end_frame_impl() {}
 
     void resize_impl(size_t w, size_t h)
     {
-        pixel_format_info cinfo = map_pixel_format(color_format_);
+        pixel_format_info cinfo = map_pixel_format(color_traits::format());
         color_buffer_.resize( w * h * cinfo.size );
 
-        if (depth_format_ != PF_UNSPECIFIED)
+        if (depth_traits::format() != PF_UNSPECIFIED)
         {
-            pixel_format_info dinfo = map_pixel_format(depth_format_);
+            pixel_format_info dinfo = map_pixel_format(depth_traits::format());
             depth_buffer_.resize( w * h * dinfo.size );
         }
     }
