@@ -43,6 +43,8 @@ std::string backtrace()
         return str.str();
     }
     return std::string();
+#else
+    return std::string("not implemented");
 #endif
 }
 
