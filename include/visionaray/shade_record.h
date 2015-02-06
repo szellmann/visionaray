@@ -97,31 +97,32 @@ struct shade_record<L, simd::float8> : public shade_record_base<L, simd::float8>
 
 namespace detail
 {
-
-template <typename Params, typename T>
-VSNRAY_FUNC
-inline auto make_shade_record(has_textures_tag)
-    -> shade_record<typename Params::light_type, vector<3, T>, T>
+namespace srf
 {
-    return shade_record<typename Params::light_type, vector<3, T>, T>();
-}
 
-template <typename Params, typename T>
-VSNRAY_FUNC
-inline auto make_shade_record(has_no_textures_tag)
-    -> shade_record<typename Params::light_type, T>
-{
-    return shade_record<typename Params::light_type, T>();
-}
+    struct R2 {};
+    struct R1 : R2 {};
 
+    template <class P, class T> auto TestShadeRecordType(R1)
+        -> decltype(
+            std::declval<P>().textures,
+            shade_record<typename P::light_type, vector<3, T>, T>()
+           );
+
+    template <class P, class T> auto TestShadeRecordType(R2)
+        -> shade_record<typename P::light_type, T>;
+
+    template <class P, class T>
+    using ShadeRecordType = decltype(TestShadeRecordType<P, T>(R1()));
+
+} // srf
 } // detail
 
 template <typename Params, typename T>
 VSNRAY_FUNC
-inline auto make_shade_record()
-    -> decltype( detail::make_shade_record<Params, T>(detail::has_textures<Params>{}) )
+inline auto make_shade_record() -> detail::srf::ShadeRecordType<Params, T>
 {
-    return detail::make_shade_record<Params, T>(detail::has_textures<Params>{});
+    return {};
 }
 
 } // visionaray
