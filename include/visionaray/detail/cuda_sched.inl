@@ -38,10 +38,10 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 
     typedef typename SP::color_traits   color_traits;
     typedef typename color_traits::type color_type;
-    color_type* color_buffer    = static_cast<color_type*>(sched_params.rt.color());
-    auto inv_view_matrix        = inverse(sched_params.cam.get_view_matrix());
-    auto inv_proj_matrix        = inverse(sched_params.cam.get_proj_matrix());
-    auto viewport               = sched_params.cam.get_viewport();
+    auto color_buffer       = sched_params.rt.color();
+    auto inv_view_matrix    = inverse(sched_params.cam.get_view_matrix());
+    auto inv_proj_matrix    = inverse(sched_params.cam.get_proj_matrix());
+    auto viewport           = sched_params.cam.get_viewport();
 
     dim3 block_size(16, 16);
     dim3 grid_size

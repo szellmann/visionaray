@@ -135,8 +135,7 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             sample_pixel<R, color_traits>
             (
                 x, y, frame_num, inv_view_matrix, inv_proj_matrix,
-                viewport,
-                static_cast<color_type*>(sched_params.rt.color()),
+                viewport, sched_params.rt.color(),
                 kernel, typename SP::pixel_sampler_type()
             );
         }
