@@ -100,11 +100,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/texture/forward.h
     ${HEADER_DIR}/texture/texture.h
 
-    # Utility headers
-
-    ${HEADER_DIR}/utility/kernels.h
-    ${HEADER_DIR}/utility/params.h
-
     # General library headers
 
     ${HEADER_DIR}/brdf.h
@@ -113,6 +108,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/exception.h
     ${HEADER_DIR}/generic_prim.h
     ${HEADER_DIR}/gpu_buffer_rt.h
+    ${HEADER_DIR}/kernels.h
     ${HEADER_DIR}/material.h
     ${HEADER_DIR}/mc.h
     ${HEADER_DIR}/norm.h

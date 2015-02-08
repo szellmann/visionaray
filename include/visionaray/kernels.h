@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_UTILITY_PARAMS_H
-#define VSNRAY_UTILITY_PARAMS_H
+#ifndef VSNRAY_KERNELS_H
+#define VSNRAY_KERNELS_H
 
 #include <visionaray/camera.h>
 #include <visionaray/render_target.h>
@@ -139,6 +139,10 @@ typedef pixel_sampler::jittered_blend_type pixel_sampler_type;
 
 } // visionaray
 
-#endif // VSNRAY_UTILITY_PARAMS_H
+#include "detail/pathtracing.inl"
+#include "detail/simple.inl"
+#include "detail/whitted.inl"
+
+#endif // VSNRAY_KERNELS_H
 
 

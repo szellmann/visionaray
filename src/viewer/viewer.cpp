@@ -39,16 +39,16 @@
 
 #include <visionaray/detail/aligned_vector.h>
 #include <visionaray/texture/texture.h>
-#include <visionaray/utility/kernels.h>
-#include <visionaray/utility/params.h>
 #include <visionaray/bvh.h>
+#include <visionaray/kernels.h>
+#include <visionaray/point_light.h>
+#include <visionaray/render_target.h>
+#include <visionaray/scheduler.h>
+
 #ifdef __CUDACC__
 #include <visionaray/gpu_buffer_rt.h>
 #include <visionaray/pixel_unpack_buffer_rt.h>
 #endif
-#include <visionaray/point_light.h>
-#include <visionaray/render_target.h>
-#include <visionaray/scheduler.h>
 
 #include "manip/arcball_manipulator.h"
 #include "manip/pan_manipulator.h"
