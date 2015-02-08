@@ -6,8 +6,6 @@
 #ifndef VSNRAY_KERNELS_H
 #define VSNRAY_KERNELS_H
 
-#include <visionaray/camera.h>
-#include <visionaray/render_target.h>
 #include <visionaray/scheduler.h>
 
 namespace visionaray
