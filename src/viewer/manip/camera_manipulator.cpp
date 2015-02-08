@@ -8,8 +8,6 @@
 #include "../input/keyboard.h"
 
 
-using std::shared_ptr;
-
 using namespace visionaray;
 
 

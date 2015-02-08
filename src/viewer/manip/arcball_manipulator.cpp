@@ -12,8 +12,6 @@
 #include "../input/mouse.h"
 
 
-using std::shared_ptr;
-
 using namespace visionaray;
 
 namespace mouse = visionaray::mouse;
