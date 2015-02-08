@@ -115,13 +115,13 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     {
         using namespace detail;
 
-        unsigned numx = tile_width  / inc<scalar_type>::x;
-        unsigned numy = tile_height / inc<scalar_type>::y;
+        unsigned numx = tile_width  / packet_size<scalar_type>::w;
+        unsigned numy = tile_height / packet_size<scalar_type>::h;
         for (unsigned i = 0; i < numx * numy; ++i)
         {
             auto pos = vec2ui(i % numx, i / numx);
-            auto x = tile.x + pos.x * inc<scalar_type>::x;
-            auto y = tile.y + pos.y * inc<scalar_type>::y;
+            auto x = tile.x + pos.x * packet_size<scalar_type>::w;
+            auto y = tile.y + pos.y * packet_size<scalar_type>::h;
 
             sample_pixel<R, color_traits>
             (

@@ -24,22 +24,22 @@ namespace detail
 //
 
 template <typename T>
-struct inc
+struct packet_size
 {
-    enum { x = 1, y = 1 };
+    enum { w = 1, h = 1 };
 };
 
 template <>
-struct inc<simd::float4>
+struct packet_size<simd::float4>
 {
-    enum { x = 2, y = 2 };
+    enum { w = 2, h = 2 };
 };
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 template <>
-struct inc<simd::float8>
+struct packet_size<simd::float8>
 {
-    enum { x = 4, y = 2 };
+    enum { w = 4, h = 2 };
 };
 #endif
 
