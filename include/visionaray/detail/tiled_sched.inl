@@ -110,6 +110,9 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 
     auto inv_view_matrix = matrix_type( inverse(sched_params.cam.get_view_matrix()) );
     auto inv_proj_matrix = matrix_type( inverse(sched_params.cam.get_proj_matrix()) );
+    auto viewport        = sched_params.cam.get_viewport();
+
+    recti xviewport(viewport.x, viewport.y, viewport.w - 1, viewport.h - 1);
 
     impl_->render_tile = [=](recti const& tile)
     {
@@ -119,14 +122,20 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
         unsigned numy = tile_height / packet_size<scalar_type>::h;
         for (unsigned i = 0; i < numx * numy; ++i)
         {
-            auto pos = vec2ui(i % numx, i / numx);
+            auto pos = vec2i(i % numx, i / numx);
             auto x = tile.x + pos.x * packet_size<scalar_type>::w;
             auto y = tile.y + pos.y * packet_size<scalar_type>::h;
+
+            recti xpixel(x, y, packet_size<scalar_type>::w - 1, packet_size<scalar_type>::h - 1);
+            if ( !overlapping(xviewport, xpixel) )
+            {
+                continue;
+            }
 
             sample_pixel<R, color_traits>
             (
                 x, y, frame_num, inv_view_matrix, inv_proj_matrix,
-                sched_params.cam.get_viewport(),
+                viewport,
                 static_cast<color_type*>(sched_params.rt.color()),
                 kernel, typename SP::pixel_sampler_type()
             );
