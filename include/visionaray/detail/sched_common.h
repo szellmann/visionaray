@@ -177,9 +177,9 @@ struct color_access<CT, vector<4, simd::float8>>
         store(b, color.z);
         store(a, color.w);
 
-        for (auto row = 0; row < 2; ++row)
+        for (auto row = 0; row < packet_size<simd::float8>::h; ++row)
         {
-            for (auto col = 0; col < 4; ++col)
+            for (auto col = 0; col < packet_size<simd::float8>::w; ++col)
             {
                 if (x + col < viewport.w && y + row < viewport.h)
                 {
