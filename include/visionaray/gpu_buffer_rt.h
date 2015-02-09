@@ -22,8 +22,8 @@ public:
 
     typedef pixel_traits<PF_RGBA32F>        color_traits;
     typedef pixel_traits<PF_UNSPECIFIED>    depth_traits;
-    typedef typename color_traits::type     color_type;
-    typedef typename depth_traits::type     depth_type;
+    typedef color_traits::type              color_type;
+    typedef depth_traits::type              depth_type;
 
     color_type* color()
     {
