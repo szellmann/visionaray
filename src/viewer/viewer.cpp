@@ -99,6 +99,13 @@ struct renderer
 
     detail::obj_scene           scene;
 
+    host_bvh_type                           host_bvh;
+#ifdef __CUDACC__
+    device_bvh_type                         device_bvh;
+    thrust::device_vector<normal_type>      device_normals;
+    thrust::device_vector<material_type>    device_materials;
+#endif
+
     tiled_sched<ray_type_cpu>   sched_cpu;
     cpu_buffer_rt               rt;
 #ifdef __CUDACC__
@@ -309,42 +316,25 @@ void render_hud_ext()
 
 void display_func()
 {
+    using light_type = point_light<float>;
 
     auto& scene = rend->scene;
-    static auto const primitives = scene.primitives;
-    static auto const normals    = scene.normals;
-    static auto const tex_coords = scene.tex_coords;
-    static auto const materials  = scene.materials;
-    static auto const textures   = scene.textures;
 
-    typedef point_light<float> light_type;
+    auto& primitives = scene.primitives;
+    auto& normals    = scene.normals;
+    auto& tex_coords = scene.tex_coords;
+    auto& materials  = scene.materials;
+    auto& textures   = scene.textures;
 
-    visionaray::aligned_vector<light_type> lights
-    {
-//        light_type{vec3(0.0, 1.0, 1.0)}
-        light_type{rend->cam.eye() - rend->cam.center()}
-    };
+    std::vector<light_type> lights;
 
-#ifdef __CUDACC__
-    thrust::device_vector<light_type> device_lights = lights;
-#endif
-
-//    timer t;
-    static auto const host_bvh = build(primitives.data(), primitives.size());
-//    std::cerr << t.elapsed() << std::endl;
+//  lights.push_back({0.0f, 1.0f, 1.0f});
+    lights.push_back({rend->cam.eye() - rend->cam.center()});
 
     if (config.dev_type == configuration::GPU)
     {
 #ifdef __CUDACC__
         namespace algorithm = simple;
-
-        typedef decltype(scene.normals)::value_type     normal_type;
-        typedef decltype(scene.materials)::value_type   material_type;
-
-        static renderer::device_bvh_type const dbvh(host_bvh);
-
-        static thrust::device_vector<normal_type>   const device_normals    = normals;
-        static thrust::device_vector<material_type> const device_materials  = materials;
 
         sched_params<pixel_unpack_buffer_rt, algorithm::pixel_sampler_type> sparams
         {
@@ -354,7 +344,7 @@ void display_func()
 
         thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
 
-        device_primitives.push_back(dbvh.ref());
+        device_primitives.push_back(rend->device_bvh.ref());
 
         thrust::device_vector<light_type> device_lights;
 
@@ -364,8 +354,8 @@ void display_func()
         (
             thrust::raw_pointer_cast(device_primitives.data()),
             thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
-            thrust::raw_pointer_cast(device_normals.data()),
-            thrust::raw_pointer_cast(device_materials.data()),
+            thrust::raw_pointer_cast(rend->device_normals.data()),
+            thrust::raw_pointer_cast(rend->device_materials.data()),
             thrust::raw_pointer_cast(device_lights.data()),
             thrust::raw_pointer_cast(device_lights.data()) + device_lights.size()
         );
@@ -395,7 +385,7 @@ void display_func()
 
         std::vector<renderer::host_bvh_type::bvh_ref> host_primitives;
 
-        host_primitives.push_back(host_bvh.ref());
+        host_primitives.push_back(rend->host_bvh.ref());
 
         auto kparams = algorithm::make_params
         (
@@ -460,7 +450,7 @@ void display_func()
         glPushMatrix();
         glLoadMatrixf(rend->cam.get_view_matrix().data());
 
-        render_bvh(host_bvh);
+        render_bvh(rend->host_bvh);
 
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix();
@@ -579,7 +569,6 @@ int main(int argc, char** argv)
     }
 
     rend = new renderer;
-    rend->scene = visionaray::load_obj(argv[1]);
 
     glutInit(&argc, argv);
 
@@ -604,9 +593,34 @@ int main(int argc, char** argv)
     {
     }
 
+    // Load the scene
+    std::cout << "Loading scene...\n";
+
+    rend->scene = visionaray::load_obj(argv[1]);
+
+//  timer t;
+
+    std::cout << "Creating BVH...\n";
+
+    // Create the BVH on the host
+    rend->host_bvh = build(rend->scene.primitives.data(), rend->scene.primitives.size());
+
+    std::cout << "Ready\n";
+
+#ifdef __CUDACC__
+    // Copy data to GPU
+    rend->device_bvh = renderer::device_bvh_type(rend->host_bvh);
+    rend->device_normals = rend->scene.normals;
+    rend->device_materials = rend->scene.materials;
+#endif
+
+//  std::cout << t.elapsed() << std::endl;
+
     float aspect = rend->w / static_cast<float>(rend->h);
+
     rend->cam.perspective(45.0f * visionaray::constants::pi<float>() / 180.0f, aspect, 0.001f, 1000.0f);
     rend->cam.view_all( rend->scene.bbox );
+
     rend->manips.push_back( make_shared<visionaray::arcball_manipulator>(rend->cam, mouse::Left) );
     rend->manips.push_back( make_shared<visionaray::pan_manipulator>(rend->cam, mouse::Middle) );
     rend->manips.push_back( make_shared<visionaray::zoom_manipulator>(rend->cam, mouse::Right) );
