@@ -77,7 +77,7 @@ inline bool is_leaf(bvh_node const& node)
 //
 
 template <typename PrimitiveType>
-struct bvh_ref_t
+class bvh_ref_t
 {
     using P = const PrimitiveType;
     using N = const bvh_node;
@@ -87,6 +87,7 @@ struct bvh_ref_t
     N* nodes_first;
     N* nodes_last;
 
+public:
     bvh_ref_t(P* p0, P* p1, N* n0, N* n1)
         : primitives_first(p0)
         , primitives_last(p1)
@@ -114,7 +115,7 @@ struct bvh_ref_t
 };
 
 template <typename PrimitiveType>
-struct indexed_bvh_ref_t
+class indexed_bvh_ref_t
 {
     using P = const PrimitiveType;
     using N = const bvh_node;
@@ -127,6 +128,7 @@ struct indexed_bvh_ref_t
     I* indices_first;
     I* indices_last;
 
+public:
     indexed_bvh_ref_t(P* p0, P* p1, N* n0, N* n1, I* i0, I* i1)
         : primitives_first(p0)
         , primitives_last(p1)
