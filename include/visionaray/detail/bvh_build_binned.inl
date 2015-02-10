@@ -189,7 +189,7 @@ void finalize_build(indexed_bvh<P>& b, prim_data const* ptr, P const* primitives
 
     for (size_t i = 0; i < num_prims; ++i)
     {
-        b.prim_indices()[i] = ptr[i].idx;
+        b.indices()[i] = ptr[i].idx;
     }
 }
 
@@ -219,7 +219,7 @@ B build(P const* primitives, size_t num_prims)
     for (size_t i = 0; i < num_prims; ++i)
     {
         auto p          = pptr[i];
-        ptr[i].idx      = i;
+        ptr[i].idx      = static_cast<unsigned>(i);
         ptr[i].bbox     = bounds(p);
         ptr[i].centroid = ptr[i].bbox.center();
         bbox            = combine( bbox, ptr[i].bbox );
@@ -319,7 +319,7 @@ B build(P const* primitives, size_t num_prims)
                 min_costs   = c;
                 best_l      = acc_bounds_l[i];
                 best_r      = acc_bounds_r;
-                split_plane = i;
+                split_plane = static_cast<unsigned>(i);
                 count_l     = acc_counts_l[i];
             }
 

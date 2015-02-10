@@ -32,7 +32,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
     st.push(Sentinel);
 
     unsigned addr = 0;
-    auto node = b.nodes()[addr];
+    auto node = b.node(addr);
 
     auto inv_dir = T(1.0) / ray.dir;
 
@@ -62,7 +62,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
         }
         else
         {
-            bvh_node const* children = b.nodes() + node.first_child;
+            bvh_node const* children = b.nodes_first + node.first_child;
 
             auto hr1 = intersect(ray, children[0].bbox, inv_dir);
             auto hr2 = intersect(ray, children[1].bbox, inv_dir);
@@ -92,7 +92,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
 
         if (addr != Sentinel)
         {
-            node = b.nodes()[addr];
+            node = b.node(addr);
         }
         else
         {

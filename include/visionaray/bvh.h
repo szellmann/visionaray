@@ -23,9 +23,33 @@
 namespace visionaray
 {
 
+namespace detail
+{
+    template <class T>
+    T* pointer_cast(T* ptr)
+    {
+        return ptr;
+    }
+
+#ifdef __CUDACC__
+    template <class T>
+    T* pointer_cast(thrust::device_ptr<T> const& ptr)
+    {
+        return thrust::raw_pointer_cast(ptr);
+    }
+#endif
+}
+
+//--------------------------------------------------------------------------------------------------
+// bvh_node
+//
+
 struct bvh_node
 {
-    bvh_node() : num_prims(0) {}
+    bvh_node()
+        : num_prims(0)
+    {
+    }
 
     aabb bbox;
     union
@@ -35,11 +59,6 @@ struct bvh_node
     };
     unsigned num_prims;
 };
-
-
-//-------------------------------------------------------------------------------------------------
-//
-//
 
 VSNRAY_FUNC
 inline bool is_inner(bvh_node const& node)
@@ -53,232 +72,212 @@ inline bool is_leaf(bvh_node const& node)
     return node.num_prims != 0;
 }
 
+//--------------------------------------------------------------------------------------------------
+// [indexed_]bvh_ref_t
+//
 
-template <typename P>
-class bvh
+template <typename PrimitiveType>
+struct bvh_ref_t
 {
-public:
+    using P = const PrimitiveType;
+    using N = const bvh_node;
 
-    typedef std::size_t size_type;
-    typedef aligned_vector<P>        prim_vector_type;
-    typedef aligned_vector<bvh_node> node_vector_type;
+    P* primitives_first;
+    P* primitives_last;
+    N* nodes_first;
+    N* nodes_last;
 
-    explicit bvh(P const* prims, size_t num_prims) // TODO: bvh c'tor does not require prims
-        : primitives_(num_prims)
-        , nodes_(node_vector_type(2 * num_prims - 1))
-    {
-        VSNRAY_UNUSED(prims);
-    }
-
-    P const&                primitive(size_t i) const   { return primitives()[i]; }
-
-    P const*                primitives() const          { return primitives_.data(); }
-    P*                      primitives()                { return primitives_.data(); }
-
-    prim_vector_type const& prim_vector() const         { return primitives_; }
-    prim_vector_type&       prim_vector()               { return primitives_; }
-
-    bvh_node const*         nodes() const               { return nodes_.data(); }
-    bvh_node*               nodes()                     { return nodes_.data(); }
-
-    node_vector_type const& nodes_vector() const        { return nodes_; }
-    node_vector_type&       nodes_vector()              { return nodes_; }
-
-private:
-
-    prim_vector_type primitives_;
-    node_vector_type nodes_;
-
-};
-
-
-template <typename P>
-class indexed_bvh
-{
-public:
-
-    typedef std::size_t size_type;
-    typedef aligned_vector<bvh_node> node_vector_type;
-    typedef aligned_vector<unsigned> idx_vector_type;
-
-    explicit indexed_bvh(P const* prims, size_t num_prims)
-        : primitives_(prims)
-        , num_prims_(num_prims)
-        , nodes_(node_vector_type(2 * num_prims - 1))
-        , prim_indices_(idx_vector_type(num_prims))
+    bvh_ref_t(P* p0, P* p1, N* n0, N* n1)
+        : primitives_first(p0)
+        , primitives_last(p1)
+        , nodes_first(n0)
+        , nodes_last(n1)
     {
     }
 
-    P const& primitive(size_t i) const { return primitives_[prim_indices()[i]]; }
+    VSNRAY_FUNC size_t num_primitives() const { return primitives_last - primitives_first; }
+    VSNRAY_FUNC size_t num_nodes() const { return nodes_last - nodes_first; }
 
-    P const* primitives() const { return primitives_; }
-    size_type num_prims() const { return num_prims_; }
+    VSNRAY_FUNC P& primitive(size_t index) const
+    {
+        assert(index < num_primitives());
 
-    bvh_node const* nodes() const { return nodes_.data(); }
-    bvh_node* nodes() { return nodes_.data(); }
+        return primitives_first[index];
+    }
 
-    node_vector_type const& nodes_vector() const { return nodes_; }
-    node_vector_type& nodes_vector() { return nodes_; }
+    VSNRAY_FUNC N& node(size_t index) const
+    {
+        assert(index < num_nodes());
 
-    unsigned const* prim_indices() const { return prim_indices_.data(); }
-    unsigned* prim_indices() { return prim_indices_.data(); }
+        return nodes_first[index];
+    }
+};
 
-    idx_vector_type const& prim_indices_vector() const { return prim_indices_; }
-    idx_vector_type& prim_indices_vector() { return prim_indices_; }
+template <typename PrimitiveType>
+struct indexed_bvh_ref_t
+{
+    using P = const PrimitiveType;
+    using N = const bvh_node;
+    using I = const unsigned;
+
+    P* primitives_first;
+    P* primitives_last;
+    N* nodes_first;
+    N* nodes_last;
+    I* indices_first;
+    I* indices_last;
+
+    indexed_bvh_ref_t(P* p0, P* p1, N* n0, N* n1, I* i0, I* i1)
+        : primitives_first(p0)
+        , primitives_last(p1)
+        , nodes_first(n0)
+        , nodes_last(n1)
+        , indices_first(i0)
+        , indices_last(i1)
+    {
+    }
+
+    VSNRAY_FUNC size_t num_primitives() const { return primitives_last - primitives_first; }
+    VSNRAY_FUNC size_t num_nodes() const { return nodes_last - nodes_first; }
+
+    VSNRAY_FUNC P& primitive(size_t indirect_index) const
+    {
+        assert(indirect_index < indices_last - indices_first);
+
+        auto index = indices_first[indirect_index];
+
+        assert(index < num_primitives());
+
+        return primitives_first[index];
+    }
+
+    VSNRAY_FUNC N& node(size_t index) const
+    {
+        assert(index < num_nodes());
+
+        return nodes_first[index];
+    }
+};
+
+//--------------------------------------------------------------------------------------------------
+// [indexed_]bvh_t
+//
+
+template <typename PrimitiveVector, typename NodeVector>
+class bvh_t
+{
+public:
+    using primitive_type    = typename PrimitiveVector::value_type;
+    using primitive_vector  = PrimitiveVector;
+    using node_vector       = NodeVector;
+
+    using bvh_ref = bvh_ref_t<primitive_type>;
+
+public:
+    bvh_t() = default;
+
+    explicit bvh_t(primitive_type const* /*prims*/, size_t count)
+        : primitives_(count)
+        , nodes_(count == 0 ? 0 : 2*count - 1)
+    {
+        assert(count != 0);
+    }
+
+    template <typename PV, typename NV>
+    explicit bvh_t(bvh_t<PV, NV> const& rhs)
+        : primitives_(rhs.primitives())
+        , nodes_(rhs.nodes())
+    {
+    }
+
+    primitive_vector const& primitives() const  { return primitives_; }
+    primitive_vector&       primitives()        { return primitives_; }
+
+    node_vector const&      nodes() const       { return nodes_; }
+    node_vector&            nodes()             { return nodes_; }
+
+    bvh_ref ref() const
+    {
+        auto p0 = detail::pointer_cast(primitives().data());
+        auto p1 = p0 + primitives().size();
+
+        auto n0 = detail::pointer_cast(nodes().data());
+        auto n1 = n0 + nodes().size();
+
+        return {p0, p1, n0, n1};
+    }
 
 private:
-
-    P const* primitives_;
-    size_type num_prims_;
-    node_vector_type nodes_;
-    idx_vector_type  prim_indices_;
-
+    primitive_vector primitives_;
+    node_vector nodes_;
 };
+
+template <typename PrimitiveVector, typename NodeVector, typename IndexVector>
+class indexed_bvh_t
+{
+public:
+    using primitive_type    = typename PrimitiveVector::value_type;
+    using primitive_vector  = PrimitiveVector;
+    using node_vector       = NodeVector;
+    using index_vector      = IndexVector;
+
+    using bvh_ref = indexed_bvh_ref_t<primitive_type>;
+
+public:
+    indexed_bvh_t() = default;
+
+    explicit indexed_bvh_t(primitive_type const* /*prims*/, size_t count)
+        : primitives_(count)
+        , nodes_(count == 0 ? 0 : 2*count - 1)
+        , indices_(count)
+    {
+        assert(count != 0);
+    }
+
+    template <typename PV, typename NV, typename IV>
+    explicit indexed_bvh_t(indexed_bvh_t<PV, NV, IV> const& rhs)
+        : primitives_(rhs.primitives())
+        , nodes_(rhs.nodes())
+        , indices_(rhs.indices())
+    {
+    }
+
+    primitive_vector const& primitives() const  { return primitives_; }
+    primitive_vector&       primitives()        { return primitives_; }
+
+    node_vector const&      nodes() const       { return nodes_; }
+    node_vector&            nodes()             { return nodes_; }
+
+    index_vector const&     indices() const     { return indices_; }
+    index_vector&           indices()           { return indices_; }
+
+    bvh_ref ref() const
+    {
+        auto p0 = detail::pointer_cast(primitives().data());
+        auto p1 = p0 + primitives().size();
+
+        auto n0 = detail::pointer_cast(nodes().data());
+        auto n1 = n0 + nodes().size();
+
+        auto i0 = detail::pointer_cast(indices().data());
+        auto i1 = i0 + indices().size();
+
+        return {p0, p1, n0, n1, i0, i1};
+    }
+
+private:
+    primitive_vector primitives_;
+    node_vector nodes_;
+    index_vector indices_;
+};
+
+template <typename P> using bvh                 = bvh_t<aligned_vector<P>, aligned_vector<bvh_node>>;
+template <typename P> using indexed_bvh         = indexed_bvh_t<aligned_vector<P>, aligned_vector<bvh_node>, aligned_vector<unsigned>>;
 
 #ifdef __CUDACC__
-
-namespace detail
-{
-
-//-------------------------------------------------------------------------------------------------
-// Wraps a thrust::device_vector and a raw pointer. The latter is accessible from a CUDA kernel.
-// Does only implement the vector interface needed in this scope
-//
-
-template <typename T>
-class kernel_device_vector
-{
-public:
-
-    typedef typename thrust::device_vector<T>::size_type    size_type;
-    typedef typename thrust::device_vector<T>::iterator     iterator;
-
-    explicit kernel_device_vector(size_type n)
-        : vector_(n)
-        , ptr_(thrust::raw_pointer_cast(vector_.data()))
-    {
-    }
-
-    template <typename U, typename Alloc>
-    /* implicit */ kernel_device_vector(std::vector<U, Alloc> const& host_vec)
-        : vector_(host_vec)
-        , ptr_(thrust::raw_pointer_cast(vector_.data()))
-    {
-    }
-
-    kernel_device_vector(kernel_device_vector const& rhs)
-        : vector_(rhs.vector_)
-        , ptr_(thrust::raw_pointer_cast(vector_.data()))
-    {
-    }
-
-    kernel_device_vector& operator=(kernel_device_vector const& rhs)
-    {
-        this->vector_ = rhs.vector_;
-        this->ptr_ = thrust::raw_pointer_cast(this->vector_.data());
-
-        return *this;
-    }
-
-    kernel_device_vector(kernel_device_vector&& rhs)
-        : vector_(std::move(rhs.vector_))
-        , ptr_(thrust::raw_pointer_cast(vector_.data()))
-    {
-        rhs.vector_ = {}; // construct new empty vector so that .data() below is valid
-        rhs.ptr_ = thrust::raw_pointer_cast(rhs.vector_.data());
-    }
-
-    kernel_device_vector& operator=(kernel_device_vector&& rhs)
-    {
-        this->vector_ = std::move(rhs.vector_);
-        this->ptr_ = thrust::raw_pointer_cast(this->vector_.data());
-
-        rhs.vector_ = {}; // construct new empty vector so that .data() below is valid
-        rhs.ptr_ = thrust::raw_pointer_cast(rhs.vector_.data());
-
-        return *this;
-    }
-
-    iterator begin() { return vector_.begin(); }
-    iterator end()   { return vector_.end(); }
-
-    VSNRAY_GPU_FUNC T const* data() const { return ptr_; }
-    VSNRAY_GPU_FUNC T*       data()       { return ptr_; }
-
-private:
-
-    thrust::device_vector<T> vector_;
-    T* ptr_; // = vector_.data()
-
-};
-
-} // detail
-
-
-//-------------------------------------------------------------------------------------------------
-// BVHs for traversal on a CUDA device. Can only be edited on the device.
-// Can only be constructed from a host BVH, is not copyable or copy assignable
-//
-
-template <typename P>
-class device_bvh
-{
-public:
-
-    device_bvh(bvh<P> const& host_bvh)
-        : primitives_(host_bvh.prim_vector().size())
-        , nodes_(host_bvh.nodes_vector())
-    {
-        thrust::copy(host_bvh.primitives(), host_bvh.primitives() + host_bvh.prim_vector().size(), primitives_.begin());
-    }
-
-    VSNRAY_GPU_FUNC P const&        primitive(size_t i) const   { return primitives_.data()[i]; }
-
-    VSNRAY_GPU_FUNC P const*        primitives() const          { return primitives_.data(); }
-    VSNRAY_GPU_FUNC P*              primitives()                { return primitives_.data(); }
-
-    VSNRAY_GPU_FUNC bvh_node const* nodes() const               { return nodes_.data(); }
-    VSNRAY_GPU_FUNC bvh_node*       nodes()                     { return nodes_.data(); }
-
-private:
-    detail::kernel_device_vector<P>         primitives_;
-    detail::kernel_device_vector<bvh_node>  nodes_;
-};
-
-template <typename P>
-class indexed_device_bvh
-{
-public:
-
-    indexed_device_bvh(indexed_bvh<P> const& host_bvh)
-        : primitives_(host_bvh.num_prims())
-        , nodes_(host_bvh.nodes_vector())
-        , prim_indices_(host_bvh.prim_indices_vector())
-    {
-        thrust::copy(host_bvh.primitives(), host_bvh.primitives() + host_bvh.num_prims(), primitives_.begin());
-    }
-
-    VSNRAY_GPU_FUNC P const&        primitive(size_t i) const   { return primitives_.data()[prim_indices()[i]]; }
-
-    VSNRAY_GPU_FUNC P const*        primitives() const          { return primitives_.data(); }
-    VSNRAY_GPU_FUNC P*              primitives()                { return primitives_.data(); }
-
-    VSNRAY_GPU_FUNC bvh_node const* nodes() const               { return nodes_.data(); }
-    VSNRAY_GPU_FUNC bvh_node*       nodes()                     { return nodes_.data(); }
-
-    VSNRAY_GPU_FUNC unsigned const* prim_indices() const        { return prim_indices_.data(); }
-    VSNRAY_GPU_FUNC unsigned*       prim_indices()              { return prim_indices_.data(); }
-
-private:
-
-    detail::kernel_device_vector<P>         primitives_;
-    detail::kernel_device_vector<bvh_node>  nodes_;
-    detail::kernel_device_vector<unsigned>  prim_indices_;
-
-};
-
-#endif // __CUDACC__
-
+template <typename P> using device_bvh          = bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>>;
+template <typename P> using indexed_device_bvh  = indexed_bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>, thrust::device_vector<unsigned>>;
+#endif
 
 //-------------------------------------------------------------------------------------------------
 //

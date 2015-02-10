@@ -76,6 +76,14 @@ struct renderer
     typedef basic_ray<scalar_type_cpu>  ray_type_cpu;
     typedef basic_ray<scalar_type_gpu>  ray_type_gpu;
 
+    using primitive_type    = detail::triangle_list::value_type;
+    using normal_type       = detail::normal_list::value_type;
+    using material_type     = detail::mat_list::value_type;
+
+    using host_bvh_type     = bvh<primitive_type>;
+#ifdef __CUDACC__
+    using device_bvh_type   = device_bvh<primitive_type>;
+#endif
 
     renderer()
         : w(800)
@@ -330,16 +338,10 @@ void display_func()
 #ifdef __CUDACC__
         namespace algorithm = simple;
 
-        typedef decltype(scene.primitives)::value_type  primitive_type;
         typedef decltype(scene.normals)::value_type     normal_type;
         typedef decltype(scene.materials)::value_type   material_type;
-        typedef device_bvh<primitive_type>              device_bvh_type;
 
-        static device_bvh_type const dbvh(host_bvh);
-
-        device_bvh_type* device_bvh_pointers = 0;
-        auto err = cudaMalloc( &device_bvh_pointers, 1 * sizeof(device_bvh_type) );if (err != cudaSuccess) throw std::runtime_error("malloc?");
-        err = cudaMemcpy( device_bvh_pointers, &dbvh, 1 * sizeof(device_bvh_type), cudaMemcpyHostToDevice );if (err != cudaSuccess) throw std::runtime_error("memcpy?");
+        static renderer::device_bvh_type const dbvh(host_bvh);
 
         static thrust::device_vector<normal_type>   const device_normals    = normals;
         static thrust::device_vector<material_type> const device_materials  = materials;
@@ -350,14 +352,22 @@ void display_func()
             rend->device_rt
         };
 
+        thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
+
+        device_primitives.push_back(dbvh.ref());
+
+        thrust::device_vector<light_type> device_lights;
+
+        device_lights.push_back(lights[0]);
+
         auto kparams = algorithm::make_params
         (
-            device_bvh_pointers,
-            device_bvh_pointers + 1,
+            thrust::raw_pointer_cast(device_primitives.data()),
+            thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
             thrust::raw_pointer_cast(device_normals.data()),
             thrust::raw_pointer_cast(device_materials.data()),
             thrust::raw_pointer_cast(device_lights.data()),
-            thrust::raw_pointer_cast(device_lights.data() + device_lights.size())
+            thrust::raw_pointer_cast(device_lights.data()) + device_lights.size()
         );
 
         typedef vector<4, renderer::scalar_type_gpu> internal_color_type;
@@ -365,9 +375,9 @@ void display_func()
         typedef algorithm::kernel<internal_color_type, decltype(kparams)> kernel_type;
         kernel_type kernel;
         kernel.params = kparams;
-        rend->sched_gpu.frame(kernel, sparams /*, ++rend->frame*/ );
-
-        err = cudaFree( device_bvh_pointers );if (err != cudaSuccess) throw std::runtime_error("free?");
+        rend->sched_gpu.frame(kernel, sparams
+            //, ++rend->frame
+            );
 #endif
     }
     else if (config.dev_type == configuration::CPU)
@@ -383,10 +393,14 @@ void display_func()
             rend->rt
         };
 
+        std::vector<renderer::host_bvh_type::bvh_ref> host_primitives;
+
+        host_primitives.push_back(host_bvh.ref());
+
         auto kparams = algorithm::make_params
         (
-            &host_bvh,
-            &host_bvh + 1,
+            host_primitives.data(),
+            host_primitives.data() + host_primitives.size(),
             normals.data(),
 //            tex_coords.data(),
             materials.data(),
@@ -400,7 +414,9 @@ void display_func()
         typedef algorithm::kernel<internal_color_type, decltype(kparams)> kernel_type;
         kernel_type kernel;
         kernel.params = kparams;
-        rend->sched_cpu.frame(kernel, sparams /*, ++rend->frame*/ );
+        rend->sched_cpu.frame(kernel, sparams
+            //, ++rend->frame
+            );
 #endif
     }
 
@@ -444,7 +460,7 @@ void display_func()
         glPushMatrix();
         glLoadMatrixf(rend->cam.get_view_matrix().data());
 
-        render(host_bvh);
+        render_bvh(host_bvh);
 
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix();

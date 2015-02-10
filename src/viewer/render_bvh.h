@@ -19,12 +19,12 @@
 namespace visionaray
 {
 
-template <template <typename> class B, typename P>
-void render(B<P> const& b)
+template <typename BVH>
+void render_bvh(BVH const& b)
 {
 
     std::vector<float> vertices;
-    for (auto const& n : b.nodes_vector())
+    for (auto const& n : b.nodes())
     {
         auto box = n.bbox;
 
@@ -72,7 +72,7 @@ void render(B<P> const& b)
 
     glVertexPointer(3, GL_FLOAT, 0, vertices.data());
     glEnableClientState(GL_VERTEX_ARRAY);
-    glDrawArrays(GL_LINES, 0, vertices.size() / 3);
+    glDrawArrays(GL_LINES, 0, (GLsizei)(vertices.size() / 3));
     glDisableClientState(GL_VERTEX_ARRAY);
 
 }
