@@ -22,23 +22,23 @@
 
 namespace visionaray
 {
-
 namespace detail
 {
-    template <class T>
-    T* pointer_cast(T* ptr)
-    {
-        return ptr;
-    }
+
+template <class T>
+T* pointer_cast(T* ptr)
+{
+    return ptr;
+}
 
 #ifdef __CUDACC__
-    template <class T>
-    T* pointer_cast(thrust::device_ptr<T> const& ptr)
-    {
-        return thrust::raw_pointer_cast(ptr);
-    }
-#endif
+template <class T>
+T* pointer_cast(thrust::device_ptr<T> const& ptr)
+{
+    return thrust::raw_pointer_cast(ptr);
 }
+#endif
+} // detail
 
 //--------------------------------------------------------------------------------------------------
 // bvh_node
@@ -79,6 +79,7 @@ inline bool is_leaf(bvh_node const& node)
 template <typename PrimitiveType>
 class bvh_ref_t
 {
+
     using P = const PrimitiveType;
     using N = const bvh_node;
 
@@ -88,6 +89,7 @@ class bvh_ref_t
     N* nodes_last;
 
 public:
+
     bvh_ref_t(P* p0, P* p1, N* n0, N* n1)
         : primitives_first(p0)
         , primitives_last(p1)
@@ -112,11 +114,13 @@ public:
 
         return nodes_first[index];
     }
+
 };
 
 template <typename PrimitiveType>
 class indexed_bvh_ref_t
 {
+
     using P = const PrimitiveType;
     using N = const bvh_node;
     using I = const unsigned;
@@ -129,6 +133,7 @@ class indexed_bvh_ref_t
     I* indices_last;
 
 public:
+
     indexed_bvh_ref_t(P* p0, P* p1, N* n0, N* n1, I* i0, I* i1)
         : primitives_first(p0)
         , primitives_last(p1)
@@ -159,6 +164,7 @@ public:
 
         return nodes_first[index];
     }
+
 };
 
 //--------------------------------------------------------------------------------------------------
@@ -169,6 +175,7 @@ template <typename PrimitiveVector, typename NodeVector>
 class bvh_t
 {
 public:
+
     using primitive_type    = typename PrimitiveVector::value_type;
     using primitive_vector  = PrimitiveVector;
     using node_vector       = NodeVector;
@@ -176,11 +183,12 @@ public:
     using bvh_ref = bvh_ref_t<primitive_type>;
 
 public:
+
     bvh_t() = default;
 
     explicit bvh_t(primitive_type const* /*prims*/, size_t count)
         : primitives_(count)
-        , nodes_(count == 0 ? 0 : 2*count - 1)
+        , nodes_(count == 0 ? 0 : 2 * count - 1)
     {
         assert(count != 0);
     }
@@ -206,18 +214,21 @@ public:
         auto n0 = detail::pointer_cast(nodes().data());
         auto n1 = n0 + nodes().size();
 
-        return {p0, p1, n0, n1};
+        return { p0, p1, n0, n1 };
     }
 
 private:
+
     primitive_vector primitives_;
     node_vector nodes_;
+
 };
 
 template <typename PrimitiveVector, typename NodeVector, typename IndexVector>
 class indexed_bvh_t
 {
 public:
+
     using primitive_type    = typename PrimitiveVector::value_type;
     using primitive_vector  = PrimitiveVector;
     using node_vector       = NodeVector;
@@ -226,11 +237,12 @@ public:
     using bvh_ref = indexed_bvh_ref_t<primitive_type>;
 
 public:
+
     indexed_bvh_t() = default;
 
     explicit indexed_bvh_t(primitive_type const* /*prims*/, size_t count)
         : primitives_(count)
-        , nodes_(count == 0 ? 0 : 2*count - 1)
+        , nodes_(count == 0 ? 0 : 2 * count - 1)
         , indices_(count)
     {
         assert(count != 0);
@@ -264,13 +276,15 @@ public:
         auto i0 = detail::pointer_cast(indices().data());
         auto i1 = i0 + indices().size();
 
-        return {p0, p1, n0, n1, i0, i1};
+        return { p0, p1, n0, n1, i0, i1 };
     }
 
 private:
+
     primitive_vector primitives_;
     node_vector nodes_;
     index_vector indices_;
+
 };
 
 template <typename P> using bvh                 = bvh_t<aligned_vector<P>, aligned_vector<bvh_node>>;

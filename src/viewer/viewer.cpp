@@ -329,7 +329,7 @@ void display_func()
     std::vector<light_type> lights;
 
 //  lights.push_back({0.0f, 1.0f, 1.0f});
-    lights.push_back({rend->cam.eye() - rend->cam.center()});
+    lights.push_back({ rend->cam.eye() - rend->cam.center() });
 
     if (config.dev_type == configuration::GPU)
     {
