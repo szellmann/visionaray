@@ -27,8 +27,6 @@ struct pixel_unpack_buffer_rt::impl
     cuda::graphics_resource resource;
     gl::buffer              buffer;
     gl::texture             texture;
-    pixel_format            color_format;
-    pixel_format            depth_format;
 };
 
 pixel_unpack_buffer_rt::pixel_unpack_buffer_rt()
