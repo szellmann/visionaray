@@ -22,7 +22,7 @@ hit_record<R, primitive<unsigned>> any_hit(R const& r, P begin, P end);
 
 template <typename R, typename P>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> any_hit(R const& r, P begin, P end);
+hit_record<R, primitive<unsigned>> closest_hit(R const& r, P begin, P end);
 
 
 } // visionaray
