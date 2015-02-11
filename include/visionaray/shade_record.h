@@ -100,27 +100,27 @@ namespace detail
 namespace srf
 {
 
-    struct R2 {};
-    struct R1 : R2 {};
+struct R2 {};
+struct R1 : R2 {};
 
-    template <class P, class T> auto TestShadeRecordType(R1)
-        -> decltype(
-            std::declval<P>().textures,
-            shade_record<typename P::light_type, vector<3, T>, T>()
-           );
+template <class P, class T> auto test_shade_record_type(R1)
+    -> decltype(
+        std::declval<P>().textures,
+        shade_record<typename P::light_type, vector<3, T>, T>()
+       );
 
-    template <class P, class T> auto TestShadeRecordType(R2)
-        -> shade_record<typename P::light_type, T>;
+template <class P, class T> auto test_shade_record_type(R2)
+    -> shade_record<typename P::light_type, T>;
 
-    template <class P, class T>
-    using ShadeRecordType = decltype(TestShadeRecordType<P, T>(R1()));
+template <class P, class T>
+using shade_record_type = decltype(test_shade_record_type<P, T>(R1()));
 
 } // srf
 } // detail
 
 template <typename Params, typename T>
 VSNRAY_FUNC
-inline auto make_shade_record() -> detail::srf::ShadeRecordType<Params, T>
+inline auto make_shade_record() -> detail::srf::shade_record_type<Params, T>
 {
     return {};
 }
