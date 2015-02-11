@@ -264,18 +264,14 @@ B build(P const* primitives, size_t num_prims)
             bin_counts[i] = 0;
         }
 
-//        return (num_bins * (1 - std::numeric_limits<float>::epsilon()) * (centroid[axis] - cb.min[axis])) / (cb.max[axis] - cb.min[axis]);
         float k0 = cb.min[axis];
         float k1 = (NumBins * (1 - std::numeric_limits<float>::epsilon())) / (cb.max[axis] - cb.min[axis]);
         for (auto i = prim_begin; i < prim_end; ++i)
         {
             auto const& b = ptr[i].bbox;
-//            auto bi = bin_id(NumBins, cb, ptr[i].centroid, axis);//if (current_idx == 11) { std::cerr << b.center() << " " << bi << std::endl; }
             auto bi = bin_id(ptr[i].centroid, axis, k0, k1);
-//            assert( bi < NumBins );
             if (bi == NumBins)
             {
-//                std::cerr << i << std::endl;
                 bi = NumBins - 1;
             }
             if (bi > NumBins) { bi = 0; }
@@ -345,29 +341,9 @@ B build(P const* primitives, size_t num_prims)
                  &ptr[prim_begin], &ptr[prim_end],
                  [&](prim_data const& pd)
                  {
-//                     return bin_id(NumBins, cb, pd.centroid, axis) <= split_plane;
                     return bin_id(pd.centroid, axis, k0, k1) <= split_plane;
                  }
             );
-
-/*            unsigned cnt_l = 0;
-            unsigned cnt_r = 0;
-            for (auto i = prim_begin; i != prim_end; ++i)
-            {
-                auto bi = bin_id(NumBins, cb, cptr[i], axis);
-                if (bi <= split_plane) cnt_l++;
-                if (bi >  split_plane) cnt_r++;
-            }
-
-            if (cnt_l != left.num_prims)
-            {std::cerr << current_idx << std::endl;
-                std::cerr << "l: " << cnt_l << " " << left.num_prims << std::endl;
-            }
-
-            if (cnt_r != right.num_prims)
-            {std::cerr << current_idx << std::endl;
-                std::cerr << "r: " << cnt_r << " " << right.num_prims << std::endl;
-            }*/
 
             // make current node an inner node
             bvh_node& current_node = result.nodes()[current_idx];
@@ -376,7 +352,7 @@ B build(P const* primitives, size_t num_prims)
 
             // store new nodes
             result.nodes()[node_stack_ptr]     = left;
-            result.nodes()[node_stack_ptr + 1] = right;//std::cerr << "+++push: " << node_stack_ptr + 1 << ' ';std::cerr << result.nodes()[node_stack_ptr + 1].num_prims << std::endl;
+            result.nodes()[node_stack_ptr + 1] = right;
 
             node = left;
             st.push(node_stack_ptr + 1);
@@ -392,7 +368,7 @@ B build(P const* primitives, size_t num_prims)
             }
             else
             {
-                current_idx = st.pop();//std::cerr << "---popp: " << current_idx << ' ';std::cerr << result.nodes()[current_idx].num_prims << std::endl;
+                current_idx = st.pop();
                 node = result.nodes()[current_idx];
             }
         }
