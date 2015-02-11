@@ -307,7 +307,7 @@ inline R jittered_ray_gen(unsigned x, unsigned y, Mat4 const& inv_view_matrix, M
 {
     typedef typename R::scalar_type scalar_type;
 
-    auto jitter = vector<2, scalar_type>
+    vector<2, scalar_type> jitter
     (
         sampler.next() - scalar_type(0.5),
         sampler.next() - scalar_type(0.5)
