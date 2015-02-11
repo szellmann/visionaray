@@ -212,13 +212,12 @@ B build(P const* primitives, size_t num_prims)
     aligned_vector<prim_data, 64> data(num_prims);
 
     // circumvent potentially slow operator[] of STL containers
-    auto ptr = &data[0];
-    auto pptr = &primitives[0];
+    auto ptr = data.data();
 
     aabb bbox = empty_box();
     for (size_t i = 0; i < num_prims; ++i)
     {
-        auto p          = pptr[i];
+        auto p          = primitives[i];
         ptr[i].idx      = static_cast<unsigned>(i);
         ptr[i].bbox     = bounds(p);
         ptr[i].centroid = ptr[i].bbox.center();
