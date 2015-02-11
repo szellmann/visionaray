@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <algorithm>
 #include <cstring>
 #include <exception>
 #include <fstream>
@@ -195,13 +196,16 @@ detail::obj_scene load_obj(std::string const& filename)
 
                 typedef tex_list::value_type tex_type;
                 boost::filesystem::path p(filename);
-                std::string tex_path = p.parent_path().string() + "/" + mat_it->second.map_kd;
+                std::string tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
 
+                static const std::string extensions[] = { ".jpg", ".jpeg", ".JPG", ".JPEG" };
+                auto tex_path = boost::filesystem::path(tex_filename);
+                auto has_jpg_ext = ( std::find(extensions, extensions + 4, tex_path.extension()) != extensions + 4 );
 
-                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_path))
+                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_jpg_ext)
                 {
 #if defined(VSNRAY_HAVE_JPEG)
-                    jpeg_image jpg(tex_path);
+                    jpeg_image jpg(tex_filename);
 
                     tex_type tex(jpg.width(), jpg.height());
 
