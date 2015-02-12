@@ -23,7 +23,7 @@ __global__ void render(MT inv_view_matrix, MT inv_proj_matrix, V viewport,
         return;
     }
 
-    sample_pixel<R, CT>(x, y, frame, inv_view_matrix, inv_proj_matrix, viewport, color_buffer, kernel, PxSamplerT());
+    sample_pixel<R, CT>(x, y, frame, viewport, color_buffer, kernel, PxSamplerT(), inv_view_matrix, inv_proj_matrix);
 }
 
 } // detail

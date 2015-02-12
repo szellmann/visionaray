@@ -274,8 +274,8 @@ private:
 
 template <typename R, typename Mat4, typename V>
 VSNRAY_FUNC
-inline R ray_gen(typename R::scalar_type x, typename R::scalar_type y, Mat4 const& inv_view_matrix,
-    Mat4 const& inv_proj_matrix, V const& viewport)
+inline R ray_gen(typename R::scalar_type x, typename R::scalar_type y, V const& viewport,
+    Mat4 const& inv_view_matrix, Mat4 const& inv_proj_matrix)
 {
     typedef typename R::scalar_type scalar_type;
     typedef vector<4, scalar_type>  vec4_type;
@@ -292,18 +292,17 @@ inline R ray_gen(typename R::scalar_type x, typename R::scalar_type y, Mat4 cons
     return r;
 }
 
-template <typename R, typename Mat4, typename V>
+template <typename R, typename ...Args>
 VSNRAY_FUNC
-inline R uniform_ray_gen(unsigned x, unsigned y, Mat4 const& inv_view_matrix, Mat4 const& inv_proj_matrix, V const& viewport)
+inline R uniform_ray_gen(unsigned x, unsigned y, Args const&... args)
 {
     typedef typename R::scalar_type scalar_type;
-    return ray_gen<R>(pixel<scalar_type>().x(x), pixel<scalar_type>().y(y), inv_view_matrix, inv_proj_matrix, viewport);
+    return ray_gen<R>(pixel<scalar_type>().x(x), pixel<scalar_type>().y(y), args...);
 }
 
-template <typename R, typename Mat4, typename V, typename S>
+template <typename R, typename S, typename ...Args>
 VSNRAY_FUNC
-inline R jittered_ray_gen(unsigned x, unsigned y, Mat4 const& inv_view_matrix, Mat4 const& inv_proj_matrix,
-    V const& viewport, S& sampler)
+inline R jittered_ray_gen(unsigned x, unsigned y, S& sampler, Args const&... args)
 {
     typedef typename R::scalar_type scalar_type;
 
@@ -317,7 +316,7 @@ inline R jittered_ray_gen(unsigned x, unsigned y, Mat4 const& inv_view_matrix, M
     (
         pixel<scalar_type>().x(x) + jitter.x,
         pixel<scalar_type>().y(y) + jitter.y,
-        inv_view_matrix, inv_proj_matrix, viewport
+        args...
     );
 }
 
@@ -326,17 +325,17 @@ inline R jittered_ray_gen(unsigned x, unsigned y, Mat4 const& inv_view_matrix, M
 // Simple uniform pixel sampler
 //
 
-template <typename R, typename CT, typename Mat4, typename V, typename C, typename K>
+template <typename R, typename CT, typename V, typename C, typename K, typename ...Args>
 VSNRAY_FUNC
-inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_matrix, Mat4 inv_proj_matrix,
-    V viewport, C* color_buffer, K kernel, pixel_sampler::uniform_type)
+inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewport,
+    C* color_buffer, K kernel, pixel_sampler::uniform_type, Args const&... args)
 {
     VSNRAY_UNUSED(frame);
 
     typedef typename R::scalar_type     scalar_type;
     typedef vector<4, scalar_type>      vec4_type;
 
-    auto r = uniform_ray_gen<R>(x, y, inv_view_matrix, inv_proj_matrix, viewport);
+    auto r = uniform_ray_gen<R>(x, y, viewport, args...);
     auto color = kernel(r);
     color_access<CT, vec4_type>::store(x, y, viewport, color, color_buffer);
 }
@@ -346,10 +345,10 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_m
 // Jittered pixel sampler, sampler is passed to kernel
 //
 
-template <typename R, typename CT, typename Mat4, typename V, typename C, typename K>
+template <typename R, typename CT, typename V, typename C, typename K, typename ...Args>
 VSNRAY_FUNC
-inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_matrix, Mat4 inv_proj_matrix,
-    V viewport, C* color_buffer, K kernel, pixel_sampler::jittered_type)
+inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewport,
+    C* color_buffer, K kernel, pixel_sampler::jittered_type, Args const&... args)
 {
     VSNRAY_UNUSED(frame);
 
@@ -359,7 +358,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_m
 
     auto gen    = sampler_gen<sampler, scalar_type>();
     auto s      = gen(x, y, viewport);
-    auto r = jittered_ray_gen<R>(x, y, inv_view_matrix, inv_proj_matrix, viewport, s);
+    auto r = jittered_ray_gen<R>(x, y, s, viewport, args...);
     auto color = kernel(r, s);
     color_access<CT, vec4_type>::store(x, y, viewport, color, color_buffer);
 }
@@ -369,10 +368,10 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_m
 // Jittered pixel sampler, result is blended on top of color buffer, sampler is passed to kernel
 //
 
-template <typename R, typename CT, typename Mat4, typename V, typename C, typename K>
+template <typename R, typename CT, typename V, typename C, typename K, typename ...Args>
 VSNRAY_FUNC
-inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_matrix, Mat4 inv_proj_matrix,
-    V viewport, C* color_buffer, K kernel, pixel_sampler::jittered_blend_type)
+inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewport,
+    C* color_buffer, K kernel, pixel_sampler::jittered_blend_type, Args const&... args)
 {
     typedef typename R::scalar_type     scalar_type;
     typedef C                           color_type;
@@ -380,7 +379,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, Mat4 inv_view_m
 
     auto gen    = sampler_gen<sampler, scalar_type>(tic());
     auto s      = gen(x, y, viewport);
-    auto r = jittered_ray_gen<R>(x, y, inv_view_matrix, inv_proj_matrix, viewport, s);
+    auto r = jittered_ray_gen<R>(x, y, s, viewport, args...);
     auto color = kernel(r, s);
     auto alpha = scalar_type(1.0) / scalar_type(frame);
     if (frame <= 1)
