@@ -618,7 +618,7 @@ int main(int argc, char** argv)
 
     float aspect = rend->w / static_cast<float>(rend->h);
 
-    rend->cam.perspective(45.0f * visionaray::constants::pi<float>() / 180.0f, aspect, 0.001f, 1000.0f);
+    rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
     rend->cam.view_all( rend->scene.bbox );
 
     rend->manips.push_back( make_shared<visionaray::arcball_manipulator>(rend->cam, mouse::Left) );
