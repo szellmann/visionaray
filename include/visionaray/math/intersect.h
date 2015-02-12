@@ -9,6 +9,7 @@
 
 #include "aabb.h"
 #include "plane.h"
+#include "ray.h"
 #include "sphere.h"
 #include "triangle.h"
 #include "vector.h"
