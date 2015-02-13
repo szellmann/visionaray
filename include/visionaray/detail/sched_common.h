@@ -272,6 +272,22 @@ private:
 // primary ray generators
 //
 
+template <typename R, typename T, typename V>
+VSNRAY_FUNC
+inline R ray_gen(T x, T y, V const& viewport, vector<3, T> const& eye,
+    vector<3, T> const& cam_u, vector<3, T> const& cam_v, vector<3, T> const& cam_w)
+{
+    using scalar_type = T;
+
+    auto u = scalar_type(2.0) * (x + scalar_type(0.5)) / scalar_type(viewport.w) - scalar_type(1.0);
+    auto v = scalar_type(2.0) * (y + scalar_type(0.5)) / scalar_type(viewport.h) - scalar_type(1.0);
+
+    R r;
+    r.ori = eye;
+    r.dir = normalize(cam_u * u + cam_v * v + cam_w);
+    return r;
+}
+
 template <typename R, typename Mat4, typename V>
 VSNRAY_FUNC
 inline R ray_gen(typename R::scalar_type x, typename R::scalar_type y, V const& viewport,

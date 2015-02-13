@@ -108,11 +108,21 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     typedef typename SP::color_traits   color_traits;
     typedef typename color_traits::type color_type;
 
-    auto inv_view_matrix = matrix_type( inverse(sched_params.cam.get_view_matrix()) );
-    auto inv_proj_matrix = matrix_type( inverse(sched_params.cam.get_proj_matrix()) );
+//  auto inv_view_matrix = matrix_type( inverse(sched_params.cam.get_view_matrix()) );
+//  auto inv_proj_matrix = matrix_type( inverse(sched_params.cam.get_proj_matrix()) );
     auto viewport        = sched_params.cam.get_viewport();
 
     recti xviewport(viewport.x, viewport.y, viewport.w - 1, viewport.h - 1);
+
+    //  front, side, and up vectors form an orthonormal basis
+    auto f = normalize( sched_params.cam.eye() - sched_params.cam.center() );
+    auto s = normalize( cross(sched_params.cam.up(), f) );
+    auto u =            cross(f, s);
+
+    auto eye   = vector<3, scalar_type>(sched_params.cam.eye());
+    auto cam_u = vector<3, scalar_type>(s) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) * sched_params.cam.aspect() );
+    auto cam_v = vector<3, scalar_type>(u) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) );
+    auto cam_w = vector<3, scalar_type>(-f);
 
     impl_->render_tile = [=](recti const& tile)
     {
@@ -136,7 +146,8 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             (
                 x, y, frame_num, viewport, sched_params.rt.color(),
                 kernel, typename SP::pixel_sampler_type(),
-                inv_view_matrix, inv_proj_matrix
+//              inv_view_matrix, inv_proj_matrix
+                eye, cam_u, cam_v, cam_w
             );
         }
     };
