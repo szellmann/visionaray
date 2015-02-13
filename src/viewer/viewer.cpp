@@ -545,7 +545,7 @@ void reshape_func(int w, int h)
     glViewport(0, 0, w, h);
     rend->cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
-    rend->cam.perspective(45.0f * visionaray::constants::pi<float>() / 180.0f, aspect, 0.001f, 1000.0f);
+    rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
     rend->rt.resize(w, h);
 #ifdef __CUDACC__
     rend->device_rt.resize(w, h);
