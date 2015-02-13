@@ -66,6 +66,8 @@ using namespace visionaray;
 
 typedef std::vector<shared_ptr<visionaray::camera_manipulator>> manipulators;
 
+enum algorithm { Simple, Whitted, Pathtracing };
+
 struct renderer
 {
 
@@ -86,12 +88,15 @@ struct renderer
 #endif
 
     renderer()
-        : w(800)
+        : algo(Simple)
+        , w(800)
         , h(800)
         , frame(0)
         , down_button(mouse::NoButton)
     {
     }
+
+    algorithm algo;
 
     int w;
     int h;
@@ -152,6 +157,54 @@ struct configuration
 };
 
 configuration config;
+
+struct kernel_tag {};
+struct simple_tag : kernel_tag {};
+struct whitted_tag : kernel_tag {};
+struct pathtracing_tag : kernel_tag {};
+
+template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
+void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, simple_tag)
+{
+    sched_params<RenderTargetType, simple::pixel_sampler_type> sparams
+    {
+        rend->cam,
+        rt
+    };
+
+    simple::kernel<ColorType, KParams> kernel;
+    kernel.params = kparams;
+    sched.frame(kernel, sparams);
+}
+
+template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
+void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, whitted_tag)
+{
+    sched_params<RenderTargetType, whitted::pixel_sampler_type> sparams
+    {
+        rend->cam,
+        rt
+    };
+
+    whitted::kernel<ColorType, KParams> kernel;
+    kernel.params = kparams;
+    sched.frame(kernel, sparams);
+}
+
+template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
+void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, pathtracing_tag)
+{
+    sched_params<RenderTargetType, pathtracing::pixel_sampler_type> sparams
+    {
+        rend->cam,
+        rt
+    };
+
+    pathtracing::kernel<ColorType, KParams> kernel;
+    kernel.params = kparams;
+    sched.frame(kernel, sparams, ++rend->frame);
+}
+
 
 void render_hud()
 {
@@ -334,13 +387,7 @@ void display_func()
     if (config.dev_type == configuration::GPU)
     {
 #ifdef __CUDACC__
-        namespace algorithm = simple;
-
-        sched_params<pixel_unpack_buffer_rt, algorithm::pixel_sampler_type> sparams
-        {
-            rend->cam,
-            rend->device_rt
-        };
+        namespace algorithm = simple; // TODO!
 
         thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
 
@@ -365,23 +412,32 @@ void display_func()
         typedef algorithm::kernel<internal_color_type, decltype(kparams)> kernel_type;
         kernel_type kernel;
         kernel.params = kparams;
-        rend->sched_gpu.frame(kernel, sparams
-            //, ++rend->frame
-            );
+
+        switch (rend->algo)
+        {
+
+        case Simple:
+            call_kernel<internal_color_type>(rend->sched_gpu, kparams, rend->device_rt, simple_tag());
+            break;
+
+        case Whitted:
+            call_kernel<internal_color_type>(rend->sched_gpu, kparams, rend->device_rt, whitted_tag());
+            break;
+
+        case Pathtracing:
+            call_kernel<internal_color_type>(rend->sched_gpu, kparams, rend->device_rt, pathtracing_tag());
+            break;
+
+        }
+
 #endif
     }
     else if (config.dev_type == configuration::CPU)
     {
 #ifndef __CUDA_ARCH__
-        namespace algorithm = simple;
+        namespace algorithm = simple; // TODO!
 
         typedef vector<4, float> color_type;
-
-        sched_params<cpu_buffer_rt, algorithm::pixel_sampler_type> sparams
-        {
-            rend->cam,
-            rend->rt
-        };
 
         std::vector<renderer::host_bvh_type::bvh_ref> host_primitives;
 
@@ -404,9 +460,24 @@ void display_func()
         typedef algorithm::kernel<internal_color_type, decltype(kparams)> kernel_type;
         kernel_type kernel;
         kernel.params = kparams;
-        rend->sched_cpu.frame(kernel, sparams
-            //, ++rend->frame
-            );
+
+        switch (rend->algo)
+        {
+
+        case Simple:
+            call_kernel<internal_color_type>(rend->sched_cpu, kparams, rend->rt, simple_tag());
+            break;
+
+        case Whitted:
+            call_kernel<internal_color_type>(rend->sched_cpu, kparams, rend->rt, whitted_tag());
+            break;
+
+        case Pathtracing:
+            call_kernel<internal_color_type>(rend->sched_cpu, kparams, rend->rt, pathtracing_tag());
+            break;
+
+        }
+
 #endif
     }
 
@@ -472,6 +543,24 @@ void keyboard_func(unsigned char key, int, int)
 {
     switch (key)
     {
+    case '1':
+        rend->algo = Simple;
+        rend->counter.reset();
+        rend->frame = 0;
+        break;
+
+    case '2':
+        rend->algo = Whitted;
+        rend->counter.reset();
+        rend->frame = 0;
+        break;
+
+    case '3':
+        rend->algo = Pathtracing;
+        rend->counter.reset();
+        rend->frame = 0;
+        break;
+
     case 'm':
 #ifdef __CUDACC__
         if (config.dev_type == configuration::CPU)
