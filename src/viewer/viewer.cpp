@@ -166,7 +166,7 @@ struct pathtracing_tag : kernel_tag {};
 template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
 void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, simple_tag)
 {
-    sched_params<RenderTargetType, simple::pixel_sampler_type> sparams
+    sched_params<RenderTargetType, pixel_sampler::uniform_type> sparams
     {
         rend->cam,
         rt
@@ -180,7 +180,7 @@ void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, sim
 template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
 void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, whitted_tag)
 {
-    sched_params<RenderTargetType, whitted::pixel_sampler_type> sparams
+    sched_params<RenderTargetType, pixel_sampler::uniform_type> sparams
     {
         rend->cam,
         rt
@@ -194,7 +194,7 @@ void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, whi
 template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
 void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, pathtracing_tag)
 {
-    sched_params<RenderTargetType, pathtracing::pixel_sampler_type> sparams
+    sched_params<RenderTargetType, pixel_sampler::jittered_blend_type> sparams
     {
         rend->cam,
         rt
@@ -381,8 +381,6 @@ void display_func()
     if (config.dev_type == configuration::GPU)
     {
 #ifdef __CUDACC__
-        namespace algorithm = simple; // TODO!
-
         thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
 
         device_primitives.push_back(rend->device_bvh.ref());
@@ -391,7 +389,7 @@ void display_func()
 
         device_lights.push_back(lights[0]);
 
-        auto kparams = algorithm::make_params
+        auto kparams = make_params
         (
             thrust::raw_pointer_cast(device_primitives.data()),
             thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
@@ -402,10 +400,6 @@ void display_func()
         );
 
         typedef vector<4, renderer::scalar_type_gpu> internal_color_type;
-
-        typedef algorithm::kernel<internal_color_type, decltype(kparams)> kernel_type;
-        kernel_type kernel;
-        kernel.params = kparams;
 
         switch (rend->algo)
         {
@@ -429,15 +423,13 @@ void display_func()
     else if (config.dev_type == configuration::CPU)
     {
 #ifndef __CUDA_ARCH__
-        namespace algorithm = simple; // TODO!
-
         typedef vector<4, float> color_type;
 
         std::vector<renderer::host_bvh_type::bvh_ref> host_primitives;
 
         host_primitives.push_back(rend->host_bvh.ref());
 
-        auto kparams = algorithm::make_params
+        auto kparams = make_params
         (
             host_primitives.data(),
             host_primitives.data() + host_primitives.size(),
@@ -450,10 +442,6 @@ void display_func()
         );
 
         typedef vector<4, renderer::scalar_type_cpu> internal_color_type;
-
-        typedef algorithm::kernel<internal_color_type, decltype(kparams)> kernel_type;
-        kernel_type kernel;
-        kernel.params = kparams;
 
         switch (rend->algo)
         {

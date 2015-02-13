@@ -12,11 +12,8 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
-// Param structs for use with simple kernel
+// Param structs
 //
-
-namespace simple
-{
 
 template <typename ...Args>
 struct kernel_params;
@@ -75,13 +72,6 @@ struct kernel_params<P, N, TC, M, T, L, Args...>
 
 
 //-------------------------------------------------------------------------------------------------
-// Default pixel sampler type for simple kernel
-//
-
-typedef pixel_sampler::uniform_type pixel_sampler_type;
-
-
-//-------------------------------------------------------------------------------------------------
 // Factory for param structs
 //
 
@@ -104,36 +94,6 @@ kernel_params<P, N, TC, M, T, L> make_params(P const& begin, P const& end, N con
         { begin, end }, normals, tex_coords, materials, textures, { lbegin, lend }
     };
 }
-
-} // simple
-
-
-//-------------------------------------------------------------------------------------------------
-// Param structs for use with whitted kernel
-//
-
-namespace whitted
-{
-
-using simple::kernel_params;
-using simple::make_params;
-using pixel_sampler_type = simple::pixel_sampler_type;
-
-} // whitted
-
-
-//-------------------------------------------------------------------------------------------------
-// Param structs for use with path tracing kernel
-//
-
-namespace pathtracing
-{
-
-using simple::kernel_params;
-using simple::make_params;
-typedef pixel_sampler::jittered_blend_type pixel_sampler_type;
-
-} // pathtracing
 
 } // visionaray
 
