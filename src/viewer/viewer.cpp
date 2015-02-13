@@ -591,6 +591,8 @@ int main(int argc, char** argv)
 
     if (glewInit() != GLEW_OK)
     {
+        std::cerr << "glewInit() failed" << std::endl;
+        return EXIT_FAILURE;
     }
 
     // Load the scene
