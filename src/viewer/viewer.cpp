@@ -501,6 +501,19 @@ void display_func()
         rend->rt.display_color_buffer();
     }
 
+    if (rend->algo == Pathtracing)
+    {
+        // TODO: this is hardcoded for white ambient light
+        // color should somehow depend on color observed in
+        // color buffer..
+        glColor3f(0.0f, 0.0f, 0.0f);
+    }
+    else
+    {
+        // TODO: see above..
+        glColor3f(1.0f, 1.0f, 1.0f);
+    }
+
     if (config.show_hud)
     {
         render_hud();
