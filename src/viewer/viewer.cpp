@@ -373,12 +373,6 @@ void display_func()
 
     auto& scene = rend->scene;
 
-    auto& primitives = scene.primitives;
-    auto& normals    = scene.normals;
-    auto& tex_coords = scene.tex_coords;
-    auto& materials  = scene.materials;
-    auto& textures   = scene.textures;
-
     std::vector<light_type> lights;
 
 //  lights.push_back({0.0f, 1.0f, 1.0f});
@@ -447,10 +441,10 @@ void display_func()
         (
             host_primitives.data(),
             host_primitives.data() + host_primitives.size(),
-            normals.data(),
-//            tex_coords.data(),
-            materials.data(),
-//            textures.data(),
+            scene.normals.data(),
+//            scene.tex_coords.data(),
+            scene.materials.data(),
+//            scene.textures.data(),
             lights.data(),
             lights.data() + lights.size()
         );
