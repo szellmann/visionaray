@@ -557,18 +557,21 @@ void keyboard_func(unsigned char key, int, int)
     switch (key)
     {
     case '1':
+        std::cout << "Switching algorithm: simple\n";
         rend->algo = Simple;
         rend->counter.reset();
         rend->frame = 0;
         break;
 
     case '2':
+        std::cout << "Switching algorithm: whitted\n";
         rend->algo = Whitted;
         rend->counter.reset();
         rend->frame = 0;
         break;
 
     case '3':
+        std::cout << "Switching algorithm: path tracing\n";
         rend->algo = Pathtracing;
         rend->counter.reset();
         rend->frame = 0;
