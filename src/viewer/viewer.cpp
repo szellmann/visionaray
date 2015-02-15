@@ -337,7 +337,7 @@ void render_hud_ext()
     }*/
 
     stream.str(std::string());
-    stream << "SPP: " << rend->frame;
+    stream << "SPP: " << max(1, rend->frame);
     str = stream.str();
     glRasterPos2i(300, h * 2 - 68);
     for (size_t i = 0; i < str.length(); ++i)
