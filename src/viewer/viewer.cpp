@@ -371,8 +371,6 @@ void display_func()
 {
     using light_type = point_light<float>;
 
-    auto& scene = rend->scene;
-
     std::vector<light_type> lights;
 
 //  lights.push_back({0.0f, 1.0f, 1.0f});
@@ -428,6 +426,8 @@ void display_func()
         std::vector<renderer::host_bvh_type::bvh_ref> host_primitives;
 
         host_primitives.push_back(rend->host_bvh.ref());
+
+        auto& scene = rend->scene;
 
         auto kparams = make_params
         (
