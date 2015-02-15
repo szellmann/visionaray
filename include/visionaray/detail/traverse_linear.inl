@@ -11,6 +11,7 @@ namespace detail
 {
 
 template <bool AnyHit, typename R, typename P>
+VSNRAY_FUNC
 hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end)
 {
 
