@@ -559,6 +559,10 @@ void keyboard_func(unsigned char key, int, int)
         rend->frame = 0;
         break;
 
+    case 'b':
+        config.show_bvh = !config.show_bvh;
+        break;
+
     case 'm':
 #ifdef __CUDACC__
         if (config.dev_type == configuration::CPU)
