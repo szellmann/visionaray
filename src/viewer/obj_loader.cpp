@@ -209,7 +209,7 @@ detail::obj_scene load_obj(std::string const& filename)
 
                     tex_type tex(jpg.width(), jpg.height());
 
-                    auto data_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data().data());
+                    auto data_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data());
                     tex.set_data(data_ptr);
 
                     result.textures.push_back(std::move(tex));

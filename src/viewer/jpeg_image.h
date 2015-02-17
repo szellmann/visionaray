@@ -24,7 +24,7 @@ public:
     size_t width() const    { return width_; }
     size_t height() const   { return height_; }
 
-    std::vector<unsigned char> const& data() const { return data_; }
+    unsigned char const* data() const { return data_.data(); }
 
 private:
 
