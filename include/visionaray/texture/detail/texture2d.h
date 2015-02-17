@@ -34,12 +34,12 @@ public:
 
     value_type& operator()(size_t x, size_t y)
     {
-        return base_type::data[y * width_ + x];
+        return base_type::data()[y * width_ + x];
     }
 
     value_type const& operator()(size_t x, size_t y) const
     {
-        return base_type::data[y * width_ + x];
+        return base_type::data()[y * width_ + x];
     }
 
 

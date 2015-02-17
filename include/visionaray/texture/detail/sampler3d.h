@@ -277,13 +277,13 @@ inline ReturnT tex3D(texture_ref<TexelT, ElementType, 3> const& tex, vector<3, F
     default:
         // fall-through
     case visionaray::Nearest:
-        return nearest<ReturnT>( tex.data, coord, texsize );
+        return nearest<ReturnT>( tex.data(), coord, texsize );
 
     case visionaray::Linear:
-        return linear<ReturnT>( tex.data, coord, texsize );
+        return linear<ReturnT>( tex.data(), coord, texsize );
 
     case visionaray::BSpline:
-        return cubic8<ReturnT>( tex.data, coord, texsize );
+        return cubic8<ReturnT>( tex.data(), coord, texsize );
 
     case visionaray::BSplineInterpol:
         return cubic<ReturnT>( tex.prefiltered_data, coord, texsize,
@@ -292,7 +292,7 @@ inline ReturnT tex3D(texture_ref<TexelT, ElementType, 3> const& tex, vector<3, F
 
 
     case visionaray::CardinalSpline:
-        return cubic<ReturnT>( tex.data, coord, texsize,
+        return cubic<ReturnT>( tex.data(), coord, texsize,
             cspline::w0_func<FloatT>(), cspline::w1_func<FloatT>(),
             cspline::w2_func<FloatT>(), cspline::w3_func<FloatT>() );
 

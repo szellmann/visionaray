@@ -4,6 +4,8 @@
 #ifndef VSNRAY_TEXTURE_COMMON_H
 #define VSNRAY_TEXTURE_COMMON_H
 
+#include <cstddef>
+
 #include <algorithm>
 #include <vector>
 
@@ -34,19 +36,21 @@ public:
     typedef T value_type;
 
 
-    value_type const* data;
-
     texture_ref_base()
-        : data(0)
+        : data_(nullptr)
         , address_mode_(Wrap)
     {
     }
+
+    void set_data(value_type const* data) { data_ = data; } // TODO: initialize through c'tor
+    value_type const* data() const { return data_; }
 
     void set_address_mode(tex_address_mode mode) { address_mode_ = mode; }
     tex_address_mode get_address_mode() const { return address_mode_; }
 
 protected:
 
+    value_type const* data_;
     tex_address_mode address_mode_;
 
 };

@@ -81,7 +81,7 @@ inline ReturnT tex2D(texture_ref<TexelT, ElementType, 2> const& tex, vector<2, F
 {
 
     vector<2, FloatT> texsize( tex.width(), tex.height() );
-    return nearest<ReturnT>( tex.data, coord, texsize );
+    return nearest<ReturnT>( tex.data(), coord, texsize );
 
 }
 
