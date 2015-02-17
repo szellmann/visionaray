@@ -15,23 +15,17 @@ namespace visionaray
 {
 
 
-template
-<
-    typename T,
-    tex_read_mode ReadMode
->
-class texture<T, ReadMode, 1> : public texture_storage<T, texture<T, ReadMode, 1>>,
-    public basic_filterable<T, texture<T, ReadMode, 1>>
+template <typename Base, typename T, tex_read_mode ReadMode>
+class texture_iface<Base, T, ReadMode, 1> : public Base
 {
 public:
 
-    typedef texture_storage<T, texture> storage_base;
-    typedef T value_type;
+    using base_type = Base;
+    using value_type = T;
 
+    texture_iface() = default;
 
-    texture() {}
-
-    texture(size_t w)
+    texture_iface(size_t w)
         : width_(w)
     {
     }
@@ -39,12 +33,12 @@ public:
 
     value_type& operator()(size_t x)
     {
-        return storage_base::data[x];
+        return base_type::data[x];
     }
 
     value_type const& operator()(size_t x) const
     {
-        return storage_base::data[x];
+        return base_type::data[x];
     }
 
 

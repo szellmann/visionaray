@@ -25,7 +25,7 @@ namespace visionaray
 //
 
 template <typename TexelT, typename FloatT>
-inline TexelT tex1D(texture<TexelT, ElementType, 1> const& tex, FloatT coord)
+inline TexelT tex1D(texture_ref<TexelT, ElementType, 1> const& tex, FloatT coord)
 {
 
     // general case: return type equals texel type
@@ -37,7 +37,7 @@ inline TexelT tex1D(texture<TexelT, ElementType, 1> const& tex, FloatT coord)
 
 
 template <typename TexelT>
-inline vector<4, simd::float4> tex1D(texture<TexelT, ElementType, 1> const& tex, simd::float4 coord)
+inline vector<4, simd::float4> tex1D(texture_ref<TexelT, ElementType, 1> const& tex, simd::float4 coord)
 {
 
     // special case for AoS rgba colors
@@ -53,7 +53,7 @@ inline vector<4, simd::float4> tex1D(texture<TexelT, ElementType, 1> const& tex,
 //
 
 template <typename TexelT, typename FloatT>
-inline TexelT tex2D(texture<TexelT, ElementType, 2> const& tex, vector<2, FloatT> coord)
+inline TexelT tex2D(texture_ref<TexelT, ElementType, 2> const& tex, vector<2, FloatT> coord)
 {
 
     // general case: return type equals texel type
@@ -65,7 +65,7 @@ inline TexelT tex2D(texture<TexelT, ElementType, 2> const& tex, vector<2, FloatT
 
 
 template <typename TexelT>
-inline vector<3, simd::float4> tex2D(texture<TexelT, ElementType, 2> const& tex, vector<2, simd::float4> coord)
+inline vector<3, simd::float4> tex2D(texture_ref<TexelT, ElementType, 2> const& tex, vector<2, simd::float4> coord)
 {
 
     // special case: lookup four texels at once and return as 32-bit float vector
@@ -81,7 +81,7 @@ inline vector<3, simd::float4> tex2D(texture<TexelT, ElementType, 2> const& tex,
 //
 
 template <typename TexelT, typename FloatT>
-inline TexelT tex3D(texture<TexelT, ElementType, 3> const& tex, vector<3, FloatT> coord)
+inline TexelT tex3D(texture_ref<TexelT, ElementType, 3> const& tex, vector<3, FloatT> coord)
 {
 
     // general case: return type equals texel type
@@ -93,7 +93,7 @@ inline TexelT tex3D(texture<TexelT, ElementType, 3> const& tex, vector<3, FloatT
 
 
 template <typename TexelT>
-inline simd::float4 tex3D(texture<TexelT, ElementType, 3> const& tex, vector<3, simd::float4> coord)
+inline simd::float4 tex3D(texture_ref<TexelT, ElementType, 3> const& tex, vector<3, simd::float4> coord)
 {
 
     // special case: lookup four texels at once and return as 32-bit float vector
@@ -108,5 +108,3 @@ inline simd::float4 tex3D(texture<TexelT, ElementType, 3> const& tex, vector<3, 
 
 
 #endif // VSNRAY_TEXTURE_H
-
-

@@ -113,7 +113,7 @@ inline ReturnT cubic(VoxelT const* tex, FloatT coord, FloatT texsize, W0 w0, W1 
 
 
 template <typename ReturnT, typename FloatT, typename VoxelT>
-inline ReturnT tex1D(texture<VoxelT, visionaray::ElementType, 1> const& tex, FloatT coord)
+inline ReturnT tex1D(texture_ref<VoxelT, visionaray::ElementType, 1> const& tex, FloatT coord)
 {
 
     FloatT texsize = tex.width();
@@ -153,5 +153,3 @@ inline ReturnT tex1D(texture<VoxelT, visionaray::ElementType, 1> const& tex, Flo
 
 
 #endif // VSNRAY_TEXTURE_SAMPLER1D_H
-
-

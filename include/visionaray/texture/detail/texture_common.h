@@ -26,8 +26,8 @@ struct cast
 } // detail
 
 
-template <typename T, typename Derived>
-class texture_storage
+template <typename T>
+class texture_ref_base
 {
 public:
 
@@ -36,7 +36,7 @@ public:
 
     value_type const* data;
 
-    texture_storage()
+    texture_ref_base()
         : data(0)
         , address_mode_(Wrap)
     {
@@ -111,5 +111,3 @@ protected:
 
 
 #endif // VSNRAY_TEXTURE_COMMON_H
-
-
