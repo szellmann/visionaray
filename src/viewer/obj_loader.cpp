@@ -210,11 +210,14 @@ detail::obj_scene load_obj(std::string const& filename)
                     tex_type tex(jpg.width(), jpg.height());
 
                     // TODO: we need textures with managed storage to fix this memory leak
-                    tex.data = new tex_type::value_type[jpg.width() * jpg.height()];
-                    auto eval_ptr = const_cast<tex_type::value_type*>(reinterpret_cast<tex_type::value_type const*>(jpg.data().data()));
-                    std::memcpy(tex.data, eval_ptr, sizeof(tex_type::value_type) * tex.size());
+                    tex_type::value_type* tmp = new tex_type::value_type[jpg.width() * jpg.height()];
+                    auto eval_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data().data());
+                    std::memcpy(tmp, eval_ptr, sizeof(tex_type::value_type) * tex.size());
+
+                    tex.data = tmp;
+
                     result.textures.push_back(std::move(tex));
-                    // TODO: here we leak tex.data..
+                    // TODO: here we leak tmp..
 #endif
                 }
                 else

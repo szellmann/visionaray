@@ -34,7 +34,7 @@ public:
     typedef T value_type;
 
 
-    value_type* data;
+    value_type const* data;
 
     texture_storage()
         : data(0)
