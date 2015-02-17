@@ -30,8 +30,31 @@ struct cast
 } // detail
 
 
+class texture_params_base
+{
+public:
+
+    texture_params_base()
+        : address_mode_(Wrap)
+        , filter_mode_(Nearest)
+    {}
+
+    void set_address_mode(tex_address_mode mode) { address_mode_ = mode; }
+    tex_address_mode get_address_mode() const { return address_mode_; }
+
+    void set_filter_mode(tex_filter_mode mode) { filter_mode_ = mode; }
+    tex_filter_mode get_filter_mode() const { return filter_mode_; }
+
+protected:
+
+    tex_address_mode address_mode_;
+    tex_filter_mode filter_mode_;
+
+};
+
+
 template <typename T>
-class texture_base
+class texture_base : public texture_params_base
 {
 public:
 
@@ -45,18 +68,14 @@ public:
     void set_data(value_type const* data) { std::copy( data, data + data_.size(), data_.begin() ); }
     value_type const* data() const { return data_.data(); }
 
-    void set_address_mode(tex_address_mode mode) { address_mode_ = mode; }
-    tex_address_mode get_address_mode() const { return address_mode_; }
-
 protected:
 
     aligned_vector<T> data_;
-    tex_address_mode address_mode_; // TODO: consolidate with texture_ref_base
 
 };
 
 template <typename T>
-class texture_ref_base
+class texture_ref_base : public texture_params_base
 {
 public:
 
@@ -65,37 +84,15 @@ public:
 
     texture_ref_base(size_t size = 0)
         : data_(nullptr)
-        , address_mode_(Wrap)
     {
     }
 
     void set_data(value_type const* data) { data_ = data; } // TODO: initialize through c'tor
     value_type const* data() const { return data_; }
 
-    void set_address_mode(tex_address_mode mode) { address_mode_ = mode; }
-    tex_address_mode get_address_mode() const { return address_mode_; }
-
 protected:
 
     value_type const* data_;
-    tex_address_mode address_mode_;
-
-};
-
-
-template <typename T, typename Derived>
-class basic_filterable
-{
-public:
-
-    basic_filterable() : filter_mode_(Nearest) {}
-
-    void set_filter_mode(tex_filter_mode mode) { filter_mode_ = mode; }
-    tex_filter_mode get_filter_mode() const { return filter_mode_; }
-
-protected:
-
-    tex_filter_mode filter_mode_;
 
 };
 

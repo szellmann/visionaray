@@ -83,7 +83,19 @@ inline ReturnT tex2D(Tex const& tex, vector<2, FloatT> coord)
     static_assert(Tex::dimensions == 2, "Incompatible texture type");
 
     vector<2, FloatT> texsize( tex.width(), tex.height() );
-    return nearest<ReturnT>( tex.data(), coord, texsize );
+
+    switch (tex.get_filter_mode())
+    {
+
+    default:
+        // fall-through
+    case visionaray::Nearest:
+        return nearest<ReturnT>( tex.data(), coord, texsize );
+
+    case visionaray::Linear:
+        return linear<ReturnT>( tex.data(), coord, texsize );
+
+    }
 
 }
 
