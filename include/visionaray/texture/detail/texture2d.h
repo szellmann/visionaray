@@ -26,7 +26,8 @@ public:
     texture_iface() = default;
 
     texture_iface(size_t w, size_t h)
-        : width_(w)
+        : Base(w * h)
+        , width_(w)
         , height_(h)
     {
     }

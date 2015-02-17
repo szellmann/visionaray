@@ -57,7 +57,7 @@ inline surface<M, vector<3, float>> get_surface
     auto s1  = tc1 * (scalar_type(1.0) - (hr.u + hr.v));
     auto tc  = s1 + s2 + s3;
 
-    auto tex = textures[hr.geom_id];
+    auto const& tex = textures[hr.geom_id];
     auto cd = tex.width() > 0 && tex.height() > 0 ? vector<3, float>(tex2D(tex, tc)) : vector<3, float>(255.0);
     cd /= scalar_type(255.0);
 
@@ -253,7 +253,7 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
         maski[i] = 0xFF;
         simd::mask4 m(maski);
 
-        auto tex = textures[geom_ids[i]];
+        auto const& tex = textures[geom_ids[i]];
         auto clr = tex.width() > 0 && tex.height() > 0 ? tex2D(tex, tc) : vector<3, simd::float4>(255.0);
         clr /= scalar_type(255.0);
 

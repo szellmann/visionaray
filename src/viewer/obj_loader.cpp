@@ -207,16 +207,12 @@ detail::obj_scene load_obj(std::string const& filename)
 #if defined(VSNRAY_HAVE_JPEG)
                     jpeg_image jpg(tex_filename);
 
-                    // TODO: we need textures with managed storage to fix this memory leak
-                    tex_type::value_type* tmp = new tex_type::value_type[jpg.width() * jpg.height()];
-                    auto evil_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data().data());
-                    std::memcpy(tmp, evil_ptr, sizeof(tex_type::value_type) * jpg.width() * jpg.height());
-
                     tex_type tex(jpg.width(), jpg.height());
-                    tex.set_data(tmp);
+
+                    auto data_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data().data());
+                    tex.set_data(data_ptr);
 
                     result.textures.push_back(std::move(tex));
-                    // TODO: here we leak tmp..
 #endif
                 }
                 else

@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <vector>
 
+#include <visionaray/detail/aligned_vector.h>
+
 #include "../forward.h"
 
 
@@ -29,6 +31,31 @@ struct cast
 
 
 template <typename T>
+class texture_base
+{
+public:
+
+    using value_type = T;
+
+    texture_base(size_t size)
+        : data_(aligned_vector<T>(size))
+    {
+    }
+
+    void set_data(value_type const* data) { std::copy( data, data + data_.size(), data_.begin() ); }
+    value_type const* data() const { return data_.data(); }
+
+    void set_address_mode(tex_address_mode mode) { address_mode_ = mode; }
+    tex_address_mode get_address_mode() const { return address_mode_; }
+
+protected:
+
+    aligned_vector<T> data_;
+    tex_address_mode address_mode_; // TODO: consolidate with texture_ref_base
+
+};
+
+template <typename T>
 class texture_ref_base
 {
 public:
@@ -36,7 +63,7 @@ public:
     typedef T value_type;
 
 
-    texture_ref_base()
+    texture_ref_base(size_t size = 0)
         : data_(nullptr)
         , address_mode_(Wrap)
     {

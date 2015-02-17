@@ -77,7 +77,7 @@ inline ReturnT linear(TexelT const* tex, vector<2, FloatT> coord, vector<2, Floa
 
 
 template <typename ReturnT, typename FloatT, typename TexelT>
-inline ReturnT tex2D(texture_ref<TexelT, ElementType, 2> const& tex, vector<2, FloatT> coord)
+inline ReturnT tex2D(texture<TexelT, ElementType, 2> const& tex, vector<2, FloatT> coord)
 {
 
     vector<2, FloatT> texsize( tex.width(), tex.height() );

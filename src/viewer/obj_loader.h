@@ -23,7 +23,7 @@ typedef aligned_vector<basic_triangle<3, float>>                            tria
 typedef aligned_vector<vector<3, float>>                                    normal_list;
 typedef aligned_vector<vector<2, float>>                                    tex_coord_list;
 typedef aligned_vector<phong<float>>                                        mat_list;
-typedef aligned_vector<texture_ref<vector<3, unsigned char>, ElementType, 2>>   tex_list;
+typedef aligned_vector<texture<vector<3, unsigned char>, ElementType, 2>>   tex_list;
 
 struct obj_scene
 {
