@@ -250,8 +250,9 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
     for (unsigned i = 0; i < 4; ++i)
     {
         VSNRAY_ALIGN(16) int maski[4] = { 0, 0, 0, 0 };
-        maski[i] = 0xFF;
-        simd::mask4 m(maski);
+        maski[i] = 0xFFFFFFFF;
+        simd::int4 mi(maski);
+        simd::mask4 m(mi);
 
         auto const& tex = textures[geom_ids[i]];
         auto clr = tex.width() > 0 && tex.height() > 0 ? tex2D(tex, tc) : vector<3, simd::float4>(255.0);
