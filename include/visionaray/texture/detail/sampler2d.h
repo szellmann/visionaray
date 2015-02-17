@@ -76,9 +76,11 @@ inline ReturnT linear(TexelT const* tex, vector<2, FloatT> coord, vector<2, Floa
 }
 
 
-template <typename ReturnT, typename FloatT, typename TexelT>
-inline ReturnT tex2D(texture<TexelT, ElementType, 2> const& tex, vector<2, FloatT> coord)
+template <typename ReturnT, typename Tex, typename FloatT>
+inline ReturnT tex2D(Tex const& tex, vector<2, FloatT> coord)
 {
+
+    static_assert(Tex::dimensions == 2, "Incompatible texture type");
 
     vector<2, FloatT> texsize( tex.width(), tex.height() );
     return nearest<ReturnT>( tex.data(), coord, texsize );

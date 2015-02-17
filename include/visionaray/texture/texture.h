@@ -24,21 +24,25 @@ namespace visionaray
 // tex1D - general case and specializations
 //
 
-template <typename TexelT, typename FloatT>
-inline TexelT tex1D(texture_ref<TexelT, ElementType, 1> const& tex, FloatT coord)
+template <typename Tex, typename FloatT>
+inline typename Tex::value_type tex1D(Tex const& tex, FloatT coord)
 {
 
+    static_assert(Tex::dimensions == 1, "Incompatible texture type");
+
     // general case: return type equals texel type
-    typedef TexelT return_type;
+    typedef typename Tex::value_type return_type;
 
     return detail::tex1D<return_type>( tex, coord );
 
 }
 
 
-template <typename TexelT>
-inline vector<4, simd::float4> tex1D(texture_ref<TexelT, ElementType, 1> const& tex, simd::float4 coord)
+template <typename Tex>
+inline vector<4, simd::float4> tex1D(Tex const& tex, simd::float4 coord)
 {
+
+    static_assert(Tex::dimensions == 1, "Incompatible texture type");
 
     // special case for AoS rgba colors
     typedef vector<4, simd::float4> return_type;
@@ -52,21 +56,25 @@ inline vector<4, simd::float4> tex1D(texture_ref<TexelT, ElementType, 1> const& 
 // tex2D - general case and specializations
 //
 
-template <typename TexelT, typename FloatT>
-inline TexelT tex2D(texture<TexelT, ElementType, 2> const& tex, vector<2, FloatT> coord)
+template <typename Tex, typename FloatT>
+inline typename Tex::value_type tex2D(Tex const& tex, vector<2, FloatT> coord)
 {
 
+    static_assert(Tex::dimensions == 2, "Incompatible texture type");
+
     // general case: return type equals texel type
-    typedef TexelT return_type;
+    typedef typename Tex::value_type return_type;
 
     return detail::tex2D<return_type>( tex, coord );
 
 }
 
 
-template <typename TexelT>
-inline vector<3, simd::float4> tex2D(texture<TexelT, ElementType, 2> const& tex, vector<2, simd::float4> coord)
+template <typename Tex>
+inline vector<3, simd::float4> tex2D(Tex const& tex, vector<2, simd::float4> coord)
 {
+
+    static_assert(Tex::dimensions == 2, "Incompatible texture type");
 
     // special case: lookup four texels at once and return as 32-bit float vector
     typedef vector<3, simd::float4> return_type;
@@ -80,21 +88,25 @@ inline vector<3, simd::float4> tex2D(texture<TexelT, ElementType, 2> const& tex,
 // tex3D - general case and specializations
 //
 
-template <typename TexelT, typename FloatT>
-inline TexelT tex3D(texture_ref<TexelT, ElementType, 3> const& tex, vector<3, FloatT> coord)
+template <typename Tex, typename FloatT>
+inline typename Tex::value_type tex3D(Tex const& tex, vector<3, FloatT> coord)
 {
 
+    static_assert(Tex::dimensions == 3, "Incompatible texture type");
+
     // general case: return type equals texel type
-    typedef TexelT return_type;
+    typedef typename Tex::value_type return_type;
 
     return detail::tex3D<return_type>( tex, coord );
 
 }
 
 
-template <typename TexelT>
-inline simd::float4 tex3D(texture_ref<TexelT, ElementType, 3> const& tex, vector<3, simd::float4> coord)
+template <typename Tex>
+inline simd::float4 tex3D(Tex const& tex, vector<3, simd::float4> coord)
 {
+
+    static_assert(Tex::dimensions == 3, "Incompatible texture type");
 
     // special case: lookup four texels at once and return as 32-bit float vector
     typedef simd::float4 return_type;

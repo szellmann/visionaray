@@ -265,9 +265,11 @@ inline ReturnT cubic(TexelT const* tex, vector<3, FloatT> coord, vector<3, Float
 }
 
 
-template<typename ReturnT, typename FloatT, typename TexelT>
-inline ReturnT tex3D(texture_ref<TexelT, ElementType, 3> const& tex, vector<3, FloatT> coord)
+template<typename ReturnT, typename Tex, typename FloatT>
+inline ReturnT tex3D(Tex const& tex, vector<3, FloatT> coord)
 {
+
+    static_assert(Tex::dimensions == 3, "Incompatible texture type");
 
     vector<3, FloatT> texsize( tex.width(), tex.height(), tex.depth() );
 

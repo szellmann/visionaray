@@ -112,9 +112,11 @@ inline ReturnT cubic(VoxelT const* tex, FloatT coord, FloatT texsize, W0 w0, W1 
 }
 
 
-template <typename ReturnT, typename FloatT, typename VoxelT>
-inline ReturnT tex1D(texture_ref<VoxelT, visionaray::ElementType, 1> const& tex, FloatT coord)
+template <typename ReturnT, typename Tex, typename FloatT>
+inline ReturnT tex1D(Tex const& tex, FloatT coord)
 {
+
+    static_assert(Tex::dimensions == 1, "Incompatible texture type");
 
     FloatT texsize = tex.width();
 

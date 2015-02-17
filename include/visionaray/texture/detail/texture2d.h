@@ -23,6 +23,8 @@ public:
     using base_type = Base;
     using value_type = T;
 
+    static const size_t dimensions = 2;
+
     texture_iface() = default;
 
     texture_iface(size_t w, size_t h)
