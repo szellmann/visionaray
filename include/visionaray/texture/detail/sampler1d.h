@@ -18,8 +18,8 @@ namespace detail
 {
 
 
-template <typename ReturnT, typename FloatT, typename VoxelT>
-inline ReturnT nearest(VoxelT const* tex, FloatT coord, FloatT texsize)
+template <typename ReturnT, typename FloatT, typename TexelT>
+inline ReturnT nearest(TexelT const* tex, FloatT coord, FloatT texsize)
 {
 
     FloatT lo = floor(coord * texsize);
@@ -29,8 +29,8 @@ inline ReturnT nearest(VoxelT const* tex, FloatT coord, FloatT texsize)
 }
 
 
-template <typename ReturnT, typename FloatT, typename VoxelT>
-inline ReturnT linear(VoxelT const* tex, FloatT coord, FloatT texsize)
+template <typename ReturnT, typename FloatT, typename TexelT>
+inline ReturnT linear(TexelT const* tex, FloatT coord, FloatT texsize)
 {
 
     FloatT texcoordf( coord * texsize - FloatT(0.5) );
@@ -55,8 +55,8 @@ inline ReturnT linear(VoxelT const* tex, FloatT coord, FloatT texsize)
 }
 
 
-template <typename ReturnT, typename FloatT, typename VoxelT>
-inline ReturnT cubic2(VoxelT const* tex, FloatT coord, FloatT texsize)
+template <typename ReturnT, typename FloatT, typename TexelT>
+inline ReturnT cubic2(TexelT const* tex, FloatT coord, FloatT texsize)
 {
 
     bspline::w0_func<FloatT> w0;
@@ -85,8 +85,8 @@ inline ReturnT cubic2(VoxelT const* tex, FloatT coord, FloatT texsize)
 }
 
 
-template <typename ReturnT, typename W0, typename W1, typename W2, typename W3, typename FloatT, typename VoxelT>
-inline ReturnT cubic(VoxelT const* tex, FloatT coord, FloatT texsize, W0 w0, W1 w1, W2 w2, W3 w3)
+template <typename ReturnT, typename W0, typename W1, typename W2, typename W3, typename FloatT, typename TexelT>
+inline ReturnT cubic(TexelT const* tex, FloatT coord, FloatT texsize, W0 w0, W1 w1, W2 w2, W3 w3)
 {
 
     FloatT x = coord * texsize - FloatT(0.5);
