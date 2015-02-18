@@ -49,12 +49,14 @@ hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end)
 
 
 template <typename R, typename P>
+VSNRAY_FUNC
 hit_record<R, primitive<unsigned>> any_hit(R const& r, P begin, P end)
 {
     return detail::traverse<true>(r, begin, end);
 }
 
 template <typename R, typename P>
+VSNRAY_FUNC
 hit_record<R, primitive<unsigned>> closest_hit(R const& r, P begin, P end)
 {
     return detail::traverse<false>(r, begin, end);
