@@ -190,7 +190,6 @@ public:
         : primitives_(count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
     {
-        assert(count != 0);
     }
 
     template <typename PV, typename NV>
@@ -245,7 +244,6 @@ public:
         , nodes_(count == 0 ? 0 : 2 * count - 1)
         , indices_(count)
     {
-        assert(count != 0);
     }
 
     template <typename PV, typename NV, typename IV>
