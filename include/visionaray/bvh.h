@@ -103,14 +103,18 @@ public:
 
     VSNRAY_FUNC P& primitive(size_t index) const
     {
+#if !defined(__CUDA_ARCH__)// || defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
         assert(index < num_primitives());
+#endif
 
         return primitives_first[index];
     }
 
     VSNRAY_FUNC N& node(size_t index) const
     {
+#if !defined(__CUDA_ARCH__)// || defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
         assert(index < num_nodes());
+#endif
 
         return nodes_first[index];
     }
@@ -149,18 +153,24 @@ public:
 
     VSNRAY_FUNC P& primitive(size_t indirect_index) const
     {
+#if !defined(__CUDA_ARCH__)// || defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
         assert(indirect_index < indices_last - indices_first);
+#endif
 
         auto index = indices_first[indirect_index];
 
+#if !defined(__CUDA_ARCH__)// || defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
         assert(index < num_primitives());
+#endif
 
         return primitives_first[index];
     }
 
     VSNRAY_FUNC N& node(size_t index) const
     {
+#if !defined(__CUDA_ARCH__)// || defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
         assert(index < num_nodes());
+#endif
 
         return nodes_first[index];
     }
