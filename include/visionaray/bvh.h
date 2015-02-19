@@ -73,7 +73,7 @@ inline bool is_leaf(bvh_node const& node)
 }
 
 //--------------------------------------------------------------------------------------------------
-// [indexed_]bvh_ref_t
+// [index_]bvh_ref_t
 //
 
 template <typename PrimitiveType>
@@ -122,7 +122,7 @@ public:
 };
 
 template <typename PrimitiveType>
-class indexed_bvh_ref_t
+class index_bvh_ref_t
 {
 
     using P = const PrimitiveType;
@@ -138,7 +138,7 @@ class indexed_bvh_ref_t
 
 public:
 
-    indexed_bvh_ref_t(P* p0, P* p1, N* n0, N* n1, I* i0, I* i1)
+    index_bvh_ref_t(P* p0, P* p1, N* n0, N* n1, I* i0, I* i1)
         : primitives_first(p0)
         , primitives_last(p1)
         , nodes_first(n0)
@@ -178,7 +178,7 @@ public:
 };
 
 //--------------------------------------------------------------------------------------------------
-// [indexed_]bvh_t
+// [index_]bvh_t
 //
 
 template <typename PrimitiveVector, typename NodeVector>
@@ -234,7 +234,7 @@ private:
 };
 
 template <typename PrimitiveVector, typename NodeVector, typename IndexVector>
-class indexed_bvh_t
+class index_bvh_t
 {
 public:
 
@@ -243,13 +243,13 @@ public:
     using node_vector       = NodeVector;
     using index_vector      = IndexVector;
 
-    using bvh_ref = indexed_bvh_ref_t<primitive_type>;
+    using bvh_ref = index_bvh_ref_t<primitive_type>;
 
 public:
 
-    indexed_bvh_t() = default;
+    index_bvh_t() = default;
 
-    explicit indexed_bvh_t(primitive_type const* prims, size_t count)
+    explicit index_bvh_t(primitive_type const* prims, size_t count)
         : primitives_(prims, prims + count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
         , indices_(count)
@@ -257,7 +257,7 @@ public:
     }
 
     template <typename PV, typename NV, typename IV>
-    explicit indexed_bvh_t(indexed_bvh_t<PV, NV, IV> const& rhs)
+    explicit index_bvh_t(index_bvh_t<PV, NV, IV> const& rhs)
         : primitives_(rhs.primitives())
         , nodes_(rhs.nodes())
         , indices_(rhs.indices())
@@ -296,11 +296,11 @@ private:
 };
 
 template <typename P> using bvh                 = bvh_t<aligned_vector<P>, aligned_vector<bvh_node>>;
-template <typename P> using indexed_bvh         = indexed_bvh_t<aligned_vector<P>, aligned_vector<bvh_node>, aligned_vector<unsigned>>;
+template <typename P> using index_bvh           = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node>, aligned_vector<unsigned>>;
 
 #ifdef __CUDACC__
 template <typename P> using device_bvh          = bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>>;
-template <typename P> using indexed_device_bvh  = indexed_bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>, thrust::device_vector<unsigned>>;
+template <typename P> using device_index_bvh    = index_bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>, thrust::device_vector<unsigned>>;
 #endif
 
 //-------------------------------------------------------------------------------------------------
@@ -311,7 +311,7 @@ template <typename P /* primitive type */>
 bvh<P> build(P const* primitives, size_t num_prims, bvh_tag);
 
 template <typename P>
-indexed_bvh<P> build(P const* primitives, size_t num_prims, indexed_bvh_tag);
+index_bvh<P> build(P const* primitives, size_t num_prims, index_bvh_tag);
 
 template <typename P>
 auto build(P const* primitives, size_t num_prims)

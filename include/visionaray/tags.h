@@ -15,7 +15,7 @@ namespace visionaray
 {
 
 struct bvh_tag {};
-struct indexed_bvh_tag {};
+struct index_bvh_tag {};
 
 }
 

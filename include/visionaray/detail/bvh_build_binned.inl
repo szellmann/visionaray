@@ -183,7 +183,7 @@ struct prim_data
 //
 
 template <typename P>
-void finalize_build(indexed_bvh<P>& b, prim_data const* ptr, P const* primitives, size_t num_prims)
+void finalize_build(index_bvh<P>& b, prim_data const* ptr, P const* primitives, size_t num_prims)
 {
     VSNRAY_UNUSED(primitives);
 
@@ -389,9 +389,9 @@ bvh<P> build(P const* primitives, size_t num_prims, bvh_tag)
 }
 
 template <typename P>
-indexed_bvh<P> build(P const* primitives, size_t num_prims, indexed_bvh_tag)
+index_bvh<P> build(P const* primitives, size_t num_prims, index_bvh_tag)
 {
-    return detail::build<indexed_bvh<P>>(primitives, num_prims);
+    return detail::build<index_bvh<P>>(primitives, num_prims);
 }
 
 } // visionaray
