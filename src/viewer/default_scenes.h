@@ -35,7 +35,6 @@ generic_prim_scene default_generic_prim_scene()
 
     typedef basic_sphere<float>         sphere_type;
     typedef triangle_list::value_type   triangle_type;
-    typedef normal_list::value_type     normal_type;
 
     generic_prim_list primitives(N);
     normal_list normals(N);
@@ -168,9 +167,6 @@ generic_prim_scene default_generic_prim_scene()
 triangle_scene default_triangle_scene()
 {
     static const size_t N = 12;
-
-    typedef triangle_list::value_type   triangle_type;
-    typedef normal_list::value_type     normal_type;
 
     triangle_list triangles(N);
     normal_list normals(N);

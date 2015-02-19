@@ -369,7 +369,6 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
     VSNRAY_UNUSED(frame);
 
     typedef typename R::scalar_type     scalar_type;
-    typedef C                           color_type;
     typedef vector<4, scalar_type>      vec4_type;
 
     auto gen    = sampler_gen<sampler, scalar_type>();
@@ -390,7 +389,6 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
     C* color_buffer, K kernel, pixel_sampler::jittered_blend_type, Args const&... args)
 {
     typedef typename R::scalar_type     scalar_type;
-    typedef C                           color_type;
     typedef vector<4, scalar_type>      vec4_type;
 
     auto gen    = sampler_gen<sampler, scalar_type>(tic());
@@ -417,7 +415,6 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame_begin, unsigned 
     C* color_buffer, K kernel, pixel_sampler::jittered_blend_type, Args const&... args)
 {
     typedef typename R::scalar_type     scalar_type;
-    typedef C                           color_type;
     typedef vector<4, scalar_type>      vec4_type;
 
     auto gen = sampler_gen<sampler, scalar_type>(tic());

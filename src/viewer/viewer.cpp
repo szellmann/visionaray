@@ -421,7 +421,6 @@ void display_func()
     else if (config.dev_type == configuration::CPU)
     {
 #ifndef __CUDA_ARCH__
-        typedef vector<4, float> color_type;
 
         std::vector<renderer::host_bvh_type::bvh_ref> host_primitives;
 

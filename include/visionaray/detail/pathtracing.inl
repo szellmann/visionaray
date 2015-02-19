@@ -32,7 +32,6 @@ struct kernel
     VSNRAY_FUNC C operator()(R ray, S<typename R::scalar_type>& s) const
     {
 
-        typedef R ray_type;
         typedef typename R::scalar_type scalar_type;
         typedef typename R::vec_type vec_type;
 
