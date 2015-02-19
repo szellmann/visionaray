@@ -214,7 +214,7 @@ inline unsigned hash(unsigned a)
 VSNRAY_FUNC
 inline unsigned tic()
 {
-#ifdef __CUDA_ARCH__
+#if defined(__CUDA_ARCH__)
     return clock64();
 #else
     auto t = std::chrono::high_resolution_clock::now();
@@ -233,11 +233,16 @@ public:
     VSNRAY_FUNC sampler_gen() {}
     VSNRAY_FUNC sampler_gen(unsigned seed) : seed_(seed) {}
 
-    template <typename V>
-    VSNRAY_FUNC
-    inline S<float> operator()(unsigned x, unsigned y, V const& viewport)
+    VSNRAY_FUNC S<float> operator()() const
     {
-        return S<float>( hash(seed_ + y * static_cast<unsigned>(viewport.w) + x) );
+#if defined(__CUDA_ARCH__)
+        unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
+        unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
+        unsigned w = blockDim.x * gridDim.x;
+        return S<float>( hash(seed_ + y * w + x) );
+#else
+        return S<float>(seed_);
+#endif
     }
 
 private:
@@ -254,9 +259,7 @@ public:
     sampler_gen() = default;
     sampler_gen(unsigned seed) : seed_(seed) {}
 
-    template <typename V>
-    VSNRAY_CPU_FUNC
-    inline S<simd::float4> operator()(unsigned x, unsigned y, V const& viewport)
+    VSNRAY_CPU_FUNC S<simd::float4> operator()() const
     {
         return S<simd::float4>(seed_);
     }
@@ -372,7 +375,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
     typedef vector<4, scalar_type>      vec4_type;
 
     auto gen    = sampler_gen<sampler, scalar_type>();
-    auto s      = gen(x, y, viewport);
+    auto s      = gen();
     auto r = jittered_ray_gen<R>(x, y, s, viewport, args...);
     auto color = kernel(r, s);
     color_access<CT, vec4_type>::store(x, y, viewport, color, color_buffer);
@@ -392,7 +395,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
     typedef vector<4, scalar_type>      vec4_type;
 
     auto gen    = sampler_gen<sampler, scalar_type>(tic());
-    auto s      = gen(x, y, viewport);
+    auto s      = gen();
     auto r = jittered_ray_gen<R>(x, y, s, viewport, args...);
     auto color = kernel(r, s);
     auto alpha = scalar_type(1.0) / scalar_type(frame);
@@ -418,7 +421,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame_begin, unsigned 
     typedef vector<4, scalar_type>      vec4_type;
 
     auto gen = sampler_gen<sampler, scalar_type>(tic());
-    auto s   = gen(x, y, viewport);
+    auto s   = gen();
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
