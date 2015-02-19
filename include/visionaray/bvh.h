@@ -249,8 +249,8 @@ public:
 
     indexed_bvh_t() = default;
 
-    explicit indexed_bvh_t(primitive_type const* /*prims*/, size_t count)
-        : primitives_(count)
+    explicit indexed_bvh_t(primitive_type const* prims, size_t count)
+        : primitives_(prims, prims + count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
         , indices_(count)
     {
