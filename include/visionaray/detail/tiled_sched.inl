@@ -35,8 +35,7 @@ inline int div_up(int a, int b)
 struct sync_params
 {
     sync_params()
-        : render_loop_active(false)
-        , render_loop_exit(false)
+        : render_loop_exit(false)
     {
     }
 
@@ -48,7 +47,6 @@ struct sync_params
     std::atomic<long>       tile_fin_counter;
     std::atomic<long>       tile_num;
 
-    std::atomic<bool>       render_loop_active;
     std::atomic<bool>       render_loop_exit;
 };
 
@@ -164,7 +162,6 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     sparams.tile_num = numtilesx * numtilesy;
 
     // render frame
-    sparams.render_loop_active = true;
     sparams.start_render.notify_all();
 
     sparams.image_ready.wait();
@@ -181,11 +178,7 @@ void tiled_sched<R>::render_loop()
 
         {
             std::unique_lock<std::mutex> l( sparams.mutex );
-
-            while (!sparams.render_loop_active)
-            {
-                sparams.start_render.wait(l);
-            }
+            sparams.start_render.wait(l);
         }
 
         // the actual render loop
