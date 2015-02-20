@@ -6,12 +6,6 @@
 #include <functional>
 #include <thread>
 
-#ifndef NDEBUG
-#include <iostream>
-#include <ostream>
-#include <sstream>
-#endif
-
 #include <visionaray/math/math.h>
 
 #include "macros.h"
@@ -40,8 +34,8 @@ struct sync_params
     }
 
     std::mutex mutex;
-    std::condition_variable start_render;
-    visionaray::semaphore   image_ready;
+    std::condition_variable threads_start;
+    visionaray::semaphore   threads_ready;
 
     std::atomic<long>       tile_idx_counter;
     std::atomic<long>       tile_fin_counter;
@@ -83,6 +77,7 @@ template <typename R>
 tiled_sched<R>::~tiled_sched()
 {
     impl_->sync_params.render_loop_exit = true;
+    impl_->sync_params.threads_start.notify_all();
 
     for (auto& t : impl_->threads)
     {
@@ -162,9 +157,9 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     sparams.tile_num = numtilesx * numtilesy;
 
     // render frame
-    sparams.start_render.notify_all();
+    sparams.threads_start.notify_all();
 
-    sparams.image_ready.wait();
+    sparams.threads_ready.wait();
 
     sched_params.rt.end_frame();
 }
@@ -174,14 +169,20 @@ void tiled_sched<R>::render_loop()
 {
     for (;;)
     {
-        auto&       sparams = impl_->sync_params;
+        auto& sparams = impl_->sync_params;
 
         {
             std::unique_lock<std::mutex> l( sparams.mutex );
-            sparams.start_render.wait(l);
+            sparams.threads_start.wait(l);
         }
 
-        // the actual render loop
+    // case event.exit:
+        if (sparams.render_loop_exit)
+        {
+            break;
+        }
+
+    // case event.render:
         for (;;)
         {
             auto tile_idx = sparams.tile_idx_counter.fetch_add(1);
@@ -194,7 +195,7 @@ void tiled_sched<R>::render_loop()
             auto w = impl_->viewport.w;
             auto tilew = detail::tile_width;
             auto tileh = detail::tile_height;
-            auto numtilesx = detail::div_up( w, tilew);
+            auto numtilesx = detail::div_up( w, tilew );
 
             recti tile
             (
@@ -211,24 +212,11 @@ void tiled_sched<R>::render_loop()
             if (num_tiles_fin >= sparams.tile_num - 1)
             {
                 assert(num_tiles_fin == sparams.tile_num - 1);
-                sparams.image_ready.notify();
+                sparams.threads_ready.notify();
                 break;
             }
         }
-
-        if (sparams.render_loop_exit)
-        {
-#ifndef NDEBUG
-            std::stringstream str;
-            str << "Bye bye\n";
-            std::cerr << str.str() << std::endl;
-#endif
-            break;
-        }
-
     }
 }
 
 } // visionaray
-
-
