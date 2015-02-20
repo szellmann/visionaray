@@ -695,7 +695,7 @@ int main(int argc, char** argv)
     std::cout << "Creating BVH...\n";
 
     // Create the BVH on the host
-    rend->host_bvh = build(rend->scene.primitives.data(), rend->scene.primitives.size());
+    rend->host_bvh = build<renderer::host_bvh_type>(rend->scene.primitives.data(), rend->scene.primitives.size());
 
     std::cout << "Ready\n";
 

@@ -186,6 +186,8 @@ class bvh_t
 {
 public:
 
+    using tag_type = bvh_tag;
+
     using primitive_type    = typename PrimitiveVector::value_type;
     using primitive_vector  = PrimitiveVector;
     using node_vector       = NodeVector;
@@ -196,7 +198,8 @@ public:
 
     bvh_t() = default;
 
-    explicit bvh_t(primitive_type const* /*prims*/, size_t count)
+    template <class P>
+    explicit bvh_t(P* /*prims*/, size_t count)
         : primitives_(count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
     {
@@ -238,6 +241,8 @@ class index_bvh_t
 {
 public:
 
+    using tag_type = index_bvh_tag;
+
     using primitive_type    = typename PrimitiveVector::value_type;
     using primitive_vector  = PrimitiveVector;
     using node_vector       = NodeVector;
@@ -249,7 +254,8 @@ public:
 
     index_bvh_t() = default;
 
-    explicit index_bvh_t(primitive_type const* prims, size_t count)
+    template <class P>
+    explicit index_bvh_t(P* prims, size_t count)
         : primitives_(prims, prims + count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
         , indices_(count)
@@ -307,18 +313,8 @@ template <typename P> using device_index_bvh    = index_bvh_t<thrust::device_vec
 //
 //
 
-template <typename P /* primitive type */>
-bvh<P> build(P const* primitives, size_t num_prims, bvh_tag);
-
-template <typename P>
-index_bvh<P> build(P const* primitives, size_t num_prims, index_bvh_tag);
-
-template <typename P>
-auto build(P const* primitives, size_t num_prims)
-    -> decltype( build(primitives, num_prims, bvh_tag()) )
-{
-    return build(primitives, num_prims, bvh_tag());
-}
+template <typename BvhType, typename P>
+BvhType build(P* primitives, size_t num_prims);
 
 template <typename T, typename B>
 VSNRAY_FUNC

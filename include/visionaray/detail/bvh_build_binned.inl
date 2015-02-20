@@ -182,8 +182,8 @@ struct prim_data
 //
 //
 
-template <typename P>
-void finalize_build(index_bvh<P>& b, prim_data const* ptr, P const* primitives, size_t num_prims)
+template <typename BvhType, typename P>
+void finalize_build(BvhType& b, prim_data const* ptr, P const* primitives, size_t num_prims, index_bvh_tag)
 {
     VSNRAY_UNUSED(primitives);
 
@@ -193,8 +193,8 @@ void finalize_build(index_bvh<P>& b, prim_data const* ptr, P const* primitives, 
     }
 }
 
-template <typename P>
-void finalize_build(bvh<P>& b, prim_data const* ptr, P const* primitives, size_t num_prims)
+template <typename BvhType, typename P>
+void finalize_build(BvhType& b, prim_data const* ptr, P const* primitives, size_t num_prims, bvh_tag)
 {
     for (size_t i = 0; i < num_prims; ++i)
     {
@@ -204,7 +204,7 @@ void finalize_build(bvh<P>& b, prim_data const* ptr, P const* primitives, size_t
 
 
 template <typename B, typename P>
-B build(P const* primitives, size_t num_prims)
+B build(P* primitives, size_t num_prims)
 {
 
     B result(primitives, num_prims);
@@ -374,7 +374,7 @@ B build(P const* primitives, size_t num_prims)
         }
     }
 
-    finalize_build(result, ptr, primitives, num_prims);
+    finalize_build(result, ptr, primitives, num_prims, typename B::tag_type());
 
     return result;
 
@@ -382,16 +382,10 @@ B build(P const* primitives, size_t num_prims)
 
 } // detail
 
-template <typename P>
-bvh<P> build(P const* primitives, size_t num_prims, bvh_tag)
+template <typename BvhType, typename P>
+BvhType build(P* primitives, size_t num_prims)
 {
-    return detail::build<bvh<P>>(primitives, num_prims);
-}
-
-template <typename P>
-index_bvh<P> build(P const* primitives, size_t num_prims, index_bvh_tag)
-{
-    return detail::build<index_bvh<P>>(primitives, num_prims);
+    return detail::build<BvhType>(primitives, num_prims);
 }
 
 } // visionaray
