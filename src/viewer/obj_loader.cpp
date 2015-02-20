@@ -14,12 +14,31 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/fusion/include/adapt_struct.hpp>
+#include <boost/spirit/include/qi.hpp>
 
 #include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
 
 #include "image.h"
 #include "obj_loader.h"
+
+namespace qi = boost::spirit::qi;
+
+BOOST_FUSION_ADAPT_STRUCT
+(
+    visionaray::vec2,
+    (float, x)
+    (float, y)
+)
+
+BOOST_FUSION_ADAPT_STRUCT
+(
+    visionaray::vec3,
+    (float, x)
+    (float, y)
+    (float, z)
+)
 
 
 namespace visionaray
@@ -226,22 +245,20 @@ detail::obj_scene load_obj(std::string const& filename)
         }
 
 
-        if (identifier == "v")
+        vec3 v;
+        vec3 n;
+        vec2 t;
+
+        if ( qi::phrase_parse(line.begin(), line.end(), "v" >> qi::float_ >> qi::float_ >> qi::float_, qi::space, v) )
         {
-            vec3 v;
-            str >> v[0] >> std::ws >> v[1] >> std::ws >> v[2] >> std::ws;
             vertices.push_back(v);
         }
-        else if (identifier == "vn")
+        else if ( qi::phrase_parse(line.begin(), line.end(), "vn" >> qi::float_ >> qi::float_ >> qi::float_, qi::space, v) )
         {
-            vec3 n;
-            str >> n[0] >> std::ws >> n[1] >> std::ws >> n[2] >> std::ws;
             result.normals.push_back(n);
         }
-        else if (identifier == "vt")
+        else if ( qi::phrase_parse(line.begin(), line.end(), "vt" >> qi::float_ >> qi::float_, qi::space, t) )
         {
-            vec2 t;
-            str >> t[0] >> std::ws >> t[1] >> std::ws;
             tex_coords.push_back(t);
         }
         else if (identifier == "f")
