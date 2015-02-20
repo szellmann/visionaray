@@ -253,7 +253,7 @@ detail::obj_scene load_obj(std::string const& filename)
         {
             vertices.push_back(v);
         }
-        else if ( qi::phrase_parse(line.begin(), line.end(), "vn" >> qi::float_ >> qi::float_ >> qi::float_, qi::space, v) )
+        else if ( qi::phrase_parse(line.begin(), line.end(), "vn" >> qi::float_ >> qi::float_ >> qi::float_, qi::space, n) )
         {
             result.normals.push_back(n);
         }
