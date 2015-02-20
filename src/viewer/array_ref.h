@@ -1,6 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#ifndef VSNRAY_ARRAY_REF_H
+#define VSNRAY_ARRAY_REF_H
+
 #pragma once
 
 #include <cassert>
@@ -19,34 +22,38 @@ template <class T>
 class array_ref
 {
 public:
+
     using value_type    = T;
     using reference     = value_type&;
     using pointer       = value_type*;
     using iterator      = value_type*;
 
 private:
+
     // The array data - an external buffer
-    pointer Data;
+    pointer data_;
     // The length of the array
-    size_t Length;
+    size_t len_;
 
 public:
+
     enum : size_t { npos = static_cast<size_t>(-1) };
 
 public:
+
     // Construct an empty array_ref.
     array_ref()
-        : Data(nullptr)
-        , Length(0)
+        : data_(nullptr)
+        , len_(0)
     {
     }
 
     // Construct a array_ref from a pointer and a length.
-    array_ref(pointer Data, size_t Length)
-        : Data(Data)
-        , Length(Length)
+    array_ref(pointer data, size_t len)
+        : data_(data)
+        , len_(len)
     {
-        assert((Data || Length == 0) && "constructing from a nullptr and a non-zero length");
+        assert((data_ || len_ == 0) && "constructing from a nullptr and a non-zero length");
     }
 
     // Construct from two iterators
@@ -57,27 +64,32 @@ public:
     }
 
     // Returns a pointer to the start of the array.
-    pointer data() const {
-        return Data;
+    pointer data() const
+    {
+        return data_;
     }
 
     // Returns the length of the array.
-    size_t size() const {
-        return Length;
+    size_t size() const
+    {
+        return len_;
     }
 
     // Returns whether this array is null or empty.
-    bool empty() const {
+    bool empty() const
+    {
         return size() == 0;
     }
 
     // Returns an iterator to the first element of the array.
-    iterator begin() const {
+    iterator begin() const
+    {
         return data();
     }
 
     // Returns an iterator to one element past the last element of the array.
-    iterator end() const {
+    iterator end() const
+    {
         return data() + size();
     }
 
@@ -131,18 +143,21 @@ public:
     }
 
     // Returns the subarray [First, Last).
-    array_ref slice(size_t First, size_t Last = npos) const {
+    array_ref slice(size_t First, size_t Last = npos) const
+    {
         return front(Last).drop_front(First);
     }
 
     // Returns whether this array is equal to another.
-    bool equals(array_ref RHS) const {
-        return size() == RHS.size() && std::equal(begin(), end(), RHS.begin());
+    bool equals(array_ref rhs) const
+    {
+        return size() == rhs.size() && std::equal(begin(), end(), rhs.begin());
     }
 
     // Lexicographically compare this array with another.
-    bool less(array_ref RHS) const {
-        return std::lexicographical_compare(begin(), end(), RHS.begin(), RHS.end());
+    bool less(array_ref rhs) const
+    {
+        return std::lexicographical_compare(begin(), end(), rhs.begin(), rhs.end());
     }
 
     // Convert to a std::vector
@@ -163,38 +178,47 @@ public:
 template <class T>
 using const_array_ref = array_ref<typename std::add_const<T>::type>;
 
+
 //--------------------------------------------------------------------------------------------------
 // Comparisons
 //
 
 template <class T>
-inline bool operator ==(array_ref<T> LHS, array_ref<T> RHS) {
-    return LHS.equals(RHS);
+inline bool operator ==(array_ref<T> lhs, array_ref<T> rhs)
+{
+    return lhs.equals(rhs);
 }
 
 template <class T>
-inline bool operator !=(array_ref<T> LHS, array_ref<T> RHS) {
-    return !(LHS == RHS);
+inline bool operator !=(array_ref<T> lhs, array_ref<T> rhs)
+{
+    return !(lhs == rhs);
 }
 
 template <class T>
-inline bool operator <(array_ref<T> LHS, array_ref<T> RHS) {
-    return LHS.less(RHS);
+inline bool operator <(array_ref<T> lhs, array_ref<T> rhs)
+{
+    return lhs.less(rhs);
 }
 
 template <class T>
-inline bool operator <=(array_ref<T> LHS, array_ref<T> RHS) {
-    return !(RHS < LHS);
+inline bool operator <=(array_ref<T> lhs, array_ref<T> rhs)
+{
+    return !(rhs < lhs);
 }
 
 template <class T>
-inline bool operator >(array_ref<T> LHS, array_ref<T> RHS) {
-    return RHS < LHS;
+inline bool operator >(array_ref<T> lhs, array_ref<T> rhs)
+{
+    return rhs < lhs;
 }
 
 template <class T>
-inline bool operator >=(array_ref<T> LHS, array_ref<T> RHS) {
-    return !(LHS < RHS);
+inline bool operator >=(array_ref<T> lhs, array_ref<T> rhs)
+{
+    return !(lhs < rhs);
 }
 
-} // namespace visionaray
+} // visionaray
+
+#endif // VSNRAY_ARRAY_REF_H
