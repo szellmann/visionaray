@@ -166,7 +166,6 @@ detail::obj_scene load_obj(std::string const& filename)
 
     std::ifstream ifstr(filename.c_str(), std::ifstream::in);
 
-    unsigned prim_id = 0;
     unsigned geom_id = 0;
 
     using namespace detail;
@@ -200,13 +199,12 @@ detail::obj_scene load_obj(std::string const& filename)
     auto store_triangle = [&](int i1, int i2, int i3)
     {
         triangle_type tri;
-        tri.prim_id = prim_id;
+        tri.prim_id = static_cast<unsigned>(result.primitives.size());
         tri.geom_id = geom_id;
         tri.v1 = vertices[i1];
         tri.e1 = vertices[i2] - tri.v1;
         tri.e2 = vertices[i3] - tri.v1;
         result.primitives.push_back(tri);
-        ++prim_id;
     };
 
     auto store_faces = [&](int vertices_size, int tex_coords_size, int normals_size)
