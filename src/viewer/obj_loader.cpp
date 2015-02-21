@@ -13,10 +13,12 @@
 #include <utility>
 
 #include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/spirit/include/qi.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/optional.hpp>
 
+#include <visionaray/detail/macros.h>
 #include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
 
@@ -24,6 +26,34 @@
 #include "obj_loader.h"
 
 namespace qi = boost::spirit::qi;
+
+
+//-------------------------------------------------------------------------------------------------
+// boost::fusion-adapt some structs for parsing
+//
+
+namespace visionaray
+{
+namespace detail
+{
+
+struct face_index_t
+{
+    int vertex_index;
+    boost::optional<int> tex_coord_index;
+    boost::optional<int> normal_index;
+};
+
+} // detail
+} // visionaray
+
+BOOST_FUSION_ADAPT_STRUCT
+(
+    visionaray::detail::face_index_t,
+    (int, vertex_index)
+    (boost::optional<int>, tex_coord_index)
+    (boost::optional<int>, normal_index)
+)
 
 BOOST_FUSION_ADAPT_STRUCT
 (
@@ -72,23 +102,6 @@ aabb bounds(detail::triangle_list const& tris)
     return result;
 }
 
-
-std::pair<triangle_type, triangle_type> tesselate_quad(vec3 v1, vec3 v2, vec3 v3, vec3 v4)
-{
-
-    triangle_type t1;
-    t1.v1 = v1;
-    t1.e1 = v2 - t1.v1;
-    t1.e2 = v3 - t1.v1;
-
-    triangle_type t2;
-    t2.v1 = v3;
-    t2.e1 = v4 - t2.v1;
-    t2.e2 = v1 - t2.v1;
-
-    return std::make_pair(t1, t2);
-
-}
 
 } // detail
 
@@ -158,51 +171,126 @@ detail::obj_scene load_obj(std::string const& filename)
 
     using namespace detail;
     obj_scene result;
-    std::vector<vec3> vertices;
-    std::vector<vec2> tex_coords;
+
+    aligned_vector<vec3> vertices;
+    aligned_vector<vec2> tex_coords;
+    aligned_vector<vec3> normals;
+
+    using face_vector = aligned_vector<face_index_t>;
+
+
+    // intermediate containers
+
+    vec3 v;
+    vec2 vt;
+    vec3 vn;
+    face_vector faces;
+    std::string comment;
+    std::string mtl_file;
+    std::string mtl_name;
+
+
+    // helper functions
+
+    auto remap_index = [](int idx, int size) -> int
+    {
+        return idx < 0 ? static_cast<int>(size) + idx : idx - 1;
+    };
+
+    auto store_triangle = [&](int i1, int i2, int i3)
+    {
+        triangle_type tri;
+        tri.prim_id = prim_id;
+        tri.geom_id = geom_id;
+        tri.v1 = vertices[i1];
+        tri.e1 = vertices[i2] - tri.v1;
+        tri.e2 = vertices[i3] - tri.v1;
+        result.primitives.push_back(tri);
+        ++prim_id;
+    };
+
+    auto store_faces = [&](int vertices_size, int tex_coords_size, int normals_size)
+    {
+        size_t last = 2;
+        auto i1 = remap_index(faces[0].vertex_index, vertices_size);
+
+        while (last != faces.size())
+        {
+            // triangle
+            auto i2 = remap_index(faces[last - 1].vertex_index, vertices_size);
+            auto i3 = remap_index(faces[last].vertex_index, vertices_size);
+            store_triangle(i1, i2, i3);
+
+            // texture coordinates
+            if (faces[0].tex_coord_index && faces[last - 1].tex_coord_index && faces[last].tex_coord_index)
+            {
+                auto ti1 = remap_index(*faces[0].tex_coord_index, tex_coords_size);
+                auto ti2 = remap_index(*faces[last - 1].tex_coord_index, tex_coords_size);
+                auto ti3 = remap_index(*faces[last].tex_coord_index, tex_coords_size);
+
+                result.tex_coords.push_back( tex_coords[ti1] );
+                result.tex_coords.push_back( tex_coords[ti2] );
+                result.tex_coords.push_back( tex_coords[ti3] );
+            }
+
+            // normals
+            if (faces[0].normal_index && faces[last - 1].normal_index && faces[last].normal_index)
+            {
+                auto ni1 = remap_index(*faces[0].normal_index, normals_size);
+                auto ni2 = remap_index(*faces[last - 1].normal_index, normals_size);
+                auto ni3 = remap_index(*faces[last].normal_index, normals_size);
+
+                result.normals.push_back( normals[ni1] );
+                result.normals.push_back( normals[ni2] );
+                result.normals.push_back( normals[ni3] );
+            }
+
+            ++last;
+        }
+    };
+
+
+    // obj grammar
+
+    using It = std::string::const_iterator;
+    using space_type = decltype(qi::space);
+
+    qi::rule<It, std::string()> r_comment               = "#" >> +qi::char_;
+    qi::rule<It, std::string(), space_type> r_mtllib    = "mtllib" >> +qi::char_;
+    qi::rule<It, std::string(), space_type> r_usemtl    = "usemtl" >> +qi::char_;
+
+    qi::rule<It, vec3(), space_type> r_v                = "v" >> qi::float_ >> qi::float_ >> qi::float_;
+    qi::rule<It, vec2(), space_type> r_vt               = "vt" >> qi::float_ >> qi::float_;
+    qi::rule<It, vec3(), space_type> r_vn               = "vn" >> qi::float_ >> qi::float_ >> qi::float_;
+
+    qi::rule<It, detail::face_index_t()> r_face_vertex  = qi::int_ >> -qi::lit("/") >> -qi::int_ >> -qi::lit("/") >> -qi::int_;
+    qi::rule<It, face_vector(), space_type> r_face      = "f" >> r_face_vertex >> r_face_vertex >> r_face_vertex >> *r_face_vertex;
+
 
     std::string line;
     while (ifstr.good() && !ifstr.eof() && std::getline(ifstr, line))
     {
+        faces.clear();
+        comment.clear();
+        mtl_file.clear();
+        mtl_name.clear();
 
-        // comments
-
-        if (line.length() > 0 && line[0] == '#')
+        if ( qi::phrase_parse(line.cbegin(), line.cend(), r_comment, qi::space, comment) )
         {
+            VSNRAY_UNUSED(comment);
             continue;
         }
-
-        // v, vn, vt, f, ...
-        std::string identifier;
-        std::istringstream str(line);
-        str >> identifier >> std::ws;
-
-
-        if (identifier.length() <= 0)
-        {
-            continue;
-        }
-
-
-        if (identifier == "mtllib")
+        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_mtllib, qi::space, mtl_file) )
         {
             boost::filesystem::path p(filename);
             std::string mtl_dir = p.parent_path().string();
-
-            std::string mtl_file;
-            str >> mtl_file >> std::ws;
 
             std::string mtl_path = mtl_dir + "/" + mtl_file;
 
             parse_mtl(mtl_path, &matlib);
         }
-
-
-        if (identifier == "usemtl")
+        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_usemtl, qi::space, mtl_name) )
         {
-            std::string mtl_name;
-            str >> mtl_name >> std::ws;
-
             auto mat_it = matlib.find(mtl_name);
             if (mat_it != matlib.end())
             {
@@ -243,126 +331,28 @@ detail::obj_scene load_obj(std::string const& filename)
             }
             geom_id = result.materials.size() == 0 ? 0 : static_cast<unsigned>(result.materials.size() - 1);
         }
-
-
-        vec3 v;
-        vec3 n;
-        vec2 t;
-
-        if ( qi::phrase_parse(line.begin(), line.end(), "v" >> qi::float_ >> qi::float_ >> qi::float_, qi::space, v) )
+        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_v, qi::space, v) )
         {
             vertices.push_back(v);
         }
-        else if ( qi::phrase_parse(line.begin(), line.end(), "vn" >> qi::float_ >> qi::float_ >> qi::float_, qi::space, n) )
+        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_vt, qi::space, vt) )
         {
-            result.normals.push_back(n);
+            tex_coords.push_back(vt);
         }
-        else if ( qi::phrase_parse(line.begin(), line.end(), "vt" >> qi::float_ >> qi::float_, qi::space, t) )
+        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_vn, qi::space, vn) )
         {
-            tex_coords.push_back(t);
+            normals.push_back(vn);
         }
-        else if (identifier == "f")
+        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_face, qi::space, faces) )
         {
-            int cnt = 0;
-            unsigned indices[4];
-            unsigned tc_indices[4];
-
-            bool has_tc = false;
-
-            while (!str.eof())
-            {
-                int i;
-                str >> i;
-
-                // indices are either 1-based or negative
-                if (i < 0)
-                {
-                    indices[cnt] = vertices.size() + i;
-                }
-                else
-                {
-                    indices[cnt] = i - 1;
-                }
-
-                if (str.get() == '/')
-                {
-                    if (str.peek() != '/')
-                    {
-                        has_tc = true;
-
-                        int ti;
-                        str >> ti;
-                        tc_indices[cnt] = ti - 1;
-                    }
-
-                    if (str.get() == '/')
-                    {
-                        int ni;
-                        str >> ni;
-                        // TODO: handle normal indices
-                    }
-                }
-
-                str >> std::ws;
-
-                if (++cnt > 4)
-                {
-                    throw std::exception();
-                    break;
-                }
-            }
-
-            if (cnt == 4)
-            {
-                auto tris = detail::tesselate_quad(vertices[indices[0]], vertices[indices[1]], vertices[indices[2]], vertices[indices[3]]);
-
-                tris.first.prim_id  = prim_id;
-                tris.first.geom_id  = geom_id;
-                ++prim_id;
-
-                tris.second.prim_id = prim_id;
-                tris.second.geom_id = geom_id;
-                ++prim_id;
-
-                result.primitives.push_back(tris.first);
-                result.primitives.push_back(tris.second);
-
-                if (has_tc)
-                {
-                    result.tex_coords.push_back(tex_coords[tc_indices[0]]);
-                    result.tex_coords.push_back(tex_coords[tc_indices[1]]);
-                    result.tex_coords.push_back(tex_coords[tc_indices[2]]);
-
-                    result.tex_coords.push_back(tex_coords[tc_indices[2]]);
-                    result.tex_coords.push_back(tex_coords[tc_indices[3]]);
-                    result.tex_coords.push_back(tex_coords[tc_indices[0]]);
-                }
-            }
-            else
-            {
-                triangle_type tri;
-                tri.prim_id = prim_id;
-                tri.geom_id = geom_id;
-                tri.v1 = vertices[indices[0]];
-                tri.e1 = vertices[indices[1]] - tri.v1;
-                tri.e2 = vertices[indices[2]] - tri.v1;
-                result.primitives.push_back(tri);
-                ++prim_id;
-
-                if (has_tc)
-                {
-                    result.tex_coords.push_back(tex_coords[tc_indices[0]]);
-                    result.tex_coords.push_back(tex_coords[tc_indices[1]]);
-                    result.tex_coords.push_back(tex_coords[tc_indices[2]]);
-                }
-            }
+            store_faces(static_cast<int>(vertices.size()), static_cast<int>(tex_coords.size()), static_cast<int>(normals.size()));
         }
     }
 
 // TODO
 
-    result.normals.resize(0);
-//    if (result.normals.size() == 0) // have no default normals
+    result.normals.resize(0); // TODO: support for vertex normals
+    if (result.normals.size() == 0) // have no default normals
     {
         for (auto const& tri : result.primitives)
         {
@@ -390,5 +380,3 @@ detail::obj_scene load_obj(std::string const& filename)
 }
 
 } // visionaray
-
-
