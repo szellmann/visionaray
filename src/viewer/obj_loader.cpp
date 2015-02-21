@@ -14,7 +14,9 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
+#include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
+#include <boost/utility/string_ref.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
 
@@ -69,6 +71,29 @@ BOOST_FUSION_ADAPT_STRUCT
     (float, y)
     (float, z)
 )
+
+
+using boost::string_ref;
+
+namespace boost
+{
+namespace spirit
+{
+namespace traits
+{
+
+template <typename Iterator, typename Enable>
+struct assign_to_attribute_from_iterators<string_ref, Iterator, Enable>
+{
+    static void call(Iterator const& first, Iterator const& last, string_ref& attr)
+    {
+        attr = { first, static_cast<size_t>(last - first) };
+    }
+};
+
+} // traits
+} // spirit
+}
 
 
 namespace visionaray
@@ -165,10 +190,12 @@ detail::obj_scene load_obj(std::string const& filename)
     std::map<std::string, mtl> matlib;
 
     std::ifstream ifstr(filename.c_str(), std::ifstream::in);
+    boost::iostreams::mapped_file_source file(filename);
 
     unsigned geom_id = 0;
 
     using namespace detail;
+
     obj_scene result;
 
     aligned_vector<vec3> vertices;
@@ -184,9 +211,9 @@ detail::obj_scene load_obj(std::string const& filename)
     vec2 vt;
     vec3 vn;
     face_vector faces;
-    std::string comment;
-    std::string mtl_file;
-    std::string mtl_name;
+    string_ref comment;
+    string_ref mtl_file;
+    string_ref mtl_name;
 
 
     // helper functions
@@ -250,46 +277,48 @@ detail::obj_scene load_obj(std::string const& filename)
 
     // obj grammar
 
-    using It = std::string::const_iterator;
-    using space_type = decltype(qi::space);
+    using It = string_ref::const_iterator;
+    using space_type = decltype(qi::blank);
 
-    qi::rule<It, std::string()> r_comment               = "#" >> +qi::char_;
-    qi::rule<It, std::string(), space_type> r_mtllib    = "mtllib" >> +qi::char_;
-    qi::rule<It, std::string(), space_type> r_usemtl    = "usemtl" >> +qi::char_;
+    qi::rule<It> r_unhandled                            = *(qi::char_ - qi::eol)                                                    >> qi::eol;
+    qi::rule<It, string_ref()> r_text_to_eol            = qi::raw[*(qi::char_ - qi::eol)];
 
-    qi::rule<It, vec3(), space_type> r_v                = "v" >> qi::float_ >> qi::float_ >> qi::float_;
-    qi::rule<It, vec2(), space_type> r_vt               = "vt" >> qi::float_ >> qi::float_;
-    qi::rule<It, vec3(), space_type> r_vn               = "vn" >> qi::float_ >> qi::float_ >> qi::float_;
+    qi::rule<It, string_ref()> r_comment                = "#" >> r_text_to_eol                                                      >> qi::eol;
+    qi::rule<It, string_ref(), space_type> r_mtllib     = "mtllib" >> r_text_to_eol                                                 >> qi::eol;
+    qi::rule<It, string_ref(), space_type> r_usemtl     = "usemtl" >> r_text_to_eol                                                 >> qi::eol;
+
+    qi::rule<It, vec3(), space_type> r_v                = "v" >> qi::float_ >> qi::float_ >> qi::float_                             >> qi::eol;
+    qi::rule<It, vec2(), space_type> r_vt               = "vt" >> qi::float_ >> qi::float_ >> -qi::float_                           >> qi::eol;// TODO: parse optional 3rd (w)
+    qi::rule<It, vec3(), space_type> r_vn               = "vn" >> qi::float_ >> qi::float_ >> qi::float_                            >> qi::eol;
 
     qi::rule<It, detail::face_index_t()> r_face_vertex  = qi::int_ >> -qi::lit("/") >> -qi::int_ >> -qi::lit("/") >> -qi::int_;
-    qi::rule<It, face_vector(), space_type> r_face      = "f" >> r_face_vertex >> r_face_vertex >> r_face_vertex >> *r_face_vertex;
+    qi::rule<It, face_vector(), space_type> r_face      = "f" >> r_face_vertex >> r_face_vertex >> r_face_vertex >> *r_face_vertex  >> qi::eol;
 
 
-    std::string line;
-    while (ifstr.good() && !ifstr.eof() && std::getline(ifstr, line))
+    string_ref text(file.data(), file.size());
+    auto it = text.cbegin();
+
+    while (it != text.cend())
     {
         faces.clear();
-        comment.clear();
-        mtl_file.clear();
-        mtl_name.clear();
 
-        if ( qi::phrase_parse(line.cbegin(), line.cend(), r_comment, qi::space, comment) )
+        if ( qi::phrase_parse(it, text.cend(), r_comment, qi::blank, comment) )
         {
             VSNRAY_UNUSED(comment);
             continue;
         }
-        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_mtllib, qi::space, mtl_file) )
+        else if ( qi::phrase_parse(it, text.cend(), r_mtllib, qi::blank, mtl_file) )
         {
             boost::filesystem::path p(filename);
             std::string mtl_dir = p.parent_path().string();
 
-            std::string mtl_path = mtl_dir + "/" + mtl_file;
+            std::string mtl_path = mtl_dir + "/" + std::string(mtl_file);
 
             parse_mtl(mtl_path, &matlib);
         }
-        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_usemtl, qi::space, mtl_name) )
+        else if ( qi::phrase_parse(it, text.cend(), r_usemtl, qi::blank, mtl_name) )
         {
-            auto mat_it = matlib.find(mtl_name);
+            auto mat_it = matlib.find(std::string(mtl_name));
             if (mat_it != matlib.end())
             {
                 phong<float> mat;
@@ -329,21 +358,25 @@ detail::obj_scene load_obj(std::string const& filename)
             }
             geom_id = result.materials.size() == 0 ? 0 : static_cast<unsigned>(result.materials.size() - 1);
         }
-        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_v, qi::space, v) )
+        else if ( qi::phrase_parse(it, text.cend(), r_v, qi::blank, v) )
         {
             vertices.push_back(v);
         }
-        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_vt, qi::space, vt) )
+        else if ( qi::phrase_parse(it, text.cend(), r_vt, qi::blank, vt) )
         {
             tex_coords.push_back(vt);
         }
-        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_vn, qi::space, vn) )
+        else if ( qi::phrase_parse(it, text.cend(), r_vn, qi::blank, vn) )
         {
             normals.push_back(vn);
         }
-        else if ( qi::phrase_parse(line.cbegin(), line.cend(), r_face, qi::space, faces) )
+        else if ( qi::phrase_parse(it, text.cend(), r_face, qi::blank, faces) )
         {
             store_faces(static_cast<int>(vertices.size()), static_cast<int>(tex_coords.size()), static_cast<int>(normals.size()));
+        }
+        else if ( qi::phrase_parse(it, text.cend(), r_unhandled, qi::blank) )
+        {
+            continue;
         }
     }
 
