@@ -287,8 +287,8 @@ detail::obj_scene load_obj(std::string const& filename)
     qi::rule<It, string_ref(), space_type> r_mtllib             = "mtllib" >> r_text_to_eol                                                 >> qi::eol;
     qi::rule<It, string_ref(), space_type> r_usemtl             = "usemtl" >> r_text_to_eol                                                 >> qi::eol;
 
-    qi::rule<It, vec3(), space_type> r_v                        = "v" >> qi::float_ >> qi::float_ >> qi::float_                             >> qi::eol;
-    qi::rule<It, vec2(), space_type> r_vt                       = "vt" >> qi::float_ >> qi::float_ >> -qi::float_                           >> qi::eol;// TODO: parse optional 3rd (w)
+    qi::rule<It, vec3(), space_type> r_v                        = "v" >> qi::float_ >> qi::float_ >> qi::float_ >> -qi::float_              >> qi::eol; // TODO: mind w
+    qi::rule<It, vec2(), space_type> r_vt                       = "vt" >> qi::float_ >> qi::float_ >> -qi::float_                           >> qi::eol; // TODO: mind w
     qi::rule<It, vec3(), space_type> r_vn                       = "vn" >> qi::float_ >> qi::float_ >> qi::float_                            >> qi::eol;
 
     qi::rule<It, vertex_vector(), space_type> r_vertices        = r_v >> *r_v;
