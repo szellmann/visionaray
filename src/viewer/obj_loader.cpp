@@ -198,19 +198,19 @@ detail::obj_scene load_obj(std::string const& filename)
 
     obj_scene result;
 
-    aligned_vector<vec3> vertices;
-    aligned_vector<vec2> tex_coords;
-    aligned_vector<vec3> normals;
+    using vertex_vector     = aligned_vector<vec3>;
+    using tex_coord_vector  = aligned_vector<vec2>;
+    using normal_vector     = aligned_vector<vec3>;
+    using face_vector       = aligned_vector<face_index_t>;
 
-    using face_vector = aligned_vector<face_index_t>;
+    vertex_vector       vertices;
+    tex_coord_vector    tex_coords;
+    normal_vector       normals;
+    face_vector         faces;
 
 
     // intermediate containers
 
-    vec3 v;
-    vec2 vt;
-    vec3 vn;
-    face_vector faces;
     string_ref comment;
     string_ref mtl_file;
     string_ref mtl_name;
@@ -280,19 +280,23 @@ detail::obj_scene load_obj(std::string const& filename)
     using It = string_ref::const_iterator;
     using space_type = decltype(qi::blank);
 
-    qi::rule<It> r_unhandled                            = *(qi::char_ - qi::eol)                                                    >> qi::eol;
-    qi::rule<It, string_ref()> r_text_to_eol            = qi::raw[*(qi::char_ - qi::eol)];
+    qi::rule<It> r_unhandled                                    = *(qi::char_ - qi::eol)                                                    >> qi::eol;
+    qi::rule<It, string_ref()> r_text_to_eol                    = qi::raw[*(qi::char_ - qi::eol)];
 
-    qi::rule<It, string_ref()> r_comment                = "#" >> r_text_to_eol                                                      >> qi::eol;
-    qi::rule<It, string_ref(), space_type> r_mtllib     = "mtllib" >> r_text_to_eol                                                 >> qi::eol;
-    qi::rule<It, string_ref(), space_type> r_usemtl     = "usemtl" >> r_text_to_eol                                                 >> qi::eol;
+    qi::rule<It, string_ref()> r_comment                        = "#" >> r_text_to_eol                                                      >> qi::eol;
+    qi::rule<It, string_ref(), space_type> r_mtllib             = "mtllib" >> r_text_to_eol                                                 >> qi::eol;
+    qi::rule<It, string_ref(), space_type> r_usemtl             = "usemtl" >> r_text_to_eol                                                 >> qi::eol;
 
-    qi::rule<It, vec3(), space_type> r_v                = "v" >> qi::float_ >> qi::float_ >> qi::float_                             >> qi::eol;
-    qi::rule<It, vec2(), space_type> r_vt               = "vt" >> qi::float_ >> qi::float_ >> -qi::float_                           >> qi::eol;// TODO: parse optional 3rd (w)
-    qi::rule<It, vec3(), space_type> r_vn               = "vn" >> qi::float_ >> qi::float_ >> qi::float_                            >> qi::eol;
+    qi::rule<It, vec3(), space_type> r_v                        = "v" >> qi::float_ >> qi::float_ >> qi::float_                             >> qi::eol;
+    qi::rule<It, vec2(), space_type> r_vt                       = "vt" >> qi::float_ >> qi::float_ >> -qi::float_                           >> qi::eol;// TODO: parse optional 3rd (w)
+    qi::rule<It, vec3(), space_type> r_vn                       = "vn" >> qi::float_ >> qi::float_ >> qi::float_                            >> qi::eol;
 
-    qi::rule<It, detail::face_index_t()> r_face_vertex  = qi::int_ >> -qi::lit("/") >> -qi::int_ >> -qi::lit("/") >> -qi::int_;
-    qi::rule<It, face_vector(), space_type> r_face      = "f" >> r_face_vertex >> r_face_vertex >> r_face_vertex >> *r_face_vertex  >> qi::eol;
+    qi::rule<It, vertex_vector(), space_type> r_vertices        = r_v >> *r_v;
+    qi::rule<It, tex_coord_vector(), space_type> r_tex_coords   = r_vt >> *r_vt;
+    qi::rule<It, normal_vector(), space_type> r_normals         = r_vn >> *r_vn;
+
+    qi::rule<It, detail::face_index_t()> r_face_vertex          = qi::int_ >> -qi::lit("/") >> -qi::int_ >> -qi::lit("/") >> -qi::int_;
+    qi::rule<It, face_vector(), space_type> r_face              = "f" >> r_face_vertex >> r_face_vertex >> r_face_vertex >> *r_face_vertex  >> qi::eol;
 
 
     string_ref text(file.data(), file.size());
@@ -358,17 +362,14 @@ detail::obj_scene load_obj(std::string const& filename)
             }
             geom_id = result.materials.size() == 0 ? 0 : static_cast<unsigned>(result.materials.size() - 1);
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_v, qi::blank, v) )
+        else if ( qi::phrase_parse(it, text.cend(), r_vertices, qi::blank, vertices) )
         {
-            vertices.push_back(v);
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_vt, qi::blank, vt) )
+        else if ( qi::phrase_parse(it, text.cend(), r_tex_coords, qi::blank, tex_coords) )
         {
-            tex_coords.push_back(vt);
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_vn, qi::blank, vn) )
+        else if ( qi::phrase_parse(it, text.cend(), r_normals, qi::blank, normals) )
         {
-            normals.push_back(vn);
         }
         else if ( qi::phrase_parse(it, text.cend(), r_face, qi::blank, faces) )
         {
