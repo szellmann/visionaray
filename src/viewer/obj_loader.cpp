@@ -2,13 +2,13 @@
 // See the LICENSE file for details.
 
 #include <algorithm>
+#include <cstddef>
 #include <cstring>
 #include <exception>
 #include <fstream>
 #include <iostream>
 #include <limits>
 #include <map>
-#include <memory>
 #include <sstream>
 #include <utility>
 
@@ -20,7 +20,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
 
-#include <visionaray/detail/macros.h>
 #include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
 
@@ -36,8 +35,6 @@ namespace qi = boost::spirit::qi;
 
 namespace visionaray
 {
-namespace detail
-{
 
 struct face_index_t
 {
@@ -46,12 +43,11 @@ struct face_index_t
     boost::optional<int> normal_index;
 };
 
-} // detail
 } // visionaray
 
 BOOST_FUSION_ADAPT_STRUCT
 (
-    visionaray::detail::face_index_t,
+    visionaray::face_index_t,
     (int, vertex_index)
     (boost::optional<int>, tex_coord_index)
     (boost::optional<int>, normal_index)
@@ -93,17 +89,94 @@ struct assign_to_attribute_from_iterators<string_ref, Iterator, Enable>
 
 } // traits
 } // spirit
-}
+} // boost
 
 
 namespace visionaray
 {
 
-typedef basic_triangle<3, float> triangle_type;
+using triangle_type     = basic_triangle<3, float>;
+using vertex_vector     = aligned_vector<vec3>;
+using tex_coord_vector  = aligned_vector<vec2>;
+using normal_vector     = aligned_vector<vec3>;
+using face_vector       = aligned_vector<face_index_t>;
 
-namespace detail
+
+//-------------------------------------------------------------------------------------------------
+// Map obj indices to unsigned base-0 indices
+//
+
+template <typename Int>
+Int remap_index(Int idx, Int size)
+{
+    return idx < 0 ? size + idx : idx - 1;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Store a triangle and assign visionaray-internal ids
+//
+
+void store_triangle(detail::obj_scene& result, vertex_vector const& vertices, int i1, int i2, int i3)
+{
+    triangle_type tri;
+    tri.prim_id = static_cast<unsigned>(result.primitives.size());
+    tri.geom_id = result.materials.size() == 0 ? 0 : static_cast<unsigned>(result.materials.size() - 1);
+    tri.v1 = vertices[i1];
+    tri.e1 = vertices[i2] - tri.v1;
+    tri.e2 = vertices[i3] - tri.v1;
+    result.primitives.push_back(tri);
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Store obj faces (i.e. triangle fans) in vertex|tex_coords|normals lists
+//
+
+void store_faces(detail::obj_scene& result, vertex_vector const& vertices,
+    tex_coord_vector const& tex_coords, normal_vector const& normals, face_vector const& faces)
 {
 
+    auto vertices_size = static_cast<int>(vertices.size());
+    size_t last = 2;
+    auto i1 = remap_index(faces[0].vertex_index, vertices_size);
+
+    while (last != faces.size())
+    {
+        // triangle
+        auto i2 = remap_index(faces[last - 1].vertex_index, vertices_size);
+        auto i3 = remap_index(faces[last].vertex_index, vertices_size);
+        store_triangle(result, vertices, i1, i2, i3);
+
+        // texture coordinates
+        if (faces[0].tex_coord_index && faces[last - 1].tex_coord_index && faces[last].tex_coord_index)
+        {
+            auto tex_coords_size = static_cast<int>(tex_coords.size());
+            auto ti1 = remap_index(*faces[0].tex_coord_index, tex_coords_size);
+            auto ti2 = remap_index(*faces[last - 1].tex_coord_index, tex_coords_size);
+            auto ti3 = remap_index(*faces[last].tex_coord_index, tex_coords_size);
+
+            result.tex_coords.push_back( tex_coords[ti1] );
+            result.tex_coords.push_back( tex_coords[ti2] );
+            result.tex_coords.push_back( tex_coords[ti3] );
+        }
+
+        // normals
+        if (faces[0].normal_index && faces[last - 1].normal_index && faces[last].normal_index)
+        {
+            auto normals_size = static_cast<int>(normals.size());
+            auto ni1 = remap_index(*faces[0].normal_index, normals_size);
+            auto ni2 = remap_index(*faces[last - 1].normal_index, normals_size);
+            auto ni3 = remap_index(*faces[last].normal_index, normals_size);
+
+            result.normals.push_back( normals[ni1] );
+            result.normals.push_back( normals[ni2] );
+            result.normals.push_back( normals[ni3] );
+        }
+
+        ++last;
+    }
+};
 
 //-------------------------------------------------------------------------------------------------
 // aabb of a list of triangles
@@ -127,8 +200,6 @@ aabb bounds(detail::triangle_list const& tris)
     return result;
 }
 
-
-} // detail
 
 struct mtl
 {
@@ -187,122 +258,54 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>* matlib)
 
 detail::obj_scene load_obj(std::string const& filename)
 {
+    detail::obj_scene result;
+
     std::map<std::string, mtl> matlib;
 
-    std::ifstream ifstr(filename.c_str(), std::ifstream::in);
     boost::iostreams::mapped_file_source file(filename);
 
-    unsigned geom_id = 0;
+    size_t geom_id = 0;
 
-    using namespace detail;
+    // obj grammar
 
-    obj_scene result;
+    using It = string_ref::const_iterator;
+    using skip_t = decltype(qi::blank);
 
-    using vertex_vector     = aligned_vector<vec3>;
-    using tex_coord_vector  = aligned_vector<vec2>;
-    using normal_vector     = aligned_vector<vec3>;
-    using face_vector       = aligned_vector<face_index_t>;
+    qi::rule<It> r_unhandled                                = *(qi::char_ - qi::eol)                                                    >> qi::eol;
+    qi::rule<It, string_ref()> r_text_to_eol                = qi::raw[*(qi::char_ - qi::eol)];
+
+    qi::rule<It, string_ref()> r_comment                    = "#" >> r_text_to_eol                                                      >> qi::eol;
+    qi::rule<It, string_ref(), skip_t> r_mtllib             = "mtllib" >> r_text_to_eol                                                 >> qi::eol;
+    qi::rule<It, string_ref(), skip_t> r_usemtl             = "usemtl" >> r_text_to_eol                                                 >> qi::eol;
+
+    qi::rule<It, vec3(), skip_t> r_v                        = "v" >> qi::float_ >> qi::float_ >> qi::float_ >> -qi::float_              >> qi::eol  // TODO: mind w
+                                                            | "v" >> qi::float_ >> qi::float_ >> qi::float_
+                                                                  >> qi::float_ >> qi::float_ >> qi::float_                             >> qi::eol; // RGB color (extension)
+    qi::rule<It, vec2(), skip_t> r_vt                       = "vt" >> qi::float_ >> qi::float_ >> -qi::float_                           >> qi::eol; // TODO: mind w
+    qi::rule<It, vec3(), skip_t> r_vn                       = "vn" >> qi::float_ >> qi::float_ >> qi::float_                            >> qi::eol;
+
+    qi::rule<It, vertex_vector(), skip_t> r_vertices        = r_v >> *r_v;
+    qi::rule<It, tex_coord_vector(), skip_t> r_tex_coords   = r_vt >> *r_vt;
+    qi::rule<It, normal_vector(), skip_t> r_normals         = r_vn >> *r_vn;
+
+    qi::rule<It, face_index_t()> r_face_vertex                  = qi::int_ >> -qi::lit("/") >> -qi::int_ >> -qi::lit("/") >> -qi::int_;
+    qi::rule<It, face_vector(), skip_t> r_face              = "f" >> r_face_vertex >> r_face_vertex >> r_face_vertex >> *r_face_vertex  >> qi::eol;
+
+
+    string_ref text(file.data(), file.size());
+    auto it = text.cbegin();
+
+    // containers for parsing
 
     vertex_vector       vertices;
     tex_coord_vector    tex_coords;
     normal_vector       normals;
     face_vector         faces;
 
-
-    // intermediate containers
-
     string_ref comment;
     string_ref mtl_file;
     string_ref mtl_name;
 
-
-    // helper functions
-
-    auto remap_index = [](int idx, int size) -> int
-    {
-        return idx < 0 ? static_cast<int>(size) + idx : idx - 1;
-    };
-
-    auto store_triangle = [&](int i1, int i2, int i3)
-    {
-        triangle_type tri;
-        tri.prim_id = static_cast<unsigned>(result.primitives.size());
-        tri.geom_id = geom_id;
-        tri.v1 = vertices[i1];
-        tri.e1 = vertices[i2] - tri.v1;
-        tri.e2 = vertices[i3] - tri.v1;
-        result.primitives.push_back(tri);
-    };
-
-    auto store_faces = [&](int vertices_size, int tex_coords_size, int normals_size)
-    {
-        size_t last = 2;
-        auto i1 = remap_index(faces[0].vertex_index, vertices_size);
-
-        while (last != faces.size())
-        {
-            // triangle
-            auto i2 = remap_index(faces[last - 1].vertex_index, vertices_size);
-            auto i3 = remap_index(faces[last].vertex_index, vertices_size);
-            store_triangle(i1, i2, i3);
-
-            // texture coordinates
-            if (faces[0].tex_coord_index && faces[last - 1].tex_coord_index && faces[last].tex_coord_index)
-            {
-                auto ti1 = remap_index(*faces[0].tex_coord_index, tex_coords_size);
-                auto ti2 = remap_index(*faces[last - 1].tex_coord_index, tex_coords_size);
-                auto ti3 = remap_index(*faces[last].tex_coord_index, tex_coords_size);
-
-                result.tex_coords.push_back( tex_coords[ti1] );
-                result.tex_coords.push_back( tex_coords[ti2] );
-                result.tex_coords.push_back( tex_coords[ti3] );
-            }
-
-            // normals
-            if (faces[0].normal_index && faces[last - 1].normal_index && faces[last].normal_index)
-            {
-                auto ni1 = remap_index(*faces[0].normal_index, normals_size);
-                auto ni2 = remap_index(*faces[last - 1].normal_index, normals_size);
-                auto ni3 = remap_index(*faces[last].normal_index, normals_size);
-
-                result.normals.push_back( normals[ni1] );
-                result.normals.push_back( normals[ni2] );
-                result.normals.push_back( normals[ni3] );
-            }
-
-            ++last;
-        }
-    };
-
-
-    // obj grammar
-
-    using It = string_ref::const_iterator;
-    using space_type = decltype(qi::blank);
-
-    qi::rule<It> r_unhandled                                    = *(qi::char_ - qi::eol)                                                    >> qi::eol;
-    qi::rule<It, string_ref()> r_text_to_eol                    = qi::raw[*(qi::char_ - qi::eol)];
-
-    qi::rule<It, string_ref()> r_comment                        = "#" >> r_text_to_eol                                                      >> qi::eol;
-    qi::rule<It, string_ref(), space_type> r_mtllib             = "mtllib" >> r_text_to_eol                                                 >> qi::eol;
-    qi::rule<It, string_ref(), space_type> r_usemtl             = "usemtl" >> r_text_to_eol                                                 >> qi::eol;
-
-    qi::rule<It, vec3(), space_type> r_v                        = "v" >> qi::float_ >> qi::float_ >> qi::float_ >> -qi::float_              >> qi::eol  // TODO: mind w
-                                                                | "v" >> qi::float_ >> qi::float_ >> qi::float_
-                                                                      >> qi::float_ >> qi::float_ >> qi::float_                             >> qi::eol; // RGB color (extension)
-    qi::rule<It, vec2(), space_type> r_vt                       = "vt" >> qi::float_ >> qi::float_ >> -qi::float_                           >> qi::eol; // TODO: mind w
-    qi::rule<It, vec3(), space_type> r_vn                       = "vn" >> qi::float_ >> qi::float_ >> qi::float_                            >> qi::eol;
-
-    qi::rule<It, vertex_vector(), space_type> r_vertices        = r_v >> *r_v;
-    qi::rule<It, tex_coord_vector(), space_type> r_tex_coords   = r_vt >> *r_vt;
-    qi::rule<It, normal_vector(), space_type> r_normals         = r_vn >> *r_vn;
-
-    qi::rule<It, detail::face_index_t()> r_face_vertex          = qi::int_ >> -qi::lit("/") >> -qi::int_ >> -qi::lit("/") >> -qi::int_;
-    qi::rule<It, face_vector(), space_type> r_face              = "f" >> r_face_vertex >> r_face_vertex >> r_face_vertex >> *r_face_vertex  >> qi::eol;
-
-
-    string_ref text(file.data(), file.size());
-    auto it = text.cbegin();
 
     while (it != text.cend())
     {
@@ -310,8 +313,6 @@ detail::obj_scene load_obj(std::string const& filename)
 
         if ( qi::phrase_parse(it, text.cend(), r_comment, qi::blank, comment) )
         {
-            VSNRAY_UNUSED(comment);
-            continue;
         }
         else if ( qi::phrase_parse(it, text.cend(), r_mtllib, qi::blank, mtl_file) )
         {
@@ -334,7 +335,7 @@ detail::obj_scene load_obj(std::string const& filename)
                 mat.set_specular_exp( mat_it->second.ns );
                 result.materials.push_back(mat);
 
-                typedef tex_list::value_type tex_type;
+                typedef detail::tex_list::value_type tex_type;
                 boost::filesystem::path p(filename);
                 std::string tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
 
@@ -362,7 +363,7 @@ detail::obj_scene load_obj(std::string const& filename)
                     result.textures.push_back(tex_type(0, 0));
                 }
             }
-            geom_id = result.materials.size() == 0 ? 0 : static_cast<unsigned>(result.materials.size() - 1);
+            geom_id = result.materials.size() == 0 ? 0 : result.materials.size() - 1;
         }
         else if ( qi::phrase_parse(it, text.cend(), r_vertices, qi::blank, vertices) )
         {
@@ -375,11 +376,10 @@ detail::obj_scene load_obj(std::string const& filename)
         }
         else if ( qi::phrase_parse(it, text.cend(), r_face, qi::blank, faces) )
         {
-            store_faces(static_cast<int>(vertices.size()), static_cast<int>(tex_coords.size()), static_cast<int>(normals.size()));
+            store_faces(result, vertices, tex_coords, normals, faces);
         }
         else if ( qi::phrase_parse(it, text.cend(), r_unhandled, qi::blank) )
         {
-            continue;
         }
     }
 
@@ -397,7 +397,7 @@ detail::obj_scene load_obj(std::string const& filename)
 
     if (result.materials.size() == 0)
     {
-        for (unsigned i = 0; i <= geom_id; ++i)
+        for (size_t i = 0; i <= geom_id; ++i)
         {
             phong<float> m;
             m.set_cd( vec3(0.8f, 0.8f, 0.8f) );
