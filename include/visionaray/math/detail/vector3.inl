@@ -333,6 +333,62 @@ inline vector<3, T> select(M const& m, vector<3, T> const& u, vector<3, T> const
     );
 }
 
+template <typename T, typename M> 
+MATH_FUNC
+inline vector<3, T> add(vector<3, T> const& v, T s, M m, vector<3, T> const& old = vector<3, T>(0.0))
+{
+    return select( m, v + s, old );
+}
+
+template <typename T, typename M> 
+MATH_FUNC
+inline vector<3, T> sub(vector<3, T> const& v, T s, M m, vector<3, T> const& old = vector<3, T>(0.0))
+{
+    return select( m, v - s, old );
+}
+
+template <typename T, typename M> 
+MATH_FUNC
+inline vector<3, T> mul(vector<3, T> const& v, T s, M m, vector<3, T> const& old = vector<3, T>(0.0))
+{
+    return select( m, v * s, old );
+}
+
+template <typename T, typename M> 
+MATH_FUNC
+inline vector<3, T> div(vector<3, T> const& v, T s, M m, vector<3, T> const& old = vector<3, T>(0.0))
+{
+    return select( m, v / s, old );
+}
+
+template <typename T, typename M> 
+MATH_FUNC
+inline vector<3, T> add(T s, vector<3, T> const& v, M m, vector<3, T> const& old = vector<3, T>(0.0))
+{
+    return select( m, s + v, old );
+}
+
+template <typename T, typename M> 
+MATH_FUNC
+inline vector<3, T> sub(T s, vector<3, T> const& v, M m, vector<3, T> const& old = vector<3, T>(0.0))
+{
+    return select( m, s - v, old );
+}
+
+template <typename T, typename M> 
+MATH_FUNC
+inline vector<3, T> mul(T s, vector<3, T> const& v, M m, vector<3, T> const& old = vector<3, T>(0.0))
+{
+    return select( m, s * v, old );
+}
+
+template <typename T, typename M> 
+MATH_FUNC
+inline vector<3, T> div(T s, vector<3, T> const& v, M m, vector<3, T> const& old = vector<3, T>(0.0))
+{
+    return select( m, s / v, old );
+}
+
 template <typename T>
 MATH_FUNC
 inline vector<3, T> min(vector<3, T> const& u, vector<3, T> const& v)
