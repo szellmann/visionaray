@@ -85,6 +85,7 @@ public:
     texture_ref_base(size_t size = 0)
         : data_(nullptr)
     {
+        VSNRAY_UNUSED(size);
     }
 
     void set_data(value_type const* data) { data_ = data; } // TODO: initialize through c'tor
