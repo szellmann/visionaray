@@ -31,6 +31,7 @@ public:
     VSNRAY_FUNC
     vector<3, U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
     {
+        VSNRAY_UNUSED(refl_dir); // TODO?
         VSNRAY_UNUSED(sampler);
         pdf = U(1.0);
         return shade(shade_rec);
