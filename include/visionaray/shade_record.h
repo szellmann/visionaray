@@ -58,7 +58,7 @@ std::array<shade_record<L, float>, 4> unpack(shade_record<L, simd::float4> const
     auto n4     = unpack(sr.normal);
     auto vd4    = unpack(sr.view_dir);
     VSNRAY_ALIGN(16) int active[4];
-    store(active, sr.active);
+    simd::store(active, sr.active.i);
 
     std::array<shade_record<L, float>, 4> result;
     result[0].normal    = n4[0];
@@ -70,6 +70,11 @@ std::array<shade_record<L, float>, 4> unpack(shade_record<L, simd::float4> const
     result[1].view_dir  = vd4[1];
     result[2].view_dir  = vd4[2];
     result[3].view_dir  = vd4[3];
+
+    result[0].light     = sr.light;
+    result[1].light     = sr.light;
+    result[2].light     = sr.light;
+    result[3].light     = sr.light;
 
     result[0].active    = active[0] != 0;
     result[1].active    = active[1] != 0;
@@ -128,5 +133,3 @@ inline auto make_shade_record() -> detail::srf::shade_record_type<Params, T>
 } // visionaray
 
 #endif // VSNRAY_SHADE_RECORD_H
-
-

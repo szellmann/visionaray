@@ -512,7 +512,8 @@ inline bool has_emissive_material(surface<emissive<T>> const& surf)
 
 template <typename T>
 VSNRAY_FUNC
-inline bool has_emissive_material(surface<generic_mat<T>> const& surf)
+inline auto has_emissive_material(surface<generic_mat<T>> const& surf)
+    -> decltype( surf.material.get_type() == detail::EmissiveMaterial )
 {
     return surf.material.get_type() == detail::EmissiveMaterial;
 }
@@ -520,5 +521,3 @@ inline bool has_emissive_material(surface<generic_mat<T>> const& surf)
 } // visionaray
 
 #endif // VSNRAY_SURFACE_INL
-
-

@@ -6,6 +6,7 @@
 #ifndef VSNRAY_MATERIAL_H
 #define VSNRAY_MATERIAL_H
 
+#include "detail/macros.h"
 #include "math/math.h"
 #include "brdf.h"
 #include "shade_record.h"
@@ -367,7 +368,13 @@ public:
         , m2_(m2)
         , m3_(m3)
         , m4_(m4)
+        , type_( simd::int4(m1.get_type(), m2.get_type(), m3.get_type(), m4.get_type()) )
     {
+    }
+
+    simd::int4 get_type() const
+    {
+        return type_;
     }
 
     template <typename L>
@@ -375,17 +382,34 @@ public:
     vector<3, simd::float4> shade(shade_record<L, simd::float4> const& sr) const
     {
         auto sr4 = unpack(sr);
-        auto v{ m1_.shade(sr4[0]), m2_.shade(sr4[1]), m3_.shade(sr4[2]), m4_.shade(sr4[3]) };
-        return pack( v[0], v[1], v[2], v[3] );
+        vector<3, float> v[] =
+        {
+            vector<3, float>( m1_.shade(sr4[0]) ),
+            vector<3, float>( m2_.shade(sr4[1]) ),
+            vector<3, float>( m3_.shade(sr4[2]) ),
+            vector<3, float>( m4_.shade(sr4[3]) )
+        };
+        return simd::pack( v[0], v[1], v[2], v[3] );
     }
 
     template <typename L, typename S /* sampler */>
     VSNRAY_FUNC
-    vector<3, simd::float4> sample(shade_record<L, simd::float4> const& sr, vector<3, simd::float4>& refl_dir, simd::float4& pdf, S& sampler)
+    vector<3, simd::float4> sample(shade_record<L, simd::float4> const& sr, vector<3, simd::float4>& refl_dir, simd::float4& pdf, S& samp)
     {
-/*        auto sr4 = unpack(sr);
-        vector<3, float> rd4;
-        VSNRAY_ALIGN float pdf4[4];*/
+        auto sr4 = unpack(sr);
+        vector<3, float> rd4[4];
+        VSNRAY_ALIGN(16) float pdf4[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        auto& s = samp.get_sampler();
+        vector<3, float> v[] =
+        {
+            vector<3, float>( m1_.sample(sr4[0], rd4[0], pdf4[0], s) ),
+            vector<3, float>( m2_.sample(sr4[1], rd4[1], pdf4[1], s) ),
+            vector<3, float>( m3_.sample(sr4[2], rd4[2], pdf4[2], s) ),
+            vector<3, float>( m4_.sample(sr4[3], rd4[3], pdf4[3], s) )
+        };
+        refl_dir = simd::pack( rd4[0], rd4[1], rd4[2], rd4[3] );
+        pdf = simd::float4(pdf4);
+        return simd::pack( v[0], v[1], v[2], v[3] );
     }
 
 private:
@@ -395,6 +419,8 @@ private:
     generic_mat<float> m3_;
     generic_mat<float> m4_;
 
+    simd::int4 type_;
+
 };
 
 
@@ -403,5 +429,3 @@ private:
 #include "detail/material.inl"
 
 #endif // VSNRAY_MATERIAL_H
-
-

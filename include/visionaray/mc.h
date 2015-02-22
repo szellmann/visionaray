@@ -78,6 +78,12 @@ public:
         );
     }
 
+    // TODO: maybe don't have a sampler4 at all?
+    sampler_type& get_sampler()
+    {
+        return sampler_;
+    }
+
 private:
 
     sampler_type sampler_;

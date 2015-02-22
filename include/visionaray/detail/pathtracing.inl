@@ -79,17 +79,15 @@ struct kernel
                 sr.active   = hit_rec.hit;
                 sr.view_dir = view_dir;
  
-                auto color      = surf.sample(sr, refl_dir, pdf, s);
+                auto color = surf.sample(sr, refl_dir, pdf, s);
 
-                if ( !has_emissive_material(surf) )
+                auto emissive = has_emissive_material(surf);
+                color = mul( color, dot(surf.normal, refl_dir) / pdf, !emissive, color ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
+                result = mul( result, C(color, scalar_type(1.0)), active_rays, result );
+                active_rays &= !emissive;
+
+                if (!any(active_rays))
                 {
-                    color *= dot(surf.normal, refl_dir) / pdf; // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
-                    result = mul( result, C(color, scalar_type(1.0)), active_rays, result );
-                }
-                else
-                {
-                    result = mul( result, C(color, scalar_type(1.0)), active_rays, result );
-                    active_rays = false;
                     break;
                 }
 
@@ -116,5 +114,3 @@ struct kernel
 } // visionaray
 
 #endif // VSNRAY_PATHTRACING_INL
-
-
