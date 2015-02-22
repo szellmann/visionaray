@@ -62,6 +62,11 @@
 #define VSNRAY_UNUSED(x) ((void)(x))
 
 
+/*! Mark code section unreachable
+ */
+#if VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
+#define VSNRAY_UNREACHABLE() __builtin_unreachable()
+#endif
+
+
 #endif // VSNRAY_MACROS_H
-
-

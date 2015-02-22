@@ -325,6 +325,8 @@ struct generic_mat
         case detail::PhongMaterial:
             return phong_mat.shade(sr);
         }
+
+        VSNRAY_UNREACHABLE();
     }
 
     template <typename SR, typename U, typename S /* sampler */>
@@ -342,6 +344,8 @@ struct generic_mat
         case detail::PhongMaterial:
             return phong_mat.sample(shade_rec, refl_dir, pdf, sampler);
         }
+
+        VSNRAY_UNREACHABLE();
     }
 
 
