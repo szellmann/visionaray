@@ -3,16 +3,11 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstring>
-#include <exception>
-#include <fstream>
 #include <iostream>
 #include <limits>
 #include <map>
-#include <sstream>
 #include <utility>
 
-#include <boost/algorithm/string.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/define_struct.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
@@ -201,46 +196,56 @@ struct mtl
 };
 
 
-void parse_mtl(std::string const& filename, std::map<std::string, mtl>* matlib)
+void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
 {
-    std::ifstream ifstr(filename.c_str(), std::ifstream::in);
-    std::string line;
-    std::map<std::string, mtl>::iterator it;
+    boost::iostreams::mapped_file_source file(filename);
 
-    while (ifstr.good() && !ifstr.eof() && std::getline(ifstr, line))
+    std::map<std::string, mtl>::iterator mtl_it;
+
+    using It = string_ref::const_iterator;
+    using skip_t = decltype(qi::blank);
+    using sref_t = string_ref;
+    using string = std::string;
+
+    qi::rule<It> r_unhandled                = *(qi::char_ - qi::eol)                        >> qi::eol;
+    qi::rule<It, sref_t(), skip_t> r_newmtl = "newmtl" >> qi::raw[*(qi::char_ - qi::eol)]   >> qi::eol;
+    qi::rule<It, vec3(), skip_t> r_vec3     = qi::float_ >> qi::float_ >> qi::float_;
+    qi::rule<It, vec3(), skip_t> r_ka       = "Ka" >> r_vec3                                >> qi::eol;
+    qi::rule<It, vec3(), skip_t> r_kd       = "Kd" >> r_vec3                                >> qi::eol;
+    qi::rule<It, vec3(), skip_t> r_ks       = "Ks" >> r_vec3                                >> qi::eol;
+    qi::rule<It, float(), skip_t> r_ns      = "Ns" >> qi::float_                            >> qi::eol;
+    qi::rule<It, string(), skip_t> r_map_kd = "map_Kd" >> *(qi::char_ - qi::eol)            >> qi::eol;
+
+    string_ref text(file.data(), file.size());
+    auto it = text.cbegin();
+
+    string_ref mtl_name;
+
+    while (it != text.cend())
     {
-        boost::algorithm::trim(line);
-        std::string identifier;
-        std::istringstream str(line);
-        str >> identifier >> std::ws;
-
-        if (identifier == "newmtl")
+        if ( qi::phrase_parse(it, text.cend(), r_newmtl, qi::blank, mtl_name) )
         {
-            std::string name;
-            str >> name;
-            auto mtl_pair = std::make_pair(name, mtl());
-            matlib->insert(mtl_pair);
-            it = matlib->find(name);
+            auto mtl_pair = std::make_pair(std::string(mtl_name), mtl());
+            matlib.insert(mtl_pair);
+            mtl_it = matlib.find(std::string(mtl_name));
         }
-        else if (identifier == "Ka")
+        else if ( qi::phrase_parse(it, text.cend(), r_ka, qi::blank, mtl_it->second.ka) )
         {
-            str >> (*it).second.ka.x >> std::ws >> (*it).second.ka.y >> std::ws >> (*it).second.ka.z >> std::ws;
         }
-        else if (identifier == "Kd")
+        else if ( qi::phrase_parse(it, text.cend(), r_kd, qi::blank, mtl_it->second.kd) )
         {
-            str >> (*it).second.kd.x >> std::ws >> (*it).second.kd.y >> std::ws >> (*it).second.kd.z >> std::ws;
         }
-        else if (identifier == "Ks")
+        else if ( qi::phrase_parse(it, text.cend(), r_kd, qi::blank, mtl_it->second.ks) )
         {
-            str >> (*it).second.ks.x >> std::ws >> (*it).second.ks.y >> std::ws >> (*it).second.ks.z >> std::ws;
         }
-        else if (identifier == "Ns")
+        else if ( qi::phrase_parse(it, text.cend(), r_ns, qi::blank, mtl_it->second.ns) )
         {
-            str >> (*it).second.ns >> std::ws;
         }
-        else if (identifier == "map_Kd")
+        else if ( qi::phrase_parse(it, text.cend(), r_map_kd, qi::blank, mtl_it->second.map_kd) )
         {
-            str >> (*it).second.map_kd;
+        }
+        else if ( qi::phrase_parse(it, text.cend(), r_unhandled, qi::blank) )
+        {
         }
     }
 }
@@ -317,7 +322,7 @@ detail::obj_scene load_obj(std::string const& filename)
 
             std::string mtl_path = mtl_dir + "/" + std::string(mtl_file);
 
-            parse_mtl(mtl_path, &matlib);
+            parse_mtl(mtl_path, matlib);
         }
         else if ( qi::phrase_parse(it, text.cend(), r_usemtl, qi::blank, mtl_name) )
         {
