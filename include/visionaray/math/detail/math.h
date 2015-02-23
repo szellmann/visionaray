@@ -36,6 +36,105 @@ inline T max(T const& x, T const& y)
 }
 
 
+//-------------------------------------------------------------------------------------------------
+// Extended versions of min/max
+//
+
+template <typename T>
+MATH_FUNC
+inline T min(T const& x, T const& y, T const& z)
+{
+    return min( min(x, y), z );
+}
+
+template <typename T>
+MATH_FUNC
+inline T max(T const& x, T const& y, T const& z)
+{
+    return max( max(x, y), z );
+}
+
+template <typename T>
+MATH_FUNC
+inline T min_max(T const& x, T const& y, T const& z)
+{
+    return max( min(x, y), z );
+}
+
+template <typename T>
+MATH_FUNC
+inline T max_min(T const& x, T const& y, T const& z)
+{
+    return min( max(x, y), z );
+}
+
+#ifdef __CUDACC__
+
+MATH_GPU_FUNC
+inline int min(int x, int y, int z)
+{
+    int result;
+    asm("vmin.s32.s32.s32.min %0, %1, %2, %3;" : "=r"(result) : "r"(x), "r"(y), "r"(z));
+    return result;
+}
+
+MATH_GPU_FUNC
+inline int max(int x, int y, int z)
+{
+    int result;
+    asm("vmax.s32.s32.s32.max %0, %1, %2, %3;" : "=r"(result) : "r"(x), "r"(y), "r"(z));
+    return result;
+}
+
+MATH_GPU_FUNC
+inline int min_max(int x, int y, int z)
+{
+    int result;
+    asm("vmin.s32.s32.s32.max %0, %1, %2, %3;" : "=r"(result) : "r"(x), "r"(y), "r"(z));
+    return result;
+}
+
+MATH_GPU_FUNC
+inline int max_min(int x, int y, int z)
+{
+    int result;
+    asm("vmax.s32.s32.s32.min %0, %1, %2, %3;" : "=r"(result) : "r"(x), "r"(y), "r"(z));
+    return result;
+}
+
+#define FF(x) __int_as_float(x)
+#define II(x) __float_as_int(x)
+
+MATH_GPU_FUNC
+inline float min(float x, float y, float z)
+{
+    return FF( min(II(x), II(y), II(z)) );
+}
+
+MATH_GPU_FUNC
+inline float max(float x, float y, float z)
+{
+    return FF( max(II(x), II(y), II(z)) );
+}
+
+MATH_GPU_FUNC
+inline float min_max(float x, float y, float z)
+{
+    return FF( min_max(II(x), II(y), II(z)) );
+}
+
+MATH_GPU_FUNC
+inline float max_min(float x, float y, float z)
+{
+    return FF( max_min(II(x), II(y), II(z)) );
+}
+
+#undef II
+#undef FF
+
+#endif
+
+
 //--------------------------------------------------------------------------------------------------
 // Implement some (useful) functions not defined in <cmath>
 //
