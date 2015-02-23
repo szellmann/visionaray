@@ -110,7 +110,7 @@ template <typename Int>
 Int remap_index(Int idx, Int size)
 {
     return idx < 0 ? size + idx : idx - 1;
-};
+}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ void store_triangle(detail::obj_scene& result, vertex_vector const& vertices, in
     tri.e1 = vertices[i2] - tri.v1;
     tri.e2 = vertices[i3] - tri.v1;
     result.primitives.push_back(tri);
-};
+}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ void store_faces(detail::obj_scene& result, vertex_vector const& vertices,
 
         ++last;
     }
-};
+}
 
 //-------------------------------------------------------------------------------------------------
 // aabb of a list of triangles
