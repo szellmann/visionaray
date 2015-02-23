@@ -21,6 +21,8 @@ Build requirements
 - All external dependencies but CMake are required as developer packages containing C/C++ header files
 - In the future we intend to relax the OpenGL and GLEW dependency
 - Microsoft Windows support is there but poor, most testing is done under Linux and Mac OS X
+- When targeting NVIDIA CUDA, make sure you have a C++11 compliant version (v6.5 on Windows and Linux, v7.0 (RC) on Mac OS X)
+- Visionaray supports Fermi+ NVIDIA GPUs (e.g. >= GeForce 400 series or >= Quadro {4|5|6}000)
 
 Additionally, in order to compile the viewer application, the following packages are needed:
 
