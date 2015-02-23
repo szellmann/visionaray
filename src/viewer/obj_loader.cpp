@@ -167,6 +167,7 @@ void store_faces(detail::obj_scene& result, vertex_vector const& vertices,
     }
 }
 
+
 //-------------------------------------------------------------------------------------------------
 // aabb of a list of triangles
 //
@@ -255,30 +256,36 @@ detail::obj_scene load_obj(std::string const& filename)
 
     size_t geom_id = 0;
 
-    // obj grammar
-
     using It = string_ref::const_iterator;
     using skip_t = decltype(qi::blank);
+    using sref_t = string_ref;
+    using VV = vertex_vector;
+    using TV = tex_coord_vector;
+    using NV = normal_vector;
+    using FV = face_vector;
+    using FI = face_index_t;
 
-    qi::rule<It> r_unhandled                                = *(qi::char_ - qi::eol)                                                    >> qi::eol;
-    qi::rule<It, string_ref()> r_text_to_eol                = qi::raw[*(qi::char_ - qi::eol)];
+    // obj grammar
 
-    qi::rule<It, string_ref()> r_comment                    = "#" >> r_text_to_eol                                                      >> qi::eol;
-    qi::rule<It, string_ref(), skip_t> r_mtllib             = "mtllib" >> r_text_to_eol                                                 >> qi::eol;
-    qi::rule<It, string_ref(), skip_t> r_usemtl             = "usemtl" >> r_text_to_eol                                                 >> qi::eol;
+    qi::rule<It> r_unhandled                = *(qi::char_ - qi::eol)                                                >> qi::eol;
+    qi::rule<It, sref_t()> r_text_to_eol    = qi::raw[*(qi::char_ - qi::eol)];
 
-    qi::rule<It, vec3(), skip_t> r_v                        = "v" >> qi::float_ >> qi::float_ >> qi::float_ >> -qi::float_              >> qi::eol  // TODO: mind w
-                                                            | "v" >> qi::float_ >> qi::float_ >> qi::float_
-                                                                  >> qi::float_ >> qi::float_ >> qi::float_                             >> qi::eol; // RGB color (extension)
-    qi::rule<It, vec2(), skip_t> r_vt                       = "vt" >> qi::float_ >> qi::float_ >> -qi::float_                           >> qi::eol; // TODO: mind w
-    qi::rule<It, vec3(), skip_t> r_vn                       = "vn" >> qi::float_ >> qi::float_ >> qi::float_                            >> qi::eol;
+    qi::rule<It, sref_t()> r_comment        = "#" >> r_text_to_eol                                                  >> qi::eol;
+    qi::rule<It, sref_t(), skip_t> r_mtllib = "mtllib" >> r_text_to_eol                                             >> qi::eol;
+    qi::rule<It, sref_t(), skip_t> r_usemtl = "usemtl" >> r_text_to_eol                                             >> qi::eol;
 
-    qi::rule<It, vertex_vector(), skip_t> r_vertices        = r_v >> *r_v;
-    qi::rule<It, tex_coord_vector(), skip_t> r_tex_coords   = r_vt >> *r_vt;
-    qi::rule<It, normal_vector(), skip_t> r_normals         = r_vn >> *r_vn;
+    qi::rule<It, vec3(), skip_t> r_v        = "v" >> qi::float_ >> qi::float_ >> qi::float_ >> -qi::float_          >> qi::eol  // TODO: mind w
+                                            | "v" >> qi::float_ >> qi::float_ >> qi::float_
+                                                      >> qi::float_ >> qi::float_ >> qi::float_                     >> qi::eol; // RGB color (extension)
+    qi::rule<It, vec2(), skip_t> r_vt       = "vt" >> qi::float_ >> qi::float_ >> -qi::float_                       >> qi::eol; // TODO: mind w
+    qi::rule<It, vec3(), skip_t> r_vn       = "vn" >> qi::float_ >> qi::float_ >> qi::float_                        >> qi::eol;
 
-    qi::rule<It, face_index_t()> r_face_vertex                  = qi::int_ >> -qi::lit("/") >> -qi::int_ >> -qi::lit("/") >> -qi::int_;
-    qi::rule<It, face_vector(), skip_t> r_face              = "f" >> r_face_vertex >> r_face_vertex >> r_face_vertex >> *r_face_vertex  >> qi::eol;
+    qi::rule<It, VV(), skip_t> r_vertices   = r_v >> *r_v;
+    qi::rule<It, TV(), skip_t> r_tex_coords = r_vt >> *r_vt;
+    qi::rule<It, NV(), skip_t> r_normals    = r_vn >> *r_vn;
+
+    qi::rule<It, FI()> r_face_idx           = qi::int_ >> -qi::lit("/") >> -qi::int_ >> -qi::lit("/") >> -qi::int_;
+    qi::rule<It, FV(), skip_t> r_face       = "f" >> r_face_idx >> r_face_idx >> r_face_idx >> *r_face_idx          >> qi::eol;
 
 
     string_ref text(file.data(), file.size());
