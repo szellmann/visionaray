@@ -29,7 +29,7 @@ struct jittered_blend_type {};
 // Param structs for different pixel sampling strategies
 //
 
-template <typename RT, typename PxSamplerT = pixel_sampler::uniform_type>
+template <typename RT, typename PxSamplerT, typename ...Args>
 struct sched_params
 {
     typedef RT                          rt_type;
@@ -40,6 +40,35 @@ struct sched_params
     RT& rt;
 };
 
+template <typename MT, typename RT, typename PxSamplerT, typename ...Args>
+struct sched_params<MT, RT, PxSamplerT, Args...>
+{
+    using rt_type               = RT;
+    using color_traits          = typename RT::color_traits;
+    using pixel_sampler_type    = PxSamplerT;
+
+    MT const& view_matrix;
+    MT const& proj_matrix;
+    RT& rt;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Sched params factory
+//
+
+template <typename PxSamplerT, typename RT>
+sched_params<RT, PxSamplerT> make_sched_params(camera const& cam, RT& rt)
+{
+    return sched_params<RT, PxSamplerT>{ cam, rt };
+}
+
+template <typename PxSamplerT, typename MT, typename RT>
+sched_params<MT, RT, PxSamplerT> make_sched_params(MT const& view_matrix, MT const& proj_matrix, RT& rt)
+{
+    return sched_params<MT, RT, PxSamplerT>{ view_matrix, proj_matrix, rt };
+}
+
 } // visionaray
 
 #ifdef __CUDACC__
@@ -49,5 +78,3 @@ struct sched_params
 #include "detail/tiled_sched.h"
 
 #endif // VSNRAY_SCHED_H
-
-

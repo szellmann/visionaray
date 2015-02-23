@@ -166,12 +166,7 @@ struct pathtracing_tag : kernel_tag {};
 template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
 void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, simple_tag)
 {
-    sched_params<RenderTargetType, pixel_sampler::uniform_type> sparams
-    {
-        rend->cam,
-        rt
-    };
-
+    auto sparams = make_sched_params<pixel_sampler::uniform_type>(rend->cam, rt);
     simple::kernel<ColorType, KParams> kernel;
     kernel.params = kparams;
     sched.frame(kernel, sparams);
@@ -180,12 +175,7 @@ void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, sim
 template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
 void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, whitted_tag)
 {
-    sched_params<RenderTargetType, pixel_sampler::uniform_type> sparams
-    {
-        rend->cam,
-        rt
-    };
-
+    auto sparams = make_sched_params<pixel_sampler::uniform_type>(rend->cam, rt);
     whitted::kernel<ColorType, KParams> kernel;
     kernel.params = kparams;
     sched.frame(kernel, sparams);
@@ -194,12 +184,7 @@ void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, whi
 template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
 void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, pathtracing_tag)
 {
-    sched_params<RenderTargetType, pixel_sampler::jittered_blend_type> sparams
-    {
-        rend->cam,
-        rt
-    };
-
+    auto sparams = make_sched_params<pixel_sampler::jittered_blend_type>(rend->cam, rt);
     pathtracing::kernel<ColorType, KParams> kernel;
     kernel.params = kparams;
     sched.frame(kernel, sparams, ++rend->frame);
