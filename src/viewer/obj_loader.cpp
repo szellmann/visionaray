@@ -14,6 +14,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
+#include <boost/fusion/include/define_struct.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
@@ -30,24 +31,12 @@ namespace qi = boost::spirit::qi;
 
 
 //-------------------------------------------------------------------------------------------------
-// boost::fusion-adapt some structs for parsing
+// boost::fusion-adapt/define some structs for parsing
 //
 
-namespace visionaray
-{
-
-struct face_index_t
-{
-    int vertex_index;
-    boost::optional<int> tex_coord_index;
-    boost::optional<int> normal_index;
-};
-
-} // visionaray
-
-BOOST_FUSION_ADAPT_STRUCT
+BOOST_FUSION_DEFINE_STRUCT
 (
-    visionaray::face_index_t,
+    (visionaray), face_index_t,
     (int, vertex_index)
     (boost::optional<int>, tex_coord_index)
     (boost::optional<int>, normal_index)
