@@ -16,7 +16,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/optional.hpp>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/texture/texture.h>
 
 #include "image.h"
