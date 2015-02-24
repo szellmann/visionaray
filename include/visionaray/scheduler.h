@@ -40,8 +40,8 @@ struct sched_params
     RT& rt;
 };
 
-template <typename MT, typename RT, typename PxSamplerT, typename ...Args>
-struct sched_params<MT, RT, PxSamplerT, Args...>
+template <typename MT, typename V, typename RT, typename PxSamplerT, typename ...Args>
+struct sched_params<MT, V, RT, PxSamplerT, Args...>
 {
     using rt_type               = RT;
     using color_traits          = typename RT::color_traits;
@@ -49,6 +49,7 @@ struct sched_params<MT, RT, PxSamplerT, Args...>
 
     MT const& view_matrix;
     MT const& proj_matrix;
+    V const& viewport;
     RT& rt;
 };
 
@@ -63,10 +64,11 @@ sched_params<RT, PxSamplerT> make_sched_params(camera const& cam, RT& rt)
     return sched_params<RT, PxSamplerT>{ cam, rt };
 }
 
-template <typename PxSamplerT, typename MT, typename RT>
-sched_params<MT, RT, PxSamplerT> make_sched_params(MT const& view_matrix, MT const& proj_matrix, RT& rt)
+template <typename PxSamplerT, typename MT, typename V, typename RT>
+sched_params<MT, V, RT, PxSamplerT> make_sched_params(MT const& view_matrix, MT const& proj_matrix,
+    V const& viewport, RT& rt)
 {
-    return sched_params<MT, RT, PxSamplerT>{ view_matrix, proj_matrix, rt };
+    return sched_params<MT, V, RT, PxSamplerT>{ view_matrix, proj_matrix, viewport, rt };
 }
 
 } // visionaray
