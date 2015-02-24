@@ -48,12 +48,22 @@ struct sync_params
 } // detail
 
 
+//-------------------------------------------------------------------------------------------------
+// Private implementation
+//
+
 template <typename R>
 struct tiled_sched<R>::impl
 {
     typedef std::function<void(recti const&)> render_tile_func;
 
     impl() = default;
+
+    template <typename K, typename SP>
+    void init_render_func(K kernel, SP sched_params, unsigned frame_num);
+
+    template <typename K, typename RT, typename PxSamplerT>
+    void init_render_func(K kernel, sched_params<RT, PxSamplerT> sched_params, unsigned frame_num);
 
     std::vector<std::thread>    threads;
     detail::sync_params         sync_params;
@@ -62,6 +72,109 @@ struct tiled_sched<R>::impl
 
     render_tile_func            render_tile;
 };
+
+template <typename R>
+template <typename K, typename SP>
+void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame_num)
+{
+    // assume that SP has members view_matrix and proj_matrix
+
+    using scalar_type   = typename R::scalar_type;
+    using matrix_type   = matrix<4, 4, scalar_type>;
+    using color_traits  = typename SP::color_traits;
+
+    viewport = sparams.viewport;
+
+    auto inv_view_matrix = matrix_type( inverse(sparams.view_matrix) );
+    auto inv_proj_matrix = matrix_type( inverse(sparams.proj_matrix) );
+
+    recti xviewport(viewport.x, viewport.y, viewport.w - 1, viewport.h - 1);
+
+    render_tile = [=](recti const& tile)
+    {
+        using namespace detail;
+
+        unsigned numx = tile_width  / packet_size<scalar_type>::w;
+        unsigned numy = tile_height / packet_size<scalar_type>::h;
+        for (unsigned i = 0; i < numx * numy; ++i)
+        {
+            auto pos = vec2i(i % numx, i / numx);
+            auto x = tile.x + pos.x * packet_size<scalar_type>::w;
+            auto y = tile.y + pos.y * packet_size<scalar_type>::h;
+
+            recti xpixel(x, y, packet_size<scalar_type>::w - 1, packet_size<scalar_type>::h - 1);
+            if ( !overlapping(xviewport, xpixel) )
+            {
+                continue;
+            }
+
+            sample_pixel<R, color_traits>
+            (
+                x, y, frame_num, viewport, sparams.rt.color(),
+                kernel, typename SP::pixel_sampler_type(),
+                inv_view_matrix, inv_proj_matrix
+            );
+        }
+    };
+}
+
+template <typename R>
+template <typename K, typename RT, typename PxSamplerT>
+void tiled_sched<R>::impl::init_render_func(K kernel, sched_params<RT, PxSamplerT> sparams, unsigned frame_num)
+{
+    // overload for pinhole cam
+
+    using SP            = sched_params<RT, PxSamplerT>;
+    using scalar_type   = typename R::scalar_type;
+    using color_traits  = typename SP::color_traits;
+
+    viewport = sparams.cam.get_viewport();
+
+    recti xviewport(viewport.x, viewport.y, viewport.w - 1, viewport.h - 1);
+
+    //  front, side, and up vectors form an orthonormal basis
+    auto f = normalize( sparams.cam.eye() - sparams.cam.center() );
+    auto s = normalize( cross(sparams.cam.up(), f) );
+    auto u =            cross(f, s);
+
+    auto eye   = vector<3, scalar_type>(sparams.cam.eye());
+    auto cam_u = vector<3, scalar_type>(s) * scalar_type( tan(sparams.cam.fovy() / 2.0f) * sparams.cam.aspect() );
+    auto cam_v = vector<3, scalar_type>(u) * scalar_type( tan(sparams.cam.fovy() / 2.0f) );
+    auto cam_w = vector<3, scalar_type>(-f);
+
+    render_tile = [=](recti const& tile)
+    {
+        using namespace detail;
+
+        unsigned numx = tile_width  / packet_size<scalar_type>::w;
+        unsigned numy = tile_height / packet_size<scalar_type>::h;
+        for (unsigned i = 0; i < numx * numy; ++i)
+        {
+            auto pos = vec2i(i % numx, i / numx);
+            auto x = tile.x + pos.x * packet_size<scalar_type>::w;
+            auto y = tile.y + pos.y * packet_size<scalar_type>::h;
+
+            recti xpixel(x, y, packet_size<scalar_type>::w - 1, packet_size<scalar_type>::h - 1);
+            if ( !overlapping(xviewport, xpixel) )
+            {
+                continue;
+            }
+
+            sample_pixel<R, color_traits>
+            (
+                x, y, frame_num, viewport, sparams.rt.color(),
+                kernel, typename SP::pixel_sampler_type(),
+                eye, cam_u, cam_v, cam_w
+            );
+        }
+    };
+}
+
+
+
+//-------------------------------------------------------------------------------------------------
+// tiled_sched implementation
+//
 
 template <typename R>
 tiled_sched<R>::tiled_sched()
@@ -94,55 +207,7 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     sched_params.rt.begin_frame();
 
-    impl_->viewport = sched_params.cam.get_viewport();
-
-    typedef typename R::scalar_type     scalar_type;
-//  typedef matrix<4, 4, scalar_type>   matrix_type;
-    typedef typename SP::color_traits   color_traits;
-
-//  auto inv_view_matrix = matrix_type( inverse(sched_params.cam.get_view_matrix()) );
-//  auto inv_proj_matrix = matrix_type( inverse(sched_params.cam.get_proj_matrix()) );
-    auto viewport        = sched_params.cam.get_viewport();
-
-    recti xviewport(viewport.x, viewport.y, viewport.w - 1, viewport.h - 1);
-
-    //  front, side, and up vectors form an orthonormal basis
-    auto f = normalize( sched_params.cam.eye() - sched_params.cam.center() );
-    auto s = normalize( cross(sched_params.cam.up(), f) );
-    auto u =            cross(f, s);
-
-    auto eye   = vector<3, scalar_type>(sched_params.cam.eye());
-    auto cam_u = vector<3, scalar_type>(s) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) * sched_params.cam.aspect() );
-    auto cam_v = vector<3, scalar_type>(u) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) );
-    auto cam_w = vector<3, scalar_type>(-f);
-
-    impl_->render_tile = [=](recti const& tile)
-    {
-        using namespace detail;
-
-        unsigned numx = tile_width  / packet_size<scalar_type>::w;
-        unsigned numy = tile_height / packet_size<scalar_type>::h;
-        for (unsigned i = 0; i < numx * numy; ++i)
-        {
-            auto pos = vec2i(i % numx, i / numx);
-            auto x = tile.x + pos.x * packet_size<scalar_type>::w;
-            auto y = tile.y + pos.y * packet_size<scalar_type>::h;
-
-            recti xpixel(x, y, packet_size<scalar_type>::w - 1, packet_size<scalar_type>::h - 1);
-            if ( !overlapping(xviewport, xpixel) )
-            {
-                continue;
-            }
-
-            sample_pixel<R, color_traits>
-            (
-                x, y, frame_num, viewport, sched_params.rt.color(),
-                kernel, typename SP::pixel_sampler_type(),
-//              inv_view_matrix, inv_proj_matrix
-                eye, cam_u, cam_v, cam_w
-            );
-        }
-    };
+    impl_->init_render_func(kernel, sched_params, frame_num);
 
     auto w = impl_->viewport.w - impl_->viewport.x;
     auto h = impl_->viewport.h - impl_->viewport.y;
