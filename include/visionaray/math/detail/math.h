@@ -193,6 +193,16 @@ inline typename std::enable_if<std::is_integral<T>::value, T>::type div_up(T a, 
     return (a + b - 1) / b;
 }
 
+//-------------------------------------------------------------------------------------------------
+// Round (a) up to the nearest multiple of (b)
+//
+
+template <typename T>
+inline typename std::enable_if<std::is_integral<T>::value, T>::type round_up(T a, T b)
+{
+    return div_up(a, b) * b;
+}
+
 
 //--------------------------------------------------------------------------------------------------
 // Constants
