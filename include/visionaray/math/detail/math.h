@@ -5,6 +5,7 @@
 #define VSNRAY_DETAIL_MATH_H
 
 #include <cmath>
+#include <type_traits>
 
 #include "../config.h"
 
@@ -182,6 +183,17 @@ inline T det2(T const& m00, T const& m01, T const& m10, T const& m11)
 }
 
 
+//-------------------------------------------------------------------------------------------------
+// Round (a) up to the nearest multiple of (b), then divide by (b)
+//
+
+template <typename T>
+inline typename std::enable_if<std::is_integral<T>::value, T>::type div_up(T a, T b)
+{
+    return (a + b - 1) / b;
+}
+
+
 //--------------------------------------------------------------------------------------------------
 // Constants
 //
@@ -252,5 +264,3 @@ inline bool all(bool b)
 
 
 #endif // VSNRAY_DETAIL_MATH_H
-
-

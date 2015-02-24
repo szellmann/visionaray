@@ -21,11 +21,6 @@ namespace detail
 static const int tile_width  = 16;
 static const int tile_height = 16;
 
-inline int div_up(int a, int b)
-{
-    return (a + b - 1) / b;
-}
-
 struct sync_params
 {
     sync_params()
@@ -212,8 +207,8 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     auto w = impl_->viewport.w - impl_->viewport.x;
     auto h = impl_->viewport.h - impl_->viewport.y;
 
-    auto numtilesx = detail::div_up(w, detail::tile_width);
-    auto numtilesy = detail::div_up(h, detail::tile_height);
+    auto numtilesx = div_up(w, detail::tile_width);
+    auto numtilesy = div_up(h, detail::tile_height);
 
     auto& sparams = impl_->sync_params;
 
@@ -260,7 +255,7 @@ void tiled_sched<R>::render_loop()
             auto w = impl_->viewport.w;
             auto tilew = detail::tile_width;
             auto tileh = detail::tile_height;
-            auto numtilesx = detail::div_up( w, tilew );
+            auto numtilesx = div_up( w, tilew );
 
             recti tile
             (

@@ -3,7 +3,7 @@
 
 #include <cuda_runtime_api.h>
 
-#include "tiled_sched.h" // TODO: consolidate
+#include "sched_common.h"
 
 namespace visionaray
 {
@@ -69,10 +69,16 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     auto cam_w = -f;
 
     dim3 block_size(16, 16);
+
+    using cuda_dim_t = decltype(block_size.x);
+
+    unsigned w = static_cast<cuda_dim_t>(viewport.w);
+    unsigned h = static_cast<cuda_dim_t>(viewport.h);
+
     dim3 grid_size
     (
-        detail::div_up(viewport.w, block_size.x),
-        detail::div_up(viewport.h, block_size.y)
+        div_up(w, block_size.x),
+        div_up(h, block_size.y)
     );
     detail::render<R, color_traits, typename SP::pixel_sampler_type><<<grid_size, block_size>>>
     (
@@ -92,5 +98,3 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 }
 
 } // visionaray
-
-
