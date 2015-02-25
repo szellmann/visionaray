@@ -3,12 +3,14 @@
 
 #include <cassert>
 
+#include <algorithm>
 #include <iostream>
 #include <limits>
 #include <ostream>
 
 #include <GL/glew.h>
 
+#include <osg/Material>
 #include <osg/MatrixTransform>
 #include <osg/StateSet>
 #include <osg/TriangleFunctor>
@@ -36,6 +38,7 @@ namespace visionaray { namespace cover {
 using triangle_type     = basic_triangle<3, float>;
 using triangle_list     = aligned_vector<triangle_type>;
 using normal_list       = aligned_vector<vec3>;
+using material_list     = aligned_vector<phong<float>>;
 
 using host_ray_type     = basic_ray<simd::float4>;
 using host_bvh_type     = bvh<triangle_type>;
@@ -52,10 +55,11 @@ public:
 
     store_triangle() : triangles_(nullptr) {}
 
-    void set_lists(triangle_list& tris, normal_list& norms)
+    void init(triangle_list& tris, normal_list& norms, unsigned geom_id)
     {
         triangles_  = &tris;
         normals_    = &norms;
+        geom_id_    = geom_id;
     }
 
     void operator()(osg::Vec3 const& v1, osg::Vec3 const& v2, osg::Vec3 const& v3, bool) const
@@ -64,7 +68,7 @@ public:
 
         triangle_type tri;
         tri.prim_id = static_cast<unsigned>(triangles_->size());
-        tri.geom_id = 0;
+        tri.geom_id = geom_id_;
         tri.v1 = vec3(v1.x(), v1.y(), v1.z());
         tri.e1 = vec3(v2.x(), v2.y(), v2.z()) - tri.v1;
         tri.e2 = vec3(v3.x(), v3.y(), v3.z()) - tri.v1;
@@ -80,6 +84,7 @@ private:
     // Store pointers because osg::TriangleFunctor is shitty..
     triangle_list*  triangles_;
     normal_list*    normals_;
+    unsigned        geom_id_;
 
 };
 
@@ -95,10 +100,11 @@ public:
     using base_type = osg::NodeVisitor;
     using base_type::apply;
 
-    get_scene_visitor(triangle_list& tris, normal_list& norms, TraversalMode tm)
+    get_scene_visitor(triangle_list& tris, normal_list& norms, material_list& mats, TraversalMode tm)
         : base_type(tm)
         , triangles_(tris)
         , normals_(norms)
+        , materials_(mats)
     {
     }
 
@@ -109,8 +115,27 @@ public:
             auto drawable = geode.getDrawable(i);
             if (drawable)
             {
+                auto set = drawable->getOrCreateStateSet();
+                auto attr = set->getAttribute(osg::StateAttribute::MATERIAL);
+                auto mat = dynamic_cast<osg::Material*>(attr);
+
+                if (mat)
+                {
+                    auto cd = mat->getDiffuse(osg::Material::Face::FRONT);
+                    auto cs = mat->getSpecular(osg::Material::Face::FRONT);
+
+                    phong<float> vsnray_mat;
+                    vsnray_mat.set_cd( vec3(cd.x(), cd.y(), cd.z()) );
+                    vsnray_mat.set_kd( 1.0f );
+                    vsnray_mat.set_ks( cs.x() ); // TODO: e.g. luminance?
+                    vsnray_mat.set_specular_exp( mat->getShininess(osg::Material::Face::FRONT) );
+                    materials_.push_back(vsnray_mat);
+                }
+
+                assert( static_cast<material_list::size_type>(static_cast<unsigned>(materials.size()) == materials.size()) );
+
                 osg::TriangleFunctor<store_triangle> tf;
-                tf.set_lists(triangles_, normals_);
+                tf.init( triangles_, normals_, std::max(0U, static_cast<unsigned>(materials_.size()) - 1) );
                 drawable->accept(tf);
             }
         }
@@ -122,6 +147,7 @@ private:
 
     triangle_list&  triangles_;
     normal_list&    normals_;
+    material_list&  materials_;
 
 };
 
@@ -133,12 +159,13 @@ private:
 struct Visionaray::impl
 {
     impl()
-        : visitor(triangles, normals, osg::NodeVisitor::TRAVERSE_ALL_CHILDREN)
+        : visitor(triangles, normals, materials, osg::NodeVisitor::TRAVERSE_ALL_CHILDREN)
     {
     }
 
     triangle_list                       triangles;
     normal_list                         normals;
+    material_list                       materials;
     host_bvh_type                       host_bvh;
     host_sched_type                     host_sched;
     cpu_buffer_rt                       host_rt;
@@ -264,14 +291,6 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     aligned_vector<host_bvh_type::bvh_ref> host_primitives;
     host_primitives.push_back(impl_->host_bvh.ref());
 
-    aligned_vector<phong<float>> materials;
-    phong<float> m;
-    m.set_cd( vec3(0.8f, 0.8f, 0.8f) );
-    m.set_kd( 1.0f );
-    m.set_ks( 1.0f );
-    m.set_specular_exp( 32.0f );
-    materials.push_back(m);
-
     vec4 lpos;
     glGetLightfv(GL_LIGHT0, GL_POSITION, lpos.data());
 
@@ -285,7 +304,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         host_primitives.data(),
         host_primitives.data() + host_primitives.size(),
         impl_->normals.data(),
-        materials.data(),
+        impl_->materials.data(),
         lights.data(),
         lights.data() + lights.size()
     );
