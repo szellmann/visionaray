@@ -20,6 +20,7 @@
 #include <visionaray/texture/texture.h>
 
 #include "image.h"
+#include "model.h"
 #include "obj_loader.h"
 
 namespace qi = boost::spirit::qi;
@@ -101,7 +102,7 @@ Int remap_index(Int idx, Int size)
 // Store a triangle and assign visionaray-internal ids
 //
 
-void store_triangle(detail::obj_scene& result, vertex_vector const& vertices, int i1, int i2, int i3)
+void store_triangle(detail::model& result, vertex_vector const& vertices, int i1, int i2, int i3)
 {
     triangle_type tri;
     tri.prim_id = static_cast<unsigned>(result.primitives.size());
@@ -117,7 +118,7 @@ void store_triangle(detail::obj_scene& result, vertex_vector const& vertices, in
 // Store obj faces (i.e. triangle fans) in vertex|tex_coords|normals lists
 //
 
-void store_faces(detail::obj_scene& result, vertex_vector const& vertices,
+void store_faces(detail::model& result, vertex_vector const& vertices,
     tex_coord_vector const& tex_coords, normal_vector const& normals, face_vector const& faces)
 {
 
@@ -251,10 +252,8 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
 }
 
 
-detail::obj_scene load_obj(std::string const& filename)
+void load_obj(std::string const& filename, detail::model& mod)
 {
-    detail::obj_scene result;
-
     std::map<std::string, mtl> matlib;
 
     boost::iostreams::mapped_file_source file(filename);
@@ -334,7 +333,7 @@ detail::obj_scene load_obj(std::string const& filename)
                 mat.set_kd( 1.0f );
                 mat.set_ks( 1.0f );
                 mat.set_specular_exp( mat_it->second.ns );
-                result.materials.push_back(mat);
+                mod.materials.push_back(mat);
 
                 typedef detail::tex_list::value_type tex_type;
                 boost::filesystem::path p(filename);
@@ -356,15 +355,15 @@ detail::obj_scene load_obj(std::string const& filename)
                     auto data_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data());
                     tex.set_data(data_ptr);
 
-                    result.textures.push_back(std::move(tex));
+                    mod.textures.push_back(std::move(tex));
 #endif
                 }
                 else
                 {
-                    result.textures.push_back(tex_type(0, 0));
+                    mod.textures.push_back(tex_type(0, 0));
                 }
             }
-            geom_id = result.materials.size() == 0 ? 0 : result.materials.size() - 1;
+            geom_id = mod.materials.size() == 0 ? 0 : mod.materials.size() - 1;
         }
         else if ( qi::phrase_parse(it, text.cend(), r_vertices, qi::blank, vertices) )
         {
@@ -377,7 +376,7 @@ detail::obj_scene load_obj(std::string const& filename)
         }
         else if ( qi::phrase_parse(it, text.cend(), r_face, qi::blank, faces) )
         {
-            store_faces(result, vertices, tex_coords, normals, faces);
+            store_faces(mod, vertices, tex_coords, normals, faces);
         }
         else if ( qi::phrase_parse(it, text.cend(), r_unhandled, qi::blank) )
         {
@@ -386,17 +385,17 @@ detail::obj_scene load_obj(std::string const& filename)
 
 // TODO
 
-    result.normals.resize(0); // TODO: support for vertex normals
-    if (result.normals.size() == 0) // have no default normals
+    mod.normals.resize(0); // TODO: support for vertex normals
+    if (mod.normals.size() == 0) // have no default normals
     {
-        for (auto const& tri : result.primitives)
+        for (auto const& tri : mod.primitives)
         {
             vec3 n = normalize( cross(tri.e1, tri.e2) );
-            result.normals.push_back(n);
+            mod.normals.push_back(n);
         }
     }
 
-    if (result.materials.size() == 0)
+    if (mod.materials.size() == 0)
     {
         for (size_t i = 0; i <= geom_id; ++i)
         {
@@ -405,13 +404,12 @@ detail::obj_scene load_obj(std::string const& filename)
             m.set_kd( 1.0f );
             m.set_ks( 1.0f );
             m.set_specular_exp( 32.0f );
-            result.materials.push_back(m);
+            mod.materials.push_back(m);
         }
     }
 // TODO
 
-    result.bbox = bounds(result.primitives);
-    return result;
+    mod.bbox = bounds(mod.primitives);
 }
 
 } // visionaray

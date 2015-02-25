@@ -54,6 +54,7 @@
 #include "manip/pan_manipulator.h"
 #include "manip/zoom_manipulator.h"
 #include "default_scenes.h"
+#include "model.h"
 #include "obj_loader.h"
 #include "render_bvh.h"
 #include "timer.h"
@@ -102,7 +103,7 @@ struct renderer
     int h;
     unsigned frame;
 
-    detail::obj_scene           scene;
+    detail::model mod;
 
     host_bvh_type                           host_bvh;
 #ifdef __CUDACC__
@@ -304,7 +305,7 @@ void render_hud_ext()
     gluOrtho2D(0, w * 2, 0, h * 2);
 
     std::stringstream stream;
-    stream << "# Triangles: " << rend->scene.primitives.size();
+    stream << "# Triangles: " << rend->mod.primitives.size();
     std::string str = stream.str();
     glRasterPos2i(300, h * 2 - 34);
     for (size_t i = 0; i < str.length(); ++i)
@@ -411,16 +412,16 @@ void display_func()
 
         host_primitives.push_back(rend->host_bvh.ref());
 
-        auto& scene = rend->scene;
+        auto& mod = rend->mod;
 
         auto kparams = make_params
         (
             host_primitives.data(),
             host_primitives.data() + host_primitives.size(),
-            scene.normals.data(),
-//            scene.tex_coords.data(),
-            scene.materials.data(),
-//            scene.textures.data(),
+            mod.normals.data(),
+//            mod.tex_coords.data(),
+            mod.materials.data(),
+//            mod.textures.data(),
             lights.data(),
             lights.data() + lights.size()
         );
@@ -671,24 +672,24 @@ int main(int argc, char** argv)
     }
 
     // Load the scene
-    std::cout << "Loading scene...\n";
+    std::cout << "Loading model...\n";
 
-    rend->scene = visionaray::load_obj(argv[1]);
+    visionaray::load_obj(argv[1], rend->mod);
 
 //  timer t;
 
     std::cout << "Creating BVH...\n";
 
     // Create the BVH on the host
-    rend->host_bvh = build<renderer::host_bvh_type>(rend->scene.primitives.data(), rend->scene.primitives.size());
+    rend->host_bvh = build<renderer::host_bvh_type>(rend->mod.primitives.data(), rend->mod.primitives.size());
 
     std::cout << "Ready\n";
 
 #ifdef __CUDACC__
     // Copy data to GPU
     rend->device_bvh = renderer::device_bvh_type(rend->host_bvh);
-    rend->device_normals = rend->scene.normals;
-    rend->device_materials = rend->scene.materials;
+    rend->device_normals = rend->mod.normals;
+    rend->device_materials = rend->mod.materials;
 #endif
 
 //  std::cout << t.elapsed() << std::endl;
@@ -696,7 +697,7 @@ int main(int argc, char** argv)
     float aspect = rend->w / static_cast<float>(rend->h);
 
     rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend->cam.view_all( rend->scene.bbox );
+    rend->cam.view_all( rend->mod.bbox );
 
     rend->manips.push_back( make_shared<visionaray::arcball_manipulator>(rend->cam, mouse::Left) );
     rend->manips.push_back( make_shared<visionaray::pan_manipulator>(rend->cam, mouse::Middle) );

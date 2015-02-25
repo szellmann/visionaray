@@ -8,42 +8,18 @@
 
 #include <string>
 
-#include <visionaray/detail/aligned_vector.h>
-#include <visionaray/math/forward.h>
-#include <visionaray/texture/forward.h>
-#include <visionaray/material.h>
-
-
 namespace visionaray
 {
 namespace detail
 {
 
-typedef aligned_vector<basic_triangle<3, float>>                            triangle_list;
-typedef aligned_vector<vector<3, float>>                                    normal_list;
-typedef aligned_vector<vector<2, float>>                                    tex_coord_list;
-typedef aligned_vector<phong<float>>                                        mat_list;
-typedef aligned_vector<texture<vector<3, unsigned char>, ElementType, 2>>   tex_list;
-
-struct obj_scene
-{
-    triangle_list   primitives;
-    normal_list     normals;
-    tex_coord_list  tex_coords;
-    mat_list        materials;
-    tex_list        textures;
-    aabb            bbox;
-};
+struct model;
 
 } // detail
 
-
-detail::obj_scene load_obj(std::string const& filename);
-
+void load_obj(std::string const& filename, detail::model& mod);
 
 } // visionaray
 
 
 #endif // VSNRAY_VIEWER_OBJ_LOADER_H
-
-
