@@ -1,8 +1,4 @@
-
-# TODO!!
-set(VSNRAY_LIBRARY "/home/zellmans/visionaray/build/src/visionaray/libvisionaray.so")
-
-set(CMAKE_MODULE_PATH "$ENV{COVISEDIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{COVISEDIR}/cmake")
 find_package(COVER)
 if (NOT COVER_FOUND)
    message("COVER not found - not building COVER plugins")
@@ -14,12 +10,12 @@ covise_create_using()
 find_package(Boost REQUIRED COMPONENTS chrono filesystem iostreams system thread)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(Visionaray REQUIRED)
 
-set(EXTRA_LIBS ${EXTRA_LIBS} ${GLEW_LIBRARY} ${VSNRAY_LIBRARY})
+include_directories(${VISIONARAY_INCLUDE_DIR}) # TODO: smth. wrong with CMAKE_MODULE_PATH
+visionaray_use_package(Visionaray)
 
-
-include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/src)
+set(EXTRA_LIBS ${EXTRA_LIBS} ${GLEW_LIBRARY} ${VISIONARAY_LIBRARY})
 
 set(HEADERS
     visionaray_plugin.h
