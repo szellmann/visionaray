@@ -51,6 +51,23 @@ inline T const& rectangle<xywh_layout, T>::operator[](size_t i) const
 }
 
 
+//-------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+template <typename T>
+bool operator==(rectangle<xywh_layout, T> const& a, rectangle<xywh_layout, T> const& b)
+{
+    return a.x == b.x && a.y == b.y && a.w == b.w && a.h == b.h;
+}
+
+template <typename T>
+bool operator!=(rectangle<xywh_layout, T> const& a, rectangle<xywh_layout, T> const& b)
+{
+    return !(a == b);
+}
+
+
 //--------------------------------------------------------------------------------------------------
 // Geometric functions
 //
