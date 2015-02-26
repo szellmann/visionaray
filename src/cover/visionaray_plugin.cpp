@@ -11,7 +11,6 @@
 #include <GL/glew.h>
 
 #include <osg/Material>
-#include <osg/MatrixTransform>
 #include <osg/StateSet>
 #include <osg/TriangleFunctor>
 
@@ -171,7 +170,6 @@ struct Visionaray::impl
 
     recti                               viewport;
 
-    osg::ref_ptr<osg::MatrixTransform>  transform;
     osg::ref_ptr<osg::Geode>            geode;
 };
 
@@ -191,8 +189,7 @@ Visionaray::Visionaray(Visionaray const& rhs, osg::CopyOp const& op)
 
 Visionaray::~Visionaray()
 {
-    impl_->transform->removeChild(impl_->geode);
-    opencover::cover->getObjectsRoot()->removeChild(impl_->transform);
+    opencover::cover->getObjectsRoot()->removeChild(impl_->geode);
 }
 
 bool Visionaray::init()
@@ -210,10 +207,7 @@ bool Visionaray::init()
     impl_->geode->setStateSet(state);
     impl_->geode->addDrawable(this);
 
-    impl_->transform = new osg::MatrixTransform();
-    impl_->transform->addChild(impl_->geode);
-
-    opencover::cover->getObjectsRoot()->addChild(impl_->transform);
+    opencover::cover->getObjectsRoot()->addChild(impl_->geode);
 
     return true;
 }
