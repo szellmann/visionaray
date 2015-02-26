@@ -152,6 +152,31 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
+// Visitor to hide the rest of the scenegprah
+//
+
+class hide_scene_visitor : public osg::NodeVisitor
+{
+public:
+
+    using base_type = osg::NodeVisitor;
+    using base_type::apply;
+
+    hide_scene_visitor(TraversalMode tm) : base_type(tm) {}
+
+    void apply(osg::Node& node)
+    {
+        if (node.getName() != "Visionaray"
+         && node.getName() != opencover::cover->getObjectsRoot()->getName())
+        {
+            node.setNodeMask(0x0);
+        }
+        base_type::traverse(node);
+    }
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Private implementation
 //
 
@@ -204,6 +229,7 @@ bool Visionaray::init()
     state->setGlobalDefaults();
 
     impl_->geode = new osg::Geode;
+    impl_->geode->setName("Visionaray");
     impl_->geode->setStateSet(state);
     impl_->geode->addDrawable(this);
 
@@ -214,6 +240,26 @@ bool Visionaray::init()
 
 void Visionaray::preFrame()
 {
+}
+
+void Visionaray::expandBoundingSphere(osg::BoundingSphere &bs)
+{
+    aabb bounds( vec3(std::numeric_limits<float>::max()), -vec3(std::numeric_limits<float>::max()) );
+    for (auto const& tri : impl_->triangles)
+    {
+        auto v1 = tri.v1;
+        auto v2 = tri.v1 + tri.e1;
+        auto v3 = tri.v1 + tri.e2;
+
+        bounds = combine(bounds, aabb(v1, v1));
+        bounds = combine(bounds, aabb(v2, v2));
+        bounds = combine(bounds, aabb(v3, v3));
+    }
+
+    auto c = bounds.center();
+    osg::BoundingSphere::vec_type center(c.x, c.y, c.z);
+    osg::BoundingSphere::value_type radius = length( c - bounds.min );
+    bs.set(center, radius);
 }
 
 void Visionaray::drawImplementation(osg::RenderInfo&) const
@@ -253,18 +299,9 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         }
 
         impl_->host_bvh = build<host_bvh_type>(impl_->triangles.data(), impl_->triangles.size());
-    }
 
-    aabb bounds( vec3(std::numeric_limits<float>::max()), -vec3(std::numeric_limits<float>::max()) );
-    for (auto const& tri : impl_->triangles)
-    {
-        auto v1 = tri.v1;
-        auto v2 = tri.v1 + tri.e1;
-        auto v3 = tri.v1 + tri.e2;
-
-        bounds = combine(bounds, aabb(v1, v1));
-        bounds = combine(bounds, aabb(v2, v2));
-        bounds = combine(bounds, aabb(v3, v3));
+        hide_scene_visitor hs_visitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
+        hs_visitor.apply(*opencover::cover->getObjectsRoot());
     }
 
 

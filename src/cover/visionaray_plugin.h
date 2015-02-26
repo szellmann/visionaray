@@ -18,8 +18,11 @@ public:
     Visionaray();
    ~Visionaray();
 
+    // COVER plugin interface
+
     bool init();
     void preFrame();
+    void expandBoundingSphere(osg::BoundingSphere &bs);
 
 private:
 
