@@ -159,7 +159,6 @@ private:
 struct Visionaray::impl
 {
     impl()
-        : visitor(triangles, normals, materials, osg::NodeVisitor::TRAVERSE_ALL_CHILDREN)
     {
     }
 
@@ -172,7 +171,6 @@ struct Visionaray::impl
 
     recti                               viewport;
 
-    get_scene_visitor                   visitor;
     osg::ref_ptr<osg::MatrixTransform>  transform;
     osg::ref_ptr<osg::Geode>            geode;
 };
@@ -241,7 +239,9 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     if (impl_->triangles.size() == 0)
     {
         // TODO: no dynamic scenes for now :(
-        impl_->visitor.apply(*opencover::cover->getObjectsRoot());
+        get_scene_visitor gs_visitor(impl_->triangles, impl_->normals, impl_->materials,
+            osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
+        gs_visitor.apply(*opencover::cover->getObjectsRoot());
 
         if (impl_->triangles.size() == 0)
         {
