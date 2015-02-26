@@ -247,6 +247,17 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         {
             return;
         }
+
+        if (impl_->materials.size() == 0)
+        {
+            phong<float> m;
+            m.set_cd( vec3(0.8f, 0.8f, 0.8f) );
+            m.set_kd( 1.0f );
+            m.set_ks( 1.0f );
+            m.set_specular_exp( 32.0f );
+            impl_->materials.push_back(m);
+        }
+
         impl_->host_bvh = build<host_bvh_type>(impl_->triangles.data(), impl_->triangles.size());
     }
 
