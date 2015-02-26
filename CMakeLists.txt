@@ -17,6 +17,7 @@ include(VisionarayUsePackage)
 # Visionaray Options
 #
 
+option(BUILD_SHARED_LIBS "Build all libraries as shared libraries instead of static" OFF)
 option(VSNRAY_ENABLE_WARNINGS "Enable all warnings" ON)
 option(VSNRAY_ENABLE_PEDANTIC "Compile with pedantic enabled (Ignored if warnings are disabled)" ON)
 option(VSNRAY_ENABLE_CUDA "Use CUDA, if available" ON)
