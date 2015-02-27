@@ -201,7 +201,7 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
 {
     boost::iostreams::mapped_file_source file(filename);
 
-    std::map<std::string, mtl>::iterator mtl_it;
+    std::map<std::string, mtl>::iterator mtl_it = matlib.end();
 
     using It = string_ref::const_iterator;
     using skip_t = decltype(qi::blank);
@@ -226,23 +226,27 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
     {
         if ( qi::phrase_parse(it, text.cend(), r_newmtl, qi::blank, mtl_name) )
         {
-            auto mtl_pair = std::make_pair(std::string(mtl_name), mtl());
-            matlib.insert(mtl_pair);
-            mtl_it = matlib.find(std::string(mtl_name));
+            auto r = matlib.insert({mtl_name.to_string(), mtl()});
+            if (!r.second)
+            {
+                // Material already exists...
+            }
+
+            mtl_it = r.first;
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_ka, qi::blank, mtl_it->second.ka) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_ka, qi::blank, mtl_it->second.ka) )
         {
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_kd, qi::blank, mtl_it->second.kd) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_kd, qi::blank, mtl_it->second.kd) )
         {
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_kd, qi::blank, mtl_it->second.ks) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_kd, qi::blank, mtl_it->second.ks) )
         {
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_ns, qi::blank, mtl_it->second.ns) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_ns, qi::blank, mtl_it->second.ns) )
         {
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_map_kd, qi::blank, mtl_it->second.map_kd) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_map_kd, qi::blank, mtl_it->second.map_kd) )
         {
         }
         else if ( qi::phrase_parse(it, text.cend(), r_unhandled, qi::blank) )
