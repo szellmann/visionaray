@@ -16,15 +16,17 @@ namespace visionaray
 namespace simple
 {
 
-template <typename C, typename Params>
+template <typename Params>
 struct kernel
 {
 
     Params params;
 
     template <typename R>
-    VSNRAY_FUNC C operator()(R ray) const
+    VSNRAY_FUNC vector<4, typename R::scalar_type> operator()(R ray) const
     {
+        using C = vector<4, typename R::scalar_type>;
+
         typedef typename R::scalar_type scalar_type;
 
         C bg_color

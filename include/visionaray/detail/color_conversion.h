@@ -6,11 +6,8 @@
 #ifndef VSNRAY_DETAIL_COLOR_CONVERSION_H
 #define VSNRAY_DETAIL_COLOR_CONVERSION_H
 
-#include <cstdint>
-
 #include <visionaray/math/math.h>
 #include <visionaray/norm.h>
-#include <visionaray/pixel_format.h>
 
 #include "macros.h"
 
@@ -18,61 +15,27 @@
 namespace visionaray
 {
 
-//-------------------------------------------------------------------------------------------------
-// Color conversion functors
-//
 
-template <pixel_format PF>
-struct convert
+template <typename TargetType, typename SourceType>
+VSNRAY_FUNC
+inline void convert(TargetType& target, SourceType const& source)
 {
-};
+    target = static_cast<TargetType>(source);
+}
 
-template <>
-struct convert<PF_RGB8>
+
+// RGBA8 <-- RGBA32F
+VSNRAY_FUNC
+inline void convert(vector<4, unorm<8>>& target, vec4 const& source)
 {
-    typedef vector<3, unorm<8>> internal_type;
+    target = vector<4, unorm<8>>(clamp(source, vec4(0.0), vec4(1.0)));
+}
 
-    VSNRAY_FUNC
-    inline internal_type operator()(vec3 const& color) const
-    {
-        return internal_type(color);
-    }
+// RGBA32F <-- RGBA8
+// Ok.
 
-    VSNRAY_FUNC
-    inline vec3 operator()(internal_type const& color) const
-    {
-        return vec3(color);
-    }
-};
-
-template <>
-struct convert<PF_RGBA8>
-{
-    typedef vector<4, unorm<8>> internal_type;
-
-    VSNRAY_FUNC
-    inline internal_type operator()(vec4 const& color) const
-    {
-        return internal_type(clamp(color, vec4(0.0), vec4(1.0)));
-    }
-
-    VSNRAY_FUNC
-    inline vec4 operator()(internal_type const& color) const
-    {
-        return vec4(color);
-    }
-};
-
-template <>
-struct convert<PF_RGBA32F>
-{
-    VSNRAY_FUNC
-    inline vec4 operator()(vec4 const& color) const
-    {
-        return vec4(color);
-    }
-};
 
 } // visionaray
+
 
 #endif // VSNRAY_DETAIL_COLOR_CONVERSION_H

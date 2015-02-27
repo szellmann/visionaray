@@ -22,15 +22,17 @@ namespace visionaray
 namespace pathtracing
 {
 
-template <typename C, typename Params>
+template <typename Params>
 struct kernel
 {
 
     Params params;
 
     template <typename R, template <typename> class S>
-    VSNRAY_FUNC C operator()(R ray, S<typename R::scalar_type>& s) const
+    VSNRAY_FUNC vector<4, typename R::scalar_type> operator()(R ray, S<typename R::scalar_type>& s) const
     {
+
+        using C = vector<4, typename R::scalar_type>;
 
         typedef typename R::scalar_type scalar_type;
         typedef typename R::vec_type vec_type;

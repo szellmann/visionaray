@@ -76,7 +76,6 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 
     using scalar_type   = typename R::scalar_type;
     using matrix_type   = matrix<4, 4, scalar_type>;
-    using color_traits  = typename SP::color_traits;
 
     viewport = sparams.viewport;
 
@@ -103,7 +102,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                 continue;
             }
 
-            sample_pixel<R, color_traits>
+            sample_pixel<R>
             (
                 x, y, frame_num, viewport, sparams.rt.color(),
                 kernel, typename SP::pixel_sampler_type(),
@@ -155,7 +154,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, sched_params<RT, PxSampler
                 continue;
             }
 
-            sample_pixel<R, color_traits>
+            sample_pixel<R>
             (
                 x, y, frame_num, viewport, sparams.rt.color(),
                 kernel, typename SP::pixel_sampler_type(),

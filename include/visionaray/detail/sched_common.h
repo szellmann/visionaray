@@ -78,93 +78,67 @@ struct pixel<simd::float8>
 // color access
 //
 
-template <typename CT /* output color traits */, typename CI /* input color */>
 struct color_access
 {
-    typedef CT color_traits;
-    typedef typename CT::type output_color;
-    typedef CI input_color;
-
+    template <typename InputColor, typename OutputColor>
     VSNRAY_FUNC
-    static void store(int x, int y, recti const& viewport, input_color const& color, output_color* buffer)
+    static void store(int x, int y, recti const& viewport, InputColor const& color, OutputColor* buffer)
     {
-        convert<color_traits::format> cv;
-        buffer[y * viewport.w + x] = cv(color);
+        convert(buffer[y * viewport.w + x], color);
     }
 
-    template <typename T>
-    VSNRAY_FUNC
-    static void blend(int x, int y, recti const& viewport, input_color const& color, output_color* buffer, T sfactor, T dfactor)
-    {
-        auto dst = get(x, y, viewport, buffer);
-        dst = color * sfactor + dst * dfactor;
-        store(x, y, viewport, dst, buffer);
-    }
-
-    VSNRAY_FUNC
-    static input_color get(int x, int y, recti const& viewport, output_color* buffer)
-    {
-        convert<color_traits::format> cv;
-        return cv( buffer[y * viewport.w + x] );
-    }
-};
-
-template <typename CT>
-struct color_access<CT, vector<4, simd::float4>>
-{
-    typedef typename CT::type output_color;
-    typedef vector<4, simd::float4> input_color;
-
+    template <typename OutputColor>
     VSNRAY_CPU_FUNC
-    static void store(int x, int y, recti const& viewport, input_color const& color, output_color* buffer)
+    static void store(int x, int y, recti const& viewport, vector<4, simd::float4> const& color, OutputColor* buffer)
     {
-        using simd::mask4;
+        VSNRAY_ALIGN(16) float r[4];
+        VSNRAY_ALIGN(16) float g[4];
+        VSNRAY_ALIGN(16) float b[4];
+        VSNRAY_ALIGN(16) float a[4];
+
         using simd::store;
 
-        input_color c = transpose(color);
-        store( reinterpret_cast<float*>(&buffer[y * viewport.w + x]),             c.x, mask4(x < viewport.w && y < viewport.h) );
-        store( reinterpret_cast<float*>(&buffer[y * viewport.w + (x + 1)]),       c.y, mask4((x + 1) < viewport.w && y < viewport.h) );
-        store( reinterpret_cast<float*>(&buffer[(y + 1) * viewport.w + x]),       c.z, mask4(x < viewport.w && (y + 1) < viewport.h) );
-        store( reinterpret_cast<float*>(&buffer[(y + 1) * viewport.w + (x + 1)]), c.w, mask4((x + 1) < viewport.w && (y + 1) < viewport.h) );
+        store(r, color.x);
+        store(g, color.y);
+        store(b, color.z);
+        store(a, color.w);
+
+        const int w = packet_size<simd::float4>::w;
+        const int h = packet_size<simd::float4>::h;
+
+        for (auto row = 0; row < h; ++row)
+        {
+            for (auto col = 0; col < w; ++col)
+            {
+                if (x + col < viewport.w && y + row < viewport.h)
+                {
+                    auto idx = row * w + col;
+                    convert( buffer[(y + row) * viewport.w + (x + col)], vec4(r[idx], g[idx], b[idx], a[idx]) );
+                }
+            }
+        }
     }
 
     VSNRAY_CPU_FUNC
-    static void blend(int x, int y, recti const& viewport, input_color const& color, output_color* buffer,
-        simd::float4 sfactor, simd::float4 dfactor)
+    static void store(int x, int y, recti const& viewport, vector<4, simd::float4> const& color, vector<4, float>* buffer)
     {
-        auto dst = get(x, y, viewport, buffer);
-        dst = color * sfactor + dst * dfactor;
-        store(x, y, viewport, dst, buffer);
+        static_assert( packet_size<simd::float4>::w == 2, "incompatible packet width" );
+        static_assert( packet_size<simd::float4>::h == 2, "incompatible packet height" );
+
+        using simd::store;
+
+        auto c = transpose(color);
+
+        if ( x      < viewport.w &&  y      < viewport.h) store( buffer[ y      * viewport.w +  x     ].data(), c.x);
+        if ((x + 1) < viewport.w &&  y      < viewport.h) store( buffer[ y      * viewport.w + (x + 1)].data(), c.y);
+        if ( x      < viewport.w && (y + 1) < viewport.h) store( buffer[(y + 1) * viewport.w +  x     ].data(), c.z);
+        if ((x + 1) < viewport.w && (y + 1) < viewport.h) store( buffer[(y + 1) * viewport.w + (x + 1)].data(), c.w);
     }
-
-    VSNRAY_CPU_FUNC
-    static input_color get(int x, int y, recti const& viewport, output_color* buffer)
-    {
-        output_color c00 = (x < viewport.w          && y < viewport.h)
-            ? output_color(reinterpret_cast<float*>(&buffer[y * viewport.w + x])) : output_color();
-
-        output_color c01 = ((x + 1) < viewport.w    && y < viewport.h)
-            ? output_color(reinterpret_cast<float*>(&buffer[y * viewport.w + (x + 1)])) : output_color();
-
-        output_color c10 = (x < viewport.w          && (y + 1) < viewport.h)
-            ? output_color(reinterpret_cast<float*>(&buffer[(y + 1) * viewport.w + x])) : output_color();
-
-        output_color c11 = ((x + 1) < viewport.w    && (y + 1) < viewport.h)
-            ? output_color(reinterpret_cast<float*>(&buffer[(y + 1) * viewport.w + (x + 1)])) : output_color();
-
-        return simd::pack(c00, c01, c10, c11);
-    }
-};
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-template <typename CT>
-struct color_access<CT, vector<4, simd::float8>>
-{
-    typedef typename CT::type output_color;
-    typedef vector<4, simd::float8> input_color;
-
+    template <typename OutputColor>
     VSNRAY_CPU_FUNC
-    static void store(int x, int y, recti const& viewport, input_color const& color, output_color* buffer)
+    static void store(int x, int y, recti const& viewport, vector<4, simd::float8> const& color, OutputColor* buffer)
     {
         VSNRAY_ALIGN(32) float r[8];
         VSNRAY_ALIGN(32) float g[8];
@@ -172,25 +146,97 @@ struct color_access<CT, vector<4, simd::float8>>
         VSNRAY_ALIGN(32) float a[8];
 
         using simd::store;
+
         store(r, color.x);
         store(g, color.y);
         store(b, color.z);
         store(a, color.w);
 
-        for (auto row = 0; row < packet_size<simd::float8>::h; ++row)
+        const int w = packet_size<simd::float8>::w;
+        const int h = packet_size<simd::float8>::h;
+
+        for (auto row = 0; row < h; ++row)
         {
-            for (auto col = 0; col < packet_size<simd::float8>::w; ++col)
+            for (auto col = 0; col < w; ++col)
             {
                 if (x + col < viewport.w && y + row < viewport.h)
                 {
-                    auto idx = row * 4 + col;
-                    buffer[(y + row) * viewport.w + (x + col)] = output_color(r[idx], g[idx], b[idx], a[idx]);
+                    auto idx = row * w + col;
+                    convert( buffer[(y + row) * viewport.w + (x + col)], vec4(r[idx], g[idx], b[idx], a[idx]) );
                 }
             }
         }
     }
-};
 #endif
+
+    template <typename InputColor, typename OutputColor>
+    VSNRAY_FUNC
+    static void get(int x, int y, recti const& viewport, InputColor& color, OutputColor const* buffer)
+    {
+        convert(color, buffer[y * viewport.w + x]);
+    }
+
+    template <typename OutputColor>
+    VSNRAY_CPU_FUNC
+    static void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, OutputColor const* buffer)
+    {
+        static_assert( packet_size<simd::float4>::w == 2, "incompatible packet width" );
+        static_assert( packet_size<simd::float4>::h == 2, "incompatible packet height" );
+
+        auto c00 = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
+        auto c01 = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
+        auto c10 = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
+        auto c11 = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
+
+        color = simd::pack(vec4(c00), vec4(c01), vec4(c10), vec4(c11));
+    }
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+    template <typename OutputColor>
+    VSNRAY_CPU_FUNC
+    static void get(int x, int y, recti const& viewport, vector<4, simd::float8>& color, OutputColor const* buffer)
+    {
+        const int w = packet_size<simd::float8>::w;
+        const int h = packet_size<simd::float8>::h;
+
+        static_assert(w * h == 8, "invalid packet size");
+
+        vec4 v[w * h];
+
+        for (auto row = 0; row < h; ++row)
+        {
+            for (auto col = 0; col < w; ++col)
+            {
+                if (x + col < viewport.w && y + row < viewport.h)
+                {
+                    auto idx = row * w + col;
+                    v[idx] = buffer[(y + row) * viewport.w + (x + col)];
+                }
+            }
+        }
+
+        color = vector<4, simd::float8>(
+            simd::float8(v[0].x, v[1].x, v[2].x, v[3].x, v[4].x, v[5].x, v[6].x, v[7].x),
+            simd::float8(v[0].y, v[1].y, v[2].y, v[3].y, v[4].y, v[5].y, v[6].y, v[7].y),
+            simd::float8(v[0].z, v[1].z, v[2].z, v[3].z, v[4].z, v[5].z, v[6].z, v[7].z),
+            simd::float8(v[0].w, v[1].w, v[2].w, v[3].w, v[4].w, v[5].w, v[6].w, v[7].w)
+            );
+    }
+#endif
+
+    template <typename InputColor, typename OutputColor, typename T>
+    VSNRAY_FUNC
+    static void blend(int x, int y, recti const& viewport, InputColor const& color, OutputColor* buffer, T sfactor, T dfactor)
+    {
+        InputColor dst;
+
+        get(x, y, viewport, dst, buffer);
+
+        dst = color * sfactor + dst * dfactor;
+
+        store(x, y, viewport, dst, buffer);
+    }
+};
 
 
 //-------------------------------------------------------------------------------------------------
@@ -223,7 +269,23 @@ inline unsigned tic()
 }
 
 template <template <typename> class S, typename T>
-class sampler_gen;
+class sampler_gen
+{
+public:
+
+    sampler_gen() = default;
+    sampler_gen(unsigned seed) : seed_(seed) {}
+
+    VSNRAY_CPU_FUNC S<T> operator()() const
+    {
+        return S<T>(seed_);
+    }
+
+private:
+
+    unsigned seed_ = 0;
+
+};
 
 template <template <typename> class S>
 class sampler_gen<S, float>
@@ -243,25 +305,6 @@ public:
 #else
         return S<float>(seed_);
 #endif
-    }
-
-private:
-
-    unsigned seed_ = 0;
-
-};
-
-template <template <typename> class S>
-class sampler_gen<S, simd::float4>
-{
-public:
-
-    sampler_gen() = default;
-    sampler_gen(unsigned seed) : seed_(seed) {}
-
-    VSNRAY_CPU_FUNC S<simd::float4> operator()() const
-    {
-        return S<simd::float4>(seed_);
     }
 
 private:
@@ -344,19 +387,16 @@ inline R jittered_ray_gen(unsigned x, unsigned y, S& sampler, Args const&... arg
 // Simple uniform pixel sampler
 //
 
-template <typename R, typename CT, typename V, typename C, typename K, typename ...Args>
+template <typename R, typename V, typename C, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewport,
     C* color_buffer, K kernel, pixel_sampler::uniform_type, Args const&... args)
 {
     VSNRAY_UNUSED(frame);
 
-    typedef typename R::scalar_type     scalar_type;
-    typedef vector<4, scalar_type>      vec4_type;
-
     auto r = uniform_ray_gen<R>(x, y, viewport, args...);
     auto color = kernel(r);
-    color_access<CT, vec4_type>::store(x, y, viewport, color, color_buffer);
+    color_access::store(x, y, viewport, color, color_buffer);
 }
 
 
@@ -364,21 +404,20 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
 // Jittered pixel sampler, sampler is passed to kernel
 //
 
-template <typename R, typename CT, typename V, typename C, typename K, typename ...Args>
+template <typename R, typename V, typename C, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewport,
     C* color_buffer, K kernel, pixel_sampler::jittered_type, Args const&... args)
 {
     VSNRAY_UNUSED(frame);
 
-    typedef typename R::scalar_type     scalar_type;
-    typedef vector<4, scalar_type>      vec4_type;
+    typedef typename R::scalar_type scalar_type;
 
     auto gen    = sampler_gen<sampler, scalar_type>();
     auto s      = gen();
     auto r = jittered_ray_gen<R>(x, y, s, viewport, args...);
     auto color = kernel(r, s);
-    color_access<CT, vec4_type>::store(x, y, viewport, color, color_buffer);
+    color_access::store(x, y, viewport, color, color_buffer);
 }
 
 
@@ -386,7 +425,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
 // Jittered pixel sampler, result is blended on top of color buffer, sampler is passed to kernel
 //
 
-template <typename R, typename CT, typename V, typename C, typename K, typename ...Args>
+template <typename R, typename V, typename C, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewport,
     C* color_buffer, K kernel, pixel_sampler::jittered_blend_type, Args const&... args)
@@ -401,9 +440,9 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
     auto alpha = scalar_type(1.0) / scalar_type(frame);
     if (frame <= 1)
     {//TODO: clear method in render target?
-        color_access<CT, vec4_type>::store(x, y, viewport, vec4_type(0.0, 0.0, 0.0, 0.0), color_buffer);
+        color_access::store(x, y, viewport, vec4_type(0.0, 0.0, 0.0, 0.0), color_buffer);
     }
-    color_access<CT, vec4_type>::blend(x, y, viewport, color, color_buffer,
+    color_access::blend(x, y, viewport, color, color_buffer,
         alpha, scalar_type(1.0) - alpha);
 }
 
@@ -412,7 +451,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
 // jittered pixel sampler, blends several samples at once
 //
 
-template <typename R, typename CT, typename V, typename C, typename K, typename ...Args>
+template <typename R, typename V, typename C, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel(unsigned x, unsigned y, unsigned frame_begin, unsigned frame_end, V const& viewport,
     C* color_buffer, K kernel, pixel_sampler::jittered_blend_type, Args const&... args)
@@ -427,14 +466,15 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame_begin, unsigned 
     {
         if (frame <= 1)
         {//TODO: clear method in render target?
-            color_access<CT, vec4_type>::store(x, y, viewport, vec4_type(0.0, 0.0, 0.0, 0.0), color_buffer);
+            color_access::store(x, y, viewport, vec4_type(0.0, 0.0, 0.0, 0.0), color_buffer);
         }
         auto r     = jittered_ray_gen<R>(x, y, s, viewport, args...);
         auto src   = kernel(r, s);
-        auto dst   = color_access<CT, vec4_type>::get(x, y, viewport, color_buffer);
+        vec4_type dst;
+        color_access::get(x, y, viewport, dst, color_buffer);
         auto alpha = scalar_type(1.0) / scalar_type(frame);
         dst = dst * scalar_type(1 - alpha) + src * scalar_type(alpha);
-        color_access<CT, vec4_type>::store(x, y, viewport, dst, color_buffer);
+        color_access::store(x, y, viewport, dst, color_buffer);
     }
 }
 

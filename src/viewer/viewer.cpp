@@ -164,29 +164,29 @@ struct simple_tag : kernel_tag {};
 struct whitted_tag : kernel_tag {};
 struct pathtracing_tag : kernel_tag {};
 
-template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
+template <typename RenderTargetType, typename Sched, typename KParams>
 void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, simple_tag)
 {
     auto sparams = make_sched_params<pixel_sampler::uniform_type>(rend->cam, rt);
-    simple::kernel<ColorType, KParams> kernel;
+    simple::kernel<KParams> kernel;
     kernel.params = kparams;
     sched.frame(kernel, sparams);
 }
 
-template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
+template <typename RenderTargetType, typename Sched, typename KParams>
 void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, whitted_tag)
 {
     auto sparams = make_sched_params<pixel_sampler::uniform_type>(rend->cam, rt);
-    whitted::kernel<ColorType, KParams> kernel;
+    whitted::kernel<KParams> kernel;
     kernel.params = kparams;
     sched.frame(kernel, sparams);
 }
 
-template <typename ColorType, typename RenderTargetType, typename Sched, typename KParams>
+template <typename RenderTargetType, typename Sched, typename KParams>
 void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, pathtracing_tag)
 {
     auto sparams = make_sched_params<pixel_sampler::jittered_blend_type>(rend->cam, rt);
-    pathtracing::kernel<ColorType, KParams> kernel;
+    pathtracing::kernel<KParams> kernel;
     kernel.params = kparams;
     sched.frame(kernel, sparams, ++rend->frame);
 }
@@ -389,15 +389,15 @@ void display_func()
         {
 
         case Simple:
-            call_kernel<internal_color_type>(rend->sched_gpu, kparams, rend->device_rt, simple_tag());
+            call_kernel(rend->sched_gpu, kparams, rend->device_rt, simple_tag());
             break;
 
         case Whitted:
-            call_kernel<internal_color_type>(rend->sched_gpu, kparams, rend->device_rt, whitted_tag());
+            call_kernel(rend->sched_gpu, kparams, rend->device_rt, whitted_tag());
             break;
 
         case Pathtracing:
-            call_kernel<internal_color_type>(rend->sched_gpu, kparams, rend->device_rt, pathtracing_tag());
+            call_kernel(rend->sched_gpu, kparams, rend->device_rt, pathtracing_tag());
             break;
 
         }
@@ -426,21 +426,19 @@ void display_func()
             lights.data() + lights.size()
         );
 
-        typedef vector<4, renderer::scalar_type_cpu> internal_color_type;
-
         switch (rend->algo)
         {
 
         case Simple:
-            call_kernel<internal_color_type>(rend->sched_cpu, kparams, rend->rt, simple_tag());
+            call_kernel(rend->sched_cpu, kparams, rend->rt, simple_tag());
             break;
 
         case Whitted:
-            call_kernel<internal_color_type>(rend->sched_cpu, kparams, rend->rt, whitted_tag());
+            call_kernel(rend->sched_cpu, kparams, rend->rt, whitted_tag());
             break;
 
         case Pathtracing:
-            call_kernel<internal_color_type>(rend->sched_cpu, kparams, rend->rt, pathtracing_tag());
+            call_kernel(rend->sched_cpu, kparams, rend->rt, pathtracing_tag());
             break;
 
         }

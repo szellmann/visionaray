@@ -11,7 +11,7 @@ namespace visionaray
 namespace detail
 {
 
-template <typename R, typename CT, typename PxSamplerT, typename MT, typename V, typename C, typename K>
+template <typename R, typename PxSamplerT, typename MT, typename V, typename C, typename K>
 __global__ void render(MT inv_view_matrix, MT inv_proj_matrix, V viewport,
     C* color_buffer, K kernel, unsigned frame)
 {
@@ -23,10 +23,10 @@ __global__ void render(MT inv_view_matrix, MT inv_proj_matrix, V viewport,
         return;
     }
 
-    sample_pixel<R, CT>(x, y, frame, viewport, color_buffer, kernel, PxSamplerT(), inv_view_matrix, inv_proj_matrix);
+    sample_pixel<R>(x, y, frame, viewport, color_buffer, kernel, PxSamplerT(), inv_view_matrix, inv_proj_matrix);
 }
 
-template <typename R, typename CT, typename PxSamplerT, typename Vec3, typename V, typename C, typename K>
+template <typename R, typename PxSamplerT, typename Vec3, typename V, typename C, typename K>
 __global__ void render(Vec3 eye, Vec3 u, Vec3 v, Vec3 w, V viewport,
     C* color_buffer, K kernel, unsigned frame)
 {
@@ -38,7 +38,7 @@ __global__ void render(Vec3 eye, Vec3 u, Vec3 v, Vec3 w, V viewport,
         return;
     }
 
-    sample_pixel<R, CT>(x, y, frame, viewport, color_buffer, kernel, PxSamplerT(), eye, u, v, w);
+    sample_pixel<R>(x, y, frame, viewport, color_buffer, kernel, PxSamplerT(), eye, u, v, w);
 }
 
 } // detail
@@ -51,8 +51,6 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     sched_params.rt.begin_frame();
 
-    typedef typename SP::color_traits   color_traits;
-    typedef typename color_traits::type color_type;
     auto color_buffer       = sched_params.rt.color();
 //  auto inv_view_matrix    = inverse(sched_params.cam.get_view_matrix());
 //  auto inv_proj_matrix    = inverse(sched_params.cam.get_proj_matrix());
@@ -80,7 +78,7 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
         div_up(w, block_size.x),
         div_up(h, block_size.y)
     );
-    detail::render<R, color_traits, typename SP::pixel_sampler_type><<<grid_size, block_size>>>
+    detail::render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>
     (
 //      inv_view_matrix,
 //      inv_proj_matrix,

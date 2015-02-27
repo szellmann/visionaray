@@ -89,6 +89,46 @@ private:
     sampler_type sampler_;
 };
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
+template <>
+class sampler<simd::float8>
+{
+public:
+
+    typedef sampler<float> sampler_type;
+
+    VSNRAY_CPU_FUNC sampler(unsigned seed)
+        : sampler_(seed)
+    {
+    }
+
+    VSNRAY_CPU_FUNC simd::float8 next()
+    {
+        return simd::float8
+        (
+            sampler_.next(),
+            sampler_.next(),
+            sampler_.next(),
+            sampler_.next(),
+            sampler_.next(),
+            sampler_.next(),
+            sampler_.next(),
+            sampler_.next()
+        );
+    }
+
+    // TODO: maybe don't have a sampler4 at all?
+    sampler_type& get_sampler()
+    {
+        return sampler_;
+    }
+
+private:
+
+    sampler_type sampler_;
+};
+#endif
+
 
 //-------------------------------------------------------------------------------------------------
 // Utility functions for Geometry sampling
