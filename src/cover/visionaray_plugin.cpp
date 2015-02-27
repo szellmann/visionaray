@@ -353,7 +353,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     // Render
 
-    auto kern =  simple::kernel<vector<4, simd::float4>, decltype(kparams)>();
+    auto kern =  simple::kernel<decltype(kparams)>();
     kern.params = kparams;
     impl_->host_sched.frame(kern, sparams);
 
