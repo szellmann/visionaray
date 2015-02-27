@@ -29,8 +29,11 @@ struct jittered_blend_type {};
 // Param structs for different pixel sampling strategies
 //
 
-template <typename RT, typename PxSamplerT, typename ...Args>
-struct sched_params
+template <typename... Args>
+struct sched_params;
+
+template <typename RT, typename PxSamplerT>
+struct sched_params<RT, PxSamplerT>
 {
     typedef RT                          rt_type;
     typedef typename RT::color_traits   color_traits;
@@ -40,8 +43,8 @@ struct sched_params
     RT& rt;
 };
 
-template <typename MT, typename V, typename RT, typename PxSamplerT, typename ...Args>
-struct sched_params<MT, V, RT, PxSamplerT, Args...>
+template <typename MT, typename V, typename RT, typename PxSamplerT>
+struct sched_params<MT, V, RT, PxSamplerT>
 {
     using rt_type               = RT;
     using color_traits          = typename RT::color_traits;
