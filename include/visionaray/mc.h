@@ -89,7 +89,7 @@ private:
     sampler_type sampler_;
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 template <>
 class sampler<simd::float8>
 {
