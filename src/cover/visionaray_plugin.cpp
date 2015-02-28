@@ -346,6 +346,10 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     kern.params = kparams;
     impl_->host_sched.frame(kern, sparams);
 
+    // TODO: generate depth buffer and use RGB render target
+    glDepthMask(GL_FALSE);
+    glPixelTransferf(GL_ALPHA_SCALE, 0.0f);
+
     impl_->host_rt.display_color_buffer();
 }
 
