@@ -120,6 +120,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/scheduler.h
     ${HEADER_DIR}/shade_record.h
     ${HEADER_DIR}/surface.h
+    ${HEADER_DIR}/tags.h
 
     #----------------------------------------------------------------------------------------------
     # Private headers
