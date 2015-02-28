@@ -117,8 +117,8 @@ inline hit_record<basic_ray<T>, basic_aabb<U>> intersect
     vector<3, T> t1 = (vector<3, T>(aabb.min) - ray.ori) * inv_dir;
     vector<3, T> t2 = (vector<3, T>(aabb.max) - ray.ori) * inv_dir;
 
-    result.tnear = min_max( t1.x, t2.x, min_max(t1.y, t2.y, min_max(t1.z, t2.z, T(0.0))) );
-    result.tfar  = max_min( t1.x, t2.x, max_min(t1.y, t2.y, max_min(t1.z, t2.z, T(3.402823466e+38f))) );
+    result.tnear = min_max( t1.x, t2.x, min_max(t1.y, t2.y, min(t1.z, t2.z)) );
+    result.tfar  = max_min( t1.x, t2.x, max_min(t1.y, t2.y, max(t1.z, t2.z)) );
     result.hit   = result.tfar >= result.tnear && result.tfar >= T(0.0);
 
     return result;
