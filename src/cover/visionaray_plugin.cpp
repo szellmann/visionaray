@@ -10,10 +10,13 @@
 
 #include <GL/glew.h>
 
+#include <osg/io_utils>
 #include <osg/Material>
+#include <osg/MatrixTransform>
 #include <osg/StateSet>
 #include <osg/TriangleFunctor>
 
+#include <cover/coVRConfig.h>
 #include <cover/coVRPluginSupport.h>
 #include <cover/VRViewer.h>
 
@@ -152,31 +155,6 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
-// Visitor to hide the rest of the scenegprah
-//
-
-class hide_scene_visitor : public osg::NodeVisitor
-{
-public:
-
-    using base_type = osg::NodeVisitor;
-    using base_type::apply;
-
-    hide_scene_visitor(TraversalMode tm) : base_type(tm) {}
-
-    void apply(osg::Node& node)
-    {
-        if (node.getName() != "Visionaray"
-         && node.getName() != opencover::cover->getObjectsRoot()->getName())
-        {
-            node.setNodeMask(0x0);
-        }
-        base_type::traverse(node);
-    }
-};
-
-
-//-------------------------------------------------------------------------------------------------
 // Private implementation
 //
 
@@ -233,7 +211,7 @@ bool Visionaray::init()
     impl_->geode->setStateSet(state);
     impl_->geode->addDrawable(this);
 
-    opencover::cover->getObjectsRoot()->addChild(impl_->geode);
+    opencover::cover->getScene()->addChild(impl_->geode);
 
     return true;
 }
@@ -279,9 +257,9 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     if (impl_->triangles.size() == 0)
     {
         // TODO: no dynamic scenes for now :(
-        get_scene_visitor gs_visitor(impl_->triangles, impl_->normals, impl_->materials,
+        get_scene_visitor visitor(impl_->triangles, impl_->normals, impl_->materials,
             osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
-        gs_visitor.apply(*opencover::cover->getObjectsRoot());
+        visitor.apply(*opencover::cover->getObjectsRoot());
 
         if (impl_->triangles.size() == 0)
         {
@@ -300,31 +278,42 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
         impl_->host_bvh = build<host_bvh_type>(impl_->triangles.data(), impl_->triangles.size());
 
-        hide_scene_visitor hs_visitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
-        hs_visitor.apply(*opencover::cover->getObjectsRoot());
+        opencover::cover->getObjectsRoot()->setNodeMask
+        (
+            opencover::cover->getObjectsRoot()->getNodeMask()
+         & ~opencover::VRViewer::instance()->getCullMask()
+        );
     }
 
 
     // Sched params
 
-    GLfloat view[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX, view);
+    auto osg_cam = opencover::coVRConfig::instance()->channels[0].camera;
 
-    GLfloat proj[16];
-    glGetFloatv(GL_PROJECTION_MATRIX, proj);
+    auto t = opencover::cover->getXformMat();
+    auto s = opencover::cover->getObjectsScale()->getMatrix();
+    // TODO: understand COVER API..
+//  auto v = opencover::cover->getViewerMat();
+    auto v = opencover::coVRConfig::instance()->channels[0].rightView;
+    auto osg_view_matrix = s * t * v;
+    auto osg_proj_matrix = opencover::coVRConfig::instance()->channels[0].rightProj;
+    auto osg_viewport = osg_cam->getViewport();
 
-    GLint vp[4] = { 0, 0, 0, 0 };
-    glGetIntegerv(GL_VIEWPORT, vp);
+    float view[16];
+    float proj[16];
+
+    std::copy(osg_view_matrix.ptr(), osg_view_matrix.ptr() + 16, view);
+    std::copy(osg_proj_matrix.ptr(), osg_proj_matrix.ptr() + 16, proj);
 
     mat4 view_matrix(view);
     mat4 proj_matrix(proj);
-    recti viewport(vp[0], vp[1], vp[2], vp[3]);
+    recti viewport(osg_viewport->x(), osg_viewport->y(), osg_viewport->width(), osg_viewport->height());
 
     auto sparams = make_sched_params<pixel_sampler::uniform_type>( view_matrix, proj_matrix, viewport, impl_->host_rt );
 
     if (impl_->viewport != viewport)
     {
-        impl_->host_rt.resize(vp[2], vp[3]);
+        impl_->host_rt.resize(viewport[2], viewport[3]);
         impl_->viewport = viewport;
     }
 
