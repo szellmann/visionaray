@@ -10,14 +10,10 @@
 
 namespace visionaray
 {
-namespace detail
-{
 
-struct model;
+class model;
 
-} // detail
-
-void load_obj(std::string const& filename, detail::model& mod);
+void load_obj(std::string const& filename, model& mod);
 
 } // visionaray
 

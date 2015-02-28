@@ -102,7 +102,7 @@ Int remap_index(Int idx, Int size)
 // Store a triangle and assign visionaray-internal ids
 //
 
-void store_triangle(detail::model& result, vertex_vector const& vertices, int i1, int i2, int i3)
+void store_triangle(model& result, vertex_vector const& vertices, int i1, int i2, int i3)
 {
     triangle_type tri;
     tri.prim_id = static_cast<unsigned>(result.primitives.size());
@@ -118,7 +118,7 @@ void store_triangle(detail::model& result, vertex_vector const& vertices, int i1
 // Store obj faces (i.e. triangle fans) in vertex|tex_coords|normals lists
 //
 
-void store_faces(detail::model& result, vertex_vector const& vertices,
+void store_faces(model& result, vertex_vector const& vertices,
     tex_coord_vector const& tex_coords, normal_vector const& normals, face_vector const& faces)
 {
 
@@ -168,7 +168,7 @@ void store_faces(detail::model& result, vertex_vector const& vertices,
 // aabb of a list of triangles
 //
 
-aabb bounds(detail::triangle_list const& tris)
+aabb bounds(model::triangle_list const& tris)
 {
     aabb result( vec3(std::numeric_limits<float>::max()), -vec3(std::numeric_limits<float>::max()) );
 
@@ -256,7 +256,7 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
 }
 
 
-void load_obj(std::string const& filename, detail::model& mod)
+void load_obj(std::string const& filename, model& mod)
 {
     std::map<std::string, mtl> matlib;
 
@@ -339,7 +339,7 @@ void load_obj(std::string const& filename, detail::model& mod)
                 mat.set_specular_exp( mat_it->second.ns );
                 mod.materials.push_back(mat);
 
-                typedef detail::tex_list::value_type tex_type;
+                typedef model::tex_list::value_type tex_type;
                 boost::filesystem::path p(filename);
                 std::string tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
 

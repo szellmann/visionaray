@@ -79,9 +79,9 @@ struct renderer
     typedef basic_ray<scalar_type_cpu>  ray_type_cpu;
     typedef basic_ray<scalar_type_gpu>  ray_type_gpu;
 
-    using primitive_type    = detail::triangle_list::value_type;
-    using normal_type       = detail::normal_list::value_type;
-    using material_type     = detail::mat_list::value_type;
+    using primitive_type    = model::triangle_list::value_type;
+    using normal_type       = model::normal_list::value_type;
+    using material_type     = model::mat_list::value_type;
 
     using host_bvh_type     = bvh<primitive_type>;
 #ifdef __CUDACC__
@@ -103,7 +103,7 @@ struct renderer
     int h;
     unsigned frame;
 
-    detail::model mod;
+    model mod;
 
     host_bvh_type                           host_bvh;
 #ifdef __CUDACC__
