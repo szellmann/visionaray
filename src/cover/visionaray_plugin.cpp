@@ -381,6 +381,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     aligned_vector<point_light<float>> lights;
     lights.push_back({ lpos.xyz() });
 
+    auto clear_color = osg_cam->getClearColor();
 
     auto kparams = make_params
     (
@@ -389,7 +390,8 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         impl_->normals.data(),
         impl_->materials.data(),
         lights.data(),
-        lights.data() + lights.size()
+        lights.data() + lights.size(),
+        vec4( clear_color.x(), clear_color.y(), clear_color.z(), clear_color.w() )
     );
 
     // Render
@@ -400,7 +402,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     // TODO: generate depth buffer and use RGB render target
     glDepthMask(GL_FALSE);
-    glPixelTransferf(GL_ALPHA_SCALE, 0.0f);
+//  glPixelTransferf(GL_ALPHA_SCALE, 0.0f);
 
     impl_->host_rt.display_color_buffer();
 }
