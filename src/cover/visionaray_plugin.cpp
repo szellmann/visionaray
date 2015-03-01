@@ -55,18 +55,26 @@ class store_triangle
 {
 public:
 
-    store_triangle() : triangles_(nullptr) {}
+    store_triangle()
+        : triangles_(nullptr)
+        , normals_(nullptr)
+    {}
 
-    void init(triangle_list& tris, normal_list& norms, unsigned geom_id)
+    void init(triangle_list& tris, normal_list& norms, unsigned geom_id, osg::Matrix const& trans_mat)
     {
         triangles_  = &tris;
         normals_    = &norms;
         geom_id_    = geom_id;
+        trans_mat_  = trans_mat;
     }
 
-    void operator()(osg::Vec3 const& v1, osg::Vec3 const& v2, osg::Vec3 const& v3, bool) const
+    void operator()(osg::Vec3 v1, osg::Vec3 v2, osg::Vec3 v3, bool) const
     {
         assert( triangles_ && normals_ );
+
+        v1 = v1 * trans_mat_;
+        v2 = v2 * trans_mat_;
+        v3 = v3 * trans_mat_;
 
         triangle_type tri;
         tri.prim_id = static_cast<unsigned>(triangles_->size());
@@ -88,6 +96,45 @@ private:
     normal_list*    normals_;
     unsigned        geom_id_;
 
+    osg::Matrix     trans_mat_;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Visitor to acquire world transform matrix for a node
+//
+
+class get_world_transform_visitor : public osg::NodeVisitor
+{
+public:
+
+    get_world_transform_visitor()
+        : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_PARENTS)
+    {
+    }
+
+    osg::Matrix const& get_matrix() const
+    {
+        return matrix_;
+    }
+
+    void apply(osg::Node& node)
+    {
+        if (&node == opencover::cover->getObjectsRoot())
+        {
+            matrix_ = osg::computeLocalToWorld(getNodePath());
+        }
+        else
+        {
+            traverse(node);
+        }
+    }
+
+private:
+
+    osg::Matrix matrix_;
+
 };
 
 
@@ -101,6 +148,8 @@ public:
 
     using base_type = osg::NodeVisitor;
     using base_type::apply;
+
+public:
 
     get_scene_visitor(triangle_list& tris, normal_list& norms, material_list& mats, TraversalMode tm)
         : base_type(tm)
@@ -134,10 +183,14 @@ public:
                     materials_.push_back(vsnray_mat);
                 }
 
+                get_world_transform_visitor visitor;
+                geode.accept(visitor);
+                auto world_transform = visitor.get_matrix();
+
                 assert( static_cast<material_list::size_type>(static_cast<unsigned>(materials_.size()) == materials_.size()) );
 
                 osg::TriangleFunctor<store_triangle> tf;
-                tf.init( triangles_, normals_, materials_.size() == 0 ? 0 : static_cast<unsigned>(materials_.size() - 1) );
+                tf.init( triangles_, normals_, materials_.size() == 0 ? 0 : static_cast<unsigned>(materials_.size() - 1), world_transform );
                 drawable->accept(tf);
             }
         }
@@ -203,7 +256,7 @@ bool Visionaray::init()
 
     std::cout << "Init Visionaray Plugin!!" << std::endl;
 
-    ref_ptr<osg::StateSet> state = new osg::StateSet();
+    ref_ptr<osg::StateSet> state = new osg::StateSet;
     state->setGlobalDefaults();
 
     impl_->geode = new osg::Geode;
