@@ -35,17 +35,9 @@ struct kernel
 
         auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
 
-        C bg_color
-        (
-            scalar_type(0.1),
-            scalar_type(0.4),
-            scalar_type(1.0),
-            scalar_type(1.0)
-        );
-
         size_t depth = 0;
         auto color = C(0.0);
-        auto no_hit_color = bg_color;
+        auto no_hit_color = C(params.bg_color);
         auto mirror = scalar_type(1.0);
         while (any(hit_rec.hit) && any(mirror > scene_epsilon) && depth++ < 4/*1*/)
         {
@@ -93,7 +85,7 @@ struct kernel
 
         if (depth == 0)
         {
-            return bg_color;
+            return C(params.bg_color);
         }
         else
         {

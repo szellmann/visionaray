@@ -44,14 +44,6 @@ struct kernel
         auto exited         = !hit_rec.hit;
         auto active_rays    =  hit_rec.hit;
 
-        C bg_color
-        (
-            scalar_type(1.0),
-            scalar_type(1.0),
-            scalar_type(1.0),
-            scalar_type(1.0)
-        );
-
         C result(1.0, 1.0, 1.0, 1.0);
 
         for (unsigned d = 0; d < MaxDepth; ++d)
@@ -103,7 +95,7 @@ struct kernel
                 active_rays &= hit_rec.hit;
             }
 
-            result = mul( result, bg_color, exited, result );
+            result = mul( result, C(params.ambient_color), exited, result );
         }
 
         result = mul( result, C(0.0, 0.0, 0.0, 1.0), active_rays, result );

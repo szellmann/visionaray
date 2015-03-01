@@ -362,6 +362,8 @@ void display_func()
 //  lights.push_back({0.0f, 1.0f, 1.0f});
     lights.push_back({ rend->cam.eye() - rend->cam.center() });
 
+    vec4 bg_color(0.1, 0.4, 1.0, 1.0);
+
     if (config.dev_type == configuration::GPU)
     {
 #ifdef __CUDACC__
@@ -380,7 +382,8 @@ void display_func()
             thrust::raw_pointer_cast(rend->device_normals.data()),
             thrust::raw_pointer_cast(rend->device_materials.data()),
             thrust::raw_pointer_cast(device_lights.data()),
-            thrust::raw_pointer_cast(device_lights.data()) + device_lights.size()
+            thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+            bg_color
         );
 
         typedef vector<4, renderer::scalar_type_gpu> internal_color_type;
@@ -423,7 +426,8 @@ void display_func()
             mod.materials.data(),
 //            mod.textures.data(),
             lights.data(),
-            lights.data() + lights.size()
+            lights.data() + lights.size(),
+            bg_color
         );
 
         switch (rend->algo)

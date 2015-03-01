@@ -29,15 +29,6 @@ struct kernel
 
         typedef typename R::scalar_type scalar_type;
 
-        C bg_color
-        (
-            scalar_type(0.1),
-            scalar_type(0.4),
-            scalar_type(1.0),
-            scalar_type(1.0)
-        );
-
-
         C shaded_clr(scalar_type(0.0));
 
         auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
@@ -54,14 +45,14 @@ struct kernel
                 sr.light    = it;
                 auto clr    = surf.shade(sr);
 
-                shaded_clr += select( hit_rec.hit, C(clr, scalar_type(1.0)), bg_color );
+                shaded_clr += select( hit_rec.hit, C(clr, scalar_type(1.0)), C(params.bg_color) );
             }
 
             return shaded_clr;
         }
         else
         {
-            return bg_color;
+            return C(params.bg_color);
         }
     }
 };
