@@ -6,9 +6,9 @@
 #ifndef VSNRAY_SURFACE_INL
 #define VSNRAY_SURFACE_INL
 
+#include <stdexcept>
 #include <type_traits>
 
-#include "../bvh.h"
 #include "../generic_prim.h"
 
 namespace visionaray
