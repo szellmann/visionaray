@@ -134,7 +134,7 @@ public:
                     materials_.push_back(vsnray_mat);
                 }
 
-                assert( static_cast<material_list::size_type>(static_cast<unsigned>(materials.size()) == materials.size()) );
+                assert( static_cast<material_list::size_type>(static_cast<unsigned>(materials_.size()) == materials_.size()) );
 
                 osg::TriangleFunctor<store_triangle> tf;
                 tf.init( triangles_, normals_, materials_.size() == 0 ? 0 : static_cast<unsigned>(materials_.size() - 1) );
