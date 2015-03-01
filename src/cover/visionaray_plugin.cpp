@@ -259,7 +259,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         // TODO: no dynamic scenes for now :(
         get_scene_visitor visitor(impl_->triangles, impl_->normals, impl_->materials,
             osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
-        visitor.apply(*opencover::cover->getObjectsRoot());
+        opencover::cover->getObjectsRoot()->accept(visitor);
 
         if (impl_->triangles.size() == 0)
         {
