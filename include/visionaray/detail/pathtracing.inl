@@ -61,7 +61,7 @@ struct kernel
                 vec_type refl_dir;
                 vec_type view_dir = -ray.dir;
 
-                auto surf = get_surface(params, hit_rec);
+                auto surf = get_surface(hit_rec, params);
                 auto below = active_rays & (dot(view_dir, surf.normal) < scalar_type(0.0));
 
                 if (any(below))

@@ -44,7 +44,7 @@ struct kernel
 
         if (any(hit_rec.hit))
         {
-            auto surf = get_surface(params, hit_rec);
+            auto surf = get_surface(hit_rec, params);
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {

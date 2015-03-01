@@ -50,7 +50,7 @@ struct kernel
         while (any(hit_rec.hit) && any(mirror > scene_epsilon) && depth++ < 4/*1*/)
         {
             C shaded_clr(scalar_type(0.0));
-            auto surf = get_surface(params, hit_rec);
+            auto surf = get_surface(hit_rec, params);
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {

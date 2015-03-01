@@ -22,9 +22,9 @@ template <typename R, typename N, typename M>
 VSNRAY_FUNC
 inline surface<M> get_surface
 (
+    hit_record<R, primitive<unsigned>> const& hr,
     N const* normals,
-    M const* materials,
-    hit_record<R, primitive<unsigned>> const& hr
+    M const* materials
 )
 {
     return surface<M>
@@ -38,11 +38,11 @@ template <typename R, typename N, typename TC, typename M, typename T>
 VSNRAY_FUNC
 inline surface<M, vector<3, float>> get_surface
 (
+    hit_record<R, primitive<unsigned>> const& hr,
     N const* normals,
     TC const* tex_coords,
     M const* materials,
     T const* textures,
-    hit_record<R, primitive<unsigned>> const& hr,
     std::integral_constant<unsigned, 3>
 )
 {
@@ -73,14 +73,14 @@ template <typename R, typename N, typename M>
 VSNRAY_FUNC
 inline surface<M> get_surface
 (
+    hit_record<R, primitive<unsigned>> const& hr,
     basic_triangle<3, float> const* primitives,
     N const* normals,
-    M const* materials,
-    hit_record<R, primitive<unsigned>> const& hr
+    M const* materials
 )
 {
     VSNRAY_UNUSED(primitives);
-    return get_surface(normals, materials, hr);
+    return get_surface(hr, normals, materials);
 }
 
 
@@ -92,10 +92,10 @@ template <typename R, typename N, typename M>
 VSNRAY_FUNC
 inline surface<M> get_surface
 (
+    hit_record<R, primitive<unsigned>> const& hr,
     generic_prim const* primitives,
     N const* normals,
-    M const* materials,
-    hit_record<R, primitive<unsigned>> const& hr
+    M const* materials
 )
 {
 
@@ -132,30 +132,30 @@ template <template <typename> class B, typename N, template <typename> class M, 
 VSNRAY_FUNC
 inline surface<M<typename R::scalar_type>> get_surface
 (
+    hit_record<R, primitive<unsigned>> const& hr,
     B<basic_triangle<3, float>> const* tree,
     N const* normals,
-    M<float> const* materials,
-    hit_record<R, primitive<unsigned>> const& hr
+    M<float> const* materials
 )
 {
     VSNRAY_UNUSED(tree);
-    return get_surface(normals, materials, hr);
+    return get_surface(hr, normals, materials);
 }
 
 template <template <typename> class B, typename N, typename TC, template <typename> class M, typename T, typename R>
 VSNRAY_FUNC
 inline surface<M<typename R::scalar_type>, vector<3, typename R::scalar_type>> get_surface
 (
+    hit_record<R, primitive<unsigned>> const& hr,
     B<basic_triangle<3, float>> const* tree,
     N const* normals,
     TC const* tex_coords,
     M<float> const* materials,
-    T const* textures,
-    hit_record<R, primitive<unsigned>> const& hr
+    T const* textures
 )
 {
     VSNRAY_UNUSED(tree);
-    return get_surface(normals, tex_coords, materials, textures, hr, std::integral_constant<unsigned, 3>{});
+    return get_surface(hr, normals, tex_coords, materials, textures, std::integral_constant<unsigned, 3>{});
 }
 
 
@@ -166,9 +166,9 @@ inline surface<M<typename R::scalar_type>, vector<3, typename R::scalar_type>> g
 template <typename N, template <typename> class M>
 inline surface<M<simd::float4>> get_surface
 (
+    hit_record<simd::ray4, primitive<unsigned>> const& hr,
     N const* normals,
-    M<float> const* materials,
-    hit_record<simd::ray4, primitive<unsigned>> const& hr
+    M<float> const* materials
 )
 {
     VSNRAY_ALIGN(16) int prim_ids[4];
@@ -205,11 +205,11 @@ inline surface<M<simd::float4>> get_surface
 template <typename N, typename TC, template <typename> class M, typename T>
 inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
 (
+    hit_record<simd::ray4, primitive<unsigned>> const& hr,
     N const* normals,
     TC const* tex_coords,
     M<float> const* materials,
     T const* textures,
-    hit_record<simd::ray4, primitive<unsigned>> const& hr,
     std::integral_constant<unsigned, 3>
 )
 {
@@ -288,14 +288,14 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
 template <typename N, template <typename> class M>
 inline surface<M<simd::float4>> get_surface
 (
+    hit_record<simd::ray4, primitive<unsigned>> const& hr,
     basic_triangle<3, float> const* primitives,
     N const* normals,
-    M<float> const* materials,
-    hit_record<simd::ray4, primitive<unsigned>> const& hr
+    M<float> const* materials
 )
 {
     VSNRAY_UNUSED(primitives);
-    return get_surface(normals, materials, hr);
+    return get_surface(hr, normals, materials);
 }
 
 
@@ -306,9 +306,9 @@ inline surface<M<simd::float4>> get_surface
 template <unsigned C, typename N>
 inline N simd_normal
 (
+    hit_record<simd::ray4, primitive<unsigned>> const& hr,
     generic_prim const* primitives,
     N const* normals,
-    hit_record<simd::ray4, primitive<unsigned>> const& hr,
     unsigned prim_type, unsigned prim_id
 )
 {
@@ -345,10 +345,10 @@ inline N simd_normal
 template <typename N, template <typename> class M>
 inline surface<M<simd::float4>> get_surface 
 ( 
+    hit_record<simd::ray4, primitive<unsigned>> const& hr ,
     generic_prim const* primitives,
     N const* normals, 
-    M<float> const* materials,
-    hit_record<simd::ray4, primitive<unsigned>> const& hr 
+    M<float> const* materials
 ) 
 { 
  
@@ -363,10 +363,10 @@ inline surface<M<simd::float4>> get_surface
 
     N n[4] = 
     { 
-        simd_normal<0>(primitives, normals, hr, types[0], prim_ids[0]), 
-        simd_normal<1>(primitives, normals, hr, types[1], prim_ids[1]), 
-        simd_normal<2>(primitives, normals, hr, types[2], prim_ids[2]), 
-        simd_normal<3>(primitives, normals, hr, types[3], prim_ids[3]) 
+        simd_normal<0>(hr, primitives, normals, types[0], prim_ids[0]), 
+        simd_normal<1>(hr, primitives, normals, types[1], prim_ids[1]), 
+        simd_normal<2>(hr, primitives, normals, types[2], prim_ids[2]), 
+        simd_normal<3>(hr, primitives, normals, types[3], prim_ids[3]) 
     }; 
 
     return surface<M<simd::float4>>
@@ -397,9 +397,9 @@ inline surface<M<simd::float4>> get_surface
 template <typename N, template <typename> class M>
 inline surface<M<simd::float8>> get_surface
 (
+    hit_record<simd::ray8, primitive<unsigned>> const& hr,
     N const* normals,
-    M<float> const* materials,
-    hit_record<simd::ray8, primitive<unsigned>> const& hr
+    M<float> const* materials
 )
 {
     VSNRAY_ALIGN(32) int prim_ids[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -448,14 +448,14 @@ inline surface<M<simd::float8>> get_surface
 template <typename N, template <typename> class M>
 inline surface<M<simd::float8>> get_surface
 (
+    hit_record<simd::ray8, primitive<unsigned>> const& hr,
     basic_triangle<3, float> const* primitives,
     N const* normals,
-    M<float> const* materials,
-    hit_record<simd::ray8, primitive<unsigned>> const& hr
+    M<float> const* materials
 )
 {
     VSNRAY_UNUSED(primitives);
-    return get_surface(normals, materials, hr);
+    return get_surface(hr, normals, materials);
 }
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -465,28 +465,28 @@ inline surface<M<simd::float8>> get_surface
 // Functions to deduce appropriate surface via parameter inspection
 //
 
-template <typename Params, typename HR>
+template <typename HR, typename Params>
 VSNRAY_FUNC
-inline auto get_surface(Params const& p, HR const& hr, detail::has_no_textures_tag)
-    -> decltype( get_surface(p.prims.begin, p.normals, p.materials, hr) )
+inline auto get_surface(HR const& hr, Params const& p, detail::has_no_textures_tag)
+    -> decltype( get_surface(hr, p.prims.begin, p.normals, p.materials) )
 {
-    return get_surface(p.prims.begin, p.normals, p.materials, hr);
+    return get_surface(hr, p.prims.begin, p.normals, p.materials);
 }
 
-template <typename Params, typename HR>
+template <typename HR, typename Params>
 VSNRAY_FUNC
-inline auto get_surface(Params const& p, HR const& hr, detail::has_textures_tag)
-    -> decltype( get_surface(p.prims.begin, p.normals, p.tex_coords, p.materials, p.textures, hr) )
+inline auto get_surface(HR const& hr, Params const& p, detail::has_textures_tag)
+    -> decltype( get_surface(hr, p.prims.begin, p.normals, p.tex_coords, p.materials, p.textures) )
 {
-    return get_surface(p.prims.begin, p.normals, p.tex_coords, p.materials, p.textures, hr);
+    return get_surface(hr, p.prims.begin, p.normals, p.tex_coords, p.materials, p.textures);
 }
 
-template <typename Params, typename HR>
+template <typename HR, typename Params>
 VSNRAY_FUNC
-inline auto get_surface(Params const& p, HR const& hr)
-    -> decltype( get_surface(p, hr, detail::has_textures<Params>{}) )
+inline auto get_surface(HR const& hr, Params const& p)
+    -> decltype( get_surface(hr, p, detail::has_textures<Params>{}) )
 {
-    return get_surface(p, hr, detail::has_textures<Params>{});
+    return get_surface(hr, p, detail::has_textures<Params>{});
 }
 
 
