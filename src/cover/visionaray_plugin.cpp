@@ -326,8 +326,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     glGetLightfv(GL_LIGHT0, GL_POSITION, lpos.data());
 
     aligned_vector<point_light<float>> lights;
-    vec3 light0_pos = (inverse(view_matrix) * lpos).xyz();
-    lights.push_back({ light0_pos });
+    lights.push_back({ lpos.xyz() });
 
 
     auto kparams = make_params
