@@ -137,7 +137,7 @@ public:
                 assert( static_cast<material_list::size_type>(static_cast<unsigned>(materials.size()) == materials.size()) );
 
                 osg::TriangleFunctor<store_triangle> tf;
-                tf.init( triangles_, normals_, std::max(0U, static_cast<unsigned>(materials_.size()) - 1) );
+                tf.init( triangles_, normals_, materials_.size() == 0 ? 0 : static_cast<unsigned>(materials_.size() - 1) );
                 drawable->accept(tf);
             }
         }
