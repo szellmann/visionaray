@@ -440,7 +440,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         impl_->materials.data(),
         lights.data(),
         lights.data() + lights.size(),
-        vec4( clear_color.x(), clear_color.y(), clear_color.z(), clear_color.w() )
+        vec4(0.0f)
     );
 
     // Render
@@ -449,9 +449,8 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     kern.params = kparams;
     impl_->host_sched.frame(kern, sparams);
 
-    // TODO: generate depth buffer and use RGB render target
+    // TODO: generate depth buffer
     glDepthMask(GL_FALSE);
-//  glPixelTransferf(GL_ALPHA_SCALE, 0.0f);
 
     impl_->host_rt.display_color_buffer();
 }
