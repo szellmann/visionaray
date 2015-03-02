@@ -375,7 +375,7 @@ void display_func()
 
         device_lights.push_back(lights[0]);
 
-        auto kparams = make_params
+        auto kparams = make_params<normals_per_face_binding>
         (
             thrust::raw_pointer_cast(device_primitives.data()),
             thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
@@ -417,7 +417,7 @@ void display_func()
 
         auto& mod = rend->mod;
 
-        auto kparams = make_params
+        auto kparams = make_params<normals_per_face_binding>
         (
             host_primitives.data(),
             host_primitives.data() + host_primitives.size(),

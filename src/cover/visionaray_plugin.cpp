@@ -14,7 +14,7 @@
 #include <osg/Material>
 #include <osg/MatrixTransform>
 #include <osg/StateSet>
-#include <osg/TriangleFunctor>
+#include <osg/TriangleIndexFunctor>
 
 #include <cover/coVRConfig.h>
 #include <cover/coVRPluginSupport.h>
@@ -56,47 +56,70 @@ class store_triangle
 public:
 
     store_triangle()
-        : triangles_(nullptr)
-        , normals_(nullptr)
+        : in({ nullptr, nullptr, osg::Matrix(), 0 })
+        , out({ nullptr, nullptr })
     {}
 
-    void init(triangle_list& tris, normal_list& norms, unsigned geom_id, osg::Matrix const& trans_mat)
+    void init(osg::Vec3Array* in_vertices, osg::Vec3Array* in_normals,
+        osg::Matrix const& in_trans_mat, unsigned in_geom_id,
+        triangle_list& out_triangles, normal_list& out_normals)
     {
-        triangles_  = &tris;
-        normals_    = &norms;
-        geom_id_    = geom_id;
-        trans_mat_  = trans_mat;
+        in.vertices     = in_vertices;
+        in.normals      = in_normals;
+        in.trans_mat    = in_trans_mat;
+        in.geom_id      = in_geom_id;
+        out.triangles   = &out_triangles;
+        out.normals     = &out_normals;
     }
 
-    void operator()(osg::Vec3 v1, osg::Vec3 v2, osg::Vec3 v3, bool) const
+    void operator()(unsigned i1, unsigned i2, unsigned i3) const
     {
-        assert( triangles_ && normals_ );
+        assert( in.vertices && out.triangles );
+        assert( in.vertices->size() > i1 && in.vertices->size() > i2 && in.vertices->size() > i3 );
 
-        v1 = v1 * trans_mat_;
-        v2 = v2 * trans_mat_;
-        v3 = v3 * trans_mat_;
+        auto v1 = (*in.vertices)[i1] * in.trans_mat;
+        auto v2 = (*in.vertices)[i2] * in.trans_mat;
+        auto v3 = (*in.vertices)[i3] * in.trans_mat;
 
         triangle_type tri;
-        tri.prim_id = static_cast<unsigned>(triangles_->size());
-        tri.geom_id = geom_id_;
+        tri.prim_id = static_cast<unsigned>(out.triangles->size());
+        tri.geom_id = in.geom_id;
         tri.v1 = vec3(v1.x(), v1.y(), v1.z());
         tri.e1 = vec3(v2.x(), v2.y(), v2.z()) - tri.v1;
         tri.e2 = vec3(v3.x(), v3.y(), v3.z()) - tri.v1;
-        triangles_->push_back(tri);
+        out.triangles->push_back(tri);
 
-        normals_->push_back( normalize(cross(tri.e1, tri.e2)) );
+        assert( in.normals && out.normals );
+        assert( in.normals->size() > i1 && in.normals->size() > i2 && in.normals->size() > i3 );
 
-        assert( triangles_->size() == normals_->size() );
+        auto n1 = (*in.normals)[i1]; // TODO: xform normals
+        auto n2 = (*in.normals)[i2]; // TODO: xform normals
+        auto n3 = (*in.normals)[i3]; // TODO: xform normals
+
+        out.normals->push_back( vec3(n1.x(), n1.y(), n1.z()) );
+        out.normals->push_back( vec3(n2.x(), n2.y(), n2.z()) );
+        out.normals->push_back( vec3(n3.x(), n3.y(), n3.z()) );
+
+        assert( out.triangles->size() == out.normals->size() * 3 );
     }
 
 private:
 
-    // Store pointers because osg::TriangleFunctor is shitty..
-    triangle_list*  triangles_;
-    normal_list*    normals_;
-    unsigned        geom_id_;
+    // Store pointers because osg::TriangleIndexFunctor is shitty..
 
-    osg::Matrix     trans_mat_;
+    struct
+    {
+        osg::Vec3Array* vertices;
+        osg::Vec3Array* normals;
+        osg::Matrix     trans_mat;
+        unsigned        geom_id;
+    } in;
+
+    struct
+    {
+        triangle_list*  triangles;
+        normal_list*    normals;
+    } out;
 
 };
 
@@ -169,35 +192,56 @@ public:
         for (size_t i = 0; i < geode.getNumDrawables(); ++i)
         {
             auto drawable = geode.getDrawable(i);
-            if (drawable)
+            if (!drawable)
             {
-                auto set = drawable->getOrCreateStateSet();
-                auto attr = set->getAttribute(osg::StateAttribute::MATERIAL);
-                auto mat = dynamic_cast<osg::Material*>(attr);
-
-                if (mat)
-                {
-                    auto cd = mat->getDiffuse(osg::Material::Face::FRONT);
-                    auto cs = mat->getSpecular(osg::Material::Face::FRONT);
-
-                    phong<float> vsnray_mat;
-                    vsnray_mat.set_cd( vec3(cd.x(), cd.y(), cd.z()) );
-                    vsnray_mat.set_kd( 1.0f );
-                    vsnray_mat.set_ks( cs.x() ); // TODO: e.g. luminance?
-                    vsnray_mat.set_specular_exp( mat->getShininess(osg::Material::Face::FRONT) );
-                    materials_.push_back(vsnray_mat);
-                }
-
-                get_world_transform_visitor visitor;
-                geode.accept(visitor);
-                auto world_transform = visitor.get_matrix();
-
-                assert( static_cast<material_list::size_type>(static_cast<unsigned>(materials_.size()) == materials_.size()) );
-
-                osg::TriangleFunctor<store_triangle> tf;
-                tf.init( triangles_, normals_, materials_.size() == 0 ? 0 : static_cast<unsigned>(materials_.size() - 1), world_transform );
-                drawable->accept(tf);
+                continue;
             }
+
+            auto geom = drawable->asGeometry();
+            if (!geom)
+            {
+                continue;
+            }
+
+            auto node_vertices = dynamic_cast<osg::Vec3Array*>(geom->getVertexArray());
+            if (!node_vertices || node_vertices->size() == 0)
+            {
+                continue;
+            }
+
+            auto node_normals  = dynamic_cast<osg::Vec3Array*>(geom->getNormalArray());
+            if (!node_normals || node_normals->size() == 0)
+            {
+                continue;
+            }
+
+            auto set = geom->getOrCreateStateSet();
+            auto attr = set->getAttribute(osg::StateAttribute::MATERIAL);
+            auto mat = dynamic_cast<osg::Material*>(attr);
+
+            if (mat)
+            {
+                auto cd = mat->getDiffuse(osg::Material::Face::FRONT);
+                auto cs = mat->getSpecular(osg::Material::Face::FRONT);
+
+                phong<float> vsnray_mat;
+                vsnray_mat.set_cd( vec3(cd.x(), cd.y(), cd.z()) );
+                vsnray_mat.set_kd( 1.0f );
+                vsnray_mat.set_ks( cs.x() ); // TODO: e.g. luminance?
+                vsnray_mat.set_specular_exp( mat->getShininess(osg::Material::Face::FRONT) );
+                materials_.push_back(vsnray_mat);
+            }
+
+            get_world_transform_visitor visitor;
+            geode.accept(visitor);
+            auto world_transform = visitor.get_matrix();
+
+            assert( static_cast<material_list::size_type>(static_cast<unsigned>(materials_.size()) == materials_.size()) );
+            unsigned geom_id = materials_.size() == 0 ? 0 : static_cast<unsigned>(materials_.size() - 1);
+
+            osg::TriangleIndexFunctor<store_triangle> tf;
+            tf.init( node_vertices, node_normals, world_transform, geom_id, triangles_, normals_ );
+            geom->accept(tf);
         }
 
         base_type::traverse(geode);
@@ -388,7 +432,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     auto clear_color = osg_cam->getClearColor();
 
-    auto kparams = make_params
+    auto kparams = make_params<normals_per_vertex_binding>
     (
         host_primitives.data(),
         host_primitives.data() + host_primitives.size(),

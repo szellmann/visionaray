@@ -17,6 +17,9 @@ namespace visionaray
 struct bvh_tag {};
 struct index_bvh_tag {};
 
+struct normals_per_face_binding {};
+struct normals_per_vertex_binding {};
+
 }
 
 #endif // VSNRAY_TAGS_H
