@@ -120,7 +120,6 @@ void tiled_sched<R>::impl::init_render_func(K kernel, sched_params<RT, PxSampler
 
     using SP            = sched_params<RT, PxSamplerT>;
     using scalar_type   = typename R::scalar_type;
-    using color_traits  = typename SP::color_traits;
 
     viewport = sparams.cam.get_viewport();
 

@@ -109,6 +109,11 @@ class get_world_transform_visitor : public osg::NodeVisitor
 {
 public:
 
+    using base_type = osg::NodeVisitor;
+    using base_type::apply;
+
+public:
+
     get_world_transform_visitor()
         : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_PARENTS)
     {
