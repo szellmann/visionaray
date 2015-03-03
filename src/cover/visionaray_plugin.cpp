@@ -101,9 +101,9 @@ public:
 
         // mul left instead of transposing the matrix
         // see http://forum.openscenegraph.org/viewtopic.php?t=2494
-        auto n1 = inv_trans_mat * (*in.normals)[i1];
-        auto n2 = inv_trans_mat * (*in.normals)[i2];
-        auto n3 = inv_trans_mat * (*in.normals)[i3];
+        auto n1 = inv_trans_mat * osg::Vec4((*in.normals)[i1], 1.0);
+        auto n2 = inv_trans_mat * osg::Vec4((*in.normals)[i2], 1.0);
+        auto n3 = inv_trans_mat * osg::Vec4((*in.normals)[i3], 1.0);
 
         out.normals->push_back( vec3(n1.x(), n1.y(), n1.z()) );
         out.normals->push_back( vec3(n2.x(), n2.y(), n2.z()) );
