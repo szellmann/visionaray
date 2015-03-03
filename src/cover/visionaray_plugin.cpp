@@ -576,23 +576,30 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     aligned_vector<point_light<float>> lights;
 
+    int max_lights = 8;
+    glGetIntegerv(GL_MAX_LIGHTS, &max_lights);
+
+    for (int i = 0; i < max_lights; ++i)
     {
-        vec4 lpos;
-        glGetLightfv(GL_LIGHT0, GL_POSITION, lpos.data());
+        if (glIsEnabled(GL_LIGHT0 + i))
+        {
+            vec4 lpos;
+            glGetLightfv(GL_LIGHT0 + i, GL_POSITION, lpos.data());
 
-        vec4 ldiff;
-        glGetLightfv(GL_LIGHT0, GL_DIFFUSE, ldiff.data());
+            vec4 ldiff;
+            glGetLightfv(GL_LIGHT0 + i, GL_DIFFUSE, ldiff.data());
 
-        // map OpenGL [-1,1] to Visionaray [0,1]
-        ldiff += 1.0f;
-        ldiff /= 2.0f;
+            // map OpenGL [-1,1] to Visionaray [0,1]
+            ldiff += 1.0f;
+            ldiff /= 2.0f;
 
-        point_light<float> light;
-        light.set_position( lpos.xyz() );
-        light.set_cl( ldiff.xyz() );
-        light.set_kl( ldiff.w );
+            point_light<float> light;
+            light.set_position( lpos.xyz() );
+            light.set_cl( ldiff.xyz() );
+            light.set_kl( ldiff.w );
 
-        lights.push_back(light);
+            lights.push_back(light);
+        }
     }
 
     auto kparams = make_params<normals_per_vertex_binding>
