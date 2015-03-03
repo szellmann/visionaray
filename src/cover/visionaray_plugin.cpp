@@ -279,8 +279,9 @@ struct Visionaray::impl : vrui::coMenuListener
     using sub_menu  = std::unique_ptr<vrui::coSubMenuItem>;
 
     impl()
-        : ui({ nullptr, nullptr, nullptr })
+        : ui({ nullptr, nullptr, nullptr, nullptr, nullptr, nullptr })
         , state({ false })
+        , dev_state({ true, false })
     {
     }
 
@@ -298,14 +299,25 @@ struct Visionaray::impl : vrui::coMenuListener
     struct
     {
         menu                    main_menu;
+        menu                    dev_menu;
         sub_menu                main_menu_entry;
+        sub_menu                dev_menu_entry;
+
         check_box               toggle_update_mode;
+
+        check_box               toggle_normal_display;
     } ui;
 
     struct
     {
         bool                    update_scene_per_frame;
     } state;
+
+    struct
+    {
+        bool                    debug_mode;
+        bool                    show_normals;
+    } dev_state;
 
     void init_ui();
     void menuEvent(vrui::coMenuItem* item);
@@ -325,6 +337,18 @@ void Visionaray::impl::init_ui()
     ui.toggle_update_mode.reset(new coCheckboxMenuItem("Update scene per frame", false));
     ui.toggle_update_mode->setMenuListener(this);
     ui.main_menu->add(ui.toggle_update_mode.get());
+
+    // dev menu at the bottom!
+
+    ui.dev_menu_entry.reset(new coSubMenuItem("Developer..."));
+    ui.main_menu->add(ui.dev_menu_entry.get());
+
+    ui.dev_menu.reset(new coRowMenu("Developer", ui.main_menu.get()));
+    ui.dev_menu_entry->setMenu(ui.dev_menu.get());
+
+    ui.toggle_normal_display.reset(new coCheckboxMenuItem("Show surface normals", false));
+    ui.toggle_normal_display->setMenuListener(this);
+    ui.dev_menu->add(ui.toggle_normal_display.get());
 }
 
 void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
@@ -332,6 +356,11 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
     if (item == ui.toggle_update_mode.get())
     {
         state.update_scene_per_frame = ui.toggle_update_mode->getState();
+    }
+
+    if (item == ui.toggle_normal_display.get())
+    {
+        dev_state.show_normals = ui.toggle_normal_display->getState();
     }
 }
 
@@ -528,9 +557,25 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     // Render
 
-    auto kern =  simple::kernel<decltype(kparams)>();
-    kern.params = kparams;
-    impl_->host_sched.frame(kern, sparams);
+    if (impl_->dev_state.debug_mode && impl_->dev_state.show_normals)
+    {
+        using R = host_ray_type;
+        using S = typename R::scalar_type;
+        using C = vector<4, S>;
+        impl_->host_sched.frame([&](R ray) -> C
+        {
+            auto hit_rec = closest_hit(ray, kparams.prims.begin, kparams.prims.end);
+            auto surf = get_surface(hit_rec, kparams);
+            return select( hit_rec.hit, C(surf.normal, S(1.0)), C(0.0) );
+        },
+        sparams);
+    }
+    else
+    {
+        auto kern =  simple::kernel<decltype(kparams)>();
+        kern.params = kparams;
+        impl_->host_sched.frame(kern, sparams);
+    }
 
     // TODO: generate depth buffer
     glDepthMask(GL_FALSE);
