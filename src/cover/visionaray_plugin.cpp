@@ -20,6 +20,7 @@
 #include <cover/coVRPluginSupport.h>
 #include <cover/VRViewer.h>
 
+#include <OpenVRUI/coCheckboxGroup.h>
 #include <OpenVRUI/coCheckboxMenuItem.h>
 #include <OpenVRUI/coRowMenu.h>
 #include <OpenVRUI/coSubMenuItem.h>
@@ -274,13 +275,16 @@ private:
 struct Visionaray::impl : vrui::coMenuListener
 {
 
-    using check_box = std::unique_ptr<vrui::coCheckboxMenuItem>;
-    using menu      = std::unique_ptr<vrui::coMenu>;
-    using sub_menu  = std::unique_ptr<vrui::coSubMenuItem>;
+    using check_box     = std::unique_ptr<vrui::coCheckboxMenuItem>;
+    using menu          = std::unique_ptr<vrui::coMenu>;
+    using radio_button  = std::unique_ptr<vrui::coCheckboxMenuItem>;
+    using radio_group   = std::unique_ptr<vrui::coCheckboxGroup>;
+    using sub_menu      = std::unique_ptr<vrui::coSubMenuItem>;
+
+    enum algorithm { Simple, Whitted };
 
     impl()
-        : ui({ nullptr, nullptr, nullptr, nullptr, nullptr, nullptr })
-        , state({ false })
+        : state({ Simple, false })
         , dev_state({ true, false })
     {
     }
@@ -299,17 +303,27 @@ struct Visionaray::impl : vrui::coMenuListener
     struct
     {
         menu                    main_menu;
+        menu                    algo_menu;
         menu                    dev_menu;
         sub_menu                main_menu_entry;
+        sub_menu                algo_menu_entry;
         sub_menu                dev_menu_entry;
 
+        // main menu
         check_box               toggle_update_mode;
 
+        // algo menu
+        radio_group             algo_group;
+        radio_button            simple_button;
+        radio_button            whitted_button;
+
+        // dev menu
         check_box               toggle_normal_display;
     } ui;
 
     struct
     {
+        algorithm               algo;
         bool                    update_scene_per_frame;
     } state;
 
@@ -331,20 +345,45 @@ void Visionaray::impl::init_ui()
     ui.main_menu_entry.reset(new coSubMenuItem("Visionaray..."));
     opencover::cover->getMenu()->add(ui.main_menu_entry.get());
 
+    // main menu
+
     ui.main_menu.reset(new coRowMenu("Visionaray", opencover::cover->getMenu()));
     ui.main_menu_entry->setMenu(ui.main_menu.get());
+
 
     ui.toggle_update_mode.reset(new coCheckboxMenuItem("Update scene per frame", false));
     ui.toggle_update_mode->setMenuListener(this);
     ui.main_menu->add(ui.toggle_update_mode.get());
 
-    // dev menu at the bottom!
+
+    // algorithm submenu
+
+    ui.algo_menu_entry.reset(new coSubMenuItem("Rendering algorithm..."));
+    ui.main_menu->add(ui.algo_menu_entry.get());
+
+    ui.algo_menu.reset(new coRowMenu("Rendering algorithm", ui.main_menu.get()));
+    ui.algo_menu_entry->setMenu(ui.algo_menu.get());
+
+
+    ui.algo_group.reset(new coCheckboxGroup( /* allow empty selection: */ false ));
+
+    ui.simple_button.reset(new coCheckboxMenuItem("Simple", false, ui.algo_group.get()));
+    ui.simple_button->setMenuListener(this);
+    ui.algo_menu->add(ui.simple_button.get());
+
+    ui.whitted_button.reset(new coCheckboxMenuItem("Whitted", false, ui.algo_group.get()));
+    ui.whitted_button->setMenuListener(this);
+    ui.algo_menu->add(ui.whitted_button.get());
+
+
+    // dev submenu at the bottom!
 
     ui.dev_menu_entry.reset(new coSubMenuItem("Developer..."));
     ui.main_menu->add(ui.dev_menu_entry.get());
 
     ui.dev_menu.reset(new coRowMenu("Developer", ui.main_menu.get()));
     ui.dev_menu_entry->setMenu(ui.dev_menu.get());
+
 
     ui.toggle_normal_display.reset(new coCheckboxMenuItem("Show surface normals", false));
     ui.toggle_normal_display->setMenuListener(this);
@@ -353,11 +392,23 @@ void Visionaray::impl::init_ui()
 
 void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
 {
+    // main menu
     if (item == ui.toggle_update_mode.get())
     {
         state.update_scene_per_frame = ui.toggle_update_mode->getState();
     }
 
+    // algorithm submenu
+    if (item == ui.simple_button.get())
+    {
+        state.algo = Simple;
+    }
+    else if (item == ui.whitted_button.get())
+    {
+        state.algo = Whitted;
+    }
+
+    // dev submenu
     if (item == ui.toggle_normal_display.get())
     {
         dev_state.show_normals = ui.toggle_normal_display->getState();
@@ -570,11 +621,21 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         },
         sparams);
     }
-    else
+    else if (impl_->state.algo == impl::Simple)
     {
-        auto kern =  simple::kernel<decltype(kparams)>();
+        auto kern = simple::kernel<decltype(kparams)>();
         kern.params = kparams;
         impl_->host_sched.frame(kern, sparams);
+    }
+    else if (impl_->state.algo == impl::Whitted)
+    {
+        auto kern =  whitted::kernel<decltype(kparams)>();
+        kern.params = kparams;
+        impl_->host_sched.frame(kern, sparams);
+    }
+    else
+    {
+        // TODO: inform user
     }
 
     // TODO: generate depth buffer
