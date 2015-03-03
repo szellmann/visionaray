@@ -96,9 +96,13 @@ public:
         assert( in.normals && out.normals );
         assert( in.normals->size() > i1 && in.normals->size() > i2 && in.normals->size() > i3 );
 
-        auto n1 = (*in.normals)[i1]; // TODO: xform normals
-        auto n2 = (*in.normals)[i2]; // TODO: xform normals
-        auto n3 = (*in.normals)[i3]; // TODO: xform normals
+        auto inv_trans_mat = osg::Matrix::inverse(in.trans_mat);
+
+        // mul left instead of transposing the matrix
+        // see http://forum.openscenegraph.org/viewtopic.php?t=2494
+        auto n1 = inv_trans_mat * (*in.normals)[i1];
+        auto n2 = inv_trans_mat * (*in.normals)[i2];
+        auto n3 = inv_trans_mat * (*in.normals)[i3];
 
         out.normals->push_back( vec3(n1.x(), n1.y(), n1.z()) );
         out.normals->push_back( vec3(n2.x(), n2.y(), n2.z()) );
