@@ -20,6 +20,10 @@
 #include <cover/coVRPluginSupport.h>
 #include <cover/VRViewer.h>
 
+#include <OpenVRUI/coCheckboxMenuItem.h>
+#include <OpenVRUI/coRowMenu.h>
+#include <OpenVRUI/coSubMenuItem.h>
+
 #include <visionaray/detail/aligned_vector.h>
 #include <visionaray/math/math.h>
 #include <visionaray/bvh.h>
@@ -260,24 +264,74 @@ private:
 // Private implementation
 //
 
-struct Visionaray::impl
+struct Visionaray::impl : vrui::coMenuListener
 {
+
+    using check_box = std::unique_ptr<vrui::coCheckboxMenuItem>;
+    using menu      = std::unique_ptr<vrui::coMenu>;
+    using sub_menu  = std::unique_ptr<vrui::coSubMenuItem>;
+
     impl()
+        : ui({ nullptr, nullptr, nullptr })
+        , state({ false })
     {
     }
 
-    triangle_list                       triangles;
-    normal_list                         normals;
-    material_list                       materials;
-    host_bvh_type                       host_bvh;
-    host_sched_type                     host_sched;
-    cpu_buffer_rt                       host_rt;
+    triangle_list               triangles;
+    normal_list                 normals;
+    material_list               materials;
+    host_bvh_type               host_bvh;
+    host_sched_type             host_sched;
+    cpu_buffer_rt               host_rt;
 
-    recti                               viewport;
+    recti                       viewport;
 
-    osg::ref_ptr<osg::Geode>            geode;
+    osg::ref_ptr<osg::Geode>    geode;
+
+    struct
+    {
+        menu                    main_menu;
+        sub_menu                main_menu_entry;
+        check_box               toggle_update_mode;
+    } ui;
+
+    struct
+    {
+        bool                    update_scene_per_frame;
+    } state;
+
+    void init_ui();
+    void menuEvent(vrui::coMenuItem* item);
+
 };
 
+void Visionaray::impl::init_ui()
+{
+    using namespace vrui;
+
+    ui.main_menu_entry.reset(new coSubMenuItem("Visionaray..."));
+    opencover::cover->getMenu()->add(ui.main_menu_entry.get());
+
+    ui.main_menu.reset(new coRowMenu("Visionaray", opencover::cover->getMenu()));
+    ui.main_menu_entry->setMenu(ui.main_menu.get());
+
+    ui.toggle_update_mode.reset(new coCheckboxMenuItem("Update scene per frame", false));
+    ui.toggle_update_mode->setMenuListener(this);
+    ui.main_menu->add(ui.toggle_update_mode.get());
+}
+
+void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
+{
+    if (item == ui.toggle_update_mode.get())
+    {
+        state.update_scene_per_frame = ui.toggle_update_mode->getState();
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Visionaray plugin
+//
 
 Visionaray::Visionaray()
     : impl_(new impl)
@@ -304,6 +358,8 @@ bool Visionaray::init()
     opencover::VRViewer::instance()->culling(false);
 
     std::cout << "Init Visionaray Plugin!!" << std::endl;
+
+    impl_->init_ui();
 
     ref_ptr<osg::StateSet> state = new osg::StateSet;
     state->setGlobalDefaults();
@@ -356,9 +412,14 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     // Scene data
 
-    if (impl_->triangles.size() == 0)
+    if (impl_->state.update_scene_per_frame || impl_->triangles.size() == 0)
     {
-        // TODO: no dynamic scenes for now :(
+        // TODO: real dynamic scenes :)
+
+        impl_->triangles.clear();
+        impl_->normals.clear();
+        impl_->materials.clear();
+
         get_scene_visitor visitor(impl_->triangles, impl_->normals, impl_->materials,
             osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
         opencover::cover->getObjectsRoot()->accept(visitor);
