@@ -53,6 +53,28 @@ using host_sched_type   = tiled_sched<host_ray_type>;
 
 
 //-------------------------------------------------------------------------------------------------
+// Conversion between osg and visionaray
+//
+
+vec3 osg_cast(osg::Vec3 const& v)
+{
+    return vec3( v.x(), v.y(), v.z() );
+}
+
+vec4 osg_cast(osg::Vec4 const& v)
+{
+    return vec4( v.x(), v.y(), v.z(), v.w() );
+}
+
+mat4 osg_cast(osg::Matrixd const& m)
+{
+    float arr[16];
+    std::copy(m.ptr(), m.ptr() + 16, arr);
+    return mat4(arr);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Functor that stores triangles from osg::Drawable
 //
 
@@ -89,9 +111,9 @@ public:
         triangle_type tri;
         tri.prim_id = static_cast<unsigned>(out.triangles->size());
         tri.geom_id = in.geom_id;
-        tri.v1 = vec3(v1.x(), v1.y(), v1.z());
-        tri.e1 = vec3(v2.x(), v2.y(), v2.z()) - tri.v1;
-        tri.e2 = vec3(v3.x(), v3.y(), v3.z()) - tri.v1;
+        tri.v1 = osg_cast(v1);
+        tri.e1 = osg_cast(v2) - tri.v1;
+        tri.e2 = osg_cast(v3) - tri.v1;
         out.triangles->push_back(tri);
 
         assert( in.normals && out.normals );
@@ -105,9 +127,9 @@ public:
         auto n2 = inv_trans_mat * osg::Vec4((*in.normals)[i2], 1.0);
         auto n3 = inv_trans_mat * osg::Vec4((*in.normals)[i3], 1.0);
 
-        out.normals->push_back( vec3(n1.x(), n1.y(), n1.z()) );
-        out.normals->push_back( vec3(n2.x(), n2.y(), n2.z()) );
-        out.normals->push_back( vec3(n3.x(), n3.y(), n3.z()) );
+        out.normals->push_back( osg_cast(n1).xyz() );
+        out.normals->push_back( osg_cast(n2).xyz() );
+        out.normals->push_back( osg_cast(n3).xyz() );
 
         assert( out.triangles->size() == out.normals->size() * 3 );
     }
@@ -235,8 +257,8 @@ public:
                 auto cs = mat->getSpecular(osg::Material::Face::FRONT);
 
                 phong<float> vsnray_mat;
-                vsnray_mat.set_ca( vec3(ca.x(), ca.y(), ca.z()) );
-                vsnray_mat.set_cd( vec3(cd.x(), cd.y(), cd.z()) );
+                vsnray_mat.set_ca( osg_cast(ca).xyz() );
+                vsnray_mat.set_cd( osg_cast(cd).xyz() );
                 vsnray_mat.set_ka( 1.0f );
                 vsnray_mat.set_kd( 1.0f );
                 vsnray_mat.set_ks( cs.x() ); // TODO: e.g. luminance?
@@ -547,18 +569,10 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     // TODO: understand COVER API..
 //  auto v = opencover::cover->getViewerMat();
     auto v = opencover::coVRConfig::instance()->channels[0].rightView;
-    auto osg_view_matrix = s * t * v;
-    auto osg_proj_matrix = opencover::coVRConfig::instance()->channels[0].rightProj;
+    auto view_matrix = osg_cast( s * t * v );
+    auto proj_matrix = osg_cast( opencover::coVRConfig::instance()->channels[0].rightProj );
+
     auto osg_viewport = osg_cam->getViewport();
-
-    float view[16];
-    float proj[16];
-
-    std::copy(osg_view_matrix.ptr(), osg_view_matrix.ptr() + 16, view);
-    std::copy(osg_proj_matrix.ptr(), osg_proj_matrix.ptr() + 16, proj);
-
-    mat4 view_matrix(view);
-    mat4 proj_matrix(proj);
     recti viewport(osg_viewport->x(), osg_viewport->y(), osg_viewport->width(), osg_viewport->height());
 
     auto sparams = make_sched_params<pixel_sampler::uniform_type>( view_matrix, proj_matrix, viewport, impl_->host_rt );
