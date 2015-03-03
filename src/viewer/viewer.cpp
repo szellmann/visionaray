@@ -359,8 +359,12 @@ void display_func()
 
     std::vector<light_type> lights;
 
-//  lights.push_back({0.0f, 1.0f, 1.0f});
-    lights.push_back({ rend->cam.eye() - rend->cam.center() });
+    light_type light;
+    light.set_cl( vec3(1.0, 1.0, 1.0) );
+    light.set_kl(1.0);
+    light.set_position( rend->cam.eye() - rend->cam.center() );
+
+    lights.push_back( light );
 
     vec4 bg_color(0.1, 0.4, 1.0, 1.0);
 

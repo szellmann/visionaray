@@ -48,11 +48,11 @@ struct kernel
             {
                 hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
 
-                auto light_pos = normalize( vec_type(it->position_) );
+                auto light_dir = normalize( vec_type(it->position()) );
                 ray_type shadow_ray
                 (
-                    hit_rec.isect_pos + light_pos * scene_epsilon,
-                    light_pos
+                    hit_rec.isect_pos + light_dir * scene_epsilon,
+                    light_dir
                 );
 
                 auto shadow_rec  = any_hit(shadow_ray, params.prims.begin, params.prims.end);

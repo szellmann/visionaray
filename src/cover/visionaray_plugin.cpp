@@ -424,13 +424,26 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     aligned_vector<host_bvh_type::bvh_ref> host_primitives;
     host_primitives.push_back(impl_->host_bvh.ref());
 
-    vec4 lpos;
-    glGetLightfv(GL_LIGHT0, GL_POSITION, lpos.data());
-
     aligned_vector<point_light<float>> lights;
-    lights.push_back({ lpos.xyz() });
 
-    auto clear_color = osg_cam->getClearColor();
+    {
+        vec4 lpos;
+        glGetLightfv(GL_LIGHT0, GL_POSITION, lpos.data());
+
+        vec4 ldiff;
+        glGetLightfv(GL_LIGHT0, GL_DIFFUSE, ldiff.data());
+
+        // map OpenGL [-1,1] to Visionaray [0,1]
+        ldiff += 1.0f;
+        ldiff /= 2.0f;
+
+        point_light<float> light;
+        light.set_position( lpos.xyz() );
+        light.set_cl( ldiff.xyz() );
+        light.set_kl( ldiff.w );
+
+        lights.push_back(light);
+    }
 
     auto kparams = make_params<normals_per_vertex_binding>
     (

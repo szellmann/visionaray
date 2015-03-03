@@ -96,15 +96,16 @@ public:
     VSNRAY_FUNC
     vector<3, U> shade(shade_record<L, U> const& sr) const
     {
-        vector<3, U> result(0.0, 0.0, 0.0);
+        using V = vector<3, U>;
+        V result(0.0, 0.0, 0.0);
 
         auto l = *sr.light;
-        auto wi = normalize(vector<3, U>(l.position_));
+        auto wi = normalize( V(l.position()) );
         auto wo = sr.view_dir;
         auto ndotl = dot(sr.normal, wi);
 
-        auto mask = sr.active & (ndotl >= U(0.0));
-        auto c = mul( diffuse_brdf_.f(sr.normal, wo, wi), vector<3, U>(ndotl), mask );
+        auto mask = sr.active & (ndotl > U(0.0));
+        auto c = diffuse_brdf_.f(sr.normal, wo, wi) * V(l.color()) * V(ndotl);
         result = add( result, c, mask );
 
         return result;
@@ -151,18 +152,18 @@ public:
     VSNRAY_FUNC
     vector<3, typename SR::scalar_type> shade(SR const& sr) const
     {
-        typedef typename SR::scalar_type    scalar_type_in;
-        typedef vector<3, scalar_type_in>   vec_type_in;
+        using U = typename SR::scalar_type;
+        using V = vector<3, U>;
 
-        vec_type_in result(0.0, 0.0, 0.0);
+        V result(0.0, 0.0, 0.0);
 
         auto l = *sr.light;
-        auto wi = normalize(vec_type_in(l.position_));
+        auto wi = normalize( V(l.position()) );
         auto wo = sr.view_dir;
         auto ndotl = dot(sr.normal, wi);
 
-        auto mask = sr.active & (ndotl >= scalar_type_in(0.0));
-        auto c = mul( add(cd(sr, wo, wi), specular_brdf_.f(sr.normal, wo, wi), mask), vec_type_in(ndotl), mask );
+        auto mask = sr.active & (ndotl > U(0.0));
+        auto c = ( cd(sr, wo, wi) + specular_brdf_.f(sr.normal, wo, wi) ) * V(l.color()) * V(ndotl);
         result = add( result, c, mask );
 
         return result;
