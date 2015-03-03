@@ -196,7 +196,9 @@ void finalize_build(BvhType& b, prim_data const* ptr, P const* primitives, size_
 template <typename BvhType, typename P>
 void finalize_build(BvhType& b, prim_data const* ptr, P const* primitives, size_t num_prims, bvh_tag)
 {
-    for (size_t i = 0; i < num_prims; ++i)
+    VSNRAY_UNUSED(num_prims); // TODO: check if indexed-finalize can make do w/o num_prims too!
+
+    for (size_t i = 0; i < b.primitives().size(); ++i)
     {
         b.primitives()[i] = primitives[ptr[i].idx];
     }
@@ -224,6 +226,58 @@ B build(P* primitives, size_t num_prims)
         bbox            = combine( bbox, ptr[i].bbox );
     }
 
+#if 1
+    vec3 avg_size;
+    for (size_t i = 0; i < num_prims; ++i)
+    {
+        avg_size += ptr[i].bbox.size();
+    }
+    avg_size /= vec3(num_prims);
+
+    aligned_vector<prim_data, 64> data_new;
+    for (size_t i = 0; i < num_prims; ++i)
+    {
+        auto size = ptr[i].bbox.size();
+
+        // calc num subdivisions
+        unsigned num_x = size.x > avg_size.x ? static_cast<unsigned>(size.x / avg_size.x) : 1;
+        unsigned num_y = size.y > avg_size.y ? static_cast<unsigned>(size.y / avg_size.y) : 1;
+        unsigned num_z = size.z > avg_size.z ? static_cast<unsigned>(size.z / avg_size.z) : 1;
+
+        float w = size.x / num_x;
+        float h = size.y / num_y;
+        float d = size.z / num_z;
+
+        auto min = ptr[i].bbox.min;
+
+        for (unsigned z = 0; z < num_z; ++z)
+        {
+            min.y = ptr[i].bbox.min.y;
+            for (unsigned y = 0; y < num_y; ++y)
+            {
+                min.x = ptr[i].bbox.min.x;
+                for (unsigned x = 0; x < num_x; ++x)
+                {
+                    prim_data pd;
+                    pd.idx = static_cast<unsigned>(i);
+                    pd.bbox = aabb( min, min + vec3(w, h, d) );
+                    pd.centroid = pd.bbox.center();
+                    data_new.push_back(pd);
+
+                    min.x += w;
+                }
+                min.y += h;
+            }
+            min.z += d;
+        }
+    }
+
+    data = data_new;
+    num_prims = data_new.size();
+    ptr = data.data();
+    result = B(primitives, num_prims);
+#endif
+
     // index into bvh's preallocated node list
     unsigned current_idx = 0;
 
@@ -233,7 +287,7 @@ B build(P* primitives, size_t num_prims)
     bvh_node root;
     root.bbox       = bbox;
     root.first_prim = 0;
-    root.num_prims  = static_cast<unsigned>(num_prims);
+    root.num_prims  = static_cast<unsigned>(data.size());
     result.nodes()[current_idx] = root;
     unsigned node_stack_ptr = 1;
 
@@ -389,5 +443,3 @@ BvhType build(P* primitives, size_t num_prims)
 }
 
 } // visionaray
-
-
