@@ -333,7 +333,9 @@ void load_obj(std::string const& filename, model& mod)
             if (mat_it != matlib.end())
             {
                 phong<float> mat;
+                mat.set_ca( mat_it->second.ka );
                 mat.set_cd( mat_it->second.kd );
+                mat.set_ka( 1.0f );
                 mat.set_kd( 1.0f );
                 mat.set_ks( 1.0f );
                 mat.set_specular_exp( mat_it->second.ns );
@@ -404,7 +406,9 @@ void load_obj(std::string const& filename, model& mod)
         for (size_t i = 0; i <= geom_id; ++i)
         {
             phong<float> m;
+            m.set_ca( vec3(0.2f, 0.2f, 0.2f) );
             m.set_cd( vec3(0.8f, 0.8f, 0.8f) );
+            m.set_ka( 1.0f );
             m.set_kd( 1.0f );
             m.set_ks( 1.0f );
             m.set_specular_exp( 32.0f );

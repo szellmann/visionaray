@@ -92,6 +92,11 @@ public:
     typedef T scalar_type;
     typedef vector<3, T> color_type;
 
+    VSNRAY_FUNC color_type ambient() const
+    {
+        return ca_ * ka_;
+    }
+
     template <typename L, typename U>
     VSNRAY_FUNC
     vector<3, U> shade(shade_record<L, U> const& sr) const
@@ -119,6 +124,16 @@ public:
     }
 
 
+    VSNRAY_FUNC void set_ca(color_type const& ca)
+    {
+        ca_ = ca;
+    }
+
+    VSNRAY_FUNC void set_ka(scalar_type ka)
+    {
+        ka_ = ka;
+    }
+
     VSNRAY_FUNC void set_cd(color_type const& cd)
     {
         diffuse_brdf_.cd = cd;
@@ -131,7 +146,9 @@ public:
 
 private:
 
-    lambertian<T> diffuse_brdf_;
+    color_type      ca_;
+    scalar_type     ka_;
+    lambertian<T>   diffuse_brdf_;
 
 };
 
@@ -147,6 +164,11 @@ public:
 
     typedef T scalar_type;
     typedef vector<3, T> color_type;
+
+    VSNRAY_FUNC color_type ambient() const
+    {
+        return ca_ * ka_;
+    }
 
     template <typename SR>
     VSNRAY_FUNC
@@ -183,6 +205,26 @@ public:
         return vector<3, U>(sr.cd) * diffuse_brdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, sampler);
     }
 
+
+    VSNRAY_FUNC void set_ca(color_type const& ca)
+    {
+        ca_ = ca;
+    }
+
+    VSNRAY_FUNC color_type get_ca() const
+    {
+        return ca_;
+    }
+
+    VSNRAY_FUNC void set_ka(scalar_type ka)
+    {
+        ka_ = ka;
+    }
+
+    VSNRAY_FUNC scalar_type get_ka() const
+    {
+        return ka_;
+    }
 
     VSNRAY_FUNC void set_cd(color_type const& cd)
     {
@@ -226,6 +268,8 @@ public:
 
 private:
 
+    color_type      ca_;
+    scalar_type     ka_;
     lambertian<T>   diffuse_brdf_;
     specular<T>     specular_brdf_;
 

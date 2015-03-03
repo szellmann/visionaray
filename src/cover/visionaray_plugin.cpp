@@ -229,11 +229,14 @@ public:
 
             if (mat)
             {
+                auto ca = mat->getAmbient(osg::Material::Face::FRONT);
                 auto cd = mat->getDiffuse(osg::Material::Face::FRONT);
                 auto cs = mat->getSpecular(osg::Material::Face::FRONT);
 
                 phong<float> vsnray_mat;
+                vsnray_mat.set_ca( vec3(ca.x(), ca.y(), ca.z()) );
                 vsnray_mat.set_cd( vec3(cd.x(), cd.y(), cd.z()) );
+                vsnray_mat.set_ka( 1.0f );
                 vsnray_mat.set_kd( 1.0f );
                 vsnray_mat.set_ks( cs.x() ); // TODO: e.g. luminance?
                 vsnray_mat.set_specular_exp( mat->getShininess(osg::Material::Face::FRONT) );
@@ -436,7 +439,9 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         if (impl_->materials.size() == 0)
         {
             phong<float> m;
+            m.set_ca( vec3(0.2f, 0.2f, 0.2f) );
             m.set_cd( vec3(0.8f, 0.8f, 0.8f) );
+            m.set_ka( 1.0f );
             m.set_kd( 1.0f );
             m.set_ks( 1.0f );
             m.set_specular_exp( 32.0f );

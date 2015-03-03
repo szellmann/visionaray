@@ -26,26 +26,24 @@ struct kernel
     VSNRAY_FUNC vector<4, typename R::scalar_type> operator()(R ray) const
     {
         using C = vector<4, typename R::scalar_type>;
-
-        typedef typename R::scalar_type scalar_type;
-
-        C shaded_clr(scalar_type(0.0));
+        using S = typename R::scalar_type;
 
         auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
 
         if (any(hit_rec.hit))
         {
             auto surf = get_surface(hit_rec, params);
+            C shaded_clr = select( hit_rec.hit, C(surf.material.ambient(), S(1.0)), C(params.bg_color) );
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
-                auto sr     = make_shade_record<Params, scalar_type>();
+                auto sr     = make_shade_record<Params, S>();
                 sr.active   = hit_rec.hit;
                 sr.view_dir = -ray.dir;
                 sr.light    = it;
                 auto clr    = surf.shade(sr);
 
-                shaded_clr += select( hit_rec.hit, C(clr, scalar_type(1.0)), C(params.bg_color) );
+                shaded_clr += select( hit_rec.hit, C(clr, S(1.0)), C(0.0) );
             }
 
             return shaded_clr;
