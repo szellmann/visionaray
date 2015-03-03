@@ -12,7 +12,7 @@ namespace detail
 
 template <bool AnyHit, typename R, typename P>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end)
+hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end, typename R::scalar_type max_t)
 {
 
     typedef typename R::scalar_type scalar_type;
@@ -26,7 +26,7 @@ hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end)
     for (prim_iterator it = begin; it != end; ++it)
     {
         auto hr = intersect(r, *it);
-        auto closer = hr.hit & ( hr.t >= scalar_type(0.0) && hr.t < result.t );
+        auto closer = hr.hit & ( hr.t >= scalar_type(0.0) && hr.t < max_t && hr.t < result.t );
         result.hit |= closer;
         result.t = select( closer, hr.t, result.t );
         result.prim_type = select( closer, hr.prim_type, result.prim_type );
@@ -45,6 +45,13 @@ hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end)
 
 }
 
+template <bool AnyHit, typename R, typename P>
+VSNRAY_FUNC
+hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end)
+{
+    return traverse<AnyHit>(r, begin, end, 3.402823466e+38f /*std::numeric_limits<float>::max()*/);
+}
+
 } // detail
 
 
@@ -57,6 +64,13 @@ hit_record<R, primitive<unsigned>> any_hit(R const& r, P begin, P end)
 
 template <typename R, typename P>
 VSNRAY_FUNC
+hit_record<R, primitive<unsigned>> any_hit(R const& r, P begin, P end, typename R::scalar_type max_t)
+{
+    return detail::traverse<true>(r, begin, end, max_t);
+}
+
+template <typename R, typename P>
+VSNRAY_FUNC
 hit_record<R, primitive<unsigned>> closest_hit(R const& r, P begin, P end)
 {
     return detail::traverse<false>(r, begin, end);
@@ -64,5 +78,3 @@ hit_record<R, primitive<unsigned>> closest_hit(R const& r, P begin, P end)
 
 
 } // visionaray
-
-

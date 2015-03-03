@@ -53,7 +53,9 @@ struct kernel
                     light_dir
                 );
 
-                auto shadow_rec  = any_hit(shadow_ray, params.prims.begin, params.prims.end);
+                // only cast a shadow if occluder between light source and hit pos
+                auto shadow_rec  = any_hit(shadow_ray, params.prims.begin, params.prims.end,
+                    length(hit_rec.isect_pos - V(it->position())));
                 auto active_rays = hit_rec.hit & !shadow_rec.hit;
 
                 auto sr     = make_shade_record<Params, S>();
