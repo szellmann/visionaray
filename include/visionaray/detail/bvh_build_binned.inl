@@ -227,7 +227,7 @@ B build(P* primitives, size_t num_prims)
     }
 
 #if 1
-    vec3 avg_size;
+    vec3 avg_size(0.0f);
     for (size_t i = 0; i < num_prims; ++i)
     {
         avg_size += ptr[i].bbox.size();
