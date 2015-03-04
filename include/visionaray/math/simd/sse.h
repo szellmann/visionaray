@@ -6,14 +6,13 @@
 #ifndef VSNRAY_SIMD_SSE_H
 #define VSNRAY_SIMD_SSE_H
 
-#include "forward.h"
-#include "intrinsics.h"
-#include "../vector.h"
+#include <array>
 
 #include <visionaray/detail/macros.h>
 
-#include <array>
-#include <stdexcept>
+#include "../vector.h"
+#include "forward.h"
+#include "intrinsics.h"
 
 
 namespace MATH_NAMESPACE

@@ -237,6 +237,47 @@ struct hit_record<simd::ray8, primitive<unsigned>>
 
 };
 
+VSNRAY_CPU_FUNC
+inline std::array<hit_record<ray, primitive<unsigned>>, 8> unpack(hit_record<simd::ray8, primitive<unsigned>> const& hr)
+{
+    using namespace simd;
+
+    VSNRAY_ALIGN(32) unsigned hit[8];
+    store(hit, hr.hit.i);
+
+    VSNRAY_ALIGN(32) unsigned prim_type[8];
+    store(prim_type, hr.prim_type);
+
+    VSNRAY_ALIGN(32) unsigned prim_id[8];
+    store(prim_id, hr.prim_id);
+
+    VSNRAY_ALIGN(32) unsigned geom_id[8];
+    store(geom_id, hr.geom_id);
+
+    VSNRAY_ALIGN(32) float t[8];
+    store(t, hr.t);
+
+    auto isect_pos = unpack(hr.isect_pos);
+
+    VSNRAY_ALIGN(32) float u[8];
+    store(u, hr.u);
+
+    VSNRAY_ALIGN(32) float v[8];
+    store(v, hr.v);
+
+    return std::array<hit_record<ray, primitive<unsigned>>, 8>
+    {{
+        { hit[0] != 0, prim_type[0], prim_id[0], geom_id[0], t[0], isect_pos[0], u[0], v[0] },
+        { hit[1] != 0, prim_type[1], prim_id[1], geom_id[1], t[1], isect_pos[1], u[1], v[1] },
+        { hit[2] != 0, prim_type[2], prim_id[2], geom_id[2], t[2], isect_pos[2], u[2], v[2] },
+        { hit[3] != 0, prim_type[3], prim_id[3], geom_id[3], t[3], isect_pos[3], u[3], v[3] },
+        { hit[4] != 0, prim_type[4], prim_id[4], geom_id[4], t[4], isect_pos[4], u[4], v[4] },
+        { hit[5] != 0, prim_type[5], prim_id[5], geom_id[5], t[5], isect_pos[5], u[5], v[5] },
+        { hit[6] != 0, prim_type[6], prim_id[6], geom_id[6], t[6], isect_pos[6], u[6], v[6] },
+        { hit[7] != 0, prim_type[7], prim_id[7], geom_id[7], t[7], isect_pos[7], u[7], v[7] },
+    }};
+}
+
 #endif
 
 

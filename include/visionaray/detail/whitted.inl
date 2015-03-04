@@ -79,7 +79,7 @@ struct kernel
                 dir
             );
             hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
-            mirror *= S(0.5);
+            mirror *= S(0.1);
             no_hit_color = C(0.0);
         }
 

@@ -458,23 +458,18 @@ inline surface<M<simd::float8>> get_surface
     NBinding
 )
 {
-    VSNRAY_ALIGN(32) int prim_ids[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-    store(&prim_ids[0], hr.prim_id, hr.hit, simd::int8(0));
-
-    VSNRAY_ALIGN(32) int geom_ids[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-    store(&geom_ids[0], hr.geom_id, hr.hit, simd::int8(0));
-
+    auto hr8 = unpack(hr);
 
     N n[8] =
     {
-        get_normal(normals, prim_ids[0]),
-        get_normal(normals, prim_ids[1]),
-        get_normal(normals, prim_ids[2]),
-        get_normal(normals, prim_ids[3]),
-        get_normal(normals, prim_ids[4]),
-        get_normal(normals, prim_ids[5]),
-        get_normal(normals, prim_ids[6]),
-        get_normal(normals, prim_ids[7])
+        hr8[0].hit ? get_normal(normals, hr8[0], NBinding()) : N(),
+        hr8[1].hit ? get_normal(normals, hr8[1], NBinding()) : N(),
+        hr8[2].hit ? get_normal(normals, hr8[2], NBinding()) : N(),
+        hr8[3].hit ? get_normal(normals, hr8[3], NBinding()) : N(),
+        hr8[4].hit ? get_normal(normals, hr8[4], NBinding()) : N(),
+        hr8[5].hit ? get_normal(normals, hr8[5], NBinding()) : N(),
+        hr8[6].hit ? get_normal(normals, hr8[6], NBinding()) : N(),
+        hr8[7].hit ? get_normal(normals, hr8[7], NBinding()) : N()
     };
 
     return surface<M<simd::float8>>
@@ -488,10 +483,14 @@ inline surface<M<simd::float8>> get_surface
 
         pack
         (
-            materials[geom_ids[0]], materials[geom_ids[1]],
-            materials[geom_ids[2]], materials[geom_ids[3]],
-            materials[geom_ids[4]], materials[geom_ids[5]],
-            materials[geom_ids[6]], materials[geom_ids[7]]
+            hr8[0].hit ? materials[hr8[0].geom_id] : M<float>(),
+            hr8[1].hit ? materials[hr8[1].geom_id] : M<float>(),
+            hr8[2].hit ? materials[hr8[2].geom_id] : M<float>(),
+            hr8[3].hit ? materials[hr8[3].geom_id] : M<float>(),
+            hr8[4].hit ? materials[hr8[4].geom_id] : M<float>(),
+            hr8[5].hit ? materials[hr8[5].geom_id] : M<float>(),
+            hr8[6].hit ? materials[hr8[6].geom_id] : M<float>(),
+            hr8[7].hit ? materials[hr8[7].geom_id] : M<float>()
         )
     );
 }
