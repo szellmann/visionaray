@@ -303,6 +303,11 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
     vector<3, simd::float4> cd;
     for (unsigned i = 0; i < 4; ++i)
     {
+        if (!hr4[i].hit)
+        {
+            continue;
+        }
+
         VSNRAY_ALIGN(16) int maski[4] = { 0, 0, 0, 0 };
         maski[i] = 0xFFFFFFFF;
         simd::int4 mi(maski);
