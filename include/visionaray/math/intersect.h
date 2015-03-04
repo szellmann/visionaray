@@ -159,7 +159,6 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
 
 };
 
-
 template <>
 struct hit_record<simd::ray4, primitive<unsigned>>
 {
@@ -178,6 +177,43 @@ struct hit_record<simd::ray4, primitive<unsigned>>
     value_type v;
 
 };
+
+VSNRAY_CPU_FUNC
+inline std::array<hit_record<ray, primitive<unsigned>>, 4> unpack(hit_record<simd::ray4, primitive<unsigned>> const& hr)
+{
+    using namespace simd;
+
+    VSNRAY_ALIGN(16) unsigned hit[4];
+    store(hit, hr.hit.i);
+
+    VSNRAY_ALIGN(16) unsigned prim_type[4];
+    store(prim_type, hr.prim_type);
+
+    VSNRAY_ALIGN(16) unsigned prim_id[4];
+    store(prim_id, hr.prim_id);
+
+    VSNRAY_ALIGN(16) unsigned geom_id[4];
+    store(geom_id, hr.geom_id);
+
+    VSNRAY_ALIGN(16) float t[4];
+    store(t, hr.t);
+
+    auto isect_pos = unpack(hr.isect_pos);
+
+    VSNRAY_ALIGN(16) float u[4];
+    store(u, hr.u);
+
+    VSNRAY_ALIGN(16) float v[4];
+    store(v, hr.v);
+
+    return std::array<hit_record<ray, primitive<unsigned>>, 4>
+    {{
+        { hit[0] != 0, prim_type[0], prim_id[0], geom_id[0], t[0], isect_pos[0], u[0], v[0] },
+        { hit[1] != 0, prim_type[1], prim_id[1], geom_id[1], t[1], isect_pos[1], u[1], v[1] },
+        { hit[2] != 0, prim_type[2], prim_id[2], geom_id[2], t[2], isect_pos[2], u[2], v[2] },
+        { hit[3] != 0, prim_type[3], prim_id[3], geom_id[3], t[3], isect_pos[3], u[3], v[3] },
+    }};
+}
 
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -315,5 +351,3 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
 } // MATH_NAMESPACE
 
 #endif // VSNRAY_MATH_INTERSECT_H
-
-

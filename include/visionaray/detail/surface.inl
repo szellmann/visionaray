@@ -19,11 +19,11 @@ namespace visionaray
 // Get face normal from array
 //
 
-template <typename N>
+template <typename N, typename HR>
 VSNRAY_FUNC
-inline N get_normal(N const* normals, unsigned prim_id)
+inline N get_normal(N const* normals, HR const& hr, normals_per_face_binding)
 {
-    return normals[prim_id];
+    return normals[hr.prim_id];
 }
 
 
@@ -31,17 +31,17 @@ inline N get_normal(N const* normals, unsigned prim_id)
 // Get vertex normal from array
 //
 
-template <typename N>
+template <typename N, typename HR>
 VSNRAY_FUNC
-inline N get_normal(N const* normals, unsigned prim_id, float u, float v)
+inline N get_normal(N const* normals, HR const& hr, normals_per_vertex_binding)
 {
-    N n1 = normals[prim_id * 3];
-    N n2 = normals[prim_id * 3 + 1];
-    N n3 = normals[prim_id * 3 + 2];
+    N n1 = normals[hr.prim_id * 3];
+    N n2 = normals[hr.prim_id * 3 + 1];
+    N n3 = normals[hr.prim_id * 3 + 2];
 
-    auto s2 = n3 * v;
-    auto s3 = n2 * u;
-    auto s1 = n1 * (1.0f - (u + v));
+    auto s2 = n3 * hr.v;
+    auto s3 = n2 * hr.u;
+    auto s1 = n1 * (1.0f - (hr.u + hr.v));
 
     return normalize(s1 + s2 + s3);
 }
@@ -51,36 +51,36 @@ inline N get_normal(N const* normals, unsigned prim_id, float u, float v)
 // Primitive with precalculated normals / float
 //
 
-template <typename R, typename N, typename M>
+template <typename NBinding, typename R, typename N, typename M>
 VSNRAY_FUNC
 inline surface<M> get_surface
 (
     hit_record<R, primitive<unsigned>> const& hr,
     N const* normals,
     M const* materials,
-    normals_per_face_binding
+    NBinding
 )
 {
     return surface<M>
     (
-        get_normal(normals, hr.prim_id),
+        get_normal(normals, hr, NBinding()),
         materials[hr.geom_id]
     );
 }
 
-template <typename R, typename N, typename M>
+template <typename NBinding, typename R, typename N, typename M>
 VSNRAY_FUNC
 inline surface<M> get_surface
 (
     hit_record<R, primitive<unsigned>> const& hr,
     N const* normals,
     M const* materials,
-    normals_per_vertex_binding
+    NBinding()
 )
 {
     return surface<M>
     (
-        get_normal(normals, hr.prim_id, hr.u, hr.v),
+        get_normal(normals, hr, NBinding()),
         materials[hr.geom_id]
     );
 }
@@ -113,7 +113,7 @@ inline surface<M, vector<3, float>> get_surface
     auto cd = tex.width() > 0 && tex.height() > 0 ? vector<3, float>(tex2D(tex, tc)) : vector<3, float>(255.0);
     cd /= scalar_type(255.0);
 
-    auto normal = get_normal(normals, hr.prim_id);
+    auto normal = get_normal(normals, hr, NBinding());
     return surface<M, vector<3, float>>( normal, materials[hr.geom_id], cd );
 }
 
@@ -220,33 +220,23 @@ inline surface<M<typename R::scalar_type>, vector<3, typename R::scalar_type>> g
 // Primitive with precalculated normals / float4
 //
 
-template <typename N, template <typename> class M>
+template <typename NBinding, typename N, template <typename> class M>
 inline surface<M<simd::float4>> get_surface
 (
     hit_record<simd::ray4, primitive<unsigned>> const& hr,
     N const* normals,
     M<float> const* materials,
-    normals_per_vertex_binding
+    NBinding
 )
 {
-    VSNRAY_ALIGN(16) int prim_ids[4];
-    store(&prim_ids[0], hr.prim_id, hr.hit, simd::int4(0));
-
-    VSNRAY_ALIGN(16) int geom_ids[4];
-    store(&geom_ids[0], hr.geom_id, hr.hit, simd::int4(0));
-
-    VSNRAY_ALIGN(16) float u[4];
-    store(&u[0], hr.u, hr.hit, simd::float4(0.0f));
-
-    VSNRAY_ALIGN(16) float v[4];
-    store(&v[0], hr.v, hr.hit, simd::float4(0.0f));
+    auto hr4 = unpack(hr);
 
     N n[4] =
     {
-        get_normal(normals, prim_ids[0], u[0], v[0]),
-        get_normal(normals, prim_ids[1], u[1], v[1]),
-        get_normal(normals, prim_ids[2], u[2], v[2]),
-        get_normal(normals, prim_ids[3], u[3], v[3])
+        hr4[0].hit ? get_normal(normals, hr4[0], NBinding()) : N(),
+        hr4[1].hit ? get_normal(normals, hr4[1], NBinding()) : N(),
+        hr4[2].hit ? get_normal(normals, hr4[2], NBinding()) : N(),
+        hr4[3].hit ? get_normal(normals, hr4[3], NBinding()) : N()
     };
 
     return surface<M<simd::float4>>
@@ -260,48 +250,10 @@ inline surface<M<simd::float4>> get_surface
 
         pack
         (
-            materials[geom_ids[0]], materials[geom_ids[1]],
-            materials[geom_ids[2]], materials[geom_ids[3]]
-        )
-    );
-}
-
-template <typename N, template <typename> class M>
-inline surface<M<simd::float4>> get_surface
-(
-    hit_record<simd::ray4, primitive<unsigned>> const& hr,
-    N const* normals,
-    M<float> const* materials,
-    normals_per_face_binding
-)
-{
-    VSNRAY_ALIGN(16) int prim_ids[4];
-    store(&prim_ids[0], hr.prim_id, hr.hit, simd::int4(0));
-
-    VSNRAY_ALIGN(16) int geom_ids[4];
-    store(&geom_ids[0], hr.geom_id, hr.hit, simd::int4(0));
-
-    N n[4] =
-    {
-        get_normal(normals, prim_ids[0]),
-        get_normal(normals, prim_ids[1]),
-        get_normal(normals, prim_ids[2]),
-        get_normal(normals, prim_ids[3])
-    };
-
-    return surface<M<simd::float4>>
-    (
-        vector<3, simd::float4>
-        (
-            simd::float4( n[0].x, n[1].x, n[2].x, n[3].x ),
-            simd::float4( n[0].y, n[1].y, n[2].y, n[3].y ),
-            simd::float4( n[0].z, n[1].z, n[2].z, n[3].z )
-        ),
-
-        pack
-        (
-            materials[geom_ids[0]], materials[geom_ids[1]],
-            materials[geom_ids[2]], materials[geom_ids[3]]
+            hr4[0].hit ? materials[hr4[0].geom_id] : M<float>(),
+            hr4[1].hit ? materials[hr4[1].geom_id] : M<float>(),
+            hr4[2].hit ? materials[hr4[2].geom_id] : M<float>(),
+            hr4[3].hit ? materials[hr4[3].geom_id] : M<float>()
         )
     );
 }
@@ -319,29 +271,25 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
     NBinding
 )
 {
-    VSNRAY_ALIGN(16) int prim_ids[4];
-    store(&prim_ids[0], hr.prim_id, hr.hit, simd::int4(0));
-
-    VSNRAY_ALIGN(16) int geom_ids[4];
-    store(&geom_ids[0], hr.geom_id, hr.hit, simd::int4(0));
+    auto hr4 = unpack(hr);
 
     N n[4] =
     {
-        get_normal(normals, prim_ids[0]),
-        get_normal(normals, prim_ids[1]),
-        get_normal(normals, prim_ids[2]),
-        get_normal(normals, prim_ids[3])
+        get_normal(normals, hr4[0], NBinding()),
+        get_normal(normals, hr4[1], NBinding()),
+        get_normal(normals, hr4[2], NBinding()),
+        get_normal(normals, hr4[3], NBinding())
     };
 
     typedef simd::float4 scalar_type;
 
-    VSNRAY_ALIGN(16) float x1[] = { tex_coords[prim_ids[0] * 3].x, tex_coords[prim_ids[1] * 3].x, tex_coords[prim_ids[2] * 3].x, tex_coords[prim_ids[3] * 3].x };
-    VSNRAY_ALIGN(16) float x2[] = { tex_coords[prim_ids[0] * 3 + 1].x, tex_coords[prim_ids[1] * 3 + 1].x, tex_coords[prim_ids[2] * 3 + 1].x, tex_coords[prim_ids[3] * 3 + 1].x };
-    VSNRAY_ALIGN(16) float x3[] = { tex_coords[prim_ids[0] * 3 + 2].x, tex_coords[prim_ids[1] * 3 + 2].x, tex_coords[prim_ids[2] * 3 + 2].x, tex_coords[prim_ids[3] * 3 + 2].x };
+    VSNRAY_ALIGN(16) float x1[] = { tex_coords[hr4[0].prim_id * 3].x, tex_coords[hr4[1].prim_id * 3].x, tex_coords[hr4[2].prim_id * 3].x, tex_coords[hr4[3].prim_id * 3].x };
+    VSNRAY_ALIGN(16) float x2[] = { tex_coords[hr4[0].prim_id * 3 + 1].x, tex_coords[hr4[1].prim_id * 3 + 1].x, tex_coords[hr4[2].prim_id * 3 + 1].x, tex_coords[hr4[3].prim_id * 3 + 1].x };
+    VSNRAY_ALIGN(16) float x3[] = { tex_coords[hr4[0].prim_id * 3 + 2].x, tex_coords[hr4[1].prim_id * 3 + 2].x, tex_coords[hr4[2].prim_id * 3 + 2].x, tex_coords[hr4[3].prim_id * 3 + 2].x };
 
-    VSNRAY_ALIGN(16) float y1[] = { tex_coords[prim_ids[0] * 3].y, tex_coords[prim_ids[1] * 3].y, tex_coords[prim_ids[2] * 3].y, tex_coords[prim_ids[3] * 3].y };
-    VSNRAY_ALIGN(16) float y2[] = { tex_coords[prim_ids[0] * 3 + 1].y, tex_coords[prim_ids[1] * 3 + 1].y, tex_coords[prim_ids[2] * 3 + 1].y, tex_coords[prim_ids[3] * 3 + 1].y };
-    VSNRAY_ALIGN(16) float y3[] = { tex_coords[prim_ids[0] * 3 + 2].y, tex_coords[prim_ids[1] * 3 + 2].y, tex_coords[prim_ids[2] * 3 + 2].y, tex_coords[prim_ids[3] * 3 + 2].y };
+    VSNRAY_ALIGN(16) float y1[] = { tex_coords[hr4[0].prim_id * 3].y, tex_coords[hr4[1].prim_id * 3].y, tex_coords[hr4[2].prim_id * 3].y, tex_coords[hr4[3].prim_id * 3].y };
+    VSNRAY_ALIGN(16) float y2[] = { tex_coords[hr4[0].prim_id * 3 + 1].y, tex_coords[hr4[1].prim_id * 3 + 1].y, tex_coords[hr4[2].prim_id * 3 + 1].y, tex_coords[hr4[3].prim_id * 3 + 1].y };
+    VSNRAY_ALIGN(16) float y3[] = { tex_coords[hr4[0].prim_id * 3 + 2].y, tex_coords[hr4[1].prim_id * 3 + 2].y, tex_coords[hr4[2].prim_id * 3 + 2].y, tex_coords[hr4[3].prim_id * 3 + 2].y };
 
     vector<2, simd::float4> tc1(x1, y1);
     vector<2, simd::float4> tc2(x2, y2);
@@ -360,7 +308,7 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
         simd::int4 mi(maski);
         simd::mask4 m(mi);
 
-        auto const& tex = textures[geom_ids[i]];
+        auto const& tex = textures[hr4[i].geom_id];
         auto clr = tex.width() > 0 && tex.height() > 0 ? tex2D(tex, tc) : vector<3, simd::float4>(255.0);
         clr /= scalar_type(255.0);
 
@@ -378,8 +326,10 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
 
         pack
         (
-            materials[geom_ids[0]], materials[geom_ids[1]],
-            materials[geom_ids[2]], materials[geom_ids[3]]
+            hr4[0].hit ? materials[hr4[0].geom_id] : M<float>(),
+            hr4[1].hit ? materials[hr4[1].geom_id] : M<float>(),
+            hr4[2].hit ? materials[hr4[2].geom_id] : M<float>(),
+            hr4[3].hit ? materials[hr4[3].geom_id] : M<float>()
         ),
 
         cd
@@ -413,25 +363,24 @@ inline surface<M<simd::float4>> get_surface
 template <typename NBinding, unsigned C, typename N>
 inline N simd_normal
 (
-    hit_record<simd::ray4, primitive<unsigned>> const& hr,
+    hit_record<simd::ray4, primitive<unsigned>> const& hr4,
+    hit_record<ray, primitive<unsigned>> const& hr,
     generic_prim const* primitives,
     N const* normals,
-    unsigned prim_type, unsigned prim_id,
     NBinding
 )
 {
-
-    switch (prim_type)
+    switch (hr.prim_type)
     {
 
     case detail::TrianglePrimitive:
-        return get_normal(normals, prim_id);
+        return get_normal(normals, hr, NBinding());
 
     case detail::SpherePrimitive:
     {
-        basic_sphere<float> sphere = primitives[prim_id].sphere;
+        basic_sphere<float> sphere = primitives[hr.prim_id].sphere;
 
-        auto tmp = hr.isect_pos;
+        auto tmp = hr4.isect_pos;
         N isect_pos
         (
             _mm_cvtss_f32(simd::shuffle<C, 0, 0, 0>(tmp.x)),
@@ -447,7 +396,6 @@ inline N simd_normal
          throw std::runtime_error("primitive type unspecified");
 
     }
-
 }
 
 template <typename NBinding, typename N, template <typename> class M>
@@ -460,22 +408,14 @@ inline surface<M<simd::float4>> get_surface
     NBinding
 ) 
 { 
- 
-    VSNRAY_ALIGN(16) int types[4]; 
-    store(&types[0], hr.prim_type, hr.hit, simd::int4(0)); 
- 
-    VSNRAY_ALIGN(16) int prim_ids[4]; 
-    store(&prim_ids[0], hr.prim_id, hr.hit, simd::int4(0));
-
-    VSNRAY_ALIGN(16) int geom_ids[4];
-    store(&geom_ids[0], hr.geom_id, hr.hit, simd::int4(0));
+    auto hr4 = unpack(hr); 
 
     N n[4] = 
     { 
-        simd_normal<0>(hr, primitives, normals, types[0], prim_ids[0], NBinding()), 
-        simd_normal<1>(hr, primitives, normals, types[1], prim_ids[1], NBinding()), 
-        simd_normal<2>(hr, primitives, normals, types[2], prim_ids[2], NBinding()), 
-        simd_normal<3>(hr, primitives, normals, types[3], prim_ids[3], NBinding()) 
+        hr4[0].hit ? simd_normal<0>(hr, hr4[0], primitives, normals, NBinding()) : N(),
+        hr4[1].hit ? simd_normal<1>(hr, hr4[1], primitives, normals, NBinding()) : N(),
+        hr4[2].hit ? simd_normal<2>(hr, hr4[2], primitives, normals, NBinding()) : N(),
+        hr4[3].hit ? simd_normal<3>(hr, hr4[3], primitives, normals, NBinding()) : N()
     }; 
 
     return surface<M<simd::float4>>
@@ -489,11 +429,12 @@ inline surface<M<simd::float4>> get_surface
 
         pack
         (
-            materials[geom_ids[0]], materials[geom_ids[1]],
-            materials[geom_ids[2]], materials[geom_ids[3]]
+            hr4[0].hit ? materials[hr4[0].geom_id] : M<float>(),
+            hr4[1].hit ? materials[hr4[1].geom_id] : M<float>(),
+            hr4[2].hit ? materials[hr4[2].geom_id] : M<float>(),
+            hr4[3].hit ? materials[hr4[3].geom_id] : M<float>()
         )
     ); 
- 
 }
 
 

@@ -404,6 +404,11 @@ VSNRAY_FORCE_INLINE void store(int dst[4], int4 const& v)
     _mm_store_si128(reinterpret_cast<__m128i*>(dst), v);
 }
 
+VSNRAY_FORCE_INLINE void store(unsigned dst[4], int4 const& v)
+{
+    _mm_store_si128(reinterpret_cast<__m128i*>(dst), v);
+}
+
 template <int A0, int A1, int A2, int A3>
 VSNRAY_FORCE_INLINE int4 shuffle(int4 const& a)
 {
@@ -1066,5 +1071,3 @@ VSNRAY_FORCE_INLINE float4 floor(float4 const& v)
 } // MATH_NAMESPACE
 
 #endif // VSNRAY_SIMD_SSE_H
-
-

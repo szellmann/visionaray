@@ -14,36 +14,15 @@ inline phong<simd::float4> pack
     phong<float> const& m3, phong<float> const& m4
 )
 {
-    vector<3, float> ca[4]          = { m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca() };
-    vector<3, float> cd[4]          = { m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd() };
-    VSNRAY_ALIGN(16) float ka[4]    = { m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka() };
-    VSNRAY_ALIGN(16) float kd[4]    = { m1.get_kd(), m2.get_kd(), m3.get_kd(), m4.get_kd() };
-    VSNRAY_ALIGN(16) float ks[4]    = { m1.get_ks(), m2.get_ks(), m3.get_ks(), m4.get_ks() };
-    VSNRAY_ALIGN(16) float exp[4]   = { m1.get_specular_exp(), m2.get_specular_exp(), m3.get_specular_exp(), m4.get_specular_exp() };
-
     phong<simd::float4> result;
-    result.set_ca
-    (
-        vector<3, simd::float4>
-        (
-            simd::float4( ca[0].x, ca[1].x, ca[2].x, ca[3].x ),
-            simd::float4( ca[0].y, ca[1].y, ca[2].y, ca[3].y ),
-            simd::float4( ca[0].z, ca[1].z, ca[2].z, ca[3].z )
-        )
-    );
-    result.set_cd
-    (
-        vector<3, simd::float4>
-        (
-            simd::float4( cd[0].x, cd[1].x, cd[2].x, cd[3].x ),
-            simd::float4( cd[0].y, cd[1].y, cd[2].y, cd[3].y ),
-            simd::float4( cd[0].z, cd[1].z, cd[2].z, cd[3].z )
-        )
-    );
-    result.set_ka(ka);
-    result.set_kd(kd);
-    result.set_ks(ks);
-    result.set_specular_exp(exp);
+
+    result.set_ca( simd::pack(m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca()) );
+    result.set_cd( simd::pack(m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd()) );
+    result.set_ka( simd::float4(m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka()) );
+    result.set_kd( simd::float4(m1.get_kd(), m2.get_kd(), m3.get_kd(), m4.get_kd()) );
+    result.set_ks( simd::float4(m1.get_ks(), m2.get_ks(), m3.get_ks(), m4.get_ks()) );
+    result.set_specular_exp( simd::float4(m1.get_specular_exp(), m2.get_specular_exp(), m3.get_specular_exp(), m4.get_specular_exp()) );
+
     return result;
 }
 
@@ -53,20 +32,10 @@ inline emissive<simd::float4> pack
     emissive<float> const& m3, emissive<float> const& m4
 )
 {
-    vector<3, float> ce[4]          = { m1.get_ce(), m2.get_ce(), m3.get_ce(), m4.get_ce() };
-    VSNRAY_ALIGN(16) float ls[4]    = { m1.get_ls(), m2.get_ls(), m3.get_ls(), m4.get_ls() };
-
     emissive<simd::float4> result;
-    result.set_ce
-    (
-        vector<3, simd::float4>
-        (
-            simd::float4( ce[0].x, ce[1].x, ce[2].x, ce[3].x ),
-            simd::float4( ce[0].y, ce[1].y, ce[2].y, ce[3].y ),
-            simd::float4( ce[0].z, ce[1].z, ce[2].z, ce[3].z )
-        )
-    );
-    result.set_ls(ls);
+
+    result.set_ce( simd::pack(m1.get_ce(), m2.get_ce(), m3.get_ce(), m4.get_ce()) );
+    result.set_ls( simd::float4(m1.get_ls(), m2.get_ls(), m3.get_ls(), m4.get_ls()) );
 
     return result;
 }
