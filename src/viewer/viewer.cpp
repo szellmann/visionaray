@@ -50,14 +50,15 @@
 #include <visionaray/pixel_unpack_buffer_rt.h>
 #endif
 
+#include <common/render_bvh.h>
+#include <common/timer.h>
+
 #include "manip/arcball_manipulator.h"
 #include "manip/pan_manipulator.h"
 #include "manip/zoom_manipulator.h"
 #include "default_scenes.h"
 #include "model.h"
 #include "obj_loader.h"
-#include "render_bvh.h"
-#include "timer.h"
 
 
 using std::make_shared;

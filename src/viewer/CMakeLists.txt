@@ -18,10 +18,15 @@ visionaray_use_package(OpenGL)
 
 visionaray_link_libraries(visionaray)
 
+set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 set(VIEWER_HEADERS
+
+    ${COMMON_DIR}/render_bvh.h
+    ${COMMON_DIR}/timer.h
 
     input/exception.h
     input/keyboard.h
@@ -36,9 +41,6 @@ set(VIEWER_HEADERS
     image.h
     jpeg_image.h
     obj_loader.h
-    render_bvh.h
-    timer.h
-
 )
 
 set(VIEWER_SOURCES
@@ -69,4 +71,3 @@ visionaray_add_executable(viewer
     ${VIEWER_SOURCES}
     ${VIEWER_CUDA_SOURCES}
 )
-

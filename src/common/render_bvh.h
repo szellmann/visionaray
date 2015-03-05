@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_VIEWER_RENDER_BVH_H
-#define VSNRAY_VIEWER_RENDER_BVH_H
+#ifndef VSNRAY_RENDER_BVH_H
+#define VSNRAY_RENDER_BVH_H
 
 #include <visionaray/detail/platform.h>
 
@@ -79,6 +79,4 @@ void render_bvh(BVH const& b)
 
 } // visionaray
 
-#endif // VSNRAY_VIEWER_RENDER_BVH_H
-
-
+#endif // VSNRAY_RENDER_BVH_H

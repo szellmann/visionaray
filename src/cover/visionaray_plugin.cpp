@@ -33,6 +33,8 @@
 #include <visionaray/render_target.h>
 #include <visionaray/scheduler.h>
 
+#include <common/render_bvh.h>
+
 #include "visionaray_plugin.h"
 
 namespace visionaray { namespace cover {
@@ -307,7 +309,7 @@ struct Visionaray::impl : vrui::coMenuListener
 
     impl()
         : state({ Simple, false })
-        , dev_state({ true, false })
+        , dev_state({ true, false, false })
     {
     }
 
@@ -340,6 +342,7 @@ struct Visionaray::impl : vrui::coMenuListener
         radio_button            whitted_button;
 
         // dev menu
+        check_box               toggle_bvh_display;
         check_box               toggle_normal_display;
     } ui;
 
@@ -352,11 +355,22 @@ struct Visionaray::impl : vrui::coMenuListener
     struct
     {
         bool                    debug_mode;
+        bool                    show_bvh;
         bool                    show_normals;
     } dev_state;
 
+    struct
+    {
+        GLboolean               depth_mask;
+        GLint                   matrix_mode;
+        GLboolean               lighting;
+    } gl_state;
+
     void init_ui();
     void menuEvent(vrui::coMenuItem* item);
+
+    void store_gl_state();
+    void restore_gl_state();
 
 };
 
@@ -407,9 +421,35 @@ void Visionaray::impl::init_ui()
     ui.dev_menu_entry->setMenu(ui.dev_menu.get());
 
 
+    ui.toggle_bvh_display.reset(new coCheckboxMenuItem("Show BVH outlines", false));
+    ui.toggle_bvh_display->setMenuListener(this);
+    ui.dev_menu->add(ui.toggle_bvh_display.get());
+
     ui.toggle_normal_display.reset(new coCheckboxMenuItem("Show surface normals", false));
     ui.toggle_normal_display->setMenuListener(this);
     ui.dev_menu->add(ui.toggle_normal_display.get());
+}
+
+void Visionaray::impl::store_gl_state()
+{
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &gl_state.depth_mask);
+    glGetIntegerv(GL_MATRIX_MODE, &gl_state.matrix_mode);
+    gl_state.lighting = glIsEnabled(GL_LIGHTING);
+}
+
+void Visionaray::impl::restore_gl_state()
+{
+    if (gl_state.lighting)
+    {
+        glEnable(GL_LIGHTING);
+    }
+    else
+    {
+        glDisable(GL_LIGHTING);
+    }
+
+    glMatrixMode(gl_state.matrix_mode);
+    glDepthMask(gl_state.depth_mask);
 }
 
 void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
@@ -431,6 +471,11 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
     }
 
     // dev submenu
+    if (item == ui.toggle_bvh_display.get())
+    {
+        dev_state.show_bvh = ui.toggle_bvh_display->getState();
+    }
+
     if (item == ui.toggle_normal_display.get())
     {
         dev_state.show_normals = ui.toggle_normal_display->getState();
@@ -509,6 +554,8 @@ void Visionaray::expandBoundingSphere(osg::BoundingSphere &bs)
 
 void Visionaray::drawImplementation(osg::RenderInfo&) const
 {
+    impl_->store_gl_state();
+
     // TODO?
 
     static bool glewed = false;
@@ -663,6 +710,32 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     glDepthMask(GL_FALSE);
 
     impl_->host_rt.display_color_buffer();
+
+    glDepthMask(GL_TRUE);
+
+    if (impl_->dev_state.debug_mode && impl_->dev_state.show_bvh)
+    {
+        glDisable(GL_LIGHTING);
+
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadMatrixf(proj_matrix.data());
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadMatrixf(view_matrix.data());
+
+        glColor3f(1.0f, 1.0f, 1.0f);
+        render_bvh(impl_->host_bvh);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+    }
+
+    impl_->restore_gl_state();
 }
 
 }} // namespace visionaray::cover
