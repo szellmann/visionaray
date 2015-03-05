@@ -50,6 +50,7 @@
 #include <visionaray/pixel_unpack_buffer_rt.h>
 #endif
 
+#include <common/call_kernel.h>
 #include <common/render_bvh.h>
 #include <common/timer.h>
 
@@ -68,7 +69,6 @@ using namespace visionaray;
 
 typedef std::vector<shared_ptr<visionaray::camera_manipulator>> manipulators;
 
-enum algorithm { Simple, Whitted, Pathtracing };
 
 struct renderer
 {
@@ -159,38 +159,6 @@ struct configuration
 };
 
 configuration config;
-
-struct kernel_tag {};
-struct simple_tag : kernel_tag {};
-struct whitted_tag : kernel_tag {};
-struct pathtracing_tag : kernel_tag {};
-
-template <typename RenderTargetType, typename Sched, typename KParams>
-void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, simple_tag)
-{
-    auto sparams = make_sched_params<pixel_sampler::uniform_type>(rend->cam, rt);
-    simple::kernel<KParams> kernel;
-    kernel.params = kparams;
-    sched.frame(kernel, sparams);
-}
-
-template <typename RenderTargetType, typename Sched, typename KParams>
-void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, whitted_tag)
-{
-    auto sparams = make_sched_params<pixel_sampler::uniform_type>(rend->cam, rt);
-    whitted::kernel<KParams> kernel;
-    kernel.params = kparams;
-    sched.frame(kernel, sparams);
-}
-
-template <typename RenderTargetType, typename Sched, typename KParams>
-void call_kernel(Sched& sched, KParams const& kparams, RenderTargetType& rt, pathtracing_tag)
-{
-    auto sparams = make_sched_params<pixel_sampler::jittered_blend_type>(rend->cam, rt);
-    pathtracing::kernel<KParams> kernel;
-    kernel.params = kparams;
-    sched.frame(kernel, sparams, ++rend->frame);
-}
 
 
 void render_hud()
@@ -391,31 +359,12 @@ void display_func()
             bg_color
         );
 
-        typedef vector<4, renderer::scalar_type_gpu> internal_color_type;
-
-        switch (rend->algo)
-        {
-
-        case Simple:
-            call_kernel(rend->sched_gpu, kparams, rend->device_rt, simple_tag());
-            break;
-
-        case Whitted:
-            call_kernel(rend->sched_gpu, kparams, rend->device_rt, whitted_tag());
-            break;
-
-        case Pathtracing:
-            call_kernel(rend->sched_gpu, kparams, rend->device_rt, pathtracing_tag());
-            break;
-
-        }
-
+        call_kernel( rend->algo, rend->sched_gpu, kparams, rend->frame, rend->cam, rend->device_rt );
 #endif
     }
     else if (config.dev_type == configuration::CPU)
     {
 #ifndef __CUDA_ARCH__
-
         std::vector<renderer::host_bvh_type::bvh_ref> host_primitives;
 
         host_primitives.push_back(rend->host_bvh.ref());
@@ -435,23 +384,7 @@ void display_func()
             bg_color
         );
 
-        switch (rend->algo)
-        {
-
-        case Simple:
-            call_kernel(rend->sched_cpu, kparams, rend->rt, simple_tag());
-            break;
-
-        case Whitted:
-            call_kernel(rend->sched_cpu, kparams, rend->rt, whitted_tag());
-            break;
-
-        case Pathtracing:
-            call_kernel(rend->sched_cpu, kparams, rend->rt, pathtracing_tag());
-            break;
-
-        }
-
+        call_kernel( rend->algo, rend->sched_cpu, kparams, rend->frame, rend->cam, rend->rt );
 #endif
     }
 

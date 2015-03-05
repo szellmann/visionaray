@@ -21,6 +21,7 @@ set(EXTRA_LIBS ${EXTRA_LIBS} ${GLEW_LIBRARY} ${VISIONARAY_LIBRARY})
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
 
 set(HEADERS
+    ${COMMON_DIR}/call_kernel.h
     ${COMMON_DIR}/render_bvh.h
 
     visionaray_plugin.h

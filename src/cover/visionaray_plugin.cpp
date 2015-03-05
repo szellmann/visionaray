@@ -33,6 +33,7 @@
 #include <visionaray/render_target.h>
 #include <visionaray/scheduler.h>
 
+#include <common/call_kernel.h>
 #include <common/render_bvh.h>
 
 #include "visionaray_plugin.h"
@@ -304,8 +305,6 @@ struct Visionaray::impl : vrui::coMenuListener
     using radio_button  = std::unique_ptr<vrui::coCheckboxMenuItem>;
     using radio_group   = std::unique_ptr<vrui::coCheckboxGroup>;
     using sub_menu      = std::unique_ptr<vrui::coSubMenuItem>;
-
-    enum algorithm { Simple, Whitted };
 
     impl()
         : state({ Simple, false })
@@ -622,8 +621,6 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     auto osg_viewport = osg_cam->getViewport();
     recti viewport(osg_viewport->x(), osg_viewport->y(), osg_viewport->width(), osg_viewport->height());
 
-    auto sparams = make_sched_params<pixel_sampler::uniform_type>( view_matrix, proj_matrix, viewport, impl_->host_rt );
-
     if (impl_->viewport != viewport)
     {
         impl_->host_rt.resize(viewport[2], viewport[3]);
@@ -681,6 +678,9 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         using R = host_ray_type;
         using S = typename R::scalar_type;
         using C = vector<4, S>;
+
+        auto sparams = make_sched_params<pixel_sampler::uniform_type>( view_matrix, proj_matrix, viewport, impl_->host_rt );
+
         impl_->host_sched.frame([&](R ray) -> C
         {
             auto hit_rec = closest_hit(ray, kparams.prims.begin, kparams.prims.end);
@@ -689,21 +689,10 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         },
         sparams);
     }
-    else if (impl_->state.algo == impl::Simple)
-    {
-        auto kern = simple::kernel<decltype(kparams)>();
-        kern.params = kparams;
-        impl_->host_sched.frame(kern, sparams);
-    }
-    else if (impl_->state.algo == impl::Whitted)
-    {
-        auto kern =  whitted::kernel<decltype(kparams)>();
-        kern.params = kparams;
-        impl_->host_sched.frame(kern, sparams);
-    }
     else
     {
-        // TODO: inform user
+        unsigned frame = 0;
+        call_kernel( impl_->state.algo, impl_->host_sched, kparams, frame, view_matrix, proj_matrix, viewport, impl_->host_rt );
     }
 
     // TODO: generate depth buffer
