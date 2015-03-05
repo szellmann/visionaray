@@ -24,7 +24,7 @@ void render_bvh(BVH const& b)
 {
 
     std::vector<float> vertices;
-    for (auto const& n : b.nodes())
+    traverse_depth_first(b, [&](typename BVH::node_type const& n)
     {
         auto box = n.bbox;
 
@@ -68,7 +68,7 @@ void render_bvh(BVH const& b)
         };
 
         vertices.insert(vertices.end(), ilist.begin(), ilist.end());
-    }
+    });
 
     glVertexPointer(3, GL_FLOAT, 0, vertices.data());
     glEnableClientState(GL_VERTEX_ARRAY);

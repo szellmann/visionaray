@@ -40,6 +40,7 @@ T* pointer_cast(thrust::device_ptr<T> const& ptr)
 #endif
 } // detail
 
+
 //--------------------------------------------------------------------------------------------------
 // bvh_node
 //
@@ -71,6 +72,7 @@ inline bool is_leaf(bvh_node const& node)
 {
     return node.num_prims != 0;
 }
+
 
 //--------------------------------------------------------------------------------------------------
 // [index_]bvh_ref_t
@@ -190,6 +192,7 @@ public:
 
     using primitive_type    = typename PrimitiveVector::value_type;
     using primitive_vector  = PrimitiveVector;
+    using node_type         = typename NodeVector::value_type;
     using node_vector       = NodeVector;
 
     using bvh_ref = bvh_ref_t<primitive_type>;
@@ -229,6 +232,16 @@ public:
         return { p0, p1, n0, n1 };
     }
 
+    primitive_type const& primitive(size_t index) const
+    {
+        return primitives_.at(index);
+    }
+
+    node_type const& node(size_t index) const
+    {
+        return nodes_.at(index);
+    }
+
 private:
 
     primitive_vector primitives_;
@@ -245,6 +258,7 @@ public:
 
     using primitive_type    = typename PrimitiveVector::value_type;
     using primitive_vector  = PrimitiveVector;
+    using node_type         = typename NodeVector::value_type;
     using node_vector       = NodeVector;
     using index_vector      = IndexVector;
 
@@ -293,6 +307,16 @@ public:
         return { p0, p1, n0, n1, i0, i1 };
     }
 
+    primitive_type const& primitive(size_t indirect_index) const
+    {
+        return primitives_.at( indices_.at(indirect_index) );
+    }
+
+    node_type const& node(size_t index) const
+    {
+        return nodes_.at(index);
+    }
+
 private:
 
     primitive_vector primitives_;
@@ -324,11 +348,16 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
     B const& b
 );
 
+template <typename B, typename F>
+void traverse_depth_first(B const& b, F func);
+
+template <typename B, typename F>
+void traverse_leaves(B const& b, F func);
+
 } // visionaray
 
 #include "detail/bvh_build_binned.inl"
 #include "detail/bvh_intersect.inl"
+#include "detail/bvh_traverse.inl"
 
 #endif
-
-
