@@ -13,7 +13,6 @@
 #include <osg/io_utils>
 #include <osg/Material>
 #include <osg/MatrixTransform>
-#include <osg/StateSet>
 #include <osg/TriangleIndexFunctor>
 
 #include <cover/coVRConfig.h>
@@ -501,6 +500,7 @@ Visionaray::Visionaray(Visionaray const& rhs, osg::CopyOp const& op)
 
 Visionaray::~Visionaray()
 {
+    impl_->geode->removeDrawable(this);
     opencover::cover->getObjectsRoot()->removeChild(impl_->geode);
 }
 
@@ -514,12 +514,8 @@ bool Visionaray::init()
 
     impl_->init_ui();
 
-    ref_ptr<osg::StateSet> state = new osg::StateSet;
-    state->setGlobalDefaults();
-
     impl_->geode = new osg::Geode;
     impl_->geode->setName("Visionaray");
-    impl_->geode->setStateSet(state);
     impl_->geode->addDrawable(this);
 
     opencover::cover->getScene()->addChild(impl_->geode);
