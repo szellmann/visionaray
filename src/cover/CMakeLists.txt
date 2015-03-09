@@ -1,3 +1,7 @@
+if (NOT VSNRAY_ENABLE_COVER)
+    return()
+endif()
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{COVISEDIR}/cmake")
 find_package(COVER)
 if (NOT COVER_FOUND)
