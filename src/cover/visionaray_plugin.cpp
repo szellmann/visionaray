@@ -306,7 +306,8 @@ struct Visionaray::impl : vrui::coMenuListener
     using sub_menu      = std::unique_ptr<vrui::coSubMenuItem>;
 
     impl()
-        : state({ Simple, false })
+        : glew_init(false)
+        , state({ Simple, false })
         , dev_state({ true, false, false })
     {
     }
@@ -321,6 +322,8 @@ struct Visionaray::impl : vrui::coMenuListener
     recti                       viewport;
 
     osg::ref_ptr<osg::Geode>    geode;
+
+    bool                        glew_init;
 
     struct
     {
@@ -549,16 +552,17 @@ void Visionaray::expandBoundingSphere(osg::BoundingSphere &bs)
 
 void Visionaray::drawImplementation(osg::RenderInfo&) const
 {
-    impl_->store_gl_state();
-
-    // TODO?
-
-    static bool glewed = false;
-
-    if (!glewed)
+    if (!impl_->glew_init)
     {
-        glewed = glewInit() == GLEW_OK;
+        impl_->glew_init = glewInit() == GLEW_OK;
     }
+
+    if (!impl_->glew_init)
+    {
+        return;
+    }
+
+    impl_->store_gl_state();
 
 
     // Scene data
