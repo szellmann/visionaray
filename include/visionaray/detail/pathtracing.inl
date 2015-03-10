@@ -44,7 +44,7 @@ struct kernel
         auto exited         = !hit_rec.hit;
         auto active_rays    =  hit_rec.hit;
 
-        C result(1.0, 1.0, 1.0, 1.0);
+        C result = select( exited, C(params.bg_color), C(1.0) );
 
         for (unsigned d = 0; d < MaxDepth; ++d)
         {
