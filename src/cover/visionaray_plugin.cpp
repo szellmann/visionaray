@@ -352,6 +352,7 @@ struct Visionaray::impl : vrui::coMenuListener
         radio_group             algo_group;
         radio_button            simple_button;
         radio_button            whitted_button;
+        radio_button            pathtracing_button;
 
         // dev menu
         check_box               toggle_bvh_display;
@@ -407,6 +408,8 @@ void Visionaray::impl::init_state_from_config()
     //
     //
 
+    // Read config
+
     using boost::algorithm::to_lower;
 
     auto algo_str       = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.Algorithm");
@@ -415,7 +418,22 @@ void Visionaray::impl::init_state_from_config()
     to_lower(algo_str);
     to_lower(data_var_str);
 
-    state.algo          = algo_str == "whitted" ? Whitted : Simple;
+
+    // Update state
+
+    if (algo_str == "whitted")
+    {
+        state.algo = Whitted;
+    }
+    else if (algo_str == "pathtracing")
+    {
+        state.algo = Pathtracing;
+    }
+    else
+    {
+        state.algo = Simple;
+    }
+
     state.data_var      = data_var_str == "dynamic" ? Dynamic : Static;
 }
 
@@ -455,6 +473,10 @@ void Visionaray::impl::init_ui()
     ui.whitted_button.reset(new coCheckboxMenuItem("Whitted", state.algo == Whitted, ui.algo_group.get()));
     ui.whitted_button->setMenuListener(this);
     ui.algo_menu->add(ui.whitted_button.get());
+
+    ui.pathtracing_button.reset(new coCheckboxMenuItem("Pathtracing", state.algo == Pathtracing, ui.algo_group.get()));
+    ui.pathtracing_button->setMenuListener(this);
+    ui.algo_menu->add(ui.pathtracing_button.get());
 
 
     // dev submenu at the bottom!
@@ -511,6 +533,15 @@ void Visionaray::impl::update_viewing_params()
     auto view = osg_cast( s * t * v );
     auto proj = osg_cast( opencover::coVRConfig::instance()->channels[0].rightProj );
 
+    if (state.data_var == impl::Static && view_matrix == view && proj_matrix == proj)
+    {
+        ++frame_num;
+    }
+    else
+    {
+        frame_num = 0;
+    }
+
     view_matrix = view;
     proj_matrix = proj;
 
@@ -549,6 +580,10 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
     else if (item == ui.whitted_button.get())
     {
         state.algo = Whitted;
+    }
+    else if (item == ui.pathtracing_button.get())
+    {
+        state.algo = Pathtracing;
     }
 
     // dev submenu
