@@ -312,7 +312,8 @@ struct Visionaray::impl : vrui::coMenuListener
     enum data_variance { Static, Dynamic };
 
     impl()
-        : glew_init(false)
+        : frame_num(0)
+        , glew_init(false)
         , state({ Simple, Static })
         , dev_state({ true, false, false })
     {
@@ -325,7 +326,11 @@ struct Visionaray::impl : vrui::coMenuListener
     host_sched_type             host_sched;
     cpu_buffer_rt               host_rt;
 
+    mat4                        view_matrix;
+    mat4                        proj_matrix;
     recti                       viewport;
+
+    unsigned                    frame_num;
 
     osg::ref_ptr<osg::Geode>    geode;
 
@@ -379,6 +384,10 @@ struct Visionaray::impl : vrui::coMenuListener
 
     void store_gl_state();
     void restore_gl_state();
+    void update_viewing_params();
+    
+    template <typename KParams>
+    void call_kernel(KParams const& params);
 
 };
 
@@ -486,6 +495,42 @@ void Visionaray::impl::restore_gl_state()
 
     glMatrixMode(gl_state.matrix_mode);
     glDepthMask(gl_state.depth_mask);
+}
+
+void Visionaray::impl::update_viewing_params()
+{
+    auto osg_cam = opencover::coVRConfig::instance()->channels[0].camera;
+
+    // Matrices
+
+    auto t = opencover::cover->getXformMat();
+    auto s = opencover::cover->getObjectsScale()->getMatrix();
+    // TODO: understand COVER API..
+//  auto v = opencover::cover->getViewerMat();
+    auto v = opencover::coVRConfig::instance()->channels[0].rightView;
+    auto view = osg_cast( s * t * v );
+    auto proj = osg_cast( opencover::coVRConfig::instance()->channels[0].rightProj );
+
+    view_matrix = view;
+    proj_matrix = proj;
+
+
+    // Viewport
+
+    auto osg_viewport = osg_cam->getViewport();
+    recti vp(osg_viewport->x(), osg_viewport->y(), osg_viewport->width(), osg_viewport->height());
+
+    if (viewport != vp)
+    {
+        viewport = vp;
+        host_rt.resize(viewport[2], viewport[3]);
+    }
+}
+
+template <typename KParams>
+void Visionaray::impl::call_kernel(KParams const& params)
+{
+    visionaray::call_kernel( state.algo, host_sched, params, frame_num, view_matrix, proj_matrix, viewport, host_rt );
 }
 
 void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
@@ -642,26 +687,10 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     }
 
 
-    // Sched params
+    // Camera matrices, viewport, render target resize
 
-    auto osg_cam = opencover::coVRConfig::instance()->channels[0].camera;
+    impl_->update_viewing_params();
 
-    auto t = opencover::cover->getXformMat();
-    auto s = opencover::cover->getObjectsScale()->getMatrix();
-    // TODO: understand COVER API..
-//  auto v = opencover::cover->getViewerMat();
-    auto v = opencover::coVRConfig::instance()->channels[0].rightView;
-    auto view_matrix = osg_cast( s * t * v );
-    auto proj_matrix = osg_cast( opencover::coVRConfig::instance()->channels[0].rightProj );
-
-    auto osg_viewport = osg_cam->getViewport();
-    recti viewport(osg_viewport->x(), osg_viewport->y(), osg_viewport->width(), osg_viewport->height());
-
-    if (impl_->viewport != viewport)
-    {
-        impl_->host_rt.resize(viewport[2], viewport[3]);
-        impl_->viewport = viewport;
-    }
 
     // Kernel params
 
@@ -715,7 +744,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         using S = typename R::scalar_type;
         using C = vector<4, S>;
 
-        auto sparams = make_sched_params<pixel_sampler::uniform_type>( view_matrix, proj_matrix, viewport, impl_->host_rt );
+        auto sparams = make_sched_params<pixel_sampler::uniform_type>( impl_->view_matrix, impl_->proj_matrix, impl_->viewport, impl_->host_rt );
 
         impl_->host_sched.frame([&](R ray) -> C
         {
@@ -727,8 +756,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     }
     else
     {
-        unsigned frame = 0;
-        call_kernel( impl_->state.algo, impl_->host_sched, kparams, frame, view_matrix, proj_matrix, viewport, impl_->host_rt );
+        impl_->call_kernel(kparams);
     }
 
     // TODO: generate depth buffer
@@ -744,11 +772,11 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
-        glLoadMatrixf(proj_matrix.data());
+        glLoadMatrixf(impl_->proj_matrix.data());
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
-        glLoadMatrixf(view_matrix.data());
+        glLoadMatrixf(impl_->view_matrix.data());
 
         glColor3f(1.0f, 1.0f, 1.0f);
         render_bvh(impl_->host_bvh);
