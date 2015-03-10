@@ -8,12 +8,16 @@
 #include <limits>
 #include <ostream>
 
+#include <boost/algorithm/string.hpp>
+
 #include <GL/glew.h>
 
 #include <osg/io_utils>
 #include <osg/Material>
 #include <osg/MatrixTransform>
 #include <osg/TriangleIndexFunctor>
+
+#include <config/CoviseConfig.h>
 
 #include <cover/coVRConfig.h>
 #include <cover/coVRPluginSupport.h>
@@ -305,9 +309,11 @@ struct Visionaray::impl : vrui::coMenuListener
     using radio_group   = std::unique_ptr<vrui::coCheckboxGroup>;
     using sub_menu      = std::unique_ptr<vrui::coSubMenuItem>;
 
+    enum data_variance { Static, Dynamic };
+
     impl()
         : glew_init(false)
-        , state({ Simple, false })
+        , state({ Simple, Static })
         , dev_state({ true, false, false })
     {
     }
@@ -350,7 +356,7 @@ struct Visionaray::impl : vrui::coMenuListener
     struct
     {
         algorithm               algo;
-        bool                    update_scene_per_frame;
+        data_variance           data_var;
     } state;
 
     struct
@@ -367,6 +373,7 @@ struct Visionaray::impl : vrui::coMenuListener
         GLboolean               lighting;
     } gl_state;
 
+    void init_state_from_config();
     void init_ui();
     void menuEvent(vrui::coMenuItem* item);
 
@@ -374,6 +381,34 @@ struct Visionaray::impl : vrui::coMenuListener
     void restore_gl_state();
 
 };
+
+//-------------------------------------------------------------------------------------------------
+// Read state from COVISE config
+//
+
+void Visionaray::impl::init_state_from_config()
+{
+
+    //
+    //
+    // <Visionaray>
+    //     <DataVariance value="static" />      <!-- "static" | "dynamic" -->
+    //     <Algorithm    value="simple" />      <!-- "simple" | "whitted" -->
+    // </Visioaray>
+    //
+    //
+
+    using boost::algorithm::to_lower;
+
+    auto algo_str       = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.Algorithm");
+    auto data_var_str   = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.DataVariance");
+
+    to_lower(algo_str);
+    to_lower(data_var_str);
+
+    state.algo          = algo_str == "whitted" ? Whitted : Simple;
+    state.data_var      = data_var_str == "dynamic" ? Dynamic : Static;
+}
 
 void Visionaray::impl::init_ui()
 {
@@ -388,7 +423,7 @@ void Visionaray::impl::init_ui()
     ui.main_menu_entry->setMenu(ui.main_menu.get());
 
 
-    ui.toggle_update_mode.reset(new coCheckboxMenuItem("Update scene per frame", false));
+    ui.toggle_update_mode.reset(new coCheckboxMenuItem("Update scene per frame", state.data_var == impl::Dynamic));
     ui.toggle_update_mode->setMenuListener(this);
     ui.main_menu->add(ui.toggle_update_mode.get());
 
@@ -404,11 +439,11 @@ void Visionaray::impl::init_ui()
 
     ui.algo_group.reset(new coCheckboxGroup( /* allow empty selection: */ false ));
 
-    ui.simple_button.reset(new coCheckboxMenuItem("Simple", false, ui.algo_group.get()));
+    ui.simple_button.reset(new coCheckboxMenuItem("Simple", state.algo == Simple, ui.algo_group.get()));
     ui.simple_button->setMenuListener(this);
     ui.algo_menu->add(ui.simple_button.get());
 
-    ui.whitted_button.reset(new coCheckboxMenuItem("Whitted", false, ui.algo_group.get()));
+    ui.whitted_button.reset(new coCheckboxMenuItem("Whitted", state.algo == Whitted, ui.algo_group.get()));
     ui.whitted_button->setMenuListener(this);
     ui.algo_menu->add(ui.whitted_button.get());
 
@@ -458,7 +493,7 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
     // main menu
     if (item == ui.toggle_update_mode.get())
     {
-        state.update_scene_per_frame = ui.toggle_update_mode->getState();
+        state.data_var = ui.toggle_update_mode->getState() ? impl::Dynamic : impl::Static;
     }
 
     // algorithm submenu
@@ -515,6 +550,7 @@ bool Visionaray::init()
 
     std::cout << "Init Visionaray Plugin!!" << std::endl;
 
+    impl_->init_state_from_config();
     impl_->init_ui();
 
     impl_->geode = new osg::Geode;
@@ -567,7 +603,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     // Scene data
 
-    if (impl_->state.update_scene_per_frame || impl_->triangles.size() == 0)
+    if (impl_->state.data_var == impl::Dynamic || impl_->triangles.size() == 0)
     {
         // TODO: real dynamic scenes :)
 
