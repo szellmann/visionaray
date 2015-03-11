@@ -54,6 +54,11 @@ struct tiled_sched<R>::impl
 
     impl() = default;
 
+    void init_threads(unsigned num_threads);
+    void destroy_threads();
+
+    void render_loop();
+
     template <typename K, typename SP>
     void init_render_func(K kernel, SP sched_params, unsigned frame_num);
 
@@ -67,6 +72,95 @@ struct tiled_sched<R>::impl
 
     render_tile_func            render_tile;
 };
+
+template <typename R>
+void tiled_sched<R>::impl::init_threads(unsigned num_threads)
+{
+    for (unsigned i = 0; i < num_threads; ++i)
+    {
+        threads.emplace_back([this](){ render_loop(); });
+    }
+}
+
+template <typename R>
+void tiled_sched<R>::impl::destroy_threads()
+{
+    if (threads.size() == 0)
+    {
+        return;
+    }
+
+    sync_params.render_loop_exit = true;
+    sync_params.threads_start.notify_all();
+
+    for (auto& t : threads)
+    {
+        if (t.joinable())
+        {
+            t.join();
+        }
+    }
+
+    sync_params.render_loop_exit = false;
+    threads.clear();
+}
+
+//-------------------------------------------------------------------------------------------------
+// Main render loop
+//
+
+template <typename R>
+void tiled_sched<R>::impl::render_loop()
+{
+    for (;;)
+    {
+        {
+            std::unique_lock<std::mutex> l( sync_params.mutex );
+            sync_params.threads_start.wait(l);
+        }
+
+    // case event.exit:
+        if (sync_params.render_loop_exit)
+        {
+            break;
+        }
+
+    // case event.render:
+        for (;;)
+        {
+            auto tile_idx = sync_params.tile_idx_counter.fetch_add(1);
+
+            if (tile_idx >= sync_params.tile_num)
+            {
+                break;
+            }
+
+            auto w = viewport.w;
+            auto tilew = detail::tile_width;
+            auto tileh = detail::tile_height;
+            auto numtilesx = div_up( w, tilew );
+
+            recti tile
+            (
+                viewport.x + (tile_idx % numtilesx) * tilew,
+                viewport.y + (tile_idx / numtilesx) * tileh,
+                tilew,
+                tileh
+            );
+
+            render_tile(tile);
+
+            auto num_tiles_fin = sync_params.tile_fin_counter.fetch_add(1);
+
+            if (num_tiles_fin >= sync_params.tile_num - 1)
+            {
+                assert(num_tiles_fin == sync_params.tile_num - 1);
+                sync_params.threads_ready.notify();
+                break;
+            }
+        }
+    }
+}
 
 template <typename R>
 template <typename K, typename SP>
@@ -170,28 +264,16 @@ void tiled_sched<R>::impl::init_render_func(K kernel, sched_params<RT, PxSampler
 //
 
 template <typename R>
-tiled_sched<R>::tiled_sched()
+tiled_sched<R>::tiled_sched(unsigned num_threads)
     : impl_(new impl())
 {
-    for (unsigned i = 0; i < 8; ++i)
-    {
-        impl_->threads.emplace_back([this](){ render_loop(); });
-    }
+    impl_->init_threads(num_threads);
 }
 
 template <typename R>
 tiled_sched<R>::~tiled_sched()
 {
-    impl_->sync_params.render_loop_exit = true;
-    impl_->sync_params.threads_start.notify_all();
-
-    for (auto& t : impl_->threads)
-    {
-        if (t.joinable())
-        {
-            t.join();
-        }
-    }
+    impl_->destroy_threads();
 }
 
 template <typename R>
@@ -223,58 +305,21 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 }
 
 template <typename R>
-void tiled_sched<R>::render_loop()
+void tiled_sched<R>::set_num_threads(unsigned num_threads)
 {
-    for (;;)
+    if ( get_num_threads()  == num_threads )
     {
-        auto& sparams = impl_->sync_params;
-
-        {
-            std::unique_lock<std::mutex> l( sparams.mutex );
-            sparams.threads_start.wait(l);
-        }
-
-    // case event.exit:
-        if (sparams.render_loop_exit)
-        {
-            break;
-        }
-
-    // case event.render:
-        for (;;)
-        {
-            auto tile_idx = sparams.tile_idx_counter.fetch_add(1);
-
-            if (tile_idx >= sparams.tile_num)
-            {
-                break;
-            }
-
-            auto w = impl_->viewport.w;
-            auto tilew = detail::tile_width;
-            auto tileh = detail::tile_height;
-            auto numtilesx = div_up( w, tilew );
-
-            recti tile
-            (
-                impl_->viewport.x + (tile_idx % numtilesx) * tilew,
-                impl_->viewport.y + (tile_idx / numtilesx) * tileh,
-                tilew,
-                tileh
-            );
-
-            impl_->render_tile(tile);
-
-            auto num_tiles_fin = sparams.tile_fin_counter.fetch_add(1);
-
-            if (num_tiles_fin >= sparams.tile_num - 1)
-            {
-                assert(num_tiles_fin == sparams.tile_num - 1);
-                sparams.threads_ready.notify();
-                break;
-            }
-        }
+        return;
     }
+
+    impl_->destroy_threads();
+    impl_->init_threads(num_threads);
+}
+
+template <typename R>
+unsigned tiled_sched<R>::get_num_threads() const
+{
+    return static_cast<unsigned>( impl_->threads.size() );
 }
 
 } // visionaray

@@ -38,6 +38,7 @@
 
 #include <common/call_kernel.h>
 #include <common/render_bvh.h>
+#include <common/util.h>
 
 #include "visionaray_plugin.h"
 
@@ -312,11 +313,14 @@ struct Visionaray::impl : vrui::coMenuListener
     enum data_variance { Static, Dynamic };
 
     impl()
-        : frame_num(0)
+        : host_sched(0)
+        , frame_num(0)
         , glew_init(false)
-        , state({ Simple, Static })
+        , state({ Simple, Static, 0 })
         , dev_state({ true, false, false })
     {
+        init_state_from_config();
+        host_sched.set_num_threads(state.num_threads > 0 ? state.num_threads : get_num_processors());
     }
 
     triangle_list               triangles;
@@ -363,6 +367,7 @@ struct Visionaray::impl : vrui::coMenuListener
     {
         algorithm               algo;
         data_variance           data_var;
+        unsigned                num_threads;
     } state;
 
     struct
@@ -402,8 +407,9 @@ void Visionaray::impl::init_state_from_config()
     //
     //
     // <Visionaray>
-    //     <DataVariance value="static" />      <!-- "static" | "dynamic" -->
-    //     <Algorithm    value="simple" />      <!-- "simple" | "whitted" -->
+    //     <DataVariance value="static"  />      <!-- "static" | "dynamic" -->
+    //     <Algorithm    value="simple"  />      <!-- "simple" | "whitted" -->
+    //     <CPUScheduler numThreads="16" />      <!-- numThreads:Integer   -->
     // </Visioaray>
     //
     //
@@ -414,6 +420,7 @@ void Visionaray::impl::init_state_from_config()
 
     auto algo_str       = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.Algorithm");
     auto data_var_str   = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.DataVariance");
+    auto num_threads    = covise::coCoviseConfig::getInt("numThreads", "COVER.Plugin.Visionaray.CPUScheduler", 0);
 
     to_lower(algo_str);
     to_lower(data_var_str);
@@ -435,6 +442,7 @@ void Visionaray::impl::init_state_from_config()
     }
 
     state.data_var      = data_var_str == "dynamic" ? Dynamic : Static;
+    state.num_threads   = num_threads;
 }
 
 void Visionaray::impl::init_ui()
@@ -630,7 +638,6 @@ bool Visionaray::init()
 
     std::cout << "Init Visionaray Plugin!!" << std::endl;
 
-    impl_->init_state_from_config();
     impl_->init_ui();
 
     impl_->geode = new osg::Geode;

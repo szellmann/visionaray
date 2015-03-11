@@ -18,18 +18,19 @@ class tiled_sched
 {
 public:
 
-    tiled_sched();
+    tiled_sched(unsigned num_threads);
    ~tiled_sched();
 
     template <typename K, typename SP>
     void frame(K kernel, SP sched_params, unsigned frame_num = 0);
 
+    void set_num_threads(unsigned num_threads);
+    unsigned get_num_threads() const;
+
 private:
 
     struct impl;
     std::unique_ptr<impl> impl_;
-
-    void render_loop();
 
 };
 
@@ -38,5 +39,3 @@ private:
 #include "tiled_sched.inl"
 
 #endif // VSNRAY_DETAIL_TILED_SCHED_H
-
-

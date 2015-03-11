@@ -53,6 +53,7 @@
 #include <common/call_kernel.h>
 #include <common/render_bvh.h>
 #include <common/timer.h>
+#include <common/util.h>
 
 #include "manip/arcball_manipulator.h"
 #include "manip/pan_manipulator.h"
@@ -94,6 +95,7 @@ struct renderer
         , w(800)
         , h(800)
         , frame(0)
+        , sched_cpu(get_num_processors())
         , down_button(mouse::NoButton)
     {
     }
@@ -638,5 +640,3 @@ int main(int argc, char** argv)
     glutMainLoop();
 
 }
-
-

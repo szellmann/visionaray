@@ -28,6 +28,7 @@ set(VIEWER_HEADERS
     ${COMMON_DIR}/call_kernel.h
     ${COMMON_DIR}/render_bvh.h
     ${COMMON_DIR}/timer.h
+    ${COMMON_DIR}/util.h
 
     input/exception.h
     input/keyboard.h
