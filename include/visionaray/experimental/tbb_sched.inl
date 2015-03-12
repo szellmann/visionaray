@@ -35,14 +35,15 @@ struct tbb_sched<R>::impl
 {
     tbb::task_scheduler_init init_;
 
-    impl() : init_(/*number_of_threads*/)
+    impl(int num_threads)
+        : init_(num_threads)
     {
     }
 };
 
 template <typename R>
-tbb_sched<R>::tbb_sched()
-    : impl_(new impl)
+tbb_sched<R>::tbb_sched(int num_threads)
+    : impl_(new impl(num_threads))
 {
 }
 

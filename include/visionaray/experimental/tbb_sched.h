@@ -18,7 +18,7 @@ class tbb_sched
 {
 public:
 
-    tbb_sched();
+    explicit tbb_sched(int num_threads);
    ~tbb_sched();
 
     template <typename K, typename SP>

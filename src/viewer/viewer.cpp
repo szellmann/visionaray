@@ -45,6 +45,10 @@
 #include <visionaray/render_target.h>
 #include <visionaray/scheduler.h>
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#include <visionaray/experimental/tbb_sched.h>
+#endif
+
 #ifdef __CUDACC__
 #include <visionaray/gpu_buffer_rt.h>
 #include <visionaray/pixel_unpack_buffer_rt.h>
@@ -115,7 +119,11 @@ struct renderer
     thrust::device_vector<material_type>    device_materials;
 #endif
 
+#if defined(__MINGW32__) || defined(__MINGW64__)
+    tbb_sched<ray_type_cpu>     sched_cpu;
+#else
     tiled_sched<ray_type_cpu>   sched_cpu;
+#endif
     cpu_buffer_rt               rt;
 #ifdef __CUDACC__
     cuda_sched<ray_type_gpu>    sched_gpu;
