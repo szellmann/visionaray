@@ -94,7 +94,7 @@ public:
         , out({ nullptr, nullptr })
     {}
 
-    void init(osg::Vec3Array* in_vertices, osg::Vec3Array* in_normals,
+    void init(osg::Vec3Array const* in_vertices, osg::Vec3Array const* in_normals,
         osg::Matrix const& in_trans_mat, unsigned in_geom_id,
         triangle_list& out_triangles, normal_list& out_normals)
     {
@@ -147,16 +147,16 @@ private:
 
     struct
     {
-        osg::Vec3Array* vertices;
-        osg::Vec3Array* normals;
-        osg::Matrix     trans_mat;
-        unsigned        geom_id;
+        osg::Vec3Array const*   vertices;
+        osg::Vec3Array const*   normals;
+        osg::Matrix             trans_mat;
+        unsigned                geom_id;
     } in;
 
     struct
     {
-        triangle_list*  triangles;
-        normal_list*    normals;
+        triangle_list*          triangles;
+        normal_list*            normals;
     } out;
 
 };
