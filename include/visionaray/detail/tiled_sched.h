@@ -18,7 +18,7 @@ class tiled_sched
 {
 public:
 
-    tiled_sched(unsigned num_threads);
+    explicit tiled_sched(unsigned num_threads);
    ~tiled_sched();
 
     template <typename K, typename SP>
