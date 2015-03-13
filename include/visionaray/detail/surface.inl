@@ -48,6 +48,72 @@ inline N get_normal(N const* normals, HR const& hr, normals_per_vertex_binding)
 
 
 //-------------------------------------------------------------------------------------------------
+// Get texture coordinate from array
+//
+
+template <typename TC, typename HR>
+VSNRAY_FUNC
+inline TC get_tex_coord(TC const* tex_coords, HR const& hr)
+{
+    TC tc1 = tex_coords[hr.prim_id * 3];
+    TC tc2 = tex_coords[hr.prim_id * 3 + 1];
+    TC tc3 = tex_coords[hr.prim_id * 3 + 2];
+
+    auto s2 = tc3 * hr.v;
+    auto s3 = tc2 * hr.u;
+    auto s1 = tc1 * (1.0f - (hr.u + hr.v));
+
+    return s1 + s2 + s3;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Get SSE texture coordinate from array. Pass hr4 if an upacked hit record is available
+//
+
+template <typename TC, typename HR, typename HR4>
+VSNRAY_FUNC
+inline vector<2, simd::float4> get_tex_coord(TC const* coords, HR const& hr, HR4 const& hr4)
+{
+    using S = simd::float4;
+
+    auto off1 = hr4[0].prim_id * 3;
+    auto off2 = hr4[1].prim_id * 3;
+    auto off3 = hr4[2].prim_id * 3;
+    auto off4 = hr4[3].prim_id * 3;
+
+    VSNRAY_ALIGN(16) float x1[] = { coords[off1    ].x, coords[off2    ].x, coords[off3    ].x, coords[off4    ].x };
+    VSNRAY_ALIGN(16) float x2[] = { coords[off1 + 1].x, coords[off2 + 1].x, coords[off3 + 1].x, coords[off4 + 1].x };
+    VSNRAY_ALIGN(16) float x3[] = { coords[off1 + 2].x, coords[off2 + 2].x, coords[off3 + 2].x, coords[off4 + 2].x };
+
+    VSNRAY_ALIGN(16) float y1[] = { coords[off1    ].y, coords[off2    ].y, coords[off3    ].y, coords[off4    ].y };
+    VSNRAY_ALIGN(16) float y2[] = { coords[off1 + 1].y, coords[off2 + 1].y, coords[off3 + 1].y, coords[off4 + 1].y };
+    VSNRAY_ALIGN(16) float y3[] = { coords[off1 + 2].y, coords[off2 + 2].y, coords[off3 + 2].y, coords[off4 + 2].y };
+
+    vector<2, S> tc1(x1, y1);
+    vector<2, S> tc2(x2, y2);
+    vector<2, S> tc3(x3, y3);
+
+    auto s2 = tc3 * hr.v;
+    auto s3 = tc2 * hr.u;
+    auto s1 = tc1 * (S(1.0) - (hr.u + hr.v));
+    return s1 + s2 + s3;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Get SSE texture coordinate from array
+//
+
+template <typename TC>
+VSNRAY_FUNC
+inline vector<2, simd::float4> get_tex_coord(TC const* tex_coords, hit_record<simd::ray4, primitive<unsigned>> const& hr)
+{
+    return get_tex_coord(tex_coords, hr, unpack(hr));
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Primitive with precalculated normals / float
 //
 
@@ -100,14 +166,7 @@ inline surface<M, vector<3, float>> get_surface
 {
     typedef typename R::scalar_type scalar_type;
 
-    auto tc1 = tex_coords[hr.prim_id * 3];
-    auto tc2 = tex_coords[hr.prim_id * 3 + 1];
-    auto tc3 = tex_coords[hr.prim_id * 3 + 2];
-
-    auto s2  = tc3 * hr.v;
-    auto s3  = tc2 * hr.u;
-    auto s1  = tc1 * (scalar_type(1.0) - (hr.u + hr.v));
-    auto tc  = s1 + s2 + s3;
+    auto tc  = get_tex_coord(tex_coords, hr);
 
     auto const& tex = textures[hr.geom_id];
     auto cd = tex.width() > 0 && tex.height() > 0 ? vector<3, float>(tex2D(tex, tc)) : vector<3, float>(255.0);
@@ -271,6 +330,8 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
     NBinding
 )
 {
+    using S = simd::float4;
+
     auto hr4 = unpack(hr);
 
     N n[4] =
@@ -281,26 +342,9 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
         get_normal(normals, hr4[3], NBinding())
     };
 
-    typedef simd::float4 scalar_type;
+    auto tc = get_tex_coord(tex_coords, hr, hr4);
 
-    VSNRAY_ALIGN(16) float x1[] = { tex_coords[hr4[0].prim_id * 3].x, tex_coords[hr4[1].prim_id * 3].x, tex_coords[hr4[2].prim_id * 3].x, tex_coords[hr4[3].prim_id * 3].x };
-    VSNRAY_ALIGN(16) float x2[] = { tex_coords[hr4[0].prim_id * 3 + 1].x, tex_coords[hr4[1].prim_id * 3 + 1].x, tex_coords[hr4[2].prim_id * 3 + 1].x, tex_coords[hr4[3].prim_id * 3 + 1].x };
-    VSNRAY_ALIGN(16) float x3[] = { tex_coords[hr4[0].prim_id * 3 + 2].x, tex_coords[hr4[1].prim_id * 3 + 2].x, tex_coords[hr4[2].prim_id * 3 + 2].x, tex_coords[hr4[3].prim_id * 3 + 2].x };
-
-    VSNRAY_ALIGN(16) float y1[] = { tex_coords[hr4[0].prim_id * 3].y, tex_coords[hr4[1].prim_id * 3].y, tex_coords[hr4[2].prim_id * 3].y, tex_coords[hr4[3].prim_id * 3].y };
-    VSNRAY_ALIGN(16) float y2[] = { tex_coords[hr4[0].prim_id * 3 + 1].y, tex_coords[hr4[1].prim_id * 3 + 1].y, tex_coords[hr4[2].prim_id * 3 + 1].y, tex_coords[hr4[3].prim_id * 3 + 1].y };
-    VSNRAY_ALIGN(16) float y3[] = { tex_coords[hr4[0].prim_id * 3 + 2].y, tex_coords[hr4[1].prim_id * 3 + 2].y, tex_coords[hr4[2].prim_id * 3 + 2].y, tex_coords[hr4[3].prim_id * 3 + 2].y };
-
-    vector<2, simd::float4> tc1(x1, y1);
-    vector<2, simd::float4> tc2(x2, y2);
-    vector<2, simd::float4> tc3(x3, y3);
-
-    auto s2 = tc3 * hr.v;
-    auto s3 = tc2 * hr.u;
-    auto s1 = tc1 * (scalar_type(1.0) - (hr.u + hr.v));
-    auto tc = s1 + s2 + s3;
-
-    vector<3, simd::float4> cd;
+    vector<3, S> cd;
     for (unsigned i = 0; i < 4; ++i)
     {
         if (!hr4[i].hit)
@@ -314,19 +358,19 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
         simd::mask4 m(mi);
 
         auto const& tex = textures[hr4[i].geom_id];
-        auto clr = tex.width() > 0 && tex.height() > 0 ? tex2D(tex, tc) : vector<3, simd::float4>(255.0);
-        clr /= scalar_type(255.0);
+        auto clr = tex.width() > 0 && tex.height() > 0 ? tex2D(tex, tc) : vector<3, S>(255.0);
+        clr /= S(255.0);
 
         cd = select(m, clr, cd);
     }
 
-    return surface<M<simd::float4>, vector<3, simd::float4>>
+    return surface<M<S>, vector<3, S>>
     (
-        vector<3, simd::float4>
+        vector<3, S>
         (
-            simd::float4( n[0].x, n[1].x, n[2].x, n[3].x ),
-            simd::float4( n[0].y, n[1].y, n[2].y, n[3].y ),
-            simd::float4( n[0].z, n[1].z, n[2].z, n[3].z )
+            S( n[0].x, n[1].x, n[2].x, n[3].x ),
+            S( n[0].y, n[1].y, n[2].y, n[3].y ),
+            S( n[0].z, n[1].z, n[2].z, n[3].z )
         ),
 
         pack
