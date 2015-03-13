@@ -30,6 +30,7 @@
 
 #include <visionaray/detail/aligned_vector.h>
 #include <visionaray/math/math.h>
+#include <visionaray/texture/texture.h>
 #include <visionaray/bvh.h>
 #include <visionaray/kernels.h>
 #include <visionaray/point_light.h>
@@ -52,7 +53,9 @@ namespace visionaray { namespace cover {
 using triangle_type     = basic_triangle<3, float>;
 using triangle_list     = aligned_vector<triangle_type>;
 using normal_list       = aligned_vector<vec3>;
+using tex_coord_list    = aligned_vector<vec2>;
 using material_list     = aligned_vector<phong<float>>;
+using texture_list      = aligned_vector<texture<vector<3, unsigned char>, ElementType, 2>>;
 
 using host_ray_type     = basic_ray<simd::float4>;
 using host_bvh_type     = bvh<triangle_type>;
@@ -62,6 +65,11 @@ using host_sched_type   = tiled_sched<host_ray_type>;
 //-------------------------------------------------------------------------------------------------
 // Conversion between osg and visionaray
 //
+
+vec2 osg_cast(osg::Vec2 const& v)
+{
+    return vec2( v.x(), v.y() );
+}
 
 vec3 osg_cast(osg::Vec3 const& v)
 {
@@ -90,24 +98,29 @@ class store_triangle
 public:
 
     store_triangle()
-        : in({ nullptr, nullptr, osg::Matrix(), 0 })
-        , out({ nullptr, nullptr })
+        : in({ nullptr, nullptr, nullptr, osg::Matrix(), 0 })
+        , out({ nullptr, nullptr, nullptr })
     {}
 
     void init(osg::Vec3Array const* in_vertices, osg::Vec3Array const* in_normals,
-        osg::Matrix const& in_trans_mat, unsigned in_geom_id,
-        triangle_list& out_triangles, normal_list& out_normals)
+        osg::Vec2Array const* in_tex_coords, osg::Matrix const& in_trans_mat, unsigned in_geom_id,
+        triangle_list& out_triangles, normal_list& out_normals, tex_coord_list& out_tex_coords)
     {
         in.vertices     = in_vertices;
         in.normals      = in_normals;
+        in.tex_coords   = in_tex_coords;
         in.trans_mat    = in_trans_mat;
         in.geom_id      = in_geom_id;
         out.triangles   = &out_triangles;
         out.normals     = &out_normals;
+        out.tex_coords  = &out_tex_coords;
     }
 
     void operator()(unsigned i1, unsigned i2, unsigned i3) const
     {
+
+        // triangles
+
         assert( in.vertices && out.triangles );
         assert( in.vertices->size() > i1 && in.vertices->size() > i2 && in.vertices->size() > i3 );
 
@@ -122,6 +135,9 @@ public:
         tri.e1 = osg_cast(v2) - tri.v1;
         tri.e2 = osg_cast(v3) - tri.v1;
         out.triangles->push_back(tri);
+
+
+        // normals
 
         assert( in.normals && out.normals );
         assert( in.normals->size() > i1 && in.normals->size() > i2 && in.normals->size() > i3 );
@@ -139,6 +155,22 @@ public:
         out.normals->push_back( osg_cast(n3).xyz() );
 
         assert( out.triangles->size() == out.normals->size() * 3 );
+
+
+        // tex coords
+
+        if ( in.tex_coords && in.tex_coords->size() > max(i1, i2, i3) )
+        {
+            out.tex_coords->push_back( osg_cast((*in.tex_coords)[i1]) );
+            out.tex_coords->push_back( osg_cast((*in.tex_coords)[i2]) );
+            out.tex_coords->push_back( osg_cast((*in.tex_coords)[i3]) );
+        }
+        else
+        {
+            out.tex_coords->push_back( vec2(0.0) );
+            out.tex_coords->push_back( vec2(0.0) );
+            out.tex_coords->push_back( vec2(0.0) );
+        }
     }
 
 private:
@@ -149,6 +181,7 @@ private:
     {
         osg::Vec3Array const*   vertices;
         osg::Vec3Array const*   normals;
+        osg::Vec2Array const*   tex_coords;
         osg::Matrix             trans_mat;
         unsigned                geom_id;
     } in;
@@ -157,6 +190,7 @@ private:
     {
         triangle_list*          triangles;
         normal_list*            normals;
+        tex_coord_list*         tex_coords;
     } out;
 
 };
@@ -217,11 +251,14 @@ public:
 
 public:
 
-    get_scene_visitor(triangle_list& tris, normal_list& norms, material_list& mats, TraversalMode tm)
+    get_scene_visitor(triangle_list& triangles, normal_list& normals, tex_coord_list& tex_coords,
+        material_list& materials, texture_list& textures, TraversalMode tm)
         : base_type(tm)
-        , triangles_(tris)
-        , normals_(norms)
-        , materials_(mats)
+        , triangles_(triangles)
+        , normals_(normals)
+        , tex_coords_(tex_coords)
+        , materials_(materials)
+        , textures_(textures)
     {
     }
 
@@ -253,9 +290,17 @@ public:
                 continue;
             }
 
+            unsigned tex_unit = 0;
+            auto node_tex_coords = dynamic_cast<osg::Vec2Array*>(geom->getTexCoordArray(tex_unit));
+            // ok if node_tex_coords == 0
+
             auto set = geom->getOrCreateStateSet();
-            auto attr = set->getAttribute(osg::StateAttribute::MATERIAL);
-            auto mat = dynamic_cast<osg::Material*>(attr);
+
+
+            // material
+
+            auto mattr = set->getAttribute(osg::StateAttribute::MATERIAL);
+            auto mat = dynamic_cast<osg::Material*>(mattr);
 
             if (mat)
             {
@@ -273,15 +318,46 @@ public:
                 materials_.push_back(vsnray_mat);
             }
 
+
+            // texture
+
+            auto tattr = set->getTextureAttribute(0, osg::StateAttribute::TEXTURE);
+            auto tex = dynamic_cast<osg::Texture2D*>(tattr);
+
+            if (tex)
+            {
+                using tex_type = typename texture_list::value_type;
+
+                auto img = tex->getImage();
+                tex_type vsnray_tex(img->s(), img->t());
+                vsnray_tex.set_address_mode( Clamp );
+                vsnray_tex.set_filter_mode( Linear );
+                auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img->data());
+                vsnray_tex.set_data(data_ptr);
+                textures_.push_back(vsnray_tex);
+            }
+            else
+            {
+                textures_.push_back( texture<vector<3, unsigned char>, ElementType, 2>(0, 0) );
+            }
+
+            assert( materials_.size() == textures_.size() );
+
+
+            // transform
+
             get_world_transform_visitor visitor;
             geode.accept(visitor);
             auto world_transform = visitor.get_matrix();
+
+
+            // geometry
 
             assert( static_cast<material_list::size_type>(static_cast<unsigned>(materials_.size()) == materials_.size()) );
             unsigned geom_id = materials_.size() == 0 ? 0 : static_cast<unsigned>(materials_.size() - 1);
 
             osg::TriangleIndexFunctor<store_triangle> tf;
-            tf.init( node_vertices, node_normals, world_transform, geom_id, triangles_, normals_ );
+            tf.init( node_vertices, node_normals, node_tex_coords, world_transform, geom_id, triangles_, normals_, tex_coords_ );
             geom->accept(tf);
         }
 
@@ -292,7 +368,9 @@ private:
 
     triangle_list&  triangles_;
     normal_list&    normals_;
+    tex_coord_list& tex_coords_;
     material_list&  materials_;
+    texture_list&   textures_;
 
 };
 
@@ -317,7 +395,7 @@ struct Visionaray::impl : vrui::coMenuListener
         , frame_num(0)
         , glew_init(false)
         , state({ Simple, Static, 0 })
-        , dev_state({ true, false, false })
+        , dev_state({ true, false, false, false })
     {
         init_state_from_config();
         host_sched.set_num_threads(state.num_threads > 0 ? state.num_threads : get_num_processors());
@@ -325,7 +403,9 @@ struct Visionaray::impl : vrui::coMenuListener
 
     triangle_list               triangles;
     normal_list                 normals;
+    tex_coord_list              tex_coords;
     material_list               materials;
+    texture_list                textures;
     host_bvh_type               host_bvh;
     host_sched_type             host_sched;
     cpu_buffer_rt               host_rt;
@@ -361,6 +441,7 @@ struct Visionaray::impl : vrui::coMenuListener
         // dev menu
         check_box               toggle_bvh_display;
         check_box               toggle_normal_display;
+        check_box               toggle_tex_coord_display;
     } ui;
 
     struct
@@ -375,6 +456,7 @@ struct Visionaray::impl : vrui::coMenuListener
         bool                    debug_mode;
         bool                    show_bvh;
         bool                    show_normals;
+        bool                    show_tex_coords;
     } dev_state;
 
     struct
@@ -394,6 +476,11 @@ struct Visionaray::impl : vrui::coMenuListener
     
     template <typename KParams>
     void call_kernel(KParams const& params);
+
+private:
+
+    template <typename KParams>
+    void call_kernel_debug(KParams const& params);
 
 };
 
@@ -503,6 +590,10 @@ void Visionaray::impl::init_ui()
     ui.toggle_normal_display.reset(new coCheckboxMenuItem("Show surface normals", false));
     ui.toggle_normal_display->setMenuListener(this);
     ui.dev_menu->add(ui.toggle_normal_display.get());
+
+    ui.toggle_tex_coord_display.reset(new coCheckboxMenuItem("Show texture coordinates", false));
+    ui.toggle_tex_coord_display->setMenuListener(this);
+    ui.dev_menu->add(ui.toggle_tex_coord_display.get());
 }
 
 void Visionaray::impl::store_gl_state()
@@ -566,10 +657,56 @@ void Visionaray::impl::update_viewing_params()
     }
 }
 
+//-------------------------------------------------------------------------------------------------
+// Call either one of the visionaray kernels or a custom one
+//
+
 template <typename KParams>
 void Visionaray::impl::call_kernel(KParams const& params)
 {
-    visionaray::call_kernel( state.algo, host_sched, params, frame_num, view_matrix, proj_matrix, viewport, host_rt );
+    if (dev_state.debug_mode && (dev_state.show_normals || dev_state.show_tex_coords))
+    {
+        call_kernel_debug( params );
+    }
+    else
+    {
+        visionaray::call_kernel( state.algo, host_sched, params, frame_num, view_matrix, proj_matrix, viewport, host_rt );
+    }
+}
+
+//-------------------------------------------------------------------------------------------------
+// Custom kernels to debug some internal values
+//
+
+template <typename KParams>
+void Visionaray::impl::call_kernel_debug(KParams const& params)
+{
+    using R = host_ray_type;
+    using S = typename R::scalar_type;
+    using C = vector<4, S>;
+
+    auto sparams = make_sched_params<pixel_sampler::uniform_type>( view_matrix, proj_matrix, viewport, host_rt );
+
+    if (dev_state.show_normals)
+    {
+        host_sched.frame([&](R ray) -> C
+        {
+            auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
+            auto surf = get_surface(hit_rec, params);
+            return select( hit_rec.hit, C(surf.normal, S(1.0)), C(0.0) );
+        },
+        sparams);
+    }
+    else if (dev_state.show_tex_coords)
+    {
+        host_sched.frame([&](R ray) -> C
+        {
+            auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
+            auto tc = get_tex_coord(params.tex_coords, hit_rec);
+            return select( hit_rec.hit, C(tc, S(1.0), S(1.0)), C(0.0) );
+        },
+        sparams);
+    }
 }
 
 void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
@@ -603,6 +740,11 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
     if (item == ui.toggle_normal_display.get())
     {
         dev_state.show_normals = ui.toggle_normal_display->getState();
+    }
+
+    if (item == ui.toggle_tex_coord_display.get())
+    {
+        dev_state.show_tex_coords = ui.toggle_tex_coord_display->getState();
     }
 }
 
@@ -698,8 +840,8 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         impl_->normals.clear();
         impl_->materials.clear();
 
-        get_scene_visitor visitor(impl_->triangles, impl_->normals, impl_->materials,
-            osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
+        get_scene_visitor visitor(impl_->triangles, impl_->normals, impl_->tex_coords, impl_->materials,
+            impl_->textures, osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
         opencover::cover->getObjectsRoot()->accept(visitor);
 
         if (impl_->triangles.size() == 0)
@@ -772,7 +914,9 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         host_primitives.data(),
         host_primitives.data() + host_primitives.size(),
         impl_->normals.data(),
+        impl_->tex_coords.data(),
         impl_->materials.data(),
+        impl_->textures.data(),
         lights.data(),
         lights.data() + lights.size(),
         vec4(0.0f)
@@ -780,23 +924,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     // Render
 
-    if (impl_->dev_state.debug_mode && impl_->dev_state.show_normals)
-    {
-        using R = host_ray_type;
-        using S = typename R::scalar_type;
-        using C = vector<4, S>;
-
-        auto sparams = make_sched_params<pixel_sampler::uniform_type>( impl_->view_matrix, impl_->proj_matrix, impl_->viewport, impl_->host_rt );
-
-        impl_->host_sched.frame([&](R ray) -> C
-        {
-            auto hit_rec = closest_hit(ray, kparams.prims.begin, kparams.prims.end);
-            auto surf = get_surface(hit_rec, kparams);
-            return select( hit_rec.hit, C(surf.normal, S(1.0)), C(0.0) );
-        },
-        sparams);
-    }
-    else
+//    else
     {
         impl_->call_kernel(kparams);
     }
