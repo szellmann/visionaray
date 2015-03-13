@@ -97,11 +97,6 @@ class store_triangle
 {
 public:
 
-    store_triangle()
-        : in({ nullptr, nullptr, nullptr, osg::Matrix(), 0 })
-        , out({ nullptr, nullptr, nullptr })
-    {}
-
     void init(osg::Vec3Array const* in_vertices, osg::Vec3Array const* in_normals,
         osg::Vec2Array const* in_tex_coords, osg::Matrix const& in_trans_mat, unsigned in_geom_id,
         triangle_list& out_triangles, normal_list& out_normals, tex_coord_list& out_tex_coords)
@@ -179,18 +174,18 @@ private:
 
     struct
     {
-        osg::Vec3Array const*   vertices;
-        osg::Vec3Array const*   normals;
-        osg::Vec2Array const*   tex_coords;
+        osg::Vec3Array const*   vertices    = nullptr;
+        osg::Vec3Array const*   normals     = nullptr;
+        osg::Vec2Array const*   tex_coords  = nullptr;
         osg::Matrix             trans_mat;
         unsigned                geom_id;
     } in;
 
     struct
     {
-        triangle_list*          triangles;
-        normal_list*            normals;
-        tex_coord_list*         tex_coords;
+        triangle_list*          triangles   = nullptr;
+        normal_list*            normals     = nullptr;
+        tex_coord_list*         tex_coords  = nullptr;
     } out;
 
 };
@@ -392,10 +387,6 @@ struct Visionaray::impl : vrui::coMenuListener
 
     impl()
         : host_sched(0)
-        , frame_num(0)
-        , glew_init(false)
-        , state({ Simple, Static, 0 })
-        , dev_state({ true, false, false, false })
     {
         init_state_from_config();
         host_sched.set_num_threads(state.num_threads > 0 ? state.num_threads : get_num_processors());
@@ -414,11 +405,11 @@ struct Visionaray::impl : vrui::coMenuListener
     mat4                        proj_matrix;
     recti                       viewport;
 
-    unsigned                    frame_num;
+    unsigned                    frame_num   = 0;
 
     osg::ref_ptr<osg::Geode>    geode;
 
-    bool                        glew_init;
+    bool                        glew_init   = false;
 
     struct
     {
@@ -446,17 +437,17 @@ struct Visionaray::impl : vrui::coMenuListener
 
     struct
     {
-        algorithm               algo;
-        data_variance           data_var;
-        unsigned                num_threads;
+        algorithm               algo            = Simple;
+        data_variance           data_var        = Static;
+        unsigned                num_threads     = 0;
     } state;
 
     struct
     {
-        bool                    debug_mode;
-        bool                    show_bvh;
-        bool                    show_normals;
-        bool                    show_tex_coords;
+        bool                    debug_mode      = true;
+        bool                    show_bvh        = false;
+        bool                    show_normals    = false;
+        bool                    show_tex_coords = false;
     } dev_state;
 
     struct
