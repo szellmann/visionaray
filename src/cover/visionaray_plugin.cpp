@@ -567,24 +567,27 @@ void Visionaray::impl::init_ui()
 
     // dev submenu at the bottom!
 
-    ui.dev_menu_entry.reset(new coSubMenuItem("Developer..."));
-    ui.main_menu->add(ui.dev_menu_entry.get());
+    if (dev_state.debug_mode)
+    {
+        ui.dev_menu_entry.reset(new coSubMenuItem("Developer..."));
+        ui.main_menu->add(ui.dev_menu_entry.get());
 
-    ui.dev_menu.reset(new coRowMenu("Developer", ui.main_menu.get()));
-    ui.dev_menu_entry->setMenu(ui.dev_menu.get());
+        ui.dev_menu.reset(new coRowMenu("Developer", ui.main_menu.get()));
+        ui.dev_menu_entry->setMenu(ui.dev_menu.get());
 
 
-    ui.toggle_bvh_display.reset(new coCheckboxMenuItem("Show BVH outlines", false));
-    ui.toggle_bvh_display->setMenuListener(this);
-    ui.dev_menu->add(ui.toggle_bvh_display.get());
+        ui.toggle_bvh_display.reset(new coCheckboxMenuItem("Show BVH outlines", false));
+        ui.toggle_bvh_display->setMenuListener(this);
+        ui.dev_menu->add(ui.toggle_bvh_display.get());
 
-    ui.toggle_normal_display.reset(new coCheckboxMenuItem("Show surface normals", false));
-    ui.toggle_normal_display->setMenuListener(this);
-    ui.dev_menu->add(ui.toggle_normal_display.get());
+        ui.toggle_normal_display.reset(new coCheckboxMenuItem("Show surface normals", false));
+        ui.toggle_normal_display->setMenuListener(this);
+        ui.dev_menu->add(ui.toggle_normal_display.get());
 
-    ui.toggle_tex_coord_display.reset(new coCheckboxMenuItem("Show texture coordinates", false));
-    ui.toggle_tex_coord_display->setMenuListener(this);
-    ui.dev_menu->add(ui.toggle_tex_coord_display.get());
+        ui.toggle_tex_coord_display.reset(new coCheckboxMenuItem("Show texture coordinates", false));
+        ui.toggle_tex_coord_display->setMenuListener(this);
+        ui.dev_menu->add(ui.toggle_tex_coord_display.get());
+    }
 }
 
 void Visionaray::impl::store_gl_state()
