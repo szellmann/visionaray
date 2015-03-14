@@ -20,6 +20,7 @@
 #include <config/CoviseConfig.h>
 
 #include <cover/coVRConfig.h>
+#include <cover/coVRLighting.h>
 #include <cover/coVRPluginSupport.h>
 #include <cover/VRViewer.h>
 
@@ -877,6 +878,22 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     aligned_vector<point_light<float>> lights;
 
+    // TODO!!
+
+    auto add_light = [&](vec4 lpos, vec4 ldiff)
+    {
+        // map OpenGL [-1,1] to Visionaray [0,1]
+        ldiff += 1.0f;
+        ldiff /= 2.0f;
+
+        point_light<float> light;
+        light.set_position( lpos.xyz() );
+        light.set_cl( ldiff.xyz() );
+        light.set_kl( ldiff.w );
+
+        lights.push_back(light);
+    };
+
     int max_lights = 8;
     glGetIntegerv(GL_MAX_LIGHTS, &max_lights);
 
@@ -890,16 +907,27 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
             vec4 ldiff;
             glGetLightfv(GL_LIGHT0 + i, GL_DIFFUSE, ldiff.data());
 
-            // map OpenGL [-1,1] to Visionaray [0,1]
-            ldiff += 1.0f;
-            ldiff /= 2.0f;
+            add_light(lpos, ldiff);
+        }
+    }
 
-            point_light<float> light;
-            light.set_position( lpos.xyz() );
-            light.set_cl( ldiff.xyz() );
-            light.set_kl( ldiff.w );
+    auto cover_lights = opencover::coVRLighting::instance()->lightList;
+    for (auto it = cover_lights.begin(); it != cover_lights.end(); ++it)
+    {
+        if ((*it).source == opencover::coVRLighting::instance()->headlight)
+        {
+            continue;
+        }
 
-            lights.push_back(light);
+        if ((*it).on)
+        {
+            auto l = (*it).source->getLight();
+
+            // TODO
+            auto lpos  = osg_cast(l->getPosition());
+            auto ldiff = osg_cast(l->getDiffuse());
+
+            add_light(lpos, ldiff);
         }
     }
 
@@ -916,12 +944,9 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         vec4(0.0f)
     );
 
-    // Render
 
-//    else
-    {
-        impl_->call_kernel(kparams);
-    }
+    // Render
+    impl_->call_kernel(kparams);
 
     // TODO: generate depth buffer
     glDepthMask(GL_FALSE);
