@@ -17,6 +17,8 @@
 #include <osg/MatrixTransform>
 #include <osg/TriangleIndexFunctor>
 
+#include <osgViewer/Renderer>
+
 #include <config/CoviseConfig.h>
 
 #include <cover/coVRConfig.h>
@@ -878,8 +880,6 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     aligned_vector<point_light<float>> lights;
 
-    // TODO!!
-
     auto add_light = [&](vec4 lpos, vec4 ldiff)
     {
         // map OpenGL [-1,1] to Visionaray [0,1]
@@ -894,21 +894,18 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         lights.push_back(light);
     };
 
-    int max_lights = 8;
-    glGetIntegerv(GL_MAX_LIGHTS, &max_lights);
-
-    for (int i = 0; i < max_lights; ++i)
+    if (opencover::coVRLighting::instance()->headlightState)
     {
-        if (glIsEnabled(GL_LIGHT0 + i))
-        {
-            vec4 lpos;
-            glGetLightfv(GL_LIGHT0 + i, GL_POSITION, lpos.data());
+        auto renderer = dynamic_cast<osgViewer::Renderer*>(opencover::coVRConfig::instance()->channels[0].camera->getRenderer());
+        assert(renderer);
 
-            vec4 ldiff;
-            glGetLightfv(GL_LIGHT0 + i, GL_DIFFUSE, ldiff.data());
+        auto scene_view = renderer->getSceneView(0);
+        auto headlight = scene_view->getLight();
 
-            add_light(lpos, ldiff);
-        }
+        auto hlpos  = inverse(impl_->view_matrix) * vec4(osg_cast(headlight->getPosition()).xyz(), 1.0f);
+        auto hldiff = osg_cast(headlight->getDiffuse());
+
+        add_light(hlpos, hldiff);
     }
 
     auto cover_lights = opencover::coVRLighting::instance()->lightList;
