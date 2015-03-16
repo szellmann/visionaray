@@ -25,14 +25,13 @@ struct kernel
 
     Params params;
 
-    template <typename R, template <typename> class S>
-    VSNRAY_FUNC vector<4, typename R::scalar_type> operator()(R ray, S<typename R::scalar_type>& s) const
+    template <typename R, template <typename> class SMP>
+    VSNRAY_FUNC vector<4, typename R::scalar_type> operator()(R ray, SMP<typename R::scalar_type>& s) const
     {
 
         using C = vector<4, typename R::scalar_type>;
-
-        typedef typename R::scalar_type scalar_type;
-        typedef typename R::vec_type vec_type;
+        using S = typename R::scalar_type;
+        using V = typename R::vec_type;
 
         /*static*/ const unsigned MaxDepth = 5;
 
@@ -46,11 +45,11 @@ struct kernel
         {
             if ( any(active_rays) )
             {
-                vec_type refl_dir;
-                vec_type view_dir = -ray.dir;
+                V refl_dir;
+                V view_dir = -ray.dir;
 
                 auto surf = get_surface(hit_rec, params);
-                auto below = active_rays & (dot(view_dir, surf.normal) < scalar_type(0.0));
+                auto below = active_rays & (dot(view_dir, surf.normal) < S(0.0));
 
                 if (any(below))
                 {
@@ -64,8 +63,8 @@ struct kernel
                 }
 
 
-                scalar_type pdf(0.0);
-                auto sr     = make_shade_record<Params, scalar_type>();
+                S pdf(0.0);
+                auto sr     = make_shade_record<Params, S>();
                 sr.active   = hit_rec.hit;
                 sr.view_dir = view_dir;
  
@@ -73,7 +72,7 @@ struct kernel
 
                 auto emissive = has_emissive_material(surf);
                 color = mul( color, dot(surf.normal, refl_dir) / pdf, !emissive, color ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
-                result = mul( result, C(color, scalar_type(1.0)), active_rays, result );
+                result = mul( result, C(color, S(1.0)), active_rays, result );
                 active_rays &= !emissive;
 
                 if (!any(active_rays))
@@ -83,7 +82,7 @@ struct kernel
 
                 auto isect_pos = ray.ori + ray.dir * hit_rec.t; // TODO: store in hit_rec?!?
 
-                ray.ori = isect_pos + refl_dir * scalar_type(params.epsilon);
+                ray.ori = isect_pos + refl_dir * S(params.epsilon);
                 ray.dir = refl_dir;
 
                 hit_rec      = closest_hit(ray, params.prims.begin, params.prims.end);
