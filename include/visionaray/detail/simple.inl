@@ -33,7 +33,8 @@ struct kernel
         if (any(hit_rec.hit))
         {
             auto surf = get_surface(hit_rec, params);
-            C shaded_clr = select( hit_rec.hit, C(surf.material.ambient(), S(1.0)), C(params.bg_color) );
+            auto ambient = C(surf.material.ambient(), S(1.0)) * C(params.ambient_color);
+            C shaded_clr = select( hit_rec.hit, ambient, C(params.bg_color) );
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
@@ -59,5 +60,3 @@ struct kernel
 } // visionaray
 
 #endif // VSNRAY_SIMPLE_INL
-
-
