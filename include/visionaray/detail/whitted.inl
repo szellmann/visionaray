@@ -4,8 +4,6 @@
 #ifndef VSNRAY_WHITTED_INL
 #define VSNRAY_WHITTED_INL
 
-#include <limits>
-
 #include <visionaray/surface.h>
 
 #include "traverse.h"
@@ -29,15 +27,13 @@ struct kernel
         using S = typename R::scalar_type;
         using V = typename R::vec_type;
 
-        /*static*/ const S scene_epsilon(0.001);
-
         auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
 
         size_t depth = 0;
         auto color = C(0.0);
         auto no_hit_color = C(params.bg_color);
         auto mirror = S(1.0);
-        while (any(hit_rec.hit) && any(mirror > scene_epsilon) && depth++ < 4/*1*/)
+        while (any(hit_rec.hit) && any(mirror > S(params.epsilon)) && depth++ < 4/*1*/)
         {
             auto surf = get_surface(hit_rec, params);
             auto ambient = C(surf.material.ambient(), S(1.0)) * C(params.ambient_color);
@@ -50,7 +46,7 @@ struct kernel
                 auto light_dir = normalize( V(it->position()) );
                 R shadow_ray
                 (
-                    hit_rec.isect_pos + light_dir * scene_epsilon,
+                    hit_rec.isect_pos + light_dir * S(params.epsilon),
                     light_dir
                 );
 
@@ -76,7 +72,7 @@ struct kernel
             auto dir = reflect(ray.dir, n);
             ray = R
             (
-                hit_rec.isect_pos + dir * scene_epsilon,
+                hit_rec.isect_pos + dir * S(params.epsilon),
                 dir
             );
             hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
@@ -100,5 +96,3 @@ struct kernel
 } // visionaray
 
 #endif // VSNRAY_WHITTED_INL
-
-

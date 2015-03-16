@@ -4,9 +4,6 @@
 #ifndef VSNRAY_PATHTRACING_INL
 #define VSNRAY_PATHTRACING_INL
 
-#include <chrono>
-#include <limits>
-
 #ifndef NDEBUG
 #include <iostream>
 #include <ostream>
@@ -37,7 +34,6 @@ struct kernel
         typedef typename R::scalar_type scalar_type;
         typedef typename R::vec_type vec_type;
 
-        /*static*/ const scalar_type scene_epsilon(0.0001);
         /*static*/ const unsigned MaxDepth = 5;
 
         auto hit_rec        =  closest_hit(ray, params.prims.begin, params.prims.end);
@@ -87,7 +83,7 @@ struct kernel
 
                 auto isect_pos = ray.ori + ray.dir * hit_rec.t; // TODO: store in hit_rec?!?
 
-                ray.ori = isect_pos + refl_dir * scene_epsilon;
+                ray.ori = isect_pos + refl_dir * scalar_type(params.epsilon);
                 ray.dir = refl_dir;
 
                 hit_rec      = closest_hit(ray, params.prims.begin, params.prims.end);

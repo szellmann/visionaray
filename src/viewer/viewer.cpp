@@ -345,6 +345,7 @@ void display_func()
 
     lights.push_back( light );
 
+    float epsilon = 0.001f;
     vec4 bg_color(0.1, 0.4, 1.0, 1.0);
 
     if (config.dev_type == configuration::GPU)
@@ -366,6 +367,7 @@ void display_func()
             thrust::raw_pointer_cast(rend->device_materials.data()),
             thrust::raw_pointer_cast(device_lights.data()),
             thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+            epsilon,
             bg_color
         );
 
@@ -391,6 +393,7 @@ void display_func()
 //            mod.textures.data(),
             lights.data(),
             lights.data() + lights.size(),
+            epsilon,
             bg_color
         );
 

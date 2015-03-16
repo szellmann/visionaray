@@ -938,6 +938,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         impl_->textures.data(),
         lights.data(),
         lights.data() + lights.size(),
+        0.001f,
         vec4(0.0f)
     );
 
