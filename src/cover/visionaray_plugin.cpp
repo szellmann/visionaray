@@ -13,6 +13,7 @@
 #include <GL/glew.h>
 
 #include <osg/io_utils>
+#include <osg/LightModel>
 #include <osg/Material>
 #include <osg/MatrixTransform>
 #include <osg/TriangleIndexFunctor>
@@ -894,12 +895,14 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         lights.push_back(light);
     };
 
+    auto renderer = dynamic_cast<osgViewer::Renderer*>(opencover::coVRConfig::instance()->channels[0].camera->getRenderer());
+    auto scene_view = renderer->getSceneView(0);
+    auto stateset = scene_view->getGlobalStateSet();
+    auto light_model = dynamic_cast<osg::LightModel*>(stateset->getAttribute(osg::StateAttribute::LIGHTMODEL));
+    auto ambient = osg_cast(light_model->getAmbientIntensity());
+
     if (opencover::coVRLighting::instance()->headlightState)
     {
-        auto renderer = dynamic_cast<osgViewer::Renderer*>(opencover::coVRConfig::instance()->channels[0].camera->getRenderer());
-        assert(renderer);
-
-        auto scene_view = renderer->getSceneView(0);
         auto headlight = scene_view->getLight();
 
         auto hlpos  = inverse(impl_->view_matrix) * vec4(osg_cast(headlight->getPosition()).xyz(), 1.0f);
@@ -939,7 +942,8 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         lights.data(),
         lights.data() + lights.size(),
         0.001f,
-        vec4(0.0f)
+        vec4(0.0f),
+        impl_->state.algo == Pathtracing ? vec4(1.0f) : ambient
     );
 
 
