@@ -178,11 +178,12 @@ struct hit_record<simd::ray4, primitive<unsigned>>
 
 };
 
-VSNRAY_CPU_FUNC
-inline std::array<hit_record<ray, primitive<unsigned>>, 4> unpack(hit_record<simd::ray4, primitive<unsigned>> const& hr)
+namespace simd
 {
-    using namespace simd;
 
+VSNRAY_CPU_FUNC
+inline std::array<hit_record<ray, primitive<unsigned>>, 4> unpack(hit_record<ray4, primitive<unsigned>> const& hr)
+{
     VSNRAY_ALIGN(16) unsigned hit[4];
     store(hit, hr.hit.i);
 
@@ -215,6 +216,8 @@ inline std::array<hit_record<ray, primitive<unsigned>>, 4> unpack(hit_record<sim
     }};
 }
 
+} // simd
+
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
@@ -237,11 +240,12 @@ struct hit_record<simd::ray8, primitive<unsigned>>
 
 };
 
-VSNRAY_CPU_FUNC
-inline std::array<hit_record<ray, primitive<unsigned>>, 8> unpack(hit_record<simd::ray8, primitive<unsigned>> const& hr)
+namespace simd
 {
-    using namespace simd;
 
+VSNRAY_CPU_FUNC
+inline std::array<hit_record<ray, primitive<unsigned>>, 8> unpack(hit_record<ray8, primitive<unsigned>> const& hr)
+{
     VSNRAY_ALIGN(32) unsigned hit[8];
     store(hit, hr.hit.i);
 
@@ -277,6 +281,8 @@ inline std::array<hit_record<ray, primitive<unsigned>>, 8> unpack(hit_record<sim
         { hit[7] != 0, prim_type[7], prim_id[7], geom_id[7], t[7], isect_pos[7], u[7], v[7] },
     }};
 }
+
+} // simd
 
 #endif
 

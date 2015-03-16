@@ -109,7 +109,7 @@ template <typename TC>
 VSNRAY_FUNC
 inline vector<2, simd::float4> get_tex_coord(TC const* tex_coords, hit_record<simd::ray4, primitive<unsigned>> const& hr)
 {
-    return get_tex_coord(tex_coords, hr, unpack(hr));
+    return get_tex_coord(tex_coords, hr, simd::unpack(hr));
 }
 
 
@@ -288,7 +288,7 @@ inline surface<M<simd::float4>> get_surface
     NBinding
 )
 {
-    auto hr4 = unpack(hr);
+    auto hr4 = simd::unpack(hr);
 
     N n[4] =
     {
@@ -307,7 +307,7 @@ inline surface<M<simd::float4>> get_surface
             simd::float4( n[0].z, n[1].z, n[2].z, n[3].z )
         ),
 
-        pack
+        simd::pack
         (
             hr4[0].hit ? materials[hr4[0].geom_id] : M<float>(),
             hr4[1].hit ? materials[hr4[1].geom_id] : M<float>(),
@@ -332,7 +332,7 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
 {
     using S = simd::float4;
 
-    auto hr4 = unpack(hr);
+    auto hr4 = simd::unpack(hr);
 
     N n[4] =
     {
@@ -373,7 +373,7 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
             S( n[0].z, n[1].z, n[2].z, n[3].z )
         ),
 
-        pack
+        simd::pack
         (
             hr4[0].hit ? materials[hr4[0].geom_id] : M<float>(),
             hr4[1].hit ? materials[hr4[1].geom_id] : M<float>(),
@@ -457,7 +457,7 @@ inline surface<M<simd::float4>> get_surface
     NBinding
 ) 
 { 
-    auto hr4 = unpack(hr); 
+    auto hr4 = simd::unpack(hr); 
 
     N n[4] = 
     { 
@@ -476,7 +476,7 @@ inline surface<M<simd::float4>> get_surface
             simd::float4( n[0].z, n[1].z, n[2].z, n[3].z ) 
         ),
 
-        pack
+        simd::pack
         (
             hr4[0].hit ? materials[hr4[0].geom_id] : M<float>(),
             hr4[1].hit ? materials[hr4[1].geom_id] : M<float>(),
@@ -502,7 +502,7 @@ inline surface<M<simd::float8>> get_surface
     NBinding
 )
 {
-    auto hr8 = unpack(hr);
+    auto hr8 = simd::unpack(hr);
 
     N n[8] =
     {
@@ -525,7 +525,7 @@ inline surface<M<simd::float8>> get_surface
             simd::float8( n[0].z, n[1].z, n[2].z, n[3].z, n[4].z, n[5].z, n[6].z, n[7].z )
         ),
 
-        pack
+        simd::pack
         (
             hr8[0].hit ? materials[hr8[0].geom_id] : M<float>(),
             hr8[1].hit ? materials[hr8[1].geom_id] : M<float>(),

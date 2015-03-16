@@ -431,7 +431,7 @@ public:
     VSNRAY_FUNC
     vector<3, simd::float4> shade(shade_record<L, simd::float4> const& sr) const
     {
-        auto sr4 = unpack(sr);
+        auto sr4 = simd::unpack(sr);
         vector<3, float> v[] =
         {
             vector<3, float>( m1_.shade(sr4[0]) ),
@@ -446,7 +446,7 @@ public:
     VSNRAY_FUNC
     vector<3, simd::float4> sample(shade_record<L, simd::float4> const& sr, vector<3, simd::float4>& refl_dir, simd::float4& pdf, S& samp)
     {
-        auto sr4 = unpack(sr);
+        auto sr4 = simd::unpack(sr);
         vector<3, float> rd4[4];
         VSNRAY_ALIGN(16) float pdf4[] = { 0.0f, 0.0f, 0.0f, 0.0f };
         auto& s = samp.get_sampler();

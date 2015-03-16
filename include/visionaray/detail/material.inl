@@ -3,50 +3,52 @@
 
 namespace visionaray
 {
+namespace simd
+{
 
 //-------------------------------------------------------------------------------------------------
 // Functions to pack four materials into a single SIMD material
 //
 
-inline phong<simd::float4> pack
+inline phong<float4> pack
 (
     phong<float> const& m1, phong<float> const& m2,
     phong<float> const& m3, phong<float> const& m4
 )
 {
-    phong<simd::float4> result;
+    phong<float4> result;
 
-    result.set_ca( simd::pack(m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca()) );
-    result.set_cd( simd::pack(m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd()) );
-    result.set_ka( simd::float4(m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka()) );
-    result.set_kd( simd::float4(m1.get_kd(), m2.get_kd(), m3.get_kd(), m4.get_kd()) );
-    result.set_ks( simd::float4(m1.get_ks(), m2.get_ks(), m3.get_ks(), m4.get_ks()) );
-    result.set_specular_exp( simd::float4(m1.get_specular_exp(), m2.get_specular_exp(), m3.get_specular_exp(), m4.get_specular_exp()) );
+    result.set_ca( pack(m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca()) );
+    result.set_cd( pack(m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd()) );
+    result.set_ka( float4(m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka()) );
+    result.set_kd( float4(m1.get_kd(), m2.get_kd(), m3.get_kd(), m4.get_kd()) );
+    result.set_ks( float4(m1.get_ks(), m2.get_ks(), m3.get_ks(), m4.get_ks()) );
+    result.set_specular_exp( float4(m1.get_specular_exp(), m2.get_specular_exp(), m3.get_specular_exp(), m4.get_specular_exp()) );
 
     return result;
 }
 
-inline emissive<simd::float4> pack
+inline emissive<float4> pack
 (
     emissive<float> const& m1, emissive<float> const& m2,
     emissive<float> const& m3, emissive<float> const& m4
 )
 {
-    emissive<simd::float4> result;
+    emissive<float4> result;
 
-    result.set_ce( simd::pack(m1.get_ce(), m2.get_ce(), m3.get_ce(), m4.get_ce()) );
-    result.set_ls( simd::float4(m1.get_ls(), m2.get_ls(), m3.get_ls(), m4.get_ls()) );
+    result.set_ce( pack(m1.get_ce(), m2.get_ce(), m3.get_ce(), m4.get_ce()) );
+    result.set_ls( float4(m1.get_ls(), m2.get_ls(), m3.get_ls(), m4.get_ls()) );
 
     return result;
 }
 
-inline generic_mat<simd::float4> pack
+inline generic_mat<float4> pack
 (
     generic_mat<float> const& m1, generic_mat<float> const& m2,
     generic_mat<float> const& m3, generic_mat<float> const& m4
 )
 {
-    return generic_mat<simd::float4>(m1, m2, m3, m4);
+    return generic_mat<float4>(m1, m2, m3, m4);
 }
 
 
@@ -56,7 +58,7 @@ inline generic_mat<simd::float4> pack
 // Functions to pack eight materials into a single SIMD material
 //
 
-inline phong<simd::float8> pack
+inline phong<float8> pack
 (
     phong<float> const& m1, phong<float> const& m2, phong<float> const& m3, phong<float> const& m4,
     phong<float> const& m5, phong<float> const& m6, phong<float> const& m7, phong<float> const& m8
@@ -75,23 +77,23 @@ inline phong<simd::float8> pack
     VSNRAY_ALIGN(32) float exp[8]   = { m1.get_specular_exp(), m2.get_specular_exp(), m3.get_specular_exp(), m4.get_specular_exp(),
                                         m5.get_specular_exp(), m6.get_specular_exp(), m7.get_specular_exp(), m8.get_specular_exp() };
 
-    phong<simd::float8> result;
+    phong<float8> result;
     result.set_ca
     (
-        vector<3, simd::float8>
+        vector<3, float8>
         (
-            simd::float8( ca[0].x, ca[1].x, ca[2].x, ca[3].x, ca[4].x, ca[5].x, ca[6].x, ca[7].x ),
-            simd::float8( ca[0].y, ca[1].y, ca[2].y, ca[3].y, ca[4].y, ca[5].y, ca[6].y, ca[7].y ),
-            simd::float8( ca[0].z, ca[1].z, ca[2].z, ca[3].z, ca[4].z, ca[5].z, ca[6].z, ca[7].z )
+            float8( ca[0].x, ca[1].x, ca[2].x, ca[3].x, ca[4].x, ca[5].x, ca[6].x, ca[7].x ),
+            float8( ca[0].y, ca[1].y, ca[2].y, ca[3].y, ca[4].y, ca[5].y, ca[6].y, ca[7].y ),
+            float8( ca[0].z, ca[1].z, ca[2].z, ca[3].z, ca[4].z, ca[5].z, ca[6].z, ca[7].z )
         )
     );
     result.set_cd
     (
-        vector<3, simd::float8>
+        vector<3, float8>
         (
-            simd::float8( cd[0].x, cd[1].x, cd[2].x, cd[3].x, cd[4].x, cd[5].x, cd[6].x, cd[7].x ),
-            simd::float8( cd[0].y, cd[1].y, cd[2].y, cd[3].y, cd[4].y, cd[5].y, cd[6].y, cd[7].y ),
-            simd::float8( cd[0].z, cd[1].z, cd[2].z, cd[3].z, cd[4].z, cd[5].z, cd[6].z, cd[7].z )
+            float8( cd[0].x, cd[1].x, cd[2].x, cd[3].x, cd[4].x, cd[5].x, cd[6].x, cd[7].x ),
+            float8( cd[0].y, cd[1].y, cd[2].y, cd[3].y, cd[4].y, cd[5].y, cd[6].y, cd[7].y ),
+            float8( cd[0].z, cd[1].z, cd[2].z, cd[3].z, cd[4].z, cd[5].z, cd[6].z, cd[7].z )
         )
     );
     result.set_ka(ka);
@@ -106,4 +108,5 @@ inline phong<simd::float8> pack
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
+} // simd
 } // visioanray
