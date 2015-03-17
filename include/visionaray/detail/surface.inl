@@ -134,23 +134,6 @@ inline surface<M> get_surface
     );
 }
 
-template <typename NBinding, typename R, typename N, typename M>
-VSNRAY_FUNC
-inline surface<M> get_surface
-(
-    hit_record<R, primitive<unsigned>> const& hr,
-    N const* normals,
-    M const* materials,
-    NBinding()
-)
-{
-    return surface<M>
-    (
-        get_normal(normals, hr, NBinding()),
-        materials[hr.geom_id]
-    );
-}
-
 template <typename R, typename NBinding, typename N, typename TC, typename M, typename T>
 VSNRAY_FUNC
 inline surface<M, vector<3, float>> get_surface
