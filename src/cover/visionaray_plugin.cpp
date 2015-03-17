@@ -767,7 +767,7 @@ Visionaray::Visionaray(Visionaray const& rhs, osg::CopyOp const& op)
 Visionaray::~Visionaray()
 {
     impl_->geode->removeDrawable(this);
-    opencover::cover->getObjectsRoot()->removeChild(impl_->geode);
+    opencover::cover->getScene()->removeChild(impl_->geode);
 }
 
 bool Visionaray::init()
