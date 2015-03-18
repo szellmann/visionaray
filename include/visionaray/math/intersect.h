@@ -119,7 +119,7 @@ inline hit_record<basic_ray<T>, basic_aabb<U>> intersect
 
     result.tnear = min_max( t1.x, t2.x, min_max(t1.y, t2.y, min(t1.z, t2.z)) );
     result.tfar  = max_min( t1.x, t2.x, max_min(t1.y, t2.y, max(t1.z, t2.z)) );
-    result.hit   = result.tfar >= result.tnear && result.tfar >= T(0.0);
+    result.hit   = result.tfar >= result.tnear;
 
     return result;
 }
