@@ -67,8 +67,8 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
             auto hr1 = intersect(ray, children[0].bbox, inv_dir);
             auto hr2 = intersect(ray, children[1].bbox, inv_dir);
 
-            auto b1 = hr1.tnear <= hr1.tfar && hr1.tnear < result.t && hr1.tfar >= T(0.0);
-            auto b2 = hr2.tnear <= hr2.tfar && hr2.tnear < result.t && hr2.tfar >= T(0.0);
+            auto b1 = hr1.hit && hr1.tnear < result.t && hr1.tfar >= T(0.0);
+            auto b2 = hr2.hit && hr2.tnear < result.t && hr2.tfar >= T(0.0);
 
             if (any(b1) && any(b2))
             {
