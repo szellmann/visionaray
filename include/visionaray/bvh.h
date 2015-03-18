@@ -47,11 +47,6 @@ T* pointer_cast(thrust::device_ptr<T> const& ptr)
 
 struct bvh_node
 {
-    bvh_node()
-        : num_prims(0)
-    {
-    }
-
     aabb bbox;
     union
     {
@@ -59,18 +54,66 @@ struct bvh_node
         unsigned first_prim;
     };
     unsigned num_prims;
+
+    VSNRAY_FUNC bool is_inner() const { return num_prims == 0; }
+    VSNRAY_FUNC bool is_leaf() const { return num_prims != 0; }
+
+    VSNRAY_FUNC aabb const& get_bounds() const
+    {
+        return bbox;
+    }
+
+    VSNRAY_FUNC unsigned get_child(unsigned i = 0) const
+    {
+        assert(is_inner());
+        return first_child + i;
+    }
+
+    struct index_range
+    {
+        unsigned first;
+        unsigned last;
+    };
+
+    VSNRAY_FUNC index_range get_indices() const
+    {
+        assert(is_leaf());
+        return { first_prim, first_prim + num_prims };
+    }
+
+    VSNRAY_FUNC unsigned get_num_primitives() const
+    {
+        assert(is_leaf());
+        return num_prims;
+    }
+
+    VSNRAY_FUNC void set_inner(aabb const& bounds, unsigned first_child_index)
+    {
+        bbox = bounds;
+        first_child = first_child_index;
+        num_prims = 0;
+    }
+
+    VSNRAY_FUNC void set_leaf(aabb const& bounds, unsigned first_primitive_index, unsigned count)
+    {
+        assert(count > 0);
+
+        bbox = bounds;
+        first_prim = first_primitive_index;
+        num_prims = count;
+    }
 };
 
 VSNRAY_FUNC
 inline bool is_inner(bvh_node const& node)
 {
-    return node.num_prims == 0;
+    return node.is_inner();
 }
 
 VSNRAY_FUNC
 inline bool is_leaf(bvh_node const& node)
 {
-    return node.num_prims != 0;
+    return node.is_leaf();
 }
 
 
