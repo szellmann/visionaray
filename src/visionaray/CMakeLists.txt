@@ -22,6 +22,7 @@ set(VSNRAY_HEADERS
 
     # Details - subject to frequent change!
 
+    ${HEADER_DIR}/detail/bvh/sah.h
     ${HEADER_DIR}/detail/aligned_vector.h
     ${HEADER_DIR}/detail/allocator.h
     ${HEADER_DIR}/detail/bvh_build_binned.inl
