@@ -411,6 +411,8 @@ struct Visionaray::impl : vrui::coMenuListener
 
     unsigned                    frame_num   = 0;
 
+    bvh_outline_renderer        outlines;
+
     osg::ref_ptr<osg::Geode>    geode;
 
     bool                        glew_init   = false;
@@ -860,6 +862,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         }
 
         impl_->host_bvh = build<host_bvh_type>(impl_->triangles.data(), impl_->triangles.size());
+        impl_->outlines.init(impl_->host_bvh);
 
         opencover::cover->getObjectsRoot()->setNodeMask
         (
@@ -970,7 +973,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         glLoadMatrixf(impl_->view_matrix.data());
 
         glColor3f(1.0f, 1.0f, 1.0f);
-        render_bvh(impl_->host_bvh);
+        impl_->outlines.frame();
 
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix();

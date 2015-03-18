@@ -137,7 +137,8 @@ struct renderer
     mouse::pos down_pos;
     mouse::pos up_pos;
 
-    visionaray::frame_counter counter;
+    visionaray::frame_counter   counter;
+    bvh_outline_renderer        outlines;
 };
 
 renderer* rend = 0;
@@ -444,7 +445,7 @@ void display_func()
         glPushMatrix();
         glLoadMatrixf(rend->cam.get_view_matrix().data());
 
-        render_bvh(rend->host_bvh);
+        rend->outlines.frame();
 
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix();
@@ -489,6 +490,12 @@ void keyboard_func(unsigned char key, int, int)
 
     case 'b':
         config.show_bvh = !config.show_bvh;
+
+        if (config.show_bvh)
+        {
+            rend->outlines.init(rend->host_bvh);
+        }
+
         break;
 
     case 'm':

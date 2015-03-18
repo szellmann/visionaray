@@ -19,63 +19,93 @@
 namespace visionaray
 {
 
-template <typename BVH>
-void render_bvh(BVH const& b)
+class bvh_outline_renderer
 {
+public:
 
-    std::vector<float> vertices;
-    traverse_depth_first(b, [&](typename BVH::node_type const& n)
+    bvh_outline_renderer() = default;
+
+   ~bvh_outline_renderer()
     {
-        auto box = n.bbox;
+        glDeleteBuffers(1, &vbo_);
+    }
 
-        auto ilist =
+    void frame()
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        glVertexPointer(3, GL_FLOAT, 0, NULL);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glDrawArrays(GL_LINES, 0, (GLsizei)(num_vertices));
+        glDisableClientState(GL_VERTEX_ARRAY);
+    }
+
+    template <typename BVH>
+    void init(BVH const& b)
+    {
+        glDeleteBuffers(1, &vbo_);
+        glGenBuffers(1, &vbo_);
+
+        std::vector<float> vertices;
+        traverse_depth_first(b, [&](typename BVH::node_type const& n)
         {
-            box.min.x, box.min.y, box.min.z,
-            box.max.x, box.min.y, box.min.z,
+            auto box = n.bbox;
 
-            box.max.x, box.min.y, box.min.z,
-            box.max.x, box.max.y, box.min.z,
+            auto ilist =
+            {
+                box.min.x, box.min.y, box.min.z,
+                box.max.x, box.min.y, box.min.z,
 
-            box.max.x, box.max.y, box.min.z,
-            box.min.x, box.max.y, box.min.z,
+                box.max.x, box.min.y, box.min.z,
+                box.max.x, box.max.y, box.min.z,
 
-            box.min.x, box.max.y, box.min.z,
-            box.min.x, box.min.y, box.min.z,
+                box.max.x, box.max.y, box.min.z,
+                box.min.x, box.max.y, box.min.z,
 
-            box.min.x, box.min.y, box.max.z,
-            box.max.x, box.min.y, box.max.z,
+                box.min.x, box.max.y, box.min.z,
+                box.min.x, box.min.y, box.min.z,
 
-            box.max.x, box.min.y, box.max.z,
-            box.max.x, box.max.y, box.max.z,
+                box.min.x, box.min.y, box.max.z,
+                box.max.x, box.min.y, box.max.z,
 
-            box.max.x, box.max.y, box.max.z,
-            box.min.x, box.max.y, box.max.z,
+                box.max.x, box.min.y, box.max.z,
+                box.max.x, box.max.y, box.max.z,
 
-            box.min.x, box.max.y, box.max.z,
-            box.min.x, box.min.y, box.max.z,
+                box.max.x, box.max.y, box.max.z,
+                box.min.x, box.max.y, box.max.z,
 
-            box.min.x, box.min.y, box.min.z,
-            box.min.x, box.min.y, box.max.z,
+                box.min.x, box.max.y, box.max.z,
+                box.min.x, box.min.y, box.max.z,
 
-            box.max.x, box.min.y, box.min.z,
-            box.max.x, box.min.y, box.max.z,
+                box.min.x, box.min.y, box.min.z,
+                box.min.x, box.min.y, box.max.z,
 
-            box.max.x, box.max.y, box.min.z,
-            box.max.x, box.max.y, box.max.z,
+                box.max.x, box.min.y, box.min.z,
+                box.max.x, box.min.y, box.max.z,
 
-            box.min.x, box.max.y, box.min.z,
-            box.min.x, box.max.y, box.max.z
-        };
+                box.max.x, box.max.y, box.min.z,
+                box.max.x, box.max.y, box.max.z,
 
-        vertices.insert(vertices.end(), ilist.begin(), ilist.end());
-    });
+                box.min.x, box.max.y, box.min.z,
+                box.min.x, box.max.y, box.max.z
+            };
 
-    glVertexPointer(3, GL_FLOAT, 0, vertices.data());
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glDrawArrays(GL_LINES, 0, (GLsizei)(vertices.size() / 3));
-    glDisableClientState(GL_VERTEX_ARRAY);
+            vertices.insert(vertices.end(), ilist.begin(), ilist.end());
+        });
 
-}
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        num_vertices = vertices.size() / 3;
+    }
+
+    GLuint vbo_ = 0;
+    size_t num_vertices = 0;
+
+};
 
 } // visionaray
 
