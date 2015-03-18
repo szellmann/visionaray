@@ -53,11 +53,67 @@ inline typename basic_aabb<T>::vec_type basic_aabb<T>::size() const
 }
 
 template <typename T>
+inline void basic_aabb<T>::invalidate()
+{
+    min = vec_type(std::numeric_limits<T>::max());
+    max = vec_type(std::numeric_limits<T>::lowest());
+}
+
+template <typename T>
+inline bool basic_aabb<T>::invalid() const
+{
+    return min.x > max.x || min.y > max.y || min.z > max.z;
+}
+
+template <typename T>
+inline bool basic_aabb<T>::empty() const
+{
+    return min.x >= max.x || min.y >= max.y || min.z >= max.z;
+}
+
+template <typename T>
 inline bool basic_aabb<T>::contains(typename basic_aabb<T>::vec_type const& v) const
 {
     return v.x >= min.x && v.x <= max.x
         && v.y >= min.y && v.y <= max.y
         && v.z >= min.z && v.z <= max.z;
+}
+
+template <typename T>
+inline bool basic_aabb<T>::contains(basic_aabb<T> const& b) const
+{
+    return contains(b.min) && contains(b.max);
+}
+
+template <typename T>
+inline void basic_aabb<T>::insert(vec_type const& v)
+{
+    min = visionaray::min(min, v);
+    max = visionaray::max(max, v);
+}
+
+template <typename T>
+inline void basic_aabb<T>::insert(basic_aabb const& v)
+{
+    min = visionaray::min(min, v.min);
+    max = visionaray::max(max, v.max);
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+template <typename T>
+inline bool operator ==(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+{
+    return lhs.min == rhs.min && lhs.max == rhs.max;
+}
+
+template <typename T>
+inline bool operator !=(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+{
+    return lhs.min != rhs.min || lhs.max != rhs.max;
 }
 
 
@@ -74,9 +130,80 @@ basic_aabb<T> combine(basic_aabb<T> const& a, basic_aabb<T> const& b)
 
 template <typename T>
 MATH_FUNC
+basic_aabb<T> combine(basic_aabb<T> const& a, typename basic_aabb<T>::vec_type const& b)
+{
+    return basic_aabb<T>( min(a.min, b), max(a.max, b) );
+}
+
+template <typename T>
+MATH_FUNC
 basic_aabb<T> intersect(basic_aabb<T> const& a, basic_aabb<T> const& b)
 {
     return basic_aabb<T>( max(a.min, b.min), min(a.max, b.max) );
+}
+
+template <typename T>
+MATH_FUNC
+T half_surface_area(basic_aabb<T> const& box)
+{
+    auto s = box.size();
+    return s.x * s.y + s.y * s.z + s.z * s.x;
+}
+
+template <typename T>
+MATH_FUNC
+T surface_area(basic_aabb<T> const& box)
+{
+    return 2 * half_surface_area(box);
+}
+
+template <typename T>
+MATH_FUNC
+T volume(basic_aabb<T> const& box)
+{
+    auto s = box.size();
+    return s.x * s.y * s.z;
+}
+
+template <typename T>
+MATH_FUNC
+T overlap_ratio_union(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+{
+    auto I = intersect(lhs, rhs);
+
+    if (I.invalid())
+    {
+        return 0.0f; // bounding boxes do not overlap.
+    }
+
+    return volume(I) / volume(combine(lhs, rhs));
+}
+
+template <typename T>
+MATH_FUNC
+T overlap_ratio_min(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+{
+    auto I = intersect(lhs, rhs);
+
+    if (I.invalid())
+    {
+        return 0.0f; // bounding boxes do not overlap.
+    }
+
+    if (lhs.empty() || rhs.empty())
+    {
+        return 1.0f;
+    }
+
+    return volume(I) / min(volume(lhs), volume(rhs));
+}
+
+template <typename T>
+MATH_FUNC
+T overlap_ratio(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+{
+//  return overlap_ratio_union(lhs, rhs);
+    return overlap_ratio_min(lhs, rhs);
 }
 
 template <typename T>
@@ -121,5 +248,3 @@ typename basic_aabb<T>::vertex_list compute_vertices(basic_aabb<T> const& box)
 }
 
 } // MATH_NAMESPACE
-
-

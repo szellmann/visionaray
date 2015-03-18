@@ -44,7 +44,17 @@ public:
     MATH_FUNC vec_type center() const;
     MATH_FUNC vec_type size() const;
 
+    MATH_FUNC void invalidate();
+
+    MATH_FUNC bool invalid() const;
+
+    MATH_FUNC bool empty() const;
+
     MATH_FUNC bool contains(vec_type const& v) const;
+    MATH_FUNC bool contains(basic_aabb const& b) const;
+
+    MATH_FUNC void insert(vec_type const& v);
+    MATH_FUNC void insert(basic_aabb const& b);
 
 };
 
