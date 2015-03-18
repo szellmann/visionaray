@@ -336,14 +336,14 @@ void display_func()
 {
     using light_type = point_light<float>;
 
-    std::vector<light_type> lights;
+    std::vector<light_type> host_lights;
 
     light_type light;
     light.set_cl( vec3(1.0, 1.0, 1.0) );
     light.set_kl(1.0);
     light.set_position( rend->cam.eye() - rend->cam.center() );
 
-    lights.push_back( light );
+    host_lights.push_back( light );
 
     float epsilon = 0.001f;
     vec4 bg_color(0.1, 0.4, 1.0, 1.0);
@@ -355,9 +355,7 @@ void display_func()
 
         device_primitives.push_back(rend->device_bvh.ref());
 
-        thrust::device_vector<light_type> device_lights;
-
-        device_lights.push_back(lights[0]);
+        thrust::device_vector<light_type> device_lights = host_lights;
 
         auto kparams = make_params<normals_per_face_binding>
         (
@@ -391,8 +389,8 @@ void display_func()
 //            mod.tex_coords.data(),
             mod.materials.data(),
 //            mod.textures.data(),
-            lights.data(),
-            lights.data() + lights.size(),
+            host_lights.data(),
+            host_lights.data() + host_lights.size(),
             epsilon,
             bg_color
         );
