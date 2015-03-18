@@ -479,7 +479,32 @@ inline vector<Dim, T> select(M const& m, vector<Dim, T> const& u, vector<Dim, T>
     return result;
 }
 
+// Returns the index of the smallest element of the vector
+template <size_t Dim, typename T>
+int min_index(vector<Dim, T> const& u)
+{
+    auto i = u.y < u.x ? 1 : 0;
+
+    for (size_t n = 2; n < Dim; ++n)
+    {
+        i = u[n] < u[i] ? n : i;
+    }
+
+    return i;
+}
+
+// Returns the index of the largest element of the vector
+template <size_t Dim, typename T>
+int max_index(vector<Dim, T> const& u)
+{
+    auto i = u.y < u.x ? 0 : 1;
+
+    for (size_t n = 2; n < Dim; ++n)
+    {
+        i = u[n] < u[i] ? i : n;
+    }
+
+    return i;
+}
 
 } // MATH_NAMESPACE
-
-
