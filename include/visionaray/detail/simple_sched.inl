@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include "tiled_sched.h" // TODO: consolidate
+#include "sched_common.h" // TODO: consolidate
 
 namespace visionaray
 {

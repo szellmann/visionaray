@@ -80,6 +80,8 @@ sched_params<MT, V, RT, PxSamplerT> make_sched_params(MT const& view_matrix, MT 
 #include "detail/cuda_sched.h"
 #endif
 #include "detail/simple_sched.h"
+#if !defined(__MINGW32__) && !defined(__MINGW64__)
 #include "detail/tiled_sched.h"
+#endif
 
 #endif // VSNRAY_SCHED_H
