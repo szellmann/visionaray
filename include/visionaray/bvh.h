@@ -105,19 +105,11 @@ public:
 
     VSNRAY_FUNC P& primitive(size_t index) const
     {
-#if !defined(__CUDA_ARCH__)// || defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
-        assert(index < num_primitives());
-#endif
-
         return primitives_first[index];
     }
 
     VSNRAY_FUNC N& node(size_t index) const
     {
-#if !defined(__CUDA_ARCH__)// || defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
-        assert(index < num_nodes());
-#endif
-
         return nodes_first[index];
     }
 
@@ -155,25 +147,11 @@ public:
 
     VSNRAY_FUNC P& primitive(size_t indirect_index) const
     {
-#if !defined(__CUDA_ARCH__)// || defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
-        assert(indirect_index < indices_last - indices_first);
-#endif
-
-        auto index = indices_first[indirect_index];
-
-#if !defined(__CUDA_ARCH__)// || defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
-        assert(index < num_primitives());
-#endif
-
-        return primitives_first[index];
+        return primitives_first[indices_first[indirect_index]];
     }
 
     VSNRAY_FUNC N& node(size_t index) const
     {
-#if !defined(__CUDA_ARCH__)// || defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
-        assert(index < num_nodes());
-#endif
-
         return nodes_first[index];
     }
 
@@ -234,12 +212,18 @@ public:
 
     primitive_type const& primitive(size_t index) const
     {
-        return primitives_.at(index);
+        return primitives_[index];
     }
 
     node_type const& node(size_t index) const
     {
-        return nodes_.at(index);
+        return nodes_[index];
+    }
+
+    void clear(size_t capacity = 0)
+    {
+        nodes_.clear();
+        nodes_.reserve(capacity);
     }
 
 private:
@@ -309,12 +293,21 @@ public:
 
     primitive_type const& primitive(size_t indirect_index) const
     {
-        return primitives_.at( indices_.at(indirect_index) );
+        return primitives_[indices_[indirect_index]];
     }
 
     node_type const& node(size_t index) const
     {
-        return nodes_.at(index);
+        return nodes_[index];
+    }
+
+    void clear(size_t capacity = 0)
+    {
+        nodes_.clear();
+        nodes_.reserve(capacity);
+
+        indices_.clear();
+        indices_.reserve(capacity);
     }
 
 private:
