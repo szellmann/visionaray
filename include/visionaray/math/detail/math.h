@@ -20,6 +20,7 @@ namespace MATH_NAMESPACE
 // Enable ADL!
 //
 
+using std::abs;
 using std::sqrt;
 
 template <typename T>
