@@ -629,6 +629,16 @@ VSNRAY_FORCE_INLINE float8 max(float8 const& u, float8 const& v)
     return _mm256_max_ps(u, v);
 }
 
+VSNRAY_FORCE_INLINE float8 saturate(float8 const& u)
+{
+    return _mm256_max_ps(_mm256_setzero_ps(), _mm256_min_ps(u, _mm256_set1_ps(1.0f)));
+}
+
+VSNRAY_FORCE_INLINE float8 abs(float8 const& u)
+{
+    return _mm256_and_ps(u, _mm256_castsi256_ps(_mm256_set1_epi32(0x7FFFFFFF)));
+}
+
 VSNRAY_FORCE_INLINE float8 ceil(float8 const& v)
 {
     return _mm256_ceil_ps(v);

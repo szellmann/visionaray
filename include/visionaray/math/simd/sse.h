@@ -1017,6 +1017,16 @@ VSNRAY_FORCE_INLINE float4 max(float4 const& u, float4 const& v)
     return _mm_max_ps(u, v);
 }
 
+VSNRAY_FORCE_INLINE float4 saturate(float4 const& u)
+{
+    return _mm_max_ps(_mm_setzero_ps(), _mm_min_ps(u, _mm_set1_ps(1.0f)));
+}
+
+VSNRAY_FORCE_INLINE float4 abs(float4 const& u)
+{
+    return _mm_and_ps(u, _mm_castsi128_ps(_mm_set1_epi32(0x7FFFFFFF)));
+}
+
 VSNRAY_FORCE_INLINE float4 round(float4 const& v)
 {
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
