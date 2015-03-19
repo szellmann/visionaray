@@ -34,6 +34,7 @@ inline basic_aabb<T>::basic_aabb
 
 template <typename T>
 template <typename U>
+MATH_FUNC
 inline basic_aabb<T>::basic_aabb(vector<3, U> const& min, vector<3, U> const& max)
     : min(min)
     , max(max)
@@ -41,18 +42,21 @@ inline basic_aabb<T>::basic_aabb(vector<3, U> const& min, vector<3, U> const& ma
 }
 
 template <typename T>
+MATH_FUNC
 inline typename basic_aabb<T>::vec_type basic_aabb<T>::center() const
 {
     return (max + min) * value_type(0.5);
 }
 
 template <typename T>
+MATH_FUNC
 inline typename basic_aabb<T>::vec_type basic_aabb<T>::size() const
 {
     return max - min;
 }
 
 template <typename T>
+MATH_FUNC
 inline void basic_aabb<T>::invalidate()
 {
     min = vec_type(std::numeric_limits<T>::max());
@@ -60,18 +64,21 @@ inline void basic_aabb<T>::invalidate()
 }
 
 template <typename T>
+MATH_FUNC
 inline bool basic_aabb<T>::invalid() const
 {
     return min.x > max.x || min.y > max.y || min.z > max.z;
 }
 
 template <typename T>
+MATH_FUNC
 inline bool basic_aabb<T>::empty() const
 {
     return min.x >= max.x || min.y >= max.y || min.z >= max.z;
 }
 
 template <typename T>
+MATH_FUNC
 inline bool basic_aabb<T>::contains(typename basic_aabb<T>::vec_type const& v) const
 {
     return v.x >= min.x && v.x <= max.x
@@ -80,12 +87,14 @@ inline bool basic_aabb<T>::contains(typename basic_aabb<T>::vec_type const& v) c
 }
 
 template <typename T>
+MATH_FUNC
 inline bool basic_aabb<T>::contains(basic_aabb<T> const& b) const
 {
     return contains(b.min) && contains(b.max);
 }
 
 template <typename T>
+MATH_FUNC
 inline void basic_aabb<T>::insert(vec_type const& v)
 {
     min = visionaray::min(min, v);
@@ -93,6 +102,7 @@ inline void basic_aabb<T>::insert(vec_type const& v)
 }
 
 template <typename T>
+MATH_FUNC
 inline void basic_aabb<T>::insert(basic_aabb const& v)
 {
     min = visionaray::min(min, v.min);
@@ -105,13 +115,15 @@ inline void basic_aabb<T>::insert(basic_aabb const& v)
 //
 
 template <typename T>
-inline bool operator ==(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+MATH_FUNC
+inline bool operator==(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 {
     return lhs.min == rhs.min && lhs.max == rhs.max;
 }
 
 template <typename T>
-inline bool operator !=(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+MATH_FUNC
+inline bool operator!=(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 {
     return lhs.min != rhs.min || lhs.max != rhs.max;
 }
@@ -225,6 +237,7 @@ std::pair<basic_aabb<T>, basic_aabb<T>> split(basic_aabb<T> const& box, cartesia
 }
 
 template <typename T>
+MATH_FUNC
 typename basic_aabb<T>::vertex_list compute_vertices(basic_aabb<T> const& box)
 {
 
