@@ -481,9 +481,9 @@ inline vector<Dim, T> select(M const& m, vector<Dim, T> const& u, vector<Dim, T>
 
 // Returns the index of the smallest element of the vector
 template <size_t Dim, typename T>
-int min_index(vector<Dim, T> const& u)
+size_t min_index(vector<Dim, T> const& u)
 {
-    auto i = u.y < u.x ? 1 : 0;
+    size_t i = u.y < u.x ? 1 : 0;
 
     for (size_t n = 2; n < Dim; ++n)
     {
@@ -495,9 +495,9 @@ int min_index(vector<Dim, T> const& u)
 
 // Returns the index of the largest element of the vector
 template <size_t Dim, typename T>
-int max_index(vector<Dim, T> const& u)
+size_t max_index(vector<Dim, T> const& u)
 {
-    auto i = u.y < u.x ? 0 : 1;
+    size_t i = u.y < u.x ? 0 : 1;
 
     for (size_t n = 2; n < Dim; ++n)
     {
