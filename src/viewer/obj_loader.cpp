@@ -240,7 +240,7 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
         else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_kd, qi::blank, mtl_it->second.kd) )
         {
         }
-        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_kd, qi::blank, mtl_it->second.ks) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_ks, qi::blank, mtl_it->second.ks) )
         {
         }
         else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_ns, qi::blank, mtl_it->second.ns) )
