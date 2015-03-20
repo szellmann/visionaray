@@ -337,7 +337,7 @@ void load_obj(std::string const& filename, model& mod)
                 mat.set_cd( mat_it->second.kd );
                 mat.set_ka( 1.0f );
                 mat.set_kd( 1.0f );
-                mat.set_ks( 1.0f );
+                mat.set_ks( 0.3f * mat_it->second.ks.x + 0.59f * mat_it->second.ks.y + 0.11f * mat_it->second.ks.z );
                 mat.set_specular_exp( mat_it->second.ns );
                 mod.materials.push_back(mat);
 
