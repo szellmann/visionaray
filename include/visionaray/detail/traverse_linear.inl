@@ -1,8 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <limits>
-
 #include "macros.h"
 
 namespace visionaray
@@ -20,7 +18,7 @@ hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end, typename
 
     hit_record<R, primitive<unsigned>> result;
     result.hit = false;
-    result.t = 3.402823466e+38f;//std::numeric_limits<float>::max();
+    result.t = numeric_limits<float>::max();
     result.prim_id = 0;
 
     for (prim_iterator it = begin; it != end; ++it)
@@ -49,7 +47,7 @@ template <bool AnyHit, typename R, typename P>
 VSNRAY_FUNC
 hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end)
 {
-    return traverse<AnyHit>(r, begin, end, 3.402823466e+38f /*std::numeric_limits<float>::max()*/);
+    return traverse<AnyHit>(r, begin, end, numeric_limits<float>::max());
 }
 
 } // detail

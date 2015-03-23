@@ -186,7 +186,7 @@ struct binned_sah_builder
     {
         auto hsa_p = half_surface_area(prim_bounds);
 
-        auto best_cost = std::numeric_limits<float>::max();
+        auto best_cost = numeric_limits<float>::max();
         auto best_index = -1;
 
         // Sweep from left to right.

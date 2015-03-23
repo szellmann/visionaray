@@ -11,6 +11,7 @@
 #include "aabb.h"
 #include "axis.h"
 #include "intersect.h"
+#include "limits.h"
 #include "matrix.h"
 #include "output.h"
 #include "plane.h"
@@ -22,5 +23,3 @@
 #include "vector.h"
 
 #endif // VSNRAY_MATH_H
-
-

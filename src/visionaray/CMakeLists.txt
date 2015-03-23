@@ -54,6 +54,7 @@ set(VSNRAY_HEADERS
 
     ${HEADER_DIR}/math/detail/simd/matrix4.inl
     ${HEADER_DIR}/math/detail/aabb.inl
+    ${HEADER_DIR}/math/detail/limits.inl
     ${HEADER_DIR}/math/detail/math.h
     ${HEADER_DIR}/math/detail/matrix4.inl
     ${HEADER_DIR}/math/detail/plane3.inl
@@ -75,6 +76,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/config.h
     ${HEADER_DIR}/math/forward.h
     ${HEADER_DIR}/math/intersect.h
+    ${HEADER_DIR}/math/limits.h
     ${HEADER_DIR}/math/math.h
     ${HEADER_DIR}/math/matrix.h
     ${HEADER_DIR}/math/output.h

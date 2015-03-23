@@ -23,8 +23,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
 
     hit_record<basic_ray<T>, primitive<unsigned>> result;
     result.hit = T(0.0);
-//    result.t = T(std::numeric_limits<double>::max());
-    result.t = T(3.402823466e+38f);
+    result.t = T(numeric_limits<float>::max());
     result.prim_id = T(0.0);
 
     stack<32> st;

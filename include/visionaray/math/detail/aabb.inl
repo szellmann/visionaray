@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "../axis.h"
+#include "../limits.h"
 
 
 namespace MATH_NAMESPACE
@@ -59,8 +60,8 @@ template <typename T>
 MATH_FUNC
 inline void basic_aabb<T>::invalidate()
 {
-    min = vec_type(std::numeric_limits<T>::max());
-    max = vec_type(std::numeric_limits<T>::lowest());
+    min = vec_type(numeric_limits<T>::max());
+    max = vec_type(numeric_limits<T>::lowest());
 }
 
 template <typename T>
