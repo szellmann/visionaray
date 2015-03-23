@@ -322,12 +322,12 @@ public:
 
             auto tattr = set->getTextureAttribute(0, osg::StateAttribute::TEXTURE);
             auto tex = dynamic_cast<osg::Texture2D*>(tattr);
+            auto img = tex != nullptr ? tex->getImage() : nullptr;
 
-            if (tex)
+            if (tex && img && img->getPixelFormat() == GL_RGB)
             {
                 using tex_type = typename texture_list::value_type;
 
-                auto img = tex->getImage();
                 tex_type vsnray_tex(img->s(), img->t());
                 vsnray_tex.set_address_mode( Clamp );
                 vsnray_tex.set_filter_mode( Linear );
