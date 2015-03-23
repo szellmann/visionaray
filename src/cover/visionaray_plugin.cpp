@@ -787,6 +787,11 @@ bool Visionaray::init()
     impl_->geode->addDrawable(this);
 
     opencover::cover->getScene()->addChild(impl_->geode);
+    opencover::cover->getObjectsRoot()->setNodeMask
+    (
+        opencover::cover->getObjectsRoot()->getNodeMask()
+     & ~opencover::VRViewer::instance()->getCullMask()
+    );
 
     return true;
 }
@@ -863,12 +868,6 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
         impl_->host_bvh = build<host_bvh_type>(impl_->triangles.data(), impl_->triangles.size());
         impl_->outlines.init(impl_->host_bvh);
-
-        opencover::cover->getObjectsRoot()->setNodeMask
-        (
-            opencover::cover->getObjectsRoot()->getNodeMask()
-         & ~opencover::VRViewer::instance()->getCullMask()
-        );
     }
 
 
