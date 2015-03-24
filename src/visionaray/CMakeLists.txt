@@ -1,10 +1,14 @@
 find_package(Boost REQUIRED)
+if (VSNRAY_ENABLE_CUDA)
 find_package(CUDA)
+endif()
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 
 visionaray_use_package(Boost)
+if (VSNRAY_ENABLE_CUDA)
 visionaray_use_package(CUDA)
+endif()
 visionaray_use_package(GLEW)
 visionaray_use_package(OpenGL)
 
