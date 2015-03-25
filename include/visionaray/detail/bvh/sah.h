@@ -37,12 +37,12 @@ struct binned_sah_builder
         template <class Triangle>
         void set(Triangle const& t, int index)
         {
-            this->bounds.invalidate();
-            this->bounds.insert(t.v1);
-            this->bounds.insert(t.v1 + t.e1);
-            this->bounds.insert(t.v1 + t.e2);
+            bounds.invalidate();
+            bounds.insert(t.v1);
+            bounds.insert(t.v1 + t.e1);
+            bounds.insert(t.v1 + t.e2);
 
-            this->centroid = bounds.center();
+            centroid = bounds.center();
 
             this->index = index;
         }
@@ -94,9 +94,9 @@ struct binned_sah_builder
 
         void clear()
         {
-            this->prim_bounds.invalidate();
-            this->cent_bounds.invalidate();
-            this->count = 0;
+            prim_bounds.invalidate();
+            cent_bounds.invalidate();
+            count = 0;
         }
 
         friend bin merge(bin lhs, bin const& rhs)
@@ -259,7 +259,9 @@ struct binned_sah_builder
         auto count = last - first;
 
         if (count <= max_leaf_size)
+        {
             return false;
+        }
 
         // Find the split axis (TODO: Test all axes...)
 
