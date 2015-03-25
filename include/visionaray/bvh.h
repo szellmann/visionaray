@@ -392,8 +392,8 @@ void traverse_leaves(B const& b, F func);
 
 } // visionaray
 
-#include "detail/bvh_build_binned.inl"
-#include "detail/bvh_intersect.inl"
-#include "detail/bvh_traverse.inl"
+#include "detail/bvh/build.inl"
+#include "detail/bvh/intersect.inl"
+#include "detail/bvh/traverse.inl"
 
 #endif

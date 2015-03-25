@@ -9,7 +9,7 @@
 #include <visionaray/bvh.h>
 #include <visionaray/math/aabb.h>
 
-#include "bvh/sah.h"
+#include "sah.h"
 
 
 namespace visionaray

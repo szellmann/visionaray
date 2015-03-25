@@ -1,11 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
-#include <limits>
-
-#include "stack.h"
-#include "traverse.h"
+#include "../stack.h"
 
 namespace visionaray
 {
@@ -105,5 +101,3 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
 }
 
 } // visionaray
-
-

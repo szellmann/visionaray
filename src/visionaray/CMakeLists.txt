@@ -26,12 +26,12 @@ set(VSNRAY_HEADERS
 
     # Details - subject to frequent change!
 
+    ${HEADER_DIR}/detail/bvh/build.inl
+    ${HEADER_DIR}/detail/bvh/intersect.inl
     ${HEADER_DIR}/detail/bvh/sah.h
+    ${HEADER_DIR}/detail/bvh/traverse.inl
     ${HEADER_DIR}/detail/aligned_vector.h
     ${HEADER_DIR}/detail/allocator.h
-    ${HEADER_DIR}/detail/bvh_build_binned.inl
-    ${HEADER_DIR}/detail/bvh_intersect.inl
-    ${HEADER_DIR}/detail/bvh_traverse.inl
     ${HEADER_DIR}/detail/color_conversion.h
     ${HEADER_DIR}/detail/compiler.h
     ${HEADER_DIR}/detail/cuda_sched.h
