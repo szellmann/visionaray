@@ -556,6 +556,8 @@ void keyboard_func(unsigned char key, int, int)
             if (file.good())
             {
                 file >> rend->cam;
+                rend->counter.reset();
+                rend->frame = 0;
             }
         }
         break;
