@@ -23,7 +23,9 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
     result.prim_id = T(0.0);
 
     stack<32> st;
-    st.push(0);
+    /*static*/ unsigned const Sentinel = unsigned(-1);
+    st.push(Sentinel);
+
     unsigned addr = 0;
     auto node = b.node(addr);
 
@@ -42,12 +44,6 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
 
                 auto hr  = intersect(ray, prim);
                 auto closer = hr.hit & ( hr.t >= T(0.0) && hr.t < result.t );
-#ifndef __CUDA_ARCH__
-                if (!any(closer))
-                {
-                    continue;
-                }
-#endif
                 result.hit |= closer;
                 result.t = select( closer, hr.t, result.t );
                 result.prim_type = select( closer, hr.prim_type, result.prim_type );
@@ -89,7 +85,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
             }
         }
 
-        if (!st.empty())
+        if (addr != Sentinel)
         {
             node = b.node(addr);
         }
