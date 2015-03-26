@@ -10,7 +10,6 @@
 #include <visionaray/math/forward.h>
 #include <visionaray/texture/forward.h>
 #include <visionaray/material.h>
-#include <visionaray/norm.h>
 
 namespace visionaray
 {

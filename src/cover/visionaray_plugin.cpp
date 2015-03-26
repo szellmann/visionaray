@@ -37,7 +37,6 @@
 #include <visionaray/texture/texture.h>
 #include <visionaray/bvh.h>
 #include <visionaray/kernels.h>
-#include <visionaray/norm.h>
 #include <visionaray/point_light.h>
 #include <visionaray/render_target.h>
 #include <visionaray/scheduler.h>

@@ -7,7 +7,6 @@
 #define VSNRAY_PIXEL_TRAITS_H
 
 #include <visionaray/math/math.h>
-#include <visionaray/norm.h>
 #include <visionaray/pixel_format.h>
 
 namespace visionaray

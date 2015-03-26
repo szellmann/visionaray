@@ -7,7 +7,6 @@
 #define VSNRAY_DETAIL_COLOR_CONVERSION_H
 
 #include <visionaray/math/math.h>
-#include <visionaray/norm.h>
 
 #include "macros.h"
 

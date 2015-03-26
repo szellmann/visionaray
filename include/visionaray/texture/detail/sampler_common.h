@@ -9,7 +9,6 @@
 
 #include <visionaray/detail/macros.h>
 #include <visionaray/math/math.h>
-#include <visionaray/norm.h>
 
 
 namespace visionaray

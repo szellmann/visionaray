@@ -20,6 +20,9 @@ namespace MATH_NAMESPACE
 template <size_t Dim>
 class cartesian_axis;
 
+template <unsigned Bits>
+class unorm;
+
 template <size_t Dim, typename T>
 class vector;
 

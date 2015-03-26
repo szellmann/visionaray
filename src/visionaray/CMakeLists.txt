@@ -83,6 +83,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/limits.h
     ${HEADER_DIR}/math/math.h
     ${HEADER_DIR}/math/matrix.h
+    ${HEADER_DIR}/math/norm.h
     ${HEADER_DIR}/math/output.h
     ${HEADER_DIR}/math/primitive.h
     ${HEADER_DIR}/math/plane.h
@@ -119,7 +120,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/kernels.h
     ${HEADER_DIR}/material.h
     ${HEADER_DIR}/mc.h
-    ${HEADER_DIR}/norm.h
     ${HEADER_DIR}/pixel_format.h
     ${HEADER_DIR}/pixel_traits.h
     ${HEADER_DIR}/pixel_unpack_buffer_rt.h

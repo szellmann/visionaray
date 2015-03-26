@@ -13,6 +13,7 @@
 #include "intersect.h"
 #include "limits.h"
 #include "matrix.h"
+#include "norm.h"
 #include "output.h"
 #include "plane.h"
 #include "quat.h"
