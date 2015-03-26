@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <istream>
 #include <ostream>
 #include <memory>
 #include <sstream>
@@ -170,6 +172,31 @@ struct configuration
 };
 
 configuration config;
+
+
+//-------------------------------------------------------------------------------------------------
+// I/O utility for camera lookat only - not fit for the general case!
+//
+
+std::istream& operator>>(std::istream& in, camera& cam)
+{
+    vec3 eye;
+    vec3 center;
+    vec3 up;
+
+    in >> eye >> std::ws >> center >> std::ws >> up >> std::ws;
+    cam.look_at(eye, center, up);
+
+    return in;
+}
+
+std::ostream& operator<<(std::ostream& out, camera const& cam)
+{
+    out << cam.eye() << '\n';
+    out << cam.center() << '\n';
+    out << cam.up() << '\n';
+    return out;
+}
 
 
 void render_hud()
@@ -511,6 +538,26 @@ void keyboard_func(unsigned char key, int, int)
         rend->counter.reset();
         rend->frame = 0;
 #endif
+        break;
+
+    case 'u':
+        {
+            std::ofstream file("visionaray-camera.txt");
+            if (file.good())
+            {
+                file << rend->cam;
+            }
+        }
+        break;
+
+    case 'v':
+        {
+            std::ifstream file("visionaray-camera.txt");
+            if (file.good())
+            {
+                file >> rend->cam;
+            }
+        }
         break;
 
     default:
