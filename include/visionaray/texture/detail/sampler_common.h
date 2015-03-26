@@ -9,6 +9,7 @@
 
 #include <visionaray/detail/macros.h>
 #include <visionaray/math/math.h>
+#include <visionaray/norm.h>
 
 
 namespace visionaray
@@ -49,7 +50,7 @@ inline simd::float4 point(T const* tex, simd::float4 idx)
 
 }
 
-inline vector<3, simd::float4> point(vector<3, unsigned char> const* tex, simd::float4 idx)
+inline vector<3, simd::float4> point(vector<3, unorm<8>> const* tex, simd::float4 idx)
 {
     VSNRAY_ALIGN(16) int indices[4];
     store(&indices[0], idx);

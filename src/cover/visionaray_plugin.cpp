@@ -37,6 +37,7 @@
 #include <visionaray/texture/texture.h>
 #include <visionaray/bvh.h>
 #include <visionaray/kernels.h>
+#include <visionaray/norm.h>
 #include <visionaray/point_light.h>
 #include <visionaray/render_target.h>
 #include <visionaray/scheduler.h>
@@ -59,7 +60,7 @@ using triangle_list     = aligned_vector<triangle_type>;
 using normal_list       = aligned_vector<vec3>;
 using tex_coord_list    = aligned_vector<vec2>;
 using material_list     = aligned_vector<phong<float>>;
-using texture_list      = aligned_vector<texture<vector<3, unsigned char>, ElementType, 2>>;
+using texture_list      = aligned_vector<texture<vector<3, unorm<8>>, ElementType, 2>>;
 
 using host_ray_type     = basic_ray<simd::float4>;
 using host_bvh_type     = bvh<triangle_type>;
@@ -337,7 +338,7 @@ public:
             }
             else
             {
-                textures_.push_back( texture<vector<3, unsigned char>, ElementType, 2>(0, 0) );
+                textures_.push_back( texture<vector<3, unorm<8>>, ElementType, 2>(0, 0) );
             }
 
             assert( materials_.size() == textures_.size() );

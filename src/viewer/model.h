@@ -10,6 +10,7 @@
 #include <visionaray/math/forward.h>
 #include <visionaray/texture/forward.h>
 #include <visionaray/material.h>
+#include <visionaray/norm.h>
 
 namespace visionaray
 {
@@ -22,7 +23,7 @@ public:
     using normal_list       = aligned_vector<vector<3, float>>;
     using tex_coord_list    = aligned_vector<vector<2, float>>;
     using mat_list          = aligned_vector<phong<float>>;
-    using tex_list          = aligned_vector<texture<vector<3, unsigned char>, ElementType, 2>>;
+    using tex_list          = aligned_vector<texture<vector<3, unorm<8>>, ElementType, 2>>;
 
 public:
 

@@ -147,13 +147,10 @@ inline surface<M, vector<3, float>> get_surface
     NBinding
 )
 {
-    typedef typename R::scalar_type scalar_type;
-
     auto tc  = get_tex_coord(tex_coords, hr);
 
     auto const& tex = textures[hr.geom_id];
-    auto cd = tex.width() > 0 && tex.height() > 0 ? vector<3, float>(tex2D(tex, tc)) : vector<3, float>(255.0);
-    cd /= scalar_type(255.0);
+    auto cd = tex.width() > 0 && tex.height() > 0 ? vector<3, float>(tex2D(tex, tc)) : vector<3, float>(1.0);
 
     auto normal = get_normal(normals, hr, NBinding());
     return surface<M, vector<3, float>>( normal, materials[hr.geom_id], cd );
@@ -341,8 +338,7 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
         simd::mask4 m(mi);
 
         auto const& tex = textures[hr4[i].geom_id];
-        auto clr = tex.width() > 0 && tex.height() > 0 ? tex2D(tex, tc) : vector<3, S>(255.0);
-        clr /= S(255.0);
+        auto clr = tex.width() > 0 && tex.height() > 0 ? tex2D(tex, tc) : vector<3, S>(1.0);
 
         cd = select(m, clr, cd);
     }
