@@ -80,11 +80,11 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/config.h
     ${HEADER_DIR}/math/forward.h
     ${HEADER_DIR}/math/intersect.h
+    ${HEADER_DIR}/math/io.h
     ${HEADER_DIR}/math/limits.h
     ${HEADER_DIR}/math/math.h
     ${HEADER_DIR}/math/matrix.h
     ${HEADER_DIR}/math/norm.h
-    ${HEADER_DIR}/math/output.h
     ${HEADER_DIR}/math/primitive.h
     ${HEADER_DIR}/math/plane.h
     ${HEADER_DIR}/math/quat.h

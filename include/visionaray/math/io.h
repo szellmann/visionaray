@@ -5,6 +5,7 @@
 #define VSNRAY_MATH_OUTPUT_H
 
 #include <cstddef>
+#include <istream>
 #include <ostream>
 #include <sstream>
 
@@ -106,7 +107,7 @@ operator<<(std::basic_ostream<CharT, Traits>& out, basic_float<__m256> const& v)
 
 template <typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream< CharT, Traits >& out, basic_int<__m256i> const& v)
+operator<<(std::basic_ostream<CharT, Traits >& out, basic_int<__m256i> const& v)
 {
 
     std::basic_ostringstream<CharT, Traits> s;
@@ -158,6 +159,26 @@ operator<<(std::basic_ostream<CharT, Traits>& out, basic_mask<__m256, __m256i> c
 //
 
 template <size_t Dim, typename T, typename CharT, typename Traits>
+std::basic_istream<CharT, Traits>&
+operator>>(std::basic_istream<CharT, Traits>& in, vector<Dim, T>& v)
+{
+    CharT ignore = '\0';
+
+    in >> ignore; // '('
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        in >> v[d];
+        if (d < Dim - 1)
+        {
+            in >> ignore; // ','
+        }
+    }
+    in >> ignore; // ')'
+
+    return in;
+}
+
+template <size_t Dim, typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, vector<Dim, T> v)
 {
@@ -182,8 +203,9 @@ operator<<(std::basic_ostream<CharT, Traits>& out, vector<Dim, T> v)
 
 }
 
+
 template <typename T, typename CharT, typename Traits>
-std::basic_ostream< CharT, Traits >&
+std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, vector<3, T> v)
 {
 
@@ -221,11 +243,32 @@ operator<<(std::basic_ostream<CharT, Traits>& out, vector<4, T> v)
 //
 
 template <typename T, typename CharT, typename Traits>
+std::basic_istream<CharT, Traits>&
+operator>>(std::basic_istream<CharT, Traits>& in, matrix<4, 4, T>& m)
+{
+
+    CharT ignore = '\0';
+
+    in >> ignore; // '('
+    in >> m.col0;
+    in >> ignore; // ','
+    in >> m.col1;
+    in >> ignore; // ','
+    in >> m.col2;
+    in >> ignore; // ','
+    in >> m.col3;
+    in >> ignore; // ')'
+
+    return in;
+
+}
+
+template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, matrix<4, 4, T> const& m)
 {
 
-    std::basic_ostringstream< CharT, Traits > s;
+    std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
     s.precision(out.precision());
@@ -263,5 +306,3 @@ operator<<(std::basic_ostream<CharT, Traits>& out, rectangle<xywh_layout, T> con
 
 
 #endif // VSNRAY_MATH_OUTPUT_H
-
-
