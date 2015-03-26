@@ -16,16 +16,26 @@ namespace detail
 template <size_t N>
 struct stack
 {
-    VSNRAY_FUNC stack() : ptr(0) {}
-    VSNRAY_FUNC bool empty() const { return ptr == 0; }
+    VSNRAY_FUNC stack()
+        : ptr(0)
+    {
+    }
+
+    VSNRAY_FUNC bool empty() const
+    {
+        return ptr == 0;
+    }
+
     VSNRAY_FUNC void push(unsigned v)
     {
         data[++ptr] = v;
     }
+
     VSNRAY_FUNC unsigned pop()
     {
         return data[ptr--];
     }
+
     unsigned data[N];
     unsigned ptr;
 };
@@ -35,5 +45,3 @@ struct stack
 
 
 #endif // VSNRAY_DETAIL_STACK_H
-
-
