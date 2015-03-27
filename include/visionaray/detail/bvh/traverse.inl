@@ -10,14 +10,14 @@ template <typename B, typename F>
 void traverse_depth_first(B const& b, F func)
 {
     detail::stack<64> st;
-    static unsigned const Sentinel = unsigned(-1);
-    st.push(Sentinel);
 
     unsigned addr = 0;
-    auto node = b.node(addr);
+    st.push(addr);
 
-    for (;;)
+    while (!st.empty())
     {
+        auto node = b.node(addr);
+
         func(node);
 
         if (is_inner(node))
@@ -28,15 +28,6 @@ void traverse_depth_first(B const& b, F func)
         else
         {
             addr = st.pop();
-        }
-
-        if (addr != Sentinel)
-        {
-            node = b.node(addr);
-        }
-        else
-        {
-            break;
         }
     }
 }
