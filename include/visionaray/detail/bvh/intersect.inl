@@ -31,20 +31,13 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
 next:
     while (!st.empty())
     {
-        auto addr = st.pop();
+        auto node = b.node(st.pop());
 
         // while node does not contain primitives
         //     traverse to the next node
 
-        for (;;)
+        while (!is_leaf(node))
         {
-            auto const& node = b.node(addr);
-
-            if (is_leaf(node))
-            {
-                break;
-            }
-
             auto children = &b.node(node.first_child);
 
             auto hr1 = intersect(ray, children[0].bbox, inv_dir);
@@ -57,15 +50,15 @@ next:
             {
                 unsigned near_addr = all( hr1.tnear < hr2.tnear ) ? 0 : 1;
                 st.push(node.first_child + (!near_addr));
-                addr = node.first_child + near_addr;
+                node = b.node(node.first_child + near_addr);
             }
             else if (b1)
             {
-                addr = node.first_child;
+                node = b.node(node.first_child);
             }
             else if (b2)
             {
-                addr = node.first_child + 1;
+                node = b.node(node.first_child + 1);
             }
             else
             {
@@ -76,8 +69,6 @@ next:
 
         // while node contains untested primitives
         //     perform a ray-primitive intersection test
-
-        auto const& node = b.node(addr);
 
         auto begin = node.first_prim;
         auto end   = node.first_prim + node.num_prims;
@@ -96,8 +87,8 @@ next:
             }
 #endif
 
-            result.hit |= closer;
-            result.t = select( closer, hr.t, result.t );
+            result.hit      |= closer;
+            result.t         = select( closer, hr.t, result.t );
             result.prim_type = select( closer, hr.prim_type, result.prim_type );
             result.prim_id   = select( closer, hr.prim_id, result.prim_id );
             result.geom_id   = select( closer, hr.geom_id, result.geom_id );
