@@ -35,15 +35,15 @@ struct kernel
         auto mirror = S(1.0);
         while (any(hit_rec.hit) && any(mirror > S(params.epsilon)) && depth++ < 4/*1*/)
         {
+            hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
+
             auto surf = get_surface(hit_rec, params);
             auto ambient = C(surf.material.ambient(), S(1.0)) * C(params.ambient_color);
             C shaded_clr = select( hit_rec.hit, ambient, C(params.bg_color) );
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
-                hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
-
-                auto light_dir = normalize( V(it->position()) );
+                auto light_dir = normalize( V(it->position()) - hit_rec.isect_pos );
                 R shadow_ray
                 (
                     hit_rec.isect_pos + light_dir * S(params.epsilon),
@@ -55,11 +55,12 @@ struct kernel
                     length(hit_rec.isect_pos - V(it->position())));
                 auto active_rays = hit_rec.hit & !shadow_rec.hit;
 
-                auto sr     = make_shade_record<Params, S>();
-                sr.active   = active_rays;
-                sr.view_dir = -ray.dir;
-                sr.light    = it;
-                auto clr    = surf.shade(sr);
+                auto sr         = make_shade_record<Params, S>();
+                sr.active       = active_rays;
+                sr.view_dir     = -ray.dir;
+                sr.light_dir    = light_dir;
+                sr.light        = it;
+                auto clr        = surf.shade(sr);
 
                 shaded_clr += select( hit_rec.hit, C(clr, S(1.0)), C(0.0) );
             }

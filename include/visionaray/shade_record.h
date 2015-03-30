@@ -21,6 +21,7 @@ struct shade_record_base
 
     vector<3, T> normal;
     vector<3, T> view_dir;
+    vector<3, T> light_dir;
     L light;
 };
 
