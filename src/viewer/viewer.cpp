@@ -369,7 +369,7 @@ void display_func()
     light_type light;
     light.set_cl( vec3(1.0, 1.0, 1.0) );
     light.set_kl(1.0);
-    light.set_position( rend->cam.eye() - rend->cam.center() );
+    light.set_position( rend->cam.eye() );
 
     host_lights.push_back( light );
 
