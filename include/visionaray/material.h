@@ -105,7 +105,7 @@ public:
         V result(0.0, 0.0, 0.0);
 
         auto l = *sr.light;
-        auto wi = normalize( V(l.position()) );
+        auto wi = sr.light_dir;
         auto wo = sr.view_dir;
         auto ndotl = dot(sr.normal, wi);
 
@@ -180,7 +180,7 @@ public:
         V result(0.0, 0.0, 0.0);
 
         auto l = *sr.light;
-        auto wi = normalize( V(l.position()) );
+        auto wi = sr.light_dir;
         auto wo = sr.view_dir;
         auto ndotl = dot(sr.normal, wi);
 
