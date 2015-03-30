@@ -73,7 +73,7 @@ public:
         auto rdotv = dot(r, wo);
         auto mask = rdotv > U(0.0);
 
-        auto I = cs * ks * ((exp + U(2.0)) / (U(2.0) * constants::pi<U>())) * pow(rdotv, exp);
+        auto I = cs * ks * ((exp + U(2.0)) / constants::two_pi<U>()) * pow(rdotv, exp);
 
         return select(mask, I, vector<3, U>(0.0));
     }
