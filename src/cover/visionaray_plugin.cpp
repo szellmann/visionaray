@@ -310,9 +310,10 @@ public:
                 phong<float> vsnray_mat;
                 vsnray_mat.set_ca( osg_cast(ca).xyz() );
                 vsnray_mat.set_cd( osg_cast(cd).xyz() );
+                vsnray_mat.set_cs( osg_cast(cs).xyz() );
                 vsnray_mat.set_ka( 1.0f );
-                vsnray_mat.set_kd( M_PI );
-                vsnray_mat.set_ks( cs.x() ); // TODO: e.g. luminance?
+                vsnray_mat.set_kd( 1.0f );
+                vsnray_mat.set_ks( 1.0f );
                 vsnray_mat.set_specular_exp( mat->getShininess(osg::Material::Face::FRONT) );
                 materials_.push_back(vsnray_mat);
             }
@@ -859,8 +860,9 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
             phong<float> m;
             m.set_ca( vec3(0.2f, 0.2f, 0.2f) );
             m.set_cd( vec3(0.8f, 0.8f, 0.8f) );
+            m.set_cs( vec3(0.1f, 0.1f, 0.1f) );
             m.set_ka( 1.0f );
-            m.set_kd( M_PI );
+            m.set_kd( 1.0f );
             m.set_ks( 1.0f );
             m.set_specular_exp( 32.0f );
             impl_->materials.push_back(m);

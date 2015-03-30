@@ -60,6 +60,7 @@ public:
     typedef T scalar_type;
     typedef vector<3, T> color_type;
 
+    color_type  cs;
     scalar_type ks;
     scalar_type exp;
 
@@ -72,13 +73,9 @@ public:
         auto rdotv = dot(r, wo);
         auto mask = rdotv > U(0.0);
 
-#ifdef SCHLICK
-        U i = ks * rdotv / (exp - exp * rdotv + rdotv);
-#else
-        U i = ks * pow(rdotv, exp);
-#endif
+        auto I = cs * ks * ((exp + U(2.0)) / (U(2.0) * constants::pi<U>())) * pow(rdotv, exp);
 
-        return vector<3, U>( select(mask, i, U(0.0)) );
+        return select(mask, I, vector<3, U>(0.0));
     }
 
 };
@@ -86,4 +83,3 @@ public:
 }
 
 #endif // VSNRAY_BRDF_H
-

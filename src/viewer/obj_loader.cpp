@@ -335,9 +335,10 @@ void load_obj(std::string const& filename, model& mod)
                 phong<float> mat;
                 mat.set_ca( mat_it->second.ka );
                 mat.set_cd( mat_it->second.kd );
+                mat.set_cs( mat_it->second.ks );
                 mat.set_ka( 1.0f );
                 mat.set_kd( 1.0f );
-                mat.set_ks( 0.3f * mat_it->second.ks.x + 0.59f * mat_it->second.ks.y + 0.11f * mat_it->second.ks.z );
+                mat.set_ks( 1.0f );
                 mat.set_specular_exp( mat_it->second.ns );
                 mod.materials.push_back(mat);
 
@@ -408,6 +409,7 @@ void load_obj(std::string const& filename, model& mod)
             phong<float> m;
             m.set_ca( vec3(0.2f, 0.2f, 0.2f) );
             m.set_cd( vec3(0.8f, 0.8f, 0.8f) );
+            m.set_cs( vec3(0.1f, 0.1f, 0.1f) );
             m.set_ka( 1.0f );
             m.set_kd( 1.0f );
             m.set_ks( 1.0f );

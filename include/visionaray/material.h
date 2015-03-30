@@ -110,7 +110,7 @@ public:
         auto ndotl = dot(sr.normal, wi);
 
         auto mask = sr.active & (ndotl > U(0.0));
-        auto c = diffuse_brdf_.f(sr.normal, wo, wi) * V(l.color()) * V(ndotl);
+        auto c = constants::pi<U>() * diffuse_brdf_.f(sr.normal, wo, wi) * V(l.color()) * V(ndotl);
         result = add( result, c, mask );
 
         return result;
@@ -185,7 +185,7 @@ public:
         auto ndotl = dot(sr.normal, wi);
 
         auto mask = sr.active & (ndotl > U(0.0));
-        auto c = ( cd(sr, wo, wi) + specular_brdf_.f(sr.normal, wo, wi) ) * V(l.color()) * V(ndotl);
+        auto c = constants::pi<U>() * ( cd(sr, wo, wi) + specular_brdf_.f(sr.normal, wo, wi) ) * V(l.color()) * V(ndotl);
         result = add( result, c, mask );
 
         return result;
@@ -244,6 +244,16 @@ public:
     VSNRAY_FUNC scalar_type get_kd() const
     {
         return diffuse_brdf_.kd;
+    }
+
+    VSNRAY_FUNC void set_cs(color_type const& cs)
+    {
+        specular_brdf_.cs = cs;
+    }
+
+    VSNRAY_FUNC color_type get_cs() const
+    {
+        return specular_brdf_.cs;
     }
 
     VSNRAY_FUNC void set_ks(scalar_type ks)
