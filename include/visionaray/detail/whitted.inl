@@ -67,10 +67,7 @@ struct kernel
 
             color += select( hit_rec.hit, shaded_clr, no_hit_color ) * mirror;
 
-            auto negn = dot(ray.dir, surf.normal) > S(0.0);
-            V n = select(negn, -surf.normal, surf.normal);
-
-            auto dir = reflect(ray.dir, n);
+            auto dir = reflect(ray.dir, surf.normal);
             ray = R
             (
                 hit_rec.isect_pos + dir * S(params.epsilon),
