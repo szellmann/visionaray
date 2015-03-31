@@ -182,13 +182,13 @@ public:
         auto l = *sr.light;
         auto wi = sr.light_dir;
         auto wo = sr.view_dir;
-        auto ndotl = dot(sr.normal, wi);
+        auto n = sr.normal;
+#if 1 // two-sided
+        n = select( dot(n, wo) < U(0.0), -n, n );
+#endif
+        auto ndotl = max( U(0.0), dot(n, wi) );
 
-        auto mask = sr.active & (ndotl > U(0.0));
-        auto c = constants::pi<U>() * ( cd(sr, wo, wi) + specular_brdf_.f(sr.normal, wo, wi) ) * V(l.color()) * V(ndotl);
-        result = add( result, c, mask );
-
-        return result;
+        return constants::pi<U>() * ( cd(sr, wo, wi) + specular_brdf_.f(sr.normal, wo, wi) ) * V(l.color()) * V(ndotl);
     }
 
     template <typename SR, typename U, typename S /* sampler */>
