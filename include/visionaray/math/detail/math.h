@@ -70,7 +70,7 @@ inline T max_min(T const& x, T const& y, T const& z)
     return min( max(x, y), z );
 }
 
-#ifdef __CUDACC__
+#ifdef __CUDA_ARCH__
 
 MATH_GPU_FUNC
 inline int min(int x, int y, int z)
