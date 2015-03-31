@@ -5,6 +5,8 @@
 #include <array>
 #include <vector>
 
+#include <visionaray/math/aabb.h>
+
 
 namespace visionaray
 {
@@ -12,98 +14,76 @@ namespace detail
 {
 
 
-struct binned_sah_builder
+struct sah_builder
 {
-    enum { NumBins = 16 };
+    // TODO:
+    // Add a bounds class with prim_bounds and cent_bounds members...
 
-    struct prim_info
+    struct prim_ref
     {
-        aabb bounds;    // Primitive bounds
-        vec3 centroid;  // Center of primitive bounds
-        int index;      // Primitive index
+        aabb bounds; // Primitive bounds
+        int index;   // Primitive index
 
-        void set(aabb const& bounds, vec3 const& centroid, int index)
-        {
-            this->bounds = bounds;
-            this->centroid = centroid;
-            this->index = index;
-        }
-
-        void set(aabb const& bounds, int index)
-        {
-            set(bounds, bounds.center(), index);
-        }
-
-        template <class Triangle>
-        void set(Triangle const& t, int index)
+        template <typename Triangle>
+        void assign(Triangle const& t, int i)
         {
             bounds.invalidate();
             bounds.insert(t.v1);
             bounds.insert(t.v1 + t.e1);
             bounds.insert(t.v1 + t.e2);
 
-            centroid = bounds.center();
-
-            this->index = index;
+            index = i;
         }
     };
 
-    struct prim_data
+    using prim_refs = std::vector<prim_ref>;
+
+    template <typename I>
+    static void init(prim_refs& refs, aabb& prim_bounds, aabb& cent_bounds, I first, I last)
     {
-        std::vector<prim_info> pinfos;
-        aabb prim_bounds;
-        aabb cent_bounds;
+        refs.resize(last - first);
 
-        prim_data() = default;
+        prim_bounds.invalidate();
+        cent_bounds.invalidate();
 
-        template <class I>
-        prim_data(I first, I last)
+        for (int i = 0; first != last; ++first, ++i)
         {
-            init(first, last);
+            refs[i].assign(*first, i);
+
+            prim_bounds.insert(refs[i].bounds);
+            cent_bounds.insert(refs[i].bounds.center());
         }
+    }
 
-        template <class I>
-        void init(I first, I last)
-        {
-            clear();
-
-            pinfos.resize(last - first);
-
-            for (int i = 0; first != last; ++first, ++i)
-            {
-                pinfos[i].set(*first, i);
-
-                prim_bounds = combine(prim_bounds, pinfos[i].bounds);
-                cent_bounds = combine(cent_bounds, pinfos[i].centroid);
-            }
-        }
-
-        void clear()
-        {
-            pinfos.clear();
-            prim_bounds.invalidate();
-            cent_bounds.invalidate();
-        }
+    enum
+    {
+        NumBins = 16
     };
 
     struct bin
     {
-        aabb prim_bounds;   // Primitive bounds
-        aabb cent_bounds;   // Centroid bounds
-        int count;          // Number of primitives in this bin
+        // TODO:
+        // Remove cent_bounds and compute them while partitioning...
+
+        aabb prim_bounds; // Primitive bounds
+        aabb cent_bounds; // Centroid bounds
+        int enter;        // Number of primitives starting in this bin
+        int leave;        // Number of primitives ending in this bin
 
         void clear()
         {
             prim_bounds.invalidate();
             cent_bounds.invalidate();
-            count = 0;
+            enter = 0;
+            leave = 0;
         }
 
         friend bin merge(bin lhs, bin const& rhs)
         {
             lhs.prim_bounds.insert(rhs.prim_bounds);
             lhs.cent_bounds.insert(rhs.cent_bounds);
-            lhs.count += rhs.count;
+            lhs.enter += rhs.enter;
+            lhs.leave += rhs.leave;
 
             return lhs;
         }
@@ -111,83 +91,97 @@ struct binned_sah_builder
 
     using bin_list = std::array<bin, NumBins>;
 
-    static int project_to_bin_unsafe(float t, float k0, float k1)
+    struct projection
     {
-        // k0 = cb.min
-        // k1 = NumBins / (cb.max - cb.min)
+        float k0;
+        float k1;
+        int axis;
 
-        return static_cast<int>(k1 * (t - k0));
-    }
-
-    static int project_to_bin(float t, float k0, float k1)
-    {
-        auto i = project_to_bin_unsafe(t, k0, k1);
-        assert(i >= 0);
-        return i < NumBins ? i : NumBins - 1;
-    }
-
-    template <class PI> // prim_info iterator
-    static void project_objects(bin_list& bins, PI first, PI last, float k0, float k1, int axis)
-    {
-        for (/**/; first != last; ++first)
+        projection(aabb const& bounds, int axis)
+            : k0(bounds.min[axis])
+            , k1(NumBins / (bounds.max[axis] - k0))
+            , axis(axis)
         {
-            auto& b = bins[project_to_bin(first->centroid[axis], k0, k1)];
-
-            b.prim_bounds.insert(first->bounds);
-            b.cent_bounds.insert(first->centroid);
-            b.count++;
         }
+
+        // Return the bin index of the projected point v.
+        // NOTE: The returned index might be out of range!
+        int project_unsafe(vec3 const& v) const
+        {
+            return static_cast<int>(k1 * (v[axis] - k0));
+        }
+
+        // Return the bin index of the projected point v.
+        // The returned index can be used as an index into a list of bins.
+        int project(vec3 const& v) const
+        {
+            auto i = project_unsafe(v);
+
+            if (i < 0)
+            {
+                i = 0;
+            }
+
+            if (i > NumBins - 1)
+            {
+                i = NumBins - 1;
+            }
+
+            return i;
+        }
+
+        // Returns the left plane of the given bin
+        float unproject(int i) const
+        {
+            return i / k1 + k0; // lerp(bounds.min, bounds.max, i/NumBins)
+        }
+    };
+
+    struct leaf_info
+    {
+        aabb prim_bounds; // Primitive bounds
+        aabb cent_bounds; // Centroid bounds
+        int first;        // Index of first primitive reference in this leaf
+    };
+
+    using leaf_infos = std::array<leaf_info, 2>;
+
+    static float compute_leaf_cost(int size)
+    {
+        return 3.0f * size;
     }
 
-    static float compute_leaf_cost(aabb const& /*prim_bounds*/, int count)
+    static float compute_split_cost(
+        aabb const& bounds_left, int size_left, aabb const& bounds_right, int size_right, float hsa_parent)
     {
-        const float Ci = 3.0f;
+        auto hsa_left = safe_half_surface_area(bounds_left);
+        auto hsa_right = safe_half_surface_area(bounds_right);
 
-        return Ci * count;
-    }
-
-    static float compute_sah
-    (
-        aabb const&     prim_bounds_left,
-        int             count_left,
-        aabb const&     prim_bounds_right,
-        int             count_right,
-        float           hsa_p
-    )
-    {
-        float const Ci = 3.0f;
-        float const Ct = 1.0f;
-
-        auto hsa_l = half_surface_area(prim_bounds_left);
-        auto hsa_r = half_surface_area(prim_bounds_right);
-
-        return Ct + (hsa_l / hsa_p) * (Ci * count_left) + (hsa_r / hsa_p) * (Ci * count_right);
+        return 1.0f + (hsa_left / hsa_parent) * compute_leaf_cost(size_left) +
+                      (hsa_right / hsa_parent) * compute_leaf_cost(size_right);
     }
 
     struct split_result
     {
-        aabb prim_bounds[2];    // Primitive bounds for left/right nodes
-        aabb cent_bounds[2];    // Centroid bounds for left/right nodes
-        float cost;             // Split costs
-        int index = -1;         // Split position (bin index)
-        int first;              // First index of left node
-        int middle;             // Pivot: last index of left node, first index of right node
-        int last;               // Last index of right node
+        // TODO:
+        // Remove cent_bounds and compute them while partitioning...
+
+        aabb prim_bounds[2]; // Primitive bounds of left/right leaves (computed while binning)
+        aabb cent_bounds[2]; // Centroid bounds of left/right leaves (computed while binning)
+        int count[2];        // Number of primitive (references) in left/right leaves
+        float cost;          // Split cost
+        int index;           // Split index (smallest bin index for the right leaf)
     };
 
-    static void find_object_split
-    (
-        split_result&   sr,
-        bin_list const& bins,
-        aabb const&     prim_bounds,
-        int             first,
-        int             last
-    )
+    // Uses the given list of bins to find the best split.
+    // Returns the information needed to build the left/right subtrees.
+    static split_result find_split(bin_list const& bins, aabb const& bounds)
     {
-        auto hsa_p = half_surface_area(prim_bounds);
+        auto hsa_parent = safe_half_surface_area(bounds);
+        assert(hsa_parent > 0);
 
-        auto best_cost = numeric_limits<float>::max();
-        auto best_index = -1;
+        auto best_cost = std::numeric_limits<float>::max();
+        int best_index = -1;
 
         // Sweep from left to right.
 
@@ -210,71 +204,58 @@ struct binned_sah_builder
         {
             acc_r[i - 1] = merge(acc_r[i], bins[i - 1]);
 
-            auto const& l = acc_l[i - 1];
-            auto const& r = acc_r[i];
-            assert(l.count + r.count == last - first);
+            auto const& L = acc_l[i - 1];
+            auto const& R = acc_r[i];
 
-            auto cost = compute_sah(l.prim_bounds, l.count, r.prim_bounds, r.count, hsa_p);
+            auto cost = compute_split_cost(L.prim_bounds, L.enter, R.prim_bounds, R.leave, hsa_parent);
             assert(cost > 0);
 
             if (cost < best_cost)
             {
                 best_cost = cost;
-                best_index = i - 1;
+                best_index = i;
             }
         }
 
-        assert(0 <= best_index && best_index < NumBins - 1);
+        assert(0 < best_index && best_index <= NumBins - 1);
 
-        auto const& best_l = acc_l[best_index];
-        auto const& best_r = acc_r[best_index + 1];
+        auto const& L = acc_l[best_index - 1];
+        auto const& R = acc_r[best_index];
 
-        auto middle = first + best_l.count;
+        split_result sr;
 
-        sr.prim_bounds[0]   = best_l.prim_bounds;
-        sr.prim_bounds[1]   = best_r.prim_bounds;
-        sr.cent_bounds[0]   = best_l.cent_bounds;
-        sr.cent_bounds[1]   = best_r.cent_bounds;
-        sr.cost             = best_cost;
-        sr.index            = best_index;
-        sr.first            = first;
-        sr.middle           = first + best_l.count;
-        sr.last             = last;
+        sr.prim_bounds[0] = L.prim_bounds;
+        sr.prim_bounds[1] = R.prim_bounds;
+        sr.cent_bounds[0] = L.cent_bounds;
+        sr.cent_bounds[1] = R.cent_bounds;
+        sr.count[0] = L.enter;
+        sr.count[1] = R.leave;
+        sr.cost = best_cost;
+        sr.index = best_index;
 
-        assert(sr.middle == last - best_r.count);
+        return sr;
     }
 
-    template <class P>
-    bool split
-    (
-        split_result&   sr,
-        P&              pinfos,
-        aabb const&     prim_bounds,
-        aabb const&     cent_bounds,
-        int             first,
-        int             last,
-        int             max_leaf_size
-    )
+    //--------------------------------------------------------------------------
+    // object patrtition
+    //
+
+    // Projects the given primitive into the bins.
+    static void project_object(bin_list& bins, prim_ref const& ref, projection pr)
     {
-        auto count = last - first;
+        auto cen = ref.bounds.center();
 
-        if (count <= max_leaf_size)
-        {
-            return false;
-        }
+        auto& b = bins[pr.project(cen)];
 
-        // Find the split axis (TODO: Test all axes...)
+        b.prim_bounds.insert(ref.bounds);
+        b.cent_bounds.insert(cen);
+        b.enter++;
+        b.leave++;
+    }
 
-        auto size = cent_bounds.size();
-        auto axis = max_index(size);
-
-        if (size[axis] <= 0.0f)
-        {
-            return false;
-        }
-
-        // Project the primitives into the bins
-
+    // Find the best object split.
+    static split_result find_object_split(prim_refs& refs, leaf_info const& leaf, projection pr)
+    {
         bin_list bins;
 
         for (auto& b : bins)
@@ -282,18 +263,397 @@ struct binned_sah_builder
             b.clear();
         }
 
-        auto k0 = cent_bounds.min[axis];
-        auto k1 = NumBins / size[axis];
+        for (auto I = refs.begin() + leaf.first, E = refs.end(); I != E; ++I)
+        {
+            project_object(bins, *I, pr);
+        }
 
-        project_objects(bins, pinfos.begin() + first, pinfos.begin() + last, k0, k1, axis);
+        return find_split(bins, leaf.prim_bounds);
+    }
 
-        // Compute split index
+    // Partition the given list of objects
+    static void perform_object_partition(
+        leaf_infos& childs, split_result const& sr, prim_refs& refs, leaf_info const& leaf, projection pr)
+    {
+        childs[0].prim_bounds = sr.prim_bounds[0];
+        childs[0].cent_bounds = sr.cent_bounds[0];
+        childs[1].prim_bounds = sr.prim_bounds[1];
+        childs[1].cent_bounds = sr.cent_bounds[1];
 
-        find_object_split(sr, bins, prim_bounds, first, last);
+        auto pivot = std::partition(
+            refs.begin() + leaf.first,
+            refs.end(),
+            [&](prim_ref const& x)
+            {
+                return pr.project_unsafe(x.bounds.center()) < sr.index;
+            }
+        );
 
-        // Check if turning this node into a leaf might be better...
+        childs[0].first = leaf.first;
+        childs[1].first = static_cast<int>(pivot - refs.begin());
+    }
 
-        auto leaf_costs = compute_leaf_cost(prim_bounds, count);
+    //--------------------------------------------------------------------------
+    // spatial split
+    //
+
+    static void split_edge(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, float plane, int axis)
+    {
+        auto t0 = v0[axis];
+        auto t1 = v1[axis];
+
+        if (t0 <= plane)
+        {
+            L.insert(v0);
+        }
+
+        if (t0 >= plane)
+        {
+            R.insert(v0);
+        }
+
+        if ((t0 < plane && plane < t1) || (t1 < plane && plane < t0))
+        {
+            auto x = lerp(v0, v1, (plane - t0) / (t1 - t0));
+
+            x[axis] = plane; // Fix numerical inaccuracies...
+
+            L.insert(x);
+            R.insert(x);
+        }
+    }
+
+    static void split_triangle(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, vec3 const& v2, float plane, int axis)
+    {
+        L.invalidate();
+        R.invalidate();
+
+        split_edge(L, R, v0, v1, plane, axis);
+        split_edge(L, R, v1, v2, plane, axis);
+        split_edge(L, R, v2, v0, plane, axis);
+    }
+
+    template <typename Data>
+    static void split_reference(prim_ref& L, prim_ref& R, prim_ref const& ref, float plane, int axis, Data const& data)
+    {
+        auto v0 = data[ref.index].v1;
+        auto v1 = v0 + data[ref.index].e1;
+        auto v2 = v0 + data[ref.index].e2;
+
+        split_triangle(L.bounds, R.bounds, v0, v1, v2, plane, axis);
+
+        // Clip with current bounds
+        L.bounds = intersect(L.bounds, ref.bounds);
+        R.bounds = intersect(R.bounds, ref.bounds);
+
+        L.index = ref.index;
+        R.index = ref.index;
+    }
+
+    template <typename Data>
+    static void split_object(bin_list& bins, prim_ref const& ref, projection pr, Data const& data)
+    {
+        auto v0 = data[ref.index].v1;
+        auto v1 = v0 + data[ref.index].e1;
+        auto v2 = v0 + data[ref.index].e2;
+
+        // Compute the range of bins this triangle overlaps
+        auto imin = pr.project(ref.bounds.min);
+        auto imax = pr.project(ref.bounds.max);
+
+        // Update all the bins this triangle overlaps
+
+        // This is used to clip the left (and right) bounds of a triangle to the
+        // current triangle and the current bin bounds.
+        auto clip = ref.bounds;
+
+        for (int i = imin; i < imax; ++i)
+        {
+            auto plane = pr.unproject(i + 1);
+
+            aabb L, R;
+
+            // Split triangle into left and right bounds
+            split_triangle(L, R, v0, v1, v2, plane, pr.axis);
+
+            // Clip the left triangle to the current triangle bounds and the current bin bounds
+            L = intersect(L, clip);
+
+            // Update the clip bounds
+            clip = intersect(R, clip);
+
+            bins[i].prim_bounds.insert(L);
+            bins[i].cent_bounds.insert(L.center());
+        }
+
+        bins[imax].prim_bounds.insert(clip);
+        bins[imax].cent_bounds.insert(clip.center());
+
+        // Update counters
+        bins[imin].enter++;
+        bins[imax].leave++;
+    }
+
+    template <typename Data>
+    static split_result
+    find_spatial_split(prim_refs const& refs, leaf_info const& leaf, projection pr, Data const& data)
+    {
+        bin_list bins;
+
+        for (auto& b : bins)
+        {
+            b.clear();
+        }
+
+        for (auto I = refs.begin() + leaf.first, E = refs.end(); I != E; ++I)
+        {
+            split_object(bins, *I, pr, data);
+        }
+
+        return find_split(bins, leaf.prim_bounds);
+    }
+
+    template <typename Data>
+    static void perform_spatial_split(
+            leaf_infos&         childs,
+            split_result const& sr,
+            prim_refs&          refs,
+            leaf_info const&    leaf,
+            projection          pr,
+            Data const&         data
+            )
+    {
+        auto plane = pr.unproject(sr.index);
+
+        auto pivot = leaf.first;
+        auto i = leaf.first;
+        auto last = static_cast<int>(refs.size());
+
+        childs[0].prim_bounds.invalidate();
+        childs[0].cent_bounds.invalidate();
+        childs[1].prim_bounds.invalidate();
+        childs[1].cent_bounds.invalidate();
+
+        while (i != last)
+        {
+            auto pmin = refs[i].bounds.min[pr.axis];
+            auto pmax = refs[i].bounds.max[pr.axis];
+
+            if (pmax <= plane)
+            {
+                // Triangle lies completely to the left of the splitting plane.
+                // Swap current reference with current pivot to move it to the correct place.
+
+                childs[0].prim_bounds.insert(refs[i].bounds);
+                childs[0].cent_bounds.insert(refs[i].bounds.center());
+
+                // xxxxxxxyyyyyyyx.......
+                //        ^      ^
+                //        p      i
+
+                if (i != pivot)
+                {
+                    std::swap(refs[pivot], refs[i]);
+                }
+
+                ++pivot;
+                ++i;
+
+                // xxxxxxxxyyyyyyy.......
+                //         ^      ^
+                //         p      i
+            }
+            else if (pmin >= plane)
+            {
+                // Triamgle lies completely to the right of the splitting plane.
+                // Reference is already at the correct place.
+
+                childs[1].prim_bounds.insert(refs[i].bounds);
+                childs[1].cent_bounds.insert(refs[i].bounds.center());
+
+                // xxxxxxxyyyyyyyy.......
+                //        ^      ^
+                //        p      i
+
+                ++i;
+
+                // xxxxxxxyyyyyyyy.......
+                //        ^       ^
+                //        p       i
+            }
+            else
+            {
+                // Triangle intersects the splitting plane.
+
+                prim_ref L, R;
+
+                split_reference(L, R, refs[i], plane, pr.axis, data);
+
+                // TODO:
+                // Reference unsplitting.
+
+                childs[0].prim_bounds.insert(L.bounds);
+                childs[0].cent_bounds.insert(L.bounds.center());
+                childs[1].prim_bounds.insert(R.bounds);
+                childs[1].cent_bounds.insert(R.bounds.center());
+
+                // xxxxxxxyyyyyyyS.......   (S -> x,y)
+                //        ^      ^
+                //        p      i
+
+                refs[i] = R;
+
+                // xxxxxxxyyyyyyyy.......
+                //        ^      ^
+                //        p      i
+
+                refs.push_back(L);
+
+                // xxxxxxxyyyyyyyy.......x
+                //        ^      ^
+                //        p      i
+
+                std::swap(refs[pivot], refs.back());
+
+                ++pivot;
+                ++i;
+
+                // xxxxxxxxyyyyyyyy......y
+                //         ^       ^
+                //         p       i
+            }
+        }
+
+        childs[0].first = leaf.first;
+        childs[1].first = pivot;
+    }
+
+    //--------------------------------------------------------------------------
+    // split
+    //
+
+    // TODO:
+    // Remove refs and factor out the object partition code...
+
+    // List of primitives references (will be modified during build)
+    prim_refs refs;
+    // Surface area threshold for spatial splits
+    float sa_threshold = 1.0e+38f;
+    // Alpha (relative threshold)
+    float alpha = 1.0e-5f;
+    // Whether to use spatial splits
+    bool use_spatial_splits = false;
+
+    void set_alpha(float value)
+    {
+        alpha = value;
+    }
+
+    void enable_spatial_splits(bool enable)
+    {
+        use_spatial_splits = enable;
+    }
+
+    template <typename I>
+    leaf_info init(I first, I last)
+    {
+        aabb prim_bounds;
+        aabb cent_bounds;
+
+        init(refs, prim_bounds, cent_bounds, first, last);
+
+        sa_threshold = alpha * safe_surface_area(prim_bounds);
+
+        return { prim_bounds, cent_bounds, 0 };
+    }
+
+    // Inserts primitive indices into INDICES and removes them from the current list.
+    template <typename Indices>
+    int insert_indices(Indices& indices, leaf_info const& leaf)
+    {
+        int leaf_size = static_cast<int>(refs.size() - leaf.first);
+
+        // Insert indices
+        for (int i = leaf.first; i != (int)refs.size(); ++i)
+        {
+            indices.push_back(refs[i].index);
+        }
+
+        // Erase the no longer used primitive references
+        refs.resize(leaf.first);
+
+        return leaf_size;
+    }
+
+    // Return true if the leaf should be split into two new leaves. In this case
+    // sr.leaves contains the information of the left/right leaves and the
+    // method returns true. If the leaf should not be split, returns false.
+    template <typename Data>
+    bool split(leaf_infos& childs, leaf_info const& leaf, Data const& data, int max_leaf_size)
+    {
+        // FIXME:
+        // Create a leaf if max_depth is reached...
+        // Or check this in build_tree?
+
+        auto leaf_size = static_cast<int>(refs.size() - leaf.first);
+
+        if (leaf_size <= max_leaf_size)
+        {
+            return false;
+        }
+
+        // Find the split axis (TODO: Test all axes...)
+
+        // Using centroid bounds for object partitioning...
+        auto size = leaf.cent_bounds.size();
+        auto axis = max_index(size);
+
+        if (size[axis] <= 0.0f)
+        {
+            return false;
+        }
+
+        // Object split --------------------------------------------------------
+
+        projection pr(leaf.cent_bounds, static_cast<int>(axis));
+
+        auto sr = find_object_split(refs, leaf, pr);
+
+        // Spatial split -------------------------------------------------------
+
+        bool do_spatial_split = false;
+
+        if (use_spatial_splits)
+        {
+            auto sa = safe_surface_area(intersect(sr.prim_bounds[0], sr.prim_bounds[1]));
+
+            if (sa > sa_threshold)
+            {
+                // Using primitive bounds for spatial splits...
+                size = leaf.prim_bounds.size();
+                axis = max_index(size);
+
+                if (size[axis] <= 0.0f)
+                {
+                    return false;
+                }
+
+                projection pr2(leaf.prim_bounds, static_cast<int>(axis));
+
+                auto sr2 = find_spatial_split(refs, leaf, pr2, data);
+
+                if (sr2.cost < sr.cost /* && (sr2.count[0] + sr2.count[1] < 1.5 * leaf_size) */)
+                {
+                    do_spatial_split = true;
+                    pr = pr2;
+                    sr = sr2;
+                }
+            }
+        }
+
+        // Check if turning this node into a leaf might be better
+
+        auto leaf_costs = compute_leaf_cost(leaf_size);
 
         if (sr.cost > leaf_costs)
         {
@@ -301,15 +661,16 @@ struct binned_sah_builder
         }
 
         // Found a new split point.
-        // Sort primitive infos.
+        // Sort primitive references.
 
-        auto pivot = std::partition(pinfos.begin() + sr.first, pinfos.begin() + sr.last,
-            [&](prim_info const& x)
-            {
-                return project_to_bin_unsafe(x.centroid[axis], k0, k1) <= sr.index;
-            });
-
-        assert(sr.middle - sr.first == pivot - (pinfos.begin() + sr.first));
+        if (do_spatial_split)
+        {
+            perform_spatial_split(childs, sr, refs, leaf, pr, data);
+        }
+        else
+        {
+            perform_object_partition(childs, sr, refs, leaf, pr);
+        }
 
         return true;
     }

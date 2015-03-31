@@ -21,114 +21,61 @@ namespace detail
 
 
 //--------------------------------------------------------------------------------------------------
-// insert_indices
-//
-
-template <class Tree, class P>
-void insert_indices(Tree& tree, P const& pinfos, int first, int last, index_bvh_tag)
-{
-    auto& indices = tree.indices();
-
-    for (auto i = first; i != last; ++i)
-    {
-        indices.push_back(pinfos[i].index);
-    }
-}
-
-template <class Tree, class P>
-void insert_indices(Tree& /*tree*/, P const& /*pinfos*/, int /*first*/, int /*last*/, bvh_tag)
-{
-}
-
-
-//--------------------------------------------------------------------------------------------------
-// permute_primitives
-//
-
-template <class Tree, class P, class I>
-void permute_primitives(Tree& /*tree*/, P const& /*pinfos*/, I /*first*/, I /*last*/, index_bvh_tag)
-{
-}
-
-template <class Tree, class P, class I>
-void permute_primitives(Tree& tree, P const& pinfos, I first, I last, bvh_tag)
-{
-    auto& prims = tree.primitives();
-
-    for (auto n = last - first; n--; /**/)
-    {
-        prims[n] = first[pinfos[n].index];
-    }
-}
-
-
-//--------------------------------------------------------------------------------------------------
 // build_tree_impl
 //
 
-template <class Tree, class P, class Builder>
-void build_tree_impl
-(
-    int         index,
-    Tree&       tree,
-    P&          pinfos,
-    aabb const& prim_bounds,
-    aabb const& cent_bounds,
-    int         first,
-    int         last,
-    Builder&    builder,
-    int         max_leaf_size
-)
+template <typename Tree, typename Builder, typename LeafInfo, typename Data>
+void build_tree_impl(
+        int             index,
+        Tree&           tree,
+        Builder&        builder,
+        LeafInfo const& leaf,
+        Data const&     data,
+        int             max_leaf_size
+        )
 {
-    // TODO:
-    // Make iterative
-
     auto& nodes = tree.nodes();
+    auto& indices = tree.indices();
 
-    typename Builder::split_result sr;
+    typename Builder::leaf_infos childs;
 
-    auto split = builder.split(sr, pinfos, prim_bounds, cent_bounds, first, last, max_leaf_size);
+    auto split = builder.split(childs, leaf, data, max_leaf_size);
 
     if (split)
     {
         auto first_child_index = static_cast<int>(nodes.size());
 
-        nodes[index].set_inner(prim_bounds, first_child_index);
+        nodes[index].set_inner(leaf.prim_bounds, first_child_index);
 
         nodes.emplace_back();
         nodes.emplace_back();
 
-        build_tree_impl
-        (
-            first_child_index + 0,
-            tree,
-            pinfos,
-            sr.prim_bounds[0],
-            sr.cent_bounds[0],
-            sr.first,
-            sr.middle,
-            builder,
-            max_leaf_size
-        );
+        // Construct right subtree
+        build_tree_impl(
+                first_child_index + 1,
+                tree,
+                builder,
+                childs[1],
+                data,
+                max_leaf_size
+                );
 
-        build_tree_impl
-        (
-            first_child_index + 1,
-            tree,
-            pinfos,
-            sr.prim_bounds[1],
-            sr.cent_bounds[1],
-            sr.middle,
-            sr.last,
-            builder,
-            max_leaf_size
-        );
+        // Construct left subtree
+        build_tree_impl(
+                first_child_index + 0,
+                tree,
+                builder,
+                childs[0],
+                data,
+                max_leaf_size
+                );
     }
     else
     {
-        nodes[index].set_leaf(prim_bounds, first, last - first);
+        auto first = static_cast<int>(indices.size());
+        auto count = builder.insert_indices(indices, leaf);
 
-        insert_indices(tree, pinfos, first, last, typename Tree::tag_type());
+        nodes[index].set_leaf(leaf.prim_bounds, first, count);
     }
 }
 
@@ -137,8 +84,8 @@ void build_tree_impl
 // build_tree
 //
 
-template <class Tree, class Builder, class I>
-void build_tree(Tree& tree, Builder& builder, I first, I last, int max_leaf_size = -1)
+template <typename Tree, typename Builder, typename I>
+void build_tree(Tree& tree, Builder& builder, I first, I last, int max_leaf_size = -1 )
 {
     if (max_leaf_size <= 0)
     {
@@ -147,34 +94,28 @@ void build_tree(Tree& tree, Builder& builder, I first, I last, int max_leaf_size
 
     // Precompute primitive data needed by the builder
 
-    typename Builder::prim_data data(first, last);
+    auto root = builder.init(first, last);
 
     // Preallocate memory
     // Guess number of nodes...
 
-    tree.clear(2 * (data.pinfos.size() / max_leaf_size));
+    auto count = std::distance(first, last);
+
+    tree.clear(2 * (count / max_leaf_size));
 
     // Build the tree
 
     // Create root node
     tree.nodes().emplace_back();
 
-    build_tree_impl
-    (
-        0, // root node index
-        tree,
-        data.pinfos,
-        data.prim_bounds,
-        data.cent_bounds,
-        0,
-        static_cast<int>(data.pinfos.size()),
-        builder,
-        max_leaf_size
-    );
-
-    // Sort primitives
-
-    permute_primitives(tree, data.pinfos, first, last, typename Tree::tag_type());
+    build_tree_impl(
+            0, // root node index
+            tree,
+            builder,
+            root,
+            first, // primitive data
+            max_leaf_size
+            );
 }
 
 
@@ -182,11 +123,14 @@ void build_tree(Tree& tree, Builder& builder, I first, I last, int max_leaf_size
 
 
 template <typename Tree, typename P>
-Tree build(P* primitives, size_t num_prims)
+Tree build(P* primitives, size_t num_prims, bool enable_spatial_splits)
 {
     Tree tree(primitives, num_prims);
 
-    detail::binned_sah_builder builder;
+    detail::sah_builder builder;
+
+    builder.enable_spatial_splits(enable_spatial_splits);
+    builder.set_alpha(1.0e-5f);
 
     detail::build_tree(tree, builder, primitives, primitives + num_prims);
 

@@ -25,14 +25,14 @@ namespace visionaray
 namespace detail
 {
 
-template <class T>
+template <typename T>
 T* pointer_cast(T* ptr)
 {
     return ptr;
 }
 
 #ifdef __CUDACC__
-template <class T>
+template <typename T>
 T* pointer_cast(thrust::device_ptr<T> const& ptr)
 {
     return thrust::raw_pointer_cast(ptr);
@@ -222,7 +222,7 @@ public:
 
     bvh_t() = default;
 
-    template <class P>
+    template <typename P>
     explicit bvh_t(P* /*prims*/, size_t count)
         : primitives_(count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
@@ -295,7 +295,7 @@ public:
 
     index_bvh_t() = default;
 
-    template <class P>
+    template <typename P>
     explicit index_bvh_t(P* prims, size_t count)
         : primitives_(prims, prims + count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
@@ -373,8 +373,8 @@ template <typename P> using device_index_bvh    = index_bvh_t<thrust::device_vec
 //
 //
 
-template <typename BvhType, typename P>
-BvhType build(P* primitives, size_t num_prims);
+template <typename Tree, typename P>
+Tree build(P* primitives, size_t num_prims, bool use_spatial_splits = false);
 
 template <typename T, typename B>
 VSNRAY_FUNC

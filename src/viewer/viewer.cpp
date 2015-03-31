@@ -91,9 +91,9 @@ struct renderer
     using normal_type       = model::normal_list::value_type;
     using material_type     = model::mat_list::value_type;
 
-    using host_bvh_type     = bvh<primitive_type>;
+    using host_bvh_type     = index_bvh<primitive_type>;
 #ifdef __CUDACC__
-    using device_bvh_type   = device_bvh<primitive_type>;
+    using device_bvh_type   = device_index_bvh<primitive_type>;
 #endif
 
     renderer()

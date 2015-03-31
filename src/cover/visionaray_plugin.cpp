@@ -62,7 +62,7 @@ using material_list     = aligned_vector<plastic<float>>;
 using texture_list      = aligned_vector<texture<vector<3, unorm<8>>, ElementType, 2>>;
 
 using host_ray_type     = basic_ray<simd::float4>;
-using host_bvh_type     = bvh<triangle_type>;
+using host_bvh_type     = index_bvh<triangle_type>;
 using host_sched_type   = tiled_sched<host_ray_type>;
 
 
