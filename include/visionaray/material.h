@@ -290,11 +290,11 @@ private:
         return diffuse_brdf_.f(sr.normal, wo, wi);
     }
 
-    template <typename L, typename C, typename VecT>
+    template <typename L, typename C, typename S>
     VSNRAY_FUNC
-    VecT cd(shade_record<L, C, typename VecT::value_type> const& sr, VecT const& wo, VecT const& wi) const
+    vector<3, S> cd(shade_record<L, C, S> const& sr, vector<3, S> const& wo, vector<3, S> const& wi) const
     {
-        return VecT(sr.cd) * diffuse_brdf_.f(sr.normal, wo, wi);
+        return vector<3, S>(sr.cd) * diffuse_brdf_.f(sr.normal, wo, wi);
     }
 
 };
