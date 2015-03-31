@@ -43,10 +43,12 @@ public:
 
     MATH_FUNC vec_type center() const;
     MATH_FUNC vec_type size() const;
+    MATH_FUNC vec_type safe_size() const;
 
     MATH_FUNC void invalidate();
 
     MATH_FUNC bool invalid() const;
+    MATH_FUNC bool valid() const;
 
     MATH_FUNC bool empty() const;
 

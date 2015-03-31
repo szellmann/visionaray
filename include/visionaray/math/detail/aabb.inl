@@ -58,6 +58,19 @@ inline typename basic_aabb<T>::vec_type basic_aabb<T>::size() const
 
 template <typename T>
 MATH_FUNC
+inline typename basic_aabb<T>::vec_type basic_aabb<T>::safe_size() const
+{
+    auto s = max - min;
+
+    s.x = visionaray::max(T(0.0), s.x);
+    s.y = visionaray::max(T(0.0), s.y);
+    s.z = visionaray::max(T(0.0), s.z);
+
+    return s;
+}
+
+template <typename T>
+MATH_FUNC
 inline void basic_aabb<T>::invalidate()
 {
     min = vec_type(numeric_limits<T>::max());
@@ -69,6 +82,13 @@ MATH_FUNC
 inline bool basic_aabb<T>::invalid() const
 {
     return min.x > max.x || min.y > max.y || min.z > max.z;
+}
+
+template <typename T>
+MATH_FUNC
+inline bool basic_aabb<T>::valid() const
+{
+    return min.x <= max.x && min.y <= max.y && min.z <= max.z;
 }
 
 template <typename T>
@@ -165,9 +185,24 @@ T half_surface_area(basic_aabb<T> const& box)
 
 template <typename T>
 MATH_FUNC
+T safe_half_surface_area(basic_aabb<T> const& box)
+{
+    auto s = box.safe_size();
+    return s.x * s.y + s.y * s.z + s.z * s.x;
+}
+
+template <typename T>
+MATH_FUNC
 T surface_area(basic_aabb<T> const& box)
 {
     return 2 * half_surface_area(box);
+}
+
+template <typename T>
+MATH_FUNC
+T safe_surface_area(basic_aabb<T> const& box)
+{
+    return 2 * safe_half_surface_area(box);
 }
 
 template <typename T>
@@ -184,9 +219,10 @@ T overlap_ratio_union(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 {
     auto I = intersect(lhs, rhs);
 
-    if (I.invalid())
+    if (I.empty())
     {
-        return 0.0f; // bounding boxes do not overlap.
+        // bounding boxes do not overlap.
+        return 0.0f;
     }
 
     return volume(I) / volume(combine(lhs, rhs));
@@ -198,14 +234,16 @@ T overlap_ratio_min(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 {
     auto I = intersect(lhs, rhs);
 
-    if (I.invalid())
-    {
-        return 0.0f; // bounding boxes do not overlap.
-    }
-
     if (lhs.empty() || rhs.empty())
     {
-        return 1.0f;
+        // an empty bounding box never overlaps another bounding box
+        return 0.0f;
+    }
+
+    if (I.empty())
+    {
+        // bounding boxes do not overlap.
+        return 0.0f;
     }
 
     return volume(I) / min(volume(lhs), volume(rhs));
