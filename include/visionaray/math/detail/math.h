@@ -155,11 +155,11 @@ inline T saturate(T const& x)
     return max(T(0.0), min(x, T(1.0)));
 }
 
-template <typename T>
+template <typename T, typename S>
 MATH_FUNC
-inline T lerp(T a, T b, T x)
+inline T lerp(T const& a, T const& b, S const& x)
 {
-    return a + x * (b - a);
+    return (S(1.0f) - x) * a + x * b;
 }
 
 template <typename T>

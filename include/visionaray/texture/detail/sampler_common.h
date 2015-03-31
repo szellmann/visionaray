@@ -15,13 +15,6 @@ namespace visionaray
 {
 
 
-template <typename T, typename FloatT>
-inline T lerp(T a, T b, FloatT x)
-{
-    return a + x * (b - a);
-}
-
-
 namespace detail
 {
 
