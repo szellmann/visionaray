@@ -414,7 +414,11 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
     using S = typename R::scalar_type;
 
     auto gen                            = sampler_gen<sampler, S>();
-    static VSNRAY_THREAD_LOCAL auto s   =  gen();
+#if defined(__CUDACC__)
+    auto s                              = gen();
+#else
+    static VSNRAY_THREAD_LOCAL auto s   = gen();
+#endif
     auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
     auto color                          = kernel(r, s);
     color_access::store(x, y, viewport, color, color_buffer);
@@ -434,7 +438,11 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
     using Vec4  = vector<4, S>;
 
     auto gen                            = sampler_gen<sampler, S>(tic());
+#if defined(__CUDACC__)
+    auto s                              = gen();
+#else
     static VSNRAY_THREAD_LOCAL auto s   = gen();
+#endif
     auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
     auto color                          = kernel(r, s);
     auto alpha                          = S(1.0) / S(frame);
@@ -460,7 +468,11 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame_begin, unsigned 
     using Vec4  = vector<4, S>;
 
     auto gen                            = sampler_gen<sampler, S>(tic());
+#if defined(__CUDACC__)
+    auto s                              = gen();
+#else
     static VSNRAY_THREAD_LOCAL auto s   = gen();
+#endif
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
