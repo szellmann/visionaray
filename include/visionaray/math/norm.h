@@ -6,6 +6,8 @@
 #ifndef VSNRAY_NORM_H
 #define VSNRAY_NORM_H
 
+#include <cstdint>
+
 namespace visionaray
 {
 namespace detail

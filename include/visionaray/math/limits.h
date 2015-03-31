@@ -19,10 +19,10 @@ class numeric_limits
 {
 public:
 
-    static constexpr T min();
-    static constexpr T lowest();
-    static constexpr T max();
-    static constexpr T epsilon();
+    static T min();
+    static T lowest();
+    static T max();
+    static T epsilon();
 
 };
 
@@ -36,9 +36,9 @@ class numeric_limits<int>
 {
 public:
 
-    MATH_FUNC static constexpr int min();
-    MATH_FUNC static constexpr int lowest();
-    MATH_FUNC static constexpr int max();
+    MATH_FUNC static int min();
+    MATH_FUNC static int lowest();
+    MATH_FUNC static int max();
 
 };
 
@@ -47,9 +47,9 @@ class numeric_limits<unsigned>
 {
 public:
 
-    MATH_FUNC static constexpr unsigned min();
-    MATH_FUNC static constexpr unsigned lowest();
-    MATH_FUNC static constexpr unsigned max();
+    MATH_FUNC static unsigned min();
+    MATH_FUNC static unsigned lowest();
+    MATH_FUNC static unsigned max();
 
 };
 
@@ -58,10 +58,10 @@ class numeric_limits<float>
 {
 public:
 
-    MATH_FUNC static constexpr float min();
-    MATH_FUNC static constexpr float lowest();
-    MATH_FUNC static constexpr float max();
-    MATH_FUNC static constexpr float epsilon();
+    MATH_FUNC static float min();
+    MATH_FUNC static float lowest();
+    MATH_FUNC static float max();
+    MATH_FUNC static float epsilon();
 
 };
 
@@ -70,10 +70,10 @@ class numeric_limits<double>
 {
 public:
 
-    MATH_FUNC static constexpr double min();
-    MATH_FUNC static constexpr double lowest();
-    MATH_FUNC static constexpr double max();
-    MATH_FUNC static constexpr double epsilon();
+    MATH_FUNC static double min();
+    MATH_FUNC static double lowest();
+    MATH_FUNC static double max();
+    MATH_FUNC static double epsilon();
 
 };
 

@@ -13,25 +13,25 @@ namespace MATH_NAMESPACE
 //
 
 template <typename T>
-constexpr T numeric_limits<T>::min()
+inline T numeric_limits<T>::min()
 {
     return std::numeric_limits<T>::min();
 }
 
 template <typename T>
-constexpr T numeric_limits<T>::lowest()
+inline T numeric_limits<T>::lowest()
 {
     return std::numeric_limits<T>::lowest();
 }
 
 template <typename T>
-constexpr T numeric_limits<T>::max()
+inline T numeric_limits<T>::max()
 {
     return std::numeric_limits<T>::max();
 }
 
 template <typename T>
-constexpr T numeric_limits<T>::epsilon()
+inline T numeric_limits<T>::epsilon()
 {
     return std::numeric_limits<T>::epsilon();
 }
@@ -41,17 +41,17 @@ constexpr T numeric_limits<T>::epsilon()
 // int limits
 //
 
-MATH_FUNC constexpr int numeric_limits<int>::min()
+MATH_FUNC inline int numeric_limits<int>::min()
 {
     return INT_MIN;
 }
 
-MATH_FUNC constexpr int numeric_limits<int>::lowest()
+MATH_FUNC inline int numeric_limits<int>::lowest()
 {
     return INT_MIN;
 }
 
-MATH_FUNC constexpr int numeric_limits<int>::max()
+MATH_FUNC inline int numeric_limits<int>::max()
 {
     return INT_MAX;
 }
@@ -61,17 +61,17 @@ MATH_FUNC constexpr int numeric_limits<int>::max()
 // unsigned int limits
 //
 
-MATH_FUNC constexpr unsigned numeric_limits<unsigned>::min()
+MATH_FUNC inline unsigned numeric_limits<unsigned>::min()
 {
     return 0;
 }
 
-MATH_FUNC constexpr unsigned numeric_limits<unsigned>::lowest()
+MATH_FUNC inline unsigned numeric_limits<unsigned>::lowest()
 {
     return 0;
 }
 
-MATH_FUNC constexpr unsigned numeric_limits<unsigned>::max()
+MATH_FUNC inline unsigned numeric_limits<unsigned>::max()
 {
     return UINT_MAX;
 }
@@ -81,22 +81,22 @@ MATH_FUNC constexpr unsigned numeric_limits<unsigned>::max()
 // float limits
 //
 
-MATH_FUNC constexpr float numeric_limits<float>::min()
+MATH_FUNC inline float numeric_limits<float>::min()
 {
     return FLT_MIN;
 }
 
-MATH_FUNC constexpr float numeric_limits<float>::lowest()
+MATH_FUNC inline float numeric_limits<float>::lowest()
 {
     return -FLT_MAX;
 }
 
-MATH_FUNC constexpr float numeric_limits<float>::max()
+MATH_FUNC inline float numeric_limits<float>::max()
 {
     return FLT_MAX;
 }
 
-MATH_FUNC constexpr float numeric_limits<float>::epsilon()
+MATH_FUNC inline float numeric_limits<float>::epsilon()
 {
     return FLT_EPSILON;
 }
@@ -106,22 +106,22 @@ MATH_FUNC constexpr float numeric_limits<float>::epsilon()
 // double limits
 //
 
-MATH_FUNC constexpr double numeric_limits<double>::min()
+MATH_FUNC inline double numeric_limits<double>::min()
 {
     return DBL_MIN;
 }
 
-MATH_FUNC constexpr double numeric_limits<double>::lowest()
+MATH_FUNC inline double numeric_limits<double>::lowest()
 {
     return -DBL_MAX;
 }
 
-MATH_FUNC constexpr double numeric_limits<double>::max()
+MATH_FUNC inline double numeric_limits<double>::max()
 {
     return DBL_MAX;
 }
 
-MATH_FUNC constexpr double numeric_limits<double>::epsilon()
+MATH_FUNC inline double numeric_limits<double>::epsilon()
 {
     return DBL_EPSILON;
 }
