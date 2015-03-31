@@ -56,6 +56,16 @@
   T& operator=(T const& rhs);
 
 
+/*! mark variables thread-local
+ */
+
+#if VSNRAY_CXX_MSVC
+#define VSNRAY_THREAD_LOCAL __declspec(thread)
+#elif VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
+#define VSNRAY_THREAD_LOCAL __thread
+#else
+#define VSNRAY_THREAD_LOCAL
+#endif
 
 /*! Verbose way to say that a parameter is not used intentionally
  */

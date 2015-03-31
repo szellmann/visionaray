@@ -161,5 +161,3 @@ vector<3, T> sample_hemisphere(T e, S& sampler)
 } // visionaray
 
 #endif // VSNRAY_DETAIL_MC_H
-
-

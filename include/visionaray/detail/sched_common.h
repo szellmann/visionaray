@@ -411,12 +411,12 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
 {
     VSNRAY_UNUSED(frame);
 
-    typedef typename R::scalar_type scalar_type;
+    using S = typename R::scalar_type;
 
-    auto gen    = sampler_gen<sampler, scalar_type>();
-    auto s      = gen();
-    auto r = jittered_ray_gen<R>(x, y, s, viewport, args...);
-    auto color = kernel(r, s);
+    auto gen                            = sampler_gen<sampler, S>();
+    static VSNRAY_THREAD_LOCAL auto s   =  gen();
+    auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
+    auto color                          = kernel(r, s);
     color_access::store(x, y, viewport, color, color_buffer);
 }
 
@@ -430,20 +430,20 @@ VSNRAY_FUNC
 inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewport,
     C* color_buffer, K kernel, pixel_sampler::jittered_blend_type, Args const&... args)
 {
-    typedef typename R::scalar_type     scalar_type;
-    typedef vector<4, scalar_type>      vec4_type;
+    using S     = typename R::scalar_type;
+    using Vec4  = vector<4, S>;
 
-    auto gen    = sampler_gen<sampler, scalar_type>(tic());
-    auto s      = gen();
-    auto r = jittered_ray_gen<R>(x, y, s, viewport, args...);
-    auto color = kernel(r, s);
-    auto alpha = scalar_type(1.0) / scalar_type(frame);
+    auto gen                            = sampler_gen<sampler, S>(tic());
+    static VSNRAY_THREAD_LOCAL auto s   = gen();
+    auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
+    auto color                          = kernel(r, s);
+    auto alpha                          = S(1.0) / S(frame);
     if (frame <= 1)
     {//TODO: clear method in render target?
-        color_access::store(x, y, viewport, vec4_type(0.0, 0.0, 0.0, 0.0), color_buffer);
+        color_access::store(x, y, viewport, Vec4(0.0, 0.0, 0.0, 0.0), color_buffer);
     }
     color_access::blend(x, y, viewport, color, color_buffer,
-        alpha, scalar_type(1.0) - alpha);
+        alpha, S(1.0) - alpha);
 }
 
 
@@ -456,24 +456,24 @@ VSNRAY_FUNC
 inline void sample_pixel(unsigned x, unsigned y, unsigned frame_begin, unsigned frame_end, V const& viewport,
     C* color_buffer, K kernel, pixel_sampler::jittered_blend_type, Args const&... args)
 {
-    typedef typename R::scalar_type     scalar_type;
-    typedef vector<4, scalar_type>      vec4_type;
+    using S     = typename R::scalar_type;
+    using Vec4  = vector<4, S>;
 
-    auto gen = sampler_gen<sampler, scalar_type>(tic());
-    auto s   = gen();
+    auto gen                            = sampler_gen<sampler, S>(tic());
+    static VSNRAY_THREAD_LOCAL auto s   = gen();
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
         if (frame <= 1)
         {//TODO: clear method in render target?
-            color_access::store(x, y, viewport, vec4_type(0.0, 0.0, 0.0, 0.0), color_buffer);
+            color_access::store(x, y, viewport, Vec4(0.0, 0.0, 0.0, 0.0), color_buffer);
         }
         auto r     = jittered_ray_gen<R>(x, y, s, viewport, args...);
         auto src   = kernel(r, s);
-        vec4_type dst;
+        Vec4 dst;
         color_access::get(x, y, viewport, dst, color_buffer);
-        auto alpha = scalar_type(1.0) / scalar_type(frame);
-        dst = dst * scalar_type(1 - alpha) + src * scalar_type(alpha);
+        auto alpha = S(1.0) / S(frame);
+        dst = dst * S(1 - alpha) + src * S(alpha);
         color_access::store(x, y, viewport, dst, color_buffer);
     }
 }
