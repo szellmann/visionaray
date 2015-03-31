@@ -25,7 +25,6 @@ function(visionaray_use_package name)
         endif()
     endif()
 
-message(${pkg_INCDIRS})
     include_directories(SYSTEM ${pkg_INCDIRS})
 
     #
