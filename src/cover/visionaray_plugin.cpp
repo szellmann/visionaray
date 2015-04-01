@@ -885,7 +885,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
     aligned_vector<point_light<float>> lights;
 
-    auto add_light = [&](vec4 lpos, vec4 ldiff)
+    auto add_light = [&](vec4 lpos, vec4 ldiff, float const_att, float linear_att, float quad_att)
     {
         // map OpenGL [-1,1] to Visionaray [0,1]
         ldiff += 1.0f;
@@ -895,6 +895,10 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         light.set_position( lpos.xyz() );
         light.set_cl( ldiff.xyz() );
         light.set_kl( ldiff.w );
+
+        light.set_constant_attenuation(const_att);
+        light.set_linear_attenuation(linear_att);
+        light.set_quadratic_attenuation(quad_att);
 
         lights.push_back(light);
     };
@@ -912,7 +916,13 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         auto hlpos  = inverse(impl_->view_matrix) * vec4(osg_cast(headlight->getPosition()).xyz(), 1.0f);
         auto hldiff = osg_cast(headlight->getDiffuse());
 
-        add_light(hlpos, hldiff);
+        add_light(
+                hlpos,
+                hldiff,
+                headlight->getConstantAttenuation(),
+                headlight->getLinearAttenuation(),
+                headlight->getQuadraticAttenuation()
+            );
     }
 
     auto cover_lights = opencover::coVRLighting::instance()->lightList;
@@ -931,7 +941,13 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
             auto lpos  = osg_cast(l->getPosition());
             auto ldiff = osg_cast(l->getDiffuse());
 
-            add_light(lpos, ldiff);
+            add_light(
+                    lpos,
+                    ldiff,
+                    l->getConstantAttenuation(),
+                    l->getLinearAttenuation(),
+                    l->getQuadraticAttenuation()
+                );
         }
     }
 
