@@ -36,23 +36,15 @@ next:
         // while node does not contain primitives
         //     traverse to the next node
 
-#ifdef __CUDA_ARCH__
-        bool search_leaf = true;
-#endif
         for (;;)
         {
             auto const& node = b.node(addr);
 
             if (is_leaf(node))
             {
-#ifdef __CUDA_ARCH__
-                search_leaf = false;
-#else
                 break;
-#endif
             }
-            else
-            {
+
             auto children = &b.node(node.first_child);
 
             auto hr1 = intersect(ray, children[0].bbox, inv_dir);
@@ -79,14 +71,6 @@ next:
             {
                 goto next;
             }
-            }
-
-#ifdef __CUDA_ARCH__
-            if (!__any(search_leaf))
-            {
-                break;
-            }
-#endif
         }
 
 
