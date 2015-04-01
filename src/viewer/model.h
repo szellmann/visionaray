@@ -21,7 +21,7 @@ public:
     using triangle_list     = aligned_vector<basic_triangle<3, float>>;
     using normal_list       = aligned_vector<vector<3, float>>;
     using tex_coord_list    = aligned_vector<vector<2, float>>;
-    using mat_list          = aligned_vector<phong<float>>;
+    using mat_list          = aligned_vector<plastic<float>>;
     using tex_list          = aligned_vector<texture<vector<3, unorm<8>>, ElementType, 2>>;
 
 public:

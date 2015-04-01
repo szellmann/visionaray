@@ -53,7 +53,7 @@ public:
 };
 
 template <typename T>
-class specular
+class phong
 {
 public:
 

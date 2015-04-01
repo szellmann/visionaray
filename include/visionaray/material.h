@@ -154,11 +154,11 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
-// Phong material
+// Plastic material
 //
 
 template <typename T>
-class phong
+class plastic
 {
 public:
 
@@ -281,7 +281,7 @@ private:
     color_type      ca_;
     scalar_type     ka_;
     lambertian<T>   diffuse_brdf_;
-    specular<T>     specular_brdf_;
+    phong<T>        specular_brdf_;
 
     template <typename SR, typename VecT>
     VSNRAY_FUNC
@@ -308,7 +308,7 @@ namespace detail
 {
 static unsigned const EmissiveMaterial  = 0x00;
 static unsigned const MatteMaterial     = 0x01;
-static unsigned const PhongMaterial     = 0x02;
+static unsigned const PlasticMaterial   = 0x02;
 } // detail
 
 
@@ -335,9 +335,9 @@ struct generic_mat
     {
     }
 
-    /* implicit */ generic_mat(phong<T> const& p)
-        : type_(detail::PhongMaterial)
-        , phong_mat(p)
+    /* implicit */ generic_mat(plastic<T> const& p)
+        : type_(detail::PlasticMaterial)
+        , plastic_mat(p)
     {
     }
 
@@ -353,10 +353,10 @@ struct generic_mat
         matte_mat = m;
     }
 
-    void operator=(phong<T> const& p)
+    void operator=(plastic<T> const& p)
     {
-        type_ = detail::PhongMaterial;
-        phong_mat = p;
+        type_ = detail::PlasticMaterial;
+        plastic_mat = p;
     }
 
     VSNRAY_FUNC
@@ -377,8 +377,8 @@ struct generic_mat
         case detail::MatteMaterial:
             return matte_mat.shade(sr);
 
-        case detail::PhongMaterial:
-            return phong_mat.shade(sr);
+        case detail::PlasticMaterial:
+            return plastic_mat.shade(sr);
         }
 
         VSNRAY_UNREACHABLE();
@@ -396,8 +396,8 @@ struct generic_mat
         case detail::MatteMaterial:
             return matte_mat.sample(shade_rec, refl_dir, pdf, sampler);
 
-        case detail::PhongMaterial:
-            return phong_mat.sample(shade_rec, refl_dir, pdf, sampler);
+        case detail::PlasticMaterial:
+            return plastic_mat.sample(shade_rec, refl_dir, pdf, sampler);
         }
 
         VSNRAY_UNREACHABLE();
@@ -408,7 +408,7 @@ struct generic_mat
     {
         emissive<T>     emissive_mat;
         matte<T>        matte_mat;
-        phong<T>        phong_mat;
+        plastic<T>      plastic_mat;
     };
 };
 

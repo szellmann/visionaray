@@ -10,13 +10,13 @@ namespace simd
 // Functions to pack four materials into a single SIMD material
 //
 
-inline phong<float4> pack
+inline plastic<float4> pack
 (
-    phong<float> const& m1, phong<float> const& m2,
-    phong<float> const& m3, phong<float> const& m4
+    plastic<float> const& m1, plastic<float> const& m2,
+    plastic<float> const& m3, plastic<float> const& m4
 )
 {
-    phong<float4> result;
+    plastic<float4> result;
 
     result.set_ca( pack(m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca()) );
     result.set_cd( pack(m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd()) );
@@ -59,10 +59,10 @@ inline generic_mat<float4> pack
 // Functions to pack eight materials into a single SIMD material
 //
 
-inline phong<float8> pack
+inline plastic<float8> pack
 (
-    phong<float> const& m1, phong<float> const& m2, phong<float> const& m3, phong<float> const& m4,
-    phong<float> const& m5, phong<float> const& m6, phong<float> const& m7, phong<float> const& m8
+    plastic<float> const& m1, plastic<float> const& m2, plastic<float> const& m3, plastic<float> const& m4,
+    plastic<float> const& m5, plastic<float> const& m6, plastic<float> const& m7, plastic<float> const& m8
 )
 {
     vector<3, float> ca[8]          = { m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca(),
@@ -80,7 +80,7 @@ inline phong<float8> pack
     VSNRAY_ALIGN(32) float exp[8]   = { m1.get_specular_exp(), m2.get_specular_exp(), m3.get_specular_exp(), m4.get_specular_exp(),
                                         m5.get_specular_exp(), m6.get_specular_exp(), m7.get_specular_exp(), m8.get_specular_exp() };
 
-    phong<float8> result;
+    plastic<float8> result;
     result.set_ca
     (
         vector<3, float8>

@@ -332,7 +332,7 @@ void load_obj(std::string const& filename, model& mod)
             auto mat_it = matlib.find(std::string(mtl_name));
             if (mat_it != matlib.end())
             {
-                phong<float> mat;
+                plastic<float> mat;
                 mat.set_ca( mat_it->second.ka );
                 mat.set_cd( mat_it->second.kd );
                 mat.set_cs( mat_it->second.ks );
@@ -406,7 +406,7 @@ void load_obj(std::string const& filename, model& mod)
     {
         for (size_t i = 0; i <= geom_id; ++i)
         {
-            phong<float> m;
+            plastic<float> m;
             m.set_ca( vec3(0.2f, 0.2f, 0.2f) );
             m.set_cd( vec3(0.8f, 0.8f, 0.8f) );
             m.set_cs( vec3(0.1f, 0.1f, 0.1f) );

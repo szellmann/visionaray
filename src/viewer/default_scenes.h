@@ -23,10 +23,10 @@ namespace detail
 typedef aligned_vector<generic_prim>                generic_prim_list;
 typedef aligned_vector<basic_triangle<3, float>>    triangle_list;
 typedef aligned_vector<vector<3, float>>            normal_list;
-typedef aligned_vector<phong<float>>                phong_mat_list;
+typedef aligned_vector<plastic<float>>              plastic_mat_list;
 
-typedef std::tuple<generic_prim_list, normal_list, phong_mat_list, aabb> generic_prim_scene;
-typedef std::tuple<triangle_list, normal_list, phong_mat_list, aabb> triangle_scene;
+typedef std::tuple<generic_prim_list, normal_list, plastic_mat_list, aabb> generic_prim_scene;
+typedef std::tuple<triangle_list, normal_list, plastic_mat_list, aabb> triangle_scene;
 
 
 generic_prim_scene default_generic_prim_scene()
@@ -38,7 +38,7 @@ generic_prim_scene default_generic_prim_scene()
 
     generic_prim_list primitives(N);
     normal_list normals(N);
-    phong_mat_list materials(4);
+    plastic_mat_list materials(4);
 
     triangle_type triangles[N];
     triangles[ 0].v1 = vec3(-1, -1,  1);
@@ -138,7 +138,7 @@ generic_prim_scene default_generic_prim_scene()
 
     for (size_t i = 0; i < 4; ++i)
     {
-        phong<float> m;
+        plastic<float> m;
         if (i == 0)
         {
             m.set_cd( vec3(0.0f, 1.0f, 1.0f) );
@@ -170,7 +170,7 @@ triangle_scene default_triangle_scene()
 
     triangle_list triangles(N);
     normal_list normals(N);
-    phong_mat_list materials(N);
+    plastic_mat_list materials(N);
 
     triangles[ 0].v1 = vec3(-1, -1,  1);
     triangles[ 0].e1 = vec3( 1, -1,  1) - triangles[ 0].v1;
@@ -246,5 +246,3 @@ triangle_scene default_triangle_scene()
 } // visionaray
 
 #endif // VSNRAY_VIEWER_DEFAULT_SCENE_H
-
-

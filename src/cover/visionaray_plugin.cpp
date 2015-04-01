@@ -58,7 +58,7 @@ using triangle_type     = basic_triangle<3, float>;
 using triangle_list     = aligned_vector<triangle_type>;
 using normal_list       = aligned_vector<vec3>;
 using tex_coord_list    = aligned_vector<vec2>;
-using material_list     = aligned_vector<phong<float>>;
+using material_list     = aligned_vector<plastic<float>>;
 using texture_list      = aligned_vector<texture<vector<3, unorm<8>>, ElementType, 2>>;
 
 using host_ray_type     = basic_ray<simd::float4>;
@@ -307,7 +307,7 @@ public:
                 auto cd = mat->getDiffuse(osg::Material::Face::FRONT);
                 auto cs = mat->getSpecular(osg::Material::Face::FRONT);
 
-                phong<float> vsnray_mat;
+                plastic<float> vsnray_mat;
                 vsnray_mat.set_ca( osg_cast(ca).xyz() );
                 vsnray_mat.set_cd( osg_cast(cd).xyz() );
                 vsnray_mat.set_cs( osg_cast(cs).xyz() );
@@ -857,7 +857,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
         if (impl_->materials.size() == 0)
         {
-            phong<float> m;
+            plastic<float> m;
             m.set_ca( vec3(0.2f, 0.2f, 0.2f) );
             m.set_cd( vec3(0.8f, 0.8f, 0.8f) );
             m.set_cs( vec3(0.1f, 0.1f, 0.1f) );
