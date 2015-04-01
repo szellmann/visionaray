@@ -63,7 +63,7 @@ struct kernel
                 sr.light        = it;
                 auto clr        = surf.shade(sr);
 
-                shaded_clr += select( hit_rec.hit, C(clr, S(1.0)), C(0.0) );
+                shaded_clr += select( active_rays, C(clr, S(1.0)), C(0.0) );
             }
 
             color += select( hit_rec.hit, shaded_clr, no_hit_color ) * mirror;
