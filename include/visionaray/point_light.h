@@ -35,6 +35,24 @@ public:
         return position_;
     }
 
+    VSNRAY_FUNC
+    T constant_attenuation() const
+    {
+        return constant_attenuation_;
+    }
+
+    VSNRAY_FUNC
+    T linear_attenuation() const
+    {
+        return linear_attenuation_;
+    }
+
+    VSNRAY_FUNC
+    T quadratic_attenuation() const
+    {
+        return quadratic_attenuation_;
+    }
+
     void set_cl(color_type const& cl)
     {
         cl_ = cl;
@@ -50,12 +68,30 @@ public:
         position_ = pos;
     }
 
+    void set_constant_attenuation(T att)
+    {
+        constant_attenuation_ = att;
+    }
+
+    void set_linear_attenuation(T att)
+    {
+        linear_attenuation_ = att;
+    }
+
+    void set_quadratic_attenuation(T att)
+    {
+        quadratic_attenuation_ = att;
+    }
+
 private:
 
     color_type  cl_;
     scalar_type kl_;
     vec_type    position_;
 
+    T constant_attenuation_     = T(1.0);
+    T linear_attenuation_       = T(0.0);
+    T quadratic_attenuation_    = T(0.0);
 };
 
 } // visionaray

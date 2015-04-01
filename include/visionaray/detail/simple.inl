@@ -43,6 +43,7 @@ struct kernel
             {
                 auto sr         = make_shade_record<Params, S>();
                 sr.active       = hit_rec.hit;
+                sr.isect_pos    = hit_rec.isect_pos;
                 sr.view_dir     = -ray.dir;
                 sr.light_dir    = normalize( V(it->position()) - hit_rec.isect_pos );
                 sr.light        = it;

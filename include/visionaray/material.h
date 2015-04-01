@@ -188,7 +188,18 @@ public:
 #endif
         auto ndotl = max( U(0.0), dot(n, wi) );
 
-        return constants::pi<U>() * ( cd(sr, wo, wi) + specular_brdf_.f(sr.normal, wo, wi) ) * V(l.color()) * V(ndotl);
+        U att(1.0);
+
+#if 1 // use attenuation
+        auto dist = length(V(l.position()) - sr.isect_pos);
+        att = U(
+                1.0 / (l.constant_attenuation()
+                     + l.linear_attenuation() * dist
+                     + l.quadratic_attenuation() * dist * dist)
+            );
+#endif
+
+        return constants::pi<U>() * ( cd(sr, wo, wi) + specular_brdf_.f(sr.normal, wo, wi) ) * att * V(l.color()) * V(ndotl);
     }
 
     template <typename SR, typename U, typename S /* sampler */>

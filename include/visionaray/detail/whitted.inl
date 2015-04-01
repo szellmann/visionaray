@@ -57,6 +57,7 @@ struct kernel
 
                 auto sr         = make_shade_record<Params, S>();
                 sr.active       = active_rays;
+                sr.isect_pos    = hit_rec.isect_pos;
                 sr.view_dir     = -ray.dir;
                 sr.light_dir    = light_dir;
                 sr.light        = it;
