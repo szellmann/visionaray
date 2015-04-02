@@ -868,7 +868,11 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
             impl_->materials.push_back(m);
         }
 
-        impl_->host_bvh = build<host_bvh_type>(impl_->triangles.data(), impl_->triangles.size());
+        impl_->host_bvh = build<host_bvh_type>(
+                impl_->triangles.data(),
+                impl_->triangles.size(),
+                impl_->state.data_var == impl::Static /* consider spatial splits if scene is static */
+                );
         impl_->outlines.init(impl_->host_bvh);
     }
 
