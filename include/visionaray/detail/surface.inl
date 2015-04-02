@@ -72,7 +72,6 @@ inline TC get_tex_coord(TC const* tex_coords, HR const& hr)
 //
 
 template <typename TC, typename HR, typename HR4>
-VSNRAY_FUNC
 inline vector<2, simd::float4> get_tex_coord(TC const* coords, HR const& hr, HR4 const& hr4)
 {
     using S = simd::float4;
@@ -106,7 +105,6 @@ inline vector<2, simd::float4> get_tex_coord(TC const* coords, HR const& hr, HR4
 //
 
 template <typename TC>
-VSNRAY_FUNC
 inline vector<2, simd::float4> get_tex_coord(TC const* tex_coords, hit_record<simd::ray4, primitive<unsigned>> const& hr)
 {
     return get_tex_coord(tex_coords, hr, simd::unpack(hr));

@@ -449,7 +449,6 @@ public:
     }
 
     template <typename L>
-    VSNRAY_FUNC
     vector<3, simd::float4> shade(shade_record<L, simd::float4> const& sr) const
     {
         auto sr4 = simd::unpack(sr);
@@ -464,7 +463,6 @@ public:
     }
 
     template <typename L, typename S /* sampler */>
-    VSNRAY_FUNC
     vector<3, simd::float4> sample(shade_record<L, simd::float4> const& sr, vector<3, simd::float4>& refl_dir, simd::float4& pdf, S& samp)
     {
         auto sr4 = simd::unpack(sr);
