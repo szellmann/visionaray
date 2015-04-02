@@ -70,8 +70,8 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 
     using cuda_dim_t = decltype(block_size.x);
 
-    unsigned w = static_cast<cuda_dim_t>(viewport.w);
-    unsigned h = static_cast<cuda_dim_t>(viewport.h);
+    auto w = static_cast<cuda_dim_t>(viewport.w);
+    auto h = static_cast<cuda_dim_t>(viewport.h);
 
     dim3 grid_size
     (
