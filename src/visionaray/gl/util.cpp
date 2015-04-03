@@ -13,11 +13,10 @@
 #include <windows.h>
 #endif
 
-#include "GL/glew.h"
+#include <GL/glew.h>
 
+#include <visionaray/gl/util.h>
 #include <visionaray/math/math.h>
-
-#include "util.h"
 
 #include "../util.h"
 

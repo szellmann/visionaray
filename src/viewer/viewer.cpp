@@ -80,20 +80,22 @@ typedef std::vector<shared_ptr<visionaray::camera_manipulator>> manipulators;
 struct renderer
 {
 
-//  typedef       float                 scalar_type_cpu;
-    typedef simd::float4                scalar_type_cpu;
-//  typedef simd::float8                scalar_type_cpu;
-    typedef       float                 scalar_type_gpu;
-    typedef basic_ray<scalar_type_cpu>  ray_type_cpu;
-    typedef basic_ray<scalar_type_gpu>  ray_type_gpu;
+//  using scalar_type_cpu           = float;
+    using scalar_type_cpu           = simd::float4;
+//  using scalar_type_cpu           = simd::float8;
+    using scalar_type_gpu           = float;
+    using ray_type_cpu              = basic_ray<scalar_type_cpu>;
+    using ray_type_gpu              = basic_ray<scalar_type_gpu>;
 
-    using primitive_type    = model::triangle_list::value_type;
-    using normal_type       = model::normal_list::value_type;
-    using material_type     = model::mat_list::value_type;
+    using primitive_type            = model::triangle_list::value_type;
+    using normal_type               = model::normal_list::value_type;
+    using material_type             = model::mat_list::value_type;
 
-    using host_bvh_type     = index_bvh<primitive_type>;
+    using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
+    using host_bvh_type             = index_bvh<primitive_type>;
 #ifdef __CUDACC__
-    using device_bvh_type   = device_index_bvh<primitive_type>;
+    using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
+    using device_bvh_type           = device_index_bvh<primitive_type>;
 #endif
 
     renderer()
@@ -126,10 +128,10 @@ struct renderer
 #else
     tiled_sched<ray_type_cpu>   sched_cpu;
 #endif
-    cpu_buffer_rt               rt;
+    host_render_target_type     rt;
 #ifdef __CUDACC__
     cuda_sched<ray_type_gpu>    sched_gpu;
-    pixel_unpack_buffer_rt      device_rt;
+    device_render_target_type   device_rt;
 #endif
     camera                      cam;
     manipulators                manips;

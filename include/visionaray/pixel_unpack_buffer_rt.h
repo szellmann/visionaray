@@ -14,14 +14,17 @@
 namespace visionaray
 {
 
+template <pixel_format ColorFormat, pixel_format DepthFormat>
 class pixel_unpack_buffer_rt : public render_target
 {
 public:
 
-    typedef pixel_traits<PF_RGBA32F>        color_traits;
-    typedef pixel_traits<PF_UNSPECIFIED>    depth_traits;
-    typedef color_traits::type              color_type;
-    typedef depth_traits::type              depth_type;
+    using color_traits  = pixel_traits<ColorFormat>;
+    using depth_traits  = pixel_traits<DepthFormat>;
+    using color_type    = typename color_traits::type;
+    using depth_type    = typename depth_traits::type;
+
+public:
 
     pixel_unpack_buffer_rt();
    ~pixel_unpack_buffer_rt();
@@ -32,20 +35,20 @@ public:
     color_type const* color() const;
     depth_type const* depth() const;
 
+    void begin_frame();
+    void end_frame();
+    void resize(size_t w, size_t h);
+    void display_color_buffer() const;
+
 private:
 
     struct impl;
     std::unique_ptr<impl> impl_;
 
-    void begin_frame_impl();
-    void end_frame_impl();
-    void resize_impl(size_t w, size_t h);
-    void display_color_buffer_impl() const;
-
 };
 
 } // visionaray
 
+#include "detail/pixel_unpack_buffer_rt.inl"
+
 #endif // VSNRAY_PIXEL_UNPACK_BUFFER_RT
-
-

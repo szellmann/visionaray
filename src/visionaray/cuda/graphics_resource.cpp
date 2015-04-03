@@ -8,7 +8,7 @@
 #endif
 #include <cuda_gl_interop.h>
 
-#include "graphics_resource.h"
+#include <visionaray/cuda/graphics_resource.h>
 
 namespace visionaray
 {

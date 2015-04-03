@@ -24,6 +24,10 @@ set(VSNRAY_HEADERS
     # Public headers
     #
 
+    # Cuda
+
+    ${HEADER_DIR}/cuda/graphics_resource.h
+
     # Details - subject to frequent change!
 
     ${HEADER_DIR}/detail/bvh/build.inl
@@ -39,7 +43,9 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/macros.h
     ${HEADER_DIR}/detail/material.inl
     ${HEADER_DIR}/detail/pathtracing.inl
+    ${HEADER_DIR}/detail/pixel_unpack_buffer_rt.inl
     ${HEADER_DIR}/detail/platform.h
+    ${HEADER_DIR}/detail/render_target.inl
     ${HEADER_DIR}/detail/sched_common.h
     ${HEADER_DIR}/detail/semaphore.h
     ${HEADER_DIR}/detail/simple.inl
@@ -53,6 +59,11 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/traverse.h
     ${HEADER_DIR}/detail/traverse_linear.inl
     ${HEADER_DIR}/detail/whitted.inl
+
+    # OpenGL
+
+    ${HEADER_DIR}/gl/handle.h
+    ${HEADER_DIR}/gl/util.h
 
     # Math
 
@@ -134,11 +145,6 @@ set(VSNRAY_HEADERS
     # Private headers
     #
 
-    cuda/graphics_resource.h
-
-    gl/handle.h
-    gl/util.h
-
     util.h
 
 )
@@ -153,8 +159,6 @@ set(VSNRAY_SOURCES
     camera.cpp
     exception.cpp
     pixel_format.cpp
-    pixel_unpack_buffer_rt.cpp
-    render_target.cpp
     util.cpp
 
 )
@@ -164,5 +168,3 @@ add_library(visionaray
     ${VSNRAY_HEADERS}
     ${VSNRAY_SOURCES}
 )
-
-

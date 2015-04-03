@@ -123,5 +123,3 @@ GLuint create_texture();
 
 
 #endif // VSNRAY_GL_HANDLE_H
-
-

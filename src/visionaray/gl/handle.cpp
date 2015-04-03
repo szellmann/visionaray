@@ -3,8 +3,7 @@
 
 #include <GL/glew.h>
 
-
-#include "handle.h"
+#include <visionaray/gl/handle.h>
 
 namespace visionaray
 {

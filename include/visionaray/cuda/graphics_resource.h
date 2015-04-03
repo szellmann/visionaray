@@ -51,9 +51,7 @@ private:
 
 };
 
-}
-}
+} // cuda
+} // visionaray
 
 #endif // VSNRAY_CUDA_GRAPHICS_RESOURCE_H
-
-

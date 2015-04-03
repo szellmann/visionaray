@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#if defined(VSNRAY_HAVE_OPENGL) && defined(VSNRAY_HAVE_CUDA)
+#pragma once
 
 #include <stdexcept>
 
@@ -9,27 +9,24 @@
 
 #include <cuda_gl_interop.h>
 
-#include <visionaray/pixel_unpack_buffer_rt.h>
-
-#include "cuda/graphics_resource.h"
-#include "gl/handle.h"
-#include "gl/util.h"
+#include <visionaray/cuda/graphics_resource.h>
+#include <visionaray/gl/handle.h>
+#include <visionaray/gl/util.h>
 
 
 namespace visionaray
 {
 
-using color_type = pixel_unpack_buffer_rt::color_type;
-using depth_type = pixel_unpack_buffer_rt::depth_type;
-
-struct pixel_unpack_buffer_rt::impl
+template <pixel_format CF, pixel_format DF>
+struct pixel_unpack_buffer_rt<CF, DF>::impl
 {
     cuda::graphics_resource resource;
     gl::buffer              buffer;
     gl::texture             texture;
 };
 
-pixel_unpack_buffer_rt::pixel_unpack_buffer_rt()
+template <pixel_format CF, pixel_format DF>
+pixel_unpack_buffer_rt<CF, DF>::pixel_unpack_buffer_rt()
     : impl_(new impl())
 {
     cudaError_t err = cudaSuccess;
@@ -49,31 +46,37 @@ pixel_unpack_buffer_rt::pixel_unpack_buffer_rt()
     }
 }
 
-pixel_unpack_buffer_rt::~pixel_unpack_buffer_rt()
+template <pixel_format CF, pixel_format DF>
+pixel_unpack_buffer_rt<CF, DF>::~pixel_unpack_buffer_rt()
 {
 }
 
-color_type* pixel_unpack_buffer_rt::color()
+template <pixel_format CF, pixel_format DF>
+typename pixel_unpack_buffer_rt<CF, DF>::color_type* pixel_unpack_buffer_rt<CF, DF>::color()
 {
-    return static_cast<color_type*>(impl_->resource.dev_ptr());
+    return static_cast<typename pixel_unpack_buffer_rt<CF, DF>::color_type*>(impl_->resource.dev_ptr());
 }
 
-depth_type* pixel_unpack_buffer_rt::depth()
-{
-    throw std::runtime_error("not implemented yet");
-}
-
-color_type const* pixel_unpack_buffer_rt::color() const
-{
-    return static_cast<color_type const*>(impl_->resource.dev_ptr());
-}
-
-depth_type const* pixel_unpack_buffer_rt::depth() const
+template <pixel_format CF, pixel_format DF>
+typename pixel_unpack_buffer_rt<CF, DF>::depth_type* pixel_unpack_buffer_rt<CF, DF>::depth()
 {
     throw std::runtime_error("not implemented yet");
 }
 
-void pixel_unpack_buffer_rt::begin_frame_impl()
+template <pixel_format CF, pixel_format DF>
+pixel_unpack_buffer_rt<CF, DF>::color_type const* pixel_unpack_buffer_rt<CF, DF>::color() const
+{
+    return static_cast<pixel_unpack_buffer_rt<CF, DF>::color_type const*>(impl_->resource.dev_ptr());
+}
+
+template <pixel_format CF, pixel_format DF>
+pixel_unpack_buffer_rt<CF, DF>::depth_type const* pixel_unpack_buffer_rt<CF, DF>::depth() const
+{
+    throw std::runtime_error("not implemented yet");
+}
+
+template <pixel_format CF, pixel_format DF>
+void pixel_unpack_buffer_rt<CF, DF>::begin_frame()
 {
     if (impl_->resource.map() == 0)
     {
@@ -81,7 +84,8 @@ void pixel_unpack_buffer_rt::begin_frame_impl()
     }
 }
 
-void pixel_unpack_buffer_rt::end_frame_impl()
+template <pixel_format CF, pixel_format DF>
+void pixel_unpack_buffer_rt<CF, DF>::end_frame()
 {
     pixel_format_info cinfo = map_pixel_format(color_traits::format);
 
@@ -94,7 +98,8 @@ void pixel_unpack_buffer_rt::end_frame_impl()
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 }
 
-void pixel_unpack_buffer_rt::resize_impl(size_t w, size_t h)
+template <pixel_format CF, pixel_format DF>
+void pixel_unpack_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 {
     pixel_format_info cinfo = map_pixel_format(color_traits::format);
 
@@ -117,15 +122,14 @@ void pixel_unpack_buffer_rt::resize_impl(size_t w, size_t h)
 
     // register buffer object with CUDA
     impl_->resource.register_buffer(impl_->buffer.get(), cudaGraphicsRegisterFlagsWriteDiscard);
+
+    render_target::resize(w, h);
 }
 
-void pixel_unpack_buffer_rt::display_color_buffer_impl() const
+template <pixel_format CF, pixel_format DF>
+void pixel_unpack_buffer_rt<CF, DF>::display_color_buffer() const
 {
     gl::blend_texture(impl_->texture.get());
 }
 
 } // visionaray
-
-#endif // VSNRAY_HAVE_OPENGL && VSNRAY_HAVE_CUDA
-
-

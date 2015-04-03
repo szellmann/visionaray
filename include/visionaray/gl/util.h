@@ -46,5 +46,3 @@ recti viewport();
 } // visionaray
 
 #endif // VSNRAY_GL_UTIL_H
-
-

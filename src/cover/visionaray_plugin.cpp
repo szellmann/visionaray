@@ -54,16 +54,17 @@ namespace visionaray { namespace cover {
 // Type definitions
 //
 
-using triangle_type     = basic_triangle<3, float>;
-using triangle_list     = aligned_vector<triangle_type>;
-using normal_list       = aligned_vector<vec3>;
-using tex_coord_list    = aligned_vector<vec2>;
-using material_list     = aligned_vector<plastic<float>>;
-using texture_list      = aligned_vector<texture<vector<3, unorm<8>>, ElementType, 2>>;
+using triangle_type             = basic_triangle<3, float>;
+using triangle_list             = aligned_vector<triangle_type>;
+using normal_list               = aligned_vector<vec3>;
+using tex_coord_list            = aligned_vector<vec2>;
+using material_list             = aligned_vector<plastic<float>>;
+using texture_list              = aligned_vector<texture<vector<3, unorm<8>>, ElementType, 2>>;
 
-using host_ray_type     = basic_ray<simd::float4>;
-using host_bvh_type     = index_bvh<triangle_type>;
-using host_sched_type   = tiled_sched<host_ray_type>;
+using host_ray_type             = basic_ray<simd::float4>;
+using host_bvh_type             = index_bvh<triangle_type>;
+using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
+using host_sched_type           = tiled_sched<host_ray_type>;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -404,7 +405,7 @@ struct Visionaray::impl : vrui::coMenuListener
     texture_list                textures;
     host_bvh_type               host_bvh;
     host_sched_type             host_sched;
-    cpu_buffer_rt               host_rt;
+    host_render_target_type     host_rt;
 
     mat4                        view_matrix;
     mat4                        proj_matrix;
