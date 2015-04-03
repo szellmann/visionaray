@@ -49,6 +49,27 @@ public:
 
 };
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+template <>
+class result_record<simd::float8>
+{
+public:
+
+    using scalar_type = simd::float4;
+    using vec_type    = vector<3, simd::float8>;
+    using color_type  = vector<4, simd::float8>;
+
+public:
+
+    simd::mask8 hit = false;
+    color_type  color;
+    vec_type    isect_pos;
+
+};
+
+#endif
+
 } // visionaray
 
 #endif // VSNRAY_RESULT_RECORD_H
