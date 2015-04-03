@@ -9,7 +9,7 @@
 #include <ostream>
 #endif
 
-#include <visionaray/generic_prim.h>
+#include <visionaray/result_record.h>
 #include <visionaray/surface.h>
 
 #include "traverse.h"
@@ -26,20 +26,34 @@ struct kernel
     Params params;
 
     template <typename R, template <typename> class SMP>
-    VSNRAY_FUNC vector<4, typename R::scalar_type> operator()(R ray, SMP<typename R::scalar_type>& s) const
+    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(R ray, SMP<typename R::scalar_type>& s) const
     {
 
-        using C = vector<4, typename R::scalar_type>;
         using S = typename R::scalar_type;
-        using V = typename R::vec_type;
+        using C = typename result_record<S>::color_type;
+        using V = typename result_record<S>::vec_type;
+
+        result_record<S> result;
 
         /*static*/ const unsigned MaxDepth = 5;
 
         auto hit_rec        =  closest_hit(ray, params.prims.begin, params.prims.end);
         auto exited         = !hit_rec.hit;
         auto active_rays    =  hit_rec.hit;
+        result.color        = select( exited, C(params.bg_color), C(1.0) );
 
-        C result = select( exited, C(params.bg_color), C(1.0) );
+
+        if (any(hit_rec.hit))
+        {
+            result.hit = hit_rec.hit;
+            result.isect_pos = ray.ori + ray.dir * hit_rec.t;
+        }
+        else
+        {
+            result.hit = false;
+            return result;
+        }
+
 
         for (unsigned d = 0; d < MaxDepth; ++d)
         {
@@ -53,7 +67,7 @@ struct kernel
 
                 if (any(below))
                 {
-                    result = mul( result, C(0.0, 0.0, 0.0, 1.0), below, result );
+                    result.color = mul( result.color, C(0.0, 0.0, 0.0, 1.0), below, result.color );
                     active_rays = active_rays & !below;
 
                     if ( !any(active_rays) )
@@ -72,7 +86,7 @@ struct kernel
 
                 auto emissive = has_emissive_material(surf);
                 color = mul( color, dot(surf.normal, refl_dir) / pdf, !emissive, color ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
-                result = mul( result, C(color, S(1.0)), active_rays, result );
+                result.color = mul( result.color, C(color, S(1.0)), active_rays, result.color );
                 active_rays &= !emissive;
 
                 if (!any(active_rays))
@@ -90,10 +104,10 @@ struct kernel
                 active_rays &= hit_rec.hit;
             }
 
-            result = mul( result, C(params.ambient_color), exited, result );
+            result.color = mul( result.color, C(params.ambient_color), exited, result.color );
         }
 
-        result = mul( result, C(0.0, 0.0, 0.0, 1.0), active_rays, result );
+        result.color = mul( result.color, C(0.0, 0.0, 0.0, 1.0), active_rays, result.color );
 
         return result;
     }

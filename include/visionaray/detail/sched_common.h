@@ -9,6 +9,7 @@
 #include <chrono>
 
 #include <visionaray/mc.h>
+#include <visionaray/result_record.h>
 #include <visionaray/scheduler.h>
 
 #include "color_conversion.h"
@@ -169,6 +170,14 @@ struct color_access
     }
 #endif
 
+    template <typename T, typename OutputColor>
+    VSNRAY_FUNC
+    static void store(int x, int y, recti const& viewport, result_record<T> const& rr, OutputColor* buffer)
+    {
+        store(x, y, viewport, rr.color, buffer);
+    }
+
+
     template <typename InputColor, typename OutputColor>
     VSNRAY_FUNC
     static void get(int x, int y, recti const& viewport, InputColor& color, OutputColor const* buffer)
@@ -235,6 +244,13 @@ struct color_access
         dst = color * sfactor + dst * dfactor;
 
         store(x, y, viewport, dst, buffer);
+    }
+
+    template <typename S, typename OutputColor, typename T>
+    VSNRAY_FUNC
+    static void blend(int x, int y, recti const& viewport, result_record<S> const& rr, OutputColor* buffer, T sfactor, T dfactor)
+    {
+        blend(x, y, viewport, rr.color, buffer, sfactor, dfactor);
     }
 };
 

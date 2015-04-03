@@ -6,6 +6,7 @@
 #ifndef VSNRAY_SIMPLE_INL
 #define VSNRAY_SIMPLE_INL
 
+#include <visionaray/result_record.h>
 #include <visionaray/surface.h>
 
 #include "traverse.h"
@@ -23,11 +24,13 @@ struct kernel
     Params params;
 
     template <typename R>
-    VSNRAY_FUNC vector<4, typename R::scalar_type> operator()(R ray) const
+    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(R ray) const
     {
-        using C = vector<4, typename R::scalar_type>;
         using S = typename R::scalar_type;
-        using V = typename R::vec_type;
+        using C = typename result_record<S>::color_type;
+        using V = typename result_record<S>::vec_type;
+
+        result_record<S> result;
 
         auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
 
@@ -52,12 +55,16 @@ struct kernel
                 shaded_clr += select( hit_rec.hit, C(clr, S(1.0)), C(0.0) );
             }
 
-            return shaded_clr;
+            result.color     = shaded_clr;
+            result.isect_pos = hit_rec.isect_pos;
         }
         else
         {
-            return C(params.bg_color);
+            result.color = C(params.bg_color);
         }
+
+        result.hit = hit_rec.hit;
+        return result;
     }
 };
 
