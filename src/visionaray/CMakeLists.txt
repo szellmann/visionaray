@@ -112,7 +112,7 @@ set(VSNRAY_HEADERS
     # General library headers
 
     ${HEADER_DIR}/brdf.h
-    ${HEADER_DIR}/bvh
+    ${HEADER_DIR}/bvh.h
     ${HEADER_DIR}/camera.h
     ${HEADER_DIR}/exception.h
     ${HEADER_DIR}/generic_prim.h
