@@ -6,7 +6,6 @@
 #ifndef VSNRAY_GPU_BUFFER_RT_H
 #define VSNRAY_GPU_BUFFER_RT_H
 
-#include <thrust/copy.h>
 #include <thrust/device_vector.h>
 
 #include "render_target.h"
@@ -28,67 +27,18 @@ public:
 
 public:
 
-    color_type* color()
-    {
-        return thrust::raw_pointer_cast(color_buffer_.data());
-    }
+    color_type* color();
+    depth_type* depth();
 
-    depth_type* depth()
-    {
-        return thrust::raw_pointer_cast(depth_buffer_.data());
-    }
+    color_type const* color() const;
+    depth_type const* depth() const;
 
-    color_type const* color() const
-    {
-        return thrust::raw_pointer_cast(color_buffer_.data());
-    }
+    void begin_frame();
+    void end_frame();
+    void resize(size_t w, size_t h);
+    void display_color_buffer() const;
 
-    depth_type const* depth() const
-    {
-        return thrust::raw_pointer_cast(depth_buffer_.data());
-    }
-
-    void begin_frame() {}
-    void end_frame() {}
-
-    void resize(size_t w, size_t h)
-    {
-        pixel_format_info cinfo = map_pixel_format(color_traits::format);
-        color_buffer_.resize( w * h * cinfo.size );
-
-        if (depth_traits::format != PF_UNSPECIFIED)
-        {
-            pixel_format_info dinfo = map_pixel_format(depth_traits::format);
-            depth_buffer_.resize( w * h * dinfo.size );
-        }
-
-        render_target::resize(w, h);
-    }
-
-    void display_color_buffer() const
-    {
-        cpu_buffer_rt<ColorFormat, DepthFormat> rt = *this;
-        rt.display_color_buffer();
-    }
-
-    operator cpu_buffer_rt<ColorFormat, DepthFormat>() const
-    {
-        cpu_buffer_rt<ColorFormat, DepthFormat> rt;
-
-        rt.resize( width(), height() );
-
-        // TODO: make render targets templates!
-        // This won't compile if cpu_buffer_rt::XXX_traits::format
-        //      != gpu_buffer_rt::XXX_traits::format
-        thrust::copy( color_buffer_.begin(), color_buffer_.end(), rt.color() );
-
-        if (depth_traits::format != PF_UNSPECIFIED)
-        {
-            thrust::copy( depth_buffer_.begin(), depth_buffer_.end(), rt.depth() );
-        }
-
-        return rt;
-    }
+    operator cpu_buffer_rt<ColorFormat, DepthFormat>() const;
 
 private:
 

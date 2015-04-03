@@ -40,6 +40,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/compiler.h
     ${HEADER_DIR}/detail/cuda_sched.h
     ${HEADER_DIR}/detail/cuda_sched.inl
+    ${HEADER_DIR}/detail/gpu_buffer_rt.inl
     ${HEADER_DIR}/detail/macros.h
     ${HEADER_DIR}/detail/material.inl
     ${HEADER_DIR}/detail/pathtracing.inl
