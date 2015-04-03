@@ -177,8 +177,6 @@ public:
         using U = typename SR::scalar_type;
         using V = vector<3, U>;
 
-        V result(0.0, 0.0, 0.0);
-
         auto l = *sr.light;
         auto wi = sr.light_dir;
         auto wo = sr.view_dir;
