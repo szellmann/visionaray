@@ -844,7 +844,9 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
 
         impl_->triangles.clear();
         impl_->normals.clear();
+        impl_->tex_coords.clear();
         impl_->materials.clear();
+        impl_->textures.clear();
 
         get_scene_visitor visitor(impl_->triangles, impl_->normals, impl_->tex_coords, impl_->materials,
             impl_->textures, osg::NodeVisitor::TRAVERSE_ALL_CHILDREN);
