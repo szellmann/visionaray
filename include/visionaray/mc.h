@@ -22,19 +22,16 @@ namespace visionaray
 //
 
 template <typename T>
-class sampler;
-
-template <>
-class sampler<float>
+class sampler
 {
 public:
 
 #ifdef __CUDA_ARCH__
     typedef thrust::default_random_engine rand_engine;
-    typedef thrust::uniform_real_distribution<float> uniform_dist;
+    typedef thrust::uniform_real_distribution<T> uniform_dist;
 #else
     typedef std::default_random_engine rand_engine;
-    typedef std::uniform_real_distribution<float> uniform_dist;
+    typedef std::uniform_real_distribution<T> uniform_dist;
 #endif
 
     VSNRAY_FUNC sampler(unsigned seed)
@@ -43,7 +40,7 @@ public:
     {
     }
 
-    VSNRAY_FUNC float next()
+    VSNRAY_FUNC T next()
     {
         return dist_(rng_);
     }
