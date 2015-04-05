@@ -173,6 +173,8 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 
     viewport = sparams.viewport;
 
+    auto view_matrix     = matrix_type( sparams.view_matrix );
+    auto proj_matrix     = matrix_type( sparams.proj_matrix );
     auto inv_view_matrix = matrix_type( inverse(sparams.view_matrix) );
     auto inv_proj_matrix = matrix_type( inverse(sparams.proj_matrix) );
 
@@ -196,12 +198,19 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                 continue;
             }
 
-            sample_pixel<R>
-            (
-                x, y, frame_num, viewport, sparams.rt.color(),
-                kernel, typename SP::pixel_sampler_type(),
-                inv_view_matrix, inv_proj_matrix
-            );
+            sample_pixel<R>(
+                    x,
+                    y,
+                    frame_num,
+                    viewport,
+                    sparams.rt,
+                    kernel,
+                    typename SP::pixel_sampler_type(),
+                    view_matrix,
+                    inv_view_matrix,
+                    proj_matrix,
+                    inv_proj_matrix
+                    );
         }
     };
 }
@@ -249,7 +258,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, sched_params<RT, PxSampler
 
             sample_pixel<R>
             (
-                x, y, frame_num, viewport, sparams.rt.color(),
+                x, y, frame_num, viewport, sparams.rt,
                 kernel, typename SP::pixel_sampler_type(),
                 eye, cam_u, cam_v, cam_w
             );

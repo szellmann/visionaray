@@ -177,8 +177,8 @@ void gl::blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid c
     recti vp = gl::viewport();
     glWindowPos2i(vp[0], vp[1]);
 
-    GLfloat scalex = static_cast<GLfloat>(vp[2]) / static_cast<float>(w);
-    GLfloat scaley = static_cast<GLfloat>(vp[3]) / static_cast<float>(h);
+    GLfloat scalex = vp[2] / static_cast<GLfloat>(w);
+    GLfloat scaley = vp[3] / static_cast<GLfloat>(h);
 
     glPixelZoom(scalex, scaley);
 
@@ -198,5 +198,3 @@ recti gl::viewport()
 }
 
 } // visionaray
-
-

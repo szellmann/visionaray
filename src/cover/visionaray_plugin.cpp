@@ -691,21 +691,25 @@ void Visionaray::impl::call_kernel_debug(KParams const& params)
 
     if (dev_state.show_normals)
     {
-        host_sched.frame([&](R ray) -> C
+        host_sched.frame([&](R ray) -> result_record<S>
         {
+            result_record<S> result;
             auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
             auto surf = get_surface(hit_rec, params);
-            return select( hit_rec.hit, C(surf.normal, S(1.0)), C(0.0) );
+            result.color = select( hit_rec.hit, C(surf.normal, S(1.0)), C(0.0) );
+            return result;
         },
         sparams);
     }
     else if (dev_state.show_tex_coords)
     {
-        host_sched.frame([&](R ray) -> C
+        host_sched.frame([&](R ray) -> result_record<S>
         {
+            result_record<S> result;
             auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
             auto tc = get_tex_coord(params.tex_coords, hit_rec);
-            return select( hit_rec.hit, C(tc, S(1.0), S(1.0)), C(0.0) );
+            result.color = select( hit_rec.hit, C(tc, S(1.0), S(1.0)), C(0.0) );
+            return result;
         },
         sparams);
     }

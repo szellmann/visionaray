@@ -28,6 +28,7 @@ public:
 
     bool        hit = false;
     color_type  color;
+    scalar_type depth;
     vec_type    isect_pos;
 
 };
@@ -45,6 +46,7 @@ public:
 
     simd::mask4 hit = false;
     color_type  color;
+    scalar_type depth;
     vec_type    isect_pos;
 
 };
@@ -64,6 +66,7 @@ public:
 
     simd::mask8 hit = false;
     color_type  color;
+    scalar_type depth;
     vec_type    isect_pos;
 
 };

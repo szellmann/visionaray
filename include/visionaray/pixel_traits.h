@@ -25,6 +25,11 @@ struct pixel_traits<PF_UNSPECIFIED>
     typedef struct {} type;
 };
 
+
+//-------------------------------------------------------------------------------------------------
+// Color formats
+//
+
 template <>
 struct pixel_traits<PF_RGB8>
 {
@@ -51,6 +56,18 @@ struct pixel_traits<PF_RGBA32F>
 {
     static const pixel_format format = PF_RGBA32F;
     typedef vector<4, float> type;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Depth / stencil formats
+//
+
+template <>
+struct pixel_traits<PF_DEPTH32F>
+{
+    static const pixel_format format = PF_DEPTH32F;
+    typedef float type;
 };
 
 } // visionaray

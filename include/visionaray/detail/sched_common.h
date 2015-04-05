@@ -9,6 +9,7 @@
 #include <chrono>
 
 #include <visionaray/mc.h>
+#include <visionaray/pixel_format.h>
 #include <visionaray/result_record.h>
 #include <visionaray/scheduler.h>
 
@@ -104,8 +105,8 @@ struct color_access
         store(b, color.z);
         store(a, color.w);
 
-        const int w = packet_size<simd::float4>::w;
-        const int h = packet_size<simd::float4>::h;
+        auto w = packet_size<simd::float4>::w;
+        auto h = packet_size<simd::float4>::h;
 
         for (auto row = 0; row < h; ++row)
         {
@@ -134,6 +135,28 @@ struct color_access
         if ((x + 1) < viewport.w &&  y      < viewport.h) store( buffer[ y      * viewport.w + (x + 1)].data(), c.y);
         if ( x      < viewport.w && (y + 1) < viewport.h) store( buffer[(y + 1) * viewport.w +  x     ].data(), c.z);
         if ((x + 1) < viewport.w && (y + 1) < viewport.h) store( buffer[(y + 1) * viewport.w + (x + 1)].data(), c.w);
+    }
+
+    VSNRAY_CPU_FUNC
+    static void store(int x, int y, recti const& viewport, simd::float4 const& value, float* buffer)
+    {
+        VSNRAY_ALIGN(32) float v[4];
+
+        simd::store(v, value);
+
+        auto w = packet_size<simd::float4>::w;
+        auto h = packet_size<simd::float4>::h;
+
+        for (auto row = 0; row < h; ++row)
+        {
+            for (auto col = 0; col < w; ++col)
+            {
+                if (x + col < viewport.w && y + row < viewport.h)
+                {
+                    convert( buffer[(y + row) * viewport.w + (x + col)], v[row * w + col] );
+                }
+            }
+        }
     }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -175,6 +198,21 @@ struct color_access
     static void store(int x, int y, recti const& viewport, result_record<T> const& rr, OutputColor* buffer)
     {
         store(x, y, viewport, rr.color, buffer);
+    }
+
+    template <typename T, typename Color, typename Depth>
+    VSNRAY_FUNC
+    static void store(
+            int                     x,
+            int                     y,
+            recti const&            viewport,
+            result_record<T> const& rr,
+            Color*                  color_buffer,
+            Depth*                  depth_buffer
+            )
+    {
+        store(x, y, viewport, rr.color, color_buffer);
+        store(x, y, viewport, rr.depth, depth_buffer);
     }
 
 
@@ -336,13 +374,18 @@ private:
 
 template <typename R, typename T, typename V>
 VSNRAY_FUNC
-inline R ray_gen(T x, T y, V const& viewport, vector<3, T> const& eye,
-    vector<3, T> const& cam_u, vector<3, T> const& cam_v, vector<3, T> const& cam_w)
+inline R ray_gen(
+        T                   x,
+        T                   y,
+        V const&            viewport,
+        vector<3, T> const& eye,
+        vector<3, T> const& cam_u,
+        vector<3, T> const& cam_v,
+        vector<3, T> const& cam_w
+        )
 {
-    using scalar_type = T;
-
-    auto u = scalar_type(2.0) * (x + scalar_type(0.5)) / scalar_type(viewport.w) - scalar_type(1.0);
-    auto v = scalar_type(2.0) * (y + scalar_type(0.5)) / scalar_type(viewport.h) - scalar_type(1.0);
+    auto u = T(2.0) * (x + T(0.5)) / T(viewport.w) - T(1.0);
+    auto v = T(2.0) * (y + T(0.5)) / T(viewport.h) - T(1.0);
 
     R r;
     r.ori = eye;
@@ -350,19 +393,26 @@ inline R ray_gen(T x, T y, V const& viewport, vector<3, T> const& eye,
     return r;
 }
 
-template <typename R, typename Mat4, typename V>
+template <typename R, typename T, typename V>
 VSNRAY_FUNC
-inline R ray_gen(typename R::scalar_type x, typename R::scalar_type y, V const& viewport,
-    Mat4 const& inv_view_matrix, Mat4 const& inv_proj_matrix)
+inline R ray_gen(
+        T                       x,
+        T                       y,
+        V const&                viewport,
+        matrix<4, 4, T> const&  view_matrix,
+        matrix<4, 4, T> const&  inv_view_matrix,
+        matrix<4, 4, T> const&  proj_matrix,
+        matrix<4, 4, T> const&  inv_proj_matrix
+        )
 {
-    typedef typename R::scalar_type scalar_type;
-    typedef vector<4, scalar_type>  vec4_type;
+    VSNRAY_UNUSED(view_matrix);
+    VSNRAY_UNUSED(proj_matrix);
 
-    auto u = scalar_type(2.0) * (x + scalar_type(0.5)) / scalar_type(viewport.w) - scalar_type(1.0);
-    auto v = scalar_type(2.0) * (y + scalar_type(0.5)) / scalar_type(viewport.h) - scalar_type(1.0);
+    auto u = T(2.0) * (x + T(0.5)) / T(viewport.w) - T(1.0);
+    auto v = T(2.0) * (y + T(0.5)) / T(viewport.h) - T(1.0);
 
-    auto o = inv_view_matrix * ( inv_proj_matrix * vec4_type(u, v, -1,  1) );
-    auto d = inv_view_matrix * ( inv_proj_matrix * vec4_type(u, v,  1,  1) );
+    auto o = inv_view_matrix * ( inv_proj_matrix * vector<4, T>(u, v, -1,  1) );
+    auto d = inv_view_matrix * ( inv_proj_matrix * vector<4, T>(u, v,  1,  1) );
 
     R r;
     r.ori =            o.xyz() / o.w;
@@ -400,6 +450,29 @@ inline R jittered_ray_gen(unsigned x, unsigned y, S& sampler, Args const&... arg
 
 
 //-------------------------------------------------------------------------------------------------
+// Depth transform
+//
+
+template <typename T>
+VSNRAY_FUNC inline T depth_transform(
+        vector<3, T> const&     isect_pos,
+        matrix<4, 4, T> const&  view_matrix,
+        matrix<4, 4, T> const&  inv_view_matrix,
+        matrix<4, 4, T> const&  proj_matrix,
+        matrix<4, 4, T> const&  inv_proj_matrix
+        )
+{
+    VSNRAY_UNUSED(inv_view_matrix);
+    VSNRAY_UNUSED(inv_proj_matrix);
+
+    auto pos4 = proj_matrix * (view_matrix * vector<4, T>(isect_pos, T(1.0)));
+    auto pos3 = pos4.xyz() / pos4.w;
+
+    return (pos3.z + T(1.0)) * T(0.5);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Simple uniform pixel sampler
 //
 
@@ -411,8 +484,30 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
     VSNRAY_UNUSED(frame);
 
     auto r = uniform_ray_gen<R>(x, y, viewport, args...);
-    auto color = kernel(r);
-    color_access::store(x, y, viewport, color, color_buffer);
+    auto result = kernel(r);
+    color_access::store(x, y, viewport, result, color_buffer);
+}
+
+template <typename R, typename V, typename C, typename D, typename K, typename ...Args>
+VSNRAY_FUNC
+inline void sample_pixel(
+        unsigned                        x,
+        unsigned                        y,
+        unsigned                        frame,
+        V const&                        viewport,
+        C*                              color_buffer,
+        D*                              depth_buffer,
+        K                               kernel,
+        pixel_sampler::uniform_type,
+        Args const&...                  args
+        )
+{
+    VSNRAY_UNUSED(frame);
+
+    auto r = uniform_ray_gen<R>(x, y, viewport, args...);
+    auto result = kernel(r);
+    result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(0.0) );
+    color_access::store(x, y, viewport, result, color_buffer, depth_buffer);
 }
 
 
@@ -436,8 +531,8 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
     static VSNRAY_THREAD_LOCAL auto s   = gen();
 #endif
     auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
-    auto color                          = kernel(r, s);
-    color_access::store(x, y, viewport, color, color_buffer);
+    auto result                         = kernel(r, s);
+    color_access::store(x, y, viewport, result, color_buffer);
 }
 
 
@@ -460,14 +555,30 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame, V const& viewpo
     static VSNRAY_THREAD_LOCAL auto s   = gen();
 #endif
     auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
-    auto color                          = kernel(r, s);
+    auto result                         = kernel(r, s);
     auto alpha                          = S(1.0) / S(frame);
     if (frame <= 1)
     {//TODO: clear method in render target?
         color_access::store(x, y, viewport, Vec4(0.0, 0.0, 0.0, 0.0), color_buffer);
     }
-    color_access::blend(x, y, viewport, color, color_buffer,
-        alpha, S(1.0) - alpha);
+    color_access::blend(x, y, viewport, result, color_buffer, alpha, S(1.0) - alpha);
+}
+
+template <typename R, typename V, typename C, typename D, typename K, typename ...Args>
+VSNRAY_FUNC
+inline void sample_pixel(
+        unsigned                            x,
+        unsigned                            y,
+        unsigned                            frame,
+        V const&                            viewport,
+        C*                                  color_buffer,
+        D*                                  depth_buffer,
+        K kernel,
+        pixel_sampler::jittered_blend_type,
+        Args const&...                      args
+        )
+{
+    // TODO
 }
 
 
@@ -505,6 +616,40 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame_begin, unsigned 
         color_access::store(x, y, viewport, dst, color_buffer);
     }
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Dispatch pixel sampler
+//
+
+template <typename R, typename V, typename RenderTarget, typename ...Args>
+VSNRAY_FUNC
+inline void sample_pixel(
+        unsigned        x,
+        unsigned        y,
+        unsigned        frame,
+        V const&        viewport,
+        RenderTarget&   rt,
+        Args const&...  args
+        )
+{
+    sample_pixel<R>(x, y, frame, viewport, rt.color(), rt.depth(), args...);
+}
+
+template <typename R, typename V, template <pixel_format, pixel_format> class RT, pixel_format ColorFormat, typename ...Args>
+VSNRAY_FUNC
+inline void sample_pixel(
+        unsigned                            x,
+        unsigned                            y,
+        unsigned                            frame,
+        V const&                            viewport,
+        RT<ColorFormat, PF_UNSPECIFIED>&    rt,
+        Args const&...                      args
+        )
+{
+    sample_pixel<R>(x, y, frame, viewport, rt.color(), args...);
+}
+
 
 } // detail
 } // visionaray
