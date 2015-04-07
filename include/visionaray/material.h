@@ -290,7 +290,7 @@ private:
     color_type      ca_;
     scalar_type     ka_;
     lambertian<T>   diffuse_brdf_;
-    phong<T>        specular_brdf_;
+    blinn<T>        specular_brdf_;
 
     template <typename SR, typename V>
     VSNRAY_FUNC

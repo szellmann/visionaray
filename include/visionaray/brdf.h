@@ -76,6 +76,31 @@ public:
 
 };
 
+template <typename T>
+class blinn
+{
+public:
+
+    using scalar_type   = T;
+    using color_type    = vector<3, T>;
+
+public:
+
+    color_type  cs;
+    scalar_type ks;
+    scalar_type exp;
+
+    template <typename U>
+    VSNRAY_FUNC
+    vector<3, U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    {
+        auto h = normalize(wo + wi);
+        auto hdotn = max( U(0.0), dot(h, n) );
+
+        return cs * ks * ((exp + U(2.0)) / (U(8.0) * constants::pi<U>())) * pow(hdotn, exp);
+    }
+};
+
 }
 
 #endif // VSNRAY_BRDF_H
