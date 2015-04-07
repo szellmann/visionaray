@@ -197,7 +197,7 @@ public:
             );
 #endif
 
-        return constants::pi<U>() * ( cd(sr, wo, wi) + specular_brdf_.f(sr.normal, wo, wi) ) * att * V(l.color()) * V(ndotl);
+        return constants::pi<U>() * ( cd(sr, n, wo, wi) + specular_brdf_.f(n, wo, wi) ) * att * V(l.color()) * V(ndotl);
     }
 
     template <typename SR, typename U, typename S /* sampler */>
@@ -292,18 +292,19 @@ private:
     lambertian<T>   diffuse_brdf_;
     phong<T>        specular_brdf_;
 
-    template <typename SR, typename VecT>
+    template <typename SR, typename V>
     VSNRAY_FUNC
-    VecT cd(SR const& sr, VecT const& wo, VecT const& wi) const
+    V cd(SR const& sr, V const& n, V const& wo, V const& wi) const
     {
-        return diffuse_brdf_.f(sr.normal, wo, wi);
+        VSNRAY_UNUSED(sr);
+        return diffuse_brdf_.f(n, wo, wi);
     }
 
-    template <typename L, typename C, typename S>
+    template <typename L, typename C, typename S, typename V>
     VSNRAY_FUNC
-    vector<3, S> cd(shade_record<L, C, S> const& sr, vector<3, S> const& wo, vector<3, S> const& wi) const
+    V cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const
     {
-        return vector<3, S>(sr.cd) * diffuse_brdf_.f(sr.normal, wo, wi);
+        return V(sr.cd) * diffuse_brdf_.f(n, wo, wi);
     }
 
 };
