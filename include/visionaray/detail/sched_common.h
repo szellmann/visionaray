@@ -617,6 +617,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame_begin, unsigned 
     }
 }
 
+} // detail
 
 //-------------------------------------------------------------------------------------------------
 // Dispatch pixel sampler
@@ -625,6 +626,7 @@ inline void sample_pixel(unsigned x, unsigned y, unsigned frame_begin, unsigned 
 template <typename R, typename V, typename RenderTarget, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel(
+        R*,
         unsigned        x,
         unsigned        y,
         unsigned        frame,
@@ -633,12 +635,13 @@ inline void sample_pixel(
         Args const&...  args
         )
 {
-    sample_pixel<R>(x, y, frame, viewport, rt.color(), rt.depth(), args...);
+    detail::sample_pixel<R>(x, y, frame, viewport, rt.color(), rt.depth(), args...);
 }
 
 template <typename R, typename V, template <pixel_format, pixel_format> class RT, pixel_format ColorFormat, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel(
+        R*,
         unsigned                            x,
         unsigned                            y,
         unsigned                            frame,
@@ -647,11 +650,10 @@ inline void sample_pixel(
         Args const&...                      args
         )
 {
-    sample_pixel<R>(x, y, frame, viewport, rt.color(), args...);
+    detail::sample_pixel<R>(x, y, frame, viewport, rt.color(), args...);
 }
 
 
-} // detail
 } // visionaray
 
 #endif // VSNRAY_DETAIL_SCHED_COMMON_H
