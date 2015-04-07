@@ -68,13 +68,10 @@ public:
     VSNRAY_FUNC
     vector<3, U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
-        auto r = reflect(-wi, n);
-        auto rdotv = dot(r, wo);
-        auto mask = rdotv > U(0.0);
+        auto r = reflect(-wo, n);
+        auto rdotl = max( U(0.0), dot(r, wi) );
 
-        auto I = cs * ks * ((exp + U(2.0)) / constants::two_pi<U>()) * pow(rdotv, exp);
-
-        return select(mask, I, vector<3, U>(0.0));
+        return cs * ks * ((exp + U(2.0)) / constants::two_pi<U>()) * pow(rdotl, exp);
     }
 
 };
