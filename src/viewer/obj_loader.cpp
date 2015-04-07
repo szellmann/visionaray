@@ -356,7 +356,7 @@ void load_obj(std::string const& filename, model& mod)
                     jpeg_image jpg(tex_filename);
 
                     tex_type tex(jpg.width(), jpg.height());
-                    tex.set_address_mode( Clamp );
+                    tex.set_address_mode( Wrap );
                     tex.set_filter_mode( Linear );
 
                     auto data_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data());
