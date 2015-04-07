@@ -19,8 +19,15 @@ namespace detail
 
 
 template <typename ReturnT, typename FloatT, typename TexelT>
-inline ReturnT nearest(TexelT const* tex, FloatT coord, FloatT texsize)
+inline ReturnT nearest(
+        TexelT const*       tex,
+        FloatT              coord,
+        FloatT              texsize,
+        tex_address_mode    address_mode
+        )
 {
+
+    coord = map_tex_coord(coord, address_mode);
 
     FloatT lo = floor(coord * texsize);
     lo = clamp(lo, FloatT(0.0f), texsize - 1);
@@ -30,8 +37,15 @@ inline ReturnT nearest(TexelT const* tex, FloatT coord, FloatT texsize)
 
 
 template <typename ReturnT, typename FloatT, typename TexelT>
-inline ReturnT linear(TexelT const* tex, FloatT coord, FloatT texsize)
+inline ReturnT linear(
+        TexelT const*       tex,
+        FloatT              coord,
+        FloatT              texsize,
+        tex_address_mode    address_mode
+        )
 {
+
+    coord = map_tex_coord(coord, address_mode);
 
     FloatT texcoordf( coord * texsize - FloatT(0.5) );
     texcoordf = clamp( texcoordf, FloatT(0.0), texsize - 1 );
@@ -77,8 +91,8 @@ inline ReturnT cubic2(TexelT const* tex, FloatT coord, FloatT texsize)
 
     // In visionaray, the return type is a float4.
     // TODO: what if precision(ReturnT) < precision(FloatT)?
-    ReturnT f_0 = linear<ReturnT>( tex, h0, texsize );
-    ReturnT f_1 = linear<ReturnT>( tex, h1, texsize );
+    ReturnT f_0 = linear<ReturnT>( tex, h0, texsize, Clamp /* TODO */ );
+    ReturnT f_1 = linear<ReturnT>( tex, h1, texsize, Clamp /* TODO */ );
 
     return g0(fracx) * f_0 + g1(fracx) * f_1;
 
@@ -126,10 +140,10 @@ inline ReturnT tex1D(Tex const& tex, FloatT coord)
     default:
         // fall-through
     case visionaray::Nearest:
-        return nearest<ReturnT>( tex.data(), coord, texsize );
+        return nearest<ReturnT>( tex.data(), coord, texsize, tex.get_address_mode() );
 
     case visionaray::Linear:
-        return linear<ReturnT>( tex.data(), coord, texsize );
+        return linear<ReturnT>( tex.data(), coord, texsize, tex.get_address_mode() );
 
     case visionaray::BSpline:
         return cubic2<ReturnT>( tex.data(), coord, texsize );

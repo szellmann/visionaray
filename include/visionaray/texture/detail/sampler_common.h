@@ -10,14 +10,42 @@
 #include <visionaray/detail/macros.h>
 #include <visionaray/math/math.h>
 
+#include "../forward.h"
+
 
 namespace visionaray
 {
-
-
 namespace detail
 {
 
+template <size_t Dim, typename T>
+vector<Dim, T> map_tex_coord(vector<Dim, T> const& coord, tex_address_mode mode)
+{
+    vector<Dim, T> result;
+
+    switch (mode)
+    {
+
+    case Wrap:
+        for (size_t d = 0; d < Dim; ++d)
+        {
+            result[d] = coord[d] - floor(coord[d]);
+        }
+        break;
+
+    case Clamp:
+        // fall-through
+    default:
+        for (unsigned d = 0; d < Dim; ++d)
+        {
+            result[d] = clamp( coord[d], T(0.0), T(1.0) );
+        }
+        break;
+
+    }
+
+    return result;
+}
 
 template <typename T>
 inline T point(T const* tex, ptrdiff_t idx)

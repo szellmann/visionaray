@@ -26,7 +26,12 @@ inline T index(T x, T y, T z, vector<3, T> texsize)
 
 
 template <typename ReturnT, typename FloatT, typename TexelT>
-inline ReturnT nearest(TexelT const* tex, vector<3, FloatT> coord, vector<3, FloatT> texsize)
+inline ReturnT nearest(
+        TexelT const*       tex,
+        vector<3, FloatT>   coord,
+        vector<3, FloatT>   texsize,
+        tex_address_mode    address_mode
+        )
 {
 
 #if 1
@@ -34,6 +39,8 @@ inline ReturnT nearest(TexelT const* tex, vector<3, FloatT> coord, vector<3, Flo
     using visionaray::clamp;
 
     typedef vector<3, FloatT> float3;
+
+    coord = map_tex_coord(coord, address_mode);
 
     float3 lo
     (
@@ -83,12 +90,19 @@ inline ReturnT nearest(TexelT const* tex, vector<3, FloatT> coord, vector<3, Flo
 
 
 template <typename ReturnT, typename FloatT, typename TexelT>
-inline ReturnT linear(TexelT const* tex, vector<3, FloatT> coord, vector<3, FloatT> texsize)
+inline ReturnT linear(
+        TexelT const*       tex,
+        vector<3, FloatT>   coord,
+        vector<3, FloatT>   texsize,
+        tex_address_mode    address_mode
+        )
 {
 
     using visionaray::clamp;
 
     typedef vector<3, FloatT> float3;
+
+    coord = map_tex_coord(coord, address_mode);
 
     float3 texcoordf( coord * texsize - FloatT(0.5) );
 
@@ -175,15 +189,15 @@ inline ReturnT cubic8(TexelT const* tex, vector<3, FloatT> coord, vector<3, Floa
 
     // Implicit cast from return type to float type.
     // TODO: what if return type is e.g. a float4?
-    auto f_000 = linear<FloatT>( tex, float3(h_000, h_010, h_001), texsize );
-    auto f_100 = linear<FloatT>( tex, float3(h_100, h_010, h_001), texsize );
-    auto f_010 = linear<FloatT>( tex, float3(h_000, h_110, h_001), texsize );
-    auto f_110 = linear<FloatT>( tex, float3(h_100, h_110, h_001), texsize );
+    auto f_000 = linear<FloatT>( tex, float3(h_000, h_010, h_001), texsize, Clamp /* TODO */ );
+    auto f_100 = linear<FloatT>( tex, float3(h_100, h_010, h_001), texsize, Clamp /* TODO */ );
+    auto f_010 = linear<FloatT>( tex, float3(h_000, h_110, h_001), texsize, Clamp /* TODO */ );
+    auto f_110 = linear<FloatT>( tex, float3(h_100, h_110, h_001), texsize, Clamp /* TODO */ );
 
-    auto f_001 = linear<FloatT>( tex, float3(h_000, h_010, h_101), texsize );
-    auto f_101 = linear<FloatT>( tex, float3(h_100, h_010, h_101), texsize );
-    auto f_011 = linear<FloatT>( tex, float3(h_000, h_110 ,h_101), texsize );
-    auto f_111 = linear<FloatT>( tex, float3(h_100, h_110, h_101), texsize );
+    auto f_001 = linear<FloatT>( tex, float3(h_000, h_010, h_101), texsize, Clamp /* TODO */ );
+    auto f_101 = linear<FloatT>( tex, float3(h_100, h_010, h_101), texsize, Clamp /* TODO */ );
+    auto f_011 = linear<FloatT>( tex, float3(h_000, h_110 ,h_101), texsize, Clamp /* TODO */ );
+    auto f_111 = linear<FloatT>( tex, float3(h_100, h_110, h_101), texsize, Clamp /* TODO */ );
 
     auto f_00  = g0(fracx) * f_000 + g1(fracx) * f_100;
     auto f_10  = g0(fracx) * f_010 + g1(fracx) * f_110;
@@ -279,10 +293,10 @@ inline ReturnT tex3D(Tex const& tex, vector<3, FloatT> coord)
     default:
         // fall-through
     case visionaray::Nearest:
-        return nearest<ReturnT>( tex.data(), coord, texsize );
+        return nearest<ReturnT>( tex.data(), coord, texsize, tex.get_address_mode() );
 
     case visionaray::Linear:
-        return linear<ReturnT>( tex.data(), coord, texsize );
+        return linear<ReturnT>( tex.data(), coord, texsize, tex.get_address_mode() );
 
     case visionaray::BSpline:
         return cubic8<ReturnT>( tex.data(), coord, texsize );
