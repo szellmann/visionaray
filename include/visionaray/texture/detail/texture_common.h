@@ -4,9 +4,11 @@
 #ifndef VSNRAY_TEXTURE_COMMON_H
 #define VSNRAY_TEXTURE_COMMON_H
 
+#include <cassert>
 #include <cstddef>
 
 #include <algorithm>
+#include <array>
 #include <vector>
 
 #include <visionaray/detail/aligned_vector.h>
@@ -30,31 +32,65 @@ struct cast
 } // detail
 
 
+template <size_t Dim>
 class texture_params_base
 {
 public:
 
     texture_params_base()
-        : address_mode_(Wrap)
-        , filter_mode_(Nearest)
-    {}
+        : filter_mode_(Nearest)
+    {
+        for (size_t d = 0; d < Dim; ++d)
+        {
+            address_mode_[d] = Wrap;
+        }
+    }
 
-    void set_address_mode(tex_address_mode mode) { address_mode_ = mode; }
-    tex_address_mode get_address_mode() const { return address_mode_; }
+    void set_address_mode(size_t index, tex_address_mode mode)
+    {
+        assert( index < Dim );
+        address_mode_[index] = mode;
+    }
 
-    void set_filter_mode(tex_filter_mode mode) { filter_mode_ = mode; }
-    tex_filter_mode get_filter_mode() const { return filter_mode_; }
+    void set_address_mode(tex_address_mode mode)
+    {
+        for (size_t d = 0; d < Dim; ++d)
+        {
+            address_mode_[d] = mode;
+        }
+    }
+
+    tex_address_mode get_address_mode(size_t index) const
+    {
+        assert( index < Dim );
+        return address_mode_[index];
+    }
+
+    std::array<tex_address_mode, Dim> const& get_address_mode() const
+    {
+        return address_mode_;
+    }
+
+    void set_filter_mode(tex_filter_mode mode)
+    {
+        filter_mode_ = mode;
+    }
+
+    tex_filter_mode get_filter_mode() const
+    {
+        return filter_mode_;
+    }
 
 protected:
 
-    tex_address_mode address_mode_;
-    tex_filter_mode filter_mode_;
+    std::array<tex_address_mode, Dim>   address_mode_;
+    tex_filter_mode                     filter_mode_;
 
 };
 
 
-template <typename T>
-class texture_base : public texture_params_base
+template <typename T, size_t Dim>
+class texture_base : public texture_params_base<Dim>
 {
 public:
 
@@ -74,8 +110,8 @@ protected:
 
 };
 
-template <typename T>
-class texture_ref_base : public texture_params_base
+template <typename T, size_t Dim>
+class texture_ref_base : public texture_params_base<Dim>
 {
 public:
 

@@ -27,10 +27,10 @@ inline T index(T x, T y, T z, vector<3, T> texsize)
 
 template <typename ReturnT, typename FloatT, typename TexelT>
 inline ReturnT nearest(
-        TexelT const*       tex,
-        vector<3, FloatT>   coord,
-        vector<3, FloatT>   texsize,
-        tex_address_mode    address_mode
+        TexelT const*                           tex,
+        vector<3, FloatT>                       coord,
+        vector<3, FloatT>                       texsize,
+        std::array<tex_address_mode, 3> const&  address_mode
         )
 {
 
@@ -91,10 +91,10 @@ inline ReturnT nearest(
 
 template <typename ReturnT, typename FloatT, typename TexelT>
 inline ReturnT linear(
-        TexelT const*       tex,
-        vector<3, FloatT>   coord,
-        vector<3, FloatT>   texsize,
-        tex_address_mode    address_mode
+        TexelT const*                           tex,
+        vector<3, FloatT>                       coord,
+        vector<3, FloatT>                       texsize,
+        std::array<tex_address_mode, 3> const&  address_mode
         )
 {
 

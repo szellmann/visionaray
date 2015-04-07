@@ -59,5 +59,3 @@ private:
 
 
 #endif // VSNRAY_TEXTURE_TEXTURE1D_H
-
-

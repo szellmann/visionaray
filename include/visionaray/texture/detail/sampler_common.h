@@ -19,29 +19,26 @@ namespace detail
 {
 
 template <size_t Dim, typename T>
-vector<Dim, T> map_tex_coord(vector<Dim, T> const& coord, tex_address_mode mode)
+vector<Dim, T> map_tex_coord(vector<Dim, T> const& coord, std::array<tex_address_mode, Dim> const& mode)
 {
     vector<Dim, T> result;
 
-    switch (mode)
+    for (size_t d = 0; d < Dim; ++d)
     {
-
-    case Wrap:
-        for (size_t d = 0; d < Dim; ++d)
+        switch (mode[d])
         {
+
+        case Wrap:
             result[d] = coord[d] - floor(coord[d]);
-        }
-        break;
+            break;
 
-    case Clamp:
-        // fall-through
-    default:
-        for (unsigned d = 0; d < Dim; ++d)
-        {
+        case Clamp:
+            // fall-through
+        default:
             result[d] = clamp( coord[d], T(0.0), T(1.0) );
-        }
-        break;
+            break;
 
+        }
     }
 
     return result;

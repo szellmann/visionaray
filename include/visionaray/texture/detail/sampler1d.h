@@ -20,10 +20,10 @@ namespace detail
 
 template <typename ReturnT, typename FloatT, typename TexelT>
 inline ReturnT nearest(
-        TexelT const*       tex,
-        FloatT              coord,
-        FloatT              texsize,
-        tex_address_mode    address_mode
+        TexelT const*                           tex,
+        FloatT                                  coord,
+        FloatT                                  texsize,
+        std::array<tex_address_mode, 1> const&  address_mode
         )
 {
 
@@ -38,10 +38,10 @@ inline ReturnT nearest(
 
 template <typename ReturnT, typename FloatT, typename TexelT>
 inline ReturnT linear(
-        TexelT const*       tex,
-        FloatT              coord,
-        FloatT              texsize,
-        tex_address_mode    address_mode
+        TexelT const*                           tex,
+        FloatT                                  coord,
+        FloatT                                  texsize,
+        std::array<tex_address_mode, 1> const&  address_mode
         )
 {
 
