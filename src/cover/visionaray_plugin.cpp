@@ -93,6 +93,25 @@ mat4 osg_cast(osg::Matrixd const& m)
     return mat4(arr);
 }
 
+tex_address_mode osg_cast(osg::Texture::WrapMode mode)
+{
+    switch (mode)
+    {
+
+    default:
+        // fall-through
+    case osg::Texture::CLAMP:
+        return visionaray::Clamp;
+
+    case osg::Texture::REPEAT:
+        return visionaray::Wrap;
+
+    case osg::Texture::MIRROR:
+        return visionaray::Mirror;
+
+    }
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Functor that stores triangles from osg::Drawable
@@ -331,7 +350,8 @@ public:
                 using tex_type = typename texture_list::value_type;
 
                 tex_type vsnray_tex(img->s(), img->t());
-                vsnray_tex.set_address_mode( Clamp );
+                vsnray_tex.set_address_mode( 0, osg_cast(tex->getWrap(osg::Texture::WRAP_S)) );
+                vsnray_tex.set_address_mode( 1, osg_cast(tex->getWrap(osg::Texture::WRAP_T)) );
                 vsnray_tex.set_filter_mode( Linear );
                 auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img->data());
                 vsnray_tex.set_data(data_ptr);
