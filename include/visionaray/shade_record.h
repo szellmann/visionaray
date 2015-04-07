@@ -58,35 +58,27 @@ namespace simd
 template <typename L>
 std::array<shade_record<L, float>, 4> unpack(shade_record<L, float4> const& sr)
 {
+    auto isect_pos4 = unpack(sr.isect_pos);
+    auto normal4    = unpack(sr.normal);
+    auto view_dir4  = unpack(sr.view_dir);
+    auto light_dir4 = unpack(sr.light_dir);
 
-    auto n4     = unpack(sr.normal);
-    auto vd4    = unpack(sr.view_dir);
     VSNRAY_ALIGN(16) int active[4];
     simd::store(active, sr.active.i);
 
     std::array<shade_record<L, float>, 4> result;
-    result[0].normal    = n4[0];
-    result[1].normal    = n4[1];
-    result[2].normal    = n4[2];
-    result[3].normal    = n4[3];
 
-    result[0].view_dir  = vd4[0];
-    result[1].view_dir  = vd4[1];
-    result[2].view_dir  = vd4[2];
-    result[3].view_dir  = vd4[3];
-
-    result[0].light     = sr.light;
-    result[1].light     = sr.light;
-    result[2].light     = sr.light;
-    result[3].light     = sr.light;
-
-    result[0].active    = active[0] != 0;
-    result[1].active    = active[1] != 0;
-    result[2].active    = active[2] != 0;
-    result[3].active    = active[3] != 0;
+    for (unsigned i = 0; i < 4; ++i)
+    {
+        result[i].isect_pos = isect_pos4[i];
+        result[i].normal    = normal4[i];
+        result[i].view_dir  = view_dir4[i];
+        result[i].light_dir = light_dir4[i];
+        result[i].light     = sr.light;
+        result[i].active    = active[i] != 0;
+    }
 
     return result;
-
 }
 
 } // simd
