@@ -52,9 +52,11 @@ struct shade_record<L, C, simd::float4, Args...> : public shade_record_base<L, s
     simd::mask4 active;
 };
 
+namespace simd
+{
 
 template <typename L>
-std::array<shade_record<L, float>, 4> unpack(shade_record<L, simd::float4> const& sr)
+std::array<shade_record<L, float>, 4> unpack(shade_record<L, float4> const& sr)
 {
 
     auto n4     = unpack(sr.normal);
@@ -86,6 +88,8 @@ std::array<shade_record<L, float>, 4> unpack(shade_record<L, simd::float4> const
     return result;
 
 }
+
+} // simd
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
