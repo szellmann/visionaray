@@ -63,7 +63,7 @@ using texture_list              = aligned_vector<texture<vector<3, unorm<8>>, El
 
 using host_ray_type             = basic_ray<simd::float4>;
 using host_bvh_type             = index_bvh<triangle_type>;
-using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
+using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_DEPTH32F>;
 using host_sched_type           = tiled_sched<host_ray_type>;
 
 
@@ -480,7 +480,6 @@ struct Visionaray::impl : vrui::coMenuListener
 
     struct
     {
-        GLboolean               depth_mask;
         GLint                   matrix_mode;
         GLboolean               lighting;
     } gl_state;
@@ -620,7 +619,6 @@ void Visionaray::impl::init_ui()
 
 void Visionaray::impl::store_gl_state()
 {
-    glGetBooleanv(GL_DEPTH_WRITEMASK, &gl_state.depth_mask);
     glGetIntegerv(GL_MATRIX_MODE, &gl_state.matrix_mode);
     gl_state.lighting = glIsEnabled(GL_LIGHTING);
 }
@@ -637,7 +635,6 @@ void Visionaray::impl::restore_gl_state()
     }
 
     glMatrixMode(gl_state.matrix_mode);
-    glDepthMask(gl_state.depth_mask);
 }
 
 void Visionaray::impl::update_viewing_params()
@@ -1005,12 +1002,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
     // Render
     impl_->call_kernel(kparams);
 
-    // TODO: generate depth buffer
-    glDepthMask(GL_FALSE);
-
     impl_->host_rt.display_color_buffer();
-
-    glDepthMask(GL_TRUE);
 
     if (impl_->dev_state.debug_mode && impl_->dev_state.show_bvh)
     {
