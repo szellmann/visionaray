@@ -982,6 +982,10 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         }
     }
 
+    auto bounds     = impl_->host_bvh.node(0).bbox;
+    auto diagonal   = bounds.max - bounds.min;
+    auto epsilon    = length(diagonal) * 1E-5f;
+
     auto kparams = make_params<normals_per_vertex_binding>
     (
         host_primitives.data(),
@@ -992,7 +996,7 @@ void Visionaray::drawImplementation(osg::RenderInfo&) const
         impl_->textures.data(),
         lights.data(),
         lights.data() + lights.size(),
-        0.001f,
+        epsilon,
         vec4(0.0f),
         impl_->state.algo == Pathtracing ? vec4(1.0f) : ambient
     );

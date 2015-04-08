@@ -375,7 +375,10 @@ void display_func()
 
     host_lights.push_back( light );
 
-    float epsilon = 0.001f;
+    auto bounds     = rend->mod.bbox;
+    auto diagonal   = bounds.max - bounds.min;
+    auto epsilon    = length(diagonal) * 1E-5f;
+
     vec4 bg_color(0.1, 0.4, 1.0, 1.0);
 
     if (config.dev_type == configuration::GPU)
