@@ -506,7 +506,7 @@ inline void sample_pixel(
 
     auto r = uniform_ray_gen<R>(x, y, viewport, args...);
     auto result = kernel(r);
-    result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(0.0) );
+    result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
     color_access::store(x, y, viewport, result, color_buffer, depth_buffer);
 }
 
