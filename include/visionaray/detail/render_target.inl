@@ -69,8 +69,33 @@ template <pixel_format CF, pixel_format DF>
 void cpu_buffer_rt<CF, DF>::display_color_buffer() const
 {
 
-    pixel_format_info info = map_pixel_format(color_traits::format);
-    gl::blend_pixels( width(), height(), info.format, info.type, color_buffer_.data() );
+    if (depth_traits::format != PF_UNSPECIFIED)
+    {
+        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ENABLE_BIT );
+
+        glEnable(GL_STENCIL_TEST);
+        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+        glStencilFunc(GL_ALWAYS, 1, 1);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
+        gl::blend_pixels( width(), height(), dinfo.format, dinfo.type, depth_buffer_.data() );
+
+        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+        glStencilFunc(GL_EQUAL, 1, 1);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+        glDisable(GL_DEPTH_TEST);
+
+        pixel_format_info cinfo = map_pixel_format(color_traits::format);
+        gl::blend_pixels( width(), height(), cinfo.format, cinfo.type, color_buffer_.data() );
+
+        glPopAttrib();
+    }
+    else
+    {
+        pixel_format_info info = map_pixel_format(color_traits::format);
+        gl::blend_pixels( width(), height(), info.format, info.type, color_buffer_.data() );
+    }
 
 }
 
