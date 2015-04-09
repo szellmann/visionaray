@@ -28,10 +28,13 @@ set(HEADERS
     ${COMMON_DIR}/call_kernel.h
     ${COMMON_DIR}/render_bvh.h
 
+    drawable.h
+    state.h
     visionaray_plugin.h
 )
 
 set(SOURCES
+    drawable.cpp
     visionaray_plugin.cpp
 )
 
