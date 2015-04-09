@@ -553,9 +553,11 @@ void drawable::impl::call_kernel_debug(KParams const& params)
         host_sched.frame([&](R ray) -> result_record<S>
         {
             result_record<S> result;
-            auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
-            auto surf = get_surface(hit_rec, params);
-            result.color = select( hit_rec.hit, C(surf.normal, S(1.0)), C(0.0) );
+            auto hit_rec        = closest_hit(ray, params.prims.begin, params.prims.end);
+            auto surf           = get_surface(hit_rec, params);
+            result.hit          = hit_rec.hit;
+            result.color        = select( hit_rec.hit, C(surf.normal, S(1.0)), C(0.0) );
+            result.isect_pos    = hit_rec.isect_pos;
             return result;
         },
         sparams);
@@ -565,9 +567,11 @@ void drawable::impl::call_kernel_debug(KParams const& params)
         host_sched.frame([&](R ray) -> result_record<S>
         {
             result_record<S> result;
-            auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
-            auto tc = get_tex_coord(params.tex_coords, hit_rec);
-            result.color = select( hit_rec.hit, C(tc, S(1.0), S(1.0)), C(0.0) );
+            auto hit_rec        = closest_hit(ray, params.prims.begin, params.prims.end);
+            auto tc             = get_tex_coord(params.tex_coords, hit_rec);
+            result.hit          = hit_rec.hit;
+            result.color        = select( hit_rec.hit, C(tc, S(1.0), S(1.0)), C(0.0) );
+            result.isect_pos    = hit_rec.isect_pos;
             return result;
         },
         sparams);
