@@ -6,6 +6,8 @@
 #ifndef VSNRAY_CALL_KERNEL_H
 #define VSNRAY_CALL_KERNEL_H
 
+#include <visionaray/kernels.h>
+
 namespace visionaray
 {
 
