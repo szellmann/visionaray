@@ -26,9 +26,9 @@
 #include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/bvh.h>
+#include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h>
 #include <visionaray/point_light.h>
-#include <visionaray/render_target.h>
 #include <visionaray/scheduler.h>
 
 #include <common/call_kernel.h>

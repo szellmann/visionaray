@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "detail/macros.h"
+#include "pixel_traits.h"
 #include "render_target.h"
 
 namespace visionaray

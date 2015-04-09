@@ -3,21 +3,18 @@
 
 #pragma once
 
-#ifndef VSNRAY_GPU_BUFFER_RT_H
-#define VSNRAY_GPU_BUFFER_RT_H
+#ifndef VSNRAY_CPU_BUFFER_RT_H
+#define VSNRAY_CPU_BUFFER_RT_H
 
-#include <thrust/device_vector.h>
-
+#include "detail/aligned_vector.h"
 #include "pixel_traits.h"
 #include "render_target.h"
 
 namespace visionaray
 {
 
-// TODO: have a *single* buffered render target template
-// from either std::vector or thrust::device_vector???
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-class gpu_buffer_rt : public render_target
+class cpu_buffer_rt : public render_target
 {
 public:
 
@@ -39,16 +36,15 @@ public:
     void resize(size_t w, size_t h);
     void display_color_buffer() const;
 
-    operator cpu_buffer_rt<ColorFormat, DepthFormat>() const;
-
 private:
 
-    thrust::device_vector<color_type> color_buffer_;
-    thrust::device_vector<depth_type> depth_buffer_;
+    aligned_vector<color_type> color_buffer_;
+    aligned_vector<depth_type> depth_buffer_;
 
 };
 
-
 } // visionaray
 
-#endif // VSNRAY_GPU_BUFFER_RT_H
+#include "detail/cpu_buffer_rt.inl"
+
+#endif // VSNRAY_CPU_BUFFER_RT_H

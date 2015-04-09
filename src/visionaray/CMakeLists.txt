@@ -38,6 +38,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/allocator.h
     ${HEADER_DIR}/detail/color_conversion.h
     ${HEADER_DIR}/detail/compiler.h
+    ${HEADER_DIR}/detail/cpu_buffer_rt.inl
     ${HEADER_DIR}/detail/cuda_sched.h
     ${HEADER_DIR}/detail/cuda_sched.inl
     ${HEADER_DIR}/detail/gpu_buffer_rt.inl
@@ -46,7 +47,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/pathtracing.inl
     ${HEADER_DIR}/detail/pixel_unpack_buffer_rt.inl
     ${HEADER_DIR}/detail/platform.h
-    ${HEADER_DIR}/detail/render_target.inl
     ${HEADER_DIR}/detail/sched_common.h
     ${HEADER_DIR}/detail/semaphore.h
     ${HEADER_DIR}/detail/simple.inl
@@ -126,6 +126,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/brdf.h
     ${HEADER_DIR}/bvh.h
     ${HEADER_DIR}/camera.h
+    ${HEADER_DIR}/cpu_buffer_rt.h
     ${HEADER_DIR}/exception.h
     ${HEADER_DIR}/generic_prim.h
     ${HEADER_DIR}/gpu_buffer_rt.h
