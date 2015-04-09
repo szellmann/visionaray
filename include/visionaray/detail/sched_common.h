@@ -461,7 +461,7 @@ VSNRAY_FUNC inline T depth_transform(
         matrix<4, 4, T> const&  proj_matrix,
         matrix<4, 4, T> const&  inv_proj_matrix
         )
-{return T(1.0);
+{
     VSNRAY_UNUSED(inv_view_matrix);
     VSNRAY_UNUSED(inv_proj_matrix);
 
