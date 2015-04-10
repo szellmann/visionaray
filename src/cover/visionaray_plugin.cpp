@@ -46,6 +46,7 @@ struct Visionaray::impl : vrui::coMenuListener
         drawable_ptr->update_state(state, dev_state);
     }
 
+    osg::Node::NodeMask             objroot_node_mask;
     osg::ref_ptr<osg::Geode>        geode;
     osg::ref_ptr<drawable>          drawable_ptr;
 
@@ -253,6 +254,7 @@ Visionaray::Visionaray()
 
 Visionaray::~Visionaray()
 {
+    opencover::cover->getObjectsRoot()->setNodeMask(impl_->objroot_node_mask);
     impl_->geode->removeDrawable(impl_->drawable_ptr);
     opencover::cover->getScene()->removeChild(impl_->geode);
 }
@@ -270,6 +272,8 @@ bool Visionaray::init()
     impl_->geode = new osg::Geode;
     impl_->geode->setName("Visionaray");
     impl_->geode->addDrawable(impl_->drawable_ptr);
+
+    impl_->objroot_node_mask = opencover::cover->getObjectsRoot()->getNodeMask();
 
     opencover::cover->getScene()->addChild(impl_->geode);
     opencover::cover->getObjectsRoot()->setNodeMask
