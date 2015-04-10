@@ -286,9 +286,34 @@ struct color_access
 
     template <typename S, typename OutputColor, typename T>
     VSNRAY_FUNC
-    static void blend(int x, int y, recti const& viewport, result_record<S> const& rr, OutputColor* buffer, T sfactor, T dfactor)
+    static void blend(
+            int                     x,
+            int                     y,
+            recti const&            viewport,
+            result_record<S> const& rr,
+            OutputColor*            color_buffer,
+            T sfactor,
+            T dfactor
+            )
     {
-        blend(x, y, viewport, rr.color, buffer, sfactor, dfactor);
+        blend(x, y, viewport, rr.color, color_buffer, sfactor, dfactor);
+    }
+
+    template <typename S, typename OutputColor, typename Depth, typename T>
+    VSNRAY_FUNC
+    static void blend(
+            int                     x,
+            int                     y,
+            recti const&            viewport,
+            result_record<S> const& rr,
+            OutputColor*            color_buffer,
+            Depth*                  depth_buffer,
+            T                       sfactor,
+            T                       dfactor
+            )
+    {
+        blend(x, y, viewport, rr.color, color_buffer, sfactor, dfactor);
+        blend(x, y, viewport, rr.depth, depth_buffer, sfactor, dfactor);
     }
 };
 
@@ -573,12 +598,31 @@ inline void sample_pixel(
         V const&                            viewport,
         C*                                  color_buffer,
         D*                                  depth_buffer,
-        K kernel,
-        pixel_sampler::jittered_blend_type,
+        K                                   kernel,
+        pixel_sampler::jittered_blend_type  /* */,
         Args const&...                      args
         )
 {
-    // TODO
+    using S     = typename R::scalar_type;
+    using Vec4  = vector<4, S>;
+
+    auto gen                            = sampler_gen<sampler, S>(tic());
+#if defined(__CUDACC__)
+    auto s                              = gen();
+#else
+    static VSNRAY_THREAD_LOCAL auto s   = gen();
+#endif
+    auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
+    auto result                         = kernel(r, s);
+    auto alpha                          = S(1.0) / S(frame);
+
+    result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
+
+    if (frame <= 1)
+    {//TODO: clear method in render target?
+        color_access::store(x, y, viewport, result, color_buffer, depth_buffer);
+    }
+    color_access::blend(x, y, viewport, result, color_buffer, depth_buffer, alpha, S(1.0) - alpha);
 }
 
 
