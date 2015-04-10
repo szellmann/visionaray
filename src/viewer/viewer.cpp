@@ -377,7 +377,7 @@ void display_func()
 
     auto bounds     = rend->mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
-    auto epsilon    = length(diagonal) * 1E-5f;
+    auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
 
     vec4 bg_color(0.1, 0.4, 1.0, 1.0);
 
