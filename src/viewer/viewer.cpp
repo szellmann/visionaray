@@ -231,7 +231,7 @@ void renderer::parse_cmd_line(int argc, char** argv)
     }
 }
 
-renderer* rend = 0;
+std::unique_ptr<renderer> rend(nullptr);
 
 
 //-------------------------------------------------------------------------------------------------
@@ -692,11 +692,6 @@ void reshape_func(int w, int h)
     rend->h = h;
 }
 
-void close_func()
-{
-    delete rend;
-}
-
 int main(int argc, char** argv)
 {
 
@@ -706,7 +701,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    rend = new renderer(argc, argv);
+    rend = std::unique_ptr<renderer>(new renderer(argc, argv));
 
     glutInit(&argc, argv);
 
@@ -721,11 +716,6 @@ int main(int argc, char** argv)
     glutMotionFunc(motion_func);
     glutPassiveMotionFunc(passive_motion_func);
     glutReshapeFunc(reshape_func);
-#ifdef FREEGLUT
-    glutCloseFunc(close_func);
-#else
-    atexit(close_func);
-#endif
 
     if (glewInit() != GLEW_OK)
     {
