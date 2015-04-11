@@ -39,6 +39,9 @@
 #include <GL/freeglut_ext.h>
 #endif
 
+#include <Support/CmdLine.h>
+#include <Support/CmdLineUtil.h>
+
 #include <visionaray/detail/aligned_vector.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/bvh.h>
@@ -74,8 +77,12 @@ using std::shared_ptr;
 
 using namespace visionaray;
 
-typedef std::vector<shared_ptr<visionaray::camera_manipulator>> manipulators;
+using manipulators = std::vector<shared_ptr<visionaray::camera_manipulator>>;
 
+
+//-------------------------------------------------------------------------------------------------
+// Renderer, stores state, geometry, normals, ...
+//
 
 struct renderer
 {
@@ -98,21 +105,30 @@ struct renderer
     using device_bvh_type           = device_index_bvh<primitive_type>;
 #endif
 
-    renderer()
-        : algo(Simple)
-        , w(800)
-        , h(800)
-        , frame(0)
-        , sched_cpu(get_num_processors())
+    enum device_type
+    {
+        CPU = 0,
+        GPU
+    };
+
+
+    renderer(int argc, char** argv)
+        : sched_cpu(get_num_processors())
         , down_button(mouse::NoButton)
     {
+        parse_cmd_line(argc, argv);
     }
 
-    algorithm algo;
 
-    int w;
-    int h;
-    unsigned frame;
+    int w                       = 800;
+    int h                       = 800;
+    unsigned    frame           = 0;
+    algorithm   algo            = Simple;
+    device_type dev_type        = CPU;
+    bool        show_hud        = true;
+    bool        show_hud_ext    = true;
+    bool        show_bvh        = false;
+
 
     model mod;
 
@@ -143,37 +159,79 @@ struct renderer
 
     visionaray::frame_counter   counter;
     bvh_outline_renderer        outlines;
+
+private:
+
+    void parse_cmd_line(int argc, char** argv);
+
 };
+
+
+//-------------------------------------------------------------------------------------------------
+// Parse renderer state from the command line
+//
+
+void renderer::parse_cmd_line(int argc, char** argv)
+{
+    using namespace support;
+
+    cl::CmdLine cmd;
+
+    auto w_opt = cl::makeOption<int&>(
+        cl::Parser<>(),
+        cmd, "width",
+        cl::Desc("Window width"),
+        cl::ArgOptional,
+        cl::init(this->w)
+        );
+
+    auto h_opt = cl::makeOption<int&>(
+        cl::Parser<>(),
+        cmd, "height",
+        cl::Desc("Window height"),
+        cl::ArgOptional,
+        cl::init(this->h)
+        );
+
+    auto algo_opt = cl::makeOption<algorithm&>({
+            { "simple",             Simple,         "Simple ray casting kernel" },
+            { "whitted",            Whitted,        "Whitted style ray tracing kernel" },
+            { "pathtracing",        Pathtracing,    "Pathtracing global illumination kernel" },
+        },
+        cmd, "algorithm",
+        cl::ArgOptional,
+        cl::Desc("Rendering algorithm"),
+        cl::init(this->algo)
+        );
+
+#ifdef __CUDACC__
+    auto dev_opt = cl::makeOption<device_type&>({
+            { "cpu",                CPU,            "Rendering on the CPU" },
+            { "gpu",                GPU,            "Rendering on the GPU" },
+        },
+        cmd, "device",
+        cl::ArgOptional,
+        cl::Desc("Rendering device"),
+        cl::init(this->dev_type)
+        );
+#endif
+
+
+    try
+    {
+        auto args = std::vector<std::string>(argv + 2, argv + argc);
+        cl::expandWildcards(args);
+        cl::expandResponseFiles(args, cl::TokenizeUnix());
+
+        cmd.parse(args);
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+}
 
 renderer* rend = 0;
-
-//auto scene = visionaray::detail::default_generic_prim_scene();
-
-
-struct configuration
-{
-    enum device_type
-    {
-        CPU = 0,
-        GPU
-    };
-
-    configuration()
-        : dev_type(CPU)
-        , show_hud(true)
-        , show_hud_ext(true)
-        , show_bvh(false)
-    {
-    }
-
-    device_type dev_type;
-
-    bool        show_hud;
-    bool        show_hud_ext;
-    bool        show_bvh;
-};
-
-configuration config;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -342,7 +400,7 @@ void render_hud_ext()
 
 
     stream.str(std::string());
-    stream << "Device: " << ( (config.dev_type == configuration::GPU) ? "GPU" : "CPU" );
+    stream << "Device: " << ( (rend->dev_type == renderer::GPU) ? "GPU" : "CPU" );
     str = stream.str();
     glRasterPos2i(300, h * 2 - 102);
     for (size_t i = 0; i < str.length(); ++i)
@@ -381,7 +439,7 @@ void display_func()
 
     vec4 bg_color(0.1, 0.4, 1.0, 1.0);
 
-    if (config.dev_type == configuration::GPU)
+    if (rend->dev_type == renderer::GPU)
     {
 #ifdef __CUDACC__
         thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
@@ -405,7 +463,7 @@ void display_func()
         call_kernel( rend->algo, rend->sched_gpu, kparams, rend->frame, rend->cam, rend->device_rt );
 #endif
     }
-    else if (config.dev_type == configuration::CPU)
+    else if (rend->dev_type == renderer::CPU)
     {
 #ifndef __CUDA_ARCH__
         std::vector<renderer::host_bvh_type::bvh_ref> host_primitives;
@@ -434,14 +492,14 @@ void display_func()
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    if (config.dev_type == configuration::GPU && false /* no direct rendering */)
+    if (rend->dev_type == renderer::GPU && false /* no direct rendering */)
     {
 #ifdef __CUDACC__
 //        rend->rt = rend->device_rt;
 //        rend->rt.display_color_buffer();
 #endif
     }
-    else if (config.dev_type == configuration::GPU && true /* direct rendering */)
+    else if (rend->dev_type == renderer::GPU && true /* direct rendering */)
     {
 #ifdef __CUDACC__
         rend->device_rt.display_color_buffer();
@@ -457,17 +515,17 @@ void display_func()
 
     glColor3f(1.0f, 1.0f, 1.0f);
 
-    if (config.show_hud)
+    if (rend->show_hud)
     {
         render_hud();
     }
 
-    if (config.show_hud_ext)
+    if (rend->show_hud_ext)
     {
         render_hud_ext();
     }
 
-    if (config.show_bvh)
+    if (rend->show_bvh)
     {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
@@ -521,9 +579,9 @@ void keyboard_func(unsigned char key, int, int)
         break;
 
     case 'b':
-        config.show_bvh = !config.show_bvh;
+        rend->show_bvh = !rend->show_bvh;
 
-        if (config.show_bvh)
+        if (rend->show_bvh)
         {
             rend->outlines.init(rend->host_bvh);
         }
@@ -532,13 +590,13 @@ void keyboard_func(unsigned char key, int, int)
 
     case 'm':
 #ifdef __CUDACC__
-        if (config.dev_type == configuration::CPU)
+        if (rend->dev_type == renderer::CPU)
         {
-            config.dev_type = configuration::GPU;
+            rend->dev_type = renderer::GPU;
         }
         else
         {
-            config.dev_type = configuration::CPU;
+            rend->dev_type = renderer::CPU;
         }
         rend->counter.reset();
         rend->frame = 0;
@@ -648,7 +706,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    rend = new renderer;
+    rend = new renderer(argc, argv);
 
     glutInit(&argc, argv);
 
