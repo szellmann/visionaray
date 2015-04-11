@@ -130,6 +130,8 @@ struct renderer
     bool        show_bvh        = false;
 
 
+    std::string filename;
+
     model mod;
 
     host_bvh_type                           host_bvh;
@@ -177,11 +179,20 @@ void renderer::parse_cmd_line(int argc, char** argv)
 
     cl::CmdLine cmd;
 
+    auto filename_opt = cl::makeOption<std::string&>(
+        cl::Parser<>(),
+        cmd,
+        cl::Desc("Input filename"),
+        cl::Positional,
+        cl::Required,
+        cl::init(this->filename)
+        );
+
     auto w_opt = cl::makeOption<int&>(
         cl::Parser<>(),
         cmd, "width",
         cl::Desc("Window width"),
-        cl::ArgOptional,
+        cl::ArgRequired,
         cl::init(this->w)
         );
 
@@ -189,7 +200,7 @@ void renderer::parse_cmd_line(int argc, char** argv)
         cl::Parser<>(),
         cmd, "height",
         cl::Desc("Window height"),
-        cl::ArgOptional,
+        cl::ArgRequired,
         cl::init(this->h)
         );
 
@@ -199,7 +210,7 @@ void renderer::parse_cmd_line(int argc, char** argv)
             { "pathtracing",        Pathtracing,    "Pathtracing global illumination kernel" },
         },
         cmd, "algorithm",
-        cl::ArgOptional,
+        cl::ArgRequired,
         cl::Desc("Rendering algorithm"),
         cl::init(this->algo)
         );
@@ -210,7 +221,7 @@ void renderer::parse_cmd_line(int argc, char** argv)
             { "gpu",                GPU,            "Rendering on the GPU" },
         },
         cmd, "device",
-        cl::ArgOptional,
+        cl::ArgRequired,
         cl::Desc("Rendering device"),
         cl::init(this->dev_type)
         );
@@ -219,7 +230,7 @@ void renderer::parse_cmd_line(int argc, char** argv)
 
     try
     {
-        auto args = std::vector<std::string>(argv + 2, argv + argc);
+        auto args = std::vector<std::string>(argv + 1, argv + argc);
         cl::expandWildcards(args);
         cl::expandResponseFiles(args, cl::TokenizeUnix());
 
@@ -695,13 +706,13 @@ void reshape_func(int w, int h)
 int main(int argc, char** argv)
 {
 
-    if (argc == 1)
+    rend = std::unique_ptr<renderer>(new renderer(argc, argv));
+
+    if (rend->filename.empty())
     {
         std::cerr << "Usage: viewer FILENAME" << std::endl;
         return EXIT_FAILURE;
     }
-
-    rend = std::unique_ptr<renderer>(new renderer(argc, argv));
 
     glutInit(&argc, argv);
 
@@ -726,7 +737,7 @@ int main(int argc, char** argv)
     // Load the scene
     std::cout << "Loading model...\n";
 
-    visionaray::load_obj(argv[1], rend->mod);
+    visionaray::load_obj(rend->filename, rend->mod);
 
 //  timer t;
 
