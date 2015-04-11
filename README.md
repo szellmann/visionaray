@@ -5,6 +5,17 @@ A C++ based, cross platform ray tracing library
 
 > **Note that the current version of Visionaray is an early preview. At this stage, the framework, including the API, are likely to undergo frequent changes.**
 
+Getting Visionaray
+------------------
+
+Under Linux or Mac OS X, use the following commands to locally clone Visionaray
+
+```Shell
+git clone https://github.com/szellmann/visionaray.git
+cd visionaray
+git submodule update --init
+```
+
 Build requirements
 ------------------
 

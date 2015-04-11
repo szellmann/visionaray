@@ -19,9 +19,12 @@ visionaray_use_package(OpenGL)
 visionaray_link_libraries(visionaray)
 
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
+set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/viewer/CmdLine)
+set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${CMD_LINE_INCLUDE_DIR})
 
 set(VIEWER_HEADERS
 
@@ -68,8 +71,29 @@ else()
     )
 endif()
 
+
+set(CMD_LINE_HEADERS
+
+    ${CMD_LINE_INCLUDE_DIR}/Support/CmdLine.h
+    ${CMD_LINE_INCLUDE_DIR}/Support/CmdLineUtil.h
+    ${CMD_LINE_INCLUDE_DIR}/Support/StringRef.h
+    ${CMD_LINE_INCLUDE_DIR}/Support/StringRefStream.h
+    ${CMD_LINE_INCLUDE_DIR}/Support/StringSplit.h
+
+)
+
+set(CMD_LINE_SOURCES
+
+    ${CMD_LINE_DIR}/src/CmdLine.cpp
+    ${CMD_LINE_DIR}/src/CmdLineUtil.cpp
+
+)
+
+
 visionaray_add_executable(viewer
     ${VIEWER_HEADERS}
     ${VIEWER_SOURCES}
     ${VIEWER_CUDA_SOURCES}
+    ${CMD_LINE_HEADERS}
+    ${CMD_LINE_SOURCES}
 )
