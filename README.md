@@ -13,7 +13,7 @@ Under Linux or Mac OS X, use the following commands to locally clone Visionaray
 ```Shell
 git clone https://github.com/szellmann/visionaray.git
 cd visionaray
-git submodule update --init
+git submodule update --init --recursive
 ```
 
 Build requirements

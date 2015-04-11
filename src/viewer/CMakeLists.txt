@@ -1,3 +1,13 @@
+set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
+set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/viewer/CmdLine)
+set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
+
+if (NOT EXISTS ${CMD_LINE_DIR}/.git)
+    message(SEND_ERROR "Git submodules not initialized.\nPlease run \"git submodule update --init --recursive\"")
+    return()
+endif()
+
+
 find_package(Boost REQUIRED COMPONENTS chrono filesystem iostreams system thread)
 if (VSNRAY_ENABLE_CUDA)
 find_package(CUDA)
@@ -17,10 +27,6 @@ visionaray_use_package(JPEG)
 visionaray_use_package(OpenGL)
 
 visionaray_link_libraries(visionaray)
-
-set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
-set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/viewer/CmdLine)
-set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
