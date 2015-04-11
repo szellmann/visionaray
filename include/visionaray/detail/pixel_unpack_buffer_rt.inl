@@ -60,7 +60,7 @@ typename pixel_unpack_buffer_rt<CF, DF>::color_type* pixel_unpack_buffer_rt<CF, 
 template <pixel_format CF, pixel_format DF>
 typename pixel_unpack_buffer_rt<CF, DF>::depth_type* pixel_unpack_buffer_rt<CF, DF>::depth()
 {
-    throw std::runtime_error("not implemented yet");
+    return nullptr;
 }
 
 template <pixel_format CF, pixel_format DF>
@@ -72,7 +72,7 @@ pixel_unpack_buffer_rt<CF, DF>::color_type const* pixel_unpack_buffer_rt<CF, DF>
 template <pixel_format CF, pixel_format DF>
 pixel_unpack_buffer_rt<CF, DF>::depth_type const* pixel_unpack_buffer_rt<CF, DF>::depth() const
 {
-    throw std::runtime_error("not implemented yet");
+    return nullptr;
 }
 
 template <pixel_format CF, pixel_format DF>
