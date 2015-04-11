@@ -64,13 +64,13 @@ typename pixel_unpack_buffer_rt<CF, DF>::depth_type* pixel_unpack_buffer_rt<CF, 
 }
 
 template <pixel_format CF, pixel_format DF>
-pixel_unpack_buffer_rt<CF, DF>::color_type const* pixel_unpack_buffer_rt<CF, DF>::color() const
+typename pixel_unpack_buffer_rt<CF, DF>::color_type const* pixel_unpack_buffer_rt<CF, DF>::color() const
 {
     return static_cast<pixel_unpack_buffer_rt<CF, DF>::color_type const*>(impl_->resource.dev_ptr());
 }
 
 template <pixel_format CF, pixel_format DF>
-pixel_unpack_buffer_rt<CF, DF>::depth_type const* pixel_unpack_buffer_rt<CF, DF>::depth() const
+typename pixel_unpack_buffer_rt<CF, DF>::depth_type const* pixel_unpack_buffer_rt<CF, DF>::depth() const
 {
     return nullptr;
 }
