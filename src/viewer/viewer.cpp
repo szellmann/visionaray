@@ -113,7 +113,7 @@ struct renderer
 
 
     renderer(int argc, char** argv)
-        : sched_cpu(get_num_processors())
+        : host_sched(get_num_processors())
         , down_button(mouse::NoButton)
     {
         parse_cmd_line(argc, argv);
@@ -142,13 +142,13 @@ struct renderer
 #endif
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
-    tbb_sched<ray_type_cpu>     sched_cpu;
+    tbb_sched<ray_type_cpu>     host_sched;
 #else
-    tiled_sched<ray_type_cpu>   sched_cpu;
+    tiled_sched<ray_type_cpu>   host_sched;
 #endif
-    host_render_target_type     rt;
+    host_render_target_type     host_rt;
 #ifdef __CUDACC__
-    cuda_sched<ray_type_gpu>    sched_gpu;
+    cuda_sched<ray_type_gpu>    device_sched;
     device_render_target_type   device_rt;
 #endif
     camera                      cam;
@@ -278,7 +278,7 @@ void render_hud()
 
     int x = visionaray::clamp( rend->motion_pos.x, 0, w - 1 );
     int y = visionaray::clamp( rend->motion_pos.y, 0, h - 1 );
-    auto color = rend->rt.color();
+    auto color = rend->host_rt.color();
     auto rgba = color[(h - 1 - y) * w + x];
 
     glMatrixMode(GL_PROJECTION);
@@ -471,7 +471,7 @@ void display_func()
             bg_color
         );
 
-        call_kernel( rend->algo, rend->sched_gpu, kparams, rend->frame, rend->cam, rend->device_rt );
+        call_kernel( rend->algo, rend->device_sched, kparams, rend->frame, rend->cam, rend->device_rt );
 #endif
     }
     else if (rend->dev_type == renderer::CPU)
@@ -497,7 +497,7 @@ void display_func()
             bg_color
         );
 
-        call_kernel( rend->algo, rend->sched_cpu, kparams, rend->frame, rend->cam, rend->rt );
+        call_kernel( rend->algo, rend->host_sched, kparams, rend->frame, rend->cam, rend->host_rt );
 #endif
     }
 
@@ -506,8 +506,8 @@ void display_func()
     if (rend->dev_type == renderer::GPU && false /* no direct rendering */)
     {
 #ifdef __CUDACC__
-//        rend->rt = rend->device_rt;
-//        rend->rt.display_color_buffer();
+//        rend->host_rt = rend->device_rt;
+//        rend->host_rt.display_color_buffer();
 #endif
     }
     else if (rend->dev_type == renderer::GPU && true /* direct rendering */)
@@ -518,7 +518,7 @@ void display_func()
     }
     else
     {
-        rend->rt.display_color_buffer();
+        rend->host_rt.display_color_buffer();
     }
 
 
@@ -695,7 +695,7 @@ void reshape_func(int w, int h)
     rend->cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
     rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend->rt.resize(w, h);
+    rend->host_rt.resize(w, h);
 #ifdef __CUDACC__
     rend->device_rt.resize(w, h);
 #endif
