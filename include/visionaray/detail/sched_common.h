@@ -604,7 +604,6 @@ inline void sample_pixel(
         )
 {
     using S     = typename R::scalar_type;
-    using Vec4  = vector<4, S>;
 
     auto gen                            = sampler_gen<sampler, S>(tic());
 #if defined(__CUDACC__)
