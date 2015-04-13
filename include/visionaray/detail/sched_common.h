@@ -448,7 +448,7 @@ inline R ray_gen(
 
 template <typename R, typename ...Args>
 VSNRAY_FUNC
-inline R uniform_ray_gen(unsigned x, unsigned y, Args const&... args)
+inline R uniform_ray_gen(unsigned x, unsigned y, Args&&... args)
 {
     typedef typename R::scalar_type scalar_type;
     return ray_gen<R>(pixel<scalar_type>().x(x), pixel<scalar_type>().y(y), args...);
@@ -456,7 +456,7 @@ inline R uniform_ray_gen(unsigned x, unsigned y, Args const&... args)
 
 template <typename R, typename S, typename ...Args>
 VSNRAY_FUNC
-inline R jittered_ray_gen(unsigned x, unsigned y, S& sampler, Args const&... args)
+inline R jittered_ray_gen(unsigned x, unsigned y, S& sampler, Args&&... args)
 {
     typedef typename R::scalar_type scalar_type;
 
@@ -513,7 +513,7 @@ inline void sample_pixel_impl(
         render_target_ref<CF>           rt_ref,
         K                               kernel,
         pixel_sampler::uniform_type     /* */,
-        Args const&...                  args
+        Args&&...                       args
         )
 {
     VSNRAY_UNUSED(frame);
@@ -534,7 +534,7 @@ inline void sample_pixel_impl(
         render_target_ref<CF, DF>           rt_ref,
         K                                   kernel,
         pixel_sampler::uniform_type         /* */,
-        Args const&...                      args
+        Args&&...                           args
         )
 {
     VSNRAY_UNUSED(frame);
@@ -561,7 +561,7 @@ inline void sample_pixel_impl(
         render_target_ref<CF>           rt_ref,
         K                               kernel,
         pixel_sampler::jittered_type    /* */,
-        Args const&...                  args)
+        Args&&...                       args)
 {
     VSNRAY_UNUSED(frame);
 
@@ -594,7 +594,7 @@ inline void sample_pixel_impl(
         render_target_ref<CF>               rt_ref,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
-        Args const&...                      args
+        Args&&...                           args
         )
 {
     using S     = typename R::scalar_type;
@@ -627,7 +627,7 @@ inline void sample_pixel_impl(
         render_target_ref<CF, DF>           rt_ref,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
-        Args const&...                      args
+        Args&&...                           args
         )
 {
     using S     = typename R::scalar_type;
@@ -668,7 +668,7 @@ inline void sample_pixel_impl(
         render_target_ref<CF>               rt_ref,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
-        Args const&...                      args
+        Args&&...                           args
         )
 {
     using S     = typename R::scalar_type;
@@ -706,9 +706,9 @@ inline void sample_pixel_impl(
 
 template <typename R, typename ...Args>
 VSNRAY_FUNC
-inline void sample_pixel(Args const&...  args)
+inline void sample_pixel(Args&&...  args)
 {
-    detail::sample_pixel_impl((R*)nullptr, args...);
+    detail::sample_pixel_impl((R*)nullptr, std::forward<Args>(args)...);
 }
 
 } // visionaray
