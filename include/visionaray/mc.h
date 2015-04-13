@@ -26,6 +26,10 @@ class sampler
 {
 public:
 
+    using value_type = T;
+
+public:
+
 #ifdef __CUDA_ARCH__
     typedef thrust::default_random_engine rand_engine;
     typedef thrust::uniform_real_distribution<T> uniform_dist;
@@ -55,6 +59,10 @@ private:
 template <>
 class sampler<simd::float4>
 {
+public:
+
+    using value_type = simd::float4;
+
 public:
 
     typedef sampler<float> sampler_type;
@@ -90,6 +98,10 @@ private:
 template <>
 class sampler<simd::float8>
 {
+public:
+
+    using value_type = simd::float8;
+
 public:
 
     typedef sampler<float> sampler_type;
@@ -128,13 +140,15 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
-// Utility functions for Geometry sampling
+// Utility functions for geometry sampling
 //
 
-template <template <typename> class S, typename T>
+template <typename S>
 VSNRAY_FUNC
-vector<3, T> sample_hemisphere(S<T>& sampler)
+vector<3, typename S::value_type> sample_hemisphere(S& sampler)
 {
+    using T = typename S::value_type;
+
     auto sample = vector<2, T>(sampler.next(), sampler.next());
     auto cosphi = cos(T(2.0) * constants::pi<T>() * sample.x);
     auto sinphi = sin(T(2.0) * constants::pi<T>() * sample.x);
