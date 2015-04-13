@@ -198,13 +198,12 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                 continue;
             }
 
-            sample_pixel(
-                    (R*)nullptr,
+            sample_pixel<R>(
                     x,
                     y,
                     frame_num,
                     viewport,
-                    sparams.rt,
+                    sparams.rt.ref(),
                     kernel,
                     typename SP::pixel_sampler_type(),
                     view_matrix,
@@ -257,12 +256,12 @@ void tiled_sched<R>::impl::init_render_func(K kernel, sched_params<RT, PxSampler
                 continue;
             }
 
-            sample_pixel(
-                    (R*)nullptr,
+            sample_pixel<R>(
                     x,
                     y,
                     frame_num,
-                    viewport, sparams.rt,
+                    viewport,
+                    sparams.rt.ref(),
                     kernel,
                     typename SP::pixel_sampler_type(),
                     eye,

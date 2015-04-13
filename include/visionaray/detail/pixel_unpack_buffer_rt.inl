@@ -76,6 +76,12 @@ typename pixel_unpack_buffer_rt<CF, DF>::depth_type const* pixel_unpack_buffer_r
 }
 
 template <pixel_format CF, pixel_format DF>
+typename pixel_unpack_buffer_rt<CF, DF>::ref_type pixel_unpack_buffer_rt<CF, DF>::ref()
+{
+    return typename pixel_unpack_buffer_rt<CF, DF>::ref_type( color(), depth() );
+}
+
+template <pixel_format CF, pixel_format DF>
 void pixel_unpack_buffer_rt<CF, DF>::begin_frame()
 {
     if (impl_->resource.map() == 0)

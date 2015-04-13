@@ -33,6 +33,12 @@ typename gpu_buffer_rt<CF, DF>::depth_type const* gpu_buffer_rt<CF, DF>::depth()
 }
 
 template <pixel_format CF, pixel_format DF>
+typename gpu_buffer_rt<CF, DF>::ref_type ref()
+{
+    return gpu_buffer_rt<CF, DF>::ref_type( color(), depth() );
+}
+
+template <pixel_format CF, pixel_format DF>
 void gpu_buffer_rt<CF, DF>::begin_frame()
 {
 }

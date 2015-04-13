@@ -41,6 +41,12 @@ typename cpu_buffer_rt<CF, DF>::depth_type const* cpu_buffer_rt<CF, DF>::depth()
 }
 
 template <pixel_format CF, pixel_format DF>
+typename cpu_buffer_rt<CF, DF>::ref_type cpu_buffer_rt<CF, DF>::ref()
+{
+    return typename cpu_buffer_rt<CF, DF>::ref_type( color(), depth() );
+}
+
+template <pixel_format CF, pixel_format DF>
 void cpu_buffer_rt<CF, DF>::begin_frame()
 {
 }

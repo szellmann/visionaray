@@ -25,6 +25,8 @@ public:
     using color_type    = typename color_traits::type;
     using depth_type    = typename depth_traits::type;
 
+    using ref_type      = render_target_ref<ColorFormat, DepthFormat>;
+
 public:
 
     pixel_unpack_buffer_rt();
@@ -35,6 +37,8 @@ public:
 
     color_type const* color() const;
     depth_type const* depth() const;
+
+    ref_type ref();
 
     void begin_frame();
     void end_frame();

@@ -8,8 +8,14 @@
 
 #include <cstddef>
 
+#include "pixel_traits.h"
+
 namespace visionaray
 {
+
+//-------------------------------------------------------------------------------------------------
+// Render target base
+//
 
 class render_target
 {
@@ -28,6 +34,54 @@ private:
 
     size_t width_;
     size_t height_;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Render target ref
+//
+
+template <pixel_format ColorFormat, pixel_format DepthFormat = PF_UNSPECIFIED>
+class render_target_ref
+{
+public:
+
+    using color_type = typename pixel_traits<ColorFormat>::type;
+    using depth_type = typename pixel_traits<DepthFormat>::type;
+
+public:
+
+    render_target_ref(color_type* color, depth_type* depth)
+        : color_(color)
+        , depth_(depth)
+    {
+    }
+
+    VSNRAY_FUNC color_type* color()
+    {
+        return color_;
+    }
+
+    VSNRAY_FUNC depth_type* depth()
+    {
+        return depth_;
+    }
+
+    VSNRAY_FUNC color_type const* color() const
+    {
+        return color_;
+    }
+
+    VSNRAY_FUNC depth_type const* depth() const
+    {
+        return depth_;
+    }
+
+private:
+
+    color_type* color_ = nullptr;
+    depth_type* depth_ = nullptr;
 
 };
 
