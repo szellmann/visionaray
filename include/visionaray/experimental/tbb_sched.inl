@@ -107,7 +107,7 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                         j0,
                         frame_num,
                         viewport,
-                        sched_params.rt.color(),
+                        sched_params.rt.ref(),
                         kernel,
                         typename SP::pixel_sampler_type(),
                         eye,
