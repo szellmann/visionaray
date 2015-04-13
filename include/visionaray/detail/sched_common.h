@@ -567,10 +567,11 @@ inline void sample_pixel_impl(
 
     using S = typename R::scalar_type;
 
-    auto gen                            = sampler_gen<sampler, S>();
 #if defined(__CUDACC__)
+    auto gen                            = sampler_gen<sampler, S>();
     auto s                              = gen();
 #else
+    static VSNRAY_THREAD_LOCAL auto gen = sampler_gen<sampler, S>();
     static VSNRAY_THREAD_LOCAL auto s   = gen();
 #endif
     auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
@@ -600,10 +601,11 @@ inline void sample_pixel_impl(
     using S     = typename R::scalar_type;
     using Vec4  = vector<4, S>;
 
-    auto gen                            = sampler_gen<sampler, S>(tic());
 #if defined(__CUDACC__)
+    auto gen                            = sampler_gen<sampler, S>(tic());
     auto s                              = gen();
 #else
+    static VSNRAY_THREAD_LOCAL auto gen = sampler_gen<sampler, S>(tic());
     static VSNRAY_THREAD_LOCAL auto s   = gen();
 #endif
     auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
@@ -632,10 +634,11 @@ inline void sample_pixel_impl(
 {
     using S     = typename R::scalar_type;
 
-    auto gen                            = sampler_gen<sampler, S>(tic());
 #if defined(__CUDACC__)
+    auto gen                            = sampler_gen<sampler, S>(tic());
     auto s                              = gen();
 #else
+    static VSNRAY_THREAD_LOCAL auto gen = sampler_gen<sampler, S>(tic());
     static VSNRAY_THREAD_LOCAL auto s   = gen();
 #endif
     auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
@@ -674,10 +677,11 @@ inline void sample_pixel_impl(
     using S     = typename R::scalar_type;
     using Vec4  = vector<4, S>;
 
-    auto gen                            = sampler_gen<sampler, S>(tic());
 #if defined(__CUDACC__)
+    auto gen                            = sampler_gen<sampler, S>(tic());
     auto s                              = gen();
 #else
+    static VSNRAY_THREAD_LOCAL auto gen = sampler_gen<sampler, S>(tic());
     static VSNRAY_THREAD_LOCAL auto s   = gen();
 #endif
 
