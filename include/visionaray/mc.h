@@ -143,30 +143,25 @@ private:
 // Utility functions for geometry sampling
 //
 
-template <typename S>
+template <typename T>
 VSNRAY_FUNC
-vector<3, typename S::value_type> sample_hemisphere(S& sampler)
+vector<3, T> uniform_sample_hemisphere(T u1, T u2)
 {
-    using T = typename S::value_type;
-
-    auto sample = vector<2, T>(sampler.next(), sampler.next());
-    auto cosphi = cos(T(2.0) * constants::pi<T>() * sample.x);
-    auto sinphi = sin(T(2.0) * constants::pi<T>() * sample.x);
-    auto costheta = T(1.0) - sample.y;
-    auto sintheta = sqrt(T(1.0) - costheta * costheta);
-    return vector<3, T>(sintheta * cosphi, sintheta * sinphi, costheta);
+    auto r   = sqrt( max(T(0.0), T(1.0) - u1 * u1) );
+    auto phi = constants::two_pi<T>() * u2;
+    return vector<3, T>(r * cos(phi), r * sin(phi), u1);
 }
 
-template <typename S, typename T>
+template <typename T>
 VSNRAY_FUNC
-vector<3, T> sample_hemisphere(T e, S& sampler)
+vector<3, T> cosine_sample_hemisphere(T u1, T u2)
 {
-    auto sample = vector<2, T>(sampler.next(), sampler.next());
-    auto cosphi = cos(T(2.0) * constants::pi<T>() * sample.x);
-    auto sinphi = sin(T(2.0) * constants::pi<T>() * sample.x);
-    auto costheta = pow((T(1.0) - sample.y), T(1.0) / (e + T(1.0)));
-    auto sintheta = sqrt(T(1.0) - costheta * costheta);
-    return vector<3, T>(sintheta * cosphi, sintheta * sinphi, costheta);
+    auto r     = sqrt(u1);
+    auto theta = constants::two_pi<T>() * u2;
+    auto x     = r * cos(theta);
+    auto y     = r * sin(theta);
+    auto z     = sqrt( max(T(0.0), T(1.0) - u1) );
+    return vector<3, T>(x, y, z);
 }
 
 } // visionaray

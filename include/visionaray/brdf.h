@@ -42,7 +42,7 @@ public:
         auto v  = normalize( cross(vector<3, U>(0.0001, 1.0, 0.0001), w) );
         auto u  = cross(v, w);
 
-        auto sp = sample_hemisphere(sampler);
+        auto sp = cosine_sample_hemisphere(sampler.next(), sampler.next());
         wi      = normalize( sp.x * u + sp.y * v + sp.z * w );
 
         pdf     = dot(n, wi) * constants::inv_pi<U>();
