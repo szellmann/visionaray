@@ -703,6 +703,11 @@ void reshape_func(int w, int h)
     rend->h = h;
 }
 
+void close_func()
+{
+    rend.reset(nullptr);
+}
+
 int main(int argc, char** argv)
 {
 
@@ -727,6 +732,11 @@ int main(int argc, char** argv)
     glutMotionFunc(motion_func);
     glutPassiveMotionFunc(passive_motion_func);
     glutReshapeFunc(reshape_func);
+#ifdef FREEGLUT
+    glutCloseFunc(close_func);
+#else
+    atexit(close_func);
+#endif
 
     if (glewInit() != GLEW_OK)
     {
