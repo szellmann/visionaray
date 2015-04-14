@@ -750,9 +750,19 @@ int main(int argc, char** argv)
 
 #ifdef __CUDACC__
     // Copy data to GPU
-    rend->device_bvh = renderer::device_bvh_type(rend->host_bvh);
-    rend->device_normals = rend->mod.normals;
-    rend->device_materials = rend->mod.materials;
+    try
+    {
+        rend->device_bvh = renderer::device_bvh_type(rend->host_bvh);
+        rend->device_normals = rend->mod.normals;
+        rend->device_materials = rend->mod.materials;
+    }
+    catch (std::bad_alloc&)
+    {
+        std::cerr << "GPU memory allocation failed" << std::endl;
+        rend->device_bvh = renderer::device_bvh_type();
+        rend->device_normals.resize(0);
+        rend->device_materials.resize(0);
+    }
 #endif
 
 //  std::cout << t.elapsed() << std::endl;
