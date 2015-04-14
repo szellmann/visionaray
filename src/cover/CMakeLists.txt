@@ -16,9 +16,9 @@ find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Visionaray REQUIRED)
 
-include_directories(${PROJECT_SOURCE_DIR}/src)
-include_directories(${VISIONARAY_INCLUDE_DIR}) # TODO: smth. wrong with CMAKE_MODULE_PATH
 visionaray_use_package(Visionaray)
+
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
 set(EXTRA_LIBS ${EXTRA_LIBS} ${GLEW_LIBRARY} ${VISIONARAY_LIBRARY})
 

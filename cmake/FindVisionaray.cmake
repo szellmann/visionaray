@@ -27,7 +27,8 @@ find_library(VISIONARAY_LIBRARY
 
 set(VISIONARAY_LIBRARIES ${VISIONARAY_LIBRARY})
 
-find_package_handle_standard_args(VISIONARAY_DEFAULT_MSG
+find_package_handle_standard_args(Visionaray
+    VISIONARAY_DEFAULT_MSG
     VISIONARAY_INCLUDE_DIR
     VISIONARAY_LIBRARY
 )
