@@ -147,7 +147,7 @@ void store_faces(model& result, vertex_vector const& vertices,
         }
 
         // normals
-        if (faces[0].normal_index && faces[last - 1].normal_index && faces[last].normal_index)
+/*        if (faces[0].normal_index && faces[last - 1].normal_index && faces[last].normal_index)
         {
             auto normals_size = static_cast<int>(normals.size());
             auto ni1 = remap_index(*faces[0].normal_index, normals_size);
@@ -157,7 +157,7 @@ void store_faces(model& result, vertex_vector const& vertices,
             result.normals.push_back( normals[ni1] );
             result.normals.push_back( normals[ni2] );
             result.normals.push_back( normals[ni3] );
-        }
+        }*/
 
         ++last;
     }
@@ -390,10 +390,9 @@ void load_obj(std::string const& filename, model& mod)
         }
     }
 
-// TODO
 
-    mod.normals.resize(0); // TODO: support for vertex normals
-    if (mod.normals.size() == 0) // have no default normals
+// TODO
+//  if (mod.normals.size() == 0) // have no default normals
     {
         for (auto const& tri : mod.primitives)
         {
