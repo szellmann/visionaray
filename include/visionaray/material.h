@@ -27,6 +27,11 @@ public:
     typedef T scalar_type;
     typedef vector<3, T> color_type;
 
+    color_type ambient() const
+    {
+        return color_type();
+    }
+
     template <typename SR, typename U, typename S /* sampler */>
     VSNRAY_FUNC
     vector<3, U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
@@ -97,11 +102,13 @@ public:
         return ca_ * ka_;
     }
 
-    template <typename L, typename U>
+    template <typename SR>
     VSNRAY_FUNC
-    vector<3, U> shade(shade_record<L, U> const& sr) const
+    vector<3, typename SR::scalar_type> shade(SR const& sr) const
     {
+        using U = typename SR::scalar_type;
         using V = vector<3, U>;
+
         V result(0.0, 0.0, 0.0);
 
         auto l = *sr.light;
@@ -323,9 +330,14 @@ static unsigned const PlasticMaterial   = 0x02;
 
 
 template <typename T>
-struct generic_mat
+class generic_mat
 {
-    typedef T scalar_type;
+public:
+
+    using scalar_type = T;
+    using color_type  = vector<3, T>;
+
+public:
 
     unsigned type_;
 
@@ -375,9 +387,26 @@ struct generic_mat
         return type_;
     }
 
-    template <typename L, typename U>
+    VSNRAY_FUNC color_type ambient() const
+    {
+        switch (type_)
+        {
+        case detail::EmissiveMaterial:
+            return emissive_mat.ambient();
+
+        case detail::MatteMaterial:
+            return matte_mat.ambient();
+
+        case detail::PlasticMaterial:
+            return plastic_mat.ambient();
+        }
+
+        VSNRAY_UNREACHABLE();
+    }
+
+    template <typename SR>
     VSNRAY_FUNC
-    vector<3, U> shade(shade_record<L, U> const& sr) const
+    vector<3, typename SR::scalar_type> shade(SR const& sr) const
     {
         switch (type_)
         {
@@ -413,6 +442,7 @@ struct generic_mat
         VSNRAY_UNREACHABLE();
     }
 
+private:
 
     union
     {
@@ -427,7 +457,10 @@ class generic_mat<simd::float4>
 {
 public:
 
-    typedef simd::float4 scalar_type;
+    using scalar_type = simd::float4;
+    using color_type  = vector<3, simd::float4>;
+
+public:
 
     generic_mat
     (
@@ -447,8 +480,18 @@ public:
         return type_;
     }
 
-    template <typename L>
-    vector<3, simd::float4> shade(shade_record<L, simd::float4> const& sr) const
+    color_type ambient() const
+    {
+        return simd::pack(
+                vector<3, float>( m1_.ambient() ),
+                vector<3, float>( m2_.ambient() ),
+                vector<3, float>( m3_.ambient() ),
+                vector<3, float>( m4_.ambient() )
+                );
+    }
+
+    template <typename SR>
+    vector<3, simd::float4> shade(SR const& sr) const
     {
         auto sr4 = simd::unpack(sr);
         vector<3, float> v[] =
@@ -461,8 +504,13 @@ public:
         return simd::pack( v[0], v[1], v[2], v[3] );
     }
 
-    template <typename L, typename S /* sampler */>
-    vector<3, simd::float4> sample(shade_record<L, simd::float4> const& sr, vector<3, simd::float4>& refl_dir, simd::float4& pdf, S& samp)
+    template <typename SR, typename S /* sampler */>
+    vector<3, simd::float4> sample(
+            SR const&                   sr,
+            vector<3, simd::float4>&    refl_dir,
+            simd::float4&               pdf,
+            S&                          samp
+            )
     {
         auto sr4 = simd::unpack(sr);
         vector<3, float> rd4[4];
