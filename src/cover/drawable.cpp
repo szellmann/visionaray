@@ -411,14 +411,16 @@ struct drawable::impl
     mat4                            proj_matrix;
     recti                           viewport;
 
-    unsigned                        frame_num   = 0;
+    unsigned                        frame_num       = 0;
+
+    algorithm                       algo_current    = Simple;
 
     bvh_outline_renderer            outlines;
 
-    bool                            glew_init   = false;
+    bool                            glew_init       = false;
 
-    std::shared_ptr<render_state>   state       = nullptr;
-    std::shared_ptr<debug_state>    dev_state   = nullptr;
+    std::shared_ptr<render_state>   state           = nullptr;
+    std::shared_ptr<debug_state>    dev_state       = nullptr;
     struct
     {
         GLint                       matrix_mode;
@@ -501,7 +503,8 @@ void drawable::impl::update_viewing_params()
 
     // Reset frame counter on change or if scene is dynamic
 
-    if (state->data_var == Dynamic || view_matrix != view || proj_matrix != proj || viewport != vp)
+    if (state->data_var == Dynamic || state->algo != algo_current
+     || view_matrix != view || proj_matrix != proj || viewport != vp)
     {
         frame_num = 0;
     }
@@ -509,8 +512,9 @@ void drawable::impl::update_viewing_params()
 
     // Update
 
-    view_matrix = view;
-    proj_matrix = proj;
+    algo_current = state->algo;
+    view_matrix  = view;
+    proj_matrix  = proj;
 
     if (viewport != vp)
     {
