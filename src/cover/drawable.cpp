@@ -492,23 +492,25 @@ void drawable::impl::update_viewing_params()
     auto view = osg_cast( s * t * v );
     auto proj = osg_cast( opencover::coVRConfig::instance()->channels[0].rightProj );
 
-    if (state->data_var == Static && view_matrix == view && proj_matrix == proj)
-    {
-        ++frame_num;
-    }
-    else
-    {
-        frame_num = 0;
-    }
-
-    view_matrix = view;
-    proj_matrix = proj;
-
 
     // Viewport
 
     auto osg_viewport = osg_cam->getViewport();
     recti vp(osg_viewport->x(), osg_viewport->y(), osg_viewport->width(), osg_viewport->height());
+
+
+    // Reset frame counter on change or if scene is dynamic
+
+    if (state->data_var == Dynamic || view_matrix != view || proj_matrix != proj || viewport != vp)
+    {
+        frame_num = 0;
+    }
+
+
+    // Update
+
+    view_matrix = view;
+    proj_matrix = proj;
 
     if (viewport != vp)
     {
