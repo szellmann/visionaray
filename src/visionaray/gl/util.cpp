@@ -50,14 +50,15 @@ static char const* get_debug_type_string(GLenum type)
     return "{unknown type}";
 }
 
-static void debug_callback(GLenum /*source*/,
-                           GLenum type,
-                           GLuint /*id*/,
-                           GLenum /*severity*/,
-                           GLsizei /*length*/,
-                           const GLchar* message,
-                           GLvoid* /*userParam*/
-                          )
+static void debug_callback(
+        GLenum          /*source*/,
+        GLenum          type,
+        GLuint          /*id*/,
+        GLenum          /*severity*/,
+        GLsizei         /*length*/,
+        const GLchar*   message,
+        GLvoid*         /*userParam*/
+        )
 {
     std::cerr << "GL " << get_debug_type_string(type) << " " << message << std::endl;
     std::cerr << visionaray::util::backtrace() << std::endl;
@@ -74,36 +75,6 @@ static void debug_callback(GLenum /*source*/,
 
 
 #endif // GL_KHR_debug
-
-static void draw_full_screen_quad()
-{
-    glPushAttrib(GL_TEXTURE_BIT | GL_TRANSFORM_BIT);
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glLoadIdentity();
-
-    glActiveTexture(GL_TEXTURE0);
-
-    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.0f, -1.0f);
-    glTexCoord2f(1.0f, 0.0f); glVertex2f( 1.0f, -1.0f);
-    glTexCoord2f(1.0f, 1.0f); glVertex2f( 1.0f,  1.0f);
-    glTexCoord2f(0.0f, 1.0f); glVertex2f(-1.0f,  1.0f);
-    glEnd();
-
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glPopMatrix();
-
-    glPopAttrib();
-}
 
 
 namespace visionaray
@@ -134,6 +105,36 @@ std::string gl::last_error()
         return std::string(reinterpret_cast<char const*>(glewGetErrorString(err)));
     }
     return "";
+}
+
+void gl::draw_full_screen_quad()
+{
+    glPushAttrib(GL_TEXTURE_BIT | GL_TRANSFORM_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glActiveTexture(GL_TEXTURE0);
+
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.0f, -1.0f);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f( 1.0f, -1.0f);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f( 1.0f,  1.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex2f(-1.0f,  1.0f);
+    glEnd();
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+
+    glPopAttrib();
 }
 
 void gl::blend_texture(GLuint texture, GLenum sfactor, GLenum dfactor)

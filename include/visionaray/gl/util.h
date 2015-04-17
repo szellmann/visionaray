@@ -33,10 +33,23 @@ void init_debug_callback();
 
 std::string last_error();
 
-void blend_texture(GLuint texture, GLenum sfactor = GL_ONE, GLenum dfactor = GL_ONE_MINUS_SRC_ALPHA);
+void draw_full_screen_quad();
 
-void blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid const* pixels,
-    GLenum sfactor = GL_ONE, GLenum dfactor = GL_ONE_MINUS_SRC_ALPHA);
+void blend_texture(
+        GLuint          texture,
+        GLenum          sfactor     = GL_ONE,
+        GLenum          dfactor     = GL_ONE_MINUS_SRC_ALPHA
+        );
+
+void blend_pixels(
+        GLsizei         w,
+        GLsizei         h,
+        GLenum          format,
+        GLenum          type,
+        GLvoid const*   pixels,
+        GLenum          sfactor     = GL_ONE,
+        GLenum          dfactor     = GL_ONE_MINUS_SRC_ALPHA
+        );
 
 recti viewport();
 
