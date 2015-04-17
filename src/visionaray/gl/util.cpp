@@ -150,6 +150,7 @@ void gl::blend_texture(GLuint texture, GLenum sfactor, GLenum dfactor)
     glBindTexture(GL_TEXTURE_2D, texture);
 
     glDepthMask(GL_FALSE);
+    glDisable(GL_LIGHTING);
 
     draw_full_screen_quad();
 
