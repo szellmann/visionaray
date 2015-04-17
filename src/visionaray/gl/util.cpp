@@ -126,21 +126,6 @@ void gl::init_debug_callback()
 #endif
 }
 
-void gl::init_ext()
-{
-    static bool glew_initialized = false;
-
-    if (!glew_initialized)
-    {
-        GLenum err = glewInit();
-        if (err != GLEW_OK)
-        {
-            throw std::exception();
-        }
-        glew_initialized = true;
-    }
-}
-
 std::string gl::last_error()
 {
     GLenum err = glGetError();

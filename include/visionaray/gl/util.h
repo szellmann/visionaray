@@ -30,7 +30,6 @@ namespace gl
 
 
 void init_debug_callback();
-void init_ext();
 
 std::string last_error();
 
