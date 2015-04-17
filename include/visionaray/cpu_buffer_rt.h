@@ -6,7 +6,8 @@
 #ifndef VSNRAY_CPU_BUFFER_RT_H
 #define VSNRAY_CPU_BUFFER_RT_H
 
-#include "detail/aligned_vector.h"
+#include <memory>
+
 #include "pixel_traits.h"
 #include "render_target.h"
 
@@ -27,6 +28,9 @@ public:
 
 public:
 
+    cpu_buffer_rt();
+   ~cpu_buffer_rt();
+
     color_type* color();
     depth_type* depth();
 
@@ -42,8 +46,8 @@ public:
 
 private:
 
-    aligned_vector<color_type> color_buffer_;
-    aligned_vector<depth_type> depth_buffer_;
+    struct impl;
+    std::unique_ptr<impl> impl_;
 
 };
 
