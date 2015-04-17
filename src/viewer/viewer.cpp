@@ -43,6 +43,7 @@
 #include <Support/CmdLineUtil.h>
 
 #include <visionaray/detail/aligned_vector.h>
+#include <visionaray/gl/util.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/bvh.h>
 #include <visionaray/cpu_buffer_rt.h>
@@ -743,6 +744,8 @@ int main(int argc, char** argv)
         std::cerr << "glewInit() failed" << std::endl;
         return EXIT_FAILURE;
     }
+
+    gl::init_debug_callback();
 
     // Load the scene
     std::cout << "Loading model...\n";
