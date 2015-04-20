@@ -47,7 +47,7 @@ public:
 
         pdf     = dot(n, wi) * constants::inv_pi<U>();
 
-        return f(n, wi, wo);
+        return f(n, wo, wi);
     }
 
 };
