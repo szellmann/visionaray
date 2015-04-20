@@ -469,7 +469,8 @@ void display_func()
             thrust::raw_pointer_cast(device_lights.data()),
             thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
             epsilon,
-            bg_color
+            bg_color,
+            rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
         );
 
         call_kernel( rend->algo, rend->device_sched, kparams, rend->frame, rend->cam, rend->device_rt );
@@ -495,7 +496,8 @@ void display_func()
             host_lights.data(),
             host_lights.data() + host_lights.size(),
             epsilon,
-            bg_color
+            bg_color,
+            rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
         );
 
         call_kernel( rend->algo, rend->host_sched, kparams, rend->frame, rend->cam, rend->host_rt );

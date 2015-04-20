@@ -94,11 +94,17 @@ struct kernel_params<NB, P, N, TC, M, T, L, C, Args...>
 //
 
 template <typename NB, typename P, typename N, typename M, typename L>
-kernel_params<NB, P, N, M, L, vec4>  make_params(P const& begin, P const& end, N const& normals,
-    M const& materials, L const& lbegin, L const& lend,
-    float epsilon = std::numeric_limits<float>::epsilon(),
-    vec4 const& bg_color = vec4(0.0, 0.0, 0.0, 1.0),
-    vec4 const& ambient_color = vec4(1.0, 1.0, 1.0, 1.0))
+kernel_params<NB, P, N, M, L, vec4>  make_params(
+        P const&    begin,
+        P const&    end,
+        N const&    normals,
+        M const&    materials,
+        L const&    lbegin,
+        L const&    lend,
+        float       epsilon         = std::numeric_limits<float>::epsilon(),
+        vec4 const& bg_color        = vec4(0.0),
+        vec4 const& ambient_color   = vec4(0.0)
+        )
 {
     return kernel_params<NB, P, N, M, L, vec4>
     {
@@ -108,11 +114,19 @@ kernel_params<NB, P, N, M, L, vec4>  make_params(P const& begin, P const& end, N
 }
 
 template <typename NB, typename P, typename N, typename TC, typename M, typename T, typename L>
-kernel_params<NB, P, N, TC, M, T, L, vec4> make_params(P const& begin, P const& end, N const& normals,
-    TC const& tex_coords, M const& materials, T const& textures, L const& lbegin, L const& lend,
-    float epsilon = std::numeric_limits<float>::epsilon(),
-    vec4 const& bg_color = vec4(0.0, 0.0, 0.0, 1.0),
-    vec4 const& ambient_color = vec4(1.0, 1.0, 1.0, 1.0))
+kernel_params<NB, P, N, TC, M, T, L, vec4> make_params(
+        P const&    begin,
+        P const&    end,
+        N const&    normals,
+        TC const&   tex_coords,
+        M const&    materials,
+        T const&    textures,
+        L const&    lbegin,
+        L const&    lend,
+        float       epsilon         = std::numeric_limits<float>::epsilon(),
+        vec4 const& bg_color        = vec4(0.0),
+        vec4 const& ambient_color   = vec4(1.0)
+        )
 {
     return kernel_params<NB, P, N, TC, M, T, L, vec4>
     {
