@@ -10,6 +10,7 @@
 #include "math/math.h"
 #include "brdf.h"
 #include "shade_record.h"
+#include "spectrum.h"
 
 
 namespace visionaray
@@ -211,14 +212,14 @@ public:
     VSNRAY_FUNC
     vector<3, U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
     {
-        return diffuse_brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl_dir, pdf, sampler);
+        return sample_impl(shade_rec, refl_dir, pdf, sampler);
     }
 
     template <typename L, typename C, typename U, typename S /* sampler */>
     VSNRAY_FUNC
     vector<3, U> sample(shade_record<L, C, U> const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler)
     {
-        return vector<3, U>(sr.cd) * diffuse_brdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, sampler);
+        return vector<3, U>(sr.cd) * sample_impl(sr, refl_dir, pdf, sampler);
     }
 
 
@@ -312,6 +313,31 @@ private:
     V cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const
     {
         return V(sr.cd) * diffuse_brdf_.f(n, wo, wi);
+    }
+
+    template <typename SR, typename U, typename S /* sampler */>
+    VSNRAY_FUNC
+    vector<3, U> sample_impl(SR const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    {
+        U pdf1;
+        U pdf2;
+
+        vector<3, U> refl1;
+        vector<3, U> refl2;
+
+        auto diff      = diffuse_brdf_.sample_f(sr.normal, sr.view_dir, refl1, pdf1, sampler);
+        auto spec      = specular_brdf_.sample_f(sr.normal, sr.view_dir, refl2, pdf2, sampler);
+
+        auto prob_diff = rgb_to_luminance( diffuse_brdf_.cd * diffuse_brdf_.kd );
+        auto prob_spec = rgb_to_luminance( specular_brdf_.cs * specular_brdf_.ks );
+        prob_diff      = prob_diff / (prob_diff + prob_spec);
+
+        auto u         = sampler.next();
+
+        pdf            = select( u < U(prob_diff), pdf1,  pdf2  );
+        refl_dir       = select( u < U(prob_diff), refl1, refl2 );
+
+        return           select( u < U(prob_diff), diff,  spec  );
     }
 
 };
