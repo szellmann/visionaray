@@ -21,7 +21,9 @@ namespace MATH_NAMESPACE
 //
 
 using std::abs;
+using std::cos;
 using std::pow;
+using std::sin;
 using std::sqrt;
 
 template <typename T>
