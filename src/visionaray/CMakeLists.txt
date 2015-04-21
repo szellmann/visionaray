@@ -141,6 +141,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/render_target.h
     ${HEADER_DIR}/scheduler.h
     ${HEADER_DIR}/shade_record.h
+    ${HEADER_DIR}/spectrum.h
     ${HEADER_DIR}/surface.h
     ${HEADER_DIR}/tags.h
 
