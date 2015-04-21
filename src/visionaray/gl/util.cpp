@@ -3,9 +3,9 @@
 
 #include <cstdio>
 
-#include <exception>
 #include <iostream>
 #include <ostream>
+#include <stdexcept>
 
 #include <visionaray/detail/platform.h>
 
@@ -61,14 +61,16 @@ static void debug_callback(
         )
 {
     std::cerr << "GL " << get_debug_type_string(type) << " " << message << std::endl;
-    std::cerr << visionaray::util::backtrace() << std::endl;
-    throw std::exception();
-
     if (type == GL_DEBUG_TYPE_ERROR)
     {
 #ifdef _WIN32
         if (IsDebuggerPresent())
+        {
             DebugBreak();
+        }
+#else
+        std::cerr << visionaray::util::backtrace() << std::endl;
+        throw std::runtime_error("OpenGL error");
 #endif
     }
 }
