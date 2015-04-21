@@ -325,14 +325,25 @@ private:
         vector<3, U> refl1;
         vector<3, U> refl2;
 
-        auto diff      = diffuse_brdf_.sample_f(sr.normal, sr.view_dir, refl1, pdf1, sampler);
-        auto spec      = specular_brdf_.sample_f(sr.normal, sr.view_dir, refl2, pdf2, sampler);
+        vector<3, U> diff;
+        vector<3, U> spec;
 
         auto prob_diff = rgb_to_luminance( diffuse_brdf_.cd * diffuse_brdf_.kd );
         auto prob_spec = rgb_to_luminance( specular_brdf_.cs * specular_brdf_.ks );
         prob_diff      = prob_diff / (prob_diff + prob_spec);
 
+
         auto u         = sampler.next();
+
+        if ( any(u < U(prob_diff)) )
+        {
+            diff       = diffuse_brdf_.sample_f(sr.normal, sr.view_dir, refl1, pdf1, sampler);
+        }
+
+        if ( any(u >= U(prob_diff)) )
+        {
+            spec       = specular_brdf_.sample_f(sr.normal, sr.view_dir, refl2, pdf2, sampler);
+        }
 
         pdf            = select( u < U(prob_diff), pdf1,  pdf2  );
         refl_dir       = select( u < U(prob_diff), refl1, refl2 );
