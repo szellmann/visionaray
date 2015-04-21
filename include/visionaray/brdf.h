@@ -99,8 +99,32 @@ public:
 
         return cs * ks * ((exp + U(2.0)) / (U(8.0) * constants::pi<U>())) * pow(hdotn, exp);
     }
+
+    template <typename U, typename S /* sampler */>
+    VSNRAY_FUNC
+    vector<3, U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler)
+    {
+        auto u1 = sampler.next();
+        auto u2 = sampler.next();
+
+        auto costheta = pow(u1, U(1.0) / (exp + U(1.0)));
+        auto sintheta = sqrt( max(U(0.0), U(1.0) - costheta * costheta) );
+        auto phi = u2 * constants::two_pi<U>();
+
+        auto w  = n;
+        auto v  = normalize( cross(vector<3, U>(0.0001, 1.0, 0.0001), w) );
+        auto u  = cross(v, w);
+
+        vector<3, U> h = normalize( sintheta * cos(phi) * u + sintheta * sin(phi) * v + costheta * w );
+
+        wi = -reflect(wo, h);
+
+        pdf = ((exp + U(1.0)) * pow(costheta, exp)) / (U(2.0) * constants::pi<U>() * U(4.0) * dot(wo, h));
+
+        return f(n, wo, wi);
+    }
 };
 
-}
+} // visionaray
 
 #endif // VSNRAY_BRDF_H
