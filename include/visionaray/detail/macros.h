@@ -76,6 +76,10 @@
  */
 #if VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
 #define VSNRAY_UNREACHABLE() __builtin_unreachable()
+#elif VSNRAY_CXX_MSVC
+#define VSNRAY_UNREACHABLE() __assume(0)
+#else
+#define VSNRAY_UNREACHABLE()
 #endif
 
 
