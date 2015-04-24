@@ -113,11 +113,10 @@ struct renderer
     };
 
 
-    renderer(int argc, char** argv)
+    renderer()
         : host_sched(get_num_processors())
         , down_button(mouse::NoButton)
     {
-        parse_cmd_line(argc, argv);
     }
 
 
@@ -163,9 +162,9 @@ struct renderer
     visionaray::frame_counter   counter;
     bvh_outline_renderer        outlines;
 
-private:
+public:
 
-    void parse_cmd_line(int argc, char** argv);
+    bool parse_cmd_line(int argc, char** argv);
 
 };
 
@@ -174,7 +173,7 @@ private:
 // Parse renderer state from the command line
 //
 
-void renderer::parse_cmd_line(int argc, char** argv)
+bool renderer::parse_cmd_line(int argc, char** argv)
 {
     using namespace support;
 
@@ -239,8 +238,15 @@ void renderer::parse_cmd_line(int argc, char** argv)
     }
     catch (std::exception& e)
     {
+        if (filename.empty())
+        {
+            return false;
+        }
+
         std::cerr << e.what() << std::endl;
     }
+
+    return true;
 }
 
 std::unique_ptr<renderer> rend(nullptr);
@@ -711,14 +717,27 @@ void close_func()
     rend.reset(nullptr);
 }
 
+void print_usage()
+{
+    std::cerr << "Usage: viewer <filename> [<args>]\n";
+    std::cerr << "\n";
+    std::cerr << "Optional arguments:\n";
+    std::cerr << "    -width=value                              default: 800\n";
+    std::cerr << "    -height=value                             default: 800\n";
+    std::cerr << "    -algorith=[simple|whitted|pathtracing]    default: simple\n";
+#ifdef __CUDACC__
+    std::cerr << "    -device=[cpu|gpu]                         default: cpu\n";
+#endif
+}
+
 int main(int argc, char** argv)
 {
 
-    rend = std::unique_ptr<renderer>(new renderer(argc, argv));
+    rend = std::unique_ptr<renderer>(new renderer);
 
-    if (rend->filename.empty())
+    if ( !rend->parse_cmd_line(argc, argv) )
     {
-        std::cerr << "Usage: viewer FILENAME" << std::endl;
+        print_usage();
         return EXIT_FAILURE;
     }
 
