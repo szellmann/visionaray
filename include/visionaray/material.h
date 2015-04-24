@@ -28,7 +28,7 @@ public:
     typedef T scalar_type;
     typedef vector<3, T> color_type;
 
-    color_type ambient() const
+    VSNRAY_FUNC color_type ambient() const
     {
         return color_type();
     }
