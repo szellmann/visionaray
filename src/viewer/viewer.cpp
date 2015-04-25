@@ -122,6 +122,7 @@ struct renderer
 
     int w                       = 800;
     int h                       = 800;
+    vec3        bgcolor         = { 0.1, 0.4, 1.0 };
     unsigned    frame           = 0;
     algorithm   algo            = Simple;
     device_type dev_type        = CPU;
@@ -202,6 +203,19 @@ bool renderer::parse_cmd_line(int argc, char** argv)
         cl::Desc("Window height"),
         cl::ArgRequired,
         cl::init(this->h)
+        );
+
+    auto bgcolor = cl::makeOption<vec3&, cl::ScalarType>(
+        [&cmd](StringRef name, StringRef /*arg*/, vec3& value)
+        {
+            cl::Parser<>()(name + "-r", cmd.bump(), value.x);
+            cl::Parser<>()(name + "-g", cmd.bump(), value.y);
+            cl::Parser<>()(name + "-b", cmd.bump(), value.z);
+        },
+        cmd, "bgcolor",
+        cl::Desc("Background color"),
+        cl::ArgDisallowed,
+        cl::init(this->bgcolor)
         );
 
     auto algo_opt = cl::makeOption<algorithm&>({
@@ -466,18 +480,17 @@ void display_func()
 
         thrust::device_vector<light_type> device_lights = host_lights;
 
-        auto kparams = make_params<normals_per_face_binding>
-        (
-            thrust::raw_pointer_cast(device_primitives.data()),
-            thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
-            thrust::raw_pointer_cast(rend->device_normals.data()),
-            thrust::raw_pointer_cast(rend->device_materials.data()),
-            thrust::raw_pointer_cast(device_lights.data()),
-            thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
-            epsilon,
-            bg_color,
-            rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
-        );
+        auto kparams = make_params<normals_per_face_binding>(
+                thrust::raw_pointer_cast(device_primitives.data()),
+                thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
+                thrust::raw_pointer_cast(rend->device_normals.data()),
+                thrust::raw_pointer_cast(rend->device_materials.data()),
+                thrust::raw_pointer_cast(device_lights.data()),
+                thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+                epsilon,
+                vec4(rend->bgcolor, 1.0f),
+                rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
+                );
 
         call_kernel( rend->algo, rend->device_sched, kparams, rend->frame, rend->cam, rend->device_rt );
 #endif
@@ -491,20 +504,19 @@ void display_func()
 
         auto& mod = rend->mod;
 
-        auto kparams = make_params<normals_per_face_binding>
-        (
-            host_primitives.data(),
-            host_primitives.data() + host_primitives.size(),
-            mod.normals.data(),
-//            mod.tex_coords.data(),
-            mod.materials.data(),
-//            mod.textures.data(),
-            host_lights.data(),
-            host_lights.data() + host_lights.size(),
-            epsilon,
-            bg_color,
-            rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
-        );
+        auto kparams = make_params<normals_per_face_binding>(
+                host_primitives.data(),
+                host_primitives.data() + host_primitives.size(),
+                mod.normals.data(),
+//              mod.tex_coords.data(),
+                mod.materials.data(),
+//              mod.textures.data(),
+                host_lights.data(),
+                host_lights.data() + host_lights.size(),
+                epsilon,
+                vec4(rend->bgcolor, 1.0f),
+                rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
+                );
 
         call_kernel( rend->algo, rend->host_sched, kparams, rend->frame, rend->cam, rend->host_rt );
 #endif
@@ -724,6 +736,7 @@ void print_usage()
     std::cerr << "Optional arguments:\n";
     std::cerr << "    -width=value                              default: 800\n";
     std::cerr << "    -height=value                             default: 800\n";
+    std::cerr << "    -bgcolor r g b                            default: 0.1 0.4 1.0\n";
     std::cerr << "    -algorith=[simple|whitted|pathtracing]    default: simple\n";
 #ifdef __CUDACC__
     std::cerr << "    -device=[cpu|gpu]                         default: cpu\n";
