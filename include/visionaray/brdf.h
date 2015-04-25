@@ -38,9 +38,13 @@ public:
     VSNRAY_FUNC
     vector<3, U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler)
     {
-        auto w  = n;
-        auto v  = normalize( cross(vector<3, U>(0.0001, 1.0, 0.0001), w) );
-        auto u  = cross(v, w);
+        auto w = n;
+        auto v = select(
+                abs(w.x) > abs(w.y),
+                normalize( vector<3, U>(-w.z, U(0.0), w.x) ),
+                normalize( vector<3, U>(U(0.0), w.z, -w.y) )
+                );
+        auto u = cross(v, w);
 
         auto sp = cosine_sample_hemisphere(sampler.next(), sampler.next());
         wi      = normalize( sp.x * u + sp.y * v + sp.z * w );
@@ -111,9 +115,13 @@ public:
         auto sintheta = sqrt( max(U(0.0), U(1.0) - costheta * costheta) );
         auto phi = u2 * constants::two_pi<U>();
 
-        auto w  = n;
-        auto v  = normalize( cross(vector<3, U>(0.0001, 1.0, 0.0001), w) );
-        auto u  = cross(v, w);
+        auto w = n;
+        auto v = select(
+                abs(w.x) > abs(w.y),
+                normalize( vector<3, U>(-w.z, U(0.0), w.x) ),
+                normalize( vector<3, U>(U(0.0), w.z, -w.y) )
+                );
+        auto u = cross(v, w);
 
         vector<3, U> h = normalize( sintheta * cos(phi) * u + sintheta * sin(phi) * v + costheta * w );
 
