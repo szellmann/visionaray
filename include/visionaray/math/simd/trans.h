@@ -16,10 +16,6 @@
 #include "../detail/math.h"
 
 
-//-------------------------------------------------------------------------------------------------
-// pow(2,x), x in [0,1)
-//
-
 namespace MATH_NAMESPACE
 {
 namespace simd
@@ -385,8 +381,8 @@ inline float4 log2(float4 x)
 {
     int4 n = 0;
     float4 m = detail::frexp(x, &n);
-    m *= 2.0f; // (1/2,1] ==> (0,1]
-    return float4(n - 1) + detail::log2(m - 1.0f); // (0,1] ==> (1,2]
+    m *= 2.0f;
+    return float4(n - 1) + detail::log2(m - 1.0f);
 }
 
 inline float4 pow(float4 x, float4 y)
