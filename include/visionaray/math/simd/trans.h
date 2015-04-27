@@ -437,7 +437,8 @@ inline float8 log2(float8 x)
 {
     int8 n = 0;
     float8 m = detail::frexp(x, &n);
-    return float8(n) + detail::log2(m - float8(1.0));
+    m *= 2.0f;
+    return float8(n - 1) + detail::log2(m - 1.0f);
 }
 
 inline float8 pow(float8 x, float8 y)
