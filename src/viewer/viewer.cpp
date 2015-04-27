@@ -182,8 +182,8 @@ bool renderer::parse_cmd_line(int argc, char** argv)
 
     auto filename_opt = cl::makeOption<std::string&>(
         cl::Parser<>(),
-        cmd,
-        cl::Desc("Input filename"),
+        cmd, "filename",
+        cl::Desc("Input file in wavefront obj format"),
         cl::Positional,
         cl::Required,
         cl::init(this->filename)
