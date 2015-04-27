@@ -254,6 +254,7 @@ bool renderer::parse_cmd_line(int argc, char** argv)
     {
         if (filename.empty())
         {
+            std::cout << cmd.help("viewer") << std::endl;
             return false;
         }
 
@@ -729,20 +730,6 @@ void close_func()
     rend.reset(nullptr);
 }
 
-void print_usage()
-{
-    std::cerr << "Usage: viewer <filename> [<args>]\n";
-    std::cerr << "\n";
-    std::cerr << "Optional arguments:\n";
-    std::cerr << "    -width=value                              default: 800\n";
-    std::cerr << "    -height=value                             default: 800\n";
-    std::cerr << "    -bgcolor r g b                            default: 0.1 0.4 1.0\n";
-    std::cerr << "    -algorith=[simple|whitted|pathtracing]    default: simple\n";
-#ifdef __CUDACC__
-    std::cerr << "    -device=[cpu|gpu]                         default: cpu\n";
-#endif
-}
-
 int main(int argc, char** argv)
 {
 
@@ -750,7 +737,6 @@ int main(int argc, char** argv)
 
     if ( !rend->parse_cmd_line(argc, argv) )
     {
-        print_usage();
         return EXIT_FAILURE;
     }
 
