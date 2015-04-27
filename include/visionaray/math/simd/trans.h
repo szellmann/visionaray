@@ -385,7 +385,8 @@ inline float4 log2(float4 x)
 {
     int4 n = 0;
     float4 m = detail::frexp(x, &n);
-    return float4(n) + detail::log2(m - float4(1.0));
+    m *= 2.0f; // (1/2,1] ==> (0,1]
+    return float4(n - 1) + detail::log2(m - 1.0f); // (0,1] ==> (1,2]
 }
 
 inline float4 pow(float4 x, float4 y)
@@ -458,5 +459,3 @@ inline float8 pow(float8 x, float8 y)
 } // MATH_NAMESPACE
 
 #endif // VSNRAY_MATH_SIMD_TRANS_H
-
-
