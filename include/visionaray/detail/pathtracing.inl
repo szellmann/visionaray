@@ -79,7 +79,7 @@ struct kernel
 
                 S pdf(0.0);
                 auto sr     = make_shade_record<Params, S>();
-                sr.active   = hit_rec.hit;
+                sr.active   = active_rays;
                 sr.view_dir = view_dir;
  
                 auto color = surf.sample(sr, refl_dir, pdf, s);
