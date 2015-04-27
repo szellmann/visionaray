@@ -330,6 +330,12 @@ private:
 
         auto prob_diff = rgb_to_luminance( diffuse_brdf_.cd * diffuse_brdf_.kd );
         auto prob_spec = rgb_to_luminance( specular_brdf_.cs * specular_brdf_.ks );
+
+        auto all_zero  = prob_diff == U(0.0) && prob_spec == U(0.0);
+
+        prob_diff      = select( all_zero, U(0.5), prob_diff );
+        prob_spec      = select( all_zero, U(0.5), prob_spec );
+
         prob_diff      = prob_diff / (prob_diff + prob_spec);
 
 
