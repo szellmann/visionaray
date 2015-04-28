@@ -23,6 +23,8 @@ inline vector<Dim, T> operator-(vector<Dim, T> const& v)
     return result;
 }
 
+// vector op vector
+
 template <size_t Dim, typename T>
 MATH_FUNC
 inline vector<Dim, T> operator+(vector<Dim, T> const& u, vector<Dim, T> const& v)
@@ -149,6 +151,8 @@ inline vector<Dim, T> operator>>(vector<Dim, T> const& u, vector<Dim, T> const& 
     return result;
 }
 
+// vector op scalar
+
 template <size_t Dim, typename T>
 MATH_FUNC
 inline vector<Dim, T> operator+(vector<Dim, T> const& v, T s)
@@ -274,6 +278,136 @@ inline vector<Dim, T> operator>>(vector<Dim, T> const& v, T s)
 
     return result;
 }
+
+// scalar op vector
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T> operator+(T s, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = s + v[d];
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T> operator-(T s, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = s - v[d];
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T> operator*(T s, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = s * v[d];
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T> operator/(T s, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = s / v[d];
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T> operator&(T s, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = s & v[d];
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T> operator|(T s, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = s | v[d];
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T> operator^(T s, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = s ^ v[d];
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T> operator<<(T s, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = s << v[d];
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T> operator>>(T s, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = s >> v[d];
+    }
+
+    return result;
+}
+
+// append operations
 
 template <size_t Dim, typename T>
 MATH_FUNC
