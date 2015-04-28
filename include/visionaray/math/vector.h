@@ -146,6 +146,43 @@ public:
 };
 
 
+//-------------------------------------------------------------------------------------------------
+// vectorN
+//
+
+template <size_t Dim, typename T>
+class vector
+{
+public:
+
+    using value_type = T;
+
+public:
+
+    MATH_FUNC vector() = default;
+
+    MATH_FUNC explicit vector(T s);
+    MATH_FUNC explicit vector(T const data[Dim]);
+
+    template <typename U>
+    MATH_FUNC explicit vector(vector<Dim, U> const& rhs);
+
+    template <typename U>
+    MATH_FUNC vector& operator=(vector<Dim, U> const& rhs);
+
+    MATH_FUNC T* data();
+    MATH_FUNC T const* data() const;
+
+    MATH_FUNC T& operator[](size_t i);
+    MATH_FUNC T const& operator[](size_t i) const;
+
+private:
+
+    T data_[Dim];
+    
+};
+
+
 } // MATH_NAMESPACE
 
 
@@ -156,5 +193,3 @@ public:
 
 
 #endif // VSNRAY_MATH_VECTOR_H
-
-

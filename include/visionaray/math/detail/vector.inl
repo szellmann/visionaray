@@ -1,8 +1,75 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <algorithm>
+
 namespace MATH_NAMESPACE
 {
+
+
+//--------------------------------------------------------------------------------------------------
+// vectorN members
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T>::vector(T s)
+{
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        data_[d] = s;
+    }
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<Dim, T>::vector(T const data[Dim])
+{
+    std::copy( data, data + Dim, data_ );    
+}
+
+template <size_t Dim, typename T>
+template <typename U>
+MATH_FUNC
+inline vector<Dim, T>::vector(vector<Dim, U> const& rhs)
+{
+    std::copy( rhs.data(), rhs.data() + Dim, data_ );
+}
+
+template <size_t Dim, typename T>
+template <typename U>
+inline vector<Dim, T>& vector<Dim, T>::operator=(vector<Dim, U> const& rhs)
+{
+    std::copy( rhs.data(), rhs.data() + Dim, data_ );
+    return *this;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline T* vector<Dim, T>::data()
+{
+    return data_;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline T const* vector<Dim, T>::data() const
+{
+    return data_;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline T& vector<Dim, T>::operator[](size_t i)
+{
+    return data_[i];
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline T const& vector<Dim, T>::operator[](size_t i) const
+{
+    return data_[i];
+}
 
 
 //--------------------------------------------------------------------------------------------------
