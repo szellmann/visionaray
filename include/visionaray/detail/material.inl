@@ -65,11 +65,13 @@ inline plastic<float8> pack
     plastic<float> const& m5, plastic<float> const& m6, plastic<float> const& m7, plastic<float> const& m8
 )
 {
-    vector<3, float> ca[8]          = { m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca(),
+    using C = spectrum<float>;
+
+    C ca[8]                         = { m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca(),
                                         m5.get_ca(), m6.get_ca(), m7.get_ca(), m8.get_ca() };
-    vector<3, float> cd[8]          = { m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd(),
+    C cd[8]                         = { m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd(),
                                         m5.get_cd(), m6.get_cd(), m7.get_cd(), m8.get_cd() };
-    vector<3, float> cs[8]          = { m1.get_cs(), m2.get_cs(), m3.get_cs(), m4.get_cs(),
+    C cs[8]                         = { m1.get_cs(), m2.get_cs(), m3.get_cs(), m4.get_cs(),
                                         m5.get_cs(), m6.get_cs(), m7.get_cs(), m8.get_cs() };
     VSNRAY_ALIGN(32) float ka[8]    = { m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka(),
                                         m5.get_ka(), m6.get_ka(), m7.get_ka(), m8.get_ka() };
@@ -81,33 +83,50 @@ inline plastic<float8> pack
                                         m5.get_specular_exp(), m6.get_specular_exp(), m7.get_specular_exp(), m8.get_specular_exp() };
 
     plastic<float8> result;
-    result.set_ca
-    (
-        vector<3, float8>
-        (
-            float8( ca[0].x, ca[1].x, ca[2].x, ca[3].x, ca[4].x, ca[5].x, ca[6].x, ca[7].x ),
-            float8( ca[0].y, ca[1].y, ca[2].y, ca[3].y, ca[4].y, ca[5].y, ca[6].y, ca[7].y ),
-            float8( ca[0].z, ca[1].z, ca[2].z, ca[3].z, ca[4].z, ca[5].z, ca[6].z, ca[7].z )
-        )
-    );
-    result.set_cd
-    (
-        vector<3, float8>
-        (
-            float8( cd[0].x, cd[1].x, cd[2].x, cd[3].x, cd[4].x, cd[5].x, cd[6].x, cd[7].x ),
-            float8( cd[0].y, cd[1].y, cd[2].y, cd[3].y, cd[4].y, cd[5].y, cd[6].y, cd[7].y ),
-            float8( cd[0].z, cd[1].z, cd[2].z, cd[3].z, cd[4].z, cd[5].z, cd[6].z, cd[7].z )
-        )
-    );
-    result.set_cs
-    (
-        vector<3, float8>
-        (
-            float8( cs[0].x, cs[1].x, cs[2].x, cs[3].x, cs[4].x, cs[5].x, cs[6].x, cs[7].x ),
-            float8( cs[0].y, cs[1].y, cs[2].y, cs[3].y, cs[4].y, cs[5].y, cs[6].y, cs[7].y ),
-            float8( cs[0].z, cs[1].z, cs[2].z, cs[3].z, cs[4].z, cs[5].z, cs[6].z, cs[7].z )
-        )
-    );
+
+    spectrum<float8> ca8;
+    spectrum<float8> cd8;
+    spectrum<float8> cs8;
+
+    for (size_t d = 0; d < spectrum<float>().size(); ++d)
+    {
+        ca8[d] = float8(
+                ca[0][d],
+                ca[1][d],
+                ca[2][d],
+                ca[3][d],
+                ca[4][d],
+                ca[5][d],
+                ca[6][d],
+                ca[7][d]
+                );
+
+        cd8[d] = float8(
+                cd[0][d],
+                cd[1][d],
+                cd[2][d],
+                cd[3][d],
+                cd[4][d],
+                cd[5][d],
+                cd[6][d],
+                cd[7][d]
+                );
+
+        cs8[d] = float8(
+                cs[0][d],
+                cs[1][d],
+                cs[2][d],
+                cs[3][d],
+                cs[4][d],
+                cs[5][d],
+                cs[6][d],
+                cs[7][d]
+                );
+    }
+
+    result.set_ca(ca8);
+    result.set_cd(cd8);
+    result.set_cs(cs8);
     result.set_ka(ka);
     result.set_kd(kd);
     result.set_ks(ks);

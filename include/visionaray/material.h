@@ -544,14 +544,12 @@ public:
     spectrum<simd::float4> shade(SR const& sr) const
     {
         auto sr4 = simd::unpack(sr);
-        spectrum<float> v[] =
-        {
-            vector<3, float>( m1_.shade(sr4[0]) ),
-            vector<3, float>( m2_.shade(sr4[1]) ),
-            vector<3, float>( m3_.shade(sr4[2]) ),
-            vector<3, float>( m4_.shade(sr4[3]) )
-        };
-        return simd::pack( v[0], v[1], v[2], v[3] );
+        return simd::pack(
+                m1_.shade(sr4[0]),
+                m2_.shade(sr4[1]),
+                m3_.shade(sr4[2]),
+                m4_.shade(sr4[3])
+                );
     }
 
     template <typename SR, typename S /* sampler */>
