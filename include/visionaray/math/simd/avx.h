@@ -590,6 +590,63 @@ inline std::array<vector<3, float>, 8> unpack(vector<3, float8> const& v)
 }
 
 
+/* VecN */
+
+template <size_t Dim>
+inline vector<Dim, float8> pack(
+        vector<Dim, float> const& v1,
+        vector<Dim, float> const& v2,
+        vector<Dim, float> const& v3,
+        vector<Dim, float> const& v4,
+        vector<Dim, float> const& v5,
+        vector<Dim, float> const& v6,
+        vector<Dim, float> const& v7,
+        vector<Dim, float> const& v8
+        )
+{
+    vector<Dim, float8> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = float8(
+                v1[d],
+                v2[d],
+                v3[d],
+                v4[d],
+                v5[d],
+                v6[d],
+                v7[d],
+                v8[d]
+                );
+    }
+
+    return result;
+}
+
+template <size_t Dim>
+inline std::array<vector<Dim, float>, 8> unpack(vector<Dim, float8> const& v)
+{
+    std::array<vector<Dim, float>, 8> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        VSNRAY_ALIGN(32) float data[8];
+        store(data, v[d]);
+
+        result[0][d] = data[0];
+        result[1][d] = data[1];
+        result[2][d] = data[2];
+        result[3][d] = data[3];
+        result[4][d] = data[4];
+        result[5][d] = data[5];
+        result[6][d] = data[6];
+        result[7][d] = data[7];
+    }
+
+    return result;
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // cstdlib-like functions
 //

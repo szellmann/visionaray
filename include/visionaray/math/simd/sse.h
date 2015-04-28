@@ -767,6 +767,46 @@ inline std::array<vector<4, float>, 4> unpack(vector<4, float4> const& v)
 }
 
 
+/* VecN */
+
+template <size_t Dim>
+inline vector<Dim, float4> pack(
+        vector<Dim, float> const& v1,
+        vector<Dim, float> const& v2,
+        vector<Dim, float> const& v3,
+        vector<Dim, float> const& v4
+        )
+{
+    vector<Dim, float4> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = float4( v1[d], v2[d], v3[d], v4[d] );
+    }
+
+    return result;
+}
+
+template <size_t Dim>
+inline std::array<vector<Dim, float>, 4> unpack(vector<Dim, float4> const& v)
+{
+    std::array<vector<Dim, float>, 4> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        VSNRAY_ALIGN(16) float data[4];
+        store(data, v[d]);
+
+        result[0][d] = data[0];
+        result[1][d] = data[1];
+        result[2][d] = data[2];
+        result[3][d] = data[3];
+    }
+
+    return result;
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // cstdlib-like functions
 //
