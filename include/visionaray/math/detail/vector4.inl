@@ -88,6 +88,13 @@ inline vector<4, T>& vector<4, T>::operator=(vector<4, U> const& rhs)
 
 template <typename T>
 MATH_FUNC
+inline size_t vector<4, T>::size() const
+{
+    return 4;
+}
+
+template <typename T>
+MATH_FUNC
 inline T* vector<4, T>::data()
 {
     return reinterpret_cast<T*>(this);

@@ -37,10 +37,18 @@ inline vector<Dim, T>::vector(vector<Dim, U> const& rhs)
 
 template <size_t Dim, typename T>
 template <typename U>
+MATH_FUNC
 inline vector<Dim, T>& vector<Dim, T>::operator=(vector<Dim, U> const& rhs)
 {
     std::copy( rhs.data(), rhs.data() + Dim, data_ );
     return *this;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+inline size_t vector<Dim, T>::size() const
+{
+    return Dim;
 }
 
 template <size_t Dim, typename T>
