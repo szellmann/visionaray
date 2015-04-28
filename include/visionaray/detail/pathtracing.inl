@@ -30,8 +30,8 @@ struct kernel
     {
 
         using S = typename R::scalar_type;
-        using C = typename result_record<S>::color_type;
         using V = typename result_record<S>::vec_type;
+        using C = spectrum<S>;
 
         result_record<S> result;
 
@@ -40,7 +40,7 @@ struct kernel
         auto hit_rec        =  closest_hit(ray, params.prims.begin, params.prims.end);
         auto exited         = !hit_rec.hit;
         auto active_rays    =  hit_rec.hit;
-        result.color        = select( exited, C(params.bg_color), C(1.0) );
+        result.color        =  params.bg_color;
 
 
         if (any(hit_rec.hit))
@@ -54,6 +54,7 @@ struct kernel
             return result;
         }
 
+        C dst(1.0);
 
         for (unsigned d = 0; d < MaxDepth; ++d)
         {
@@ -67,7 +68,7 @@ struct kernel
 
                 if (any(below))
                 {
-                    result.color = mul( result.color, C(0.0, 0.0, 0.0, 1.0), below, result.color );
+                    dst = mul( dst, C(0.0), below, dst );
                     active_rays = active_rays & !below;
 
                     if ( !any(active_rays) )
@@ -82,11 +83,11 @@ struct kernel
                 sr.active   = active_rays;
                 sr.view_dir = view_dir;
  
-                auto color = surf.sample(sr, refl_dir, pdf, s);
+                auto src = surf.sample(sr, refl_dir, pdf, s);
 
                 auto emissive = has_emissive_material(surf);
-                color = mul( color, dot(surf.normal, refl_dir) / pdf, !emissive, color ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
-                result.color = mul( result.color, C(color, S(1.0)), active_rays, result.color );
+                src = mul( src, dot(surf.normal, refl_dir) / pdf, !emissive, src ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
+                dst = mul( dst, src, active_rays, dst );
                 active_rays &= !emissive;
 
                 if (!any(active_rays))
@@ -104,10 +105,12 @@ struct kernel
                 active_rays &= hit_rec.hit;
             }
 
-            result.color = mul( result.color, C(params.ambient_color), exited, result.color );
+            dst = mul( dst, C(params.ambient_color), exited, dst );
         }
 
-        result.color = mul( result.color, C(0.0, 0.0, 0.0, 1.0), active_rays, result.color );
+        dst = mul( dst, C(0.0), active_rays, dst );
+
+        result.color = select( result.hit, rgb_to_rgba(dst), result.color );
 
         return result;
     }

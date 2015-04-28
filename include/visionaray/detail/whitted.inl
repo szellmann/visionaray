@@ -25,8 +25,8 @@ struct kernel
     {
 
         using S = typename R::scalar_type;
-        using C = typename result_record<S>::color_type;
         using V = typename result_record<S>::vec_type;
+        using C = spectrum<S>;
 
         result_record<S> result;
 
@@ -40,22 +40,22 @@ struct kernel
         else
         {
             result.hit = false;
-            result.color = C(params.bg_color);
+            result.color = params.bg_color;
             return result;
         }
 
-        result.color = C(0.0);
+        C color(0.0);
 
         size_t depth = 0;
-        auto no_hit_color = C(params.bg_color);
+        auto no_hit_color = C(rgba_to_rgb(params.bg_color));
         auto mirror = S(1.0);
         while (any(hit_rec.hit) && any(mirror > S(params.epsilon)) && depth++ < 4/*1*/)
         {
             hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
 
             auto surf = get_surface(hit_rec, params);
-            auto ambient = C(surf.material.ambient(), S(1.0)) * C(params.ambient_color);
-            C shaded_clr = select( hit_rec.hit, ambient, C(params.bg_color) );
+            auto ambient = surf.material.ambient() * C(rgba_to_rgb(params.ambient_color));
+            auto shaded_clr = select( hit_rec.hit, ambient, C(rgba_to_rgb(params.bg_color)) );
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
@@ -79,10 +79,10 @@ struct kernel
                 sr.light        = it;
                 auto clr        = surf.shade(sr);
 
-                shaded_clr += select( active_rays, C(clr, S(1.0)), C(0.0) );
+                shaded_clr += select( active_rays, clr, C(0.0) );
             }
 
-            result.color += select( hit_rec.hit, shaded_clr, no_hit_color ) * mirror;
+            color += select( hit_rec.hit, shaded_clr, no_hit_color ) * mirror;
 
             auto dir = reflect(ray.dir, surf.normal);
             ray = R
@@ -94,6 +94,8 @@ struct kernel
             mirror *= S(0.1);
             no_hit_color = C(0.0);
         }
+
+        result.color = rgb_to_rgba(color);
 
         return result;
 

@@ -27,8 +27,8 @@ struct kernel
     VSNRAY_FUNC result_record<typename R::scalar_type> operator()(R ray) const
     {
         using S = typename R::scalar_type;
-        using C = typename result_record<S>::color_type;
         using V = typename result_record<S>::vec_type;
+        using C = spectrum<S>;
 
         result_record<S> result;
 
@@ -39,8 +39,8 @@ struct kernel
             hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
 
             auto surf = get_surface(hit_rec, params);
-            auto ambient = C(surf.material.ambient(), S(1.0)) * C(params.ambient_color);
-            C shaded_clr = select( hit_rec.hit, ambient, C(params.bg_color) );
+            auto ambient = surf.material.ambient() * C(rgba_to_rgb(params.ambient_color));
+            C shaded_clr = select( hit_rec.hit, ambient, C(rgba_to_rgb(params.bg_color)) );
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
@@ -52,15 +52,15 @@ struct kernel
                 sr.light        = it;
                 auto clr        = surf.shade(sr);
 
-                shaded_clr += select( hit_rec.hit, C(clr, S(1.0)), C(0.0) );
+                shaded_clr     += select( hit_rec.hit, clr, C(0.0) );
             }
 
-            result.color     = shaded_clr;
-            result.isect_pos = hit_rec.isect_pos;
+            result.color        = rgb_to_rgba(shaded_clr);
+            result.isect_pos    = hit_rec.isect_pos;
         }
         else
         {
-            result.color = C(params.bg_color);
+            result.color = params.bg_color;
         }
 
         result.hit = hit_rec.hit;

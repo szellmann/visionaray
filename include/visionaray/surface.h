@@ -22,7 +22,9 @@ class surface<M, Args...>
 {
 public:
 
-    typedef typename M::scalar_type scalar_type;
+    using scalar_type   = typename M::scalar_type;
+
+public:
 
     VSNRAY_FUNC
     surface(vector<3, scalar_type> const& n, M const& m)
@@ -36,7 +38,7 @@ public:
 
     template <typename SR>
     VSNRAY_FUNC
-    vector<3, scalar_type> shade(SR shade_rec)
+    spectrum<scalar_type> shade(SR shade_rec)
     {
         shade_rec.normal = normal;
         return material.shade(shade_rec);
@@ -44,7 +46,7 @@ public:
 
     template <typename SR, typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    vector<3, scalar_type> sample(SR shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    spectrum<scalar_type> sample(SR shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
     {
         shade_rec.normal = normal;
         return material.sample(shade_rec, refl_dir, pdf, sampler);
@@ -57,8 +59,10 @@ class surface<M, C, Args...> : public surface<M, Args...>
 {
 public:
 
-    typedef surface<M, Args...>     base_type;
-    typedef typename M::scalar_type scalar_type;
+    using base_type     = surface<M, Args...>;
+    using scalar_type   = typename M::scalar_type;
+
+public:
 
     VSNRAY_FUNC
     surface(vector<3, scalar_type> const& n, M const& m, C const& cd)
@@ -69,7 +73,7 @@ public:
 
     template <typename SR>
     VSNRAY_FUNC
-    vector<3, scalar_type> shade(SR shade_rec)
+    spectrum<scalar_type> shade(SR shade_rec)
     {
         shade_rec.cd = cd_;
         return base_type::shade(shade_rec);
@@ -77,7 +81,7 @@ public:
 
     template <typename SR, typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    vector<3, scalar_type> sample(SR shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    spectrum<scalar_type> sample(SR shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
     {
         shade_rec.cd = cd_;
         return base_type::sample(shade_rec, refl_dir, pdf, sampler);
@@ -89,10 +93,6 @@ public:
 
 } // visionaray
 
-
 #include "detail/surface.inl"
 
-
 #endif // VSNRAY_SURFACE_H
-
-

@@ -8,6 +8,7 @@
 
 #include "math/math.h"
 #include "mc.h"
+#include "spectrum.h"
 
 namespace visionaray
 {
@@ -17,26 +18,27 @@ class lambertian
 {
 public:
 
-    typedef T scalar_type;
-    typedef vector<3, T> color_type;
+    using scalar_type   = T;
+
+public:
 
     scalar_type kd;
-    color_type cd;
+    spectrum<T> cd;
 
     template <typename U>
     VSNRAY_FUNC
-    vector<3, U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    spectrum<U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
         VSNRAY_UNUSED(n);
         VSNRAY_UNUSED(wi);
         VSNRAY_UNUSED(wo);
 
-        return vector<3, U>( cd * kd * constants::inv_pi<T>() );
+        return spectrum<U>( cd * kd * constants::inv_pi<T>() );
     }
 
     template <typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    vector<3, U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler)
+    spectrum<U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler)
     {
         auto w = n;
         auto v = select(
@@ -61,21 +63,22 @@ class phong
 {
 public:
 
-    typedef T scalar_type;
-    typedef vector<3, T> color_type;
+    using scalar_type   = T;
 
-    color_type  cs;
+public:
+
+    spectrum<T> cs;
     scalar_type ks;
     scalar_type exp;
 
     template <typename U>
     VSNRAY_FUNC
-    vector<3, U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    spectrum<U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
         auto r = reflect(-wo, n);
         auto rdotl = max( U(0.0), dot(r, wi) );
 
-        return cs * ks * ((exp + U(2.0)) / constants::two_pi<U>()) * pow(rdotl, exp);
+        return  spectrum<U>( cs * ks * ((exp + U(2.0)) / constants::two_pi<U>()) * pow(rdotl, exp) );
     }
 
 };
@@ -86,27 +89,26 @@ class blinn
 public:
 
     using scalar_type   = T;
-    using color_type    = vector<3, T>;
 
 public:
 
-    color_type  cs;
+    spectrum<T> cs;
     scalar_type ks;
     scalar_type exp;
 
     template <typename U>
     VSNRAY_FUNC
-    vector<3, U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    spectrum<U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
         auto h = normalize(wo + wi);
         auto hdotn = max( U(0.0), dot(h, n) );
 
-        return cs * ks * ((exp + U(2.0)) / (U(8.0) * constants::pi<U>())) * pow(hdotn, exp);
+        return spectrum<U>( cs * ks * ((exp + U(2.0)) / (U(8.0) * constants::pi<U>())) * pow(hdotn, exp) );
     }
 
     template <typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    vector<3, U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler)
+    spectrum<U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler)
     {
         auto u1 = sampler.next();
         auto u2 = sampler.next();
