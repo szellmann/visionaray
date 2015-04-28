@@ -531,31 +531,6 @@ VSNRAY_FORCE_INLINE mask8& operator^=(mask8& a, mask8 const& b)
     return a;
 }
 
-VSNRAY_FORCE_INLINE float8 neg(float8 const& v, mask8 const& mask)
-{
-    return select(mask, -v, 0.0f);
-}
-
-VSNRAY_FORCE_INLINE float8 add(float8 const& u, float8 const& v, mask8 const& mask)
-{
-    return select(mask, u + v, 0.0f);
-}
-
-VSNRAY_FORCE_INLINE float8 sub(float8 const& u, float8 const& v, mask8 const& mask)
-{
-    return select(mask, u - v, 0.0f);
-}
-
-VSNRAY_FORCE_INLINE float8 mul(float8 const& u, float8 const& v, mask8 const& mask)
-{
-    return select(mask, u * v, 0.0f);
-}
-
-VSNRAY_FORCE_INLINE float8 div(float8 const& u, float8 const& v, mask8 const& mask)
-{
-    return select(mask, u / v, 0.0f);
-}
-
 template <typename S, typename T>
 VSNRAY_FORCE_INLINE void store(S dst[8], T const& v, mask8 const& mask)
 {
