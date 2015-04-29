@@ -96,10 +96,24 @@ set(CMD_LINE_SOURCES
 )
 
 
+#--------------------------------------------------------------------------------------------------
+# Add viewer target
+#
+
 visionaray_add_executable(viewer
     ${VIEWER_HEADERS}
     ${VIEWER_SOURCES}
     ${VIEWER_CUDA_SOURCES}
     ${CMD_LINE_HEADERS}
     ${CMD_LINE_SOURCES}
+)
+
+
+#--------------------------------------------------------------------------------------------------
+# Install viewer
+#
+
+install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/viewer
+    DESTINATION bin
+    RENAME vsnray-viewer
 )

@@ -168,7 +168,34 @@ set(VSNRAY_SOURCES
 )
 
 
+#--------------------------------------------------------------------------------------------------
+# Add library target
+#
+
 add_library(visionaray
     ${VSNRAY_HEADERS}
     ${VSNRAY_SOURCES}
+)
+
+
+#--------------------------------------------------------------------------------------------------
+# Install headers and library
+#
+
+install(DIRECTORY ${HEADER_DIR}
+    DESTINATION include
+    COMPONENT headers
+    FILES_MATCHING
+        PATTERN "*.h"
+        PATTERN "*.hh"
+        PATTERN "*.hpp"
+        PATTERN "*.hxx"
+        PATTERN "*.inl"
+        PATTERN "*.inc"
+)
+
+install(TARGETS visionaray
+     RUNTIME DESTINATION bin COMPONENT libraries
+     LIBRARY DESTINATION lib COMPONENT libraries
+     ARCHIVE DESTINATION lib COMPONENT libraries
 )
