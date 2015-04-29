@@ -58,7 +58,23 @@ cd build
 
 cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1"
 make
+make install
 ```
+
+The headers, libraries and viewer application will then be located in the standard install path of your operating system (usually /usr/local).
+
+
+Visionaray Viewer
+-----------------
+
+Visionaray comes with a viewer application that can process wavefront obj files containing polygons. The viewer application is primarily meant as a developer tool for debugging and testing.
+After being installed, the viewer application executable can be called using the following command:
+
+```Shell
+vsnray-viewer <filename.obj>
+```
+
+where filename.obj is a wavefront obj file.
 
 License
 -------
