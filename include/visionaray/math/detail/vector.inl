@@ -716,4 +716,18 @@ size_t max_index(vector<Dim, T> const& u)
     return i;
 }
 
+template <size_t Dim, typename T>
+MATH_FUNC
+T hadd(vector<Dim, T> const& u)
+{
+    T result(0.0);
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result += u[d];
+    }
+
+    return result;
+}
+
 } // MATH_NAMESPACE

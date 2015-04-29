@@ -354,7 +354,11 @@ inline vector<3, T> max(vector<3, T> const& u, vector<3, T> const& v)
     return vector<3, T>( max(u.x, v.x), max(u.y, v.y), max(u.z, v.z) );
 }
 
+template <typename T>
+MATH_FUNC
+inline T hadd(vector<3, T> const& u)
+{
+    return u.x + u.y + u.z;
+}
 
 } // MATH_NAMESPACE
-
-

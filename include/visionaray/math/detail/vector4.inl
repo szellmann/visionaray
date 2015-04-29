@@ -350,7 +350,11 @@ inline vector<4, T> max(vector<4, T> const& u, vector<4, T> const& v)
     return vector<4, T>( max(u.x, v.x), max(u.y, v.y), max(u.z, v.z), max(u.w, v.w) );
 }
 
+template <typename T>
+MATH_FUNC
+inline T hadd(vector<4, T> const& u)
+{
+    return u.x + u.y + u.z + u.w;
+}
 
 } // MATH_NAMESPACE
-
-

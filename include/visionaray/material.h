@@ -336,8 +336,8 @@ private:
         spectrum<U>  diff;
         spectrum<U>  spec;
 
-        auto prob_diff = rgb_to_luminance( diffuse_brdf_.cd * diffuse_brdf_.kd );
-        auto prob_spec = rgb_to_luminance( specular_brdf_.cs * specular_brdf_.ks );
+        auto prob_diff = hadd( diffuse_brdf_.cd * diffuse_brdf_.kd ) / spectrum<U>().size();
+        auto prob_spec = hadd( specular_brdf_.cs * specular_brdf_.ks ) / spectrum<U>().size();
 
         auto all_zero  = prob_diff == U(0.0) && prob_spec == U(0.0);
 

@@ -305,7 +305,11 @@ inline vector<2, T> select(M const& m, vector<2, T> const& u, vector<2, T> const
     );
 }
 
+template <typename T>
+MATH_FUNC
+inline vector<2, T> hadd(vector<2, T> const& u)
+{
+    return u.x + u.y;
+}
 
 } // MATH_NAMESPACE
-
-
