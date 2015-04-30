@@ -233,7 +233,7 @@ public:
     VSNRAY_FUNC
     spectrum<U> sample(shade_record<L, C, U> const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler)
     {
-        return spectrum<U>(sr.cd) * sample_impl(sr, refl_dir, pdf, sampler);
+        return spectrum<U>(from_rgb(sr.cd)) * sample_impl(sr, refl_dir, pdf, sampler);
     }
 
 
@@ -326,7 +326,7 @@ private:
     VSNRAY_FUNC
     spectrum<T> cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const
     {
-        return spectrum<T>(sr.cd) * diffuse_brdf_.f(n, wo, wi);
+        return spectrum<T>(from_rgb(sr.cd)) * diffuse_brdf_.f(n, wo, wi);
     }
 
     template <typename SR, typename U, typename S /* sampler */>
