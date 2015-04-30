@@ -141,19 +141,19 @@ generic_prim_scene default_generic_prim_scene()
         plastic<float> m;
         if (i == 0)
         {
-            m.set_cd( vec3(0.0f, 1.0f, 1.0f) );
+            m.set_cd( from_rgb(0.0f, 1.0f, 1.0f) );
         }
         else if (i == 1)
         {
-            m.set_cd( vec3(1.0f, 0.0f, 0.0f) );
+            m.set_cd( from_rgb(1.0f, 0.0f, 0.0f) );
         }
         else if (i == 2)
         {
-            m.set_cd( vec3(0.0f, 0.0f, 1.0f) );
+            m.set_cd( from_rgb(0.0f, 0.0f, 1.0f) );
         }
         else
         {
-            m.set_cd( vec3(1.0f, 1.0f, 1.0f) );
+            m.set_cd( from_rgb(1.0f, 1.0f, 1.0f) );
         }
         m.set_kd( 1.0f );
         m.set_ks( 1.0f );
@@ -229,12 +229,12 @@ triangle_scene default_triangle_scene()
         normals[i] = normalize( cross(triangles[i].e1, triangles[i].e2) );
     }
 
-    materials[0].set_cd( vec3(0.0f, 1.0f, 1.0f) );
+    materials[0].set_cd( from_rgb(0.0f, 1.0f, 1.0f) );
     materials[0].set_kd( 1.0f );
     materials[0].set_ks( 1.0f );
     materials[0].set_specular_exp( 32.0f );
 
-    materials[1].set_cd( vec3(1.0f, 0.0f, 0.0f) );
+    materials[1].set_cd( from_rgb(1.0f, 0.0f, 0.0f) );
     materials[1].set_kd( 1.0f );
     materials[1].set_ks( 1.0f );
     materials[1].set_specular_exp( 32.0f );

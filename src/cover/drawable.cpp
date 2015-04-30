@@ -318,9 +318,9 @@ public:
                 auto cs = mat->getSpecular(osg::Material::Face::FRONT);
 
                 plastic<float> vsnray_mat;
-                vsnray_mat.set_ca( osg_cast(ca).xyz() );
-                vsnray_mat.set_cd( osg_cast(cd).xyz() );
-                vsnray_mat.set_cs( osg_cast(cs).xyz() );
+                vsnray_mat.set_ca( from_rgb(osg_cast(ca).xyz()) );
+                vsnray_mat.set_cd( from_rgb(osg_cast(cd).xyz()) );
+                vsnray_mat.set_cs( from_rgb(osg_cast(cs).xyz()) );
                 vsnray_mat.set_ka( 1.0f );
                 vsnray_mat.set_kd( 1.0f );
                 vsnray_mat.set_ks( 1.0f );
@@ -703,9 +703,9 @@ void drawable::drawImplementation(osg::RenderInfo&) const
         if (impl_->materials.size() == 0)
         {
             plastic<float> m;
-            m.set_ca( vec3(0.2f, 0.2f, 0.2f) );
-            m.set_cd( vec3(0.8f, 0.8f, 0.8f) );
-            m.set_cs( vec3(0.1f, 0.1f, 0.1f) );
+            m.set_ca( from_rgb(0.2f, 0.2f, 0.2f) );
+            m.set_cd( from_rgb(0.8f, 0.8f, 0.8f) );
+            m.set_cs( from_rgb(0.1f, 0.1f, 0.1f) );
             m.set_ka( 1.0f );
             m.set_kd( 1.0f );
             m.set_ks( 1.0f );

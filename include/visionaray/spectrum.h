@@ -13,11 +13,37 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
-// Spectral color representation
+// Spectral power distribution
 //
 
 template <typename T>
-using spectrum      = vector<3, T>; // TODO: for now, this is an RGB color
+class spectrum
+{
+public:
+
+    static size_t const num_samples = 3;
+
+public:
+
+    VSNRAY_FUNC spectrum() = default;
+
+    VSNRAY_FUNC explicit spectrum(T c);
+    VSNRAY_FUNC explicit spectrum(vector<num_samples, T> const& samples);
+
+    template <typename U>
+    VSNRAY_FUNC explicit spectrum(spectrum<U> const& rhs);
+
+    template <typename U>
+    VSNRAY_FUNC spectrum& operator=(spectrum<U> const& rhs);
+
+    VSNRAY_FUNC vector<num_samples, T>&       samples();
+    VSNRAY_FUNC vector<num_samples, T> const& samples() const;
+
+private:
+
+    vector<num_samples, T> samples_;
+
+};
 
 
 //-------------------------------------------------------------------------------------------------
@@ -31,21 +57,8 @@ inline T rgb_to_luminance(vector<3, T> const& rgb)
     return T(0.3) * rgb.x + T(0.59) * rgb.y + T(0.11) * rgb.z;
 }
 
-template <typename T>
-VSNRAY_FUNC
-inline vector<3, T> rgba_to_rgb(vector<4, T> const& rgba)
-{
-    auto inv = select( rgba.w != T(0.0), T(1.0) / rgba.w, T(1.0) );
-    return vector<3, T>( rgba.x * inv, rgba.y * inv, rgba.z * inv );
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline vector<4, T> rgb_to_rgba(vector<3, T> const& rgb)
-{
-    return vector<4, T>( rgb, T(1.0) );
-}
-
 } // visionaray
+
+#include "detail/spectrum.inl"
 
 #endif // VSNRAY_SPECTRUM_H

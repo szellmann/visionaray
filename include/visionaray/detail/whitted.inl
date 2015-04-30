@@ -47,15 +47,15 @@ struct kernel
         C color(0.0);
 
         size_t depth = 0;
-        auto no_hit_color = C(rgba_to_rgb(params.bg_color));
+        auto no_hit_color = C(from_rgba(params.bg_color));
         auto mirror = S(1.0);
         while (any(hit_rec.hit) && any(mirror > S(params.epsilon)) && depth++ < 4/*1*/)
         {
             hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
 
             auto surf = get_surface(hit_rec, params);
-            auto ambient = surf.material.ambient() * C(rgba_to_rgb(params.ambient_color));
-            auto shaded_clr = select( hit_rec.hit, ambient, C(rgba_to_rgb(params.bg_color)) );
+            auto ambient = surf.material.ambient() * C(from_rgba(params.ambient_color));
+            auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgba(params.bg_color)) );
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
@@ -95,7 +95,7 @@ struct kernel
             no_hit_color = C(0.0);
         }
 
-        result.color = rgb_to_rgba(color);
+        result.color = to_rgba(color);
 
         return result;
 

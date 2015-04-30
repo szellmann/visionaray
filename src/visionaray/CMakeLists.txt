@@ -53,6 +53,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/simple.inl
     ${HEADER_DIR}/detail/simple_sched.h
     ${HEADER_DIR}/detail/simple_sched.inl
+    ${HEADER_DIR}/detail/spectrum.inl
     ${HEADER_DIR}/detail/stack.h
     ${HEADER_DIR}/detail/surface.inl
     ${HEADER_DIR}/detail/tags.h

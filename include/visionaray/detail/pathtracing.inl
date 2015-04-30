@@ -105,12 +105,12 @@ struct kernel
                 active_rays &= hit_rec.hit;
             }
 
-            dst = mul( dst, C(params.ambient_color), exited, dst );
+            dst = mul( dst, C(from_rgba(params.ambient_color)), exited, dst );
         }
 
         dst = mul( dst, C(0.0), active_rays, dst );
 
-        result.color = select( result.hit, rgb_to_rgba(dst), result.color );
+        result.color = select( result.hit, to_rgba(dst), result.color );
 
         return result;
     }

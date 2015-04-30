@@ -119,7 +119,13 @@ public:
         auto ndotl = dot(sr.normal, wi);
 
         auto mask = sr.active & (ndotl > U(0.0));
-        auto c = spectrum<U>( constants::pi<U>() * diffuse_brdf_.f(sr.normal, wo, wi) * l.color() * ndotl );
+        auto c = spectrum<U>(
+                constants::pi<U>()
+              * diffuse_brdf_.f(sr.normal, wo, wi)
+              * from_rgb(l.color())
+              * ndotl
+                );
+
         result = add( result, c, mask );
 
         return result;
@@ -210,7 +216,7 @@ public:
         return spectrum<U>(
                 constants::pi<U>()
               * ( cd(sr, n, wo, wi) + specular_brdf_.f(n, wo, wi) )
-              * spectrum<U>(l.color())
+              * spectrum<U>(from_rgb(l.color()))
               * ndotl
               * att
                 );
@@ -336,8 +342,8 @@ private:
         spectrum<U>  diff;
         spectrum<U>  spec;
 
-        auto prob_diff = hadd( diffuse_brdf_.cd * diffuse_brdf_.kd ) / U(3.0);
-        auto prob_spec = hadd( specular_brdf_.cs * specular_brdf_.ks ) / U(3.0);
+        auto prob_diff = mean_value( diffuse_brdf_.cd ) * diffuse_brdf_.kd;
+        auto prob_spec = mean_value( specular_brdf_.cs ) * specular_brdf_.ks;
 
         auto all_zero  = prob_diff == U(0.0) && prob_spec == U(0.0);
 
