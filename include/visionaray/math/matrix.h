@@ -6,6 +6,7 @@
 
 #include <cassert>
 
+#include "forward.h"
 #include "vector.h"
 
 
@@ -14,16 +15,51 @@ namespace MATH_NAMESPACE
 
 
 template <typename T>
+class matrix<3, 3, T>
+{
+public:
+
+    using column_type = vector<3, T>;
+
+public:
+
+    column_type col0;
+    column_type col1;
+    column_type col2;
+
+public:
+
+    MATH_FUNC matrix() = default;
+
+    MATH_FUNC matrix(
+            T m00, T m10, T m20,
+            T m01, T m11, T m21,
+            T m02, T m12, T m22
+            );
+
+    MATH_FUNC column_type& operator()(size_t col);
+    MATH_FUNC column_type const& operator()(size_t col) const;
+
+    MATH_FUNC T& operator()(size_t row, size_t col);
+    MATH_FUNC T const& operator()(size_t row, size_t col) const;
+
+};
+
+template <typename T>
 class matrix<4, 4, T>
 {
 public:
 
-    typedef vector<4, T> column_type;
+    using column_type = vector<4, T>;
+
+public:
 
     column_type col0;
     column_type col1;
     column_type col2;
     column_type col3;
+
+public:
 
     MATH_FUNC
     matrix();
@@ -70,10 +106,7 @@ public:
 
 } // MATH_NAMESPACE
 
-
+#include "detail/matrix3.inl"
 #include "detail/matrix4.inl"
 
-
 #endif // VSNRAY_MATH_MATRIX_H
-
-
