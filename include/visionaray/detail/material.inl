@@ -88,7 +88,7 @@ inline plastic<float8> pack
     spectrum<float8> cd8;
     spectrum<float8> cs8;
 
-    for (size_t d = 0; d < spectrum<float>().size(); ++d)
+    for (size_t d = 0; d < C::num_samples; ++d)
     {
         ca8[d] = float8(
                 ca[0][d],
