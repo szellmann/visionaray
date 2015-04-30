@@ -74,13 +74,6 @@ inline vector<2, T>& vector<2, T>::operator=(vector<2, U> const& rhs)
 
 template <typename T>
 MATH_FUNC
-inline size_t vector<2, T>::size() const
-{
-    return 2;
-}
-
-template <typename T>
-MATH_FUNC
 inline T* vector<2, T>::data()
 {
     return reinterpret_cast<T*>(this);

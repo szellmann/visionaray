@@ -46,8 +46,6 @@ public:
     template <typename U>
     MATH_FUNC vector& operator=(vector<2, U> const& rhs);
 
-    MATH_FUNC size_t size() const;
-
     MATH_FUNC T* data();
     MATH_FUNC T const* data() const;
 
@@ -89,8 +87,6 @@ public:
 
     template <typename U>
     MATH_FUNC vector& operator=(vector<3, U> const& rhs);
-
-    MATH_FUNC size_t size() const;
 
     MATH_FUNC T* data();
     MATH_FUNC T const* data() const;
@@ -138,8 +134,6 @@ public:
     template <typename U>
     MATH_FUNC vector& operator=(vector<4, U> const& rhs);
 
-    MATH_FUNC size_t size() const;
-
     MATH_FUNC T* data();
     MATH_FUNC T const* data() const;
 
@@ -175,8 +169,6 @@ public:
 
     template <typename U>
     MATH_FUNC vector& operator=(vector<Dim, U> const& rhs);
-
-    MATH_FUNC size_t size() const;
 
     MATH_FUNC T* data();
     MATH_FUNC T const* data() const;

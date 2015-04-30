@@ -52,13 +52,6 @@ inline vector<Dim, T>& vector<Dim, T>::operator=(vector<Dim, U> const& rhs)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline size_t vector<Dim, T>::size() const
-{
-    return Dim;
-}
-
-template <size_t Dim, typename T>
-MATH_FUNC
 inline T* vector<Dim, T>::data()
 {
     return data_;
