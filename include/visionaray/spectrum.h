@@ -36,6 +36,9 @@ public:
     template <typename U>
     VSNRAY_FUNC spectrum& operator=(spectrum<U> const& rhs);
 
+    VSNRAY_FUNC T& operator[](size_t i);
+    VSNRAY_FUNC T const& operator[](size_t i) const;
+
     VSNRAY_FUNC vector<num_samples, T>&       samples();
     VSNRAY_FUNC vector<num_samples, T> const& samples() const;
 

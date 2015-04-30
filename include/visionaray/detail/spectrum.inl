@@ -44,6 +44,20 @@ inline spectrum<T>& spectrum<T>::operator=(spectrum<U> const& rhs)
 
 template <typename T>
 VSNRAY_FUNC
+inline T& spectrum<T>::operator[](size_t i)
+{
+    return samples_[i];
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T const& spectrum<T>::operator[](size_t i) const
+{
+    return samples_[i];
+}
+
+template <typename T>
+VSNRAY_FUNC
 inline vector<spectrum<T>::num_samples, T>& spectrum<T>::samples()
 {
     return samples_;
