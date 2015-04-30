@@ -6,11 +6,8 @@
 #ifndef VSNRAY_SIMD_SSE_H
 #define VSNRAY_SIMD_SSE_H
 
-#include <array>
-
 #include <visionaray/detail/macros.h>
 
-#include "../vector.h"
 #include "forward.h"
 #include "intrinsics.h"
 
@@ -295,7 +292,6 @@ VSNRAY_FORCE_INLINE float4& operator^=(float4& u, float4 const& v)
 }
 
 
-
 /* vector math functions */
 
 /*! \brief  returns a vector with each element {x|y|z|w} containing
@@ -372,25 +368,6 @@ VSNRAY_FORCE_INLINE float4 rsqrt(float4 const& v)
 {
     float4 x0 = _mm_rsqrt_ps(v);
     return rsqrt_step<1>(v, x0);
-}
-
-// TODO: find a better place for this
-VSNRAY_FORCE_INLINE vector<4, float4> transpose(vector<4, float4> const& v)
-{
-
-    float4 tmp0 = _mm_unpacklo_ps(v.x, v.y);
-    float4 tmp1 = _mm_unpacklo_ps(v.z, v.w);
-    float4 tmp2 = _mm_unpackhi_ps(v.x, v.y);
-    float4 tmp3 = _mm_unpackhi_ps(v.z, v.w);
-
-    return vector<4, float4>
-    (
-        _mm_movelh_ps(tmp0, tmp1),
-        _mm_movehl_ps(tmp1, tmp0),
-        _mm_movelh_ps(tmp2, tmp3),
-        _mm_movehl_ps(tmp3, tmp2)
-    );
-
 }
 
 
@@ -689,121 +666,6 @@ VSNRAY_FORCE_INLINE float4 sqrt(float4 const& v)
 VSNRAY_FORCE_INLINE float4 approx_rsqrt(float4 const& v)
 {
     return _mm_rsqrt_ps(v);
-}
-
-
-/* Vec3 */
-
-inline vector<3, float4> pack
-(
-    vector<3, float> const& v1, vector<3, float> const& v2,
-    vector<3, float> const& v3, vector<3, float> const& v4
-)
-{
-    return vector<3, float4>
-    (
-        float4(v1.x, v2.x, v3.x, v4.x),
-        float4(v1.y, v2.y, v3.y, v4.y),
-        float4(v1.z, v2.z, v3.z, v4.z)
-    );
-}
-
-inline std::array<vector<3, float>, 4> unpack(vector<3, float4> const& v)
-{
-    VSNRAY_ALIGN(16) float x[4];
-    VSNRAY_ALIGN(16) float y[4];
-    VSNRAY_ALIGN(16) float z[4];
-
-    store(x, v.x);
-    store(y, v.y);
-    store(z, v.z);
-
-    return std::array<vector<3, float>, 4>
-    {{
-        vector<3, float>(x[0], y[0], z[0]),
-        vector<3, float>(x[1], y[1], z[1]),
-        vector<3, float>(x[2], y[2], z[2]),
-        vector<3, float>(x[3], y[3], z[3])
-    }};
-}
-
-
-/* Vec4 */
-
-inline vector<4, float4> pack
-(
-    vector<4, float> const& v1, vector<4, float> const& v2,
-    vector<4, float> const& v3, vector<4, float> const& v4
-)
-{
-    return vector<4, float4>
-    (
-        float4(v1.x, v2.x, v3.x, v4.x),
-        float4(v1.y, v2.y, v3.y, v4.y),
-        float4(v1.z, v2.z, v3.z, v4.z),
-        float4(v1.w, v2.w, v3.w, v4.w)
-    );
-}
-
-inline std::array<vector<4, float>, 4> unpack(vector<4, float4> const& v)
-{
-    VSNRAY_ALIGN(16) float x[4];
-    VSNRAY_ALIGN(16) float y[4];
-    VSNRAY_ALIGN(16) float z[4];
-    VSNRAY_ALIGN(16) float w[4];
-
-    store(x, v.x);
-    store(y, v.y);
-    store(z, v.z);
-    store(w, v.w);
-
-    return std::array<vector<4, float>, 4>
-    {{
-        vector<4, float>(x[0], y[0], z[0], w[0]),
-        vector<4, float>(x[1], y[1], z[1], w[1]),
-        vector<4, float>(x[2], y[2], z[2], w[2]),
-        vector<4, float>(x[3], y[3], z[3], w[3])
-    }};
-}
-
-
-/* VecN */
-
-template <size_t Dim>
-inline vector<Dim, float4> pack(
-        vector<Dim, float> const& v1,
-        vector<Dim, float> const& v2,
-        vector<Dim, float> const& v3,
-        vector<Dim, float> const& v4
-        )
-{
-    vector<Dim, float4> result;
-
-    for (size_t d = 0; d < Dim; ++d)
-    {
-        result[d] = float4( v1[d], v2[d], v3[d], v4[d] );
-    }
-
-    return result;
-}
-
-template <size_t Dim>
-inline std::array<vector<Dim, float>, 4> unpack(vector<Dim, float4> const& v)
-{
-    std::array<vector<Dim, float>, 4> result;
-
-    for (size_t d = 0; d < Dim; ++d)
-    {
-        VSNRAY_ALIGN(16) float data[4];
-        store(data, v[d]);
-
-        result[0][d] = data[0];
-        result[1][d] = data[1];
-        result[2][d] = data[2];
-        result[3][d] = data[3];
-    }
-
-    return result;
 }
 
 

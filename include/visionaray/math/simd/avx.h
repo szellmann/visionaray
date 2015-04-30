@@ -6,13 +6,10 @@
 #ifndef VSNRAY_MATH_SIMD_AVX_H
 #define VSNRAY_MATH_SIMD_AVH_H
 
-#include <array>
-
 #include <visionaray/detail/macros.h>
 
 #include "forward.h"
 #include "intrinsics.h"
-#include "../vector.h"
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
@@ -547,103 +544,6 @@ VSNRAY_FORCE_INLINE void store(S dst[8], T const& v, mask8 const& mask, T const&
 VSNRAY_FORCE_INLINE float8 sqrt(float8 const& v)
 {
     return _mm256_sqrt_ps(v);
-}
-
-
-/* Vec3 */
-
-inline vector<3, float8> pack
-(
-    vector<3, float> const& v1, vector<3, float> const& v2, vector<3, float> const& v3, vector<3, float> const& v4,
-    vector<3, float> const& v5, vector<3, float> const& v6, vector<3, float> const& v7, vector<3, float> const& v8
-)
-{
-    return vector<3, float8>
-    (
-        float8(v1.x, v2.x, v3.x, v4.x, v5.x, v6.x, v7.x, v8.x),
-        float8(v1.y, v2.y, v3.y, v4.y, v5.y, v6.y, v7.y, v8.y),
-        float8(v1.z, v2.z, v3.z, v4.z, v5.z, v6.z, v7.z, v8.z)
-    );
-}
-
-inline std::array<vector<3, float>, 8> unpack(vector<3, float8> const& v)
-{
-    VSNRAY_ALIGN(32) float x[8];
-    VSNRAY_ALIGN(32) float y[8];
-    VSNRAY_ALIGN(32) float z[8];
-
-    store(x, v.x);
-    store(y, v.y);
-    store(z, v.z);
-
-    return std::array<vector<3, float>, 8>
-    {{
-        vector<3, float>(x[0], y[0], z[0]),
-        vector<3, float>(x[1], y[1], z[1]),
-        vector<3, float>(x[2], y[2], z[2]),
-        vector<3, float>(x[3], y[3], z[3]),
-        vector<3, float>(x[4], y[4], z[4]),
-        vector<3, float>(x[5], y[5], z[5]),
-        vector<3, float>(x[6], y[6], z[6]),
-        vector<3, float>(x[7], y[7], z[7])
-    }};
-}
-
-
-/* VecN */
-
-template <size_t Dim>
-inline vector<Dim, float8> pack(
-        vector<Dim, float> const& v1,
-        vector<Dim, float> const& v2,
-        vector<Dim, float> const& v3,
-        vector<Dim, float> const& v4,
-        vector<Dim, float> const& v5,
-        vector<Dim, float> const& v6,
-        vector<Dim, float> const& v7,
-        vector<Dim, float> const& v8
-        )
-{
-    vector<Dim, float8> result;
-
-    for (size_t d = 0; d < Dim; ++d)
-    {
-        result[d] = float8(
-                v1[d],
-                v2[d],
-                v3[d],
-                v4[d],
-                v5[d],
-                v6[d],
-                v7[d],
-                v8[d]
-                );
-    }
-
-    return result;
-}
-
-template <size_t Dim>
-inline std::array<vector<Dim, float>, 8> unpack(vector<Dim, float8> const& v)
-{
-    std::array<vector<Dim, float>, 8> result;
-
-    for (size_t d = 0; d < Dim; ++d)
-    {
-        VSNRAY_ALIGN(32) float data[8];
-        store(data, v[d]);
-
-        result[0][d] = data[0];
-        result[1][d] = data[1];
-        result[2][d] = data[2];
-        result[3][d] = data[3];
-        result[4][d] = data[4];
-        result[5][d] = data[5];
-        result[6][d] = data[6];
-        result[7][d] = data[7];
-    }
-
-    return result;
 }
 
 

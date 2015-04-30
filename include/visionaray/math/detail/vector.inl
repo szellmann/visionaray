@@ -2,6 +2,12 @@
 // See the LICENSE file for details.
 
 #include <algorithm>
+#include <array>
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#include "../simd/avx.h"
+#endif
+#include "../simd/sse.h"
 
 namespace MATH_NAMESPACE
 {
@@ -729,5 +735,114 @@ T hadd(vector<Dim, T> const& u)
 
     return result;
 }
+
+
+namespace simd
+{
+
+//-------------------------------------------------------------------------------------------------
+// SIMD conversions
+//
+
+// SSE
+
+template <size_t Dim>
+inline vector<Dim, float4> pack(
+        vector<Dim, float> const& v1,
+        vector<Dim, float> const& v2,
+        vector<Dim, float> const& v3,
+        vector<Dim, float> const& v4
+        )
+{
+    vector<Dim, float4> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = float4( v1[d], v2[d], v3[d], v4[d] );
+    }
+
+    return result;
+}
+
+template <size_t Dim>
+inline std::array<vector<Dim, float>, 4> unpack(vector<Dim, float4> const& v)
+{
+    std::array<vector<Dim, float>, 4> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        VSNRAY_ALIGN(16) float data[4];
+        store(data, v[d]);
+
+        result[0][d] = data[0];
+        result[1][d] = data[1];
+        result[2][d] = data[2];
+        result[3][d] = data[3];
+    }
+
+    return result;
+}
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// AVX
+
+template <size_t Dim>
+inline vector<Dim, float8> pack(
+        vector<Dim, float> const& v1,
+        vector<Dim, float> const& v2,
+        vector<Dim, float> const& v3,
+        vector<Dim, float> const& v4,
+        vector<Dim, float> const& v5,
+        vector<Dim, float> const& v6,
+        vector<Dim, float> const& v7,
+        vector<Dim, float> const& v8
+        )
+{
+    vector<Dim, float8> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = float8(
+                v1[d],
+                v2[d],
+                v3[d],
+                v4[d],
+                v5[d],
+                v6[d],
+                v7[d],
+                v8[d]
+                );
+    }
+
+    return result;
+}
+
+template <size_t Dim>
+inline std::array<vector<Dim, float>, 8> unpack(vector<Dim, float8> const& v)
+{
+    std::array<vector<Dim, float>, 8> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        VSNRAY_ALIGN(32) float data[8];
+        store(data, v[d]);
+
+        result[0][d] = data[0];
+        result[1][d] = data[1];
+        result[2][d] = data[2];
+        result[3][d] = data[3];
+        result[4][d] = data[4];
+        result[5][d] = data[5];
+        result[6][d] = data[6];
+        result[7][d] = data[7];
+    }
+
+    return result;
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+} // simd
 
 } // MATH_NAMESPACE
