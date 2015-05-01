@@ -111,7 +111,7 @@ public:
     {
         using U = typename SR::scalar_type;
 
-        spectrum<U> result(0.0, 0.0, 0.0);
+        spectrum<U> result(0.0);
 
         auto l = *sr.light;
         auto wi = sr.light_dir;
