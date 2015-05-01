@@ -34,6 +34,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/bvh/intersect.inl
     ${HEADER_DIR}/detail/bvh/sah.h
     ${HEADER_DIR}/detail/bvh/traverse.inl
+    ${HEADER_DIR}/detail/spd/d65.h
     ${HEADER_DIR}/detail/aligned_vector.h
     ${HEADER_DIR}/detail/allocator.h
     ${HEADER_DIR}/detail/color_conversion.h

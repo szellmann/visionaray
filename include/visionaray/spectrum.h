@@ -9,6 +9,13 @@
 #include <visionaray/detail/macros.h>
 #include <visionaray/math/vector.h>
 
+
+//-------------------------------------------------------------------------------------------------
+// If set to 0, Visionaray stores sampled spectral power distributions in class spectrum
+//
+
+#define VSNRAY_SPECTRUM_RGB 1
+
 namespace visionaray
 {
 
@@ -21,7 +28,13 @@ class spectrum
 {
 public:
 
-    static size_t const num_samples = 3;
+#if VSNRAY_SPECTRUM_RGB
+    static const size_t     num_samples = 3;
+#else
+    static const size_t     num_samples = 300;
+    static constexpr float  lambda_min  = 400.0f;
+    static constexpr float  lambda_max  = 700.0f;
+#endif
 
 public:
 
@@ -38,6 +51,8 @@ public:
 
     VSNRAY_FUNC T& operator[](size_t i);
     VSNRAY_FUNC T const& operator[](size_t i) const;
+
+    VSNRAY_FUNC T operator()(float lambda) const;
 
     VSNRAY_FUNC vector<num_samples, T>&       samples();
     VSNRAY_FUNC vector<num_samples, T> const& samples() const;

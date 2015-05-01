@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "color_conversion.h"
+
 namespace visionaray
 {
 
@@ -54,6 +56,33 @@ VSNRAY_FUNC
 inline T const& spectrum<T>::operator[](size_t i) const
 {
     return samples_[i];
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T spectrum<T>::operator()(float lambda) const
+{
+#if VSNRAY_SPECTRUM_RGB
+    float lambda_min = 0.0f;
+    float lambda_max = 2.0f;
+#endif
+
+    // TODO: implement with tex1D()
+/*
+    texture_ref<T, ElementType, 1> tex(num_samples);
+    tex.set_data( samples_.data() );
+    T coord = (lambda - lambda_min) / (lambda_max - lambda_min);
+    return tex1D(tex, coord);
+*/
+
+    if (lambda < lambda_min || lambda > lambda_max)
+    {
+        return T(0.0);
+    }
+
+    float coord = (lambda - lambda_min) / (lambda_max - lambda_min);
+    int index = coord * (num_samples - 1);
+    return samples_[index];
 }
 
 template <typename T>
@@ -231,8 +260,34 @@ template <typename T>
 VSNRAY_FUNC
 inline spectrum<T> from_rgb(vector<3, T> const& rgb)
 {
-#if 1
+#if VSNRAY_SPECTRUM_RGB
     return spectrum<T>(rgb);
+#else
+
+    // TODO: http://www.cs.utah.edu/~bes/papers/color/paper.pdf
+
+    spectrum<T> result;
+
+    for (size_t i = 0; i < spectrum<T>::num_samples; ++i)
+    {
+        auto bin = (i * 3) / spectrum<T>::num_samples;
+
+        if (bin == 0)
+        {
+            result[i] = rgb.z;
+        }
+        else if (bin == 1)
+        {
+            result[i] = rgb.y;
+        }
+        else
+        {
+            result[i] = rgb.x;
+        }
+    }
+
+    return result;
+
 #endif
 }
 
@@ -249,10 +304,8 @@ template <typename T>
 VSNRAY_FUNC
 inline spectrum<T> from_rgba(vector<4, T> const& rgba)
 {
-#if 1
     auto inv = select( rgba.w != T(0.0), T(1.0) / rgba.w, T(1.0) );
     return from_rgb( rgba.x * inv, rgba.y * inv, rgba.z * inv );
-#endif
 }
 
 template <typename T>
@@ -262,15 +315,28 @@ inline spectrum<T> from_rgba(T r, T g, T b, T a)
     return from_rgba(r, g, b, a);
 }
 
+// SPD -> RGB
+
+template <typename T>
+VSNRAY_FUNC
+inline vector<3, T> to_rgb(spectrum<T> const& s)
+{
+#if VSNRAY_SPECTRUM_RGB
+    static_assert( spectrum<T>::num_samples == 3, "Incompatible num samples" );
+    return s.samples();
+#else
+    static_assert( spectrum<T>::num_samples > 1, "Incompatible num samples" );
+    return reflective_spd_to_rgb(s);
+#endif
+}
+
 // SPD -> RGBA
 
 template <typename T>
 VSNRAY_FUNC
 inline vector<4, T> to_rgba(spectrum<T> const& s)
 {
-#if 1
-    return vector<4, T>( s.samples(), T(1.0) );
-#endif
+    return vector<4, T>( to_rgb(s), T(1.0) );
 }
 
 
