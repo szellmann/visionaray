@@ -31,7 +31,7 @@ public:
 
         i -= 30;
 
-        return (1.0f - s) * table_[i] + s * table_[i + 1];
+        return lerp( table_[i], table_[i + 1], s );
     }
 
 private:
