@@ -146,7 +146,7 @@ inline ReturnT tex1D(Tex const& tex, FloatT coord)
         return linear<ReturnT>( tex.data(), coord, texsize, tex.get_address_mode() );
 
     case visionaray::BSpline:
-        return cubic2<ReturnT>( tex.data(), coord, texsize );
+//        return cubic2<ReturnT>( tex.data(), coord, texsize );
 
 /*    case visionaray::BSplineInterpol:
         return cubic<ReturnT>( tex.prefiltered_data, coord, texsize,

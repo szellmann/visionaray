@@ -18,6 +18,22 @@ namespace visionaray
 namespace detail
 {
 
+template <typename T>
+T map_tex_coord(T const& coord, std::array<tex_address_mode, 1> const& mode)
+{
+    switch (mode[0])
+    {
+
+    case Wrap:
+        return coord - floor(coord);
+
+    case Clamp:
+        // fall-through
+    default:
+        return clamp( coord, T(0.0), T(1.0) );
+    }
+}
+
 template <size_t Dim, typename T>
 vector<Dim, T> map_tex_coord(vector<Dim, T> const& coord, std::array<tex_address_mode, Dim> const& mode)
 {
@@ -25,20 +41,7 @@ vector<Dim, T> map_tex_coord(vector<Dim, T> const& coord, std::array<tex_address
 
     for (size_t d = 0; d < Dim; ++d)
     {
-        switch (mode[d])
-        {
-
-        case Wrap:
-            result[d] = coord[d] - floor(coord[d]);
-            break;
-
-        case Clamp:
-            // fall-through
-        default:
-            result[d] = clamp( coord[d], T(0.0), T(1.0) );
-            break;
-
-        }
+        result[d] = map_tex_coord( coord[d], mode[d] );
     }
 
     return result;
