@@ -54,7 +54,7 @@ inline ReturnT nearest(
     lo[2] = clamp(lo[2], FloatT(0.0f), texsize[2] - 1);
 
     FloatT idx = index(lo[0], lo[1], lo[2], texsize);
-    return point(tex, idx);
+    return point(tex, idx, ReturnT());
 
 #else
 
@@ -82,7 +82,7 @@ inline ReturnT nearest(
                       uvw[2] < FloatT(0.5) ? lo[2] : hi[2],
                       texsize);
 
-    return point(tex, idx);
+    return point(tex, idx, ReturnT());
 
 #endif
 
@@ -118,14 +118,14 @@ inline ReturnT linear(
     // TODO: what if return type is e.g. a float4?
     FloatT samples[8] =
     {
-        FloatT( point(tex, index( lo.x, lo.y, lo.z, texsize )) ),
-        FloatT( point(tex, index( hi.x, lo.y, lo.z, texsize )) ),
-        FloatT( point(tex, index( lo.x, hi.y, lo.z, texsize )) ),
-        FloatT( point(tex, index( hi.x, hi.y, lo.z, texsize )) ),
-        FloatT( point(tex, index( lo.x, lo.y, hi.z, texsize )) ),
-        FloatT( point(tex, index( hi.x, lo.y, hi.z, texsize )) ),
-        FloatT( point(tex, index( lo.x, hi.y, hi.z, texsize )) ),
-        FloatT( point(tex, index( hi.x, hi.y, hi.z, texsize )) )
+        FloatT( point(tex, index( lo.x, lo.y, lo.z, texsize ), ReturnT()) ),
+        FloatT( point(tex, index( hi.x, lo.y, lo.z, texsize ), ReturnT()) ),
+        FloatT( point(tex, index( lo.x, hi.y, lo.z, texsize ), ReturnT()) ),
+        FloatT( point(tex, index( hi.x, hi.y, lo.z, texsize ), ReturnT()) ),
+        FloatT( point(tex, index( lo.x, lo.y, hi.z, texsize ), ReturnT()) ),
+        FloatT( point(tex, index( hi.x, lo.y, hi.z, texsize ), ReturnT()) ),
+        FloatT( point(tex, index( lo.x, hi.y, hi.z, texsize ), ReturnT()) ),
+        FloatT( point(tex, index( hi.x, hi.y, hi.z, texsize ), ReturnT()) )
     };
 
 
@@ -247,7 +247,7 @@ inline ReturnT cubic(TexelT const* tex, vector<3, FloatT> coord, vector<3, Float
         pos[i].z = clamp(pos[i].z, FloatT(0.0), texsize.z - 1);
     }
 
-#define TEX(x,y,z) (point(tex, index(x,y,z,texsize)))
+#define TEX(x,y,z) (point(tex, index(x,y,z,texsize), ReturnT()))
     auto f00 = w0(fracx) * TEX(pos[0].x, pos[0].y, pos[0].z) + w1(fracx) * TEX(pos[1].x, pos[0].y, pos[0].z) + w2(fracx) * TEX(pos[2].x, pos[0].y, pos[0].z) + w3(fracx) * TEX(pos[3].x, pos[0].y, pos[0].z);
     auto f01 = w0(fracx) * TEX(pos[0].x, pos[1].y, pos[0].z) + w1(fracx) * TEX(pos[1].x, pos[1].y, pos[0].z) + w2(fracx) * TEX(pos[2].x, pos[1].y, pos[0].z) + w3(fracx) * TEX(pos[3].x, pos[1].y, pos[0].z);
     auto f02 = w0(fracx) * TEX(pos[0].x, pos[2].y, pos[0].z) + w1(fracx) * TEX(pos[1].x, pos[2].y, pos[0].z) + w2(fracx) * TEX(pos[2].x, pos[2].y, pos[0].z) + w3(fracx) * TEX(pos[3].x, pos[2].y, pos[0].z);

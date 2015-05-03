@@ -46,7 +46,7 @@ inline ReturnT nearest(
     lo[1] = clamp(lo[1], FloatT(0.0f), texsize[1] - 1);
 
     FloatT idx = index(lo[0], lo[1], texsize);
-    return point(tex, idx);
+    return point(tex, idx, ReturnT());
 
 }
 
@@ -75,10 +75,10 @@ inline ReturnT linear(
 
     vector<3, FloatT> samples[4] = // TODO: this must somehow be consolidated with ReturnT
     {
-        vector<3, FloatT>( point(tex, index( lo.x, lo.y, texsize )) ),
-        vector<3, FloatT>( point(tex, index( hi.x, lo.y, texsize )) ),
-        vector<3, FloatT>( point(tex, index( lo.x, hi.y, texsize )) ),
-        vector<3, FloatT>( point(tex, index( hi.x, hi.y, texsize )) )
+        vector<3, FloatT>( point(tex, index( lo.x, lo.y, texsize ), ReturnT()) ),
+        vector<3, FloatT>( point(tex, index( hi.x, lo.y, texsize ), ReturnT()) ),
+        vector<3, FloatT>( point(tex, index( lo.x, hi.y, texsize ), ReturnT()) ),
+        vector<3, FloatT>( point(tex, index( hi.x, hi.y, texsize ), ReturnT()) )
     };
 
 

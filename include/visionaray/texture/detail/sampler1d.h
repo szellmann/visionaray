@@ -31,7 +31,7 @@ inline ReturnT nearest(
 
     FloatT lo = floor(coord * texsize);
     lo = clamp(lo, FloatT(0.0f), texsize - 1);
-    return point(tex, lo);
+    return point(tex, lo, ReturnT());
 
 }
 
@@ -58,8 +58,8 @@ inline ReturnT linear(
     // TODO: what if precision(ReturnT) < precision(FloatT)?
     ReturnT samples[2] =
     {
-        point(tex, lo),
-        point(tex, hi)
+        point(tex, lo, ReturnT()),
+        point(tex, hi, ReturnT())
     };
 
     FloatT u = texcoordf - lo;
@@ -120,7 +120,7 @@ inline ReturnT cubic(TexelT const* tex, FloatT coord, FloatT texsize, W0 w0, W1 
         pos[i] = clamp(pos[i], FloatT(0.0), texsize - FloatT(1.0));
     }
 
-#define TEX(x) (point(tex,x))
+#define TEX(x) (point(tex,x, ReturnT()))
     return w0(fracx) * TEX(pos[0]) + w1(fracx) * TEX(pos[1]) + w2(fracx) * TEX(pos[2]) + w3(fracx) * TEX(pos[3]);
 #undef TEX
 }
