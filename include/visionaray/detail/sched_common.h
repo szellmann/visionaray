@@ -691,13 +691,10 @@ inline void sample_pixel_impl(
         {//TODO: clear method in render target?
             color_access::store(x, y, viewport, Vec4(0.0, 0.0, 0.0, 0.0), rt_ref.color());
         }
-        auto r     = jittered_ray_gen<R>(x, y, s, viewport, args...);
-        auto src   = kernel(r, s);
-        Vec4 dst;
-        color_access::get(x, y, viewport, dst, rt_ref.color());
+        auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
+        auto result = kernel(r, s);
         auto alpha = S(1.0) / S(frame);
-        dst = dst * S(1 - alpha) + src * S(alpha);
-        color_access::store(x, y, viewport, dst, rt_ref.color());
+        color_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
     }
 }
 
