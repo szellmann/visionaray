@@ -19,9 +19,9 @@ namespace detail
 {
 
 template <typename T>
-T map_tex_coord(T const& coord, std::array<tex_address_mode, 1> const& mode)
+T map_tex_coord(T const& coord, tex_address_mode mode)
 {
-    switch (mode[0])
+    switch (mode)
     {
 
     case Wrap:
@@ -32,6 +32,12 @@ T map_tex_coord(T const& coord, std::array<tex_address_mode, 1> const& mode)
     default:
         return clamp( coord, T(0.0), T(1.0) );
     }
+}
+
+template <typename T>
+T map_tex_coord(T const& coord, std::array<tex_address_mode, 1> const& mode)
+{
+    return map_tex_coord(coord, mode[0]);
 }
 
 template <size_t Dim, typename T>
