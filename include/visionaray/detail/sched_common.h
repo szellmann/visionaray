@@ -599,7 +599,7 @@ inline void sample_pixel_impl(
         )
 {
     using S     = typename R::scalar_type;
-    using Vec4  = vector<4, S>;
+    using Color = vector<4, S>;
 
 #if defined(__CUDACC__)
     auto gen                            = sampler_gen<sampler, S>(tic());
@@ -613,7 +613,7 @@ inline void sample_pixel_impl(
     auto alpha                          = S(1.0) / S(frame);
     if (frame <= 1)
     {//TODO: clear method in render target?
-        color_access::store(x, y, viewport, Vec4(0.0, 0.0, 0.0, 0.0), rt_ref.color());
+        color_access::store(x, y, viewport, Color(0.0), rt_ref.color());
     }
     color_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
 }
@@ -675,7 +675,7 @@ inline void sample_pixel_impl(
         )
 {
     using S     = typename R::scalar_type;
-    using Vec4  = vector<4, S>;
+    using Color = vector<4, S>;
 
 #if defined(__CUDACC__)
     auto gen                            = sampler_gen<sampler, S>(tic());
@@ -689,7 +689,7 @@ inline void sample_pixel_impl(
     {
         if (frame <= 1)
         {//TODO: clear method in render target?
-            color_access::store(x, y, viewport, Vec4(0.0, 0.0, 0.0, 0.0), rt_ref.color());
+            color_access::store(x, y, viewport, Color(0.0), rt_ref.color());
         }
         auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
         auto result = kernel(r, s);
