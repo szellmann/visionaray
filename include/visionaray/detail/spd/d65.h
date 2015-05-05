@@ -6,6 +6,8 @@
 #ifndef VSNRAY_SPD_D65_H
 #define VSNRAY_SPD_D65_H
 
+#include "../macros.h"
+
 namespace visionaray
 {
 
@@ -19,7 +21,7 @@ class spd_d65
 {
 public:
 
-    float operator()(float lambda) const
+    VSNRAY_FUNC float operator()(float lambda) const
     {
         if (lambda < 300 || lambda >= 830)
         {

@@ -8,6 +8,8 @@
 
 #include <cmath>
 
+#include "../macros.h"
+
 namespace visionaray
 {
 
@@ -21,7 +23,7 @@ struct blackbody
 {
     blackbody(float T = 1500.0) : T(T) {}
 
-    float operator()(float lambda /* nm */) const
+    VSNRAY_FUNC float operator()(float lambda /* nm */) const
     {
         double const k = 1.3806488E-23;
         double const h = 6.62606957E-34;
