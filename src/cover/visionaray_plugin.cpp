@@ -77,10 +77,23 @@ struct Visionaray::impl : vrui::coMenuListener
     std::shared_ptr<render_state>   state;
     std::shared_ptr<debug_state>    dev_state;
 
+    // init
+
     void init_state_from_config();
     void init_ui();
+
+    // menu listener interface
+
     void menuEvent(vrui::coMenuItem* item);
 
+
+    // control state
+
+    void set_data_variance(data_variance var);
+    void set_algorithm(algorithm algo);
+    void set_show_bvh(bool show_bvh);
+    void set_show_normals(bool show_normals);
+    void set_show_tex_coords(bool show_tex_coords);
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -208,38 +221,75 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
     // main menu
     if (item == ui.toggle_update_mode.get())
     {
-        state->data_var = ui.toggle_update_mode->getState() ? Dynamic : Static;
+        set_data_variance(ui.toggle_update_mode->getState() ? Dynamic : Static);
     }
 
     // algorithm submenu
     if (item == ui.simple_button.get())
     {
-        state->algo = Simple;
+        set_algorithm(Simple);
     }
     else if (item == ui.whitted_button.get())
     {
-        state->algo = Whitted;
+        set_algorithm(Whitted);
     }
     else if (item == ui.pathtracing_button.get())
     {
-        state->algo = Pathtracing;
+        set_algorithm(Pathtracing);
     }
 
     // dev submenu
     if (item == ui.toggle_bvh_display.get())
     {
-        dev_state->show_bvh = ui.toggle_bvh_display->getState();
+        set_show_bvh(ui.toggle_bvh_display->getState());
     }
 
     if (item == ui.toggle_normal_display.get())
     {
-        dev_state->show_normals = ui.toggle_normal_display->getState();
+        set_show_normals(ui.toggle_normal_display->getState());
     }
 
     if (item == ui.toggle_tex_coord_display.get())
     {
-        dev_state->show_tex_coords = ui.toggle_tex_coord_display->getState();
+        set_show_tex_coords(ui.toggle_tex_coord_display->getState());
     }
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Control state
+//
+
+void Visionaray::impl::set_data_variance(data_variance var)
+{
+    state->data_var = var;
+    ui.toggle_update_mode->setState( var == Dynamic, false );
+}
+
+void Visionaray::impl::set_algorithm(algorithm algo)
+{
+    state->algo = algo;
+    ui.simple_button->setState( algo == Simple, false );
+    ui.whitted_button->setState( algo == Whitted, false );
+    ui.pathtracing_button->setState( algo == Pathtracing, false );
+}
+
+void Visionaray::impl::set_show_bvh(bool show_bvh)
+{
+    dev_state->show_bvh = show_bvh;
+    ui.toggle_bvh_display->setState( show_bvh, false );
+}
+
+void Visionaray::impl::set_show_normals(bool show_normals)
+{
+    dev_state->show_normals = show_normals;
+    ui.toggle_normal_display->setState( show_normals, false );
+}
+
+void Visionaray::impl::set_show_tex_coords(bool show_tex_coords)
+{
+    dev_state->show_tex_coords = show_tex_coords;
+    ui.toggle_tex_coord_display->setState( show_tex_coords, false );
 }
 
 
@@ -301,15 +351,15 @@ void Visionaray::key(int type, int key_sym, int /* mod */)
         switch (key_sym)
         {
         case '1':
-            impl_->state->algo = Simple;
+            impl_->set_algorithm(Simple);
             break;
 
         case '2':
-            impl_->state->algo = Whitted;
+            impl_->set_algorithm(Whitted);
             break;
 
         case '3':
-            impl_->state->algo = Pathtracing;
+            impl_->set_algorithm(Pathtracing);
             break;
         }
     }
