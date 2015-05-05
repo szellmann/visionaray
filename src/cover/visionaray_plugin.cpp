@@ -294,6 +294,27 @@ void Visionaray::expandBoundingSphere(osg::BoundingSphere &bs)
     impl_->drawable_ptr->expandBoundingSphere(bs);
 }
 
+void Visionaray::key(int type, int key_sym, int /* mod */)
+{
+    if (type == osgGA::GUIEventAdapter::KEYDOWN)
+    {
+        switch (key_sym)
+        {
+        case '1':
+            impl_->state->algo = Simple;
+            break;
+
+        case '2':
+            impl_->state->algo = Whitted;
+            break;
+
+        case '3':
+            impl_->state->algo = Pathtracing;
+            break;
+        }
+    }
+}
+
 }} // namespace visionaray::cover
 
 COVERPLUGIN(visionaray::cover::Visionaray)

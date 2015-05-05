@@ -24,6 +24,7 @@ public:
     bool init();
     void preFrame();
     void expandBoundingSphere(osg::BoundingSphere &bs);
+    void key(int type, int key_sym, int /* mod */);
 
 private:
 
