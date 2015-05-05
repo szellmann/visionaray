@@ -254,6 +254,32 @@ inline T mean_value(spectrum<T> const& s)
 // Conversions
 //
 
+// SPD -> SPD
+
+template <typename T, typename SPD>
+VSNRAY_FUNC
+inline spectrum<T> from_spd(SPD spd)
+{
+#if VSNRAY_SPECTRUM_RGB
+    float lambda_min = 0.0f;
+    float lambda_max = 2.0f;
+#else
+    float lambda_min = spectrum<T>::lambda_min;
+    float lambda_max = spectrum<T>::lambda_max;
+#endif
+
+    spectrum<T> result;
+
+    for (size_t i = 0; i < spectrum<T>::num_samples; ++i)
+    {
+        float f = i / static_cast<float>(spectrum<T>::num_samples - 1);
+        float lambda = lerp( lambda_min, lambda_max, f );
+        result.samples()[i] = spd(lambda);
+    }
+
+    return result;
+}
+
 // RGB -> SPD
 
 template <typename T>
