@@ -64,19 +64,6 @@ struct kernel
                 V view_dir = -ray.dir;
 
                 auto surf = get_surface(hit_rec, params);
-                auto below = active_rays & (dot(view_dir, surf.normal) < S(0.0));
-
-                if (any(below))
-                {
-                    dst = mul( dst, C(0.0), below, dst );
-                    active_rays = active_rays & !below;
-
-                    if ( !any(active_rays) )
-                    {
-                        break;
-                    }
-                }
-
 
                 S pdf(0.0);
                 auto sr     = make_shade_record<Params, S>();
