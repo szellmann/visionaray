@@ -4,18 +4,21 @@ endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "$ENV{COVISEDIR}/cmake")
 find_package(COVER)
+find_package(COVISE)
 if (NOT COVER_FOUND)
    message("COVER not found - not building COVER plugins")
    return()
 endif()
-
-covise_create_using()
 
 find_package(Boost REQUIRED COMPONENTS chrono filesystem iostreams system thread)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Visionaray REQUIRED)
 
+visionaray_use_package(COVER)
+visionaray_use_package(COVISE)
+visionaray_use_package(GLEW)
+visionaray_use_package(OpenGL)
 visionaray_use_package(Visionaray)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
