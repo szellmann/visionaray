@@ -40,11 +40,7 @@ public:
     VSNRAY_FUNC
     spectrum<U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler)
     {
-#if 1 // two-sided
-        auto w = select( dot(n, wo) < U(0.0), -n, n );
-#else
         auto w = n;
-#endif
         auto v = select(
                 abs(w.x) > abs(w.y),
                 normalize( vector<3, U>(-w.z, U(0.0), w.x) ),
@@ -121,11 +117,7 @@ public:
         auto sintheta = sqrt( max(U(0.0), U(1.0) - costheta * costheta) );
         auto phi = u2 * constants::two_pi<U>();
 
-#if 1 // two-sided
-        auto w = select( dot(n, wo) < U(0.0), -n, n );
-#else
         auto w = n;
-#endif
         auto v = select(
                 abs(w.x) > abs(w.y),
                 normalize( vector<3, U>(-w.z, U(0.0), w.x) ),
