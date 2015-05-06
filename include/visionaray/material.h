@@ -48,14 +48,22 @@ public:
     VSNRAY_FUNC
     spectrum<U> shade(shade_record<L, U> const& sr) const
     {
+#if 1 // two-sided
+        return ce_ * ls_;
+#else
         return select( dot(sr.normal, sr.view_dir) >= U(0.0), ce_ * ls_, spectrum<U>(0.0) );
+#endif
     }
 
     template <typename L, typename C, typename U>
     VSNRAY_FUNC
     spectrum<U> shade(shade_record<L, C, U> const& sr) const
     {
+#if 1 // two-sided
+        return ce_ * ls_;
+#else
         return select( dot(sr.normal, sr.view_dir) >= U(0.0), ce_ * ls_, spectrum<U>(0.0) );
+#endif
     }
 
 
