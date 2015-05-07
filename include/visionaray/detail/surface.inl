@@ -15,6 +15,156 @@
 namespace visionaray
 {
 
+namespace simd
+{
+
+//-------------------------------------------------------------------------------------------------
+// Functions to pack and unpack SIMD surfaces
+//
+
+template <template <typename, typename...> class M, typename ...Args>
+inline surface<M<simd::float4>> pack(
+        surface<M<float, Args...>> const& s1,
+        surface<M<float, Args...>> const& s2,
+        surface<M<float, Args...>> const& s3,
+        surface<M<float, Args...>> const& s4
+        )
+{
+    return surface<M<simd::float4, Args...>>(
+            pack(
+                s1.normal,
+                s2.normal,
+                s3.normal,
+                s4.normal
+                ),
+            pack(
+                s1.material,
+                s2.material,
+                s3.material,
+                s4.material
+                )
+            );
+}
+
+template <template <typename, typename...> class M, typename C, typename ...Args>
+inline surface<M<simd::float4>, vector<3, simd::float4>> pack(
+        surface<M<float, Args...>, C> const& s1,
+        surface<M<float, Args...>, C> const& s2,
+        surface<M<float, Args...>, C> const& s3,
+        surface<M<float, Args...>, C> const& s4
+        )
+{
+    return surface<M<simd::float4, Args...>, vector<3, simd::float4>>(
+            pack(
+                s1.normal,
+                s2.normal,
+                s3.normal,
+                s4.normal
+                ),
+            pack(
+                s1.material,
+                s2.material,
+                s3.material,
+                s4.material
+                ),
+            pack(
+                s1.cd_,
+                s2.cd_,
+                s3.cd_,
+                s4.cd_
+                )
+            );
+}
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+template <template <typename, typename...> class M, typename ...Args>
+inline surface<M<simd::float8>> pack(
+        surface<M<float, Args...>> const& s1,
+        surface<M<float, Args...>> const& s2,
+        surface<M<float, Args...>> const& s3,
+        surface<M<float, Args...>> const& s4,
+        surface<M<float, Args...>> const& s5,
+        surface<M<float, Args...>> const& s6,
+        surface<M<float, Args...>> const& s7,
+        surface<M<float, Args...>> const& s8
+        )
+{
+    return surface<M<simd::float8, Args...>>(
+            pack(
+                s1.normal,
+                s2.normal,
+                s3.normal,
+                s4.normal,
+                s5.normal,
+                s6.normal,
+                s7.normal,
+                s8.normal
+                ),
+            pack(
+                s1.material,
+                s2.material,
+                s3.material,
+                s4.material,
+                s5.material,
+                s6.material,
+                s7.material,
+                s8.material
+                )
+            );
+}
+
+template <template <typename, typename...> class M, typename C, typename ...Args>
+inline surface<M<simd::float8>, vector<3, simd::float8>> pack(
+        surface<M<float, Args...>, C> const& s1,
+        surface<M<float, Args...>, C> const& s2,
+        surface<M<float, Args...>, C> const& s3,
+        surface<M<float, Args...>, C> const& s4,
+        surface<M<float, Args...>, C> const& s5,
+        surface<M<float, Args...>, C> const& s6,
+        surface<M<float, Args...>, C> const& s7,
+        surface<M<float, Args...>, C> const& s8
+        )
+{
+    return surface<M<simd::float8, Args...>, vector<3, simd::float8>>(
+            pack(
+                s1.normal,
+                s2.normal,
+                s3.normal,
+                s4.normal,
+                s5.normal,
+                s6.normal,
+                s7.normal,
+                s8.normal
+                ),
+            pack(
+                s1.material,
+                s2.material,
+                s3.material,
+                s4.material,
+                s5.material,
+                s6.material,
+                s7.material,
+                s8.material
+                ),
+            pack(
+                s1.cd_,
+                s2.cd_,
+                s3.cd_,
+                s4.cd_,
+                s5.cd_,
+                s6.cd_,
+                s7.cd_,
+                s8.cd_
+                )
+            );
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+} // simd
+
+
 //-------------------------------------------------------------------------------------------------
 // Get face normal from array
 //
@@ -237,19 +387,25 @@ inline surface<M<typename R::scalar_type>> get_surface
 
 template <template <typename> class B, typename NBinding, typename N, typename TC, template <typename> class M, typename T, typename R>
 VSNRAY_FUNC
-inline surface<M<typename R::scalar_type>, vector<3, typename R::scalar_type>> get_surface
-(
-    hit_record<R, primitive<unsigned>> const& hr,
-    B<basic_triangle<3, float>> const* tree,
-    N const* normals,
-    TC const* tex_coords,
-    M<float> const* materials,
-    T const* textures,
-    NBinding
-)
+inline surface<M<typename R::scalar_type>, vector<3, typename R::scalar_type>> get_surface(
+        hit_record<R, primitive<unsigned>> const&   hr,
+        B<basic_triangle<3, float>> const*          tree,
+        N const*                                    normals,
+        TC const*                                   tex_coords,
+        M<float> const*                             materials,
+        T const*                                    textures,
+        NBinding                                    /* */
+        )
 {
     VSNRAY_UNUSED(tree);
-    return get_surface(hr, normals, tex_coords, materials, textures, std::integral_constant<unsigned, 3>{}, NBinding());
+    return get_surface(
+            hr,
+            normals,
+            tex_coords,
+            materials,
+            textures,
+            std::integral_constant<unsigned, 3>{}, NBinding()
+            );
 }
 
 
@@ -258,71 +414,52 @@ inline surface<M<typename R::scalar_type>, vector<3, typename R::scalar_type>> g
 //
 
 template <typename NBinding, typename N, template <typename> class M>
-inline surface<M<simd::float4>> get_surface
-(
-    hit_record<simd::ray4, primitive<unsigned>> const& hr,
-    N const* normals,
-    M<float> const* materials,
-    NBinding
-)
+inline surface<M<simd::float4>> get_surface(
+        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
+        N const*                                            normals,
+        M<float> const*                                     materials,
+        NBinding                                            /* */
+        )
 {
     auto hr4 = simd::unpack(hr);
 
-    N n[4] =
-    {
-        hr4[0].hit ? get_normal(normals, hr4[0], NBinding()) : N(),
-        hr4[1].hit ? get_normal(normals, hr4[1], NBinding()) : N(),
-        hr4[2].hit ? get_normal(normals, hr4[2], NBinding()) : N(),
-        hr4[3].hit ? get_normal(normals, hr4[3], NBinding()) : N()
-    };
-
-    return surface<M<simd::float4>>
-    (
-        vector<3, simd::float4>
-        (
-            simd::float4( n[0].x, n[1].x, n[2].x, n[3].x ),
-            simd::float4( n[0].y, n[1].y, n[2].y, n[3].y ),
-            simd::float4( n[0].z, n[1].z, n[2].z, n[3].z )
-        ),
-
-        simd::pack
-        (
-            hr4[0].hit ? materials[hr4[0].geom_id] : M<float>(),
-            hr4[1].hit ? materials[hr4[1].geom_id] : M<float>(),
-            hr4[2].hit ? materials[hr4[2].geom_id] : M<float>(),
-            hr4[3].hit ? materials[hr4[3].geom_id] : M<float>()
-        )
-    );
+    return simd::pack(
+            surface<M<float>>(
+                hr4[0].hit ? get_normal(normals, hr4[0], NBinding()) : N(),
+                hr4[0].hit ? materials[hr4[0].geom_id]               : M<float>()
+                ),
+            surface<M<float>>(
+                hr4[1].hit ? get_normal(normals, hr4[1], NBinding()) : N(),
+                hr4[1].hit ? materials[hr4[1].geom_id]               : M<float>()
+                ),
+            surface<M<float>>(
+                hr4[2].hit ? get_normal(normals, hr4[2], NBinding()) : N(),
+                hr4[2].hit ? materials[hr4[2].geom_id]               : M<float>()
+                ),
+            surface<M<float>>(
+                hr4[3].hit ? get_normal(normals, hr4[3], NBinding()) : N(),
+                hr4[3].hit ? materials[hr4[3].geom_id]               : M<float>()
+                )
+            );
 }
 
 
 template <typename NBinding, typename N, typename TC, template <typename> class M, typename T>
-inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
-(
-    hit_record<simd::ray4, primitive<unsigned>> const& hr,
-    N const* normals,
-    TC const* tex_coords,
-    M<float> const* materials,
-    T const* textures,
-    std::integral_constant<unsigned, 3>,
-    NBinding
-)
+inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface(
+        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
+        N const*                                            normals,
+        TC const*                                           tex_coords,
+        M<float> const*                                     materials,
+        T const*                                            textures,
+        std::integral_constant<unsigned, 3>                 /* */,
+        NBinding                                            /* */
+        )
 {
-    using S = simd::float4;
-
     auto hr4 = simd::unpack(hr);
 
-    N n[4] =
-    {
-        get_normal(normals, hr4[0], NBinding()),
-        get_normal(normals, hr4[1], NBinding()),
-        get_normal(normals, hr4[2], NBinding()),
-        get_normal(normals, hr4[3], NBinding())
-    };
+    auto tc4 = simd::unpack( get_tex_coord(tex_coords, hr, hr4) );
 
-    auto tc = get_tex_coord(tex_coords, hr, hr4);
-
-    vector<3, S> cd;
+    vector<3, float> cd4[4];
     for (unsigned i = 0; i < 4; ++i)
     {
         if (!hr4[i].hit)
@@ -330,36 +467,32 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface
             continue;
         }
 
-        VSNRAY_ALIGN(16) int maski[4] = { 0, 0, 0, 0 };
-        maski[i] = 0xFFFFFFFF;
-        simd::int4 mi(maski);
-        simd::mask4 m(mi);
-
         auto const& tex = textures[hr4[i].geom_id];
-        auto clr = tex.width() > 0 && tex.height() > 0 ? tex2D(tex, tc) : vector<3, S>(1.0);
-
-        cd = select(m, clr, cd);
+        cd4[i] = tex.width() > 0 && tex.height() > 0 ? vector<3, float>(tex2D(tex, tc4[i])) : vector<3, float>(1.0);
     }
 
-    return surface<M<S>, vector<3, S>>
-    (
-        vector<3, S>
-        (
-            S( n[0].x, n[1].x, n[2].x, n[3].x ),
-            S( n[0].y, n[1].y, n[2].y, n[3].y ),
-            S( n[0].z, n[1].z, n[2].z, n[3].z )
-        ),
-
-        simd::pack
-        (
-            hr4[0].hit ? materials[hr4[0].geom_id] : M<float>(),
-            hr4[1].hit ? materials[hr4[1].geom_id] : M<float>(),
-            hr4[2].hit ? materials[hr4[2].geom_id] : M<float>(),
-            hr4[3].hit ? materials[hr4[3].geom_id] : M<float>()
-        ),
-
-        cd
-    );
+    return simd::pack(
+            surface<M<float>, vector<3, float>>(
+                hr4[0].hit ? get_normal(normals, hr4[0], NBinding()) : N(),
+                hr4[0].hit ? materials[hr4[0].geom_id]               : M<float>(),
+                hr4[0].hit ? cd4[0]                                  : vector<3, float>(1.0)
+                ),
+            surface<M<float>, vector<3, float>>(
+                hr4[1].hit ? get_normal(normals, hr4[1], NBinding()) : N(),
+                hr4[1].hit ? materials[hr4[1].geom_id]               : M<float>(),
+                hr4[1].hit ? cd4[1]                                  : vector<3, float>(1.0)
+                ),
+            surface<M<float>, vector<3, float>>(
+                hr4[2].hit ? get_normal(normals, hr4[2], NBinding()) : N(),
+                hr4[2].hit ? materials[hr4[2].geom_id]               : M<float>(),
+                hr4[2].hit ? cd4[2]                                  : vector<3, float>(1.0)
+                ),
+            surface<M<float>, vector<3, float>>(
+                hr4[3].hit ? get_normal(normals, hr4[3], NBinding()) : N(),
+                hr4[3].hit ? materials[hr4[3].geom_id]               : M<float>(),
+                hr4[3].hit ? cd4[3]                                  : vector<3, float>(1.0)
+                )
+            );
 }
 
 
@@ -436,31 +569,24 @@ inline surface<M<simd::float4>> get_surface
 { 
     auto hr4 = simd::unpack(hr); 
 
-    N n[4] = 
-    { 
-        hr4[0].hit ? simd_normal<0>(hr, hr4[0], primitives, normals, NBinding()) : N(),
-        hr4[1].hit ? simd_normal<1>(hr, hr4[1], primitives, normals, NBinding()) : N(),
-        hr4[2].hit ? simd_normal<2>(hr, hr4[2], primitives, normals, NBinding()) : N(),
-        hr4[3].hit ? simd_normal<3>(hr, hr4[3], primitives, normals, NBinding()) : N()
-    }; 
-
-    return surface<M<simd::float4>>
-    ( 
-        vector<3, simd::float4> 
-        ( 
-            simd::float4( n[0].x, n[1].x, n[2].x, n[3].x ), 
-            simd::float4( n[0].y, n[1].y, n[2].y, n[3].y ), 
-            simd::float4( n[0].z, n[1].z, n[2].z, n[3].z ) 
-        ),
-
-        simd::pack
-        (
-            hr4[0].hit ? materials[hr4[0].geom_id] : M<float>(),
-            hr4[1].hit ? materials[hr4[1].geom_id] : M<float>(),
-            hr4[2].hit ? materials[hr4[2].geom_id] : M<float>(),
-            hr4[3].hit ? materials[hr4[3].geom_id] : M<float>()
-        )
-    ); 
+    return simd::pack(
+            surface<M<float>>(
+                hr4[0].hit ? simd_normal<0>(hr, hr4[0], primitives, normals, NBinding()) : N(),
+                hr4[0].hit ? materials[hr4[0].geom_id]                                   : M<float>()
+                ),
+            surface<M<float>>(
+                hr4[1].hit ? simd_normal<1>(hr, hr4[1], primitives, normals, NBinding()) : N(),
+                hr4[1].hit ? materials[hr4[1].geom_id]                                   : M<float>()
+                ),
+            surface<M<float>>(
+                hr4[2].hit ? simd_normal<2>(hr, hr4[2], primitives, normals, NBinding()) : N(),
+                hr4[2].hit ? materials[hr4[2].geom_id]                                   : M<float>()
+                ),
+            surface<M<float>>(
+                hr4[3].hit ? simd_normal<3>(hr, hr4[3], primitives, normals, NBinding()) : N(),
+                hr4[3].hit ? materials[hr4[3].geom_id]                                   : M<float>()
+                )
+            );
 }
 
 
@@ -481,39 +607,40 @@ inline surface<M<simd::float8>> get_surface
 {
     auto hr8 = simd::unpack(hr);
 
-    N n[8] =
-    {
-        hr8[0].hit ? get_normal(normals, hr8[0], NBinding()) : N(),
-        hr8[1].hit ? get_normal(normals, hr8[1], NBinding()) : N(),
-        hr8[2].hit ? get_normal(normals, hr8[2], NBinding()) : N(),
-        hr8[3].hit ? get_normal(normals, hr8[3], NBinding()) : N(),
-        hr8[4].hit ? get_normal(normals, hr8[4], NBinding()) : N(),
-        hr8[5].hit ? get_normal(normals, hr8[5], NBinding()) : N(),
-        hr8[6].hit ? get_normal(normals, hr8[6], NBinding()) : N(),
-        hr8[7].hit ? get_normal(normals, hr8[7], NBinding()) : N()
-    };
-
-    return surface<M<simd::float8>>
-    (
-        vector<3, simd::float8>
-        (
-            simd::float8( n[0].x, n[1].x, n[2].x, n[3].x, n[4].x, n[5].x, n[6].x, n[7].x ),
-            simd::float8( n[0].y, n[1].y, n[2].y, n[3].y, n[4].y, n[5].y, n[6].y, n[7].y ),
-            simd::float8( n[0].z, n[1].z, n[2].z, n[3].z, n[4].z, n[5].z, n[6].z, n[7].z )
-        ),
-
-        simd::pack
-        (
-            hr8[0].hit ? materials[hr8[0].geom_id] : M<float>(),
-            hr8[1].hit ? materials[hr8[1].geom_id] : M<float>(),
-            hr8[2].hit ? materials[hr8[2].geom_id] : M<float>(),
-            hr8[3].hit ? materials[hr8[3].geom_id] : M<float>(),
-            hr8[4].hit ? materials[hr8[4].geom_id] : M<float>(),
-            hr8[5].hit ? materials[hr8[5].geom_id] : M<float>(),
-            hr8[6].hit ? materials[hr8[6].geom_id] : M<float>(),
-            hr8[7].hit ? materials[hr8[7].geom_id] : M<float>()
-        )
-    );
+    return simd::pack(
+            surface<M<float>>(
+                hr8[0].hit ? get_normal(normals, hr8[0], NBinding()) : N(),
+                hr8[0].hit ? materials[hr8[0].geom_id]               : M<float>()
+                ),
+            surface<M<float>>(
+                hr8[1].hit ? get_normal(normals, hr8[1], NBinding()) : N(),
+                hr8[1].hit ? materials[hr8[1].geom_id]               : M<float>()
+                ),
+            surface<M<float>>(
+                hr8[2].hit ? get_normal(normals, hr8[2], NBinding()) : N(),
+                hr8[2].hit ? materials[hr8[2].geom_id]               : M<float>()
+                ),
+            surface<M<float>>(
+                hr8[3].hit ? get_normal(normals, hr8[3], NBinding()) : N(),
+                hr8[3].hit ? materials[hr8[3].geom_id]               : M<float>()
+                ),
+            surface<M<float>>(
+                hr8[4].hit ? get_normal(normals, hr8[4], NBinding()) : N(),
+                hr8[4].hit ? materials[hr8[4].geom_id]               : M<float>()
+                ),
+            surface<M<float>>(
+                hr8[5].hit ? get_normal(normals, hr8[5], NBinding()) : N(),
+                hr8[5].hit ? materials[hr8[5].geom_id]               : M<float>()
+                ),
+            surface<M<float>>(
+                hr8[6].hit ? get_normal(normals, hr8[6], NBinding()) : N(),
+                hr8[6].hit ? materials[hr8[6].geom_id]               : M<float>()
+                ),
+            surface<M<float>>(
+                hr8[7].hit ? get_normal(normals, hr8[7], NBinding()) : N(),
+                hr8[7].hit ? materials[hr8[7].geom_id]               : M<float>()
+                )
+            );
 }
 
 
