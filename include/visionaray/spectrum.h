@@ -29,9 +29,9 @@ class spectrum
 public:
 
 #if VSNRAY_SPECTRUM_RGB
-    static const size_t     num_samples = 3;
+    enum { num_samples = 3 };
 #else
-    static const size_t     num_samples = 300;
+    enum { num_samples = 300 };
     static constexpr float  lambda_min  = 400.0f;
     static constexpr float  lambda_max  = 700.0f;
 #endif
