@@ -275,7 +275,8 @@ public:
 
     void apply(osg::Node& node)
     {
-        if (auto sw = dynamic_cast<osg::Switch*>(&node))
+        auto sw = dynamic_cast<osg::Switch*>(&node);
+        if (sw && sw->containsNode(last_child_))
         {
             visible_ &= sw->getChildValue(last_child_);
         }
