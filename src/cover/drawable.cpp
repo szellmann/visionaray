@@ -13,6 +13,7 @@
 #include <osg/LightModel>
 #include <osg/Material>
 #include <osg/MatrixTransform>
+#include <osg/Switch>
 #include <osg/TriangleIndexFunctor>
 
 #include <osgViewer/Renderer>
@@ -248,6 +249,53 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
+// Visitor to check visibility by traversing upwards to a node's parents
+//
+
+class visibility_visitor : public osg::NodeVisitor
+{
+public:
+
+    using base_type = osg::NodeVisitor;
+    using base_type::apply;
+
+public:
+
+    visibility_visitor(osg::Node* node)
+        : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_PARENTS)
+        , last_child_(node)
+        , visible_(true)
+    {
+    }
+
+    bool is_visible() const
+    {
+        return visible_;
+    }
+
+    void apply(osg::Node& node)
+    {
+        if (auto sw = dynamic_cast<osg::Switch*>(&node))
+        {
+            visible_ &= sw->getChildValue(last_child_);
+        }
+
+        if (visible_)
+        {
+            last_child_ = &node;
+            traverse(node);
+        }
+    }
+
+private:
+
+    osg::Node* last_child_;
+    bool visible_;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Visitor to acquire scene data
 //
 
@@ -295,6 +343,17 @@ public:
 
             auto node_normals  = dynamic_cast<osg::Vec3Array*>(geom->getNormalArray());
             if (!node_normals || node_normals->size() == 0)
+            {
+                continue;
+            }
+
+
+            // Simple checks are done - traverse parents to see if node is visible
+
+            visibility_visitor visible(&geode);
+            geode.accept(visible);
+
+            if (!visible.is_visible())
             {
                 continue;
             }
