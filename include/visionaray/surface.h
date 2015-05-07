@@ -26,6 +26,8 @@ public:
 
 public:
 
+    VSNRAY_FUNC surface() = default;
+
     VSNRAY_FUNC
     surface(vector<3, scalar_type> const& n, M const& m)
         : normal(n)
@@ -63,6 +65,8 @@ public:
     using scalar_type   = typename M::scalar_type;
 
 public:
+
+    VSNRAY_FUNC surface() = default;
 
     VSNRAY_FUNC
     surface(vector<3, scalar_type> const& n, M const& m, C const& cd)
