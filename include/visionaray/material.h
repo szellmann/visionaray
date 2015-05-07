@@ -49,6 +49,7 @@ public:
     spectrum<U> shade(shade_record<L, U> const& sr) const
     {
 #if 1 // two-sided
+        VSNRAY_UNUSED(sr);
         return ce_ * ls_;
 #else
         return select( dot(sr.normal, sr.view_dir) >= U(0.0), ce_ * ls_, spectrum<U>(0.0) );
@@ -60,6 +61,7 @@ public:
     spectrum<U> shade(shade_record<L, C, U> const& sr) const
     {
 #if 1 // two-sided
+        VSNRAY_UNUSED(sr);
         return ce_ * ls_;
 #else
         return select( dot(sr.normal, sr.view_dir) >= U(0.0), ce_ * ls_, spectrum<U>(0.0) );
