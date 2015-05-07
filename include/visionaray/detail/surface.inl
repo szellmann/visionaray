@@ -218,46 +218,19 @@ inline TC get_tex_coord(TC const* tex_coords, HR const& hr)
 
 
 //-------------------------------------------------------------------------------------------------
-// Get SSE texture coordinate from array. Pass hr4 if an upacked hit record is available
+// Gather four texture coordinates from array
 //
 
-template <typename TC, typename HR, typename HR4>
-inline vector<2, simd::float4> get_tex_coord(TC const* coords, HR const& hr, HR4 const& hr4)
+template <typename TC, typename HR>
+inline std::array<TC, 4> get_tex_coord(TC const* coords, std::array<HR, 4> const& hr)
 {
-    using S = simd::float4;
-
-    auto off1 = hr4[0].prim_id * 3;
-    auto off2 = hr4[1].prim_id * 3;
-    auto off3 = hr4[2].prim_id * 3;
-    auto off4 = hr4[3].prim_id * 3;
-
-    VSNRAY_ALIGN(16) float x1[] = { coords[off1    ].x, coords[off2    ].x, coords[off3    ].x, coords[off4    ].x };
-    VSNRAY_ALIGN(16) float x2[] = { coords[off1 + 1].x, coords[off2 + 1].x, coords[off3 + 1].x, coords[off4 + 1].x };
-    VSNRAY_ALIGN(16) float x3[] = { coords[off1 + 2].x, coords[off2 + 2].x, coords[off3 + 2].x, coords[off4 + 2].x };
-
-    VSNRAY_ALIGN(16) float y1[] = { coords[off1    ].y, coords[off2    ].y, coords[off3    ].y, coords[off4    ].y };
-    VSNRAY_ALIGN(16) float y2[] = { coords[off1 + 1].y, coords[off2 + 1].y, coords[off3 + 1].y, coords[off4 + 1].y };
-    VSNRAY_ALIGN(16) float y3[] = { coords[off1 + 2].y, coords[off2 + 2].y, coords[off3 + 2].y, coords[off4 + 2].y };
-
-    vector<2, S> tc1(x1, y1);
-    vector<2, S> tc2(x2, y2);
-    vector<2, S> tc3(x3, y3);
-
-    auto s2 = tc3 * hr.v;
-    auto s3 = tc2 * hr.u;
-    auto s1 = tc1 * (S(1.0) - (hr.u + hr.v));
-    return s1 + s2 + s3;
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Get SSE texture coordinate from array
-//
-
-template <typename TC>
-inline vector<2, simd::float4> get_tex_coord(TC const* tex_coords, hit_record<simd::ray4, primitive<unsigned>> const& hr)
-{
-    return get_tex_coord(tex_coords, hr, simd::unpack(hr));
+    return std::array<TC, 4>
+    {{
+        get_tex_coord(coords, hr[0]),
+        get_tex_coord(coords, hr[1]),
+        get_tex_coord(coords, hr[2]),
+        get_tex_coord(coords, hr[3])
+    }};
 }
 
 
@@ -457,7 +430,7 @@ inline surface<M<simd::float4>, vector<3, simd::float4>> get_surface(
 {
     auto hr4 = simd::unpack(hr);
 
-    auto tc4 = simd::unpack( get_tex_coord(tex_coords, hr, hr4) );
+    auto tc4 = get_tex_coord(tex_coords, hr4);
 
     vector<3, float> cd4[4];
     for (unsigned i = 0; i < 4; ++i)
