@@ -44,26 +44,15 @@ public:
         return shade(shade_rec);
     }
 
-    template <typename L, typename U>
+    template <typename SR>
     VSNRAY_FUNC
-    spectrum<U> shade(shade_record<L, U> const& sr) const
+    spectrum<typename SR::scalar_type> shade(SR const& sr) const
     {
 #if 1 // two-sided
         VSNRAY_UNUSED(sr);
         return ce_ * ls_;
 #else
-        return select( dot(sr.normal, sr.view_dir) >= U(0.0), ce_ * ls_, spectrum<U>(0.0) );
-#endif
-    }
-
-    template <typename L, typename C, typename U>
-    VSNRAY_FUNC
-    spectrum<U> shade(shade_record<L, C, U> const& sr) const
-    {
-#if 1 // two-sided
-        VSNRAY_UNUSED(sr);
-        return ce_ * ls_;
-#else
+        using U = typename SR::scalar_type;
         return select( dot(sr.normal, sr.view_dir) >= U(0.0), ce_ * ls_, spectrum<U>(0.0) );
 #endif
     }
