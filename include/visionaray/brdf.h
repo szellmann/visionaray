@@ -38,7 +38,7 @@ public:
 
     template <typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler)
+    spectrum<U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler) const
     {
         auto w = n;
         auto v = select(
@@ -108,7 +108,7 @@ public:
 
     template <typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler)
+    spectrum<U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler) const
     {
         auto u1 = sampler.next();
         auto u2 = sampler.next();
