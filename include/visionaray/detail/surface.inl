@@ -217,6 +217,45 @@ inline TC get_tex_coord(TC const* tex_coords, HR const& hr)
 
 
 //-------------------------------------------------------------------------------------------------
+// Gather four texture coordinates with SSE
+//
+
+template <typename TC>
+inline vector<2, simd::float4> get_tex_coord(
+        TC const*                                           coords,
+        hit_record<simd::ray4, primitive<unsigned>> const&  hr
+        )
+{
+    auto hr4 = simd::unpack(hr);
+
+    auto off1 = hr4[0].prim_id * 3;
+    auto off2 = hr4[1].prim_id * 3;
+    auto off3 = hr4[2].prim_id * 3;
+    auto off4 = hr4[3].prim_id * 3;
+
+    vector<2, simd::float4> tc1(
+            simd::float4( coords[off1    ].x, coords[off2    ].x, coords[off3    ].x, coords[off4    ].x ),
+            simd::float4( coords[off1    ].y, coords[off2    ].y, coords[off3    ].y, coords[off4    ].y )
+            );
+                
+    vector<2, simd::float4> tc2(
+            simd::float4( coords[off1 + 1].x, coords[off2 + 1].x, coords[off3 + 1].x, coords[off4 + 1].x ),
+            simd::float4( coords[off1 + 1].y, coords[off2 + 1].y, coords[off3 + 1].y, coords[off4 + 1].y )
+            );
+
+    vector<2, simd::float4> tc3(
+            simd::float4( coords[off1 + 2].x, coords[off2 + 2].x, coords[off3 + 2].x, coords[off4 + 2].x ),
+            simd::float4( coords[off1 + 2].y, coords[off2 + 2].y, coords[off3 + 2].y, coords[off4 + 2].y )
+            );
+
+    auto s2 = tc3 * hr.v;
+    auto s3 = tc2 * hr.u;
+    auto s1 = tc1 * (simd::float4(1.0) - (hr.u + hr.v));
+    return s1 + s2 + s3;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Gather four texture coordinates from array
 //
 
