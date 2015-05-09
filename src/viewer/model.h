@@ -9,7 +9,7 @@
 #include <visionaray/detail/aligned_vector.h>
 #include <visionaray/math/forward.h>
 #include <visionaray/texture/forward.h>
-#include <visionaray/material.h>
+#include <visionaray/generic_material.h>
 
 namespace visionaray
 {

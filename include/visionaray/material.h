@@ -11,6 +11,7 @@
 #include "brdf.h"
 #include "shade_record.h"
 #include "spectrum.h"
+#include "variant.h"
 
 
 namespace visionaray
@@ -36,7 +37,7 @@ public:
 
     template <typename SR, typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    spectrum<U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler) const
     {
         VSNRAY_UNUSED(refl_dir); // TODO?
         VSNRAY_UNUSED(sampler);
@@ -132,7 +133,7 @@ public:
 
     template <typename SR, typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    spectrum<U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler) const
     {
         return diffuse_brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl_dir, pdf, sampler);
     }
@@ -223,14 +224,14 @@ public:
 
     template <typename SR, typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    spectrum<U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler) const
     {
         return sample_impl(shade_rec, refl_dir, pdf, sampler);
     }
 
     template <typename L, typename C, typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<U> sample(shade_record<L, C, U> const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    spectrum<U> sample(shade_record<L, C, U> const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler) const
     {
         return spectrum<U>(from_rgb(sr.cd)) * sample_impl(sr, refl_dir, pdf, sampler);
     }
@@ -330,7 +331,7 @@ private:
 
     template <typename SR, typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<U> sample_impl(SR const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    spectrum<U> sample_impl(SR const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler) const
     {
         U pdf1;
         U pdf2;
@@ -380,226 +381,6 @@ private:
         return           select( u < U(prob_diff), diff,  spec  );
 #endif
     }
-
-};
-
-
-//-------------------------------------------------------------------------------------------------
-// Generic material
-//
-
-namespace detail
-{
-static unsigned const EmissiveMaterial  = 0x00;
-static unsigned const MatteMaterial     = 0x01;
-static unsigned const PlasticMaterial   = 0x02;
-} // detail
-
-
-template <typename T>
-class generic_mat
-{
-public:
-
-    using scalar_type   = T;
-
-public:
-
-    unsigned type_;
-
-    generic_mat()
-    {
-    }
-
-    /* implicit */ generic_mat(emissive<T> const& e)
-        : type_(detail::EmissiveMaterial)
-        , emissive_mat(e)
-    {
-    }
-
-    /* implicit */ generic_mat(matte<T> const& m)
-        : type_(detail::MatteMaterial)
-        , matte_mat(m)
-    {
-    }
-
-    /* implicit */ generic_mat(plastic<T> const& p)
-        : type_(detail::PlasticMaterial)
-        , plastic_mat(p)
-    {
-    }
-
-    void operator=(emissive<T> const& e)
-    {
-        type_ = detail::EmissiveMaterial;
-        emissive_mat = e;
-    }
-
-    void operator=(matte<T> const& m)
-    {
-        type_ = detail::MatteMaterial;
-        matte_mat = m;
-    }
-
-    void operator=(plastic<T> const& p)
-    {
-        type_ = detail::PlasticMaterial;
-        plastic_mat = p;
-    }
-
-    VSNRAY_FUNC
-    unsigned get_type() const
-    {
-        return type_;
-    }
-
-    VSNRAY_FUNC spectrum<T> ambient() const
-    {
-        switch (type_)
-        {
-        case detail::EmissiveMaterial:
-            return emissive_mat.ambient();
-
-        case detail::MatteMaterial:
-            return matte_mat.ambient();
-
-        case detail::PlasticMaterial:
-            return plastic_mat.ambient();
-        }
-
-        VSNRAY_UNREACHABLE();
-    }
-
-    template <typename SR>
-    VSNRAY_FUNC
-    spectrum<typename SR::scalar_type> shade(SR const& sr) const
-    {
-        switch (type_)
-        {
-        case detail::EmissiveMaterial:
-            return emissive_mat.shade(sr);
-
-        case detail::MatteMaterial:
-            return matte_mat.shade(sr);
-
-        case detail::PlasticMaterial:
-            return plastic_mat.shade(sr);
-        }
-
-        VSNRAY_UNREACHABLE();
-    }
-
-    template <typename SR, typename U, typename S /* sampler */>
-    VSNRAY_FUNC
-    spectrum<U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
-    {
-        switch (type_)
-        {
-        case detail::EmissiveMaterial:
-            return emissive_mat.sample(shade_rec, refl_dir, pdf, sampler);
-
-        case detail::MatteMaterial:
-            return matte_mat.sample(shade_rec, refl_dir, pdf, sampler);
-
-        case detail::PlasticMaterial:
-            return plastic_mat.sample(shade_rec, refl_dir, pdf, sampler);
-        }
-
-        VSNRAY_UNREACHABLE();
-    }
-
-private:
-
-    union
-    {
-        emissive<T>     emissive_mat;
-        matte<T>        matte_mat;
-        plastic<T>      plastic_mat;
-    };
-};
-
-template <>
-class generic_mat<simd::float4>
-{
-public:
-
-    using scalar_type   = simd::float4;
-
-public:
-
-    generic_mat(
-            generic_mat<float> const& m1,
-            generic_mat<float> const& m2,
-            generic_mat<float> const& m3,
-            generic_mat<float> const& m4
-            )
-        : m1_(m1)
-        , m2_(m2)
-        , m3_(m3)
-        , m4_(m4)
-        , type_( simd::int4(m1.get_type(), m2.get_type(), m3.get_type(), m4.get_type()) )
-    {
-    }
-
-    simd::int4 get_type() const
-    {
-        return type_;
-    }
-
-    spectrum<simd::float4> ambient() const
-    {
-        return simd::pack(
-                spectrum<float>( m1_.ambient() ),
-                spectrum<float>( m2_.ambient() ),
-                spectrum<float>( m3_.ambient() ),
-                spectrum<float>( m4_.ambient() )
-                );
-    }
-
-    template <typename SR>
-    spectrum<simd::float4> shade(SR const& sr) const
-    {
-        auto sr4 = simd::unpack(sr);
-        return simd::pack(
-                m1_.shade(sr4[0]),
-                m2_.shade(sr4[1]),
-                m3_.shade(sr4[2]),
-                m4_.shade(sr4[3])
-                );
-    }
-
-    template <typename SR, typename S /* sampler */>
-    spectrum<simd::float4> sample(
-            SR const&                   sr,
-            vector<3, simd::float4>&    refl_dir,
-            simd::float4&               pdf,
-            S&                          samp
-            )
-    {
-        auto sr4 = simd::unpack(sr);
-        vector<3, float> rd4[4];
-        VSNRAY_ALIGN(16) float pdf4[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-        auto& s = samp.get_sampler();
-        spectrum<float> v[] =
-        {
-            spectrum<float>( m1_.sample(sr4[0], rd4[0], pdf4[0], s) ),
-            spectrum<float>( m2_.sample(sr4[1], rd4[1], pdf4[1], s) ),
-            spectrum<float>( m3_.sample(sr4[2], rd4[2], pdf4[2], s) ),
-            spectrum<float>( m4_.sample(sr4[3], rd4[3], pdf4[3], s) )
-        };
-        refl_dir = simd::pack( rd4[0], rd4[1], rd4[2], rd4[3] );
-        pdf = simd::float4(pdf4);
-        return simd::pack( v[0], v[1], v[2], v[3] );
-    }
-
-private:
-
-    generic_mat<float> m1_;
-    generic_mat<float> m2_;
-    generic_mat<float> m3_;
-    generic_mat<float> m4_;
-
-    simd::int4 type_;
 
 };
 

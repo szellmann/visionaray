@@ -10,11 +10,12 @@ namespace simd
 // Functions to pack four materials into a single SIMD material
 //
 
-inline plastic<float4> pack
-(
-    plastic<float> const& m1, plastic<float> const& m2,
-    plastic<float> const& m3, plastic<float> const& m4
-)
+inline plastic<float4> pack(
+        plastic<float> const& m1,
+        plastic<float> const& m2,
+        plastic<float> const& m3,
+        plastic<float> const& m4
+        )
 {
     plastic<float4> result;
 
@@ -29,27 +30,30 @@ inline plastic<float4> pack
     return result;
 }
 
-inline emissive<float4> pack
-(
-    emissive<float> const& m1, emissive<float> const& m2,
-    emissive<float> const& m3, emissive<float> const& m4
-)
+inline emissive<float4> pack(
+        emissive<float> const& m1,
+        emissive<float> const& m2,
+        emissive<float> const& m3,
+        emissive<float> const& m4
+        )
 {
     emissive<float4> result;
 
-    result.set_ce( pack(m1.get_ce(), m2.get_ce(), m3.get_ce(), m4.get_ce()) );
-    result.set_ls( float4(m1.get_ls(), m2.get_ls(), m3.get_ls(), m4.get_ls()) );
+    result.set_ce(
+            pack(m1.get_ce(),
+            m2.get_ce(),
+            m3.get_ce(),
+            m4.get_ce())
+            );
+
+    result.set_ls( float4(
+            m1.get_ls(),
+            m2.get_ls(),
+            m3.get_ls(),
+            m4.get_ls())
+            );
 
     return result;
-}
-
-inline generic_mat<float4> pack
-(
-    generic_mat<float> const& m1, generic_mat<float> const& m2,
-    generic_mat<float> const& m3, generic_mat<float> const& m4
-)
-{
-    return generic_mat<float4>(m1, m2, m3, m4);
 }
 
 
@@ -59,11 +63,16 @@ inline generic_mat<float4> pack
 // Functions to pack eight materials into a single SIMD material
 //
 
-inline plastic<float8> pack
-(
-    plastic<float> const& m1, plastic<float> const& m2, plastic<float> const& m3, plastic<float> const& m4,
-    plastic<float> const& m5, plastic<float> const& m6, plastic<float> const& m7, plastic<float> const& m8
-)
+inline plastic<float8> pack(
+        plastic<float> const& m1,
+        plastic<float> const& m2,
+        plastic<float> const& m3,
+        plastic<float> const& m4,
+        plastic<float> const& m5,
+        plastic<float> const& m6,
+        plastic<float> const& m7,
+        plastic<float> const& m8
+        )
 {
     using C = spectrum<float>;
 
