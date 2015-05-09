@@ -147,6 +147,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/spectrum.h
     ${HEADER_DIR}/surface.h
     ${HEADER_DIR}/tags.h
+    ${HEADER_DIR}/variant.h
 
     #----------------------------------------------------------------------------------------------
     # Private headers
