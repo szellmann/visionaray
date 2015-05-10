@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <ostream>
+
 #include "color_conversion.h"
 
 namespace visionaray
@@ -247,6 +249,29 @@ VSNRAY_FUNC
 inline T mean_value(spectrum<T> const& s)
 {
     return hadd( s.samples() ) / T(spectrum<T>::num_samples);
+}
+
+template <typename T, typename CharT, typename Traits>
+std::basic_ostream<CharT, Traits>&
+operator<<(std::basic_ostream<CharT, Traits>& out, spectrum<T> const& v)
+{
+    std::basic_ostringstream<CharT, Traits> s;
+    s.flags(out.flags());
+    s.imbue(out.getloc());
+    s.precision(out.precision());
+
+    s << '(';
+    for (size_t d = 0; d < spectrum<T>::num_samples; ++d)
+    {
+        s << v[d];
+        if (d < spectrum<T>::num_samples - 1)
+        {
+            s << ',';
+        }
+    }
+    s << ')';
+
+    return out << s.str();
 }
 
 
