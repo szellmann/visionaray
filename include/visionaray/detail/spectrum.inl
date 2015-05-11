@@ -366,6 +366,19 @@ inline spectrum<T> from_rgba(T r, T g, T b, T a)
     return from_rgba(r, g, b, a);
 }
 
+// SPD -> Luminance
+
+template <typename T>
+VSNRAY_FUNC
+inline T to_luminance(spectrum<T> const& s)
+{
+#if VSNRAY_SPECTRUM_RGB
+    return T(0.3) * s[0] + T(0.59) * s[1] + T(0.11) * s[2];
+#else
+    return reflective_spd_to_luminance(s);
+#endif
+}
+
 // SPD -> RGB
 
 template <typename T>

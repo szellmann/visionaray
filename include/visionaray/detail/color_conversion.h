@@ -73,6 +73,36 @@ inline vector<3, T> xyz_to_rgb(vector<3, T> const& xyz)
 
 
 //-------------------------------------------------------------------------------------------------
+// Convert spectrum to luminance (cd/m^2).
+// Multiplication with a standard illuminant.
+// See: http://www.brucelindbloom.com/index.html?Eqn_Spect_to_XYZ.html
+//
+
+template <typename T>
+VSNRAY_FUNC
+inline T reflective_spd_to_luminance(spectrum<T> const& spe)
+{
+    const float lmin = spectrum<T>::lambda_min;
+    const float lmax = spectrum<T>::lambda_max;
+    const float step = (lmax - lmin) / (spectrum<T>::num_samples - 1);
+
+    auto ill = spd_d65();
+
+    T y(0.0);
+
+    for (float lambda = lmin; lambda <= lmax; lambda += step)
+    {
+        auto p = spe(lambda);
+        auto i = ill(lambda);
+
+        y += p * i * cie_y(lambda);
+    }
+
+    return y;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Reflective spectrum to RGB. Requires normalization and mult. with a standard illuminant.
 // See: http://www.brucelindbloom.com/index.html?Eqn_Spect_to_XYZ.html
 //
