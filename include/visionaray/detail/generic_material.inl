@@ -125,12 +125,12 @@ public:
 
     simd::mask4 is_emissive() const
     {
-        return simd::mask4( simd::int4(
-                m1_.is_emissive() ? 0xFFFFFFFF : 0x00000000,
-                m2_.is_emissive() ? 0xFFFFFFFF : 0x00000000,
-                m3_.is_emissive() ? 0xFFFFFFFF : 0x00000000,
-                m4_.is_emissive() ? 0xFFFFFFFF : 0x00000000
-                ) );
+        return simd::mask4(
+                m1_.is_emissive(),
+                m2_.is_emissive(),
+                m3_.is_emissive(),
+                m4_.is_emissive()
+                );
     }
 
     spectrum<simd::float4> ambient() const

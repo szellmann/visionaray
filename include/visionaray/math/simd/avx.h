@@ -138,6 +138,29 @@ public:
     {
     }
 
+    basic_mask(
+            bool x1,
+            bool x2,
+            bool x3,
+            bool x4,
+            bool x5,
+            bool x6,
+            bool x7,
+            bool x8
+            )
+        : i( basic_int<__m256i>(
+                x1 ? 0xFFFFFFFF : 0x00000000,
+                x2 ? 0xFFFFFFFF : 0x00000000,
+                x3 ? 0xFFFFFFFF : 0x00000000,
+                x4 ? 0xFFFFFFFF : 0x00000000,
+                x5 ? 0xFFFFFFFF : 0x00000000,
+                x6 ? 0xFFFFFFFF : 0x00000000,
+                x7 ? 0xFFFFFFFF : 0x00000000,
+                x8 ? 0xFFFFFFFF : 0x00000000
+                ) )
+    {
+    }
+
     VSNRAY_FORCE_INLINE basic_mask(basic_float<__m256> const& m)
         : f(m)
     {

@@ -128,6 +128,16 @@ public:
     {
     }
 
+    basic_mask(bool x, bool y, bool z, bool w)
+        : i( basic_int<__m128i>(
+                x ? 0xFFFFFFFF : 0x00000000,
+                y ? 0xFFFFFFFF : 0x00000000,
+                z ? 0xFFFFFFFF : 0x00000000,
+                w ? 0xFFFFFFFF : 0x00000000
+                ) )
+    {
+    }
+
     VSNRAY_FORCE_INLINE basic_mask(bool b)
         : i( basic_int<__m128i>(b ? 0xFFFFFFFF : 0x00000000) )
     {
