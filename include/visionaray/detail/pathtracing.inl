@@ -72,6 +72,8 @@ struct kernel
  
                 auto src = surf.sample(sr, refl_dir, pdf, s);
 
+                active_rays &= pdf != S(0.0);
+
                 auto emissive = has_emissive_material(surf);
                 src = mul( src, dot(surf.normal, refl_dir) / pdf, !emissive, src ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
                 dst = mul( dst, src, active_rays, dst );
