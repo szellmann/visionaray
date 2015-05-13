@@ -355,8 +355,7 @@ template <typename T>
 VSNRAY_FUNC
 inline spectrum<T> from_rgba(vector<4, T> const& rgba)
 {
-    auto inv = select( rgba.w != T(0.0), T(1.0) / rgba.w, T(1.0) );
-    return from_rgb( rgba.x * inv, rgba.y * inv, rgba.z * inv );
+    return from_rgb( rgba.x * rgba.w, rgba.y * rgba.w, rgba.z * rgba.w );
 }
 
 template <typename T>
