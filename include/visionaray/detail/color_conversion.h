@@ -53,6 +53,22 @@ inline float cie_z(float lambda)
 
 
 //-------------------------------------------------------------------------------------------------
+// Gamma correction
+//
+
+template <typename T>
+VSNRAY_FUNC
+inline T gamma_correction(T c)
+{
+    return select(
+        c <= T(0.0031308),
+        T(12.92) * c,
+        T(1.055) * pow(c, T(1.0 / 2.4)) - T(0.055)
+        );
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // XYZ to RGB
 //
 
@@ -62,13 +78,18 @@ inline vector<3, T> xyz_to_rgb(vector<3, T> const& xyz)
 {
     // see: http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     // Assume sRGB working space and D65 reference white
-    return matrix<3, 3, T>(
+    auto rgb = matrix<3, 3, T>(
              3.2404542, -0.9692660,  0.0556434,
             -1.5371385,  1.8760108, -0.2040259,
             -0.4985314,  0.0415560,  1.0572252
             )
         * xyz;
 
+    return vector<3, T>(
+            T(gamma_correction(rgb.x)),
+            T(gamma_correction(rgb.y)),
+            T(gamma_correction(rgb.z))
+            );
 }
 
 
