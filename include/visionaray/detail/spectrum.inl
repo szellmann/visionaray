@@ -375,7 +375,7 @@ inline T to_luminance(spectrum<T> const& s)
 #if VSNRAY_SPECTRUM_RGB
     return T(0.3) * s[0] + T(0.59) * s[1] + T(0.11) * s[2];
 #else
-    return reflective_spd_to_luminance(s);
+    return emissive_spd_to_luminance(s);
 #endif
 }
 
@@ -390,7 +390,7 @@ inline vector<3, T> to_rgb(spectrum<T> const& s)
     return s.samples();
 #else
     static_assert( spectrum<T>::num_samples > 1, "Incompatible num samples" );
-    return reflective_spd_to_rgb(s);
+    return emissive_spd_to_rgb(s);
 #endif
 }
 
