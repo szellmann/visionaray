@@ -53,22 +53,6 @@ inline float cie_z(float lambda)
 
 
 //-------------------------------------------------------------------------------------------------
-// Gamma correction
-//
-
-template <typename T>
-VSNRAY_FUNC
-inline T gamma_correction(T c)
-{
-    return select(
-        c <= T(0.0031308),
-        T(12.92) * c,
-        T(1.055) * pow(c, T(1.0 / 2.4)) - T(0.055)
-        );
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // XYZ to RGB
 //
 
@@ -78,94 +62,22 @@ inline vector<3, T> xyz_to_rgb(vector<3, T> const& xyz)
 {
     // see: http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
     // Assume sRGB working space and D65 reference white
-    auto rgb = matrix<3, 3, T>(
+    return matrix<3, 3, T>(
              3.2404542, -0.9692660,  0.0556434,
             -1.5371385,  1.8760108, -0.2040259,
             -0.4985314,  0.0415560,  1.0572252
             )
         * xyz;
-
-    return vector<3, T>(
-            T(gamma_correction(rgb.x)),
-            T(gamma_correction(rgb.y)),
-            T(gamma_correction(rgb.z))
-            );
 }
 
 
 //-------------------------------------------------------------------------------------------------
-// Reflective spectrum to RGB. Requires normalization and mult. with a standard illuminant.
-// See: http://www.brucelindbloom.com/index.html?Eqn_Spect_to_XYZ.html
+// Convert spectrum to RGB
 //
 
 template <typename T>
 VSNRAY_FUNC
-inline vector<3, T> reflective_spd_to_rgb(spectrum<T> const& spe)
-{
-    const float lmin = spectrum<T>::lambda_min;
-    const float lmax = spectrum<T>::lambda_max;
-    const float step = (lmax - lmin) / (spectrum<T>::num_samples - 1);
-
-    auto ill = spd_d65();
-
-    T x(0.0);
-    T y(0.0);
-    T z(0.0);
-    T n(0.0);
-
-    for (float lambda = lmin; lambda <= lmax; lambda += step)
-    {
-        auto p = spe(lambda);
-        auto i = ill(lambda);
-
-
-        x += p * i * cie_x(lambda);
-        y += p * i * cie_y(lambda);
-        z += p * i * cie_z(lambda);
-        n +=     i * cie_y(lambda);
-    }
-
-    return xyz_to_rgb( vector<3, T>( x / n, y / n, z / n ) );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Convert spectrum to luminance (cd/m^2).
-// Multiplication with a standard illuminant.
-// See: http://www.brucelindbloom.com/index.html?Eqn_Spect_to_XYZ.html
-//
-
-template <typename T>
-VSNRAY_FUNC
-inline T reflective_spd_to_luminance(spectrum<T> const& spe)
-{
-    const float lmin = spectrum<T>::lambda_min;
-    const float lmax = spectrum<T>::lambda_max;
-    const float step = (lmax - lmin) / (spectrum<T>::num_samples - 1);
-
-    auto ill = spd_d65();
-
-    T y(0.0);
-
-    for (float lambda = lmin; lambda <= lmax; lambda += step)
-    {
-        auto p = spe(lambda);
-        auto i = ill(lambda);
-
-        y += p * i * cie_y(lambda);
-    }
-
-    return y;
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Convert emissive spectrum to RGB
-//
-
-template <typename T>
-VSNRAY_FUNC
-inline vector<3, T> emissive_spd_to_rgb(spectrum<T> const& spe)
+inline vector<3, T> spd_to_rgb(spectrum<T> const& spe)
 {
     const float lmin = spectrum<T>::lambda_min;
     const float lmax = spectrum<T>::lambda_max;
@@ -192,12 +104,12 @@ inline vector<3, T> emissive_spd_to_rgb(spectrum<T> const& spe)
 
 
 //-------------------------------------------------------------------------------------------------
-// Convert emissive spectrum to luminance (cd/m^2)
+// Convert spectrum to luminance (cd/m^2)
 //
 
 template <typename T>
 VSNRAY_FUNC
-inline T emissive_spd_to_luminance(spectrum<T> const& spe)
+inline T spd_to_luminance(spectrum<T> const& spe)
 {
     const float lmin = spectrum<T>::lambda_min;
     const float lmax = spectrum<T>::lambda_max;
