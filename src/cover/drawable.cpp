@@ -485,6 +485,7 @@ struct drawable::impl
     {
         GLint                       matrix_mode;
         GLboolean                   lighting;
+        GLboolean                   framebuffer_srgb;
     } gl_state;
 
     void update_state(
@@ -524,10 +525,20 @@ void drawable::impl::store_gl_state()
 {
     glGetIntegerv(GL_MATRIX_MODE, &gl_state.matrix_mode);
     gl_state.lighting = glIsEnabled(GL_LIGHTING);
+    gl_state.framebuffer_srgb = glIsEnabled(GL_FRAMEBUFFER_SRGB);
 }
 
 void drawable::impl::restore_gl_state()
 {
+    if (gl_state.framebuffer_srgb)
+    {
+        glEnable(GL_FRAMEBUFFER_SRGB);
+    }
+    else
+    {
+        glDisable(GL_FRAMEBUFFER_SRGB);
+    }
+
     if (gl_state.lighting)
     {
         glEnable(GL_LIGHTING);
@@ -882,6 +893,8 @@ void drawable::drawImplementation(osg::RenderInfo&) const
 
     // Render
     impl_->call_kernel(kparams);
+
+    glEnable(GL_FRAMEBUFFER_SRGB);
 
     impl_->host_rt.display_color_buffer();
 
