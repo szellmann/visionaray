@@ -127,7 +127,7 @@ class variant
 {
 public:
 
-    VSNRAY_FUNC variant() = default;
+    VSNRAY_FUNC variant() {}
 
     template <typename T>
     VSNRAY_FUNC variant(T const& value)
