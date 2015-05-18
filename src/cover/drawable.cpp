@@ -532,6 +532,7 @@ struct drawable::impl
     void restore_gl_state();
     void update_viewing_params();
     void update_device_data();
+    void commit_state();
     
     template <typename KParams>
     void call_kernel(KParams const& params);
@@ -597,7 +598,7 @@ void drawable::impl::update_viewing_params()
 
     // Reset frame counter on change or if scene is dynamic
 
-    if (state->data_var == Dynamic || state->algo != algo_current
+    if (state->data_var == Dynamic || state->algo != algo_current || state->device != device
      || view_matrix != view || proj_matrix != proj || viewport != vp)
     {
         frame_num = 0;
@@ -606,7 +607,6 @@ void drawable::impl::update_viewing_params()
 
     // Update
 
-    algo_current = state->algo;
     view_matrix  = view;
     proj_matrix  = proj;
 
@@ -631,6 +631,12 @@ void drawable::impl::update_device_data()
         device_materials    = materials;
     }
 #endif
+}
+
+void drawable::impl::commit_state()
+{
+    algo_current    = state->algo;
+    device          = state->device;
 }
 
 
@@ -871,6 +877,10 @@ void drawable::drawImplementation(osg::RenderInfo&) const
     // Copy BVH, normals, etc. if necessary
 
     impl_->update_device_data();
+
+    // Finally update state variables. Call after any other updates!
+
+    impl_->commit_state();
 
 
     // Kernel params
