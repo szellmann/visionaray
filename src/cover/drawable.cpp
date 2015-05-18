@@ -464,7 +464,6 @@ private:
 
 struct drawable::impl
 {
-    enum device_type { CPU = 0, GPU };
 
     impl()
         : host_sched(0)
@@ -496,7 +495,7 @@ struct drawable::impl
     unsigned                                frame_num       = 0;
 
     algorithm                               algo_current    = Simple;
-    device_type                             dev_type        = CPU;
+    device_type                             device          = CPU;
 
     bvh_outline_renderer                    outlines;
 
@@ -532,6 +531,7 @@ struct drawable::impl
     void store_gl_state();
     void restore_gl_state();
     void update_viewing_params();
+    void update_device_data();
     
     template <typename KParams>
     void call_kernel(KParams const& params);
@@ -620,6 +620,20 @@ void drawable::impl::update_viewing_params()
     }
 }
 
+void drawable::impl::update_device_data()
+{
+#ifdef __CUDACC__
+    if ( state->device == GPU && (state->data_var == Dynamic || state->device != device) )
+    {
+        device_bvh          = device_bvh_type(host_bvh);
+        device_normals      = normals;
+        device_tex_coords   = tex_coords;
+        device_materials    = materials;
+    }
+#endif
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // Call either one of the visionaray kernels or a custom one
 //
@@ -633,7 +647,7 @@ void drawable::impl::call_kernel(KParams const& params)
     }
     else
     {
-        if (dev_type == GPU)
+        if (state->device == GPU)
         {
 #ifdef __CUDACC__
             visionaray::call_kernel(
@@ -847,22 +861,16 @@ void drawable::drawImplementation(osg::RenderInfo&) const
                 impl_->state->data_var == Static /* consider spatial splits if scene is static */
                 );
         impl_->outlines.init(impl_->host_bvh);
-
-#ifdef __CUDACC__
-        if (impl_->dev_type == impl::GPU)
-        {
-            impl_->device_bvh           = device_bvh_type(impl_->host_bvh);
-            impl_->device_normals       = impl_->normals;
-            impl_->device_tex_coords    = impl_->tex_coords;
-            impl_->device_materials     = impl_->materials;
-        }
-#endif
     }
 
 
     // Camera matrices, viewport, render target resize
 
     impl_->update_viewing_params();
+
+    // Copy BVH, normals, etc. if necessary
+
+    impl_->update_device_data();
 
 
     // Kernel params
@@ -947,7 +955,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
 
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-    if (impl_->dev_type == impl::GPU)
+    if (impl_->state->device == GPU)
     {
 #ifdef __CUDACC__
         thrust::device_vector<device_bvh_type::bvh_ref> device_primitives;
@@ -973,7 +981,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
         impl_->device_rt.display_color_buffer();
 #endif
     }
-    else if (impl_->dev_type == impl::CPU)
+    else if (impl_->state->device == CPU)
     {
 #ifndef __CUDA_ARCH__
         auto kparams = make_params<normals_per_vertex_binding>(

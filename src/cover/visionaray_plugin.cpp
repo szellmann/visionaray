@@ -54,9 +54,11 @@ struct Visionaray::impl : vrui::coMenuListener
     {
         menu                        main_menu;
         menu                        algo_menu;
+        menu                        device_menu;
         menu                        dev_menu;
         sub_menu                    main_menu_entry;
         sub_menu                    algo_menu_entry;
+        sub_menu                    device_menu_entry;
         sub_menu                    dev_menu_entry;
 
         // main menu
@@ -67,6 +69,11 @@ struct Visionaray::impl : vrui::coMenuListener
         radio_button                simple_button;
         radio_button                whitted_button;
         radio_button                pathtracing_button;
+
+        // device menu
+        radio_group                 device_group;
+        radio_button                cpu_button;
+        radio_button                gpu_button;
 
         // dev menu
         check_box                   toggle_bvh_display;
@@ -91,6 +98,7 @@ struct Visionaray::impl : vrui::coMenuListener
 
     void set_data_variance(data_variance var);
     void set_algorithm(algorithm algo);
+    void set_device(device_type dev);
     void set_show_bvh(bool show_bvh);
     void set_show_normals(bool show_normals);
     void set_show_tex_coords(bool show_tex_coords);
@@ -108,6 +116,7 @@ void Visionaray::impl::init_state_from_config()
     // <Visionaray>
     //     <DataVariance value="static"  />      <!-- "static" | "dynamic" -->
     //     <Algorithm    value="simple"  />      <!-- "simple" | "whitted" -->
+    //     <Device       vlaue="CPU"     />      <!-- "CPU"    | "GPU"     -->
     //     <CPUScheduler numThreads="16" />      <!-- numThreads:Integer   -->
     // </Visioaray>
     //
@@ -123,10 +132,12 @@ void Visionaray::impl::init_state_from_config()
     using boost::algorithm::to_lower;
 
     auto algo_str       = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.Algorithm");
+    auto device_str     = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.Device");
     auto data_var_str   = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.DataVariance");
     auto num_threads    = covise::coCoviseConfig::getInt("numThreads", "COVER.Plugin.Visionaray.CPUScheduler", 0);
 
     to_lower(algo_str);
+    to_lower(device_str);
     to_lower(data_var_str);
 
 
@@ -143,6 +154,15 @@ void Visionaray::impl::init_state_from_config()
     else
     {
         state->algo = Simple;
+    }
+
+    if (device_str == "gpu")
+    {
+        state->device = GPU;
+    }
+    else
+    {
+        state->device = CPU;
     }
 
     state->data_var     = data_var_str == "dynamic" ? Dynamic : Static;
@@ -189,6 +209,26 @@ void Visionaray::impl::init_ui()
     ui.pathtracing_button.reset(new coCheckboxMenuItem("Pathtracing", state->algo == Pathtracing, ui.algo_group.get()));
     ui.pathtracing_button->setMenuListener(this);
     ui.algo_menu->add(ui.pathtracing_button.get());
+
+
+    // device submenu
+
+    ui.device_menu_entry.reset(new coSubMenuItem("Device..."));
+    ui.main_menu->add(ui.device_menu_entry.get());
+
+    ui.device_menu.reset(new coRowMenu("Device", ui.main_menu.get()));
+    ui.device_menu_entry->setMenu(ui.device_menu.get());
+
+
+    ui.device_group.reset(new coCheckboxGroup( /* allow empty selection: */ false ));
+
+    ui.cpu_button.reset(new coCheckboxMenuItem("CPU", state->device == CPU, ui.device_group.get()));
+    ui.cpu_button->setMenuListener(this);
+    ui.device_menu->add(ui.cpu_button.get());
+
+    ui.gpu_button.reset(new coCheckboxMenuItem("GPU", state->device == GPU, ui.device_group.get()));
+    ui.gpu_button->setMenuListener(this);
+    ui.device_menu->add(ui.gpu_button.get());
 
 
     // dev submenu at the bottom!
@@ -238,6 +278,16 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
         set_algorithm(Pathtracing);
     }
 
+    // device submenu
+    if (item == ui.cpu_button.get())
+    {
+        set_device(CPU);
+    }
+    else if (item == ui.gpu_button.get())
+    {
+        set_device(GPU);
+    }
+
     // dev submenu
     if (item == ui.toggle_bvh_display.get())
     {
@@ -272,6 +322,13 @@ void Visionaray::impl::set_algorithm(algorithm algo)
     ui.simple_button->setState( algo == Simple, false );
     ui.whitted_button->setState( algo == Whitted, false );
     ui.pathtracing_button->setState( algo == Pathtracing, false );
+}
+
+void Visionaray::impl::set_device(device_type dev)
+{
+    state->device = dev;
+    ui.cpu_button->setState( dev == CPU, false );
+    ui.gpu_button->setState( dev == GPU, false );
 }
 
 void Visionaray::impl::set_show_bvh(bool show_bvh)

@@ -15,7 +15,8 @@ namespace visionaray { namespace cover {
 // Control scene update behavior
 //
 
-enum data_variance { Static, Dynamic };
+enum device_type    { CPU, GPU };
+enum data_variance  { Static, Dynamic };
 
 
 //-------------------------------------------------------------------------------------------------
@@ -25,6 +26,7 @@ enum data_variance { Static, Dynamic };
 struct render_state
 {
     algorithm       algo            = Simple;
+    device_type     device          = CPU;
     data_variance   data_var        = Static;
     unsigned        num_threads     = 0;
 };
