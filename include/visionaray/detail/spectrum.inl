@@ -5,6 +5,8 @@
 
 #include <ostream>
 
+#include <visionaray/texture/texture.h>
+
 #include "color_conversion.h"
 
 namespace visionaray
@@ -69,22 +71,17 @@ inline T spectrum<T>::operator()(float lambda) const
     float lambda_max = 2.0f;
 #endif
 
-    // TODO: implement with tex1D()
-/*
-    texture_ref<T, ElementType, 1> tex(num_samples);
-    tex.set_data( samples_.data() );
-    T coord = (lambda - lambda_min) / (lambda_max - lambda_min);
-    return tex1D(tex, coord);
-*/
-
     if (lambda < lambda_min || lambda > lambda_max)
     {
         return T(0.0);
     }
 
+    texture_ref<T, ElementType, 1> tex(num_samples);
+    tex.set_data( samples_.data() );
+    tex.set_filter_mode( Linear );
+
     float coord = (lambda - lambda_min) / (lambda_max - lambda_min);
-    int index = coord * (num_samples - 1);
-    return samples_[index];
+    return tex1D(tex, coord);
 }
 
 template <typename T>
