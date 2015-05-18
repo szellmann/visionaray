@@ -11,14 +11,20 @@ namespace visionaray
 namespace detail
 {
 
-template <typename R, typename PxSamplerT, typename MT, typename V, typename RTRef, typename K>
+//-------------------------------------------------------------------------------------------------
+// CUDA kernels
+//
+
+template <typename R, typename PxSamplerT, typename V, typename RTRef, typename K>
 __global__ void render(
-        MT          inv_view_matrix,
-        MT          inv_proj_matrix,
-        V           viewport,
-        RTRef       rt_ref,
-        K           kernel,
-        unsigned    frame
+        matrix<4, 4, float> view_matrix,
+        matrix<4, 4, float> inv_view_matrix,
+        matrix<4, 4, float> proj_matrix,
+        matrix<4, 4, float> inv_proj_matrix,
+        V                   viewport,
+        RTRef               rt_ref,
+        K                   kernel,
+        unsigned            frame_num
         )
 {
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -32,12 +38,14 @@ __global__ void render(
     sample_pixel<R>(
             x,
             y,
-            frame,
+            frame_num,
             viewport,
             rt_ref,
             kernel,
             PxSamplerT(),
+            view_matrix,
             inv_view_matrix,
+            proj_matrix,
             inv_proj_matrix
             );
 }
@@ -51,7 +59,7 @@ __global__ void render(
         V           viewport,
         RTRef       rt_ref,
         K           kernel,
-        unsigned    frame
+        unsigned    frame_num
         )
 {
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -65,7 +73,7 @@ __global__ void render(
     sample_pixel<R>(
             x,
             y,
-            frame,
+            frame_num,
             viewport,
             rt_ref,
             kernel,
@@ -77,29 +85,60 @@ __global__ void render(
             );
 }
 
-} // detail
 
+//-------------------------------------------------------------------------------------------------
+// Dispatch functions
+//
 
-
-template <typename R>
-template <typename K, typename SP>
-void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
+template <typename R, typename K, typename SP>
+inline void cuda_sched_impl_frame(K kernel, SP sparams, unsigned frame_num)
 {
-    sched_params.rt.begin_frame();
+    auto rt_ref             = sparams.rt.ref();
+    auto inv_view_matrix    = inverse(sparams.view_matrix);
+    auto inv_proj_matrix    = inverse(sparams.proj_matrix);
+    auto viewport           = sparams.viewport;
 
-    auto rt_ref             = sched_params.rt.ref();
-//  auto inv_view_matrix    = inverse(sched_params.cam.get_view_matrix());
-//  auto inv_proj_matrix    = inverse(sched_params.cam.get_proj_matrix());
-    auto viewport           = sched_params.cam.get_viewport();
+    dim3 block_size(16, 16);
+
+    using cuda_dim_t = decltype(block_size.x);
+
+    auto w = static_cast<cuda_dim_t>(viewport.w);
+    auto h = static_cast<cuda_dim_t>(viewport.h);
+
+    dim3 grid_size
+    (
+        div_up(w, block_size.x),
+        div_up(h, block_size.y)
+    );
+    render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
+            sparams.view_matrix,
+            inv_view_matrix,
+            sparams.proj_matrix,
+            inv_proj_matrix,
+            viewport,
+            rt_ref,
+            kernel,
+            frame_num
+            );
+
+    cudaPeekAtLastError();
+    cudaDeviceSynchronize();
+}
+
+template <typename R, typename K, typename RT, typename PxSamplerT>
+inline void cuda_sched_impl_frame(K kernel, sched_params<RT, PxSamplerT> sparams, unsigned frame_num)
+{
+    auto rt_ref             = sparams.rt.ref();
+    auto viewport           = sparams.cam.get_viewport();
 
     //  front, side, and up vectors form an orthonormal basis
-    auto f = normalize( sched_params.cam.eye() - sched_params.cam.center() );
-    auto s = normalize( cross(sched_params.cam.up(), f) );
+    auto f = normalize( sparams.cam.eye() - sparams.cam.center() );
+    auto s = normalize( cross(sparams.cam.up(), f) );
     auto u =            cross(f, s);
 
-    auto eye   = sched_params.cam.eye();
-    auto cam_u = s * tan(sched_params.cam.fovy() / 2.0f) * sched_params.cam.aspect();
-    auto cam_v = u * tan(sched_params.cam.fovy() / 2.0f);
+    auto eye   = sparams.cam.eye();
+    auto cam_u = s * tan(sparams.cam.fovy() / 2.0f) * sparams.cam.aspect();
+    auto cam_v = u * tan(sparams.cam.fovy() / 2.0f);
     auto cam_w = -f;
 
     dim3 block_size(16, 16);
@@ -114,9 +153,7 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
         div_up(w, block_size.x),
         div_up(h, block_size.y)
     );
-    detail::render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
-//          inv_view_matrix,
-//          inv_proj_matrix,
+    render<R, PxSamplerT><<<grid_size, block_size>>>(
             eye,
             cam_u,
             cam_v,
@@ -129,6 +166,18 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 
     cudaPeekAtLastError();
     cudaDeviceSynchronize();
+}
+
+} // detail
+
+
+template <typename R>
+template <typename K, typename SP>
+void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
+{
+    sched_params.rt.begin_frame();
+
+    detail::cuda_sched_impl_frame<R>(kernel, sched_params, frame_num);
 
     sched_params.rt.end_frame();
 }
