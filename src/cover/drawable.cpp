@@ -176,7 +176,7 @@ public:
         out.normals->push_back( osg_cast(n2).xyz() );
         out.normals->push_back( osg_cast(n3).xyz() );
 
-        assert( out.triangles->size() == out.normals->size() * 3 );
+        assert( out.triangles->size() == out.normals->size() / 3 );
 
 
         // tex coords
