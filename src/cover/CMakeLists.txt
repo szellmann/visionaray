@@ -11,19 +11,21 @@ if (NOT COVER_FOUND)
 endif()
 
 find_package(Boost REQUIRED COMPONENTS chrono filesystem iostreams system thread)
+find_package(CUDA)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Visionaray REQUIRED)
 
 visionaray_use_package(COVER)
 visionaray_use_package(COVISE)
+visionaray_use_package(CUDA)
 visionaray_use_package(GLEW)
 visionaray_use_package(OpenGL)
 visionaray_use_package(Visionaray)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-set(EXTRA_LIBS ${EXTRA_LIBS} ${GLEW_LIBRARY} ${VISIONARAY_LIBRARY})
+set(EXTRA_LIBS ${EXTRA_LIBS} ${CUDA_LIBRARIES} ${GLEW_LIBRARY} ${VISIONARAY_LIBRARY})
 
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
 
@@ -37,10 +39,21 @@ set(HEADERS
 )
 
 set(SOURCES
-    drawable.cpp
     visionaray_plugin.cpp
 )
 
-cover_add_plugin(Visionaray ${HEADERS} ${SOURCES})
+if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
+    visionaray_cuda_compile(CUDA_SOURCES
+        drawable.cu
+    )
+else()
+    set(SOURCES
+        ${SOURCES}
+        drawable.cpp
+    )
+endif()
+
+
+cover_add_plugin(Visionaray ${HEADERS} ${SOURCES} ${CUDA_SOURCES})
 
 target_link_libraries(Visionaray ${EXTRA_LIBS})

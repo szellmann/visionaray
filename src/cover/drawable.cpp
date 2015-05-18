@@ -32,6 +32,10 @@
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 
+#ifdef __CUDACC__
+#include <visionaray/pixel_unpack_buffer_rt.h>
+#endif
+
 #include <common/call_kernel.h>
 #include <common/render_bvh.h>
 #include <common/util.h>
@@ -49,13 +53,21 @@ using triangle_type             = basic_triangle<3, float>;
 using triangle_list             = aligned_vector<triangle_type>;
 using normal_list               = aligned_vector<vec3>;
 using tex_coord_list            = aligned_vector<vec2>;
-using material_list             = aligned_vector<plastic<float>>;
+using material_type             = plastic<float>;
+using material_list             = aligned_vector<material_type>;
 using texture_list              = aligned_vector<texture<vector<3, unorm<8>>, ElementType, 2>>;
 
 using host_ray_type             = basic_ray<simd::float4>;
 using host_bvh_type             = index_bvh<triangle_type>;
 using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_DEPTH32F>;
 using host_sched_type           = tiled_sched<host_ray_type>;
+
+#ifdef __CUDACC__
+using device_ray_type           = basic_ray<float>;
+using device_bvh_type           = device_index_bvh<triangle_type>;
+using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
+using device_sched_type         = cuda_sched<device_ray_type>;
+#endif
 
 
 //-------------------------------------------------------------------------------------------------
@@ -452,40 +464,51 @@ private:
 
 struct drawable::impl
 {
+    enum device_type { CPU = 0, GPU };
 
     impl()
         : host_sched(0)
     {
     }
 
-    triangle_list                   triangles;
-    normal_list                     normals;
-    tex_coord_list                  tex_coords;
-    material_list                   materials;
-    texture_list                    textures;
-    host_bvh_type                   host_bvh;
-    host_sched_type                 host_sched;
-    host_render_target_type         host_rt;
+    triangle_list                           triangles;
+    normal_list                             normals;
+    tex_coord_list                          tex_coords;
+    material_list                           materials;
+    texture_list                            textures;
+    host_bvh_type                           host_bvh;
+    host_sched_type                         host_sched;
+    host_render_target_type                 host_rt;
 
-    mat4                            view_matrix;
-    mat4                            proj_matrix;
-    recti                           viewport;
+#ifdef __CUDACC__
+    thrust::device_vector<vec3>             device_normals;
+    thrust::device_vector<vec2>             device_tex_coords;
+    thrust::device_vector<material_type>    device_materials;
+    device_bvh_type                         device_bvh;
+    device_sched_type                       device_sched;
+    device_render_target_type               device_rt;
+#endif
 
-    unsigned                        frame_num       = 0;
+    mat4                                    view_matrix;
+    mat4                                    proj_matrix;
+    recti                                   viewport;
 
-    algorithm                       algo_current    = Simple;
+    unsigned                                frame_num       = 0;
 
-    bvh_outline_renderer            outlines;
+    algorithm                               algo_current    = Simple;
+    device_type                             dev_type        = CPU;
 
-    bool                            glew_init       = false;
+    bvh_outline_renderer                    outlines;
 
-    std::shared_ptr<render_state>   state           = nullptr;
-    std::shared_ptr<debug_state>    dev_state       = nullptr;
+    bool                                    glew_init       = false;
+
+    std::shared_ptr<render_state>           state           = nullptr;
+    std::shared_ptr<debug_state>            dev_state       = nullptr;
     struct
     {
-        GLint                       matrix_mode;
-        GLboolean                   lighting;
-        GLboolean                   framebuffer_srgb;
+        GLint                               matrix_mode;
+        GLboolean                           lighting;
+        GLboolean                           framebuffer_srgb;
     } gl_state;
 
     void update_state(
@@ -591,6 +614,9 @@ void drawable::impl::update_viewing_params()
     {
         viewport = vp;
         host_rt.resize(viewport[2], viewport[3]);
+#ifdef __CUDACC__
+        device_rt.resize(viewport[2], viewport[3]);
+#endif
     }
 }
 
@@ -607,7 +633,36 @@ void drawable::impl::call_kernel(KParams const& params)
     }
     else
     {
-        visionaray::call_kernel( state->algo, host_sched, params, frame_num, view_matrix, proj_matrix, viewport, host_rt );
+        if (dev_type == GPU)
+        {
+#ifdef __CUDACC__
+            visionaray::call_kernel(
+                    state->algo,
+                    device_sched,
+                    params,
+                    frame_num,
+                    view_matrix,
+                    proj_matrix,
+                    viewport,
+                    device_rt
+                    );
+#endif
+        }
+        else
+        {
+#ifndef __CUDA_ARCH__
+            visionaray::call_kernel(
+                    state->algo,
+                    host_sched,
+                    params,
+                    frame_num,
+                    view_matrix,
+                    proj_matrix,
+                    viewport,
+                    host_rt
+                    );
+#endif
+        }
     }
 }
 
@@ -619,6 +674,7 @@ void drawable::impl::call_kernel(KParams const& params)
 template <typename KParams>
 void drawable::impl::call_kernel_debug(KParams const& params)
 {
+#ifndef __CUDA_ARCH__ // TODO: support debug kernels on GPU
     using R = host_ray_type;
     using S = typename R::scalar_type;
     using C = vector<4, S>;
@@ -641,7 +697,7 @@ void drawable::impl::call_kernel_debug(KParams const& params)
     }
     else if (dev_state->show_tex_coords)
     {
-        host_sched.frame([&](R ray) -> result_record<S>
+/*        host_sched.frame([&](R ray) -> result_record<S>
         {
             result_record<S> result;
             auto hit_rec        = closest_hit(ray, params.prims.begin, params.prims.end);
@@ -651,8 +707,9 @@ void drawable::impl::call_kernel_debug(KParams const& params)
             result.isect_pos    = hit_rec.isect_pos;
             return result;
         },
-        sparams);
+        sparams);*/
     }
+#endif // __CUDA_ARCH__
 }
 
 
@@ -790,6 +847,16 @@ void drawable::drawImplementation(osg::RenderInfo&) const
                 impl_->state->data_var == Static /* consider spatial splits if scene is static */
                 );
         impl_->outlines.init(impl_->host_bvh);
+
+#ifdef __CUDACC__
+        if (impl_->dev_type == impl::GPU)
+        {
+            impl_->device_bvh           = device_bvh_type(impl_->host_bvh);
+            impl_->device_normals       = impl_->normals;
+            impl_->device_tex_coords    = impl_->tex_coords;
+            impl_->device_materials     = impl_->materials;
+        }
+#endif
     }
 
 
@@ -803,7 +870,9 @@ void drawable::drawImplementation(osg::RenderInfo&) const
     aligned_vector<host_bvh_type::bvh_ref> host_primitives;
     host_primitives.push_back(impl_->host_bvh.ref());
 
-    aligned_vector<point_light<float>> lights;
+    using light_type = point_light<float>;
+
+    aligned_vector<light_type> lights;
 
     auto add_light = [&](vec4 lpos, vec4 ldiff, float const_att, float linear_att, float quad_att)
     {
@@ -875,28 +944,57 @@ void drawable::drawImplementation(osg::RenderInfo&) const
     auto diagonal   = bounds.max - bounds.min;
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
 
-    auto kparams = make_params<normals_per_vertex_binding>
-    (
-        host_primitives.data(),
-        host_primitives.data() + host_primitives.size(),
-        impl_->normals.data(),
-        impl_->tex_coords.data(),
-        impl_->materials.data(),
-        impl_->textures.data(),
-        lights.data(),
-        lights.data() + lights.size(),
-        epsilon,
-        vec4(0.0f),
-        impl_->state->algo == Pathtracing ? vec4(1.0f) : ambient
-    );
-
-
-    // Render
-    impl_->call_kernel(kparams);
 
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-    impl_->host_rt.display_color_buffer();
+    if (impl_->dev_type == impl::GPU)
+    {
+#ifdef __CUDACC__
+        thrust::device_vector<device_bvh_type::bvh_ref> device_primitives;
+
+        device_primitives.push_back(impl_->device_bvh.ref());
+
+        thrust::device_vector<light_type> device_lights = lights;
+
+        auto kparams = make_params<normals_per_vertex_binding>(
+                thrust::raw_pointer_cast(device_primitives.data()),
+                thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
+                thrust::raw_pointer_cast(impl_->device_normals.data()),
+                thrust::raw_pointer_cast(impl_->device_materials.data()),
+                thrust::raw_pointer_cast(device_lights.data()),
+                thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+                epsilon,
+                vec4(0.0f),
+                impl_->state->algo == Pathtracing ? vec4(1.0f) : ambient
+                );
+
+        impl_->call_kernel(kparams);
+
+        impl_->device_rt.display_color_buffer();
+#endif
+    }
+    else if (impl_->dev_type == impl::CPU)
+    {
+#ifndef __CUDA_ARCH__
+        auto kparams = make_params<normals_per_vertex_binding>(
+                host_primitives.data(),
+                host_primitives.data() + host_primitives.size(),
+                impl_->normals.data(),
+                impl_->tex_coords.data(),
+                impl_->materials.data(),
+                impl_->textures.data(),
+                lights.data(),
+                lights.data() + lights.size(),
+                epsilon,
+                vec4(0.0f),
+                impl_->state->algo == Pathtracing ? vec4(1.0f) : ambient
+                );
+
+        impl_->call_kernel(kparams);
+
+        impl_->host_rt.display_color_buffer();
+#endif
+    }
 
     if (impl_->dev_state->debug_mode && impl_->dev_state->show_bvh)
     {
