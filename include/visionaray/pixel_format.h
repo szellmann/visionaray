@@ -43,7 +43,7 @@ enum pixel_format
     PF_R32UI,
     PF_RG32UI,
     PF_RGB32UI,
-    PR_RGBA32UI,
+    PF_RGBA32UI,
 
     PF_BGR8,
     PF_BGRA8,
@@ -79,11 +79,10 @@ struct pixel_format_info
 };
 
 
+pixel_format      map_gl_format(unsigned format, unsigned type, unsigned size);
 pixel_format_info map_pixel_format(pixel_format format);
 
 
 } // visionaray
 
 #endif // VSNRAY_PIXEL_FORMAT_H
-
-
