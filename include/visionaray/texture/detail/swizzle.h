@@ -43,7 +43,7 @@ inline void swizzle_BGRA8_to_RGBA8(vector<4, unorm<8>>* data, size_t len)
     for (size_t i = 0; i < len; ++i)
     {
         auto bgra = data[i];
-        data[i] = vector<4, unorm<8>>( bgra.w, bgra.z, bgra.y, bgra.x );
+        data[i] = vector<4, unorm<8>>( bgra.z, bgra.y, bgra.x, bgra.w );
     }
 }
 
