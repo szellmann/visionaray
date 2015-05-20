@@ -63,6 +63,8 @@ using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_DEPTH32F>;
 using host_sched_type           = tiled_sched<host_ray_type>;
 
 #ifdef __CUDACC__
+using device_tex_type           = device_texture<vector<4, unorm<8>>, ElementType, 2>;
+using device_tex_ref            = device_texture_ref<vector<4, unorm<8>>, ElementType, 2>;
 using device_ray_type           = basic_ray<float>;
 using device_bvh_type           = device_index_bvh<triangle_type>;
 using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
@@ -506,6 +508,8 @@ struct drawable::impl
     thrust::device_vector<vec3>             device_normals;
     thrust::device_vector<vec2>             device_tex_coords;
     thrust::device_vector<material_type>    device_materials;
+    std::vector<device_tex_type>            device_textures;
+    thrust::device_vector<device_tex_ref>   device_texture_refs;
     device_bvh_type                         device_bvh;
     device_sched_type                       device_sched;
     device_render_target_type               device_rt;
@@ -652,6 +656,16 @@ void drawable::impl::update_device_data()
         device_normals      = normals;
         device_tex_coords   = tex_coords;
         device_materials    = materials;
+
+        device_textures.clear();
+        device_texture_refs.clear();
+
+        for (size_t i = 0; i < textures.size(); ++i)
+        {
+            auto const& host_tex = textures[i];
+            device_textures.emplace_back( host_tex );
+            device_texture_refs.push_back( device_tex_ref(device_textures[i]) );
+        }
     }
 #endif
 }
@@ -1001,7 +1015,9 @@ void drawable::drawImplementation(osg::RenderInfo&) const
                 thrust::raw_pointer_cast(device_primitives.data()),
                 thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
                 thrust::raw_pointer_cast(impl_->device_normals.data()),
+                thrust::raw_pointer_cast(impl_->device_tex_coords.data()),
                 thrust::raw_pointer_cast(impl_->device_materials.data()),
+                thrust::raw_pointer_cast(impl_->device_texture_refs.data()),
                 thrust::raw_pointer_cast(device_lights.data()),
                 thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
                 epsilon,
