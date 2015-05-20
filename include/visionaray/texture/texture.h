@@ -6,6 +6,11 @@
 #ifndef VSNRAY_TEXTURE_H
 #define VSNRAY_TEXTURE_H
 
+#include <visionaray/detail/macros.h>
+
+#ifdef __CUDACC__
+#include "detail/device_texture.h"
+#endif
 
 #include "detail/prefilter.h"
 #include "detail/sampler1d.h"
@@ -82,6 +87,25 @@ inline vector<3, simd::float4> tex2D(Tex const& tex, vector<2, simd::float4> coo
     return detail::tex2D<return_type>( tex, coord );
 
 }
+
+
+#ifdef __CUDACC__
+
+template <typename T, tex_read_mode ReadMode>
+VSNRAY_GPU_FUNC
+inline T tex2D(device_texture_ref<T, ReadMode, 2> const& tex, vector<2, float> coord)
+{
+    using tex_type    = device_texture_ref<T, ReadMode, 2>;
+    using device_type = typename tex_type::device_type;
+
+    return cuda::map_texel_type<device_type>::cast( ::tex2D<device_type>(
+                tex.texture_object(),
+                coord.x,
+                coord.y
+                ) );
+}
+
+#endif // __CUDACC__
 
 
 //-------------------------------------------------------------------------------------------------
