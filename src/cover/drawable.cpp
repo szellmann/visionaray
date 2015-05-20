@@ -63,8 +63,8 @@ using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_DEPTH32F>;
 using host_sched_type           = tiled_sched<host_ray_type>;
 
 #ifdef __CUDACC__
-using device_tex_type           = device_texture<vector<4, unorm<8>>, ElementType, 2>;
-using device_tex_ref            = device_texture_ref<vector<4, unorm<8>>, ElementType, 2>;
+using device_tex_type           = device_texture<vector<4, float>, ElementType, 2>;
+using device_tex_ref            = device_texture_ref<vector<4, float>, ElementType, 2>;
 using device_ray_type           = basic_ray<float>;
 using device_bvh_type           = device_index_bvh<triangle_type>;
 using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;

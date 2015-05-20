@@ -93,7 +93,8 @@ public:
     device_texture(device_texture&& rhs) = default;
 
     // Construct from host texture
-    explicit device_texture(texture<T, ReadMode, 2> const& host_tex)
+    template <typename U>
+    explicit device_texture(texture<U, ReadMode, 2> const& host_tex)
         : width_(host_tex.width())
         , height_(host_tex.height())
     {
@@ -104,7 +105,7 @@ public:
 
 
         pitch_.allocate( width_, height_ );
-        pitch_.upload( (device_type const*)host_tex.data(), width_, height_ );
+        upload_data( host_tex.data() );
 
         auto desc = cudaCreateChannelDesc<device_type>();
 
@@ -121,7 +122,7 @@ public:
         memset(&texture_desc, 0, sizeof(texture_desc));
         texture_desc.addressMode[0]             = detail::map_address_mode( host_tex.get_address_mode(0) );
         texture_desc.addressMode[1]             = detail::map_address_mode( host_tex.get_address_mode(1) );
-//      texture_desc.filterMode                 = detail::map_filter_mode( host_tex.get_filter_mode() ); // TODO
+        texture_desc.filterMode                 = detail::map_filter_mode( host_tex.get_filter_mode() ); // TODO: ucharX does not support lerp
         texture_desc.readMode                   = cudaReadModeElementType;
         texture_desc.normalizedCoords           = true;
 
@@ -165,6 +166,26 @@ private:
 
     size_t width_;
     size_t height_;
+
+    cudaError_t upload_data(host_type const* data)
+    {
+        // Cast from host type to device type
+        return pitch_.upload( reinterpret_cast<device_type const*>(data), width_, height_ );
+    }
+
+    template <typename U>
+    cudaError_t upload_data(U const* data)
+    {
+        // First promote to host type
+        aligned_vector<host_type> dst( width_ * height_ );
+
+        for (size_t i = 0; i < width_ * height_; ++i)
+        {
+            dst[i] = host_type( data[i] );
+        }
+
+        return upload_data( dst.data() );
+    }
 
 };
 
