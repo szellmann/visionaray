@@ -55,7 +55,7 @@ using normal_list               = aligned_vector<vec3>;
 using tex_coord_list            = aligned_vector<vec2>;
 using material_type             = plastic<float>;
 using material_list             = aligned_vector<material_type>;
-using texture_list              = aligned_vector<texture<vector<3, unorm<8>>, ElementType, 2>>;
+using texture_list              = aligned_vector<texture<vector<4, unorm<8>>, ElementType, 2>>;
 
 using host_ray_type             = basic_ray<simd::float4>;
 using host_bvh_type             = index_bvh<triangle_type>;
@@ -407,21 +407,44 @@ public:
             auto tex = dynamic_cast<osg::Texture2D*>(tattr);
             auto img = tex != nullptr ? tex->getImage() : nullptr;
 
-            if (tex && img && img->getPixelFormat() == GL_RGB)
+            if (tex && img)
             {
                 using tex_type = typename texture_list::value_type;
+
+                auto dest_format = PF_RGBA8;
+                auto source_format = map_gl_format(
+                        img->getPixelFormat(),
+                        img->getDataType(),
+                        osg::Image::computeNumComponents(img->getPixelFormat()) * sizeof(uint8_t) /* TODO */
+                        );
+
+                auto source_info = map_pixel_format(source_format);
+
+                assert( source_info.components == 3 || source_info.components == 4 );
 
                 tex_type vsnray_tex(img->s(), img->t());
                 vsnray_tex.set_address_mode( 0, osg_cast(tex->getWrap(osg::Texture::WRAP_S)) );
                 vsnray_tex.set_address_mode( 1, osg_cast(tex->getWrap(osg::Texture::WRAP_T)) );
                 vsnray_tex.set_filter_mode( Linear );
-                auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img->data());
-                vsnray_tex.set_data(data_ptr);
+
+                assert( img->isDataContiguous() ); // TODO
+
+                if (source_info.components == 3)
+                {
+                    auto data_ptr = reinterpret_cast<vector<3, unorm<8>> const*>(img->data());
+                    vsnray_tex.set_data(data_ptr, source_format, dest_format);
+                }
+                else if (source_info.components == 4)
+                {
+                    auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(img->data());
+                    vsnray_tex.set_data(data_ptr, source_format, dest_format);
+                }
+
                 textures_.push_back(vsnray_tex);
             }
             else
             {
-                textures_.push_back( texture<vector<3, unorm<8>>, ElementType, 2>(0, 0) );
+                textures_.push_back( texture<vector<4, unorm<8>>, ElementType, 2>(0, 0) );
             }
 
             assert( materials_.size() == textures_.size() );

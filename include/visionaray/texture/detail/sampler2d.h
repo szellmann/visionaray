@@ -73,12 +73,12 @@ inline ReturnT linear(
     float2 hi( ceil(texcoordf[0]),  ceil(texcoordf[1]) );
 
 
-    vector<3, FloatT> samples[4] = // TODO: this must somehow be consolidated with ReturnT
+    vector<4, FloatT> samples[4] = // TODO: this must somehow be consolidated with ReturnT
     {
-        vector<3, FloatT>( point(tex, index( lo.x, lo.y, texsize ), ReturnT()) ),
-        vector<3, FloatT>( point(tex, index( hi.x, lo.y, texsize ), ReturnT()) ),
-        vector<3, FloatT>( point(tex, index( lo.x, hi.y, texsize ), ReturnT()) ),
-        vector<3, FloatT>( point(tex, index( hi.x, hi.y, texsize ), ReturnT()) )
+        vector<4, FloatT>( point(tex, index( lo.x, lo.y, texsize ), ReturnT()) ),
+        vector<4, FloatT>( point(tex, index( hi.x, lo.y, texsize ), ReturnT()) ),
+        vector<4, FloatT>( point(tex, index( lo.x, hi.y, texsize ), ReturnT()) ),
+        vector<4, FloatT>( point(tex, index( hi.x, hi.y, texsize ), ReturnT()) )
     };
 
 

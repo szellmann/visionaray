@@ -12,8 +12,10 @@
 #include <vector>
 
 #include <visionaray/detail/aligned_vector.h>
+#include <visionaray/pixel_format.h>
 
 #include "../forward.h"
+#include "swizzle.h"
 
 
 namespace visionaray
@@ -101,8 +103,40 @@ public:
     {
     }
 
-    void set_data(value_type const* data) { std::copy( data, data + data_.size(), data_.begin() ); }
-    value_type const* data() const { return data_.data(); }
+    void set_data(T const* data)
+    {
+        std::copy( data, data + data_.size(), data_.begin() );
+    }
+
+    void set_data(T const* data, pixel_format format, pixel_format internal_format)
+    {
+        if (format != internal_format)
+        {
+            // Swizzle in-place
+            aligned_vector<T> tmp( data, data + data_.size() );
+            swizzle( tmp.data(), tmp.size(), format, internal_format );
+            set_data( tmp.data() );
+        }
+        else
+        {
+            // Simple copy
+            set_data( data );
+        }
+    }
+
+    template <typename U>
+    void set_data(U const* data, pixel_format format, pixel_format internal_format)
+    {
+        // Copy to temporary array, then swizzle
+        aligned_vector<T> dst( data_.size() );
+        swizzle( dst.data(), data, dst.size(), format, internal_format );
+        set_data( dst.data() );
+    }
+
+    value_type const* data() const
+    {
+        return data_.data();
+    }
 
 protected:
 
