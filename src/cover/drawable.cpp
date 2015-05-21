@@ -534,6 +534,7 @@ struct drawable::impl
     {
         GLint                               matrix_mode;
         GLboolean                           lighting;
+        GLboolean                           depth_test;
         GLboolean                           framebuffer_srgb;
     } gl_state;
 
@@ -576,6 +577,7 @@ void drawable::impl::store_gl_state()
 {
     glGetIntegerv(GL_MATRIX_MODE, &gl_state.matrix_mode);
     gl_state.lighting = glIsEnabled(GL_LIGHTING);
+    gl_state.depth_test = glIsEnabled(GL_DEPTH_TEST);
     gl_state.framebuffer_srgb = glIsEnabled(GL_FRAMEBUFFER_SRGB);
 }
 
@@ -588,6 +590,15 @@ void drawable::impl::restore_gl_state()
     else
     {
         glDisable(GL_FRAMEBUFFER_SRGB);
+    }
+
+    if (gl_state.depth_test)
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
+    else
+    {
+        glDisable(GL_DEPTH_TEST);
     }
 
     if (gl_state.lighting)
@@ -1056,6 +1067,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
     if (impl_->dev_state->debug_mode && impl_->dev_state->show_bvh)
     {
         glDisable(GL_LIGHTING);
+        glDisable(GL_DEPTH_TEST);
 
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
