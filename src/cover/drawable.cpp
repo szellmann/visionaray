@@ -221,48 +221,6 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
-// Visitor to acquire world transform matrix for a node
-//
-
-class get_world_transform_visitor : public osg::NodeVisitor
-{
-public:
-
-    using base_type = osg::NodeVisitor;
-    using base_type::apply;
-
-public:
-
-    get_world_transform_visitor()
-        : osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_PARENTS)
-    {
-    }
-
-    osg::Matrix const& get_matrix() const
-    {
-        return matrix_;
-    }
-
-    void apply(osg::Node& node)
-    {
-        if (&node == opencover::cover->getObjectsRoot())
-        {
-            matrix_ = osg::computeLocalToWorld(getNodePath());
-        }
-        else
-        {
-            traverse(node);
-        }
-    }
-
-private:
-
-    osg::Matrix matrix_;
-
-};
-
-
-//-------------------------------------------------------------------------------------------------
 // Visitor to check visibility by traversing upwards to a node's parents
 //
 
@@ -454,9 +412,7 @@ public:
 
             // transform
 
-            get_world_transform_visitor visitor;
-            geode.accept(visitor);
-            auto world_transform = visitor.get_matrix();
+            auto world_transform = osg::computeLocalToWorld(getNodePath());
 
 
             // geometry
