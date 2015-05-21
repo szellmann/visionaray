@@ -29,7 +29,7 @@ public:
     // width and height are always *elements*
 
 
-    pitch2d() = default;
+    pitch2d() {}
 
     pitch2d(size_t width, size_t height)
     {
