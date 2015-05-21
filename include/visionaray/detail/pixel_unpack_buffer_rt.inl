@@ -40,6 +40,13 @@ pixel_unpack_buffer_rt<CF, DF>::pixel_unpack_buffer_rt()
     }
 
     err = cudaGLSetGLDevice(dev);
+
+    if (err == cudaErrorSetOnActiveProcess)
+    {
+        err = cudaDeviceReset();
+        err = cudaGLSetGLDevice(dev);
+    }
+
     if (err != cudaSuccess)
     {
         throw std::runtime_error("set GL device");
