@@ -765,7 +765,7 @@ void drawable::impl::call_kernel_debug(KParams const& params)
     }
     else if (dev_state->show_tex_coords)
     {
-/*        host_sched.frame([&](R ray) -> result_record<S>
+        host_sched.frame([&](R ray) -> result_record<S>
         {
             result_record<S> result;
             auto hit_rec        = closest_hit(ray, params.prims.begin, params.prims.end);
@@ -775,7 +775,7 @@ void drawable::impl::call_kernel_debug(KParams const& params)
             result.isect_pos    = hit_rec.isect_pos;
             return result;
         },
-        sparams);*/
+        sparams);
     }
 #endif // __CUDA_ARCH__
 }
