@@ -117,6 +117,26 @@ tex_address_mode osg_cast(osg::Texture::WrapMode mode)
     }
 }
 
+tex_filter_mode osg_cast(osg::Texture::FilterMode mode)
+{
+    switch (mode)
+    {
+
+    default:
+        // fall-through
+    case osg::Texture::LINEAR:
+    case osg::Texture::LINEAR_MIPMAP_LINEAR:
+    case osg::Texture::LINEAR_MIPMAP_NEAREST:
+        return visionaray::Linear;
+
+    case osg::Texture::NEAREST:
+    case osg::Texture::NEAREST_MIPMAP_LINEAR:
+    case osg::Texture::NEAREST_MIPMAP_NEAREST:
+        return visionaray::Nearest;
+
+    }
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Functor that stores triangles from osg::Drawable
@@ -385,7 +405,11 @@ public:
                 tex_type vsnray_tex(img->s(), img->t());
                 vsnray_tex.set_address_mode( 0, osg_cast(tex->getWrap(osg::Texture::WRAP_S)) );
                 vsnray_tex.set_address_mode( 1, osg_cast(tex->getWrap(osg::Texture::WRAP_T)) );
-                vsnray_tex.set_filter_mode( Linear );
+
+//              auto min_filter = tex->getFilter(osg::Texture::MIN_FILTER);
+                auto mag_filter = tex->getFilter(osg::Texture::MAG_FILTER);
+
+                vsnray_tex.set_filter_mode( osg_cast(mag_filter) );
 
                 assert( img->isDataContiguous() ); // TODO
 
