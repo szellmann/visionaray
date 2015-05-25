@@ -379,6 +379,18 @@ public:
                 vsnray_mat.set_specular_exp( mat->getShininess(osg::Material::Face::FRONT) );
                 materials_.push_back(vsnray_mat);
             }
+            else
+            {
+                plastic<float> vsnray_mat;
+                vsnray_mat.set_ca( from_rgb(0.2f, 0.2f, 0.2f) );
+                vsnray_mat.set_cd( from_rgb(0.8f, 0.8f, 0.8f) );
+                vsnray_mat.set_cs( from_rgb(0.1f, 0.1f, 0.1f) );
+                vsnray_mat.set_ka( 1.0f );
+                vsnray_mat.set_kd( 1.0f );
+                vsnray_mat.set_ks( 1.0f );
+                vsnray_mat.set_specular_exp( 32.0f );
+                materials_.push_back(vsnray_mat);
+            }
 
 
             // texture
@@ -880,19 +892,6 @@ void drawable::drawImplementation(osg::RenderInfo&) const
         if (impl_->triangles.size() == 0)
         {
             return;
-        }
-
-        if (impl_->materials.size() == 0)
-        {
-            plastic<float> m;
-            m.set_ca( from_rgb(0.2f, 0.2f, 0.2f) );
-            m.set_cd( from_rgb(0.8f, 0.8f, 0.8f) );
-            m.set_cs( from_rgb(0.1f, 0.1f, 0.1f) );
-            m.set_ka( 1.0f );
-            m.set_kd( 1.0f );
-            m.set_ks( 1.0f );
-            m.set_specular_exp( 32.0f );
-            impl_->materials.push_back(m);
         }
 
         impl_->host_bvh = build<host_bvh_type>(
