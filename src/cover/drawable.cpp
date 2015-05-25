@@ -454,7 +454,7 @@ public:
             // geometry
 
             assert( static_cast<material_list::size_type>(static_cast<unsigned>(materials_.size()) == materials_.size()) );
-            unsigned geom_id = materials_.size() == 0 ? 0 : static_cast<unsigned>(materials_.size() - 1);
+            unsigned geom_id = static_cast<unsigned>(materials_.size() - 1);
 
             osg::TriangleIndexFunctor<store_triangle> tf;
             tf.init( node_vertices, node_normals, node_tex_coords, world_transform, geom_id, triangles_, normals_, tex_coords_ );
