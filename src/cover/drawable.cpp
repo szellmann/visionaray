@@ -698,7 +698,13 @@ void drawable::impl::call_kernel(KParams const& params)
 template <typename KParams>
 void drawable::impl::call_kernel_debug(KParams const& params)
 {
-#ifndef __CUDA_ARCH__ // TODO: support debug kernels on GPU
+    // TODO: support debug kernels on GPU
+    if (state->device == GPU)
+    {
+        return;
+    }
+
+#ifndef __CUDA_ARCH__
     using R = host_ray_type;
     using S = typename R::scalar_type;
     using C = vector<4, S>;
