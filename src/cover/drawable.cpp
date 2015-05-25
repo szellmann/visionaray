@@ -744,7 +744,7 @@ void drawable::impl::call_kernel_debug(KParams const& params)
             auto surf           = get_surface(hit_rec, params);
             result.hit          = hit_rec.hit;
             result.color        = select( hit_rec.hit, C(surf.normal, S(1.0)), C(0.0) );
-            result.isect_pos    = hit_rec.isect_pos;
+            result.isect_pos    = ray.ori + ray.dir * hit_rec.t;
             return result;
         },
         sparams);
@@ -758,7 +758,7 @@ void drawable::impl::call_kernel_debug(KParams const& params)
             auto tc             = get_tex_coord(params.tex_coords, hit_rec);
             result.hit          = hit_rec.hit;
             result.color        = select( hit_rec.hit, C(tc, S(1.0), S(1.0)), C(0.0) );
-            result.isect_pos    = hit_rec.isect_pos;
+            result.isect_pos    = ray.ori + ray.dir * hit_rec.t;
             return result;
         },
         sparams);
