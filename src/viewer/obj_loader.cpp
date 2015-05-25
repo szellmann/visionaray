@@ -388,6 +388,10 @@ void load_obj(std::string const& filename, model& mod)
         else if ( qi::phrase_parse(it, text.cend(), r_unhandled, qi::blank) )
         {
         }
+        else
+        {
+            ++it;
+        }
     }
 
 
