@@ -1005,7 +1005,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
 
     auto bounds     = impl_->host_bvh.node(0).bbox;
     auto diagonal   = bounds.max - bounds.min;
-    auto bounces    = impl_->state->algo == Pathtracing ? 10U : 4U;
+    auto bounces    = 4U;
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
 
 
