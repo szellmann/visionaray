@@ -138,7 +138,7 @@ void Visionaray::impl::init_state_from_config()
 
     auto algo_str       = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.Algorithm");
     auto num_bounces    = covise::coCoviseConfig::getInt("value", "COVER.Plugin.Visionaray.NumBounces", 4);
-    auto min_bounces    = covise::coCoviseConfig::getInt("min", "COVER.Plugin.Visionaray.NumBounces", 0);
+    auto min_bounces    = covise::coCoviseConfig::getInt("min", "COVER.Plugin.Visionaray.NumBounces", 1);
     auto max_bounces    = covise::coCoviseConfig::getInt("max", "COVER.Plugin.Visionaray.NumBounces", 10);
     auto device_str     = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.Device");
     auto data_var_str   = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.DataVariance");
