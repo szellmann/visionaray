@@ -21,6 +21,7 @@
 #include <cover/coVRConfig.h>
 #include <cover/coVRLighting.h>
 #include <cover/coVRPluginSupport.h>
+#include <cover/VRSceneGraph.h>
 #include <cover/VRViewer.h>
 
 #include <visionaray/detail/aligned_vector.h>
@@ -935,58 +936,20 @@ void drawable::drawImplementation(osg::RenderInfo&) const
     aligned_vector<host_bvh_type::bvh_ref> host_primitives;
     host_primitives.push_back(impl_->host_bvh.ref());
 
-    using light_type = point_light<float>;
-
-    aligned_vector<light_type> lights;
-
-    auto add_light = [&](vec4 lpos, vec4 ldiff, float const_att, float linear_att, float quad_att)
-    {
-        // map OpenGL [-1,1] to Visionaray [0,1]
-        ldiff += 1.0f;
-        ldiff /= 2.0f;
-
-        point_light<float> light;
-        light.set_position( lpos.xyz() );
-        light.set_cl( ldiff.xyz() );
-        light.set_kl( ldiff.w );
-
-        light.set_constant_attenuation(const_att);
-        light.set_linear_attenuation(linear_att);
-        light.set_quadratic_attenuation(quad_att);
-
-        lights.push_back(light);
-    };
-
     auto renderer = dynamic_cast<osgViewer::Renderer*>(opencover::coVRConfig::instance()->channels[0].camera->getRenderer());
     auto scene_view = renderer->getSceneView(0);
     auto stateset = scene_view->getGlobalStateSet();
     auto light_model = dynamic_cast<osg::LightModel*>(stateset->getAttribute(osg::StateAttribute::LIGHTMODEL));
     auto ambient = osg_cast(light_model->getAmbientIntensity());
 
-    if (opencover::coVRLighting::instance()->headlightState)
-    {
-        auto headlight = scene_view->getLight();
 
-        auto hlpos  = inverse(impl_->view_matrix) * vec4(osg_cast(headlight->getPosition()).xyz(), 1.0f);
-        auto hldiff = osg_cast(headlight->getDiffuse());
+    using light_type = point_light<float>;
 
-        add_light(
-                hlpos,
-                hldiff,
-                headlight->getConstantAttenuation(),
-                headlight->getLinearAttenuation(),
-                headlight->getQuadraticAttenuation()
-            );
-    }
+    aligned_vector<light_type> lights;
 
     auto cover_lights = opencover::coVRLighting::instance()->lightList;
     for (auto it = cover_lights.begin(); it != cover_lights.end(); ++it)
     {
-        if ((*it).source == opencover::coVRLighting::instance()->headlight)
-        {
-            continue;
-        }
-
         if ((*it).on)
         {
             auto l = (*it).source->getLight();
@@ -995,13 +958,27 @@ void drawable::drawImplementation(osg::RenderInfo&) const
             auto lpos  = osg_cast(l->getPosition());
             auto ldiff = osg_cast(l->getDiffuse());
 
-            add_light(
-                    lpos,
-                    ldiff,
-                    l->getConstantAttenuation(),
-                    l->getLinearAttenuation(),
-                    l->getQuadraticAttenuation()
-                );
+            if ((*it).source->getParent(0) == opencover::VRSceneGraph::instance()->getScene())
+            {
+                // Light source is fixed to scene (e.g. headlight)
+                auto trans = osg::computeLocalToWorld(opencover::cover->getObjectsRoot()->getParentalNodePaths()[0]);
+                lpos = inverse(osg_cast(trans)) * lpos;
+            }
+
+                    // map OpenGL [-1,1] to Visionaray [0,1]
+            ldiff += 1.0f;
+            ldiff /= 2.0f;
+
+            point_light<float> light;
+            light.set_position( lpos.xyz() );
+            light.set_cl( ldiff.xyz() );
+            light.set_kl( ldiff.w );
+
+            light.set_constant_attenuation(l->getConstantAttenuation());
+            light.set_linear_attenuation(l->getLinearAttenuation());
+            light.set_quadratic_attenuation(l->getQuadraticAttenuation());
+
+            lights.push_back(light);
         }
     }
 
