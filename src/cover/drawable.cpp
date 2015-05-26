@@ -28,6 +28,7 @@
 #include <visionaray/texture/texture.h>
 #include <visionaray/bvh.h>
 #include <visionaray/cpu_buffer_rt.h>
+#include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
@@ -53,7 +54,7 @@ using triangle_type             = basic_triangle<3, float>;
 using triangle_list             = aligned_vector<triangle_type>;
 using normal_list               = aligned_vector<vec3>;
 using tex_coord_list            = aligned_vector<vec2>;
-using material_type             = plastic<float>;
+using material_type             = generic_material<plastic<float>, emissive<float>>;
 using material_list             = aligned_vector<material_type>;
 using texture_list              = aligned_vector<texture<vector<4, unorm<8>>, ElementType, 2>>;
 
@@ -368,16 +369,27 @@ public:
                 auto ca = mat->getAmbient(osg::Material::Face::FRONT);
                 auto cd = mat->getDiffuse(osg::Material::Face::FRONT);
                 auto cs = mat->getSpecular(osg::Material::Face::FRONT);
+                auto ce = mat->getEmission(osg::Material::Face::FRONT);
 
-                plastic<float> vsnray_mat;
-                vsnray_mat.set_ca( from_rgb(osg_cast(ca).xyz()) );
-                vsnray_mat.set_cd( from_rgb(osg_cast(cd).xyz()) );
-                vsnray_mat.set_cs( from_rgb(osg_cast(cs).xyz()) );
-                vsnray_mat.set_ka( 1.0f );
-                vsnray_mat.set_kd( 1.0f );
-                vsnray_mat.set_ks( 1.0f );
-                vsnray_mat.set_specular_exp( mat->getShininess(osg::Material::Face::FRONT) );
-                materials_.push_back(vsnray_mat);
+                if (ce[0] > 0.0f || ce[1] > 0.0f || ce[2] > 0.0f)
+                {
+                    emissive<float> vsnray_mat;
+                    vsnray_mat.set_ce( from_rgb(osg_cast(ce).xyz()) );
+                    vsnray_mat.set_ls( 1.0f );
+                    materials_.push_back(vsnray_mat);
+                }
+                else
+                {
+                    plastic<float> vsnray_mat;
+                    vsnray_mat.set_ca( from_rgb(osg_cast(ca).xyz()) );
+                    vsnray_mat.set_cd( from_rgb(osg_cast(cd).xyz()) );
+                    vsnray_mat.set_cs( from_rgb(osg_cast(cs).xyz()) );
+                    vsnray_mat.set_ka( 1.0f );
+                    vsnray_mat.set_kd( 1.0f );
+                    vsnray_mat.set_ks( 1.0f );
+                    vsnray_mat.set_specular_exp( mat->getShininess(osg::Material::Face::FRONT) );
+                    materials_.push_back(vsnray_mat);
+                }
             }
             else
             {
