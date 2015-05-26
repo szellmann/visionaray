@@ -21,8 +21,10 @@ inline T index(T x, T y, vector<2, T> texsize)
 }
 
 
-template <typename ReturnT, typename FloatT, typename TexelT>
+template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
 inline ReturnT nearest(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
         TexelT const*                           tex,
         vector<2, FloatT>                       coord,
         vector<2, FloatT>                       texsize,
@@ -32,15 +34,12 @@ inline ReturnT nearest(
 
     using visionaray::clamp;
 
-    typedef vector<2, FloatT> float2;
-
     coord = map_tex_coord(coord, address_mode);
 
-    float2 lo
-    (
-        floor(coord.x * texsize.x),
-        floor(coord.y * texsize.y)
-    );
+    vector<2, FloatT> lo(
+            floor(coord.x * texsize.x),
+            floor(coord.y * texsize.y)
+            );
 
     lo[0] = clamp(lo[0], FloatT(0.0f), texsize[0] - 1);
     lo[1] = clamp(lo[1], FloatT(0.0f), texsize[1] - 1);
@@ -51,68 +50,158 @@ inline ReturnT nearest(
 }
 
 
-template <typename ReturnT, typename FloatT, typename TexelT>
+template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
 inline ReturnT linear(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
         TexelT const*                           tex,
         vector<2, FloatT>                       coord,
         vector<2, FloatT>                       texsize,
         std::array<tex_address_mode, 2> const&  address_mode
         )
 {
-
-    typedef vector<2, FloatT> float2;
-
     coord = map_tex_coord(coord, address_mode);
 
-    float2 texcoordf( coord * texsize - FloatT(0.5) );
+    vector<2, FloatT> texcoordf( coord * texsize - FloatT(0.5) );
 
     texcoordf[0] = clamp( texcoordf[0], FloatT(0.0), texsize[0] - 1 );
     texcoordf[1] = clamp( texcoordf[1], FloatT(0.0), texsize[1] - 1 );
 
-    float2 lo( floor(texcoordf[0]), floor(texcoordf[1]) );
-    float2 hi( ceil(texcoordf[0]),  ceil(texcoordf[1]) );
+    vector<2, FloatT> lo( floor(texcoordf[0]), floor(texcoordf[1]) );
+    vector<2, FloatT> hi( ceil(texcoordf[0]),  ceil(texcoordf[1]) );
 
 
-    vector<4, FloatT> samples[4] = // TODO: this must somehow be consolidated with ReturnT
+    InternalT samples[4] =
     {
-        vector<4, FloatT>( point(tex, index( lo.x, lo.y, texsize ), ReturnT()) ),
-        vector<4, FloatT>( point(tex, index( hi.x, lo.y, texsize ), ReturnT()) ),
-        vector<4, FloatT>( point(tex, index( lo.x, hi.y, texsize ), ReturnT()) ),
-        vector<4, FloatT>( point(tex, index( hi.x, hi.y, texsize ), ReturnT()) )
+        InternalT( point(tex, index( lo.x, lo.y, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( hi.x, lo.y, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( lo.x, hi.y, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( hi.x, hi.y, texsize ), ReturnT()) )
     };
 
 
-    float2 uv = texcoordf - lo;
+    auto uv = texcoordf - lo;
 
     auto p1 = lerp(samples[0], samples[1], uv[0]);
     auto p2 = lerp(samples[2], samples[3], uv[0]);
 
     return ReturnT(lerp(p1, p2, uv[1]));
-
 }
 
 
-template <typename ReturnT, typename Tex, typename FloatT>
-inline ReturnT tex2D(Tex const& tex, vector<2, FloatT> coord)
+//-------------------------------------------------------------------------------------------------
+// Dispatch function to choose among filtering algorithms
+//
+
+template <typename ReturnT, typename FloatT, typename TexelT, typename InternalT>
+inline ReturnT tex2D_impl_choose_filter(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
+        TexelT const*                           tex,
+        vector<2, FloatT> const&                coord,
+        vector<2, FloatT> const&                texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 2> const&  address_mode
+        )
 {
-
-    static_assert(Tex::dimensions == 2, "Incompatible texture type");
-
-    vector<2, FloatT> texsize( tex.width(), tex.height() );
-
-    switch (tex.get_filter_mode())
+    switch (filter_mode)
     {
 
     default:
         // fall-through
     case visionaray::Nearest:
-        return nearest<ReturnT>( tex.data(), coord, texsize, tex.get_address_mode() );
+        return nearest(
+                ReturnT(),
+                InternalT(),
+                tex,
+                coord,
+                texsize,
+                address_mode
+                );
 
     case visionaray::Linear:
-        return linear<ReturnT>( tex.data(), coord, texsize, tex.get_address_mode() );
+        return linear(
+                ReturnT(),
+                InternalT(),
+                tex,
+                coord,
+                texsize,
+                address_mode
+                );
 
     }
+}
 
+
+//-------------------------------------------------------------------------------------------------
+// Dispatch function overloads to deduce texture type and internal texture type
+//
+
+template <typename T>
+inline vector<3, T> tex2D_impl_expand_types(
+        vector<3, T> const*                     tex,
+        vector<2, float> const&                 coord,
+        vector<2, float> const&                 texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 2> const&  address_mode
+        )
+{
+    using return_type   = vector<3, T>;
+    using internal_type = vector<3, float>;
+
+    return tex2D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+template <typename T>
+inline vector<4, T> tex2D_impl_expand_types(
+        vector<4, T> const*                     tex,
+        vector<2, float> const&                 coord,
+        vector<2, float> const&                 texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 2> const&  address_mode
+        )
+{
+    using return_type   = vector<4, T>;
+    using internal_type = vector<4, float>;
+
+    return tex2D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// tex2D() dispatch function
+//
+
+template <typename ReturnT, typename Tex, typename FloatT>
+inline ReturnT tex2D(Tex const& tex, vector<2, FloatT> coord)
+{
+    static_assert(Tex::dimensions == 2, "Incompatible texture type");
+
+    vector<2, FloatT> texsize( tex.width(), tex.height() );
+
+    return tex2D_impl_expand_types(
+            tex.data(),
+            coord,
+            texsize,
+            tex.get_filter_mode(),
+            tex.get_address_mode()
+            );
 }
 
 

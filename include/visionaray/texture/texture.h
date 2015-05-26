@@ -64,28 +64,11 @@ inline vector<4, simd::float4> tex1D(Tex const& tex, simd::float4 coord)
 template <typename Tex, typename FloatT>
 inline typename Tex::value_type tex2D(Tex const& tex, vector<2, FloatT> coord)
 {
-
     static_assert(Tex::dimensions == 2, "Incompatible texture type");
 
-    // general case: return type equals texel type
-    typedef typename Tex::value_type return_type;
+    using return_type = typename Tex::value_type;
 
     return detail::tex2D<return_type>( tex, coord );
-
-}
-
-
-template <typename Tex>
-inline vector<3, simd::float4> tex2D(Tex const& tex, vector<2, simd::float4> coord)
-{
-
-    static_assert(Tex::dimensions == 2, "Incompatible texture type");
-
-    // special case: lookup four texels at once and return as 32-bit float vector
-    typedef vector<3, simd::float4> return_type;
-
-    return detail::tex2D<return_type>( tex, coord );
-
 }
 
 
