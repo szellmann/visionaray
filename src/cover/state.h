@@ -26,6 +26,9 @@ enum data_variance  { Static, Dynamic };
 struct render_state
 {
     algorithm       algo            = Simple;
+    unsigned        min_bounces     = 1;
+    unsigned        max_bounces     = 10;
+    unsigned        num_bounces     = 4;
     device_type     device          = CPU;
     data_variance   data_var        = Static;
     unsigned        num_threads     = 0;

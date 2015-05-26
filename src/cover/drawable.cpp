@@ -526,6 +526,7 @@ struct drawable::impl
     unsigned                                frame_num       = 0;
 
     algorithm                               algo_current    = Simple;
+    unsigned                                num_bounces     = 4;
     device_type                             device          = CPU;
 
     bvh_outline_renderer                    outlines;
@@ -641,7 +642,7 @@ void drawable::impl::update_viewing_params()
     // Reset frame counter on change or if scene is dynamic
 
     if (state->data_var == Dynamic || state->algo != algo_current || state->device != device
-     || view_matrix != view || proj_matrix != proj || viewport != vp)
+     || state->num_bounces != num_bounces || view_matrix != view || proj_matrix != proj || viewport != vp)
     {
         frame_num = 0;
     }
@@ -688,6 +689,7 @@ void drawable::impl::update_device_data()
 void drawable::impl::commit_state()
 {
     algo_current    = state->algo;
+    num_bounces     = state->num_bounces;
     device          = state->device;
 }
 
@@ -1005,7 +1007,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
 
     auto bounds     = impl_->host_bvh.node(0).bbox;
     auto diagonal   = bounds.max - bounds.min;
-    auto bounces    = 4U;
+    auto bounces    = impl_->state->num_bounces;
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
 
 

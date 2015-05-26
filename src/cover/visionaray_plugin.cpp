@@ -17,6 +17,7 @@
 #include <OpenVRUI/coCheckboxGroup.h>
 #include <OpenVRUI/coCheckboxMenuItem.h>
 #include <OpenVRUI/coRowMenu.h>
+#include <OpenVRUI/coSliderMenuItem.h>
 #include <OpenVRUI/coSubMenuItem.h>
 
 #include "drawable.h"
@@ -37,6 +38,7 @@ struct Visionaray::impl : vrui::coMenuListener
     using menu          = std::unique_ptr<vrui::coMenu>;
     using radio_button  = std::unique_ptr<vrui::coCheckboxMenuItem>;
     using radio_group   = std::unique_ptr<vrui::coCheckboxGroup>;
+    using slider        = std::unique_ptr<vrui::coSliderMenuItem>;
     using sub_menu      = std::unique_ptr<vrui::coSubMenuItem>;
 
     impl()
@@ -63,6 +65,7 @@ struct Visionaray::impl : vrui::coMenuListener
 
         // main menu
         check_box                   toggle_update_mode;
+        slider                      bounces_slider;
 
         // algo menu
         radio_group                 algo_group;
@@ -98,6 +101,7 @@ struct Visionaray::impl : vrui::coMenuListener
 
     void set_data_variance(data_variance var);
     void set_algorithm(algorithm algo);
+    void set_num_bounces(unsigned num_bounces);
     void set_device(device_type dev);
     void set_show_bvh(bool show_bvh);
     void set_show_normals(bool show_normals);
@@ -114,10 +118,11 @@ void Visionaray::impl::init_state_from_config()
     //
     //
     // <Visionaray>
-    //     <DataVariance value="static"  />      <!-- "static" | "dynamic" -->
-    //     <Algorithm    value="simple"  />      <!-- "simple" | "whitted" -->
-    //     <Device       vlaue="CPU"     />      <!-- "CPU"    | "GPU"     -->
-    //     <CPUScheduler numThreads="16" />      <!-- numThreads:Integer   -->
+    //     <DataVariance value="static"  />                 <!-- "static" | "dynamic" -->
+    //     <Algorithm    value="simple"  />                 <!-- "simple" | "whitted" -->
+    //     <NumBounces   value="4" min="1" max="10" />      <!-- value:Integer | [min:Integer|max:Integer]  -->
+    //     <Device       value="CPU"     />                 <!-- "CPU"    | "GPU"     -->
+    //     <CPUScheduler numThreads="16" />                 <!-- numThreads:Integer   -->
     // </Visioaray>
     //
     //
@@ -132,6 +137,9 @@ void Visionaray::impl::init_state_from_config()
     using boost::algorithm::to_lower;
 
     auto algo_str       = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.Algorithm");
+    auto num_bounces    = covise::coCoviseConfig::getInt("value", "COVER.Plugin.Visionaray.NumBounces", 4);
+    auto min_bounces    = covise::coCoviseConfig::getInt("min", "COVER.Plugin.Visionaray.NumBounces", 0);
+    auto max_bounces    = covise::coCoviseConfig::getInt("max", "COVER.Plugin.Visionaray.NumBounces", 10);
     auto device_str     = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.Device");
     auto data_var_str   = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.DataVariance");
     auto num_threads    = covise::coCoviseConfig::getInt("numThreads", "COVER.Plugin.Visionaray.CPUScheduler", 0);
@@ -155,6 +163,13 @@ void Visionaray::impl::init_state_from_config()
     {
         state->algo = Simple;
     }
+
+    // TODO
+//  assert( min_bounces <= num_bounces && num_bounces <= max_bounces );
+
+    state->num_bounces  = num_bounces;
+    state->min_bounces  = min_bounces;
+    state->max_bounces  = max_bounces;
 
     if (device_str == "gpu")
     {
@@ -185,6 +200,12 @@ void Visionaray::impl::init_ui()
     ui.toggle_update_mode.reset(new coCheckboxMenuItem("Update scene per frame", state->data_var == Dynamic));
     ui.toggle_update_mode->setMenuListener(this);
     ui.main_menu->add(ui.toggle_update_mode.get());
+
+
+    ui.bounces_slider.reset(new coSliderMenuItem("Number of bounces", state->min_bounces, state->max_bounces, state->num_bounces));
+    ui.bounces_slider->setInteger(true);
+    ui.bounces_slider->setMenuListener(this);
+    ui.main_menu->add(ui.bounces_slider.get());
 
 
     // algorithm submenu
@@ -278,6 +299,11 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
         set_algorithm(Pathtracing);
     }
 
+    if (item == ui.bounces_slider.get())
+    {
+        set_num_bounces(ui.bounces_slider->getValue());
+    }
+
     // device submenu
     if (item == ui.cpu_button.get())
     {
@@ -322,6 +348,12 @@ void Visionaray::impl::set_algorithm(algorithm algo)
     ui.simple_button->setState( algo == Simple, false );
     ui.whitted_button->setState( algo == Whitted, false );
     ui.pathtracing_button->setState( algo == Pathtracing, false );
+}
+
+void Visionaray::impl::set_num_bounces(unsigned num_bounces)
+{
+    state->num_bounces = num_bounces;
+    ui.bounces_slider->setValue(num_bounces);
 }
 
 void Visionaray::impl::set_device(device_type dev)
