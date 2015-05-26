@@ -50,11 +50,10 @@ public:
     spectrum<typename SR::scalar_type> shade(SR const& sr) const
     {
 #if 1 // two-sided
-        VSNRAY_UNUSED(sr);
-        return ce_ * ls_;
+        return ce(sr);
 #else
         using U = typename SR::scalar_type;
-        return select( dot(sr.normal, sr.view_dir) >= U(0.0), ce_ * ls_, spectrum<U>(0.0) );
+        return select( dot(sr.normal, sr.view_dir) >= U(0.0), ce(sr), spectrum<U>(0.0) );
 #endif
     }
 
@@ -83,6 +82,21 @@ private:
 
     spectrum<T> ce_;
     scalar_type ls_;
+
+    template <typename SR, typename V>
+    VSNRAY_FUNC
+    spectrum<T> ce(SR const& sr) const
+    {
+        VSNRAY_UNUSED(sr);
+        return ce_ * ls_;
+    }
+
+    template <typename L, typename C, typename S>
+    VSNRAY_FUNC
+    spectrum<T> ce(shade_record<L, C, S> const& sr) const
+    {
+        return spectrum<T>(from_rgb(sr.tex_color)) * ce_ * ls_;
+    }
 
 };
 
@@ -233,7 +247,7 @@ public:
     VSNRAY_FUNC
     spectrum<U> sample(shade_record<L, C, U> const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler) const
     {
-        return spectrum<U>(from_rgb(sr.cd)) * sample_impl(sr, refl_dir, pdf, sampler);
+        return spectrum<U>(from_rgb(sr.tex_color)) * sample_impl(sr, refl_dir, pdf, sampler);
     }
 
 
@@ -326,7 +340,7 @@ private:
     VSNRAY_FUNC
     spectrum<T> cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const
     {
-        return spectrum<T>(from_rgb(sr.cd)) * diffuse_brdf_.f(n, wo, wi);
+        return spectrum<T>(from_rgb(sr.tex_color)) * diffuse_brdf_.f(n, wo, wi);
     }
 
     template <typename SR, typename U, typename S /* sampler */>

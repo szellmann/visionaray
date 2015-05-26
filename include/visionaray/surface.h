@@ -69,9 +69,9 @@ public:
     VSNRAY_FUNC surface() = default;
 
     VSNRAY_FUNC
-    surface(vector<3, scalar_type> const& n, M const& m, C const& cd)
+    surface(vector<3, scalar_type> const& n, M const& m, C const& tex_color)
         : base_type(n, m)
-        , cd_(cd)
+        , tex_color_(tex_color)
     {
     }
 
@@ -79,7 +79,7 @@ public:
     VSNRAY_FUNC
     spectrum<scalar_type> shade(SR shade_rec)
     {
-        shade_rec.cd = cd_;
+        shade_rec.tex_color = tex_color_;
         return base_type::shade(shade_rec);
     }
 
@@ -87,11 +87,11 @@ public:
     VSNRAY_FUNC
     spectrum<scalar_type> sample(SR shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
     {
-        shade_rec.cd = cd_;
+        shade_rec.tex_color = tex_color_;
         return base_type::sample(shade_rec, refl_dir, pdf, sampler);
     }
 
-    C cd_;
+    C tex_color_;
 
 };
 

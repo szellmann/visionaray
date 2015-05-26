@@ -35,7 +35,7 @@ struct shade_record : public shade_record_base<L, T, Args...>
 template <typename L, typename C, typename T, typename ...Args>
 struct shade_record<L, C, T, Args...> : public shade_record_base<L, T, Args...>
 {
-    C cd;
+    C tex_color;
     bool active;
 };
 
@@ -48,7 +48,7 @@ struct shade_record<L, simd::float4, Args...> : public shade_record_base<L, simd
 template <typename L, typename C, typename ...Args>
 struct shade_record<L, C, simd::float4, Args...> : public shade_record_base<L, simd::float4, Args...>
 {
-    C cd;
+    C tex_color;
     simd::mask4 active;
 };
 
@@ -87,7 +87,7 @@ std::array<shade_record<L, float>, 4> unpack(shade_record<L, float4> const& sr)
 
 
 //-------------------------------------------------------------------------------------------------
-// Unpack SSE shade record with diffuse texture color
+// Unpack SSE shade record with texture color
 //
 
 template <typename L>
@@ -97,7 +97,7 @@ std::array<shade_record<L, vector<3, float>, float>, 4> unpack(shade_record<L, v
     auto normal4    = unpack(sr.normal);
     auto view_dir4  = unpack(sr.view_dir);
     auto light_dir4 = unpack(sr.light_dir);
-    auto cd4        = unpack(sr.cd);
+    auto tex_color4 = unpack(sr.tex_color);
 
     VSNRAY_ALIGN(16) int active[4];
     simd::store(active, sr.active.i);
@@ -111,7 +111,7 @@ std::array<shade_record<L, vector<3, float>, float>, 4> unpack(shade_record<L, v
         result[i].view_dir  = view_dir4[i];
         result[i].light_dir = light_dir4[i];
         result[i].light     = sr.light;
-        result[i].cd        = cd4[i];
+        result[i].tex_color = tex_color4[i];
         result[i].active    = active[i] != 0;
     }
 

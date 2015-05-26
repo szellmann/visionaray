@@ -27,9 +27,9 @@ surface<M> make_surface(N const& n, M const& m)
 }
 
 template <typename M, typename C, typename N>
-surface<M, C> make_surface(N const& n, M const m, C const& cd)
+surface<M, C> make_surface(N const& n, M const m, C const& tex_color)
 {
-    return surface<M, C>(n, m, cd);
+    return surface<M, C>(n, m, tex_color);
 }
 
 } // detail
@@ -96,10 +96,10 @@ inline auto pack(
                 s4.material
                 ),
             pack(
-                s1.cd_,
-                s2.cd_,
-                s3.cd_,
-                s4.cd_
+                s1.tex_color_,
+                s2.tex_color_,
+                s3.tex_color_,
+                s4.tex_color_
                 )
             ) )
 {
@@ -117,10 +117,10 @@ inline auto pack(
                 s4.material
                 ),
             pack(
-                s1.cd_,
-                s2.cd_,
-                s3.cd_,
-                s4.cd_
+                s1.tex_color_,
+                s2.tex_color_,
+                s3.tex_color_,
+                s4.tex_color_
                 )
             );
 }
@@ -197,14 +197,14 @@ inline surface<M<simd::float8>, vector<3, simd::float8>> pack(
                 s8.material
                 ),
             pack(
-                s1.cd_,
-                s2.cd_,
-                s3.cd_,
-                s4.cd_,
-                s5.cd_,
-                s6.cd_,
-                s7.cd_,
-                s8.cd_
+                s1.tex_color_,
+                s2.tex_color_,
+                s3.tex_color_,
+                s4.tex_color_,
+                s5.tex_color_,
+                s6.tex_color_,
+                s7.tex_color_,
+                s8.tex_color_
                 )
             );
 }
@@ -355,10 +355,12 @@ inline surface<M, vector<3, float>> get_surface_impl(
     auto tc  = get_tex_coord(tex_coords, hr);
 
     auto const& tex = textures[hr.geom_id];
-    auto cd = tex.width() > 0 && tex.height() > 0 ? vector<3, float>(tex2D(tex, tc)) : vector<3, float>(1.0);
+    auto tex_color = tex.width() > 0 && tex.height() > 0
+                   ? vector<3, float>(tex2D(tex, tc))
+                   : vector<3, float>(1.0);
 
     auto normal = get_normal(normals, hr, NBinding());
-    return surface<M, vector<3, float>>( normal, materials[hr.geom_id], cd );
+    return surface<M, vector<3, float>>( normal, materials[hr.geom_id], tex_color );
 }
 
 
@@ -534,7 +536,7 @@ inline auto get_surface_impl(
 
     auto tc4 = get_tex_coord(tex_coords, hr4);
 
-    vector<3, float> cd4[4];
+    vector<3, float> tex_color4[4];
     for (unsigned i = 0; i < 4; ++i)
     {
         if (!hr4[i].hit)
@@ -543,29 +545,31 @@ inline auto get_surface_impl(
         }
 
         auto const& tex = textures[hr4[i].geom_id];
-        cd4[i] = tex.width() > 0 && tex.height() > 0 ? vector<3, float>(tex2D(tex, tc4[i])) : vector<3, float>(1.0);
+        tex_color4[i] = tex.width() > 0 && tex.height() > 0
+                      ? vector<3, float>(tex2D(tex, tc4[i]))
+                      : vector<3, float>(1.0);
     }
 
     return simd::pack(
             surface<M, vector<3, float>>(
                 hr4[0].hit ? get_normal(normals, hr4[0], NBinding()) : N(),
                 hr4[0].hit ? materials[hr4[0].geom_id]               : M(),
-                hr4[0].hit ? cd4[0]                                  : vector<3, float>(1.0)
+                hr4[0].hit ? tex_color4[0]                           : vector<3, float>(1.0)
                 ),
             surface<M, vector<3, float>>(
                 hr4[1].hit ? get_normal(normals, hr4[1], NBinding()) : N(),
                 hr4[1].hit ? materials[hr4[1].geom_id]               : M(),
-                hr4[1].hit ? cd4[1]                                  : vector<3, float>(1.0)
+                hr4[1].hit ? tex_color4[1]                           : vector<3, float>(1.0)
                 ),
             surface<M, vector<3, float>>(
                 hr4[2].hit ? get_normal(normals, hr4[2], NBinding()) : N(),
                 hr4[2].hit ? materials[hr4[2].geom_id]               : M(),
-                hr4[2].hit ? cd4[2]                                  : vector<3, float>(1.0)
+                hr4[2].hit ? tex_color4[2]                           : vector<3, float>(1.0)
                 ),
             surface<M, vector<3, float>>(
                 hr4[3].hit ? get_normal(normals, hr4[3], NBinding()) : N(),
                 hr4[3].hit ? materials[hr4[3].geom_id]               : M(),
-                hr4[3].hit ? cd4[3]                                  : vector<3, float>(1.0)
+                hr4[3].hit ? tex_color4[3]                           : vector<3, float>(1.0)
                 )
             );
 }
