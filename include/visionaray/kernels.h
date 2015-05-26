@@ -47,6 +47,7 @@ struct kernel_params<NB, P, N, M, L, C, Args...>
         L end;
     } lights;
 
+    unsigned num_bounces;
     float epsilon;
 
     C bg_color;
@@ -82,6 +83,7 @@ struct kernel_params<NB, P, N, TC, M, T, L, C, Args...>
         L end;
     } lights;
 
+    unsigned num_bounces;
     float epsilon;
 
     C bg_color;
@@ -101,6 +103,7 @@ kernel_params<NB, P, N, M, L, vec4>  make_params(
         M const&    materials,
         L const&    lbegin,
         L const&    lend,
+        unsigned    num_bounces     = 5,
         float       epsilon         = std::numeric_limits<float>::epsilon(),
         vec4 const& bg_color        = vec4(0.0),
         vec4 const& ambient_color   = vec4(0.0)
@@ -109,7 +112,7 @@ kernel_params<NB, P, N, M, L, vec4>  make_params(
     return kernel_params<NB, P, N, M, L, vec4>
     {
         { begin, end }, normals, materials, { lbegin, lend },
-        epsilon, bg_color, ambient_color
+        num_bounces, epsilon, bg_color, ambient_color
     };
 }
 
@@ -123,6 +126,7 @@ kernel_params<NB, P, N, TC, M, T, L, vec4> make_params(
         T const&    textures,
         L const&    lbegin,
         L const&    lend,
+        unsigned    num_bounces     = 5,
         float       epsilon         = std::numeric_limits<float>::epsilon(),
         vec4 const& bg_color        = vec4(0.0),
         vec4 const& ambient_color   = vec4(1.0)
@@ -131,7 +135,7 @@ kernel_params<NB, P, N, TC, M, T, L, vec4> make_params(
     return kernel_params<NB, P, N, TC, M, T, L, vec4>
     {
         { begin, end }, normals, tex_coords, materials, textures, { lbegin, lend },
-        epsilon, bg_color, ambient_color
+        num_bounces, epsilon, bg_color, ambient_color
     };
 }
 

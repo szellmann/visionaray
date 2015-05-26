@@ -35,8 +35,6 @@ struct kernel
 
         result_record<S> result;
 
-        /*static*/ const unsigned MaxDepth = 5;
-
         auto hit_rec        =  closest_hit(ray, params.prims.begin, params.prims.end);
         auto exited         = !hit_rec.hit;
         auto active_rays    =  hit_rec.hit;
@@ -56,7 +54,7 @@ struct kernel
 
         C dst(1.0);
 
-        for (unsigned d = 0; d < MaxDepth; ++d)
+        for (unsigned d = 0; d < params.num_bounces; ++d)
         {
             if ( any(active_rays) )
             {

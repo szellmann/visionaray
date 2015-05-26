@@ -468,6 +468,7 @@ void display_func()
 
     auto bounds     = rend->mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
+    auto bounces    = rend->algo == Pathtracing ? 10U : 4U;
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
 
     vec4 bg_color(0.1, 0.4, 1.0, 1.0);
@@ -488,6 +489,7 @@ void display_func()
                 thrust::raw_pointer_cast(rend->device_materials.data()),
                 thrust::raw_pointer_cast(device_lights.data()),
                 thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+                bounces,
                 epsilon,
                 vec4(rend->bgcolor, 1.0f),
                 rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
@@ -514,6 +516,7 @@ void display_func()
 //              mod.textures.data(),
                 host_lights.data(),
                 host_lights.data() + host_lights.size(),
+                bounces,
                 epsilon,
                 vec4(rend->bgcolor, 1.0f),
                 rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)

@@ -1005,6 +1005,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
 
     auto bounds     = impl_->host_bvh.node(0).bbox;
     auto diagonal   = bounds.max - bounds.min;
+    auto bounces    = impl_->state->algo == Pathtracing ? 10U : 4U;
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
 
 
@@ -1028,6 +1029,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
                 thrust::raw_pointer_cast(impl_->device_texture_refs.data()),
                 thrust::raw_pointer_cast(device_lights.data()),
                 thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+                bounces,
                 epsilon,
                 vec4(0.0f),
                 impl_->state->algo == Pathtracing ? vec4(1.0f) : ambient
@@ -1050,6 +1052,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
                 impl_->textures.data(),
                 lights.data(),
                 lights.data() + lights.size(),
+                bounces,
                 epsilon,
                 vec4(0.0f),
                 impl_->state->algo == Pathtracing ? vec4(1.0f) : ambient

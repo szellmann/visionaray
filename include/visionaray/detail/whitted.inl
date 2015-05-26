@@ -49,7 +49,7 @@ struct kernel
         size_t depth = 0;
         auto no_hit_color = C(from_rgba(params.bg_color));
         auto mirror = S(1.0);
-        while (any(hit_rec.hit) && any(mirror > S(params.epsilon)) && depth++ < 4/*1*/)
+        while (any(hit_rec.hit) && any(mirror > S(params.epsilon)) && depth++ < params.num_bounces)
         {
             hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
 
