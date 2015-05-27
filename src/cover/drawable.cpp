@@ -13,6 +13,7 @@
 #include <osg/LightModel>
 #include <osg/Material>
 #include <osg/MatrixTransform>
+#include <osg/Sequence>
 #include <osg/Switch>
 #include <osg/TriangleIndexFunctor>
 
@@ -273,6 +274,13 @@ public:
         if (sw && sw->containsNode(last_child_))
         {
             visible_ &= sw->getChildValue(last_child_);
+        }
+
+        auto seq = dynamic_cast<osg::Sequence*>(&node);
+        if (seq && seq->containsNode(last_child_))
+        {
+            auto ts = seq->getValue();
+            visible_ &= seq->getChild(ts) == last_child_;
         }
 
         if (visible_)
