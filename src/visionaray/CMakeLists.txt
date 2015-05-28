@@ -70,6 +70,7 @@ set(VSNRAY_HEADERS
 
     # OpenGL
 
+    ${HEADER_DIR}/gl/compositing.h
     ${HEADER_DIR}/gl/handle.h
     ${HEADER_DIR}/gl/util.h
 

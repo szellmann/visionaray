@@ -70,7 +70,7 @@ using device_tex_type           = device_texture<vector<4, float>, ElementType, 
 using device_tex_ref            = device_texture_ref<vector<4, float>, ElementType, 2>;
 using device_ray_type           = basic_ray<float>;
 using device_bvh_type           = device_index_bvh<triangle_type>;
-using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
+using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_DEPTH32F>;
 using device_sched_type         = cuda_sched<device_ray_type>;
 #endif
 
