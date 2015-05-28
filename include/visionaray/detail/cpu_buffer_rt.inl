@@ -134,7 +134,7 @@ void cpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 
 #if VSNRAY_CPU_BUFFER_TEX
 
-    glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ENABLE_BIT );
+    glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT );
 
     // Allocate texture storage
 
@@ -187,7 +187,7 @@ void cpu_buffer_rt<CF, DF>::display_color_buffer() const
 
     if (depth_traits::format != PF_UNSPECIFIED)
     {
-        glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ENABLE_BIT );
+        glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT );
 
         // Update color texture
 
