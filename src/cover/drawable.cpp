@@ -887,6 +887,8 @@ void drawable::drawImplementation(osg::RenderInfo&) const
         return;
     }
 
+    gl::init_debug_callback();
+
     impl_->store_gl_state();
 
 
