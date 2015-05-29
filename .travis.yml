@@ -5,9 +5,10 @@ compiler:
 before_install:
     - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
     - sudo apt-get update -qq
-    - sudo apt-get install -qq g++-4.8 libboost1.48-all-dev libglew-dev libxi-dev libxmu-dev freeglut3-dev 
+    - sudo apt-get install -qq g++-4.8 cmake libboost1.48-all-dev libglew-dev libxi-dev libxmu-dev freeglut3-dev
     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 script:
+    - wget https://github.com/Kitware/CMake/blob/master/Modules/FindGLEW.cmake -O cmake/FindGLEW.cmake
     - mkdir -p build
     - cd build
     - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1"
