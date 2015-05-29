@@ -21,18 +21,15 @@ namespace visionaray
 template <pixel_format CF, pixel_format DF>
 struct pixel_unpack_buffer_rt<CF, DF>::impl
 {
-    impl() : comp_program(nullptr) {}
+    impl() : compositor(nullptr) {}
 
-    std::unique_ptr<gl::depth_compositing_program>  comp_program;
+    std::unique_ptr<gl::depth_compositor>   compositor;
 
-    cuda::graphics_resource                         color_resource;
-    cuda::graphics_resource                         depth_resource;
+    cuda::graphics_resource                 color_resource;
+    cuda::graphics_resource                 depth_resource;
 
-    gl::buffer                                      color_buffer;
-    gl::buffer                                      depth_buffer;
-
-    gl::texture                                     color_texture;
-    gl::texture                                     depth_texture;
+    gl::buffer                              color_buffer;
+    gl::buffer                              depth_buffer;
 };
 
 template <pixel_format CF, pixel_format DF>
@@ -115,46 +112,30 @@ void pixel_unpack_buffer_rt<CF, DF>::begin_frame()
 template <pixel_format CF, pixel_format DF>
 void pixel_unpack_buffer_rt<CF, DF>::end_frame()
 {
-    pixel_format_info cinfo = map_pixel_format(color_traits::format);
-
     impl_->color_resource.unmap();
-
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, impl_->color_buffer.get());
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width(), height(), cinfo.format, cinfo.type, 0);
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
     if (depth_traits::format != PF_UNSPECIFIED)
     {
-        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
-
         impl_->depth_resource.unmap();
-
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, impl_->depth_buffer.get());
-        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width(), height(), dinfo.format, dinfo.type, 0);
-        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
     }
 }
 
 template <pixel_format CF, pixel_format DF>
 void pixel_unpack_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 {
+    render_target::resize(w, h);
+
+    if (!impl_->compositor)
+    {
+        impl_->compositor.reset(new gl::depth_compositor);
+    }
+
     pixel_format_info cinfo = map_pixel_format(color_traits::format);
 
-    // gl texture
-    impl_->color_texture.reset( gl::create_texture() );
+    // GL texture
+    impl_->compositor->setup_color_texture(cinfo, w, h);
 
-    glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexImage2D(GL_TEXTURE_2D, 0, cinfo.internal_format, w, h, 0, cinfo.format, cinfo.type, 0);
-
-    // gl buffer
+    // GL buffer
     impl_->color_buffer.reset( gl::create_buffer() );
 
     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, impl_->color_buffer.get());
@@ -168,17 +149,10 @@ void pixel_unpack_buffer_rt<CF, DF>::resize(size_t w, size_t h)
     {
         pixel_format_info dinfo = map_pixel_format(depth_traits::format);
 
-        // gl texture
-        impl_->depth_texture.reset( gl::create_texture() );
+        // GL texture
+        impl_->compositor->setup_depth_texture(dinfo, w, h);
 
-        glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexImage2D(GL_TEXTURE_2D, 0, dinfo.internal_format, w, h, 0, dinfo.format, dinfo.type, 0);
-
-        // gl buffer
+        // GL buffer
         impl_->depth_buffer.reset( gl::create_buffer() );
 
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, impl_->depth_buffer.get());
@@ -187,37 +161,70 @@ void pixel_unpack_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 
         // register buffer object with CUDA
         impl_->depth_resource.register_buffer(impl_->depth_buffer.get(), cudaGraphicsRegisterFlagsWriteDiscard);
-
-        if (!impl_->comp_program)
-        {
-            impl_->comp_program.reset(new gl::depth_compositing_program);
-        }
     }
-
-    render_target::resize(w, h);
 }
 
 template <pixel_format CF, pixel_format DF>
 void pixel_unpack_buffer_rt<CF, DF>::display_color_buffer() const
 {
-    if (depth_traits::format == PF_UNSPECIFIED)
-    {
-        gl::blend_texture(impl_->color_texture.get());
-    }
-    else
+    if (depth_traits::format != PF_UNSPECIFIED)
     {
         glPushAttrib( GL_TEXTURE_BIT | GL_ENABLE_BIT );
 
-        glEnable(GL_DEPTH_TEST);
+        // Update color texture
 
-        impl_->comp_program->enable();
-        impl_->comp_program->set_textures( impl_->color_texture.get(), impl_->depth_texture.get());
+        pixel_format_info cinfo = map_pixel_format(color_traits::format);
 
-        gl::draw_full_screen_quad();
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, impl_->color_buffer.get());
 
-        impl_->comp_program->disable();
+        impl_->compositor->update_color_texture(
+                cinfo,
+                width(),
+                height(),
+                0
+                );
+
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
+
+        // Update depth texture
+
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, impl_->depth_buffer.get());
+
+        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
+
+        impl_->compositor->update_depth_texture(
+                dinfo,
+                width(),
+                height(),
+                0
+                );
+
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
+
+        // Combine textures using a shader
+
+        impl_->compositor->composite_textures();
 
         glPopAttrib();
+    }
+    else
+    {
+        pixel_format_info cinfo = map_pixel_format(color_traits::format);
+
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, impl_->color_buffer.get());
+
+        impl_->compositor->update_color_texture(
+                cinfo,
+                width(),
+                height(),
+                0
+                );
+
+        glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+
+        impl_->compositor->display_color_texture();
     }
 }
 

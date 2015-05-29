@@ -21,6 +21,7 @@
 #endif
 
 #include <visionaray/math/forward.h>
+#include <visionaray/pixel_format.h>
 
 
 namespace visionaray
@@ -32,6 +33,24 @@ namespace gl
 void init_debug_callback();
 
 std::string last_error();
+
+void alloc_texture(pixel_format_info info, GLsizei w, GLsizei h);
+
+void update_texture(
+        pixel_format_info   info,
+        GLsizei             x,
+        GLsizei             y,
+        GLsizei             w,
+        GLsizei             h,
+        GLvoid const*       pixels
+        );
+
+void update_texture(
+        pixel_format_info   info,
+        GLsizei             w,
+        GLsizei             h,
+        GLvoid const*       pixels
+        );
 
 void draw_full_screen_quad();
 

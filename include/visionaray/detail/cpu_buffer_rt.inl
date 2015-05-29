@@ -20,27 +20,6 @@
 
 namespace visionaray
 {
-namespace detail
-{
-
-//-------------------------------------------------------------------------------------------------
-// Helper functions
-//
-
-void alloc_texture(pixel_format_info info, size_t w, size_t h)
-{
-    if (glTexStorage2D)
-    {
-        glTexStorage2D(GL_TEXTURE_2D, 1, info.internal_format, w, h);
-    }
-    else
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, info.internal_format, w, h, 0, info.format, info.type, 0);
-    }
-}
-
-} // detail
-
 
 //-------------------------------------------------------------------------------------------------
 // Private implementation
@@ -49,15 +28,12 @@ void alloc_texture(pixel_format_info info, size_t w, size_t h)
 template <pixel_format CF, pixel_format DF>
 struct cpu_buffer_rt<CF, DF>::impl
 {
-    impl() : comp_program(nullptr) {}
+    impl() : compositor(nullptr) {}
 
-    std::unique_ptr<gl::depth_compositing_program>  comp_program;
+    std::unique_ptr<gl::depth_compositor>   compositor;
 
-    aligned_vector<color_type>                      color_buffer;
-    aligned_vector<depth_type>                      depth_buffer;
-
-    gl::texture                                     color_texture;
-    gl::texture                                     depth_texture;
+    aligned_vector<color_type>              color_buffer;
+    aligned_vector<depth_type>              depth_buffer;
 };
 
 
@@ -121,6 +97,7 @@ void cpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 {
     render_target::resize(w, h);
 
+
     // Allocate storage
 
     pixel_format_info cinfo = map_pixel_format(color_traits::format);
@@ -134,45 +111,23 @@ void cpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 
 #if VSNRAY_CPU_BUFFER_TEX
 
-    glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT );
+    glPushAttrib( GL_TEXTURE_BIT );
+
+    if (!impl_->compositor)
+    {
+        impl_->compositor.reset(new gl::depth_compositor);
+    }
 
     // Allocate texture storage
 
-    impl_->color_texture.reset( gl::create_texture() );
+    impl_->compositor->setup_color_texture(cinfo, w, h);
 
-    glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
-
-    detail::alloc_texture(cinfo, w, h);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
     if (depth_traits::format != PF_UNSPECIFIED)
     {
         pixel_format_info dinfo = map_pixel_format(depth_traits::format);
 
-        impl_->depth_texture.reset( gl::create_texture() );
-
-        glActiveTexture(GL_TEXTURE0 + 1);
-        glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
-
-        detail::alloc_texture(dinfo, w, h);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-
-        if (!impl_->comp_program)
-        {
-            impl_->comp_program.reset(new gl::depth_compositing_program);
-        }
+        impl_->compositor->setup_depth_texture(dinfo, w, h);
     }
 
     glPopAttrib();
@@ -187,24 +142,16 @@ void cpu_buffer_rt<CF, DF>::display_color_buffer() const
 
     if (depth_traits::format != PF_UNSPECIFIED)
     {
-        glPushAttrib( GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT );
+        glPushAttrib( GL_TEXTURE_BIT | GL_ENABLE_BIT );
 
         // Update color texture
 
         pixel_format_info cinfo = map_pixel_format(color_traits::format);
 
-        glActiveTexture(GL_TEXTURE0 + 0);
-        glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
-
-        glTexSubImage2D(
-                GL_TEXTURE_2D,
-                0,
-                0,
-                0,
+        impl_->compositor->update_color_texture(
+                cinfo,
                 width(),
                 height(),
-                cinfo.format,
-                cinfo.type,
                 impl_->color_buffer.data()
                 );
 
@@ -213,32 +160,17 @@ void cpu_buffer_rt<CF, DF>::display_color_buffer() const
 
         pixel_format_info dinfo = map_pixel_format(depth_traits::format);
 
-        glActiveTexture(GL_TEXTURE0 + 1);
-        glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
-
-        glTexSubImage2D(
-                GL_TEXTURE_2D,
-                0,
-                0,
-                0,
+        impl_->compositor->update_depth_texture(
+                dinfo,
                 width(),
                 height(),
-                dinfo.format,
-                dinfo.type,
                 impl_->depth_buffer.data()
                 );
 
 
         // Combine textures using a shader
 
-        glEnable(GL_DEPTH_TEST);
-
-        impl_->comp_program->enable();
-        impl_->comp_program->set_textures( impl_->color_texture.get(), impl_->depth_texture.get());
-
-        gl::draw_full_screen_quad();
-
-        impl_->comp_program->disable();
+        impl_->compositor->composite_textures();
 
         glPopAttrib();
     }
@@ -246,21 +178,14 @@ void cpu_buffer_rt<CF, DF>::display_color_buffer() const
     {
         pixel_format_info cinfo = map_pixel_format(color_traits::format);
 
-        glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
-
-        glTexSubImage2D(
-                GL_TEXTURE_2D,
-                0,
-                0,
-                0,
+        impl_->compositor->update_color_texture(
+                cinfo,
                 width(),
                 height(),
-                cinfo.format,
-                cinfo.type,
                 impl_->color_buffer.data()
                 );
 
-        gl::blend_texture(impl_->color_texture.get());
+        impl_->compositor->display_color_texture();
     }
 
 #else

@@ -8,20 +8,25 @@
 
 #include <GL/glew.h>
 
+#include <visionaray/pixel_format.h>
+
+#include "handle.h"
+#include "util.h"
+
 namespace visionaray
 {
 namespace gl
 {
 
 //-------------------------------------------------------------------------------------------------
-// Depth compositing frag prog
+// GLSL-based depth compositor
 //
 
-class depth_compositing_program
+class depth_compositor
 {
 public:
 
-    depth_compositing_program()
+    depth_compositor()
         : program_(glCreateProgram())
         , frag_(glCreateShader(GL_FRAGMENT_SHADER))
     {
@@ -59,35 +64,82 @@ public:
         depth_loc_ = glGetUniformLocation(program_, "depth_tex");
     }
 
-   ~depth_compositing_program()
+   ~depth_compositor()
     {
         glDetachShader(program_, frag_);
         glDeleteShader(frag_);
         glDeleteProgram(program_);
     }
 
-    void enable() const
+    void composite_textures() const
     {
-        glUseProgram(program_);
+        glEnable(GL_DEPTH_TEST);
+
+        enable_program();
+
+        gl::draw_full_screen_quad();
+
+        disable_program();
     }
 
-    void disable() const
+    void display_color_texture() const
     {
-        glUseProgram(0);
+        gl::blend_texture(color_texture_.get());
     }
 
-    void set_textures(GLuint color, GLuint depth) const
+    void setup_color_texture(pixel_format_info info, GLsizei w, GLsizei h)
     {
-        glUniform1i(color_loc_, 0);
-        glActiveTexture(GL_TEXTURE0 + 0);
-        glBindTexture(GL_TEXTURE_2D, color);
+        color_texture_.reset( create_texture() );
 
-        glUniform1i(depth_loc_, 1);
-        glActiveTexture(GL_TEXTURE0 + 1);
-        glBindTexture(GL_TEXTURE_2D, depth);
+        glBindTexture(GL_TEXTURE_2D, color_texture_.get());
+
+        set_texture_params();
+
+        alloc_texture(info, w, h);
+    }
+
+    void setup_depth_texture(pixel_format_info info, GLsizei w, GLsizei h)
+    {
+        depth_texture_.reset( create_texture() );
+
+        glBindTexture(GL_TEXTURE_2D, depth_texture_.get());
+
+        set_texture_params();
+
+        alloc_texture(info, w, h);
+    }
+
+    void update_color_texture(
+            pixel_format_info   info,
+            GLsizei             w,
+            GLsizei             h,
+            GLvoid const*       data
+            ) const
+    {
+        glBindTexture(GL_TEXTURE_2D, color_texture_.get());
+
+        gl::update_texture( info, w, h, data );
+    }
+
+    void update_depth_texture(
+            pixel_format_info   info,
+            GLsizei             w,
+            GLsizei             h,
+            GLvoid const*       data
+            ) const
+    {
+        glBindTexture(GL_TEXTURE_2D, depth_texture_.get());
+
+        gl::update_texture( info, w, h, data );
     }
 
 private:
+
+    // GL color texture handle
+    gl::texture color_texture_;
+
+    // GL color texture handle
+    gl::texture depth_texture_;
 
     // The program
     GLuint program_;
@@ -146,6 +198,32 @@ private:
         }
 
         return true;
+    }
+
+    void enable_program() const
+    {
+        glUseProgram(program_);
+
+        glUniform1i(color_loc_, 0);
+        glActiveTexture(GL_TEXTURE0 + 0);
+        glBindTexture(GL_TEXTURE_2D, color_texture_.get());
+
+        glUniform1i(depth_loc_, 1);
+        glActiveTexture(GL_TEXTURE0 + 1);
+        glBindTexture(GL_TEXTURE_2D, depth_texture_.get());
+    }
+
+    void disable_program() const
+    {
+        glUseProgram(0);
+    }
+
+    void set_texture_params() const
+    {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     }
 
 };

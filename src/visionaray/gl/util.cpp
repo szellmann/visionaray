@@ -109,6 +109,60 @@ std::string gl::last_error()
     return "";
 }
 
+void gl::alloc_texture(pixel_format_info info, GLsizei w, GLsizei h)
+{
+    if (glTexStorage2D)
+    {
+        glTexStorage2D(GL_TEXTURE_2D, 1, info.internal_format, w, h);
+    }
+    else
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, info.internal_format, w, h, 0, info.format, info.type, 0);
+    }
+}
+
+void gl::update_texture(
+        pixel_format_info   info,
+        GLsizei             x,
+        GLsizei             y,
+        GLsizei             w,
+        GLsizei             h,
+        GLvoid const*       pixels
+        )
+{
+    glTexSubImage2D(
+            GL_TEXTURE_2D,
+            0, // TODO
+            x,
+            y,
+            w,
+            h,
+            info.format,
+            info.type,
+            pixels
+            );
+}
+
+void gl::update_texture(
+        pixel_format_info   info,
+        GLsizei             w,
+        GLsizei             h,
+        GLvoid const*       pixels
+        )
+{
+    glTexSubImage2D(
+            GL_TEXTURE_2D,
+            0, // TODO
+            0,
+            0,
+            w,
+            h,
+            info.format,
+            info.type,
+            pixels
+            );
+}
+
 void gl::draw_full_screen_quad()
 {
     glPushAttrib(GL_TEXTURE_BIT | GL_TRANSFORM_BIT);
