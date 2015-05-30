@@ -1,7 +1,7 @@
+[![Build Status](https://travis-ci.org/szellmann/visionaray.svg?branch=master)](https://travis-ci.org/szellmann/visionaray)
+
 Visionaray
 ==========
-
-[![Build Status](https://travis-ci.org/szellmann/visionaray.svg?branch=master)](https://travis-ci.org/szellmann/visionaray)
 
 A C++ based, cross platform ray tracing library
 
