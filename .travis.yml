@@ -8,9 +8,8 @@ before_install:
     - sudo apt-get install -qq g++-4.8 cmake libboost1.48-all-dev libglew-dev libxi-dev libxmu-dev freeglut3-dev
     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 script:
-    - wget https://raw.githubusercontent.com/Kitware/CMake/master/Modules/FindGLEW.cmake -O cmake/FindGLEW.cmake
     - mkdir -p build
     - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1"
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1" -DGLEW_INCLUDE_DIR:PATH=/usr/include -DGLEW_LIBRARY:FILE_PATH=/usr/lib/x86_64-linux-gnu/libGLEW.so
     - make -j5
     - sudo make install
