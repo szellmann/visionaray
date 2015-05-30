@@ -6,12 +6,50 @@ before_install:
     - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
     - sudo apt-get update -qq
     - sudo apt-get install -qq g++-4.8 cmake libxi-dev libxmu-dev freeglut3-dev
+    - wget http://launchpadlibrarian.net/160737168/libicu52_52.1-3_amd64.deb
     - wget http://launchpadlibrarian.net/161405671/libglew1.10_1.10.0-3_amd64.deb
     - wget http://launchpadlibrarian.net/161405670/libglew-dev_1.10.0-3_amd64.deb
     - wget http://launchpadlibrarian.net/160798967/libboost1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160799003/libboost-system1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160799004/libboost-system1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798971/libboost-chrono1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798972/libboost-chrono1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798999/libboost-serialization1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160799000/libboost-serialization1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798976/libboost-date-time1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798977/libboost-date-time1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798969/libboost-atomic1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798970/libboost-atomic1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798979/libboost-filesystem1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798980/libboost-filesystem1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798997/libboost-regex1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798998/libboost-regex1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798983/libboost-iostreams1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160798984/libboost-iostreams1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - wget http://launchpadlibrarian.net/160799007/libboost-thread1.54.0_1.54.0-4ubuntu3_amd64.de
+    - wget http://launchpadlibrarian.net/160799008/libboost-thread1.54-dev_1.54.0-4ubuntu3_amd64.deb
     - sudo dpkg -i libglew1.10_1.10.0-3_amd64.deb
     - sudo dpkg -i libglew-dev_1.10.0-3_amd64.deb
+    - sudo dpkg -i libicu52_52.1-3_amd64.deb
     - sudo dpkg -i libboost1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-system1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-system1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-chrono1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-chrono1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-serialization1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-serialization1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-date-time1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-date-time1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-atomic1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-atomic1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-filesystem1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-filesystem1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-regex1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-regex1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-iostreams1.54.0_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-iostreams1.54-dev_1.54.0-4ubuntu3_amd64.deb
+    - sudo dpkg -i libboost-thread1.54.0_1.54.0-4ubuntu3_amd64.de
+    - sudo dpkg -i libboost-thread1.54-dev_1.54.0-4ubuntu3_amd64.deb
     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 script:
     - printf "set(GLEW_INCLUDE_DIR \"/usr/include\")\n" > cmake/FindGLEW.cmake
