@@ -5,16 +5,11 @@ compiler:
 before_install:
     - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
     - sudo apt-get update -qq
-    - sudo apt-get install -qq g++-4.8 cmake libboost1.48-all-dev libxi-dev libxmu-dev freeglut3-dev
-    - git clone https://github.com/nigels-com/glew.git glew
-    - cd glew
-    - make -j5
-    - sudo make install
-    - cd $HOME
+    - sudo apt-get install -qq g++-4.8 cmake libboost1.48-all-dev libglew-dev libxi-dev libxmu-dev freeglut3-dev
     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 script:
     - printf "set(GLEW_INCLUDE_DIR \"/usr/include\")\n" > cmake/FindGLEW.cmake
-    - printf "set(GLEW_LIBRARY \"/usr/lib/libGLEW.a\")\n" >> cmake/FindGLEW.cmake
+    - printf "set(GLEW_LIBRARY \"/usr/lib/x86_64-linux-gnu/libGLEW.so\")\n" >> cmake/FindGLEW.cmake
     - printf "set(GLEW_FOUND TRUE)\n" >> cmake/FindGLEW.cmake
     - mkdir -p build
     - cd build
