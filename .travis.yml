@@ -26,7 +26,7 @@ before_install:
     - wget http://launchpadlibrarian.net/160798998/libboost-regex1.54-dev_1.54.0-4ubuntu3_amd64.deb
     - wget http://launchpadlibrarian.net/160798983/libboost-iostreams1.54.0_1.54.0-4ubuntu3_amd64.deb
     - wget http://launchpadlibrarian.net/160798984/libboost-iostreams1.54-dev_1.54.0-4ubuntu3_amd64.deb
-    - wget http://launchpadlibrarian.net/160799007/libboost-thread1.54.0_1.54.0-4ubuntu3_amd64.de
+    - wget http://launchpadlibrarian.net/160799007/libboost-thread1.54.0_1.54.0-4ubuntu3_amd64.deb
     - wget http://launchpadlibrarian.net/160799008/libboost-thread1.54-dev_1.54.0-4ubuntu3_amd64.deb
     - sudo dpkg -i libglew1.10_1.10.0-3_amd64.deb
     - sudo dpkg -i libglew-dev_1.10.0-3_amd64.deb
@@ -48,7 +48,7 @@ before_install:
     - sudo dpkg -i libboost-regex1.54-dev_1.54.0-4ubuntu3_amd64.deb
     - sudo dpkg -i libboost-iostreams1.54.0_1.54.0-4ubuntu3_amd64.deb
     - sudo dpkg -i libboost-iostreams1.54-dev_1.54.0-4ubuntu3_amd64.deb
-    - sudo dpkg -i libboost-thread1.54.0_1.54.0-4ubuntu3_amd64.de
+    - sudo dpkg -i libboost-thread1.54.0_1.54.0-4ubuntu3_amd64.deb
     - sudo dpkg -i libboost-thread1.54-dev_1.54.0-4ubuntu3_amd64.deb
     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 script:
