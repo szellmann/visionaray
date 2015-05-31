@@ -103,9 +103,15 @@ public:
             return;
         }
 
+        if ( pitch_.allocate(width_, height_) != cudaSuccess )
+        {
+            return;
+        }
 
-        pitch_.allocate( width_, height_ );
-        upload_data( host_tex.data() );
+        if ( upload_data(host_tex.data()) != cudaSuccess )
+        {
+            return;
+        }
 
         auto desc = cudaCreateChannelDesc<device_type>();
 

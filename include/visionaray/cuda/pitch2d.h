@@ -97,8 +97,6 @@ public:
 
     cudaError_t upload(T const* host_data, size_t width, size_t height)
     {
-        assert( device_ptr_ );
-
         return cudaMemcpy2D(
                 device_ptr_,
                 dpitch_,
