@@ -60,6 +60,12 @@ public:
     }
 
     VSNRAY_FUNC
+    operator value_type() const
+    {
+        return value;
+    }
+
+    VSNRAY_FUNC
     operator float() const
     {
         return detail::unorm_to_float<Bits>(value);

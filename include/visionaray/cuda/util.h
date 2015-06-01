@@ -47,12 +47,7 @@ struct map_texel_type<uchar4, ElementType>
 
     VSNRAY_FUNC static vector<4, unorm<8>> cast(uchar4 const& value)
     {
-        return vector<4, unorm<8>>(
-                value.x / 255.0f,
-                value.y / 255.0f,
-                value.z / 255.0f,
-                value.w / 255.0f
-                );
+        return vector<4, unorm<8>>( value.x, value.y, value.z, value.w );
     }
 };
 
@@ -100,10 +95,10 @@ struct map_texel_type<vector<4, unorm<8>>, ReadMode>
     VSNRAY_FUNC static uchar4 cast(vector<4, unorm<8>> const& value)
     {
         return make_uchar4(
-                value.x * 255,
-                value.y * 255,
-                value.z * 255,
-                value.w * 255
+                static_cast<unsigned char>(value.x),
+                static_cast<unsigned char>(value.y),
+                static_cast<unsigned char>(value.z),
+                static_cast<unsigned char>(value.w)
                 );
     }
 };
