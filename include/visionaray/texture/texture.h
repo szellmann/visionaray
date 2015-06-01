@@ -76,16 +76,23 @@ inline typename Tex::value_type tex2D(Tex const& tex, vector<2, FloatT> coord)
 
 template <typename T, tex_read_mode ReadMode>
 VSNRAY_GPU_FUNC
-inline T tex2D(device_texture_ref<T, ReadMode, 2> const& tex, vector<2, float> coord)
+inline typename cuda::map_texel_type<typename device_texture_ref<T, ReadMode, 2>::device_type, ReadMode>::host_return_type
+tex2D(device_texture_ref<T, ReadMode, 2> const& tex, vector<2, float> coord)
 {
-    using tex_type    = device_texture_ref<T, ReadMode, 2>;
-    using device_type = typename tex_type::device_type;
+    using tex_type              = device_texture_ref<T, ReadMode, 2>;
+    using device_type           = typename tex_type::device_type;
+    using device_return_type    = typename cuda::map_texel_type<device_type, ReadMode>::device_return_type;
 
-    return cuda::map_texel_type<device_type>::cast( ::tex2D<device_type>(
-                tex.texture_object(),
-                coord.x,
-                coord.y
-                ) );
+    device_return_type retval;
+
+    ::tex2D(
+            &retval,
+            tex.texture_object(),
+            coord.x,
+            coord.y
+            );
+
+    return cuda::map_texel_type<device_type, ReadMode>::cast( retval );
 }
 
 #endif // __CUDACC__

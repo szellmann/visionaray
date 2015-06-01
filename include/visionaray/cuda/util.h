@@ -10,6 +10,7 @@
 
 #include <visionaray/detail/macros.h>
 #include <visionaray/math/math.h>
+#include <visionaray/texture/forward.h>
 
 namespace visionaray
 {
@@ -20,11 +21,14 @@ namespace cuda
 // cuda texel type <-> visionaray texel type
 //
 
-template <typename Type>
+template <typename Type, tex_read_mode ReadMode>
 struct map_texel_type
 {
-    using device_type = Type;
-    using host_type   = Type;
+    using device_type           = Type;
+    using host_type             = Type;
+
+    using device_return_type    = Type;
+    using host_return_type      = Type;
 };
 
 
@@ -33,10 +37,13 @@ struct map_texel_type
 //
 
 template <>
-struct map_texel_type<uchar4>
+struct map_texel_type<uchar4, ElementType>
 {
-    using device_type = uchar4;
-    using host_type   = vector<4, unorm<8>>;
+    using device_type           = uchar4;
+    using host_type             = vector<4, unorm<8>>;
+
+    using device_return_type    = uchar4;
+    using host_return_type      = vector<4, unorm<8>>;
 
     VSNRAY_FUNC static vector<4, unorm<8>> cast(uchar4 const& value)
     {
@@ -50,10 +57,28 @@ struct map_texel_type<uchar4>
 };
 
 template <>
-struct map_texel_type<float4>
+struct map_texel_type<uchar4, NormalizedFloat>
 {
-    using device_type = float4;
-    using host_typ    = vector<4, float>;
+    using device_type           = uchar4;
+    using host_type             = vector<4, unorm<8>>;
+
+    using device_return_type    = float4;
+    using host_return_type      = vector<4, float>;
+
+    VSNRAY_FUNC static vector<4, float> cast(float4 const& value)
+    {
+        return vector<4, float>( value.x, value.y, value.z, value.w );
+    }
+};
+
+template <tex_read_mode ReadMode>
+struct map_texel_type<float4, ReadMode>
+{
+    using device_type           = float4;
+    using host_type             = vector<4, float>;
+
+    using device_return_type    = float4;
+    using host_return_type      = vector<4, float>;
 
     VSNRAY_FUNC static vector<4, float> cast(float4 const& value)
     {
@@ -66,8 +91,8 @@ struct map_texel_type<float4>
 // cuda <- visionaray
 //
 
-template <>
-struct map_texel_type<vector<4, unorm<8>>>
+template <tex_read_mode ReadMode>
+struct map_texel_type<vector<4, unorm<8>>, ReadMode>
 {
     using device_type = uchar4;
     using host_type   = vector<4, unorm<8>>;
@@ -83,8 +108,8 @@ struct map_texel_type<vector<4, unorm<8>>>
     }
 };
 
-template <>
-struct map_texel_type<vector<4, float>>
+template <tex_read_mode ReadMode>
+struct map_texel_type<vector<4, float>, ReadMode>
 {
     using device_type = float4;
     using host_type   = vector<4, float>;

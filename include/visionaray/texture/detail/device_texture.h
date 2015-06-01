@@ -70,6 +70,27 @@ cudaTextureFilterMode map_filter_mode(tex_filter_mode mode)
     }
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Map visionaray texture read mode to cuda texture read mode
+//
+
+cudaTextureReadMode map_read_mode(tex_read_mode mode)
+{
+    switch (mode)
+    {
+
+    default:
+        // fall-through
+    case ElementType:
+        return cudaReadModeElementType;
+
+    case NormalizedFloat:
+        return cudaReadModeNormalizedFloat;
+
+    }
+}
+
 } // detail
 
 //-------------------------------------------------------------------------------------------------
@@ -84,8 +105,8 @@ class device_texture<T, ReadMode, 2>
 {
 public:
 
-    using device_type = typename cuda::map_texel_type<T>::device_type;
-    using host_type   = typename cuda::map_texel_type<T>::host_type;
+    using device_type = typename cuda::map_texel_type<T, ReadMode>::device_type;
+    using host_type   = typename cuda::map_texel_type<T, ReadMode>::host_type;
 
 public:
 
@@ -128,8 +149,8 @@ public:
         memset(&texture_desc, 0, sizeof(texture_desc));
         texture_desc.addressMode[0]             = detail::map_address_mode( host_tex.get_address_mode(0) );
         texture_desc.addressMode[1]             = detail::map_address_mode( host_tex.get_address_mode(1) );
-        texture_desc.filterMode                 = detail::map_filter_mode( host_tex.get_filter_mode() ); // TODO: ucharX does not support lerp
-        texture_desc.readMode                   = cudaReadModeElementType;
+        texture_desc.filterMode                 = detail::map_filter_mode( host_tex.get_filter_mode() );
+        texture_desc.readMode                   = detail::map_read_mode( ReadMode );
         texture_desc.normalizedCoords           = true;
 
         cudaTextureObject_t obj = 0;
@@ -205,8 +226,8 @@ class device_texture_ref
 {
 public:
 
-    using device_type = typename cuda::map_texel_type<T>::device_type;
-    using host_type   = typename cuda::map_texel_type<T>::host_type;
+    using device_type = typename cuda::map_texel_type<T, ReadMode>::device_type;
+    using host_type   = typename cuda::map_texel_type<T, ReadMode>::host_type;
 
 public:
 
