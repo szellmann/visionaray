@@ -28,7 +28,7 @@ inline vector<Dim, T>::vector(T s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>::vector(T const data[Dim])
+inline vector<Dim, T>::vector(T const* data/*[Dim]*/)
 {
     std::copy( data, data + Dim, data_ );    
 }

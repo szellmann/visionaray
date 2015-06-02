@@ -162,7 +162,7 @@ public:
     MATH_FUNC vector() = default;
 
     MATH_FUNC explicit vector(T s);
-    MATH_FUNC explicit vector(T const data[Dim]);
+    MATH_FUNC explicit vector(T const* data/*[Dim]*/);
 
     template <typename U>
     MATH_FUNC explicit vector(vector<Dim, U> const& rhs);
