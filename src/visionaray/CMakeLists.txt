@@ -168,6 +168,8 @@ set(VSNRAY_SOURCES
 
     cuda/graphics_resource.cpp
 
+    detail/spd/d65.cpp
+
     gl/handle.cpp
     gl/util.cpp
 
