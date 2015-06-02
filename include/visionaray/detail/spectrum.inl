@@ -26,7 +26,7 @@ inline spectrum<T>::spectrum(T c)
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T>::spectrum(vector<spectrum<T>::num_samples, T> const& samples)
+inline spectrum<T>::spectrum(vector<num_samples, T> const& samples)
     : samples_(samples)
 {
 }
@@ -82,20 +82,6 @@ inline T spectrum<T>::operator()(float lambda) const
 
     float coord = (lambda - lambda_min) / (lambda_max - lambda_min);
     return tex1D(tex, coord);
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline vector<spectrum<T>::num_samples, T>& spectrum<T>::samples()
-{
-    return samples_;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline vector<spectrum<T>::num_samples, T> const& spectrum<T>::samples() const
-{
-    return samples_;
 }
 
 
