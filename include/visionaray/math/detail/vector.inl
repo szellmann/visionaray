@@ -650,7 +650,7 @@ template <size_t Dim, typename T>
 MATH_FUNC
 inline vector<Dim, T> reflect(vector<Dim, T> const& i, vector<Dim, T> const& n)
 {
-    return i - T(2.0) * dot(n, i) * n;
+    return T(2.0) * dot(n, i) * n - i;
 }
 
 template <size_t Dim, typename T>

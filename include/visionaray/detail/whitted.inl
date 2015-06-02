@@ -84,7 +84,8 @@ struct kernel
 
             color += select( hit_rec.hit, shaded_clr, no_hit_color ) * mirror;
 
-            auto dir = reflect(ray.dir, surf.normal);
+            auto wo = -ray.dir;
+            auto dir = reflect(wo, surf.normal);
             ray = R
             (
                 hit_rec.isect_pos + dir * S(params.epsilon),

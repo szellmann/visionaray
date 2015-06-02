@@ -75,7 +75,7 @@ public:
     VSNRAY_FUNC
     spectrum<U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
-        auto r = reflect(-wo, n);
+        auto r = reflect(wo, n);
         auto rdotl = max( U(0.0), dot(r, wi) );
 
         return  spectrum<U>( cs * ks * ((exp + U(2.0)) / constants::two_pi<U>()) * pow(rdotl, exp) );
@@ -127,7 +127,7 @@ public:
 
         vector<3, U> h = normalize( sintheta * cos(phi) * u + sintheta * sin(phi) * v + costheta * w );
 
-        wi = -reflect(wo, h);
+        wi = reflect(wo, h);
 
         pdf = ((exp + U(1.0)) * pow(costheta, exp)) / (U(2.0) * constants::pi<U>() * U(4.0) * dot(wo, h));
 
