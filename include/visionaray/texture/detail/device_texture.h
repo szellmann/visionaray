@@ -14,6 +14,7 @@
 #include <visionaray/cuda/pitch2d.h>
 #include <visionaray/cuda/texture_object.h>
 #include <visionaray/cuda/util.h>
+#include <visionaray/detail/macros.h>
 
 #include "texture_common.h"
 
@@ -101,7 +102,7 @@ template <typename T, tex_read_mode ReadMode, size_t Dim>
 class device_texture;
 
 template <typename T, tex_read_mode ReadMode>
-class device_texture<T, ReadMode, 2> 
+class device_texture<T, ReadMode, 2>
 {
 public:
 
@@ -111,7 +112,6 @@ public:
 public:
 
     device_texture() = default;
-    device_texture(device_texture&& rhs) = default;
 
     // Construct from host texture
     template <typename U>
@@ -158,12 +158,28 @@ public:
         texture_obj_.reset(obj);
     }
 
-   ~device_texture()
+#if !VSNRAY_CXX_MSVC
+    device_texture(device_texture&&) = default;
+    device_texture& operator=(device_texture&&) = default;
+#else
+    device_texture(device_texture&& rhs)
+        : pitch_(std::move(rhs.pitch_))
+        , texture_obj_(std::move(rhs.texture_obj_))
+        , width_(rhs.width_)
+        , height_(rhs.height_)
     {
     }
 
-    device_texture& operator=(device_texture&& rhs) = default;
+    device_texture& operator=(device_texture&& rhs)
+    {
+        pitch_ = std::move(rhs.pitch_);
+        texture_obj_ = std::move(rhs.texture_obj_);
+        width_ = rhs.width_;
+        height_ = rhs.height_;
 
+        return *this;
+    }
+#endif
 
     // NOT copyable
     device_texture(device_texture const& rhs) = delete;
