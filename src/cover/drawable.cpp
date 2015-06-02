@@ -422,7 +422,7 @@ public:
 
             if (tex && img)
             {
-                using tex_type = typename texture_list::value_type;
+                assert( img->isDataContiguous() ); // TODO
 
                 auto dest_format = PF_RGBA8;
                 auto source_format = map_gl_format(
@@ -435,7 +435,9 @@ public:
 
                 assert( source_info.components == 3 || source_info.components == 4 );
 
-                tex_type vsnray_tex(img->s(), img->t());
+                textures_.emplace_back(img->s(), img->t());
+                auto& vsnray_tex = textures_.back();
+
                 vsnray_tex.set_address_mode( 0, osg_cast(tex->getWrap(osg::Texture::WRAP_S)) );
                 vsnray_tex.set_address_mode( 1, osg_cast(tex->getWrap(osg::Texture::WRAP_T)) );
 
@@ -443,8 +445,6 @@ public:
                 auto mag_filter = tex->getFilter(osg::Texture::MAG_FILTER);
 
                 vsnray_tex.set_filter_mode( osg_cast(mag_filter) );
-
-                assert( img->isDataContiguous() ); // TODO
 
                 if (source_info.components == 3)
                 {
@@ -456,8 +456,10 @@ public:
                     auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(img->data());
                     vsnray_tex.set_data(data_ptr, source_format, dest_format);
                 }
-
-                textures_.push_back(vsnray_tex);
+                else
+                {
+                    assert(0); // TODO
+                }
             }
             else
             {
