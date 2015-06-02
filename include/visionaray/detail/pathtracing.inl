@@ -63,18 +63,27 @@ struct kernel
 
                 auto surf = get_surface(hit_rec, params);
 
+                auto n = surf.normal;
+
+#if 1 // two-sided
+                n = faceforward( n, view_dir, n );
+#endif
+
                 S pdf(0.0);
                 auto sr     = make_shade_record<Params, S>();
                 sr.active   = active_rays;
+                sr.normal   = n;
                 sr.view_dir = view_dir;
  
                 auto src = surf.sample(sr, refl_dir, pdf, s);
 
-                active_rays &= pdf != S(0.0);
+                auto zero_pdf = pdf <= S(0.0);
+                active_rays &= !zero_pdf;
 
                 auto emissive = has_emissive_material(surf);
-                src = mul( src, dot(surf.normal, refl_dir) / pdf, !emissive, src ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
+                src = mul( src, dot(n, refl_dir) / pdf, !emissive, src ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
                 dst = mul( dst, src, active_rays, dst );
+                dst = mul( dst, C(0.0), zero_pdf, dst );
                 active_rays &= !emissive;
 
                 if (!any(active_rays))

@@ -648,6 +648,17 @@ inline vector<Dim, T> dot(vector<Dim, T> const& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
+inline vector<Dim, T> faceforward(
+        vector<Dim, T> const& n,
+        vector<Dim, T> const& i,
+        vector<Dim, T> const& nref
+        )
+{
+    return select( dot(nref, i) < T(0.0), -n, n );
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
 inline vector<Dim, T> reflect(vector<Dim, T> const& i, vector<Dim, T> const& n)
 {
     return T(2.0) * dot(n, i) * n - i;

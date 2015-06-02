@@ -40,13 +40,21 @@ struct kernel
 
             auto surf = get_surface(hit_rec, params);
             auto ambient = surf.material.ambient() * C(from_rgba(params.ambient_color));
-            C shaded_clr = select( hit_rec.hit, ambient, C(from_rgba(params.bg_color)) );
+            auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgba(params.bg_color)) );
+            auto view_dir = -ray.dir;
+
+            auto n = surf.normal;
+
+#if 1 // two-sided
+            n = faceforward( n, view_dir, n );
+#endif
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
                 auto sr         = make_shade_record<Params, S>();
                 sr.active       = hit_rec.hit;
                 sr.isect_pos    = hit_rec.isect_pos;
+                sr.normal       = n;
                 sr.view_dir     = -ray.dir;
                 sr.light_dir    = normalize( V(it->position()) - hit_rec.isect_pos );
                 sr.light        = it;

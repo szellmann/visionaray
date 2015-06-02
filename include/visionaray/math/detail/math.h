@@ -140,53 +140,6 @@ inline float max_min(float x, float y, float z)
 #endif
 
 
-//--------------------------------------------------------------------------------------------------
-// Implement some (useful) functions not defined in <cmath>
-//
-
-template <typename T>
-MATH_FUNC
-inline T clamp(T const& x, T const& a, T const& b)
-{
-    return max( a, min(x, b) );
-}
-
-template <typename T>
-MATH_FUNC
-inline T saturate(T const& x)
-{
-    return max(T(0.0), min(x, T(1.0)));
-}
-
-template <typename T, typename S>
-MATH_FUNC
-inline T lerp(T const& a, T const& b, S const& x)
-{
-    return (S(1.0f) - x) * a + x * b;
-}
-
-template <typename T>
-MATH_FUNC
-inline T rsqrt(T const& x)
-{
-    return T(1.0) / sqrt(x);
-}
-
-template <typename T>
-MATH_FUNC
-inline T cot(T x)
-{
-    return T(1.0) / tan(x);
-}
-
-template <typename T>
-MATH_FUNC
-inline T det2(T const& m00, T const& m01, T const& m10, T const& m11)
-{
-    return m00 * m11 - m10 * m01;
-}
-
-
 //-------------------------------------------------------------------------------------------------
 // Round (a) up to the nearest multiple of (b), then divide by (b)
 //
@@ -347,6 +300,60 @@ MATH_FUNC
 inline bool all(bool b)
 {
     return b;
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// Implement some (useful) functions not defined in <cmath>
+//
+
+template <typename T>
+MATH_FUNC
+inline T heavyside(T x)
+{
+    return select( x < T(0.0), T(0.0), T(1.0) );
+}
+
+template <typename T>
+MATH_FUNC
+inline T clamp(T const& x, T const& a, T const& b)
+{
+    return max( a, min(x, b) );
+}
+
+template <typename T>
+MATH_FUNC
+inline T saturate(T const& x)
+{
+    return max(T(0.0), min(x, T(1.0)));
+}
+
+template <typename T, typename S>
+MATH_FUNC
+inline T lerp(T const& a, T const& b, S const& x)
+{
+    return (S(1.0f) - x) * a + x * b;
+}
+
+template <typename T>
+MATH_FUNC
+inline T rsqrt(T const& x)
+{
+    return T(1.0) / sqrt(x);
+}
+
+template <typename T>
+MATH_FUNC
+inline T cot(T x)
+{
+    return T(1.0) / tan(x);
+}
+
+template <typename T>
+MATH_FUNC
+inline T det2(T const& m00, T const& m01, T const& m10, T const& m11)
+{
+    return m00 * m11 - m10 * m01;
 }
 
 } // MATH_NAMESPACE

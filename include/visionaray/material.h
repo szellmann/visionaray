@@ -49,12 +49,8 @@ public:
     VSNRAY_FUNC
     spectrum<typename SR::scalar_type> shade(SR const& sr) const
     {
-#if 1 // two-sided
-        return ce(sr);
-#else
         using U = typename SR::scalar_type;
         return select( dot(sr.normal, sr.view_dir) >= U(0.0), ce(sr), spectrum<U>(0.0) );
-#endif
     }
 
 
@@ -211,9 +207,6 @@ public:
         auto wi = sr.light_dir;
         auto wo = sr.view_dir;
         auto n = sr.normal;
-#if 1 // two-sided
-        n = select( dot(n, wo) < U(0.0), -n, n );
-#endif
         auto ndotl = max( U(0.0), dot(n, wi) );
 
         U att(1.0);
@@ -369,31 +362,20 @@ private:
 
         auto u         = sampler.next();
 
-        auto n         = sr.normal;
-#if 1 // two-sided
-        n              = select( dot(sr.normal, sr.view_dir) < U(0.0), -n, n );
-#endif
-
         if ( any(sr.active && u < U(prob_diff)) )
         {
-            diff       = diffuse_brdf_.sample_f(n, sr.view_dir, refl1, pdf1, sampler);
+            diff       = diffuse_brdf_.sample_f(sr.normal, sr.view_dir, refl1, pdf1, sampler);
         }
 
         if ( any(sr.active && u >= U(prob_diff)) )
         {
-            spec       = specular_brdf_.sample_f(n, sr.view_dir, refl2, pdf2, sampler);
+            spec       = specular_brdf_.sample_f(sr.normal, sr.view_dir, refl2, pdf2, sampler);
         }
 
         pdf            = select( u < U(prob_diff), pdf1,  pdf2  );
         refl_dir       = select( u < U(prob_diff), refl1, refl2 );
 
-#if 1 // two-sided
-        auto result    = select( u < U(prob_diff), diff,  spec  );
-        // TODO: find a better way than simply flipping the color
-        return           select( dot(sr.normal, sr.view_dir) < U(0.0), -result, result );
-#else
         return           select( u < U(prob_diff), diff,  spec  );
-#endif
     }
 
 };

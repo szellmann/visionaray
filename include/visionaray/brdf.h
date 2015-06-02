@@ -51,7 +51,7 @@ public:
         auto sp = cosine_sample_hemisphere(sampler.next(), sampler.next());
         wi      = normalize( sp.x * u + sp.y * v + sp.z * w );
 
-        pdf     = dot(n, wi) * constants::inv_pi<U>();
+        pdf     = dot(n, wi) * constants::inv_pi<U>() * heavyside( dot(n, wo) );
 
         return f(n, wo, wi);
     }
@@ -129,7 +129,10 @@ public:
 
         wi = reflect(wo, h);
 
-        pdf = ((exp + U(1.0)) * pow(costheta, exp)) / (U(2.0) * constants::pi<U>() * U(4.0) * dot(wo, h));
+        auto vdoth = dot(wo, h);
+        pdf = ( ((exp + U(1.0)) * pow(costheta, exp)) / (U(2.0) * constants::pi<U>() * U(4.0) * vdoth) )
+                * heavyside( dot(n, wo) )
+                * heavyside( dot(n, wi) );
 
         return f(n, wo, wi);
     }

@@ -40,17 +40,15 @@ public:
 
     template <typename SR>
     VSNRAY_FUNC
-    spectrum<scalar_type> shade(SR shade_rec)
+    spectrum<scalar_type> shade(SR const& shade_rec)
     {
-        shade_rec.normal = normal;
         return material.shade(shade_rec);
     }
 
     template <typename SR, typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<scalar_type> sample(SR shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    spectrum<scalar_type> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
     {
-        shade_rec.normal = normal;
         return material.sample(shade_rec, refl_dir, pdf, sampler);
     }
 
