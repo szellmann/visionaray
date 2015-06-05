@@ -17,6 +17,7 @@ namespace visionaray { namespace cover {
 
 enum device_type    { CPU, GPU };
 enum data_variance  { Static, Dynamic };
+enum color_space    { RGB, sRGB };
 
 
 //-------------------------------------------------------------------------------------------------
@@ -31,6 +32,7 @@ struct render_state
     unsigned        num_bounces     = 4;
     device_type     device          = CPU;
     data_variance   data_var        = Static;
+    color_space     clr_space       = sRGB;
     unsigned        num_threads     = 0;
 };
 

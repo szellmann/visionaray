@@ -120,6 +120,7 @@ void Visionaray::impl::init_state_from_config()
     // <Visionaray>
     //     <DataVariance value="static"  />                 <!-- "static" | "dynamic" -->
     //     <Algorithm    value="simple"  />                 <!-- "simple" | "whitted" -->
+    //     <Framebuffer  colorSpace="sRGB" />               <!-- colorSpace: "sRGB" | "RGB" -->
     //     <NumBounces   value="4" min="1" max="10" />      <!-- value:Integer | [min:Integer|max:Integer]  -->
     //     <Device       value="CPU"     />                 <!-- "CPU"    | "GPU"     -->
     //     <CPUScheduler numThreads="16" />                 <!-- numThreads:Integer   -->
@@ -142,11 +143,13 @@ void Visionaray::impl::init_state_from_config()
     auto max_bounces    = covise::coCoviseConfig::getInt("max", "COVER.Plugin.Visionaray.NumBounces", 10);
     auto device_str     = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.Device");
     auto data_var_str   = covise::coCoviseConfig::getEntry("COVER.Plugin.Visionaray.DataVariance");
+    auto clr_space_str  = covise::coCoviseConfig::getEntry("colorSpace", "COVER.Plugin.Visionaray.Framebuffer");
     auto num_threads    = covise::coCoviseConfig::getInt("numThreads", "COVER.Plugin.Visionaray.CPUScheduler", 0);
 
     to_lower(algo_str);
     to_lower(device_str);
     to_lower(data_var_str);
+    to_lower(clr_space_str);
 
 
     // Update state
@@ -182,6 +185,15 @@ void Visionaray::impl::init_state_from_config()
 
     state->data_var     = data_var_str == "dynamic" ? Dynamic : Static;
     state->num_threads  = num_threads;
+
+    if (clr_space_str == "rgb")
+    {
+        state->clr_space = RGB;
+    }
+    else
+    {
+        state->clr_space = sRGB;
+    }
 }
 
 void Visionaray::impl::init_ui()

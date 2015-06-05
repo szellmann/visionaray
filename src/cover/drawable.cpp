@@ -1000,7 +1000,14 @@ void drawable::drawImplementation(osg::RenderInfo&) const
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
 
 
-    glEnable(GL_FRAMEBUFFER_SRGB);
+    if (impl_->state->clr_space == sRGB)
+    {
+        glEnable(GL_FRAMEBUFFER_SRGB);
+    }
+    else
+    {
+        glDisable(GL_FRAMEBUFFER_SRGB);
+    }
 
     if (impl_->state->device == GPU)
     {
