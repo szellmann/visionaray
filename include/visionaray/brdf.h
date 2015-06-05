@@ -130,9 +130,7 @@ public:
         wi = reflect(wo, h);
 
         auto vdoth = dot(wo, h);
-        pdf = ( ((exp + U(1.0)) * pow(costheta, exp)) / (U(2.0) * constants::pi<U>() * U(4.0) * vdoth) )
-                * heavyside( dot(n, wo) )
-                * heavyside( dot(n, wi) );
+        pdf = ( ((exp + U(1.0)) * pow(costheta, exp)) / (U(2.0) * constants::pi<U>() * U(4.0) * vdoth) ) * heavyside( dot(n, wo) );
 
         return f(n, wo, wi);
     }
