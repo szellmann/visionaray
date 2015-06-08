@@ -150,11 +150,13 @@ class texture_ref_base : public texture_params_base<Dim>
 public:
 
     using value_type = T;
+    using base_type  = texture_params_base<Dim>;
 
 public:
 
     texture_ref_base(texture_base<T, Dim> const& tex)
-        : data_(tex.data())
+        : base_type(tex)
+        , data_(tex.data())
     {
     }
 
