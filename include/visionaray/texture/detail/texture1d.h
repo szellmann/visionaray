@@ -23,12 +23,23 @@ public:
     using base_type = Base;
     using value_type = T;
 
+    using Base::Base;
+
     static const size_t dimensions = 1;
+
+public:
 
     texture_iface() = default;
 
     texture_iface(size_t w)
         : width_(w)
+    {
+    }
+
+    template <typename B2>
+    texture_iface(texture_iface<B2, T, ReadMode, 1> const& rhs)
+        : Base(rhs)
+        , width_(rhs.width())
     {
     }
 

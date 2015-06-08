@@ -23,7 +23,11 @@ public:
     using base_type = Base;
     using value_type = T;
 
+    using Base::Base;
+
     static const size_t dimensions = 3;
+
+public:
 
     texture_iface() = default;
 
@@ -31,6 +35,15 @@ public:
         : width_(w)
         , height_(h)
         , depth_(d)
+    {
+    }
+
+    template <typename B2>
+    texture_iface(texture_iface<B2, T, ReadMode, 3> const& rhs)
+        : Base(rhs)
+        , width_(rhs.width())
+        , height_(rhs.height())
+        , depth_(rhs.depth())
     {
     }
 
