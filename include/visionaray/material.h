@@ -79,7 +79,7 @@ private:
     spectrum<T> ce_;
     scalar_type ls_;
 
-    template <typename SR, typename V>
+    template <typename SR>
     VSNRAY_FUNC
     spectrum<T> ce(SR const& sr) const
     {
