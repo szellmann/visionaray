@@ -25,7 +25,7 @@ visionaray_use_package(Visionaray)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-set(EXTRA_LIBS ${EXTRA_LIBS} ${CUDA_LIBRARIES} ${GLEW_LIBRARY} ${VISIONARAY_LIBRARY})
+set(EXTRA_LIBS ${EXTRA_LIBS} ${GLEW_LIBRARY} ${VISIONARAY_LIBRARY})
 
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
 
@@ -43,6 +43,7 @@ set(SOURCES
 )
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
+    set(EXTRA_LIBS ${EXTRA_LIBS} ${CUDA_LIBRARY})
     visionaray_cuda_compile(CUDA_SOURCES
         drawable.cu
     )
