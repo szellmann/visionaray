@@ -7,6 +7,7 @@
 #include <limits>
 #include <map>
 #include <memory>
+#include <string>
 
 #include <GL/glew.h>
 
@@ -449,8 +450,15 @@ public:
 
                 assert( source_info.components == 3 || source_info.components == 4 );
 
+                std::string filename = img->getFileName();
+
+                if (filename.empty())
+                {
+                    filename = std::string("TEXTURE") + std::to_string( textures_.size() );
+                }
+
                 auto p = textures_.emplace( std::make_pair(
-                        img->getFileName(),
+                        filename,
                         host_tex_type(img->s(), img->t())
                         ) );
 
