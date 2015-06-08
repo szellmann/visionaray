@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <map>
 #include <memory>
 
 #include <GL/glew.h>
@@ -58,7 +59,11 @@ using normal_list               = aligned_vector<vec3>;
 using tex_coord_list            = aligned_vector<vec2>;
 using material_type             = generic_material<plastic<float>, emissive<float>>;
 using material_list             = aligned_vector<material_type>;
-using texture_list              = aligned_vector<texture<vector<4, unorm<8>>, NormalizedFloat, 2>>;
+
+using host_tex_type             = texture<vector<4, unorm<8>>, NormalizedFloat, 2>;
+using host_tex_ref_type         = texture_ref<vector<4, unorm<8>>, NormalizedFloat, 2>;
+using texture_list              = aligned_vector<host_tex_ref_type>;
+using texture_map               = std::map<std::string, host_tex_type>;
 
 using host_ray_type             = basic_ray<simd::float4>;
 using host_bvh_type             = index_bvh<triangle_type>;
@@ -68,6 +73,7 @@ using host_sched_type           = tiled_sched<host_ray_type>;
 #ifdef __CUDACC__
 using device_tex_type           = device_texture<vector<4, unorm<8>>, NormalizedFloat, 2>;
 using device_tex_ref            = device_texture_ref<vector<4, unorm<8>>, NormalizedFloat, 2>;
+using device_texture_map        = std::map<std::string, device_tex_type>;
 using device_ray_type           = basic_ray<float>;
 using device_bvh_type           = device_index_bvh<triangle_type>;
 using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_DEPTH32F>;
@@ -311,14 +317,22 @@ public:
 
 public:
 
-    get_scene_visitor(triangle_list& triangles, normal_list& normals, tex_coord_list& tex_coords,
-        material_list& materials, texture_list& textures, TraversalMode tm)
+    get_scene_visitor(
+            triangle_list&  triangles,
+            normal_list&    normals,
+            tex_coord_list& tex_coords,
+            material_list&  materials,
+            texture_map&    textures,
+            texture_list&   texture_refs,
+            TraversalMode   tm
+            )
         : base_type(tm)
         , triangles_(triangles)
         , normals_(normals)
         , tex_coords_(tex_coords)
         , materials_(materials)
         , textures_(textures)
+        , texture_refs_(texture_refs)
     {
     }
 
@@ -435,38 +449,51 @@ public:
 
                 assert( source_info.components == 3 || source_info.components == 4 );
 
-                textures_.emplace_back(img->s(), img->t());
-                auto& vsnray_tex = textures_.back();
+                auto p = textures_.emplace( std::make_pair(
+                        img->getFileName(),
+                        host_tex_type(img->s(), img->t())
+                        ) );
 
-                vsnray_tex.set_address_mode( 0, osg_cast(tex->getWrap(osg::Texture::WRAP_S)) );
-                vsnray_tex.set_address_mode( 1, osg_cast(tex->getWrap(osg::Texture::WRAP_T)) );
+                bool inserted = p.second;
+                auto it = inserted ? p.first : textures_.find( img->getFileName() );
+                assert( it );
 
-//              auto min_filter = tex->getFilter(osg::Texture::MIN_FILTER);
-                auto mag_filter = tex->getFilter(osg::Texture::MAG_FILTER);
+                auto& vsnray_tex = it->second;
 
-                vsnray_tex.set_filter_mode( osg_cast(mag_filter) );
-
-                if (source_info.components == 3)
+                if (inserted)
                 {
-                    auto data_ptr = reinterpret_cast<vector<3, unorm<8>> const*>(img->data());
-                    vsnray_tex.set_data(data_ptr, source_format, dest_format);
+                    vsnray_tex.set_address_mode( 0, osg_cast(tex->getWrap(osg::Texture::WRAP_S)) );
+                    vsnray_tex.set_address_mode( 1, osg_cast(tex->getWrap(osg::Texture::WRAP_T)) );
+
+//                  auto min_filter = tex->getFilter(osg::Texture::MIN_FILTER);
+                    auto mag_filter = tex->getFilter(osg::Texture::MAG_FILTER);
+
+                    vsnray_tex.set_filter_mode( osg_cast(mag_filter) );
+
+                    if (source_info.components == 3)
+                    {
+                        auto data_ptr = reinterpret_cast<vector<3, unorm<8>> const*>(img->data());
+                        vsnray_tex.set_data(data_ptr, source_format, dest_format);
+                    }
+                    else if (source_info.components == 4)
+                    {
+                        auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(img->data());
+                        vsnray_tex.set_data(data_ptr, source_format, dest_format);
+                    }
+                    else
+                    {
+                        assert(0); // TODO
+                    }
                 }
-                else if (source_info.components == 4)
-                {
-                    auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(img->data());
-                    vsnray_tex.set_data(data_ptr, source_format, dest_format);
-                }
-                else
-                {
-                    assert(0); // TODO
-                }
+
+                texture_refs_.emplace_back( vsnray_tex );
             }
             else
             {
-                textures_.push_back( texture<vector<4, unorm<8>>, NormalizedFloat, 2>(0, 0) );
+                texture_refs_.emplace_back( 0, 0 );
             }
 
-            assert( materials_.size() == textures_.size() );
+            assert( materials_.size() == texture_refs_.size() );
 
 
             // transform
@@ -493,7 +520,8 @@ private:
     normal_list&    normals_;
     tex_coord_list& tex_coords_;
     material_list&  materials_;
-    texture_list&   textures_;
+    texture_map&    textures_;
+    texture_list&   texture_refs_;
 
 };
 
@@ -514,7 +542,8 @@ struct drawable::impl
     normal_list                             normals;
     tex_coord_list                          tex_coords;
     material_list                           materials;
-    texture_list                            textures;
+    texture_map                             textures;
+    texture_list                            texture_refs;
     host_bvh_type                           host_bvh;
     host_sched_type                         host_sched;
     host_render_target_type                 host_rt;
@@ -523,7 +552,7 @@ struct drawable::impl
     thrust::device_vector<vec3>             device_normals;
     thrust::device_vector<vec2>             device_tex_coords;
     thrust::device_vector<material_type>    device_materials;
-    std::vector<device_tex_type>            device_textures;
+    device_texture_map                      device_textures;
     thrust::device_vector<device_tex_ref>   device_texture_refs;
     device_bvh_type                         device_bvh;
     device_sched_type                       device_sched;
@@ -687,11 +716,26 @@ void drawable::impl::update_device_data()
         device_textures.clear();
         device_texture_refs.clear();
 
-        for (size_t i = 0; i < textures.size(); ++i)
+        device_texture_refs.resize(texture_refs.size());
+
+        for (auto const& pair_host_tex : textures)
         {
-            auto const& host_tex = textures[i];
-            device_textures.emplace_back( host_tex );
-            device_texture_refs.push_back( device_tex_ref(device_textures[i]) );
+            auto const& host_tex = pair_host_tex.second;
+            device_tex_type device_tex(pair_host_tex.second);
+            auto const& p = device_textures.emplace( pair_host_tex.first, std::move(device_tex) );
+
+            assert( p.second /* inserted */ );
+
+            auto it = p.first;
+
+            // TODO: construct GPU data during get_scene_visitor traversal
+            for (size_t i = 0; i < texture_refs.size(); ++i)
+            {
+                if ( texture_refs[i].data() == host_tex.data() )
+                {
+                    device_texture_refs[i] = device_tex_ref(it->second);
+                }
+            }
         }
     }
 #endif
@@ -904,7 +948,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
         impl_->normals.clear();
         impl_->tex_coords.clear();
         impl_->materials.clear();
-        impl_->textures.clear();
+        impl_->texture_refs.clear();
 
         get_scene_visitor visitor(
                 impl_->triangles,
@@ -912,6 +956,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
                 impl_->tex_coords,
                 impl_->materials,
                 impl_->textures,
+                impl_->texture_refs,
                 osg::NodeVisitor::TRAVERSE_ALL_CHILDREN
                 );
         opencover::cover->getObjectsRoot()->accept(visitor);
@@ -1047,7 +1092,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
                 impl_->normals.data(),
                 impl_->tex_coords.data(),
                 impl_->materials.data(),
-                impl_->textures.data(),
+                impl_->texture_refs.data(),
                 lights.data(),
                 lights.data() + lights.size(),
                 bounces,

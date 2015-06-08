@@ -149,8 +149,14 @@ class texture_ref_base : public texture_params_base<Dim>
 {
 public:
 
-    typedef T value_type;
+    using value_type = T;
 
+public:
+
+    texture_ref_base(texture_base<T, Dim> const& tex)
+        : data_(tex.data())
+    {
+    }
 
     texture_ref_base(size_t size = 0)
         : data_(nullptr)
