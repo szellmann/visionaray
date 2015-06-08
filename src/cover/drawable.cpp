@@ -456,7 +456,7 @@ public:
 
                 bool inserted = p.second;
                 auto it = inserted ? p.first : textures_.find( img->getFileName() );
-                assert( it );
+                assert( it != textures_.end() );
 
                 auto& vsnray_tex = it->second;
 
