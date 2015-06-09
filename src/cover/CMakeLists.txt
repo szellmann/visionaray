@@ -43,7 +43,7 @@ set(SOURCES
 )
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
-    set(EXTRA_LIBS ${EXTRA_LIBS} ${CUDA_LIBRARY})
+    set(EXTRA_LIBS ${EXTRA_LIBS} ${CUDA_LIBRARIES})
     visionaray_cuda_compile(CUDA_SOURCES
         drawable.cu
     )
