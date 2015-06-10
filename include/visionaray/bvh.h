@@ -175,6 +175,8 @@ class index_bvh_ref_t
 
 public:
 
+    index_bvh_ref_t() = default;
+
     index_bvh_ref_t(P* p0, P* p1, N* n0, N* n1, I* i0, I* i1)
         : primitives_first(p0)
         , primitives_last(p1)
