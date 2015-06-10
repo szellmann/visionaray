@@ -388,11 +388,17 @@ inline auto get_surface_any_prim_impl(
 // Triangle / float
 //
 
-template <typename R, typename NormalBinding, typename Normals, typename Materials>
+template <
+    typename R,
+    typename NormalBinding,
+    typename Primitives,
+    typename Normals,
+    typename Materials
+    >
 VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
         hit_record<R, primitive<unsigned>> const&   hr,
-        basic_triangle<3, float> const*             primitives,
+        Primitives                                  primitives,
         Normals                                     normals,
         Materials                                   materials,
         basic_triangle<3, float>                    /* */,
@@ -409,11 +415,17 @@ inline auto get_surface_with_prims_impl(
 // Generic primitive / float
 //
 
-template <typename R, typename NormalBinding, typename Normals, typename Materials>
+template <
+    typename R,
+    typename NormalBinding,
+    typename Primitives,
+    typename Normals,
+    typename Materials
+    >
 VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
         hit_record<R, primitive<unsigned>> const&   hr,
-        generic_prim const*                         primitives,
+        Primitives                                  primitives,
         Normals                                     normals,
         Materials                                   materials,
         generic_prim                                /* */,
@@ -565,13 +577,14 @@ template <
     typename R,
     typename NormalBinding,
     template <typename> class B,
+    typename Primitives,
     typename Normals,
     typename Materials
     >
 VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
         hit_record<R, primitive<unsigned>> const&   hr,
-        B<basic_triangle<3, float>> const*          primitives,
+        Primitives                                  primitives,
         Normals                                     normals,
         Materials                                   materials,
         B<basic_triangle<3, float>>                 /* */,
@@ -591,6 +604,7 @@ template <
     typename R,
     typename NormalBinding,
     template <typename> class B,
+    typename Primitives,
     typename Normals,
     typename TexCoords,
     typename Materials,
@@ -599,7 +613,7 @@ template <
 VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
         hit_record<R, primitive<unsigned>> const&   hr,
-        B<basic_triangle<3, float>> const*          primitives,
+        Primitives                                  primitives,
         Normals                                     normals,
         TexCoords                                   tex_coords,
         Materials                                   materials,
@@ -691,10 +705,10 @@ inline auto simd_normal
     }
 }
 
-template <typename NormalBinding, typename Normals, typename Materials>
+template <typename NormalBinding, typename Primitives, typename Normals, typename Materials>
 inline auto get_surface_with_prims_impl(
         hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        generic_prim const*                                 primitives,
+        Primitives                                          primitives,
         Normals                                             normals,
         Materials                                           materials,
         generic_prim                                        /* */,
@@ -801,10 +815,10 @@ inline auto get_surface_any_prim_impl(
 // Triangle / float8
 //
 
-template <typename NormalBinding, typename Normals, typename Materials>
+template <typename NormalBinding, typename Primitives, typename Normals, typename Materials>
 inline auto get_surface_with_prims_impl(
         hit_record<simd::ray8, primitive<unsigned>> const&  hr,
-        basic_triangle<3, float> const*                     primitives,
+        Primitives                                          primitives,
         Normals                                             normals,
         Materials                                           materials,
         basic_triangle<3, float>                            /* */,
