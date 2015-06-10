@@ -594,6 +594,8 @@ void idle_func()
 
 void keyboard_func(unsigned char key, int, int)
 {
+    static const std::string camera_filename = "visionaray-camera.txt";
+
     switch (key)
     {
     case '1':
@@ -644,9 +646,10 @@ void keyboard_func(unsigned char key, int, int)
 
     case 'u':
         {
-            std::ofstream file("visionaray-camera.txt");
+            std::ofstream file( camera_filename );
             if (file.good())
             {
+                std::cout << "Storing camera to file: " << camera_filename << '\n';
                 file << rend->cam;
             }
         }
@@ -654,12 +657,13 @@ void keyboard_func(unsigned char key, int, int)
 
     case 'v':
         {
-            std::ifstream file("visionaray-camera.txt");
+            std::ifstream file( camera_filename );
             if (file.good())
             {
                 file >> rend->cam;
                 rend->counter.reset();
                 rend->frame = 0;
+                std::cout << "Load camera from file: " << camera_filename << '\n';
             }
         }
         break;
