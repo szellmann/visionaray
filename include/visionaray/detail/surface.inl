@@ -6,6 +6,7 @@
 #ifndef VSNRAY_SURFACE_INL
 #define VSNRAY_SURFACE_INL
 
+#include <iterator>
 #include <stdexcept>
 
 #include "../generic_prim.h"
@@ -218,9 +219,10 @@ inline surface<M<simd::float8>, vector<3, simd::float8>> pack(
 // Get face normal from array
 //
 
-template <typename N, typename HR>
+template <typename Normals, typename HR>
 VSNRAY_FUNC
-inline N get_normal(N const* normals, HR const& hr, normals_per_face_binding)
+inline auto get_normal(Normals normals, HR const& hr, normals_per_face_binding)
+    -> typename std::iterator_traits<Normals>::value_type
 {
     return normals[hr.prim_id];
 }
@@ -230,13 +232,14 @@ inline N get_normal(N const* normals, HR const& hr, normals_per_face_binding)
 // Get vertex normal from array
 //
 
-template <typename N, typename HR>
+template <typename Normals, typename HR>
 VSNRAY_FUNC
-inline N get_normal(N const* normals, HR const& hr, normals_per_vertex_binding)
+inline auto get_normal(Normals normals, HR const& hr, normals_per_vertex_binding)
+    -> typename std::iterator_traits<Normals>::value_type
 {
-    N n1 = normals[hr.prim_id * 3];
-    N n2 = normals[hr.prim_id * 3 + 1];
-    N n3 = normals[hr.prim_id * 3 + 2];
+    auto n1 = normals[hr.prim_id * 3];
+    auto n2 = normals[hr.prim_id * 3 + 1];
+    auto n3 = normals[hr.prim_id * 3 + 2];
 
     auto s2 = n3 * hr.v;
     auto s3 = n2 * hr.u;
@@ -250,13 +253,14 @@ inline N get_normal(N const* normals, HR const& hr, normals_per_vertex_binding)
 // Get texture coordinate from array
 //
 
-template <typename TC, typename HR>
+template <typename TexCoords, typename HR>
 VSNRAY_FUNC
-inline TC get_tex_coord(TC const* tex_coords, HR const& hr)
+inline auto get_tex_coord(TexCoords tex_coords, HR const& hr)
+    -> typename std::iterator_traits<TexCoords>::value_type
 {
-    TC tc1 = tex_coords[hr.prim_id * 3];
-    TC tc2 = tex_coords[hr.prim_id * 3 + 1];
-    TC tc3 = tex_coords[hr.prim_id * 3 + 2];
+    auto tc1 = tex_coords[hr.prim_id * 3];
+    auto tc2 = tex_coords[hr.prim_id * 3 + 1];
+    auto tc3 = tex_coords[hr.prim_id * 3 + 2];
 
     auto s2 = tc3 * hr.v;
     auto s3 = tc2 * hr.u;
@@ -270,9 +274,9 @@ inline TC get_tex_coord(TC const* tex_coords, HR const& hr)
 // Gather four texture coordinates with SSE
 //
 
-template <typename TC>
+template <typename TexCoords>
 inline vector<2, simd::float4> get_tex_coord(
-        TC const*                                           coords,
+        TexCoords                                           coords,
         hit_record<simd::ray4, primitive<unsigned>> const&  hr
         )
 {
@@ -309,9 +313,12 @@ inline vector<2, simd::float4> get_tex_coord(
 // Gather four texture coordinates from array
 //
 
-template <typename TC, typename HR>
-inline std::array<TC, 4> get_tex_coord(TC const* coords, std::array<HR, 4> const& hr)
+template <typename TexCoords, typename HR>
+inline auto get_tex_coord(TexCoords coords, std::array<HR, 4> const& hr)
+    -> std::array<typename std::iterator_traits<TexCoords>::value_type, 4>
 {
+    using TC = typename std::iterator_traits<TexCoords>::value_type;
+
     return std::array<TC, 4>
     {{
         get_tex_coord(coords, hr[0]),
@@ -326,40 +333,53 @@ inline std::array<TC, 4> get_tex_coord(TC const* coords, std::array<HR, 4> const
 // Primitive with precalculated normals / float
 //
 
-template <typename R, typename NBinding, typename N, typename M>
+template <typename R, typename NormalBinding, typename Normals, typename Materials>
 VSNRAY_FUNC
-inline surface<M> get_surface_impl(
+inline auto get_surface_any_prim(
         hit_record<R, primitive<unsigned>> const&   hr,
-        N const*                                    normals,
-        M const*                                    materials,
-        NBinding                                    /* */
+        Normals                                     normals,
+        Materials                                   materials,
+        NormalBinding                               /* */
         )
+    -> surface<typename std::iterator_traits<Materials>::value_type>
 {
+    using M = typename std::iterator_traits<Materials>::value_type;
+
     return surface<M>(
-            get_normal(normals, hr, NBinding()),
+            get_normal(normals, hr, NormalBinding()),
             materials[hr.geom_id]
             );
 }
 
-template <typename R, typename NBinding, typename N, typename TC, typename M, typename T>
+template <
+    typename R,
+    typename NormalBinding,
+    typename Normals,
+    typename TexCoords,
+    typename Materials,
+    typename Textures
+    >
 VSNRAY_FUNC
-inline surface<M, vector<3, float>> get_surface_impl(
+inline auto get_surface_any_prim(
         hit_record<R, primitive<unsigned>> const&   hr,
-        N const*                                    normals,
-        TC const*                                   tex_coords,
-        M const*                                    materials,
-        T const*                                    textures,
-        NBinding                                    /* */
+        Normals                                     normals,
+        TexCoords                                   tex_coords,
+        Materials                                   materials,
+        Textures                                    textures,
+        NormalBinding                               /* */
         )
+    -> surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>
 {
-    auto tc  = get_tex_coord(tex_coords, hr);
+    using M = typename std::iterator_traits<Materials>::value_type;
+
+    auto tc = get_tex_coord(tex_coords, hr);
 
     auto const& tex = textures[hr.geom_id];
     auto tex_color = tex.width() > 0 && tex.height() > 0
                    ? vector<3, float>(tex2D(tex, tc))
                    : vector<3, float>(1.0);
 
-    auto normal = get_normal(normals, hr, NBinding());
+    auto normal = get_normal(normals, hr, NormalBinding());
     return surface<M, vector<3, float>>( normal, materials[hr.geom_id], tex_color );
 }
 
@@ -368,18 +388,19 @@ inline surface<M, vector<3, float>> get_surface_impl(
 // Triangle / float
 //
 
-template <typename R, typename NBinding, typename N, typename M>
+template <typename R, typename NormalBinding, typename Normals, typename Materials>
 VSNRAY_FUNC
-inline surface<M> get_surface_impl(
+inline auto get_surface_impl(
         hit_record<R, primitive<unsigned>> const&   hr,
         basic_triangle<3, float> const*             primitives,
-        N const*                                    normals,
-        M const*                                    materials,
-        NBinding                                    /* */
+        Normals                                     normals,
+        Materials                                   materials,
+        NormalBinding                               /* */
         )
+    -> surface<typename std::iterator_traits<Materials>::value_type>
 {
     VSNRAY_UNUSED(primitives);
-    return get_surface_impl(hr, normals, materials, NBinding());
+    return get_surface_impl(hr, normals, materials, NormalBinding());
 }
 
 
@@ -387,16 +408,18 @@ inline surface<M> get_surface_impl(
 // Generic primitive / float
 //
 
-template <typename R, typename NBinding, typename N, typename M>
+template <typename R, typename NormalBinding, typename Normals, typename Materials>
 VSNRAY_FUNC
-inline surface<M> get_surface_impl(
+inline auto get_surface_impl(
         hit_record<R, primitive<unsigned>> const&   hr,
         generic_prim const*                         primitives,
-        N const*                                    normals,
-        M const*                                    materials,
-        NBinding                                    /* */
+        Normals                                     normals,
+        Materials                                   materials,
+        NormalBinding                               /* */
         )
+    -> surface<typename std::iterator_traits<Materials>::value_type>
 {
+    using M = typename std::iterator_traits<Materials>::value_type;
 
     vector<3, float> n;
     switch (hr.prim_type)
@@ -419,61 +442,6 @@ inline surface<M> get_surface_impl(
     }
 
     return surface<M>( n, materials[hr.geom_id] );
-
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Bvh / float|float4|float8|...
-//
-
-template <typename R, typename NBinding, template <typename> class B, typename N, typename M>
-VSNRAY_FUNC
-inline auto get_surface_impl(
-        hit_record<R, primitive<unsigned>> const&   hr,
-        B<basic_triangle<3, float>> const*          tree,
-        N const*                                    normals,
-        M const*                                    materials,
-        NBinding                                    /* */
-        ) -> decltype( get_surface_impl(
-                hr,
-                normals,
-                materials,
-                NBinding()
-                ) )
-{
-    VSNRAY_UNUSED(tree);
-    return get_surface_impl(hr, normals, materials, NBinding());
-}
-
-template <typename R, typename NBinding, template <typename> class B, typename N, typename TC, typename M, typename T>
-VSNRAY_FUNC
-inline auto get_surface_impl(
-        hit_record<R, primitive<unsigned>> const&   hr,
-        B<basic_triangle<3, float>> const*          tree,
-        N const*                                    normals,
-        TC const*                                   tex_coords,
-        M const*                                    materials,
-        T const*                                    textures,
-        NBinding                                    /* */
-        ) -> decltype( get_surface_impl(
-                hr,
-                normals,
-                tex_coords,
-                materials,
-                textures,
-                NBinding()
-                ) )
-{
-    VSNRAY_UNUSED(tree);
-    return get_surface_impl(
-            hr,
-            normals,
-            tex_coords,
-            materials,
-            textures,
-            NBinding()
-            );
 }
 
 
@@ -481,57 +449,69 @@ inline auto get_surface_impl(
 // Primitive with precalculated normals / float4
 //
 
-template <typename NBinding, typename N, typename M>
-inline auto get_surface_impl(
+template <typename NormalBinding, typename Normals, typename Materials>
+inline auto get_surface_any_prim(
         hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        N const*                                            normals,
-        M const*                                            materials,
-        NBinding                                            /* */
+        Normals                                             normals,
+        Materials                                           materials,
+        NormalBinding                                       /* */
         ) -> decltype( simd::pack(
-                surface<M>(),
-                surface<M>(),
-                surface<M>(),
-                surface<M>()
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>()
                 ) )
 {
+    using N = typename std::iterator_traits<Normals>::value_type;
+    using M = typename std::iterator_traits<Materials>::value_type;
+
     auto hr4 = simd::unpack(hr);
 
     return simd::pack(
             surface<M>(
-                hr4[0].hit ? get_normal(normals, hr4[0], NBinding()) : N(),
-                hr4[0].hit ? materials[hr4[0].geom_id]               : M()
+                hr4[0].hit ? get_normal(normals, hr4[0], NormalBinding()) : N(),
+                hr4[0].hit ? materials[hr4[0].geom_id]                    : M()
                 ),
             surface<M>(
-                hr4[1].hit ? get_normal(normals, hr4[1], NBinding()) : N(),
-                hr4[1].hit ? materials[hr4[1].geom_id]               : M()
+                hr4[1].hit ? get_normal(normals, hr4[1], NormalBinding()) : N(),
+                hr4[1].hit ? materials[hr4[1].geom_id]                    : M()
                 ),
             surface<M>(
-                hr4[2].hit ? get_normal(normals, hr4[2], NBinding()) : N(),
-                hr4[2].hit ? materials[hr4[2].geom_id]               : M()
+                hr4[2].hit ? get_normal(normals, hr4[2], NormalBinding()) : N(),
+                hr4[2].hit ? materials[hr4[2].geom_id]                    : M()
                 ),
             surface<M>(
-                hr4[3].hit ? get_normal(normals, hr4[3], NBinding()) : N(),
-                hr4[3].hit ? materials[hr4[3].geom_id]               : M()
+                hr4[3].hit ? get_normal(normals, hr4[3], NormalBinding()) : N(),
+                hr4[3].hit ? materials[hr4[3].geom_id]                    : M()
                 )
             );
 }
 
 
-template <typename NBinding, typename N, typename TC, typename M, typename T>
-inline auto get_surface_impl(
+template <
+    typename NormalBinding,
+    typename Normals,
+    typename TexCoords,
+    typename Materials,
+    typename Textures
+    >
+inline auto get_surface_any_prim(
         hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        N const*                                            normals,
-        TC const*                                           tex_coords,
-        M const*                                            materials,
-        T const*                                            textures,
-        NBinding                                            /* */
+        Normals                                             normals,
+        TexCoords                                           tex_coords,
+        Materials                                           materials,
+        Textures                                            textures,
+        NormalBinding                                       /* */
         ) -> decltype( simd::pack(
-                surface<M, vector<3, float>>(),
-                surface<M, vector<3, float>>(),
-                surface<M, vector<3, float>>(),
-                surface<M, vector<3, float>>()
+                surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>(),
+                surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>(),
+                surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>(),
+                surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>()
                 ) )
 {
+    using N = typename std::iterator_traits<Normals>::value_type;
+    using M = typename std::iterator_traits<Materials>::value_type;
+
     auto hr4 = simd::unpack(hr);
 
     auto tc4 = get_tex_coord(tex_coords, hr4);
@@ -552,25 +532,93 @@ inline auto get_surface_impl(
 
     return simd::pack(
             surface<M, vector<3, float>>(
-                hr4[0].hit ? get_normal(normals, hr4[0], NBinding()) : N(),
-                hr4[0].hit ? materials[hr4[0].geom_id]               : M(),
-                hr4[0].hit ? tex_color4[0]                           : vector<3, float>(1.0)
+                hr4[0].hit ? get_normal(normals, hr4[0], NormalBinding()) : N(),
+                hr4[0].hit ? materials[hr4[0].geom_id]                    : M(),
+                hr4[0].hit ? tex_color4[0]                                : vector<3, float>(1.0)
                 ),
             surface<M, vector<3, float>>(
-                hr4[1].hit ? get_normal(normals, hr4[1], NBinding()) : N(),
-                hr4[1].hit ? materials[hr4[1].geom_id]               : M(),
-                hr4[1].hit ? tex_color4[1]                           : vector<3, float>(1.0)
+                hr4[1].hit ? get_normal(normals, hr4[1], NormalBinding()) : N(),
+                hr4[1].hit ? materials[hr4[1].geom_id]                    : M(),
+                hr4[1].hit ? tex_color4[1]                                : vector<3, float>(1.0)
                 ),
             surface<M, vector<3, float>>(
-                hr4[2].hit ? get_normal(normals, hr4[2], NBinding()) : N(),
-                hr4[2].hit ? materials[hr4[2].geom_id]               : M(),
-                hr4[2].hit ? tex_color4[2]                           : vector<3, float>(1.0)
+                hr4[2].hit ? get_normal(normals, hr4[2], NormalBinding()) : N(),
+                hr4[2].hit ? materials[hr4[2].geom_id]                    : M(),
+                hr4[2].hit ? tex_color4[2]                                : vector<3, float>(1.0)
                 ),
             surface<M, vector<3, float>>(
-                hr4[3].hit ? get_normal(normals, hr4[3], NBinding()) : N(),
-                hr4[3].hit ? materials[hr4[3].geom_id]               : M(),
-                hr4[3].hit ? tex_color4[3]                           : vector<3, float>(1.0)
+                hr4[3].hit ? get_normal(normals, hr4[3], NormalBinding()) : N(),
+                hr4[3].hit ? materials[hr4[3].geom_id]                    : M(),
+                hr4[3].hit ? tex_color4[3]                                : vector<3, float>(1.0)
                 )
+            );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Bvh / float|float4|float8|...
+//
+
+template <
+    typename R,
+    typename NormalBinding,
+    template <typename> class B,
+    typename Normals,
+    typename Materials
+    >
+VSNRAY_FUNC
+inline auto get_surface_impl(
+        hit_record<R, primitive<unsigned>> const&   hr,
+        B<basic_triangle<3, float>> const*          tree,
+        Normals                                     normals,
+        Materials                                   materials,
+        NormalBinding                               /* */
+        ) -> decltype( get_surface_any_prim(
+                hr,
+                normals,
+                materials,
+                NormalBinding()
+                ) )
+{
+    VSNRAY_UNUSED(tree);
+    return get_surface_any_prim(hr, normals, materials, NormalBinding());
+}
+
+template <
+    typename R,
+    typename NormalBinding,
+    template <typename> class B,
+    typename Normals,
+    typename TexCoords,
+    typename Materials,
+    typename Textures
+    >
+VSNRAY_FUNC
+inline auto get_surface_impl(
+        hit_record<R, primitive<unsigned>> const&   hr,
+        B<basic_triangle<3, float>> const*          tree,
+        Normals                                     normals,
+        TexCoords                                   tex_coords,
+        Materials                                   materials,
+        Textures                                    textures,
+        NormalBinding                               /* */
+        ) -> decltype( get_surface_any_prim(
+                hr,
+                normals,
+                tex_coords,
+                materials,
+                textures,
+                NormalBinding()
+                ) )
+{
+    VSNRAY_UNUSED(tree);
+    return get_surface_any_prim(
+            hr,
+            normals,
+            tex_coords,
+            materials,
+            textures,
+            NormalBinding()
             );
 }
 
@@ -579,17 +627,17 @@ inline auto get_surface_impl(
 // Triangle / float4
 //
 
-template <typename NBinding, typename N, typename M>
+template <typename NormalBinding, typename Normals, typename Materials>
 inline auto get_surface_impl(
         hit_record<simd::ray4, primitive<unsigned>> const&  hr,
         basic_triangle<3, float> const*                     primitives,
-        N const*                                            normals,
-        M const*                                            materials,
-        NBinding                                            /* */
-        ) -> decltype( get_surface_impl(hr, normals, materials, NBinding()) )
+        Normals                                             normals,
+        Materials                                           materials,
+        NormalBinding                                       /* */
+        ) -> decltype( get_surface_impl(hr, normals, materials, NormalBinding()) )
 {
     VSNRAY_UNUSED(primitives);
-    return get_surface_impl(hr, normals, materials, NBinding());
+    return get_surface_any_prim(hr, normals, materials, NormalBinding());
 }
 
 
@@ -597,21 +645,23 @@ inline auto get_surface_impl(
 // Generic primitive / float4
 //
 
-template <typename NBinding, unsigned C, typename N>
-inline N simd_normal
+template <typename NormalBinding, unsigned C, typename Normals>
+inline auto simd_normal
 (
-    hit_record<simd::ray4, primitive<unsigned>> const& hr4,
-    hit_record<ray, primitive<unsigned>> const& hr,
-    generic_prim const* primitives,
-    N const* normals,
-    NBinding
-)
+    hit_record<simd::ray4, primitive<unsigned>> const&  hr4,
+    hit_record<ray, primitive<unsigned>> const&         hr,
+    generic_prim const*                                 primitives,
+    Normals                                             normals,
+    NormalBinding                                       /* */
+) -> typename std::iterator_traits<Normals>::value_type
 {
+    using N = typename std::iterator_traits<Normals>::value_type;
+
     switch (hr.prim_type)
     {
 
     case detail::TrianglePrimitive:
-        return get_normal(normals, hr, NBinding());
+        return get_normal(normals, hr, NormalBinding());
 
     case detail::SpherePrimitive:
     {
@@ -635,38 +685,41 @@ inline N simd_normal
     }
 }
 
-template <typename NBinding, typename N, typename M>
+template <typename NormalBinding, typename Normals, typename Materials>
 inline auto get_surface_impl(
         hit_record<simd::ray4, primitive<unsigned>> const&  hr,
         generic_prim const*                                 primitives,
-        N const*                                            normals,
-        M const*                                            materials,
-        NBinding                                            /* */
+        Normals                                             normals,
+        Materials                                           materials,
+        NormalBinding                                       /* */
         ) -> decltype( simd::pack(
-                surface<M>(),
-                surface<M>(),
-                surface<M>(),
-                surface<M>()
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>()
                 ) )
-{ 
+{
+    using N = typename std::iterator_traits<Normals>::value_type;
+    using M = typename std::iterator_traits<Materials>::value_type;
+
     auto hr4 = simd::unpack(hr); 
 
     return simd::pack(
             surface<M>(
-                hr4[0].hit ? simd_normal<0>(hr, hr4[0], primitives, normals, NBinding()) : N(),
-                hr4[0].hit ? materials[hr4[0].geom_id]                                   : M()
+                hr4[0].hit ? simd_normal<0>(hr, hr4[0], primitives, normals, NormalBinding()) : N(),
+                hr4[0].hit ? materials[hr4[0].geom_id]                                        : M()
                 ),
             surface<M>(
-                hr4[1].hit ? simd_normal<1>(hr, hr4[1], primitives, normals, NBinding()) : N(),
-                hr4[1].hit ? materials[hr4[1].geom_id]                                   : M()
+                hr4[1].hit ? simd_normal<1>(hr, hr4[1], primitives, normals, NormalBinding()) : N(),
+                hr4[1].hit ? materials[hr4[1].geom_id]                                        : M()
                 ),
             surface<M>(
-                hr4[2].hit ? simd_normal<2>(hr, hr4[2], primitives, normals, NBinding()) : N(),
-                hr4[2].hit ? materials[hr4[2].geom_id]                                   : M()
+                hr4[2].hit ? simd_normal<2>(hr, hr4[2], primitives, normals, NormalBinding()) : N(),
+                hr4[2].hit ? materials[hr4[2].geom_id]                                        : M()
                 ),
             surface<M>(
-                hr4[3].hit ? simd_normal<3>(hr, hr4[3], primitives, normals, NBinding()) : N(),
-                hr4[3].hit ? materials[hr4[3].geom_id]                                   : M()
+                hr4[3].hit ? simd_normal<3>(hr, hr4[3], primitives, normals, NormalBinding()) : N(),
+                hr4[3].hit ? materials[hr4[3].geom_id]                                        : M()
                 )
             );
 }
@@ -678,57 +731,60 @@ inline auto get_surface_impl(
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
-template <typename NBinding, typename N, typename M>
-inline auto get_surface_impl(
+template <typename NormalBinding, typename Normals, typename Materials>
+inline auto get_surface_any_prim(
         hit_record<simd::ray8, primitive<unsigned>> const&  hr,
-        N const*                                            normals,
-        M const*                                            materials,
-        NBinding                                            /* */
+        Normals                                             normals,
+        Materials                                           materials,
+        NormalBinding                                       /* */
         ) -> decltype( simd::pack(
-                surface<M>(),
-                surface<M>(),
-                surface<M>(),
-                surface<M>(),
-                surface<M>(),
-                surface<M>(),
-                surface<M>(),
-                surface<M>()
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>(),
+                surface<typename std::iterator_traits<Materials>::value_type>()
                 ) )
 {
+    using N = typename std::iterator_traits<Normals>::value_type;
+    using M = typename std::iterator_traits<Materials>::value_type;
+
     auto hr8 = simd::unpack(hr);
 
     return simd::pack(
             surface<M>(
-                hr8[0].hit ? get_normal(normals, hr8[0], NBinding()) : N(),
-                hr8[0].hit ? materials[hr8[0].geom_id]               : M()
+                hr8[0].hit ? get_normal(normals, hr8[0], NormalBinding()) : N(),
+                hr8[0].hit ? materials[hr8[0].geom_id]                    : M()
                 ),
             surface<M>(
-                hr8[1].hit ? get_normal(normals, hr8[1], NBinding()) : N(),
-                hr8[1].hit ? materials[hr8[1].geom_id]               : M()
+                hr8[1].hit ? get_normal(normals, hr8[1], NormalBinding()) : N(),
+                hr8[1].hit ? materials[hr8[1].geom_id]                    : M()
                 ),
             surface<M>(
-                hr8[2].hit ? get_normal(normals, hr8[2], NBinding()) : N(),
-                hr8[2].hit ? materials[hr8[2].geom_id]               : M()
+                hr8[2].hit ? get_normal(normals, hr8[2], NormalBinding()) : N(),
+                hr8[2].hit ? materials[hr8[2].geom_id]                    : M()
                 ),
             surface<M>(
-                hr8[3].hit ? get_normal(normals, hr8[3], NBinding()) : N(),
-                hr8[3].hit ? materials[hr8[3].geom_id]               : M()
+                hr8[3].hit ? get_normal(normals, hr8[3], NormalBinding()) : N(),
+                hr8[3].hit ? materials[hr8[3].geom_id]                    : M()
                 ),
             surface<M>(
-                hr8[4].hit ? get_normal(normals, hr8[4], NBinding()) : N(),
-                hr8[4].hit ? materials[hr8[4].geom_id]               : M()
+                hr8[4].hit ? get_normal(normals, hr8[4], NormalBinding()) : N(),
+                hr8[4].hit ? materials[hr8[4].geom_id]                    : M()
                 ),
             surface<M>(
-                hr8[5].hit ? get_normal(normals, hr8[5], NBinding()) : N(),
-                hr8[5].hit ? materials[hr8[5].geom_id]               : M()
+                hr8[5].hit ? get_normal(normals, hr8[5], NormalBinding()) : N(),
+                hr8[5].hit ? materials[hr8[5].geom_id]                    : M()
                 ),
             surface<M>(
-                hr8[6].hit ? get_normal(normals, hr8[6], NBinding()) : N(),
-                hr8[6].hit ? materials[hr8[6].geom_id]               : M()
+                hr8[6].hit ? get_normal(normals, hr8[6], NormalBinding()) : N(),
+                hr8[6].hit ? materials[hr8[6].geom_id]                    : M()
                 ),
             surface<M>(
-                hr8[7].hit ? get_normal(normals, hr8[7], NBinding()) : N(),
-                hr8[7].hit ? materials[hr8[7].geom_id]               : M()
+                hr8[7].hit ? get_normal(normals, hr8[7], NormalBinding()) : N(),
+                hr8[7].hit ? materials[hr8[7].geom_id]                    : M()
                 )
             );
 }
@@ -738,22 +794,22 @@ inline auto get_surface_impl(
 // Triangle / float8
 //
 
-template <typename NBinding, typename N, typename M>
+template <typename NormalBinding, typename Normals, typename Materials>
 inline auto get_surface_impl(
         hit_record<simd::ray8, primitive<unsigned>> const&  hr,
         basic_triangle<3, float> const*                     primitives,
-        N const*                                            normals,
-        M const*                                            materials,
-        NBinding                                            /* */
-        ) -> decltype( get_surface_impl(
+        Normals                                             normals,
+        Materials                                           materials,
+        NormalBinding                                       /* */
+        ) -> decltype( get_surface_any_prim(
                 hr,
                 normals,
                 materials,
-                NBinding()
+                NormalBinding()
                 ) )
 {
     VSNRAY_UNUSED(primitives);
-    return get_surface_impl(hr, normals, materials, NBinding());
+    return get_surface_any_prim(hr, normals, materials, NormalBinding());
 }
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX

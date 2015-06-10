@@ -6,6 +6,7 @@
 #ifndef VSNRAY_KERNELS_H
 #define VSNRAY_KERNELS_H
 
+#include <iterator>
 #include <limits>
 
 #include <visionaray/math/math.h>
@@ -22,72 +23,106 @@ namespace visionaray
 template <typename ...Args>
 struct kernel_params;
 
-template <typename NB, typename P, typename N, typename M, typename L, typename C, typename ...Args>
-struct kernel_params<NB, P, N, M, L, C, Args...>
+template <
+    typename NormalBinding,
+    typename Primitives,
+    typename Normals,
+    typename Materials,
+    typename Lights,
+    typename Color,
+    typename ...Args
+    >
+struct kernel_params<
+        NormalBinding,
+        Primitives,
+        Normals,
+        Materials,
+        Lights,
+        Color,
+        Args...
+        >
 {
-    using normal_binding = NB;
-
-    typedef P primitive_type;
-    typedef N normal_type;
-    typedef M material_type;
-    typedef L light_type;
+    using normal_binding = NormalBinding;
+    using primitive_type    = typename std::iterator_traits<Primitives>::value_type;
+    using normal_type       = typename std::iterator_traits<Normals>::value_type;
+    using material_type     = typename std::iterator_traits<Materials>::value_type;
+    using light_type        = typename std::iterator_traits<Lights>::value_type;
 
     struct
     {
-        P begin;
-        P end;
+        Primitives begin;
+        Primitives end;
     } prims;
 
-    N normals;
-    M materials;
+    Normals   normals;
+    Materials materials;
 
     struct
     {
-        L begin;
-        L end;
+        Lights begin;
+        Lights end;
     } lights;
 
     unsigned num_bounces;
     float epsilon;
 
-    C bg_color;
-    C ambient_color;
+    Color bg_color;
+    Color ambient_color;
 };
 
-template <typename NB, typename P, typename N, typename TC, typename M, typename T, typename L, typename C, typename ...Args>
-struct kernel_params<NB, P, N, TC, M, T, L, C, Args...>
+template <
+    typename NormalBinding,
+    typename Primitives,
+    typename Normals,
+    typename TexCoords,
+    typename Materials,
+    typename Textures,
+    typename Lights,
+    typename Color,
+    typename ...Args
+    >
+struct kernel_params<
+        NormalBinding,
+        Primitives,
+        Normals,
+        TexCoords,
+        Materials,
+        Textures,
+        Lights,
+        Color,
+        Args...
+        >
 {
-    using normal_binding = NB;
-
-    typedef P  primitive_type;
-    typedef N  normal_type;
-    typedef TC tex_coords_type;
-    typedef M  material_type;
-    typedef T  texture_type;
-    typedef L  light_type;
+    using normal_binding = NormalBinding;
+    using primitive_type    = typename std::iterator_traits<Primitives>::value_type;
+    using normal_type       = typename std::iterator_traits<Normals>::value_type;
+    using tex_coords_type   = typename std::iterator_traits<TexCoords>::value_type;
+    using material_type     = typename std::iterator_traits<Materials>::value_type;
+    using texture_type      = typename std::iterator_traits<Textures>::value_type;
+    using light_type        = typename std::iterator_traits<Lights>::value_type;
 
     struct
     {
-        P begin;
-        P end;
+        Primitives begin;
+        Primitives end;
     } prims;
 
-    N  normals;
-    TC tex_coords;
-    M  materials;
-    T  textures;
+    Normals   normals;
+    TexCoords tex_coords;
+    Materials materials;
+    Textures  textures;
 
     struct
     {
-        L begin;
-        L end;
+        Lights begin;
+        Lights end;
     } lights;
 
     unsigned num_bounces;
     float epsilon;
 
-    C bg_color;
-    C ambient_color;
+    Color bg_color;
+    Color ambient_color;
 };
 
 
@@ -95,48 +130,76 @@ struct kernel_params<NB, P, N, TC, M, T, L, C, Args...>
 // Factory for param structs
 //
 
-template <typename NB, typename P, typename N, typename M, typename L>
-kernel_params<NB, P, N, M, L, vec4>  make_params(
-        P const&    begin,
-        P const&    end,
-        N const&    normals,
-        M const&    materials,
-        L const&    lbegin,
-        L const&    lend,
-        unsigned    num_bounces     = 5,
-        float       epsilon         = std::numeric_limits<float>::epsilon(),
-        vec4 const& bg_color        = vec4(0.0),
-        vec4 const& ambient_color   = vec4(0.0)
+template <
+    typename NormalBinding,
+    typename Primitives,
+    typename Normals,
+    typename Materials,
+    typename Lights
+    >
+auto make_params(
+        Primitives const&   begin,
+        Primitives const&   end,
+        Normals const&      normals,
+        Materials const&    materials,
+        Lights const&       lbegin,
+        Lights const&       lend,
+        unsigned            num_bounces     = 5,
+        float               epsilon         = std::numeric_limits<float>::epsilon(),
+        vec4 const&         bg_color        = vec4(0.0),
+        vec4 const&         ambient_color   = vec4(0.0)
         )
+    -> kernel_params<NormalBinding, Primitives, Normals, Materials, Lights, vec4>
 {
-    return kernel_params<NB, P, N, M, L, vec4>
-    {
-        { begin, end }, normals, materials, { lbegin, lend },
-        num_bounces, epsilon, bg_color, ambient_color
-    };
+    return kernel_params<NormalBinding, Primitives, Normals, Materials, Lights, vec4>{
+            { begin, end },
+            normals,
+            materials,
+            { lbegin, lend },
+            num_bounces,
+            epsilon,
+            bg_color,
+            ambient_color
+            };
 }
 
-template <typename NB, typename P, typename N, typename TC, typename M, typename T, typename L>
-kernel_params<NB, P, N, TC, M, T, L, vec4> make_params(
-        P const&    begin,
-        P const&    end,
-        N const&    normals,
-        TC const&   tex_coords,
-        M const&    materials,
-        T const&    textures,
-        L const&    lbegin,
-        L const&    lend,
-        unsigned    num_bounces     = 5,
-        float       epsilon         = std::numeric_limits<float>::epsilon(),
-        vec4 const& bg_color        = vec4(0.0),
-        vec4 const& ambient_color   = vec4(1.0)
+template <
+    typename NormalBinding,
+    typename Primitives,
+    typename Normals,
+    typename TexCoords,
+    typename Materials,
+    typename Textures,
+    typename Lights
+    >
+auto make_params(
+        Primitives const&   begin,
+        Primitives const&   end,
+        Normals const&      normals,
+        TexCoords const&    tex_coords,
+        Materials const&    materials,
+        Textures const&     textures,
+        Lights const&       lbegin,
+        Lights const&       lend,
+        unsigned            num_bounces     = 5,
+        float               epsilon         = std::numeric_limits<float>::epsilon(),
+        vec4 const&         bg_color        = vec4(0.0),
+        vec4 const&         ambient_color   = vec4(1.0)
         )
+    -> kernel_params<NormalBinding, Primitives, Normals, TexCoords, Materials, Textures, Lights, vec4>
 {
-    return kernel_params<NB, P, N, TC, M, T, L, vec4>
-    {
-        { begin, end }, normals, tex_coords, materials, textures, { lbegin, lend },
-        num_bounces, epsilon, bg_color, ambient_color
-    };
+    return kernel_params<NormalBinding, Primitives, Normals, TexCoords, Materials, Textures, Lights, vec4>{
+            { begin, end },
+            normals,
+            tex_coords,
+            materials,
+            textures,
+            { lbegin, lend },
+            num_bounces,
+            epsilon,
+            bg_color,
+            ambient_color
+            };
 }
 
 } // visionaray

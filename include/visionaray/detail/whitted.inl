@@ -84,7 +84,7 @@ struct kernel
                 sr.normal       = n;
                 sr.view_dir     = -ray.dir;
                 sr.light_dir    = light_dir;
-                sr.light        = it;
+                sr.light        = *it;
                 auto clr        = surf.shade(sr);
 
                 shaded_clr += select( active_rays, clr, C(0.0) );

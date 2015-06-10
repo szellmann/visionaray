@@ -57,7 +57,7 @@ struct kernel
                 sr.normal       = n;
                 sr.view_dir     = -ray.dir;
                 sr.light_dir    = normalize( V(it->position()) - hit_rec.isect_pos );
-                sr.light        = it;
+                sr.light        = *it;
                 auto clr        = surf.shade(sr);
 
                 shaded_clr     += select( hit_rec.hit, clr, C(0.0) );
