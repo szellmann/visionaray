@@ -30,7 +30,7 @@ struct basic_intersector
 
     template <typename R, typename P, typename = typename std::enable_if<is_bvh<P>::value>::type>
     auto operator()(R const& ray, P const& prim)
-        -> decltype( intersect(ray, prim, *static_cast<Derived*>(this)) )
+        -> hit_record<R, primitive<unsigned>>
     {
         return intersect(ray, prim, *static_cast<Derived*>(this));
     }
