@@ -141,6 +141,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/generic_prim.h
     ${HEADER_DIR}/generic_material.h
     ${HEADER_DIR}/gpu_buffer_rt.h
+    ${HEADER_DIR}/intersector.h
     ${HEADER_DIR}/kernels.h
     ${HEADER_DIR}/material.h
     ${HEADER_DIR}/mc.h

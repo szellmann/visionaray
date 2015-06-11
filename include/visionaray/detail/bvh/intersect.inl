@@ -6,13 +6,13 @@
 namespace visionaray
 {
 
-template <typename T, typename B>
+template <typename T, typename BVH, typename Intersector>
 VSNRAY_FUNC
-inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
-(
-    basic_ray<T> const& ray,
-    B const& b
-)
+inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
+        basic_ray<T> const& ray,
+        BVH const&          b,
+        Intersector&        isect
+        )
 {
 
     using namespace detail;
@@ -40,8 +40,8 @@ next:
         {
             auto children = &b.node(node.first_child);
 
-            auto hr1 = intersect(ray, children[0].bbox, inv_dir);
-            auto hr2 = intersect(ray, children[1].bbox, inv_dir);
+            auto hr1 = isect(ray, children[0].bbox, inv_dir);
+            auto hr2 = isect(ray, children[1].bbox, inv_dir);
 
             auto b1 = any( hr1.hit && hr1.tnear < result.t && hr1.tfar >= T(0.0) );
             auto b2 = any( hr2.hit && hr2.tnear < result.t && hr2.tfar >= T(0.0) );
@@ -77,7 +77,7 @@ next:
         {
             auto prim = b.primitive(i);
 
-            auto hr  = intersect(ray, prim);
+            auto hr  = isect(ray, prim);
             auto closer = hr.hit && ( hr.t >= T(0.0) && hr.t < result.t );
 
 #ifndef __CUDA_ARCH__

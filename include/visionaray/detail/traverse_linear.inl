@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/intersector.h>
+
 #include "macros.h"
 
 namespace visionaray
@@ -8,9 +10,15 @@ namespace visionaray
 namespace detail
 {
 
-template <bool AnyHit, typename R, typename P>
+template <bool AnyHit, typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end, typename R::scalar_type max_t)
+hit_record<R, primitive<unsigned>> traverse(
+        R const& r,
+        P begin,
+        P end,
+        typename R::scalar_type max_t,
+        Intersector& isect
+        )
 {
 
     typedef typename R::scalar_type scalar_type;
@@ -23,7 +31,7 @@ hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end, typename
 
     for (prim_iterator it = begin; it != end; ++it)
     {
-        auto hr = intersect(r, *it);
+        auto hr = isect(r, *it);
         auto closer = hr.hit & ( hr.t >= scalar_type(0.0) && hr.t < max_t && hr.t < result.t );
         result.hit |= closer;
         result.t = select( closer, hr.t, result.t );
@@ -43,36 +51,99 @@ hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end, typename
 
 }
 
-template <bool AnyHit, typename R, typename P>
+template <bool AnyHit, typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> traverse(R const& r, P begin, P end)
+hit_record<R, primitive<unsigned>> traverse(
+        R const& r,
+        P begin,
+        P end,
+        Intersector& isect)
 {
-    return traverse<AnyHit>(r, begin, end, numeric_limits<float>::max());
+    return traverse<AnyHit>(r, begin, end, numeric_limits<float>::max(), isect);
 }
 
 } // detail
 
 
-template <typename R, typename P>
+
+//-------------------------------------------------------------------------------------------------
+// any hit w/o max_t
+//
+
+template <typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> any_hit(R const& r, P begin, P end)
+hit_record<R, primitive<unsigned>> any_hit(
+        R const& r,
+        P begin,
+        P end,
+        Intersector& isect
+        )
 {
-    return detail::traverse<true>(r, begin, end);
+    return detail::traverse<true>(r, begin, end, isect);
 }
 
 template <typename R, typename P>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> any_hit(R const& r, P begin, P end, typename R::scalar_type max_t)
+hit_record<R, primitive<unsigned>> any_hit(R const& r, P begin, P end)
 {
-    return detail::traverse<true>(r, begin, end, max_t);
+    default_intersector ignore;
+    return detail::traverse<true>(r, begin, end, ignore);
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// any hit with max_t
+//
+
+template <typename R, typename P, typename Intersector>
+VSNRAY_FUNC
+hit_record<R, primitive<unsigned>> any_hit(
+        R const& r,
+        P begin,
+        P end,
+        typename R::scalar_type max_t,
+        Intersector& isect
+        )
+{
+    return detail::traverse<true>(r, begin, end, max_t, isect);
+}
+
+template <typename R, typename P>
+VSNRAY_FUNC
+hit_record<R, primitive<unsigned>> any_hit(
+        R const& r,
+        P begin,
+        P end,
+        typename R::scalar_type max_t
+        )
+{
+    default_intersector ignore;
+    return detail::traverse<true>(r, begin, end, max_t, ignore);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// closest hit 
+//
+
+template <typename R, typename P, typename Intersector>
+VSNRAY_FUNC
+hit_record<R, primitive<unsigned>> closest_hit(
+        R const& r,
+        P begin,
+        P end,
+        Intersector& isect)
+{
+    return detail::traverse<false>(r, begin, end, isect);
+}
+
 
 template <typename R, typename P>
 VSNRAY_FUNC
 hit_record<R, primitive<unsigned>> closest_hit(R const& r, P begin, P end)
 {
-    return detail::traverse<false>(r, begin, end);
+    default_intersector ignore;
+    return detail::traverse<false>(r, begin, end, ignore);
 }
-
 
 } // visionaray

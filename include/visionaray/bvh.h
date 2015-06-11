@@ -8,6 +8,7 @@
 
 #include <cstddef>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
 
 #ifdef __CUDACC__
@@ -362,6 +363,23 @@ private:
     index_vector indices_;
 
 };
+
+
+template <typename T>
+struct is_bvh : std::false_type {};
+
+template <typename ...Ts>
+struct is_bvh<bvh_t<Ts...>> : std::true_type {};
+
+template <typename ...Ts>
+struct is_bvh<index_bvh_t<Ts...>> : std::true_type {};
+
+template <typename ...Ts>
+struct is_bvh<bvh_ref_t<Ts...>> : std::true_type {};
+
+template <typename ...Ts>
+struct is_bvh<index_bvh_ref_t<Ts...>> : std::true_type {};
+
 
 template <typename P> using bvh                 = bvh_t<aligned_vector<P>, aligned_vector<bvh_node>>;
 template <typename P> using index_bvh           = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node>, aligned_vector<unsigned>>;
