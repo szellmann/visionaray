@@ -535,6 +535,65 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
+// Helper functions
+//
+
+template <typename T>
+inline vector<3, T> hue_to_rgb(T hue)
+{
+//  assert(hue >= 0.0f && hue <= 1.0f);
+
+    T s = saturate( hue ) * T(6.0f);
+
+    T r = saturate( abs(s - T(3.0)) - T(1.0) );
+    T g = saturate( T(2.0) - abs(s - T(2.0)) );
+    T b = saturate( T(2.0) - abs(s - T(4.0)) );
+
+    return vector<3, T>(r, g, b);
+}
+
+template <typename T>
+inline vector<3, T> temperature_to_rgb(T t)
+{
+    T K = T(4.0f / 6.0f);
+
+    T h = K - K * t;
+    T v = T(0.5f) + T(0.5f) * t;
+
+    return v * hue_to_rgb(h);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// TODO: use make_intersector(lambda...) instead
+//
+
+struct bvh_cost_intersector : basic_intersector<bvh_cost_intersector>
+{
+    using basic_intersector<bvh_cost_intersector>::operator();
+
+    template <typename R, typename S, typename ...Args>
+    auto operator()(R const& ray, basic_aabb<S> const& box, Args&&... args)
+        -> decltype( intersect(ray, box, std::forward<Args>(args)...) )
+    {
+        ++num_boxes;
+        return intersect(ray, box, std::forward<Args>(args)...);
+    }
+
+    template <typename R, typename S>
+    auto operator()(R const& ray, basic_triangle<3, S> const& tri)
+        -> decltype( intersect(ray, tri) )
+    {
+        ++num_tris;
+        return intersect(ray, tri);
+    }
+
+    unsigned num_boxes = 0;
+    unsigned num_tris  = 0;
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Private implementation
 //
 
@@ -764,7 +823,7 @@ void drawable::impl::commit_state()
 template <typename KParams>
 void drawable::impl::call_kernel(KParams const& params)
 {
-    if (dev_state->debug_mode && (dev_state->show_normals || dev_state->show_tex_coords))
+    if (dev_state->debug_mode && (dev_state->show_bvh_costs || dev_state->show_normals || dev_state->show_tex_coords))
     {
         call_kernel_debug( params );
     }
@@ -824,7 +883,31 @@ void drawable::impl::call_kernel_debug(KParams const& params)
 
     auto sparams = make_sched_params<pixel_sampler::uniform_type>( view_matrix, proj_matrix, viewport, host_rt );
 
-    if (dev_state->show_normals)
+    if (dev_state->show_bvh_costs)
+    {
+        host_sched.frame([&](R ray) -> result_record<S>
+        {
+            // weights for box costs and primitive costs, in [0..1]
+            S wb = 1.0f;
+            S wp = 1.0f;
+
+            result_record<S> result;
+
+            bvh_cost_intersector i;
+
+            auto hit_rec        = closest_hit(ray, params.prims.begin, params.prims.end, i);
+
+            S t                 = i.num_boxes * wb + i.num_tris * wp;
+            auto rgb            = temperature_to_rgb(t / S(120.0)); // plot max. 120 ray interactions..
+
+            result.hit          = hit_rec.hit;
+            result.color        = select( hit_rec.hit, C(rgb, S(1.0)), C(0.0) );
+            result.isect_pos    = ray.ori + ray.dir * hit_rec.t;
+            return result;
+        },
+        sparams);
+    }
+    else if (dev_state->show_normals)
     {
         host_sched.frame([&](R ray) -> result_record<S>
         {

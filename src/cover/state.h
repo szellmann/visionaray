@@ -45,6 +45,7 @@ struct debug_state
 {
     bool            debug_mode      = true;
     bool            show_bvh        = false;
+    bool            show_bvh_costs  = false;
     bool            show_normals    = false;
     bool            show_tex_coords = false;
 };

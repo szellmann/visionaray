@@ -80,6 +80,7 @@ struct Visionaray::impl : vrui::coMenuListener
 
         // dev menu
         check_box                   toggle_bvh_display;
+        check_box                   toggle_bvh_costs_display;
         check_box                   toggle_normal_display;
         check_box                   toggle_tex_coord_display;
     } ui;
@@ -104,6 +105,7 @@ struct Visionaray::impl : vrui::coMenuListener
     void set_num_bounces(unsigned num_bounces);
     void set_device(device_type dev);
     void set_show_bvh(bool show_bvh);
+    void set_show_bvh_costs(bool show_costs);
     void set_show_normals(bool show_normals);
     void set_show_tex_coords(bool show_tex_coords);
 };
@@ -279,6 +281,10 @@ void Visionaray::impl::init_ui()
         ui.toggle_bvh_display->setMenuListener(this);
         ui.dev_menu->add(ui.toggle_bvh_display.get());
 
+        ui.toggle_bvh_costs_display.reset(new coCheckboxMenuItem("Show BVH traversal costs", false));
+        ui.toggle_bvh_costs_display->setMenuListener(this);
+        ui.dev_menu->add(ui.toggle_bvh_costs_display.get());
+
         ui.toggle_normal_display.reset(new coCheckboxMenuItem("Show surface normals", false));
         ui.toggle_normal_display->setMenuListener(this);
         ui.dev_menu->add(ui.toggle_normal_display.get());
@@ -332,6 +338,11 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
         set_show_bvh(ui.toggle_bvh_display->getState());
     }
 
+    if (item == ui.toggle_bvh_costs_display.get())
+    {
+        set_show_bvh_costs(ui.toggle_bvh_costs_display->getState());
+    }
+
     if (item == ui.toggle_normal_display.get())
     {
         set_show_normals(ui.toggle_normal_display->getState());
@@ -379,6 +390,12 @@ void Visionaray::impl::set_show_bvh(bool show_bvh)
 {
     dev_state->show_bvh = show_bvh;
     ui.toggle_bvh_display->setState( show_bvh, false );
+}
+
+void Visionaray::impl::set_show_bvh_costs(bool show_costs)
+{
+    dev_state->show_bvh_costs = show_costs;
+    ui.toggle_bvh_costs_display->setState( show_costs, false );
 }
 
 void Visionaray::impl::set_show_normals(bool show_normals)
