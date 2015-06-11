@@ -33,7 +33,7 @@ struct basic_intersector
     template <typename R, typename P, typename = typename std::enable_if<is_bvh<P>::value>::type>
     VSNRAY_FUNC
     auto operator()(R const& ray, P const& prim)
-        -> hit_record<R, primitive<unsigned>>
+        -> decltype( intersect(ray, prim, std::declval<Derived&>()) )
     {
         return intersect(ray, prim, *static_cast<Derived*>(this));
     }
