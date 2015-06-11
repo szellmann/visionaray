@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "detail/macros.h"
 #include "bvh.h"
 
 namespace visionaray
@@ -22,6 +23,7 @@ template <typename Derived>
 struct basic_intersector
 {
     template <typename R, typename P, typename ...Args>
+    VSNRAY_FUNC
     auto operator()(R const& ray, P const& prim, Args&&... args)
         -> decltype( intersect(ray, prim, std::forward<Args>(args)...) )
     {
@@ -29,6 +31,7 @@ struct basic_intersector
     }
 
     template <typename R, typename P, typename = typename std::enable_if<is_bvh<P>::value>::type>
+    VSNRAY_FUNC
     auto operator()(R const& ray, P const& prim)
         -> hit_record<R, primitive<unsigned>>
     {
