@@ -80,6 +80,7 @@ struct Visionaray::impl : vrui::coMenuListener
 
         // dev menu
         check_box                   toggle_bvh_display;
+        radio_group                 debug_kernel_group;
         check_box                   toggle_bvh_costs_display;
         check_box                   toggle_normal_display;
         check_box                   toggle_tex_coord_display;
@@ -281,15 +282,18 @@ void Visionaray::impl::init_ui()
         ui.toggle_bvh_display->setMenuListener(this);
         ui.dev_menu->add(ui.toggle_bvh_display.get());
 
-        ui.toggle_bvh_costs_display.reset(new coCheckboxMenuItem("Show BVH traversal costs", false));
+
+        ui.debug_kernel_group.reset(new coCheckboxGroup( /* allow empty selection: */ true ));
+
+        ui.toggle_bvh_costs_display.reset(new coCheckboxMenuItem("Show BVH traversal costs", false, ui.debug_kernel_group.get()));
         ui.toggle_bvh_costs_display->setMenuListener(this);
         ui.dev_menu->add(ui.toggle_bvh_costs_display.get());
 
-        ui.toggle_normal_display.reset(new coCheckboxMenuItem("Show surface normals", false));
+        ui.toggle_normal_display.reset(new coCheckboxMenuItem("Show surface normals", false, ui.debug_kernel_group.get()));
         ui.toggle_normal_display->setMenuListener(this);
         ui.dev_menu->add(ui.toggle_normal_display.get());
 
-        ui.toggle_tex_coord_display.reset(new coCheckboxMenuItem("Show texture coordinates", false));
+        ui.toggle_tex_coord_display.reset(new coCheckboxMenuItem("Show texture coordinates", false, ui.debug_kernel_group.get()));
         ui.toggle_tex_coord_display->setMenuListener(this);
         ui.dev_menu->add(ui.toggle_tex_coord_display.get());
     }
@@ -342,13 +346,11 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
     {
         set_show_bvh_costs(ui.toggle_bvh_costs_display->getState());
     }
-
-    if (item == ui.toggle_normal_display.get())
+    else if (item == ui.toggle_normal_display.get())
     {
         set_show_normals(ui.toggle_normal_display->getState());
     }
-
-    if (item == ui.toggle_tex_coord_display.get())
+    else if (item == ui.toggle_tex_coord_display.get())
     {
         set_show_tex_coords(ui.toggle_tex_coord_display->getState());
     }
