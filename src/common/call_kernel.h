@@ -6,6 +6,8 @@
 #ifndef VSNRAY_CALL_KERNEL_H
 #define VSNRAY_CALL_KERNEL_H
 
+#include <utility>
+
 #include <visionaray/kernels.h>
 
 namespace visionaray
@@ -22,7 +24,7 @@ void call_kernel(Sched& sched, SParams const& sparams, KParams const& kparams, u
 }
 
 template <typename Sched, typename KParams, typename ...Args>
-void call_kernel(algorithm algo, Sched& sched, KParams const& kparams, unsigned& frame_num, Args&... args)
+void call_kernel(algorithm algo, Sched& sched, KParams const& kparams, unsigned& frame_num, Args&&... args)
 {
     switch (algo)
     {
@@ -31,7 +33,7 @@ void call_kernel(algorithm algo, Sched& sched, KParams const& kparams, unsigned&
         call_kernel<simple::kernel>
         (
             sched,
-            make_sched_params<pixel_sampler::uniform_type>(args...),
+            make_sched_params<pixel_sampler::uniform_type>(std::forward<Args>(args)...),
             kparams
         );
         break;
@@ -40,7 +42,7 @@ void call_kernel(algorithm algo, Sched& sched, KParams const& kparams, unsigned&
         call_kernel<whitted::kernel>
         (
             sched,
-            make_sched_params<pixel_sampler::uniform_type>(args...),
+            make_sched_params<pixel_sampler::uniform_type>(std::forward<Args>(args)...),
             kparams
         );
         break;
@@ -49,7 +51,7 @@ void call_kernel(algorithm algo, Sched& sched, KParams const& kparams, unsigned&
         call_kernel<pathtracing::kernel>
         (
             sched,
-            make_sched_params<pixel_sampler::jittered_blend_type>(args...),
+            make_sched_params<pixel_sampler::jittered_blend_type>(std::forward<Args>(args)...),
             kparams,
             ++frame_num
         );
