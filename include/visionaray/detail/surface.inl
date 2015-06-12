@@ -280,6 +280,8 @@ inline vector<2, simd::float4> get_tex_coord(
         hit_record<simd::ray4, primitive<unsigned>> const&  hr
         )
 {
+    using TC = typename std::iterator_traits<TexCoords>::value_type;
+
     auto hr4 = simd::unpack(hr);
 
     auto off1 = hr4[0].prim_id * 3;
@@ -287,19 +289,24 @@ inline vector<2, simd::float4> get_tex_coord(
     auto off3 = hr4[2].prim_id * 3;
     auto off4 = hr4[3].prim_id * 3;
 
+    auto get_coord = [&](int x, int y)
+    {
+        return hr4[x].hit ? coords[hr4[x].prim_id * 3 + y] : TC();
+    };
+
     vector<2, simd::float4> tc1(
-            simd::float4( coords[off1    ].x, coords[off2    ].x, coords[off3    ].x, coords[off4    ].x ),
-            simd::float4( coords[off1    ].y, coords[off2    ].y, coords[off3    ].y, coords[off4    ].y )
+            simd::float4( get_coord(0, 0).x, get_coord(1, 0).x, get_coord(2, 0).x, get_coord(3, 0).x ),
+            simd::float4( get_coord(0, 0).y, get_coord(1, 0).y, get_coord(2, 0).y, get_coord(3, 0).y )
             );
                 
     vector<2, simd::float4> tc2(
-            simd::float4( coords[off1 + 1].x, coords[off2 + 1].x, coords[off3 + 1].x, coords[off4 + 1].x ),
-            simd::float4( coords[off1 + 1].y, coords[off2 + 1].y, coords[off3 + 1].y, coords[off4 + 1].y )
+            simd::float4( get_coord(0, 1).x, get_coord(1, 1).x, get_coord(2, 1).x, get_coord(3, 1).x ),
+            simd::float4( get_coord(0, 1).y, get_coord(1, 1).y, get_coord(2, 1).y, get_coord(3, 1).y )
             );
 
     vector<2, simd::float4> tc3(
-            simd::float4( coords[off1 + 2].x, coords[off2 + 2].x, coords[off3 + 2].x, coords[off4 + 2].x ),
-            simd::float4( coords[off1 + 2].y, coords[off2 + 2].y, coords[off3 + 2].y, coords[off4 + 2].y )
+            simd::float4( get_coord(0, 2).x, get_coord(1, 2).x, get_coord(2, 2).x, get_coord(3, 2).x ),
+            simd::float4( get_coord(0, 2).y, get_coord(1, 2).y, get_coord(2, 2).y, get_coord(3, 2).y )
             );
 
     auto s2 = tc3 * hr.v;
