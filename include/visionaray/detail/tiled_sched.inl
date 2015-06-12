@@ -63,7 +63,11 @@ struct tiled_sched<R>::impl
     void init_render_func(K kernel, SP sched_params, unsigned frame_num);
 
     template <typename K, typename RT, typename PxSamplerT>
-    void init_render_func(K kernel, sched_params<RT, PxSamplerT> sched_params, unsigned frame_num);
+    void init_render_func(
+            K kernel,
+            sched_params<RT, PxSamplerT> sched_params,
+            unsigned frame_num
+            );
 
     std::vector<std::thread>    threads;
     detail::sync_params         sync_params;
@@ -199,13 +203,13 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
             }
 
             sample_pixel<R>(
+                    typename SP::pixel_sampler_type(),
+                    sparams.rt.ref(),
                     x,
                     y,
                     frame_num,
                     viewport,
-                    sparams.rt.ref(),
                     kernel,
-                    typename SP::pixel_sampler_type(),
                     view_matrix,
                     inv_view_matrix,
                     proj_matrix,
@@ -217,7 +221,11 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 
 template <typename R>
 template <typename K, typename RT, typename PxSamplerT>
-void tiled_sched<R>::impl::init_render_func(K kernel, sched_params<RT, PxSamplerT> sparams, unsigned frame_num)
+void tiled_sched<R>::impl::init_render_func(
+        K kernel,
+        sched_params<RT, PxSamplerT> sparams,
+        unsigned frame_num
+        )
 {
     // overload for pinhole cam
 
@@ -257,13 +265,13 @@ void tiled_sched<R>::impl::init_render_func(K kernel, sched_params<RT, PxSampler
             }
 
             sample_pixel<R>(
+                    typename SP::pixel_sampler_type(),
+                    sparams.rt.ref(),
                     x,
                     y,
                     frame_num,
                     viewport,
-                    sparams.rt.ref(),
                     kernel,
-                    typename SP::pixel_sampler_type(),
                     eye,
                     cam_u,
                     cam_v,

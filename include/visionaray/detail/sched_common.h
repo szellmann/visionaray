@@ -502,17 +502,17 @@ VSNRAY_FUNC inline T depth_transform(
 // Simple uniform pixel sampler
 //
 
-template <typename R, typename V, pixel_format CF, typename K, typename ...Args>
+template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                              /* */,
+        pixel_sampler::uniform_type     /* */,
+        render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
         unsigned                        frame,
         V const&                        viewport,
-        render_target_ref<CF>           rt_ref,
         K                               kernel,
-        pixel_sampler::uniform_type     /* */,
         Args&&...                       args
         )
 {
@@ -523,17 +523,17 @@ inline void sample_pixel_impl(
     color_access::store(x, y, viewport, result, rt_ref.color());
 }
 
-template <typename R, typename V, pixel_format CF, pixel_format DF, typename K, typename ...Args>
+template <typename R, pixel_format CF, pixel_format DF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                                  /* */,
+        pixel_sampler::uniform_type         /* */,
+        render_target_ref<CF, DF>           rt_ref,
         unsigned                            x,
         unsigned                            y,
         unsigned                            frame,
         V const&                            viewport,
-        render_target_ref<CF, DF>           rt_ref,
         K                                   kernel,
-        pixel_sampler::uniform_type         /* */,
         Args&&...                           args
         )
 {
@@ -550,17 +550,17 @@ inline void sample_pixel_impl(
 // Jittered pixel sampler, sampler is passed to kernel
 //
 
-template <typename R, typename V, pixel_format CF, typename K, typename ...Args>
+template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                              /* */,
+        pixel_sampler::jittered_type    /* */,
+        render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
         unsigned                        frame,
         V const&                        viewport,
-        render_target_ref<CF>           rt_ref,
         K                               kernel,
-        pixel_sampler::jittered_type    /* */,
         Args&&...                       args)
 {
     VSNRAY_UNUSED(frame);
@@ -584,17 +584,17 @@ inline void sample_pixel_impl(
 // Jittered pixel sampler, result is blended on top of color buffer, sampler is passed to kernel
 //
 
-template <typename R, typename V, pixel_format CF, typename K, typename ...Args>
+template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                                  /* */,
+        pixel_sampler::jittered_blend_type  /* */,
+        render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
         unsigned                            frame,
         V const&                            viewport,
-        render_target_ref<CF>               rt_ref,
         K                                   kernel,
-        pixel_sampler::jittered_blend_type  /* */,
         Args&&...                           args
         )
 {
@@ -618,17 +618,17 @@ inline void sample_pixel_impl(
     color_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
 }
 
-template <typename R, typename V, pixel_format CF, pixel_format DF, typename K, typename ...Args>
+template <typename R, pixel_format CF, pixel_format DF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                                  /* */,
+        pixel_sampler::jittered_blend_type  /* */,
+        render_target_ref<CF, DF>           rt_ref,
         unsigned                            x,
         unsigned                            y,
         unsigned                            frame,
         V const&                            viewport,
-        render_target_ref<CF, DF>           rt_ref,
         K                                   kernel,
-        pixel_sampler::jittered_blend_type  /* */,
         Args&&...                           args
         )
 {
@@ -659,18 +659,18 @@ inline void sample_pixel_impl(
 // jittered pixel sampler, blends several samples at once
 //
 
-template <typename R, typename V, pixel_format CF, typename K, typename ...Args>
+template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                                  /* */,
+        pixel_sampler::jittered_blend_type  /* */,
+        render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
         unsigned                            frame_begin,
         unsigned                            frame_end,
         V const&                            viewport,
-        render_target_ref<CF>               rt_ref,
         K                                   kernel,
-        pixel_sampler::jittered_blend_type  /* */,
         Args&&...                           args
         )
 {

@@ -36,13 +36,13 @@ __global__ void render(
     }
 
     sample_pixel<R>(
+            PxSamplerT(),
+            rt_ref,
             x,
             y,
             frame_num,
             viewport,
-            rt_ref,
             kernel,
-            PxSamplerT(),
             view_matrix,
             inv_view_matrix,
             proj_matrix,
@@ -71,13 +71,13 @@ __global__ void render(
     }
 
     sample_pixel<R>(
+            PxSamplerT(),
+            rt_ref,
             x,
             y,
             frame_num,
             viewport,
-            rt_ref,
             kernel,
-            PxSamplerT(),
             eye,
             u,
             v,
