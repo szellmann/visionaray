@@ -568,6 +568,57 @@ inline vector<3, T> temperature_to_rgb(T t)
 // TODO: use make_intersector(lambda...) instead
 //
 
+struct mask_intersector : basic_intersector<mask_intersector>
+{
+    using basic_intersector<mask_intersector>::operator();
+
+    template <typename R, typename S>
+    auto operator()(R const& ray, basic_triangle<3, S> const& tri)
+        -> decltype( intersect(ray, tri) )
+    {
+        // TODO: support all ISA
+        assert( tex_coords );
+        assert( textures );
+
+        auto hr = intersect(ray, tri);
+
+        auto tc = get_tex_coord(tex_coords, hr);
+
+        auto hr4 = simd::unpack( hr );
+        auto tc4 = simd::unpack( tc );
+
+        vector<4, float> tex_color4[4];
+
+        for (unsigned i = 0; i < 4; ++i)
+        {
+            if (!hr4[i].hit)
+            {
+                continue;
+            }
+
+            auto const& tex = textures[hr4[i].geom_id];
+            tex_color4[i] = tex.width() > 0 && tex.height() > 0
+                          ? vector<4, float>(tex2D(tex, tc4[i]))
+                          : vector<4, float>(1.0);
+        }
+
+        auto tex_color = simd::pack(
+                tex_color4[0],
+                tex_color4[1],
+                tex_color4[2],
+                tex_color4[3]
+                );
+  
+        hr.hit &= tex_color.w >= S(0.01);
+ 
+        return hr;
+    }
+
+    vec2 const*                 tex_coords;
+    host_tex_ref_type const*    textures;
+};
+
+
 struct bvh_cost_intersector : basic_intersector<bvh_cost_intersector>
 {
     using basic_intersector<bvh_cost_intersector>::operator();
@@ -625,6 +676,8 @@ struct drawable::impl
     device_sched_type                       device_sched;
     device_render_target_type               device_rt;
 #endif
+
+    mask_intersector                        intersector;
 
     mat4                                    view_matrix;
     mat4                                    proj_matrix;
@@ -855,7 +908,8 @@ void drawable::impl::call_kernel(KParams const& params)
                     view_matrix,
                     proj_matrix,
                     viewport,
-                    host_rt
+                    host_rt,
+                    intersector
                     );
 #endif
         }
@@ -1191,6 +1245,9 @@ void drawable::drawImplementation(osg::RenderInfo&) const
                 vec4(0.0f),
                 impl_->state->algo == Pathtracing ? vec4(1.0f) : ambient
                 );
+
+        impl_->intersector.tex_coords = kparams.tex_coords;
+        impl_->intersector.textures   = kparams.textures;
 
         impl_->call_kernel(kparams);
 
