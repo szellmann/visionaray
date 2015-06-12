@@ -35,9 +35,15 @@ struct sched_params;
 template <typename RT, typename PxSamplerT>
 struct sched_params<RT, PxSamplerT>
 {
-    typedef RT                          rt_type;
-    typedef typename RT::color_traits   color_traits;
-    typedef PxSamplerT                  pixel_sampler_type;
+    using rt_type               = RT;
+    using color_traits          = typename RT::color_traits;
+    using pixel_sampler_type    = PxSamplerT;
+
+    sched_params(camera const& c, RT& r)
+        : cam(c)
+        , rt(r)
+    {
+    }
 
     camera const& cam;
     RT& rt;
@@ -49,6 +55,14 @@ struct sched_params<MT, V, RT, PxSamplerT>
     using rt_type               = RT;
     using color_traits          = typename RT::color_traits;
     using pixel_sampler_type    = PxSamplerT;
+
+    sched_params(MT const& vm, MT const& pm, V const& vp, RT& r)
+        : view_matrix(vm)
+        , proj_matrix(pm)
+        , viewport(vp)
+        , rt(r)
+    {
+    }
 
     MT const& view_matrix;
     MT const& proj_matrix;
