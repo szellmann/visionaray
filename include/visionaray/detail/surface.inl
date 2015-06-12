@@ -284,11 +284,6 @@ inline vector<2, simd::float4> get_tex_coord(
 
     auto hr4 = simd::unpack(hr);
 
-    auto off1 = hr4[0].prim_id * 3;
-    auto off2 = hr4[1].prim_id * 3;
-    auto off3 = hr4[2].prim_id * 3;
-    auto off4 = hr4[3].prim_id * 3;
-
     auto get_coord = [&](int x, int y)
     {
         return hr4[x].hit ? coords[hr4[x].prim_id * 3 + y] : TC();
