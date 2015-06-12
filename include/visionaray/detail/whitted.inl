@@ -20,8 +20,8 @@ struct kernel
 
     Params params;
 
-    template <typename R>
-    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(R ray) const
+    template <typename Intersector, typename R>
+    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(Intersector& isect, R ray) const
     {
 
         using S = typename R::scalar_type;
@@ -30,7 +30,7 @@ struct kernel
 
         result_record<S> result;
 
-        auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
+        auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end, isect);
 
         if (any(hit_rec.hit))
         {
@@ -74,8 +74,14 @@ struct kernel
                 );
 
                 // only cast a shadow if occluder between light source and hit pos
-                auto shadow_rec  = any_hit(shadow_ray, params.prims.begin, params.prims.end,
-                    length(hit_rec.isect_pos - V(it->position())));
+                auto shadow_rec  = any_hit(
+                        shadow_ray,
+                        params.prims.begin,
+                        params.prims.end,
+                        length(hit_rec.isect_pos - V(it->position())),
+                        isect
+                        );
+
                 auto active_rays = hit_rec.hit & !shadow_rec.hit;
 
                 auto sr         = make_shade_record<Params, S>();
@@ -98,7 +104,7 @@ struct kernel
                 hit_rec.isect_pos + dir * S(params.epsilon),
                 dir
             );
-            hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
+            hit_rec = closest_hit(ray, params.prims.begin, params.prims.end, isect);
             mirror *= S(0.1);
             no_hit_color = C(0.0);
         }
@@ -107,6 +113,13 @@ struct kernel
 
         return result;
 
+    }
+
+    template <typename R>
+    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(R ray) const
+    {
+        default_intersector ignore;
+        return (*this)(ignore, ray);
     }
 };
 

@@ -103,13 +103,13 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                 [=](int i0, int /*i1*/, int j0, int /*j1*/)
                 {
                     sample_pixel<R>(
+                        kernel,
                         typename SP::pixel_sampler_type(),
                         sched_params.rt.ref(),
                         i0,
                         j0,
                         frame_num,
                         viewport,
-                        kernel,
                         eye,
                         cam_u,
                         cam_v,

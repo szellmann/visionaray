@@ -23,8 +23,8 @@ struct kernel
 
     Params params;
 
-    template <typename R>
-    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(R ray) const
+    template <typename Intersector, typename R>
+    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(Intersector& isect, R ray) const
     {
         using S = typename R::scalar_type;
         using V = typename result_record<S>::vec_type;
@@ -32,7 +32,7 @@ struct kernel
 
         result_record<S> result;
 
-        auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end);
+        auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end, isect);
 
         if (any(hit_rec.hit))
         {
@@ -74,6 +74,13 @@ struct kernel
         result.hit = hit_rec.hit;
         return result;
     }
+
+    template <typename R>
+    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(R ray) const
+    {
+        default_intersector ignore;
+        return (*this)(ignore, ray);
+    } 
 };
 
 } // simple

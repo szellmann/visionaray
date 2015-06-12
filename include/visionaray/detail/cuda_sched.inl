@@ -36,13 +36,13 @@ __global__ void render(
     }
 
     sample_pixel<R>(
+            kernel,
             PxSamplerT(),
             rt_ref,
             x,
             y,
             frame_num,
             viewport,
-            kernel,
             view_matrix,
             inv_view_matrix,
             proj_matrix,
@@ -71,13 +71,13 @@ __global__ void render(
     }
 
     sample_pixel<R>(
+            kernel,
             PxSamplerT(),
             rt_ref,
             x,
             y,
             frame_num,
             viewport,
-            kernel,
             eye,
             u,
             v,
@@ -91,7 +91,12 @@ __global__ void render(
 //
 
 template <typename R, typename K, typename SP>
-inline void cuda_sched_impl_frame(K kernel, SP sparams, unsigned frame_num)
+inline void cuda_sched_impl_frame(
+        K               kernel,
+        SP              sparams,
+        unsigned        frame_num,
+        std::true_type  /* has matrix */
+        )
 {
     auto rt_ref             = sparams.rt.ref();
     auto inv_view_matrix    = inverse(sparams.view_matrix);
@@ -125,8 +130,13 @@ inline void cuda_sched_impl_frame(K kernel, SP sparams, unsigned frame_num)
     cudaDeviceSynchronize();
 }
 
-template <typename R, typename K, typename RT, typename PxSamplerT>
-inline void cuda_sched_impl_frame(K kernel, sched_params<RT, PxSamplerT> sparams, unsigned frame_num)
+template <typename R, typename K, typename SP>
+inline void cuda_sched_impl_frame(
+        K               kernel,
+        SP              sparams,
+        unsigned        frame_num,
+        std::false_type /* has matrix */
+        )
 {
     auto rt_ref             = sparams.rt.ref();
     auto viewport           = sparams.cam.get_viewport();
@@ -153,7 +163,7 @@ inline void cuda_sched_impl_frame(K kernel, sched_params<RT, PxSamplerT> sparams
         div_up(w, block_size.x),
         div_up(h, block_size.y)
     );
-    render<R, PxSamplerT><<<grid_size, block_size>>>(
+    render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
             eye,
             cam_u,
             cam_v,
@@ -177,7 +187,12 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     sched_params.rt.begin_frame();
 
-    detail::cuda_sched_impl_frame<R>(kernel, sched_params, frame_num);
+    detail::cuda_sched_impl_frame<R>(
+                kernel,
+                sched_params,
+                frame_num,
+                typename SP::has_view_matrix()
+                );
 
     sched_params.rt.end_frame();
 }

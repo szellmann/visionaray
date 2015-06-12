@@ -6,6 +6,9 @@
 #ifndef VSNRAY_SCHED_H
 #define VSNRAY_SCHED_H
 
+#include <type_traits>
+#include <utility>
+
 #include "camera.h"
 
 namespace visionaray
@@ -26,21 +29,42 @@ struct jittered_blend_type {};
 
 
 //-------------------------------------------------------------------------------------------------
+// Base classes for scheduler params
+//
+
+struct sched_params_base {};
+
+template <typename Intersector>
+struct sched_params_intersector_base
+{
+    sched_params_intersector_base(Intersector& i) : intersector(i) {}
+
+    Intersector& intersector;
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Param structs for different pixel sampling strategies
 //
 
 template <typename... Args>
 struct sched_params;
 
-template <typename RT, typename PxSamplerT>
-struct sched_params<RT, PxSamplerT>
+template <typename Base, typename RT, typename PxSamplerT>
+struct sched_params<Base, RT, PxSamplerT> : Base
 {
+    using has_camera            = std::true_type;
+    using has_view_matrix       = std::false_type;
+    using has_proj_matrix       = std::false_type;
+
     using rt_type               = RT;
     using color_traits          = typename RT::color_traits;
     using pixel_sampler_type    = PxSamplerT;
 
-    sched_params(camera const& c, RT& r)
-        : cam(c)
+    template <typename ...Args>
+    sched_params(camera const& c, RT& r, Args&&... args)
+        : Base( std::forward<Args>(args)... )
+        , cam(c)
         , rt(r)
     {
     }
@@ -49,15 +73,21 @@ struct sched_params<RT, PxSamplerT>
     RT& rt;
 };
 
-template <typename MT, typename V, typename RT, typename PxSamplerT>
-struct sched_params<MT, V, RT, PxSamplerT>
+template <typename Base, typename MT, typename V, typename RT, typename PxSamplerT>
+struct sched_params<Base, MT, V, RT, PxSamplerT> : Base
 {
+    using has_camera            = std::false_type;
+    using has_view_matrix       = std::true_type;
+    using has_proj_matrix       = std::true_type;
+
     using rt_type               = RT;
     using color_traits          = typename RT::color_traits;
     using pixel_sampler_type    = PxSamplerT;
 
-    sched_params(MT const& vm, MT const& pm, V const& vp, RT& r)
-        : view_matrix(vm)
+    template <typename ...Args>
+    sched_params(MT const& vm, MT const& pm, V const& vp, RT& r, Args&&... args)
+        : Base( std::forward<Args>(args)...)
+        , view_matrix(vm)
         , proj_matrix(pm)
         , viewport(vp)
         , rt(r)
@@ -76,16 +106,53 @@ struct sched_params<MT, V, RT, PxSamplerT>
 //
 
 template <typename PxSamplerT, typename RT>
-sched_params<RT, PxSamplerT> make_sched_params(camera const& cam, RT& rt)
+auto make_sched_params(camera const& cam, RT& rt)
+    -> sched_params<sched_params_base, RT, PxSamplerT>
 {
-    return sched_params<RT, PxSamplerT>{ cam, rt };
+    return sched_params<sched_params_base, RT, PxSamplerT>{ cam, rt };
 }
 
-template <typename PxSamplerT, typename MT, typename V, typename RT>
-sched_params<MT, V, RT, PxSamplerT> make_sched_params(MT const& view_matrix, MT const& proj_matrix,
-    V const& viewport, RT& rt)
+template <typename PxSamplerT, typename Intersector, typename RT>
+auto make_sched_params(camera const& cam, RT& rt, Intersector& isect)
+    -> sched_params<sched_params_intersector_base<Intersector>, RT, PxSamplerT>
 {
-    return sched_params<MT, V, RT, PxSamplerT>{ view_matrix, proj_matrix, viewport, rt };
+    return sched_params<sched_params_intersector_base<Intersector>, RT, PxSamplerT>{
+            cam,
+            rt,
+            isect
+            };
+}
+
+
+template <typename PxSamplerT, typename MT, typename V, typename RT>
+auto make_sched_params(
+        MT const& view_matrix,
+        MT const& proj_matrix,
+        V const& viewport,
+        RT& rt
+        )
+    -> sched_params<sched_params_base, MT, V, RT, PxSamplerT>
+{
+    return sched_params<sched_params_base, MT, V, RT, PxSamplerT>{ view_matrix, proj_matrix, viewport, rt };
+}
+
+template <typename PxSamplerT, typename Intersector, typename MT, typename V, typename RT>
+auto make_sched_params(
+        MT const& view_matrix,
+        MT const& proj_matrix,
+        V const& viewport,
+        RT& rt,
+        Intersector& isect
+        )
+    -> sched_params<sched_params_intersector_base<Intersector>, MT, V, RT, PxSamplerT>
+{
+    return sched_params<sched_params_intersector_base<Intersector>, MT, V, RT, PxSamplerT>{
+            view_matrix,
+            proj_matrix,
+            viewport,
+            rt,
+            isect
+            };
 }
 
 } // visionaray

@@ -5,6 +5,7 @@
 #include <condition_variable>
 #include <functional>
 #include <thread>
+#include <utility>
 
 #include <visionaray/math/math.h>
 
@@ -60,14 +61,39 @@ struct tiled_sched<R>::impl
     void render_loop();
 
     template <typename K, typename SP>
-    void init_render_func(K kernel, SP sched_params, unsigned frame_num);
+    void init_render_func(K kernel, SP sparams, unsigned frame_num, std::true_type /* has matrix */);
 
-    template <typename K, typename RT, typename PxSamplerT>
-    void init_render_func(
+    template <typename K, typename SP>
+    void init_render_func(K kernel, SP sparams, unsigned frame_num, std::false_type /* has matrix */);
+
+    template <typename K, typename SP, typename ...Args>
+    void call_sample_pixel(K kernel, SP sparams, Args&&... args)
+    {
+        sample_pixel<R>(
+                kernel,
+                typename SP::pixel_sampler_type(),
+                sparams.rt.ref(),
+                std::forward<Args>(args)...
+                );
+    }
+
+    template <typename K, template <typename...> class SP, typename Intersector, typename ...SPArgs, typename ...Args>
+    void call_sample_pixel(
             K kernel,
-            sched_params<RT, PxSamplerT> sched_params,
-            unsigned frame_num
-            );
+            SP<sched_params_intersector_base<Intersector>, SPArgs...> sparams,
+            Args&&... args)
+    {
+        using SPI = SP<sched_params_intersector_base<Intersector>, SPArgs...>;
+
+        sample_pixel<R>(
+                kernel,
+                detail::have_intersector_tag(),
+                sparams.intersector,
+                typename SPI::pixel_sampler_type(),
+                sparams.rt.ref(),
+                std::forward<Args>(args)...
+                );
+    }
 
     std::vector<std::thread>    threads;
     detail::sync_params         sync_params;
@@ -168,10 +194,8 @@ void tiled_sched<R>::impl::render_loop()
 
 template <typename R>
 template <typename K, typename SP>
-void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame_num)
+void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame_num, std::true_type)
 {
-    // assume that SP has members view_matrix and proj_matrix
-
     using scalar_type   = typename R::scalar_type;
     using matrix_type   = matrix<4, 4, scalar_type>;
 
@@ -202,14 +226,13 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                 continue;
             }
 
-            sample_pixel<R>(
-                    typename SP::pixel_sampler_type(),
-                    sparams.rt.ref(),
+            call_sample_pixel(
+                    kernel,
+                    sparams,
                     x,
                     y,
                     frame_num,
                     viewport,
-                    kernel,
                     view_matrix,
                     inv_view_matrix,
                     proj_matrix,
@@ -220,16 +243,11 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 }
 
 template <typename R>
-template <typename K, typename RT, typename PxSamplerT>
-void tiled_sched<R>::impl::init_render_func(
-        K kernel,
-        sched_params<RT, PxSamplerT> sparams,
-        unsigned frame_num
-        )
+template <typename K, typename SP>
+void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame_num, std::false_type)
 {
     // overload for pinhole cam
 
-    using SP            = sched_params<RT, PxSamplerT>;
     using scalar_type   = typename R::scalar_type;
 
     viewport = sparams.cam.get_viewport();
@@ -264,14 +282,13 @@ void tiled_sched<R>::impl::init_render_func(
                 continue;
             }
 
-            sample_pixel<R>(
-                    typename SP::pixel_sampler_type(),
-                    sparams.rt.ref(),
+            call_sample_pixel(
+                    kernel,
+                    sparams,
                     x,
                     y,
                     frame_num,
                     viewport,
-                    kernel,
                     eye,
                     cam_u,
                     cam_v,
@@ -306,7 +323,7 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     sched_params.rt.begin_frame();
 
-    impl_->init_render_func(kernel, sched_params, frame_num);
+    impl_->init_render_func(kernel, sched_params, frame_num, typename SP::has_view_matrix());
 
     auto w = impl_->viewport.w - impl_->viewport.x;
     auto h = impl_->viewport.h - impl_->viewport.y;

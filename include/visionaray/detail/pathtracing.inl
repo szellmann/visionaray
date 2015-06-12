@@ -25,8 +25,12 @@ struct kernel
 
     Params params;
 
-    template <typename R, template <typename> class SMP>
-    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(R ray, SMP<typename R::scalar_type>& s) const
+    template <typename Intersector, typename R, template <typename> class SMP>
+    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(
+            Intersector& isect,
+            R ray,
+            SMP<typename R::scalar_type>& s
+            ) const
     {
 
         using S = typename R::scalar_type;
@@ -35,7 +39,7 @@ struct kernel
 
         result_record<S> result;
 
-        auto hit_rec        =  closest_hit(ray, params.prims.begin, params.prims.end);
+        auto hit_rec        =  closest_hit(ray, params.prims.begin, params.prims.end, isect);
         auto exited         = !hit_rec.hit;
         auto active_rays    =  hit_rec.hit;
         result.color        =  params.bg_color;
@@ -98,7 +102,7 @@ struct kernel
                 ray.ori = isect_pos + refl_dir * S(params.epsilon);
                 ray.dir = refl_dir;
 
-                hit_rec      = closest_hit(ray, params.prims.begin, params.prims.end);
+                hit_rec      = closest_hit(ray, params.prims.begin, params.prims.end, isect);
                 exited       = active_rays & !hit_rec.hit;
                 active_rays &= hit_rec.hit;
             }
@@ -111,6 +115,16 @@ struct kernel
         result.color = select( result.hit, to_rgba(dst), result.color );
 
         return result;
+    }
+
+    template <typename R, template <typename> class SMP>
+    VSNRAY_FUNC result_record<typename R::scalar_type> operator()(
+            R ray,
+            SMP<typename R::scalar_type>& s
+            ) const 
+    {
+        default_intersector ignore;
+        return (*this)(ignore, ray, s);
     }
 };
 

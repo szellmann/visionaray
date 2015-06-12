@@ -16,6 +16,7 @@
 
 #include "color_conversion.h"
 #include "macros.h"
+#include "tags.h"
 
 namespace visionaray
 {
@@ -506,13 +507,13 @@ template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                              /* */,
+        K                               kernel,
         pixel_sampler::uniform_type     /* */,
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
         unsigned                        frame,
         V const&                        viewport,
-        K                               kernel,
         Args&&...                       args
         )
 {
@@ -526,15 +527,15 @@ inline void sample_pixel_impl(
 template <typename R, pixel_format CF, pixel_format DF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R*                                  /* */,
-        pixel_sampler::uniform_type         /* */,
-        render_target_ref<CF, DF>           rt_ref,
-        unsigned                            x,
-        unsigned                            y,
-        unsigned                            frame,
-        V const&                            viewport,
-        K                                   kernel,
-        Args&&...                           args
+        R*                              /* */,
+        K                               kernel,
+        pixel_sampler::uniform_type     /* */,
+        render_target_ref<CF, DF>       rt_ref,
+        unsigned                        x,
+        unsigned                        y,
+        unsigned                        frame,
+        V const&                        viewport,
+        Args&&...                       args
         )
 {
     VSNRAY_UNUSED(frame);
@@ -554,13 +555,13 @@ template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                              /* */,
+        K                               kernel,
         pixel_sampler::jittered_type    /* */,
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
         unsigned                        frame,
         V const&                        viewport,
-        K                               kernel,
         Args&&...                       args)
 {
     VSNRAY_UNUSED(frame);
@@ -588,13 +589,13 @@ template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                                  /* */,
+        K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
         unsigned                            frame,
         V const&                            viewport,
-        K                                   kernel,
         Args&&...                           args
         )
 {
@@ -622,13 +623,13 @@ template <typename R, pixel_format CF, pixel_format DF, typename V, typename K, 
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                                  /* */,
+        K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
         render_target_ref<CF, DF>           rt_ref,
         unsigned                            x,
         unsigned                            y,
         unsigned                            frame,
         V const&                            viewport,
-        K                                   kernel,
         Args&&...                           args
         )
 {
@@ -663,6 +664,7 @@ template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                                  /* */,
+        K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
@@ -670,7 +672,6 @@ inline void sample_pixel_impl(
         unsigned                            frame_begin,
         unsigned                            frame_end,
         V const&                            viewport,
-        K                                   kernel,
         Args&&...                           args
         )
 {
@@ -698,6 +699,57 @@ inline void sample_pixel_impl(
     }
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// w/o intersector
+//
+
+template <typename R, typename ...Args>
+VSNRAY_FUNC
+inline void sample_pixel_choose_intersector_impl(R*, Args&&... args)
+{
+    detail::sample_pixel_impl((R*)nullptr, std::forward<Args>(args)...);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// w/ intersector
+//
+
+template <typename K, typename I>
+struct call_kernel_with_intersector
+{
+    K& kernel;
+    I& isect;
+
+    explicit call_kernel_with_intersector(K& k, I& i) : kernel(k) , isect(i) {}
+
+    template <typename ...Args>
+    auto operator()(Args&&... args) const
+        -> decltype( kernel(isect, std::forward<Args>(args)...) )
+    {
+        return kernel(isect, std::forward<Args>(args)...);
+    }
+};
+
+template <typename R, typename K, typename Intersector, typename ...Args>
+VSNRAY_FUNC
+inline void sample_pixel_choose_intersector_impl(
+        R*                      /* */,
+        K                       kernel,
+        have_intersector_tag    /* */,
+        Intersector&            isect,
+        Args&&...               args
+        )
+{
+    auto caller = call_kernel_with_intersector<K, Intersector>(kernel, isect);
+    detail::sample_pixel_impl(
+            (R*)nullptr,
+            caller,
+            std::forward<Args>(args)...
+            );
+}
+
 } // detail
 
 
@@ -709,7 +761,7 @@ template <typename R, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel(Args&&...  args)
 {
-    detail::sample_pixel_impl((R*)nullptr, std::forward<Args>(args)...);
+    detail::sample_pixel_choose_intersector_impl((R*)nullptr, std::forward<Args>(args)...);
 }
 
 } // visionaray

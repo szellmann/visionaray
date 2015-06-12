@@ -33,9 +33,14 @@ struct has_textures : has_no_textures_tag {};
 template <typename T>
 struct has_textures<T, always_void_t<decltype(T::textures)>> : has_textures_tag {};
 
+
+//-------------------------------------------------------------------------------------------------
+// Misc.
+//
+
+struct have_intersector_tag {};
+
 } // detail
 } // visionaray
 
 #endif // VSNRAY_DETAIL_TAGS_H
-
-
