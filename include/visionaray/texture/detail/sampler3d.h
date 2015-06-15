@@ -298,7 +298,7 @@ inline ReturnT tex3D(Tex const& tex, vector<3, FloatT> coord)
     case visionaray::Linear:
         return linear<ReturnT>( tex.data(), coord, texsize, tex.get_address_mode() );
 
-    case visionaray::BSpline:
+/*    case visionaray::BSpline:
         return cubic8<ReturnT>( tex.data(), coord, texsize );
 
     case visionaray::BSplineInterpol:
@@ -310,7 +310,7 @@ inline ReturnT tex3D(Tex const& tex, vector<3, FloatT> coord)
     case visionaray::CardinalSpline:
         return cubic<ReturnT>( tex.data(), coord, texsize,
             cspline::w0_func<FloatT>(), cspline::w1_func<FloatT>(),
-            cspline::w2_func<FloatT>(), cspline::w3_func<FloatT>() );
+            cspline::w2_func<FloatT>(), cspline::w3_func<FloatT>() );*/
 
     }
 
