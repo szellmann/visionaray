@@ -1,0 +1,22 @@
+find_package(CUDA)
+find_package(GLEW REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(PTHREAD REQUIRED)
+find_package(Visionaray REQUIRED)
+
+if (CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
+visionaray_use_package(CUDA)
+endif()
+visionaray_use_package(GLEW)
+visionaray_use_package(OpenGL)
+visionaray_use_package(PTHREAD)
+visionaray_use_package(Visionaray)
+
+set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
+
+include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${CMD_LINE_INCLUDE_DIR})
+
+add_subdirectory(minimal)
+add_subdirectory(volume)
