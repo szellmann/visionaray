@@ -191,7 +191,7 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                 kernel,
                 sched_params,
                 frame_num,
-                typename SP::has_view_matrix()
+                typename detail::sched_params_has_view_matrix<SP>::type()
                 );
 
     sched_params.rt.end_frame();

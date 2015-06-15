@@ -53,10 +53,6 @@ struct sched_params;
 template <typename Base, typename RT, typename PxSamplerT>
 struct sched_params<Base, RT, PxSamplerT> : Base
 {
-    using has_camera            = std::true_type;
-    using has_view_matrix       = std::false_type;
-    using has_proj_matrix       = std::false_type;
-
     using rt_type               = RT;
     using color_traits          = typename RT::color_traits;
     using pixel_sampler_type    = PxSamplerT;
@@ -76,17 +72,13 @@ struct sched_params<Base, RT, PxSamplerT> : Base
 template <typename Base, typename MT, typename V, typename RT, typename PxSamplerT>
 struct sched_params<Base, MT, V, RT, PxSamplerT> : Base
 {
-    using has_camera            = std::false_type;
-    using has_view_matrix       = std::true_type;
-    using has_proj_matrix       = std::true_type;
-
     using rt_type               = RT;
     using color_traits          = typename RT::color_traits;
     using pixel_sampler_type    = PxSamplerT;
 
     template <typename ...Args>
     sched_params(MT const& vm, MT const& pm, V const& vp, RT& r, Args&&... args)
-        : Base( std::forward<Args>(args)...)
+        : Base( std::forward<Args>(args)... )
         , view_matrix(vm)
         , proj_matrix(pm)
         , viewport(vp)
@@ -99,6 +91,50 @@ struct sched_params<Base, MT, V, RT, PxSamplerT> : Base
     V const& viewport;
     RT& rt;
 };
+
+
+//-------------------------------------------------------------------------------------------------
+// Deduce sched params type from members
+//
+
+namespace detail
+{
+
+template <typename SP>
+class sched_params_has_cam
+{
+private:
+
+    template <typename U>
+    static std::true_type  test(typename std::remove_reference<decltype(U::cam)>::type*);
+
+    template <typename U>
+    static std::false_type test(...);
+
+public:
+
+    using type = decltype( test<SP>(nullptr) );
+
+};
+
+template <typename SP>
+class sched_params_has_view_matrix
+{
+private:
+
+    template <typename U>
+    static std::true_type  test(typename std::remove_reference<decltype(U::view_matrix)>::type*);
+
+    template <typename U>
+    static std::false_type test(...);
+
+public:
+
+    using type = decltype( test<SP>(nullptr) );
+
+};
+
+} // detail
 
 
 //-------------------------------------------------------------------------------------------------

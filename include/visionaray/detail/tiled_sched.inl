@@ -323,7 +323,12 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     sched_params.rt.begin_frame();
 
-    impl_->init_render_func(kernel, sched_params, frame_num, typename SP::has_view_matrix());
+    impl_->init_render_func(
+            kernel,
+            sched_params,
+            frame_num,
+            typename detail::sched_params_has_view_matrix<SP>::type()
+            );
 
     auto w = impl_->viewport.w - impl_->viewport.x;
     auto h = impl_->viewport.h - impl_->viewport.y;
