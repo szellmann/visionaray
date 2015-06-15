@@ -582,6 +582,11 @@ struct mask_intersector : basic_intersector<mask_intersector>
 
         auto hr = intersect(ray, tri);
 
+        if ( !any(hr.hit) )
+        {
+            return hr;
+        }
+
         auto tc = get_tex_coord(tex_coords, hr);
 
         auto hr4 = simd::unpack( hr );
