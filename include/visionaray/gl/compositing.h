@@ -6,6 +6,9 @@
 #ifndef VSNRAY_GL_COMPOSITING_H
 #define VSNRAY_GL_COMPOSITING_H
 
+#include <iostream>
+#include <ostream>
+
 #include <GL/glew.h>
 
 #include <visionaray/pixel_format.h>
