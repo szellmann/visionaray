@@ -50,6 +50,7 @@
 // VSNRAY_CXX_HAS_DECLTYPE
 // VSNRAY_CXX_HAS_EXPLICIT_CONVERSIONS
 // VSNRAY_CXX_HAS_GENERALIZED_INITIALIZERS
+// VSNRAY_CXX_HAS_INHERITING_CONSTRUCTORS
 // VSNRAY_CXX_HAS_LAMBDAS
 // VSNRAY_CXX_HAS_NULLPTR
 // VSNRAY_CXX_HAS_OVERRIDE_CONTROL
@@ -76,6 +77,9 @@
 #   endif
 #   if __has_feature(cxx_generalized_initializers)
 #       define VSNRAY_CXX_HAS_GENERALIZED_INITIALIZERS
+#   endif
+#   if __has_feature(cxx_inheriting_constructors)
+#       define VSNRAY_CXX_HAS_INHERITING_CONSTRUCTORS
 #   endif
 #   if __has_feature(cxx_lambdas)
 #       define VSNRAY_CXX_HAS_LAMBDAS
@@ -122,6 +126,9 @@
 #       if VSNRAY_CXX_GCC >= 407
 #           define VSNRAY_CXX_HAS_ALIAS_TEMPLATES
 #           define VSNRAY_CXX_HAS_OVERRIDE_CONTROL
+#       endif
+#       if VSNRAY_CXX_GCC >= 408
+#           define VSNRAY_CXX_HAS_INHERITING_CONSTRUCTORS
 #       endif
 #   endif
 #elif VSNRAY_CXX_MSVC

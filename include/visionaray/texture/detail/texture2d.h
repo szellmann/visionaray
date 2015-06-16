@@ -23,7 +23,9 @@ public:
     using base_type = Base;
     using value_type = T;
 
+#ifdef VSNRAY_CXX_HAS_INHERITING_CONSTRUCTORS
     using Base::Base;
+#endif
 
     static const size_t dimensions = 2;
 
