@@ -72,6 +72,11 @@ static const vec4 tfdata[4 * 4] = {
         { 1.0f, 1.0f, 1.0f, 0.05f }
         };
 
+
+//-------------------------------------------------------------------------------------------------
+// struct with state variables
+//
+
 struct renderer
 {
     using host_ray_type = basic_ray<simd::float4>;
@@ -113,55 +118,6 @@ struct renderer
 };
 
 std::unique_ptr<renderer> rend(nullptr);
-
-void mouse_func(int button, int state, int x, int y)
-{
-    using namespace visionaray::mouse;
-
-    mouse::button b = map_glut_button(button);
-    pos p = { x, y };
-
-    if (state == GLUT_DOWN)
-    {
-        for (auto it = rend->manips.begin(); it != rend->manips.end(); ++it)
-        {
-            (*it)->handle_mouse_down(visionaray::mouse_event(mouse::ButtonDown, b, p));
-        }
-        rend->down_pos = p;
-        rend->down_button = b;
-    }
-    else if (state == GLUT_UP)
-    {
-        for (auto it = rend->manips.begin(); it != rend->manips.end(); ++it)
-        {
-            (*it)->handle_mouse_up(visionaray::mouse_event(mouse::ButtonUp, b, p));
-        }
-        rend->up_pos = p;
-        rend->down_button = mouse::NoButton;
-    }
-}
-
-void motion_func(int x, int y)
-{
-    using namespace visionaray::mouse;
-
-    pos p = { x, y };
-    for (auto it = rend->manips.begin(); it != rend->manips.end(); ++it)
-    {
-        (*it)->handle_mouse_move( visionaray::mouse_event(mouse::Move, NoButton, p, rend->down_button, visionaray::keyboard::NoKey) );
-    }
-    rend->motion_pos = p;
-}
-
-void passive_motion_func(int x, int y)
-{
-    rend->motion_pos = { x, y };
-}
-
-void idle_func()
-{
-    glutPostRedisplay();
-}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -217,6 +173,7 @@ void display_func()
                     C(0.0)
                     );
 
+            // early-ray termination - don't traverse w/o a contribution
             if ( all(result.color.w >= 0.999) )
             {
                 break;
@@ -243,6 +200,71 @@ void display_func()
 
 
 //-------------------------------------------------------------------------------------------------
+// on idle, refresh the viewport
+//
+
+void idle_func()
+{
+    glutPostRedisplay();
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// mouse handling
+//
+
+void motion_func(int x, int y)
+{
+    using namespace visionaray::mouse;
+
+    pos p = { x, y };
+    for (auto it = rend->manips.begin(); it != rend->manips.end(); ++it)
+    {
+        (*it)->handle_mouse_move( visionaray::mouse_event(
+                mouse::Move,
+                NoButton,
+                p,
+                rend->down_button,
+                visionaray::keyboard::NoKey
+                ) );
+    }
+    rend->motion_pos = p;
+}
+
+void mouse_func(int button, int state, int x, int y)
+{
+    using namespace visionaray::mouse;
+
+    mouse::button b = map_glut_button(button);
+    pos p = { x, y };
+
+    if (state == GLUT_DOWN)
+    {
+        for (auto it = rend->manips.begin(); it != rend->manips.end(); ++it)
+        {
+            (*it)->handle_mouse_down(visionaray::mouse_event(mouse::ButtonDown, b, p));
+        }
+        rend->down_pos = p;
+        rend->down_button = b;
+    }
+    else if (state == GLUT_UP)
+    {
+        for (auto it = rend->manips.begin(); it != rend->manips.end(); ++it)
+        {
+            (*it)->handle_mouse_up(visionaray::mouse_event(mouse::ButtonUp, b, p));
+        }
+        rend->up_pos = p;
+        rend->down_button = mouse::NoButton;
+    }
+}
+
+void passive_motion_func(int x, int y)
+{
+    rend->motion_pos = { x, y };
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Main function, performs initialization
 //
 
@@ -256,11 +278,11 @@ int main(int argc, char** argv)
 
     glutInitWindowSize(512, 512);
     glutCreateWindow("Visionaray Volume Rendering Example");
-    glutMouseFunc(mouse_func);
-    glutMotionFunc(motion_func);
-    glutPassiveMotionFunc(passive_motion_func);
-    glutIdleFunc(idle_func);
     glutDisplayFunc(display_func);
+    glutIdleFunc(idle_func);
+    glutMotionFunc(motion_func);
+    glutMouseFunc(mouse_func);
+    glutPassiveMotionFunc(passive_motion_func);
 
     glewInit();
 
