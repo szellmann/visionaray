@@ -15,8 +15,22 @@ class basic_triangle : public primitive<P>
 {
 public:
 
-    typedef T scalar_type;
-    typedef vector<Dim, T> vec_type;
+    using scalar_type =  T;
+    using vec_type    =  vector<Dim, T>;
+
+public:
+
+    MATH_FUNC basic_triangle() = default;
+    MATH_FUNC basic_triangle(
+            vector<Dim, T> const& v1,
+            vector<Dim, T> const& e1,
+            vector<Dim, T> const& e2
+            )
+        : v1(v1)
+        , e1(e1)
+        , e2(e2)
+    {
+    }
 
     vec_type v1;
     vec_type e1;
@@ -26,5 +40,3 @@ public:
 } // MATH_NAMESPACE
 
 #endif // VSNRAY_MATH_TRIANGLE_H
-
-
