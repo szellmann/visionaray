@@ -661,6 +661,42 @@ inline auto get_surface_with_prims_impl(
     return get_surface_any_prim_impl(hr, normals, materials, NormalBinding());
 }
 
+template <
+    typename NormalBinding,
+    typename Normals,
+    typename TexCoords,
+    typename Materials,
+    typename Textures
+    >
+inline auto get_surface_with_prims_impl(
+        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
+        basic_triangle<3, float> const*                     primitives,
+        Normals                                             normals,
+        TexCoords                                           tex_coords,
+        Materials                                           materials,
+        Textures                                            textures,
+        basic_triangle<3, float>                            /* */,
+        NormalBinding                                       /* */
+        ) -> decltype( get_surface_any_prim_impl(
+                hr,
+                normals,
+                tex_coords,
+                materials,
+                textures,
+                NormalBinding())
+                )
+{
+    VSNRAY_UNUSED(primitives);
+    return get_surface_any_prim_impl(
+            hr,
+            normals,
+            tex_coords,
+            materials,
+            textures,
+            NormalBinding()
+            );
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Generic primitive / float4
