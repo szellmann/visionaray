@@ -18,5 +18,6 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${CMD_LINE_INCLUDE_DIR})
 
+add_subdirectory(intersector)
 add_subdirectory(minimal)
 add_subdirectory(volume)
