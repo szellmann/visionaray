@@ -22,6 +22,7 @@ option(VSNRAY_ENABLE_WARNINGS "Enable all warnings" ON)
 option(VSNRAY_ENABLE_PEDANTIC "Compile with pedantic enabled (Ignored if warnings are disabled)" ON)
 option(VSNRAY_ENABLE_COVER "Build OpenCOVER plugin" ON)
 option(VSNRAY_ENABLE_CUDA "Use CUDA, if available" ON)
+option(VSNRAY_ENABLE_EXAMPLES "Build the programming examples" OFF)
 
 #---------------------------------------------------------------------------------------------------
 # All VSNRAY_* options have to be specified before this include
