@@ -138,6 +138,29 @@ inline ReturnT tex2D_impl_choose_filter(
 //
 
 template <typename T>
+inline T tex2D_impl_expand_types(
+        T const*                                tex,
+        vector<2, float> const&                 coord,
+        vector<2, float> const&                 texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 2> const&  address_mode
+        )
+{
+    using return_type   = T;
+    using internal_type = float;
+
+    return tex2D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+template <typename T>
 inline vector<3, T> tex2D_impl_expand_types(
         vector<3, T> const*                     tex,
         vector<2, float> const&                 coord,
