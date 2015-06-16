@@ -15,10 +15,8 @@
 namespace visionaray
 {
 
-
 class camera;
 class mouse_event;
-
 
 class zoom_manipulator : public camera_manipulator
 {
@@ -41,9 +39,6 @@ private:
 
 };
 
-
 } // visionaray
 
 #endif // VSNRAY_ZOOM_MANIPULATOR_H
-
-

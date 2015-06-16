@@ -15,11 +15,9 @@
 namespace visionaray
 {
 
-
 class camera;
 class key_event;
 class mouse_event;
-
 
 class camera_manipulator
 {
@@ -53,9 +51,6 @@ public:
 
 };
 
-
 } // visionaray
 
 #endif // VSNRAY_CAMERA_MANIPULATOR_H
-
-

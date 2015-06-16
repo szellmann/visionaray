@@ -60,14 +60,14 @@
 #include <visionaray/pixel_unpack_buffer_rt.h>
 #endif
 
+#include <common/manip/arcball_manipulator.h>
+#include <common/manip/pan_manipulator.h>
+#include <common/manip/zoom_manipulator.h>
 #include <common/call_kernel.h>
 #include <common/render_bvh.h>
 #include <common/timer.h>
 #include <common/util.h>
 
-#include "manip/arcball_manipulator.h"
-#include "manip/pan_manipulator.h"
-#include "manip/zoom_manipulator.h"
 #include "default_scenes.h"
 #include "model.h"
 #include "obj_loader.h"

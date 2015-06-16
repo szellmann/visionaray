@@ -176,5 +176,3 @@ vec3 arcball_manipulator::to_sphere_coords(int x, int y)
     return v;
 
 }
-
-

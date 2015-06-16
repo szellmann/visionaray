@@ -15,10 +15,8 @@
 namespace visionaray
 {
 
-
 class camera;
 class mouse_event;
-
 
 class arcball_manipulator : public camera_manipulator
 {
@@ -47,9 +45,6 @@ private:
 
 };
 
-
 } // visionaray
 
 #endif // VSNRAY_ARCBALL_MANIPULATOR_H
-
-

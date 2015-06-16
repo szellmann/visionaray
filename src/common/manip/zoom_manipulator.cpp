@@ -84,5 +84,3 @@ void zoom_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
     camera_manipulator::handle_mouse_move(event);
 
 }
-
-

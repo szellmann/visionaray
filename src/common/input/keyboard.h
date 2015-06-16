@@ -20,11 +20,8 @@
 
 namespace visionaray
 {
-
-
 namespace keyboard
 {
-
 
 enum key
 {
@@ -158,7 +155,6 @@ static inline key map_glut_modifier(unsigned char code)
     return NoKey;
 }
 
-
 } // keyboard
 
 
@@ -179,9 +175,6 @@ private:
 
 };
 
-
 } // visionaray
 
 #endif // VSNRAY_INPUT_KEYBOARD_H
-
-

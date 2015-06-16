@@ -8,10 +8,8 @@
 
 #include <visionaray/exception.h>
 
-
 namespace visionaray
 {
-
 
 class invalid_key_modifier : public visionaray::exception
 {
@@ -24,9 +22,6 @@ public:
 
 };
 
-
 } // visionaray
 
 #endif // VSNRAY_INPUT_EXCEPTION_H
-
-

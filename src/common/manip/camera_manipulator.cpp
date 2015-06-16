@@ -40,5 +40,3 @@ void fp_manipulator::handle_key_press(key_event const& event)
     camera_manipulator::handle_key_press(event);
 
 }
-
-

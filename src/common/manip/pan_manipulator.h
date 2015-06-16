@@ -12,7 +12,6 @@
 namespace visionaray
 {
 
-
 class camera;
 class mouse_event;
 
@@ -37,10 +36,6 @@ private:
 
 };
 
-
 } // visionaray
 
-
 #endif // VSNRAY_PAN_MANIPULATOR_H
-
-

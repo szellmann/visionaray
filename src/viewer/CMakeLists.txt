@@ -40,19 +40,19 @@ include_directories(${CMD_LINE_INCLUDE_DIR})
 
 set(VIEWER_HEADERS
 
+    ${COMMON_DIR}/input/exception.h
+    ${COMMON_DIR}/input/keyboard.h
+    ${COMMON_DIR}/input/mouse.h
+
+    ${COMMON_DIR}/manip/arcball_manipulator.h
+    ${COMMON_DIR}/manip/camera_manipulator.h
+    ${COMMON_DIR}/manip/pan_manipulator.h
+    ${COMMON_DIR}/manip/zoom_manipulator.h
+
     ${COMMON_DIR}/call_kernel.h
     ${COMMON_DIR}/render_bvh.h
     ${COMMON_DIR}/timer.h
     ${COMMON_DIR}/util.h
-
-    input/exception.h
-    input/keyboard.h
-    input/mouse.h
-
-    manip/arcball_manipulator.h
-    manip/camera_manipulator.h
-    manip/pan_manipulator.h
-    manip/zoom_manipulator.h
 
     default_scenes.h
     image.h
@@ -62,10 +62,10 @@ set(VIEWER_HEADERS
 
 set(VIEWER_SOURCES
 
-    manip/arcball_manipulator.cpp
-    manip/camera_manipulator.cpp
-    manip/pan_manipulator.cpp
-    manip/zoom_manipulator.cpp
+    ${COMMON_DIR}/manip/arcball_manipulator.cpp
+    ${COMMON_DIR}/manip/camera_manipulator.cpp
+    ${COMMON_DIR}/manip/pan_manipulator.cpp
+    ${COMMON_DIR}/manip/zoom_manipulator.cpp
 
     jpeg_image.cpp
     obj_loader.cpp

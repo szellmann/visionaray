@@ -23,8 +23,6 @@
 
 namespace visionaray
 {
-
-
 namespace mouse
 {
 
@@ -136,9 +134,6 @@ private:
 
 };
 
-
 } // visionaray
 
 #endif // VSNRAY_INPUT_MOUSE_H
-
-
