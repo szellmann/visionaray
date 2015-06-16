@@ -406,7 +406,7 @@ inline auto get_surface_with_prims_impl(
         basic_triangle<3, float>                    /* */,
         NormalBinding                               /* */
         )
-    -> surface<typename std::iterator_traits<Materials>::value_type>
+    -> decltype( get_surface_any_prim_impl(hr, normals, materials, NormalBinding()) )
 {
     VSNRAY_UNUSED(primitives);
     return get_surface_any_prim_impl(hr, normals, materials, NormalBinding());
