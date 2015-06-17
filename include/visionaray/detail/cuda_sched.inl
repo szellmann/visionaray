@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <type_traits>
+
 #include <cuda_runtime_api.h>
 
 #include "sched_common.h"
@@ -15,16 +17,24 @@ namespace detail
 // CUDA kernels
 //
 
-template <typename R, typename PxSamplerT, typename V, typename RTRef, typename K>
+template <
+    typename R,
+    typename PxSamplerT,
+    typename Viewport,
+    typename Mat4,
+    typename RTRef,
+    typename K
+    >
 __global__ void render(
-        matrix<4, 4, float> view_matrix,
-        matrix<4, 4, float> inv_view_matrix,
-        matrix<4, 4, float> proj_matrix,
-        matrix<4, 4, float> inv_proj_matrix,
-        V                   viewport,
-        RTRef               rt_ref,
-        K                   kernel,
-        unsigned            frame_num
+        std::true_type  /* has matrix */,
+        Viewport        viewport,
+        Mat4            view_matrix,
+        Mat4            inv_view_matrix,
+        Mat4            proj_matrix,
+        Mat4            inv_proj_matrix,
+        RTRef           rt_ref,
+        K               kernel,
+        unsigned        frame_num
         )
 {
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -50,16 +60,24 @@ __global__ void render(
             );
 }
 
-template <typename R, typename PxSamplerT, typename Vec3, typename V, typename RTRef, typename K>
+template <
+    typename R,
+    typename PxSamplerT,
+    typename Viewport,
+    typename Vec3,
+    typename RTRef,
+    typename K
+    >
 __global__ void render(
-        Vec3        eye,
-        Vec3        u,
-        Vec3        v,
-        Vec3        w,
-        V           viewport,
-        RTRef       rt_ref,
-        K           kernel,
-        unsigned    frame_num
+        std::false_type /* has matrix */,
+        Viewport        viewport,
+        Vec3            eye,
+        Vec3            u,
+        Vec3            v,
+        Vec3            w,
+        RTRef           rt_ref,
+        K               kernel,
+        unsigned        frame_num
         )
 {
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -90,6 +108,31 @@ __global__ void render(
 // Dispatch functions
 //
 
+template <typename R, typename SP, typename V, typename ...Args>
+inline void cuda_sched_impl_call_render(V const& viewport, Args&&... args)
+{
+    dim3 block_size(16, 16);
+
+    using cuda_dim_t = decltype(block_size.x);
+
+    auto w = static_cast<cuda_dim_t>(viewport.w);
+    auto h = static_cast<cuda_dim_t>(viewport.h);
+
+    dim3 grid_size(
+            div_up(w, block_size.x),
+            div_up(h, block_size.y)
+            );
+
+    render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
+            typename detail::sched_params_has_view_matrix<SP>::type(),
+            viewport,
+            std::forward<Args>(args)...
+            );
+
+    cudaPeekAtLastError();
+    cudaDeviceSynchronize();
+}
+
 template <typename R, typename K, typename SP>
 inline void cuda_sched_impl_frame(
         K               kernel,
@@ -103,31 +146,16 @@ inline void cuda_sched_impl_frame(
     auto inv_proj_matrix    = inverse(sparams.proj_matrix);
     auto viewport           = sparams.viewport;
 
-    dim3 block_size(16, 16);
-
-    using cuda_dim_t = decltype(block_size.x);
-
-    auto w = static_cast<cuda_dim_t>(viewport.w);
-    auto h = static_cast<cuda_dim_t>(viewport.h);
-
-    dim3 grid_size
-    (
-        div_up(w, block_size.x),
-        div_up(h, block_size.y)
-    );
-    render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
+    cuda_sched_impl_call_render<R, SP>(
+            viewport,
             sparams.view_matrix,
             inv_view_matrix,
             sparams.proj_matrix,
             inv_proj_matrix,
-            viewport,
             rt_ref,
             kernel,
             frame_num
             );
-
-    cudaPeekAtLastError();
-    cudaDeviceSynchronize();
 }
 
 template <typename R, typename K, typename SP>
@@ -151,31 +179,16 @@ inline void cuda_sched_impl_frame(
     auto cam_v = u * tan(sparams.cam.fovy() / 2.0f);
     auto cam_w = -f;
 
-    dim3 block_size(16, 16);
-
-    using cuda_dim_t = decltype(block_size.x);
-
-    auto w = static_cast<cuda_dim_t>(viewport.w);
-    auto h = static_cast<cuda_dim_t>(viewport.h);
-
-    dim3 grid_size
-    (
-        div_up(w, block_size.x),
-        div_up(h, block_size.y)
-    );
-    render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
+    cuda_sched_impl_call_render<R, SP>(
+            viewport,
             eye,
             cam_u,
             cam_v,
             cam_w,
-            viewport,
             rt_ref,
             kernel,
             frame_num
             );
-
-    cudaPeekAtLastError();
-    cudaDeviceSynchronize();
 }
 
 } // detail
