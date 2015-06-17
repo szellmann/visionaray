@@ -25,50 +25,33 @@
 namespace visionaray
 {
 
-//-------------------------------------------------------------------------------------------------
-// tex1D - general case and specializations
-//
-
 template <typename Tex, typename FloatT>
-inline typename Tex::value_type tex1D(Tex const& tex, FloatT coord)
+inline auto tex1D(Tex const& tex, FloatT coord)
+    -> decltype( detail::tex1D(tex, coord) )
 {
-
     static_assert(Tex::dimensions == 1, "Incompatible texture type");
 
-    // general case: return type equals texel type
-    typedef typename Tex::value_type return_type;
-
-    return detail::tex1D<return_type>( tex, coord );
-
+    return detail::tex1D( tex, coord );
 }
 
 
-template <typename Tex>
-inline vector<4, simd::float4> tex1D(Tex const& tex, simd::float4 coord)
-{
-
-    static_assert(Tex::dimensions == 1, "Incompatible texture type");
-
-    // special case for AoS rgba colors
-    typedef vector<4, simd::float4> return_type;
-
-    return detail::tex1D<return_type>( tex, coord );
-
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// tex2D - general case and specializations
-//
-
 template <typename Tex, typename FloatT>
-inline typename Tex::value_type tex2D(Tex const& tex, vector<2, FloatT> coord)
+inline auto tex2D(Tex const& tex, vector<2, FloatT> coord)
+    -> decltype( detail::tex2D(tex, coord) )
 {
     static_assert(Tex::dimensions == 2, "Incompatible texture type");
 
-    using return_type = typename Tex::value_type;
+    return detail::tex2D( tex, coord );
+}
 
-    return detail::tex2D<return_type>( tex, coord );
+
+template <typename Tex, typename FloatT>
+inline auto tex3D(Tex const& tex, vector<3, FloatT> coord)
+    -> decltype( detail::tex3D(tex, coord) )
+{
+    static_assert(Tex::dimensions == 3, "Incompatible texture type");
+
+    return detail::tex3D( tex, coord );
 }
 
 
@@ -96,38 +79,6 @@ tex2D(device_texture_ref<T, ReadMode, 2> const& tex, vector<2, float> coord)
 }
 
 #endif // __CUDACC__
-
-
-//-------------------------------------------------------------------------------------------------
-// tex3D - general case and specializations
-//
-
-template <typename Tex, typename FloatT>
-inline typename Tex::value_type tex3D(Tex const& tex, vector<3, FloatT> coord)
-{
-
-    static_assert(Tex::dimensions == 3, "Incompatible texture type");
-
-    // general case: return type equals texel type
-    typedef typename Tex::value_type return_type;
-
-    return detail::tex3D<return_type>( tex, coord );
-
-}
-
-
-template <typename Tex>
-inline simd::float4 tex3D(Tex const& tex, vector<3, simd::float4> coord)
-{
-
-    static_assert(Tex::dimensions == 3, "Incompatible texture type");
-
-    // special case: lookup four texels at once and return as 32-bit float vector
-    typedef simd::float4 return_type;
-
-    return detail::tex3D<return_type>( tex, coord );
-
-}
 
 
 } // visionaray

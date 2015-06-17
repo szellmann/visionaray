@@ -31,9 +31,6 @@ inline ReturnT nearest(
         std::array<tex_address_mode, 2> const&  address_mode
         )
 {
-
-    using visionaray::clamp;
-
     coord = map_tex_coord(coord, address_mode);
 
     vector<2, FloatT> lo(
@@ -211,8 +208,15 @@ inline vector<4, T> tex2D_impl_expand_types(
 // tex2D() dispatch function
 //
 
-template <typename ReturnT, typename Tex, typename FloatT>
-inline ReturnT tex2D(Tex const& tex, vector<2, FloatT> coord)
+template <typename Tex, typename FloatT>
+inline auto tex2D(Tex const& tex, vector<2, FloatT> coord)
+    -> decltype( tex2D_impl_expand_types(
+            tex.data(),
+            coord,
+            vector<2, FloatT>(),
+            tex.get_filter_mode(),
+            tex.get_address_mode()
+            ) )
 {
     static_assert(Tex::dimensions == 2, "Incompatible texture type");
 

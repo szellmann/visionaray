@@ -18,33 +18,34 @@ namespace detail
 {
 
 
-template <typename ReturnT, typename FloatT, typename TexelT>
+template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
 inline ReturnT nearest(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
         TexelT const*                           tex,
         FloatT                                  coord,
         FloatT                                  texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
-
     coord = map_tex_coord(coord, address_mode);
 
     FloatT lo = floor(coord * texsize);
     lo = clamp(lo, FloatT(0.0f), texsize - 1);
     return point(tex, lo, ReturnT());
-
 }
 
 
-template <typename ReturnT, typename FloatT, typename TexelT>
+template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
 inline ReturnT linear(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
         TexelT const*                           tex,
         FloatT                                  coord,
         FloatT                                  texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
-
     coord = map_tex_coord(coord, address_mode);
 
     FloatT texcoordf( coord * texsize - FloatT(0.5) );
@@ -54,18 +55,15 @@ inline ReturnT linear(
     FloatT hi = ceil(texcoordf);
 
 
-    // In visionaray, the return type is a float4.
-    // TODO: what if precision(ReturnT) < precision(FloatT)?
-    ReturnT samples[2] =
+    InternalT samples[2] =
     {
-        point(tex, lo, ReturnT()),
-        point(tex, hi, ReturnT())
+        InternalT( point(tex, lo, ReturnT()) ),
+        InternalT( point(tex, hi, ReturnT()) )
     };
 
-    FloatT u = texcoordf - lo;
+    auto u = texcoordf - lo;
 
     return lerp( samples[0], samples[1], u );
-
 }
 
 
@@ -126,41 +124,128 @@ inline ReturnT cubic(TexelT const* tex, FloatT coord, FloatT texsize, W0 w0, W1 
 }
 
 
-template <typename ReturnT, typename Tex, typename FloatT>
-inline ReturnT tex1D(Tex const& tex, FloatT coord)
+//-------------------------------------------------------------------------------------------------
+// Dispatch function to choose among filtering algorithms
+//
+
+template <typename ReturnT, typename FloatT, typename TexelT, typename InternalT>
+inline ReturnT tex1D_impl_choose_filter(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
+        TexelT const&                           tex,
+        FloatT                                  coord,
+        FloatT                                  texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
+        )
 {
-
-    static_assert(Tex::dimensions == 1, "Incompatible texture type");
-
-    FloatT texsize = tex.width();
-
-    switch (tex.get_filter_mode())
+    switch (filter_mode)
     {
 
     default:
         // fall-through
     case visionaray::Nearest:
-        return nearest<ReturnT>( tex.data(), coord, texsize, tex.get_address_mode() );
+        return nearest(
+                ReturnT(),
+                InternalT(),
+                tex,
+                coord,
+                texsize,
+                address_mode
+                );
 
     case visionaray::Linear:
-        return linear<ReturnT>( tex.data(), coord, texsize, tex.get_address_mode() );
-
-    case visionaray::BSpline:
-//        return cubic2<ReturnT>( tex.data(), coord, texsize );
-
-/*    case visionaray::BSplineInterpol:
-        return cubic<ReturnT>( tex.prefiltered_data, coord, texsize,
-            bspline::w0_func<FloatT>(), bspline::w1_func<FloatT>(),
-            bspline::w2_func<FloatT>(), bspline::w3_func<FloatT>() );*/
-
-
-    case visionaray::CardinalSpline:
-        return cubic<ReturnT>( tex.data(), coord, texsize,
-            cspline::w0_func<FloatT>(), cspline::w1_func<FloatT>(),
-            cspline::w2_func<FloatT>(), cspline::w3_func<FloatT>() );
+        return linear(
+                ReturnT(),
+                InternalT(),
+                tex,
+                coord,
+                texsize,
+                address_mode
+                );
 
     }
 
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Dispatch function overloads to deduce texture type and internal texture type
+//
+
+template <typename T>
+inline T tex1D_impl_expand_types(
+        T const*                                tex,
+        float                                   coord,
+        float                                   texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
+        )
+{
+    using return_type   = T;
+    using internal_type = float;
+
+    return tex1D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+
+template <typename T>
+inline vector<4, simd::float4> tex1D_impl_expand_types(
+        vector<4, T> const*                     tex,
+        simd::float4 const&                     coord,
+        simd::float4 const&                     texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
+        )
+{
+    using return_type   = vector<4, simd::float4>;
+    using internal_type = vector<4, simd::float4>;
+
+    return tex1D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// tex1D() dispatch function
+//
+
+template <typename Tex, typename FloatT>
+inline auto tex1D(Tex const& tex, FloatT coord)
+    -> decltype( tex1D_impl_expand_types(
+            tex.data(),
+            coord,
+            FloatT(),
+            tex.get_filter_mode(),
+            tex.get_address_mode()
+            ) )
+{
+    static_assert(Tex::dimensions == 1, "Incompatible texture type");
+
+    auto texsize = FloatT( tex.width() );
+
+    return tex1D_impl_expand_types(
+            tex.data(),
+            coord,
+            texsize,
+            tex.get_filter_mode(),
+            tex.get_address_mode()
+            );
 }
 
 
