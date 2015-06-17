@@ -318,7 +318,7 @@ inline vector<3, T> tex3D_impl_expand_types(
     using return_type   = vector<3, T>;
     using internal_type = vector<3, float>;
 
-    tex3D_impl_choose_filter(
+    return tex3D_impl_choose_filter(
             return_type(),
             internal_type(),
             tex,
