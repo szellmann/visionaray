@@ -722,9 +722,11 @@ struct call_kernel_with_intersector
     K& kernel;
     I& isect;
 
+    VSNRAY_FUNC
     explicit call_kernel_with_intersector(K& k, I& i) : kernel(k) , isect(i) {}
 
     template <typename ...Args>
+    VSNRAY_FUNC
     auto operator()(Args&&... args) const
         -> decltype( kernel(isect, std::forward<Args>(args)...) )
     {
