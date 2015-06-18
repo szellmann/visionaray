@@ -197,6 +197,8 @@ inline T tex1D_impl_expand_types(
 }
 
 
+// SIMD: AoS textures
+
 template <typename T>
 inline vector<4, simd::float4> tex1D_impl_expand_types(
         vector<4, T> const*                     tex,
@@ -208,6 +210,31 @@ inline vector<4, simd::float4> tex1D_impl_expand_types(
 {
     using return_type   = vector<4, simd::float4>;
     using internal_type = vector<4, simd::float4>;
+
+    return tex1D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+
+// SIMD: SoA textures
+
+inline simd::float4 tex1D_impl_expand_types(
+        simd::float4 const*                     tex,
+        float                                   coord,
+        float                                   texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
+        )
+{
+    using return_type   = simd::float4;
+    using internal_type = simd::float4;
 
     return tex1D_impl_choose_filter(
             return_type(),

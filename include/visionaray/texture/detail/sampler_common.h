@@ -65,6 +65,9 @@ inline RT point(T const* tex, ptrdiff_t idx, RT = RT())
     return tex[idx];
 }
 
+
+// SIMD: if multi-channel texture, assume AoS
+
 template <typename T>
 inline simd::float4 point(T const* tex, simd::float4 idx, simd::float4 /* result type */)
 {
@@ -122,6 +125,18 @@ inline vector<4, simd::float4> point(
     colors = transpose(colors);
     return colors;
 
+}
+
+
+// SIMD: special case, if multi-channel texture, assume SoA
+
+inline simd::float4 point(
+        simd::float4 const* tex,
+        float               coord,
+        simd::float4        /* result type */
+        )
+{
+    return tex[static_cast<int>(coord)];
 }
 
 
