@@ -103,13 +103,113 @@ __global__ void render(
             );
 }
 
+template <
+    typename R,
+    typename PxSamplerT,
+    typename Intersector,
+    typename Viewport,
+    typename Mat4,
+    typename RTRef,
+    typename K
+    >
+__global__ void render(
+        detail::have_intersector_tag    /* */,
+        Intersector                     intersector,
+        std::true_type                  /* has matrix */,
+        Viewport                        viewport,
+        Mat4                            view_matrix,
+        Mat4                            inv_view_matrix,
+        Mat4                            proj_matrix,
+        Mat4                            inv_proj_matrix,
+        RTRef                           rt_ref,
+        K                               kernel,
+        unsigned                        frame_num
+        )
+{
+    auto x = blockIdx.x * blockDim.x + threadIdx.x;
+    auto y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (x >= viewport.w || y >= viewport.h)
+    {
+        return;
+    }
+
+    sample_pixel<R>(
+            kernel,
+            detail::have_intersector_tag(),
+            intersector,
+            PxSamplerT(),
+            rt_ref,
+            x,
+            y,
+            frame_num,
+            viewport,
+            view_matrix,
+            inv_view_matrix,
+            proj_matrix,
+            inv_proj_matrix
+            );
+}
+
+template <
+    typename R,
+    typename PxSamplerT,
+    typename Intersector,
+    typename Viewport,
+    typename Vec3,
+    typename RTRef,
+    typename K
+    >
+__global__ void render(
+        detail::have_intersector_tag    /* */,
+        Intersector                     intersector,
+        std::false_type                 /* has matrix */,
+        Viewport                        viewport,
+        Vec3                            eye,
+        Vec3                            u,
+        Vec3                            v,
+        Vec3                            w,
+        RTRef                           rt_ref,
+        K                               kernel,
+        unsigned                        frame_num
+        )
+{
+    auto x = blockIdx.x * blockDim.x + threadIdx.x;
+    auto y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (x >= viewport.w || y >= viewport.h)
+    {
+        return;
+    }
+
+    sample_pixel<R>(
+            kernel,
+            detail::have_intersector_tag(),
+            intersector,
+            PxSamplerT(),
+            rt_ref,
+            x,
+            y,
+            frame_num,
+            viewport,
+            eye,
+            u,
+            v,
+            w
+            );
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Dispatch functions
 //
 
-template <typename R, typename SP, typename V, typename ...Args>
-inline void cuda_sched_impl_call_render(V const& viewport, Args&&... args)
+template <typename R, typename SP, typename Viewport, typename ...Args>
+inline void cuda_sched_impl_call_render(
+        SP              /* */,
+        Viewport const& viewport,
+        Args&&...       args
+        )
 {
     dim3 block_size(16, 16);
 
@@ -133,6 +233,47 @@ inline void cuda_sched_impl_call_render(V const& viewport, Args&&... args)
     cudaDeviceSynchronize();
 }
 
+template <
+    typename R,
+    template <typename...> class SP,
+    typename Intersector,
+    typename ...SPArgs,
+    typename Viewport,
+    typename ...Args
+    >
+inline void cuda_sched_impl_call_render(
+        SP<sched_params_intersector_base<Intersector>, SPArgs...> sparams,
+        Viewport const& viewport,
+        Args&&... args
+        )
+{
+    using SPI = SP<sched_params_intersector_base<Intersector>, SPArgs...>;
+
+    dim3 block_size(16, 16);
+
+    using cuda_dim_t = decltype(block_size.x);
+
+    auto w = static_cast<cuda_dim_t>(viewport.w);
+    auto h = static_cast<cuda_dim_t>(viewport.h);
+
+    dim3 grid_size(
+            div_up(w, block_size.x),
+            div_up(h, block_size.y)
+            );
+
+    render<R, typename SPI::pixel_sampler_type, Intersector><<<grid_size, block_size>>>(
+            detail::have_intersector_tag(),
+            sparams.intersector,
+            typename detail::sched_params_has_view_matrix<SPI>::type(),
+            viewport,
+            std::forward<Args>(args)...
+            );
+
+    cudaPeekAtLastError();
+    cudaDeviceSynchronize();
+}
+
+
 template <typename R, typename K, typename SP>
 inline void cuda_sched_impl_frame(
         K               kernel,
@@ -146,7 +287,8 @@ inline void cuda_sched_impl_frame(
     auto inv_proj_matrix    = inverse(sparams.proj_matrix);
     auto viewport           = sparams.viewport;
 
-    cuda_sched_impl_call_render<R, SP>(
+    cuda_sched_impl_call_render<R>(
+            sparams,
             viewport,
             sparams.view_matrix,
             inv_view_matrix,
@@ -179,7 +321,8 @@ inline void cuda_sched_impl_frame(
     auto cam_v = u * tan(sparams.cam.fovy() / 2.0f);
     auto cam_w = -f;
 
-    cuda_sched_impl_call_render<R, SP>(
+    cuda_sched_impl_call_render<R>(
+            sparams,
             viewport,
             eye,
             cam_u,
