@@ -568,17 +568,34 @@ inline vector<3, T> temperature_to_rgb(T t)
 // TODO: use make_intersector(lambda...) instead
 //
 
-struct mask_intersector : basic_intersector<mask_intersector>
+template <typename Texture>
+struct mask_intersector : basic_intersector<mask_intersector<Texture>>
 {
-    using basic_intersector<mask_intersector>::operator();
+    using basic_intersector<mask_intersector<Texture>>::operator();
 
     template <typename R, typename S>
+    VSNRAY_FUNC
     auto operator()(R const& ray, basic_triangle<3, S> const& tri)
         -> decltype( intersect(ray, tri) )
     {
         // TODO: support all ISA
-        assert( tex_coords );
-        assert( textures );
+
+#ifdef __CUDA_ARCH__
+
+        auto hr = intersect(ray, tri);
+
+        if (!hr.hit)
+        {
+            return hr;
+        }
+
+        auto tc = get_tex_coord(tex_coords, hr);
+        auto const& tex = textures[hr.geom_id];
+        auto tex_color = tex.width() > 0 && tex.height() > 0
+                       ? vector<4, float>(tex2D(tex, tc))
+                       : vector<4, float>(1.0);
+
+#else
 
         auto hr = intersect(ray, tri);
 
@@ -613,6 +630,7 @@ struct mask_intersector : basic_intersector<mask_intersector>
                 tex_color4[2],
                 tex_color4[3]
                 );
+#endif // __CUDA_ARCH__
   
         hr.hit &= tex_color.w >= S(0.01);
  
@@ -620,7 +638,7 @@ struct mask_intersector : basic_intersector<mask_intersector>
     }
 
     vec2 const*                 tex_coords;
-    host_tex_ref_type const*    textures;
+    Texture const*              textures;
 };
 
 
@@ -682,7 +700,8 @@ struct drawable::impl
     device_render_target_type               device_rt;
 #endif
 
-    mask_intersector                        intersector;
+    mask_intersector<host_tex_ref_type>     host_intersector;
+    mask_intersector<device_tex_ref>        device_intersector;
 
     mat4                                    view_matrix;
     mat4                                    proj_matrix;
@@ -898,7 +917,8 @@ void drawable::impl::call_kernel(KParams const& params)
                     view_matrix,
                     proj_matrix,
                     viewport,
-                    device_rt
+                    device_rt,
+                    device_intersector
                     );
 #endif
         }
@@ -914,7 +934,7 @@ void drawable::impl::call_kernel(KParams const& params)
                     proj_matrix,
                     viewport,
                     host_rt,
-                    intersector
+                    host_intersector
                     );
 #endif
         }
@@ -1228,6 +1248,9 @@ void drawable::drawImplementation(osg::RenderInfo&) const
                 impl_->state->algo == Pathtracing ? vec4(1.0f) : ambient
                 );
 
+        impl_->device_intersector.tex_coords = kparams.tex_coords;
+        impl_->device_intersector.textures   = kparams.textures;
+
         impl_->call_kernel(kparams);
 
         impl_->device_rt.display_color_buffer();
@@ -1251,8 +1274,8 @@ void drawable::drawImplementation(osg::RenderInfo&) const
                 impl_->state->algo == Pathtracing ? vec4(1.0f) : ambient
                 );
 
-        impl_->intersector.tex_coords = kparams.tex_coords;
-        impl_->intersector.textures   = kparams.textures;
+        impl_->host_intersector.tex_coords = kparams.tex_coords;
+        impl_->host_intersector.textures   = kparams.textures;
 
         impl_->call_kernel(kparams);
 
