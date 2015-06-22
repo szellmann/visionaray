@@ -73,7 +73,8 @@ using host_sched_type           = tiled_sched<host_ray_type>;
 
 #ifdef __CUDACC__
 using device_tex_type           = device_texture<vector<4, unorm<8>>, NormalizedFloat, 2>;
-using device_tex_ref            = device_texture_ref<vector<4, unorm<8>>, NormalizedFloat, 2>;
+using device_tex_ref_type       = device_texture_ref<vector<4, unorm<8>>, NormalizedFloat, 2>;
+using device_texture_list       = thrust::device_vector<device_tex_ref_type>;
 using device_texture_map        = std::map<std::string, device_tex_type>;
 using device_ray_type           = basic_ray<float>;
 using device_bvh_type           = device_index_bvh<triangle_type>;
@@ -694,14 +695,14 @@ struct drawable::impl
     thrust::device_vector<vec2>             device_tex_coords;
     thrust::device_vector<material_type>    device_materials;
     device_texture_map                      device_textures;
-    thrust::device_vector<device_tex_ref>   device_texture_refs;
+    device_texture_list                     device_texture_refs;
     device_bvh_type                         device_bvh;
     device_sched_type                       device_sched;
     device_render_target_type               device_rt;
 #endif
 
     mask_intersector<host_tex_ref_type>     host_intersector;
-    mask_intersector<device_tex_ref>        device_intersector;
+    mask_intersector<device_tex_ref_type>   device_intersector;
 
     mat4                                    view_matrix;
     mat4                                    proj_matrix;
@@ -877,7 +878,7 @@ void drawable::impl::update_device_data()
             {
                 if ( texture_refs[i].data() == host_tex.data() )
                 {
-                    device_texture_refs[i] = device_tex_ref(it->second);
+                    device_texture_refs[i] = device_tex_ref_type(it->second);
                 }
             }
         }
