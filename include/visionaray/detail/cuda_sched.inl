@@ -21,20 +21,16 @@ template <
     typename R,
     typename PxSamplerT,
     typename Viewport,
-    typename Mat4,
     typename RTRef,
-    typename K
+    typename K,
+    typename ...Args
     >
 __global__ void render(
-        std::true_type  /* has matrix */,
         Viewport        viewport,
-        Mat4            view_matrix,
-        Mat4            inv_view_matrix,
-        Mat4            proj_matrix,
-        Mat4            inv_proj_matrix,
         RTRef           rt_ref,
         K               kernel,
-        unsigned        frame_num
+        unsigned        frame_num,
+        Args...         args
         )
 {
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -53,53 +49,7 @@ __global__ void render(
             y,
             frame_num,
             viewport,
-            view_matrix,
-            inv_view_matrix,
-            proj_matrix,
-            inv_proj_matrix
-            );
-}
-
-template <
-    typename R,
-    typename PxSamplerT,
-    typename Viewport,
-    typename Vec3,
-    typename RTRef,
-    typename K
-    >
-__global__ void render(
-        std::false_type /* has matrix */,
-        Viewport        viewport,
-        Vec3            eye,
-        Vec3            u,
-        Vec3            v,
-        Vec3            w,
-        RTRef           rt_ref,
-        K               kernel,
-        unsigned        frame_num
-        )
-{
-    auto x = blockIdx.x * blockDim.x + threadIdx.x;
-    auto y = blockIdx.y * blockDim.y + threadIdx.y;
-
-    if (x >= viewport.w || y >= viewport.h)
-    {
-        return;
-    }
-
-    sample_pixel<R>(
-            kernel,
-            PxSamplerT(),
-            rt_ref,
-            x,
-            y,
-            frame_num,
-            viewport,
-            eye,
-            u,
-            v,
-            w
+            args...
             );
 }
 
@@ -108,22 +58,18 @@ template <
     typename PxSamplerT,
     typename Intersector,
     typename Viewport,
-    typename Mat4,
     typename RTRef,
-    typename K
+    typename K,
+    typename ...Args
     >
 __global__ void render(
         detail::have_intersector_tag    /* */,
         Intersector                     intersector,
-        std::true_type                  /* has matrix */,
         Viewport                        viewport,
-        Mat4                            view_matrix,
-        Mat4                            inv_view_matrix,
-        Mat4                            proj_matrix,
-        Mat4                            inv_proj_matrix,
         RTRef                           rt_ref,
         K                               kernel,
-        unsigned                        frame_num
+        unsigned                        frame_num,
+        Args...                         args
         )
 {
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -144,58 +90,7 @@ __global__ void render(
             y,
             frame_num,
             viewport,
-            view_matrix,
-            inv_view_matrix,
-            proj_matrix,
-            inv_proj_matrix
-            );
-}
-
-template <
-    typename R,
-    typename PxSamplerT,
-    typename Intersector,
-    typename Viewport,
-    typename Vec3,
-    typename RTRef,
-    typename K
-    >
-__global__ void render(
-        detail::have_intersector_tag    /* */,
-        Intersector                     intersector,
-        std::false_type                 /* has matrix */,
-        Viewport                        viewport,
-        Vec3                            eye,
-        Vec3                            u,
-        Vec3                            v,
-        Vec3                            w,
-        RTRef                           rt_ref,
-        K                               kernel,
-        unsigned                        frame_num
-        )
-{
-    auto x = blockIdx.x * blockDim.x + threadIdx.x;
-    auto y = blockIdx.y * blockDim.y + threadIdx.y;
-
-    if (x >= viewport.w || y >= viewport.h)
-    {
-        return;
-    }
-
-    sample_pixel<R>(
-            kernel,
-            detail::have_intersector_tag(),
-            intersector,
-            PxSamplerT(),
-            rt_ref,
-            x,
-            y,
-            frame_num,
-            viewport,
-            eye,
-            u,
-            v,
-            w
+            args...
             );
 }
 
@@ -224,7 +119,6 @@ inline void cuda_sched_impl_call_render(
             );
 
     render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
-            typename detail::sched_params_has_view_matrix<SP>::type(),
             viewport,
             std::forward<Args>(args)...
             );
@@ -264,7 +158,6 @@ inline void cuda_sched_impl_call_render(
     render<R, typename SPI::pixel_sampler_type, Intersector><<<grid_size, block_size>>>(
             detail::have_intersector_tag(),
             sparams.intersector,
-            typename detail::sched_params_has_view_matrix<SPI>::type(),
             viewport,
             std::forward<Args>(args)...
             );
@@ -290,13 +183,13 @@ inline void cuda_sched_impl_frame(
     cuda_sched_impl_call_render<R>(
             sparams,
             viewport,
+            rt_ref,
+            kernel,
+            frame_num,
             sparams.view_matrix,
             inv_view_matrix,
             sparams.proj_matrix,
-            inv_proj_matrix,
-            rt_ref,
-            kernel,
-            frame_num
+            inv_proj_matrix
             );
 }
 
@@ -324,13 +217,13 @@ inline void cuda_sched_impl_frame(
     cuda_sched_impl_call_render<R>(
             sparams,
             viewport,
+            rt_ref,
+            kernel,
+            frame_num,
             eye,
             cam_u,
             cam_v,
-            cam_w,
-            rt_ref,
-            kernel,
-            frame_num
+            cam_w
             );
 }
 
