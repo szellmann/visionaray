@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_VIEWER_JPEG_IMAGE_H
-#define VSNRAY_VIEWER_JPEG_IMAGE_H
+#ifndef VSNRAY_COMMON_JPEG_IMAGE_H
+#define VSNRAY_COMMON_JPEG_IMAGE_H
 
 #if defined(VSNRAY_HAVE_JPEG)
 
@@ -39,6 +39,4 @@ private:
 
 #endif // VSNRAY_HAVE_JPEG
 
-#endif // VSNRAY_VIEWER_JPEG_IMAGE_H
-
-
+#endif // VSNRAY_COMMON_JPEG_IMAGE_H

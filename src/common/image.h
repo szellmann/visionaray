@@ -3,11 +3,9 @@
 
 #pragma once
 
-#ifndef VSNRAY_VIEWER_IMAGE_H
-#define VSNRAY_VIEWER_IMAGE_H
+#ifndef VSNRAY_COMMON_IMAGE_H
+#define VSNRAY_COMMON_IMAGE_H
 
 #include "jpeg_image.h"
 
-#endif // VSNRAY_VIEWER_IMAGE_H
-
-
+#endif // VSNRAY_COMMON_IMAGE_H

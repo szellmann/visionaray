@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_VIEWER_MODEL_H
-#define VSNRAY_VIEWER_MODEL_H
+#ifndef VSNRAY_COMMON_MODEL_H
+#define VSNRAY_COMMON_MODEL_H
 
 #include <visionaray/detail/aligned_vector.h>
 #include <visionaray/math/forward.h>
@@ -37,4 +37,4 @@ public:
 
 } // visionaray
 
-#endif // VSNRAY_VIEWER_MODEL_H
+#endif // VSNRAY_COMMON_MODEL_H

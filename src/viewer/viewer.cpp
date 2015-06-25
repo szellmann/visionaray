@@ -64,13 +64,11 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 #include <common/call_kernel.h>
+#include <common/model.h>
+#include <common/obj_loader.h>
 #include <common/render_bvh.h>
 #include <common/timer.h>
 #include <common/util.h>
-
-#include "default_scenes.h"
-#include "model.h"
-#include "obj_loader.h"
 
 
 using std::make_shared;

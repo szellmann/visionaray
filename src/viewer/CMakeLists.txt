@@ -50,14 +50,14 @@ set(VIEWER_HEADERS
     ${COMMON_DIR}/manip/zoom_manipulator.h
 
     ${COMMON_DIR}/call_kernel.h
+    ${COMMON_DIR}/image.h
+    ${COMMON_DIR}/jpeg_image.h
+    ${COMMON_DIR}/obj_loader.h
     ${COMMON_DIR}/render_bvh.h
     ${COMMON_DIR}/timer.h
     ${COMMON_DIR}/util.h
 
     default_scenes.h
-    image.h
-    jpeg_image.h
-    obj_loader.h
 )
 
 set(VIEWER_SOURCES
@@ -67,8 +67,8 @@ set(VIEWER_SOURCES
     ${COMMON_DIR}/manip/pan_manipulator.cpp
     ${COMMON_DIR}/manip/zoom_manipulator.cpp
 
-    jpeg_image.cpp
-    obj_loader.cpp
+    ${COMMON_DIR}/jpeg_image.cpp
+    ${COMMON_DIR}/obj_loader.cpp
 
 )
 
