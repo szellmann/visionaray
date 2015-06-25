@@ -250,6 +250,38 @@ inline auto get_normal(Normals normals, HR const& hr, normals_per_vertex_binding
 
 
 //-------------------------------------------------------------------------------------------------
+// Gather four normals with SSE
+//
+
+template <typename Normals>
+inline vector<3, simd::float4> get_normal(
+        Normals                                             normals,
+        hit_record<simd::ray4, primitive<unsigned>> const&  hr
+        )
+{
+    using N = typename std::iterator_traits<Normals>::value_type;
+
+    auto hr4 = simd::unpack(hr);
+
+    auto get_norm = [&](int x)
+    {
+        return hr4[x].hit ? normals[hr4[x].prim_id] : N();
+    };
+
+    auto n1 = get_norm(0);
+    auto n2 = get_norm(1);
+    auto n3 = get_norm(2);
+    auto n4 = get_norm(3);
+
+    return vector<3, simd::float4>(
+            simd::float4( n1.x, n2.x, n3.x, n4.x ),
+            simd::float4( n1.y, n2.y, n3.y, n4.y ),
+            simd::float4( n1.z, n2.z, n3.z, n4.z )
+            );
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Get texture coordinate from array
 //
 
