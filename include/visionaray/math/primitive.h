@@ -9,12 +9,6 @@
 namespace MATH_NAMESPACE
 {
 
-namespace detail
-{
-static unsigned const SpherePrimitive   = 0x00;
-static unsigned const TrianglePrimitive = 0x01;
-} // detail
-
 template <typename T /* (unsigned) int type */>
 struct primitive
 {
@@ -27,5 +21,3 @@ struct primitive
 } // visionaray
 
 #endif // VSNRAY_MATH_PRIMITIVE_H
-
-

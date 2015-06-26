@@ -89,7 +89,6 @@ next:
 
             result.hit      |= closer;
             result.t         = select( closer, hr.t, result.t );
-            result.prim_type = select( closer, hr.prim_type, result.prim_type );
             result.prim_id   = select( closer, hr.prim_id, result.prim_id );
             result.geom_id   = select( closer, hr.geom_id, result.geom_id );
             result.u         = select( closer, hr.u, result.u );

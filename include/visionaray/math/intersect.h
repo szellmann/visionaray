@@ -41,10 +41,10 @@ struct hit_record<basic_ray<T>, basic_plane<3, T>>
 
 template <typename T>
 MATH_FUNC
-inline hit_record<basic_ray<T>, basic_plane<3, T>> intersect
-(
-    basic_ray<T> const& ray, basic_plane<3, T> const& p
-)
+inline hit_record<basic_ray<T>, basic_plane<3, T>> intersect(
+        basic_ray<T> const&         ray,
+        basic_plane<3, T> const&    p
+        )
 {
 
     hit_record<basic_ray<T>, basic_plane<3, T>> result;
@@ -107,10 +107,11 @@ struct hit_record<basic_ray<simd::float8>, basic_aabb<U>>
 
 template <typename T, typename U>
 MATH_FUNC
-inline hit_record<basic_ray<T>, basic_aabb<U>> intersect
-(
-    basic_ray<T> const& ray, basic_aabb<U> const& aabb, vector<3, T> inv_dir
-)
+inline hit_record<basic_ray<T>, basic_aabb<U>> intersect(
+        basic_ray<T> const&     ray,
+        basic_aabb<U> const&    aabb,
+        vector<3, T>            inv_dir
+        )
 {
     hit_record<basic_ray<T>, basic_aabb<U>> result;
 
@@ -147,7 +148,6 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
     typedef T value_type;
 
     bool hit;
-    unsigned prim_type;
     unsigned prim_id;
     unsigned geom_id;
 
@@ -166,7 +166,6 @@ struct hit_record<simd::ray4, primitive<unsigned>>
     typedef simd::float4 value_type;
 
     simd::mask4 hit;
-    simd::int4 prim_type;
     simd::int4 prim_id;
     simd::int4 geom_id;
 
@@ -187,9 +186,6 @@ inline std::array<hit_record<ray, primitive<unsigned>>, 4> unpack(hit_record<ray
     VSNRAY_ALIGN(16) unsigned hit[4];
     store(hit, hr.hit.i);
 
-    VSNRAY_ALIGN(16) unsigned prim_type[4];
-    store(prim_type, hr.prim_type);
-
     VSNRAY_ALIGN(16) unsigned prim_id[4];
     store(prim_id, hr.prim_id);
 
@@ -209,10 +205,10 @@ inline std::array<hit_record<ray, primitive<unsigned>>, 4> unpack(hit_record<ray
 
     return std::array<hit_record<ray, primitive<unsigned>>, 4>
     {{
-        { hit[0] != 0, prim_type[0], prim_id[0], geom_id[0], t[0], isect_pos[0], u[0], v[0] },
-        { hit[1] != 0, prim_type[1], prim_id[1], geom_id[1], t[1], isect_pos[1], u[1], v[1] },
-        { hit[2] != 0, prim_type[2], prim_id[2], geom_id[2], t[2], isect_pos[2], u[2], v[2] },
-        { hit[3] != 0, prim_type[3], prim_id[3], geom_id[3], t[3], isect_pos[3], u[3], v[3] },
+        { hit[0] != 0, prim_id[0], geom_id[0], t[0], isect_pos[0], u[0], v[0] },
+        { hit[1] != 0, prim_id[1], geom_id[1], t[1], isect_pos[1], u[1], v[1] },
+        { hit[2] != 0, prim_id[2], geom_id[2], t[2], isect_pos[2], u[2], v[2] },
+        { hit[3] != 0, prim_id[3], geom_id[3], t[3], isect_pos[3], u[3], v[3] },
     }};
 }
 
@@ -228,7 +224,6 @@ struct hit_record<simd::ray8, primitive<unsigned>>
     typedef simd::float8 value_type;
 
     simd::mask8 hit;
-    simd::int8 prim_type;
     simd::int8 prim_id;
     simd::int8 geom_id;
 
@@ -249,9 +244,6 @@ inline std::array<hit_record<ray, primitive<unsigned>>, 8> unpack(hit_record<ray
     VSNRAY_ALIGN(32) unsigned hit[8];
     store(hit, hr.hit.i);
 
-    VSNRAY_ALIGN(32) unsigned prim_type[8];
-    store(prim_type, hr.prim_type);
-
     VSNRAY_ALIGN(32) unsigned prim_id[8];
     store(prim_id, hr.prim_id);
 
@@ -271,14 +263,14 @@ inline std::array<hit_record<ray, primitive<unsigned>>, 8> unpack(hit_record<ray
 
     return std::array<hit_record<ray, primitive<unsigned>>, 8>
     {{
-        { hit[0] != 0, prim_type[0], prim_id[0], geom_id[0], t[0], isect_pos[0], u[0], v[0] },
-        { hit[1] != 0, prim_type[1], prim_id[1], geom_id[1], t[1], isect_pos[1], u[1], v[1] },
-        { hit[2] != 0, prim_type[2], prim_id[2], geom_id[2], t[2], isect_pos[2], u[2], v[2] },
-        { hit[3] != 0, prim_type[3], prim_id[3], geom_id[3], t[3], isect_pos[3], u[3], v[3] },
-        { hit[4] != 0, prim_type[4], prim_id[4], geom_id[4], t[4], isect_pos[4], u[4], v[4] },
-        { hit[5] != 0, prim_type[5], prim_id[5], geom_id[5], t[5], isect_pos[5], u[5], v[5] },
-        { hit[6] != 0, prim_type[6], prim_id[6], geom_id[6], t[6], isect_pos[6], u[6], v[6] },
-        { hit[7] != 0, prim_type[7], prim_id[7], geom_id[7], t[7], isect_pos[7], u[7], v[7] },
+        { hit[0] != 0, prim_id[0], geom_id[0], t[0], isect_pos[0], u[0], v[0] },
+        { hit[1] != 0, prim_id[1], geom_id[1], t[1], isect_pos[1], u[1], v[1] },
+        { hit[2] != 0, prim_id[2], geom_id[2], t[2], isect_pos[2], u[2], v[2] },
+        { hit[3] != 0, prim_id[3], geom_id[3], t[3], isect_pos[3], u[3], v[3] },
+        { hit[4] != 0, prim_id[4], geom_id[4], t[4], isect_pos[4], u[4], v[4] },
+        { hit[5] != 0, prim_id[5], geom_id[5], t[5], isect_pos[5], u[5], v[5] },
+        { hit[6] != 0, prim_id[6], geom_id[6], t[6], isect_pos[6], u[6], v[6] },
+        { hit[7] != 0, prim_id[7], geom_id[7], t[7], isect_pos[7], u[7], v[7] },
     }};
 }
 
@@ -293,10 +285,10 @@ inline std::array<hit_record<ray, primitive<unsigned>>, 8> unpack(hit_record<ray
 
 template <typename T, typename U>
 MATH_FUNC
-inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
-(
-    basic_ray<T> const& ray, basic_triangle<3, U, unsigned> const& tri
-)
+inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
+        basic_ray<T> const&                     ray,
+        basic_triangle<3, U, unsigned> const&   tri
+        )
 {
 
     typedef vector<3, T> vec_type;
@@ -341,7 +333,6 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
         return result;
     }
 
-    result.prim_type = detail::TrianglePrimitive;
     result.prim_id = tri.prim_id;
     result.geom_id = tri.geom_id;
     result.t = dot(e2, s2) * inv_div;
@@ -358,10 +349,10 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
 
 template <typename T, typename U>
 MATH_FUNC
-inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
-(
-    basic_ray<T> const& ray, basic_sphere<U, unsigned> const& sphere
-)
+inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
+        basic_ray<T> const&                 ray,
+        basic_sphere<U, unsigned> const&    sphere
+        )
 {
 
     typedef basic_ray<T> ray_type;
@@ -387,7 +378,6 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
 
     hit_record<basic_ray<T>, primitive<unsigned>> result;
     result.hit = valid;
-    result.prim_type = detail::SpherePrimitive;
     result.prim_id = sphere.prim_id;
     result.geom_id = sphere.geom_id;
     result.t = select( valid, select( t1 > t2, t2, t1 ), T(-1.0) );

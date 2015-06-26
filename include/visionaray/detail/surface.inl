@@ -9,8 +9,8 @@
 #include <iterator>
 #include <stdexcept>
 
-#include "../generic_prim.h"
 #include "../generic_material.h"
+#include "../generic_primitive.h"
 #include "../tags.h"
 
 namespace visionaray
@@ -495,12 +495,58 @@ inline auto get_surface_with_prims_impl(
 // Generic primitive / float
 //
 
+namespace detail
+{
+
+template <typename Normals, typename HR>
+class get_normal_from_generic_primitive_visitor
+{
+public:
+
+    using return_type = vector<3, float>;
+
+public:
+
+    VSNRAY_FUNC
+    get_normal_from_generic_primitive_visitor(
+            Normals     normals,
+            HR const&   hr
+            )
+        : normals_(normals)
+        , hr_(hr)
+    {
+    }
+
+    VSNRAY_FUNC
+    return_type operator()(basic_sphere<float> const& sphere) const
+    {
+        return (hr_.isect_pos - sphere.center) / sphere.radius; // TODO: (custom) get_normal() functions?
+    }
+
+    template <typename Primitive>
+    VSNRAY_FUNC
+    return_type operator()(Primitive const& primitive) const
+    {
+        VSNRAY_UNUSED(primitive);
+        return normals_[hr_.prim_id]; // TODO: mind normal binding!
+    }
+
+private:
+
+    Normals     normals_;
+    HR const&   hr_;
+
+};
+
+} // detail
+
 template <
     typename R,
     typename NormalBinding,
     typename Primitives,
     typename Normals,
-    typename Materials
+    typename Materials,
+    typename ...Ts
     >
 VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
@@ -508,33 +554,20 @@ inline auto get_surface_with_prims_impl(
         Primitives                                  primitives,
         Normals                                     normals,
         Materials                                   materials,
-        generic_prim                                /* */,
+        generic_primitive<Ts...>                    /* */,
         NormalBinding                               /* */
         )
     -> surface<typename std::iterator_traits<Materials>::value_type>
 {
     using M = typename std::iterator_traits<Materials>::value_type;
+    using HR = hit_record<R, primitive<unsigned>>;
 
-    vector<3, float> n;
-    switch (hr.prim_type)
-    {
+    detail::get_normal_from_generic_primitive_visitor<Normals, HR> visitor(
+            normals,
+            hr
+            );
 
-    case detail::TrianglePrimitive:
-        n = normals[hr.prim_id];
-        break;
-
-    case detail::SpherePrimitive:
-    {
-        basic_sphere<float> sphere = primitives[hr.prim_id].sphere;
-        n = (hr.isect_pos - sphere.center) / sphere.radius;
-        break;
-    }
-
-    default:
-        throw std::runtime_error("primitive type unspecified");
-
-    }
-
+    auto n = apply_visitor( visitor, primitives[hr.prim_id] );
     return surface<M>( n, materials[hr.geom_id] );
 }
 
@@ -780,54 +813,18 @@ inline auto get_surface_with_prims_impl(
 // Generic primitive / float4
 //
 
-template <typename NormalBinding, unsigned C, typename Normals>
-inline auto simd_normal
-(
-    hit_record<simd::ray4, primitive<unsigned>> const&  hr4,
-    hit_record<ray, primitive<unsigned>> const&         hr,
-    generic_prim const*                                 primitives,
-    Normals                                             normals,
-    generic_prim                                        /* */,
-    NormalBinding                                       /* */
-) -> typename std::iterator_traits<Normals>::value_type
-{
-    using N = typename std::iterator_traits<Normals>::value_type;
-
-    switch (hr.prim_type)
-    {
-
-    case detail::TrianglePrimitive:
-        return get_normal(normals, hr, NormalBinding());
-
-    case detail::SpherePrimitive:
-    {
-        basic_sphere<float> sphere = primitives[hr.prim_id].sphere;
-
-        auto tmp = hr4.isect_pos;
-        N isect_pos
-        (
-            _mm_cvtss_f32(simd::shuffle<C, 0, 0, 0>(tmp.x)),
-            _mm_cvtss_f32(simd::shuffle<C, 0, 0, 0>(tmp.y)),
-            _mm_cvtss_f32(simd::shuffle<C, 0, 0, 0>(tmp.z))
-        );
-
-        return (isect_pos - sphere.center) / sphere.radius;
-
-    }
-
-    default:
-         throw std::runtime_error("primitive type unspecified");
-
-    }
-}
-
-template <typename NormalBinding, typename Primitives, typename Normals, typename Materials>
+template <
+    typename NormalBinding,
+    typename Primitives,
+    typename Normals,
+    typename Materials,
+    typename ...Ts>
 inline auto get_surface_with_prims_impl(
         hit_record<simd::ray4, primitive<unsigned>> const&  hr,
         Primitives                                          primitives,
         Normals                                             normals,
         Materials                                           materials,
-        generic_prim                                        /* */,
+        generic_primitive<Ts...>                            /* */,
         NormalBinding                                       /* */
         ) -> decltype( simd::pack(
                 surface<typename std::iterator_traits<Materials>::value_type>(),
@@ -841,23 +838,24 @@ inline auto get_surface_with_prims_impl(
 
     auto hr4 = simd::unpack(hr); 
 
+    auto get_surf = [&](unsigned index)
+    {
+        // dispatch to scalar version of this function
+        return get_surface_with_prims_impl(
+                hr4[index],
+                primitives,
+                normals,
+                materials,
+                generic_primitive<Ts...>(),
+                NormalBinding()
+                );
+    };
+
     return simd::pack(
-            surface<M>(
-                hr4[0].hit ? simd_normal<0>(hr, hr4[0], primitives, normals, NormalBinding()) : N(),
-                hr4[0].hit ? materials[hr4[0].geom_id]                                        : M()
-                ),
-            surface<M>(
-                hr4[1].hit ? simd_normal<1>(hr, hr4[1], primitives, normals, NormalBinding()) : N(),
-                hr4[1].hit ? materials[hr4[1].geom_id]                                        : M()
-                ),
-            surface<M>(
-                hr4[2].hit ? simd_normal<2>(hr, hr4[2], primitives, normals, NormalBinding()) : N(),
-                hr4[2].hit ? materials[hr4[2].geom_id]                                        : M()
-                ),
-            surface<M>(
-                hr4[3].hit ? simd_normal<3>(hr, hr4[3], primitives, normals, NormalBinding()) : N(),
-                hr4[3].hit ? materials[hr4[3].geom_id]                                        : M()
-                )
+            hr4[0].hit ? get_surf(0) : surface<M>( N(), M() ),
+            hr4[1].hit ? get_surf(1) : surface<M>( N(), M() ),
+            hr4[2].hit ? get_surf(2) : surface<M>( N(), M() ),
+            hr4[3].hit ? get_surf(3) : surface<M>( N(), M() )
             );
 }
 
