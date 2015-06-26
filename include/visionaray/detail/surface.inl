@@ -250,7 +250,7 @@ inline auto get_normal(Normals normals, HR const& hr, normals_per_vertex_binding
 
 
 //-------------------------------------------------------------------------------------------------
-// Gather four normals with SSE
+// Gather four face normals with SSE
 //
 
 template <typename Normals>
@@ -279,6 +279,51 @@ inline vector<3, simd::float4> get_normal(
             simd::float4( n1.y, n2.y, n3.y, n4.y ),
             simd::float4( n1.z, n2.z, n3.z, n4.z )
             );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Gather four vertex normals with SSE
+//
+
+template <typename Normals>
+inline vector<3, simd::float4> get_normal(
+        Normals                                             normals,
+        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
+        normals_per_vertex_binding
+        )
+{
+    using N = typename std::iterator_traits<Normals>::value_type;
+
+    auto hr4 = simd::unpack(hr);
+
+    auto get_norm = [&](int x, int y)
+    {
+        return hr4[x].hit ? normals[hr4[x].prim_id * 3 + y] : N();
+    };
+
+    vector<3, simd::float4> n1(
+            simd::float4( get_norm(0, 0).x, get_norm(1, 0).x, get_norm(2, 0).x, get_norm(3, 0).x ),
+            simd::float4( get_norm(0, 0).y, get_norm(1, 0).y, get_norm(2, 0).y, get_norm(3, 0).y ),
+            simd::float4( get_norm(0, 0).z, get_norm(1, 0).z, get_norm(2, 0).z, get_norm(3, 0).z )
+            );
+
+    vector<3, simd::float4> n2(
+            simd::float4( get_norm(0, 1).x, get_norm(1, 1).x, get_norm(2, 1).x, get_norm(3, 1).x ),
+            simd::float4( get_norm(0, 1).y, get_norm(1, 1).y, get_norm(2, 1).y, get_norm(3, 1).y ),
+            simd::float4( get_norm(0, 1).z, get_norm(1, 1).z, get_norm(2, 1).z, get_norm(3, 1).z )
+            );
+
+    vector<3, simd::float4> n3(
+            simd::float4( get_norm(0, 2).x, get_norm(1, 2).x, get_norm(2, 2).x, get_norm(3, 2).x ),
+            simd::float4( get_norm(0, 2).y, get_norm(1, 2).y, get_norm(2, 2).y, get_norm(3, 2).y ),
+            simd::float4( get_norm(0, 2).z, get_norm(1, 2).z, get_norm(2, 2).z, get_norm(3, 2).z )
+            );
+
+    auto s2 = n3 * hr.v;
+    auto s3 = n2 * hr.u;
+    auto s1 = n1 * (simd::float4(1.0) - (hr.u + hr.v));
+    return normalize(s1 + s2 + s3);
 }
 
 
