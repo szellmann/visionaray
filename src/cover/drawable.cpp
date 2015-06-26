@@ -689,6 +689,7 @@ struct drawable::impl
     host_bvh_type                           host_bvh;
     host_sched_type                         host_sched;
     host_render_target_type                 host_rt;
+    mask_intersector<host_tex_ref_type>     host_intersector;
 
 #ifdef __CUDACC__
     thrust::device_vector<vec3>             device_normals;
@@ -699,10 +700,8 @@ struct drawable::impl
     device_bvh_type                         device_bvh;
     device_sched_type                       device_sched;
     device_render_target_type               device_rt;
-#endif
-
-    mask_intersector<host_tex_ref_type>     host_intersector;
     mask_intersector<device_tex_ref_type>   device_intersector;
+#endif
 
     mat4                                    view_matrix;
     mat4                                    proj_matrix;
