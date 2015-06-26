@@ -256,7 +256,8 @@ inline auto get_normal(Normals normals, HR const& hr, normals_per_vertex_binding
 template <typename Normals>
 inline vector<3, simd::float4> get_normal(
         Normals                                             normals,
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr
+        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
+        normals_per_face_binding
         )
 {
     using N = typename std::iterator_traits<Normals>::value_type;

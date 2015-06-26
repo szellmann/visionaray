@@ -132,7 +132,7 @@ void display_func()
 
             C clr(1.0);
 
-            auto n = get_normal(rend->mod.normals.data(), hit_rec);
+            auto n = get_normal(rend->mod.normals.data(), hit_rec, normals_per_face_binding());
 
             // Make an ortho basis (TODO: move to library)
             auto w = n;
