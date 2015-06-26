@@ -162,6 +162,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/surface.h
     ${HEADER_DIR}/tags.h
     ${HEADER_DIR}/variant.h
+    ${HEADER_DIR}/version.h
 
     #----------------------------------------------------------------------------------------------
     # Private headers
