@@ -56,6 +56,7 @@ set(VIEWER_HEADERS
     ${COMMON_DIR}/render_bvh.h
     ${COMMON_DIR}/timer.h
     ${COMMON_DIR}/util.h
+    ${COMMON_DIR}/viewer_glut.h
 )
 
 set(VIEWER_SOURCES
@@ -67,6 +68,7 @@ set(VIEWER_SOURCES
 
     ${COMMON_DIR}/jpeg_image.cpp
     ${COMMON_DIR}/obj_loader.cpp
+    ${COMMON_DIR}/viewer_glut.cpp
 
 )
 

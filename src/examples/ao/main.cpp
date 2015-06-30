@@ -8,27 +8,9 @@
 #include <visionaray/detail/platform.h>
 
 #if defined(VSNRAY_OS_DARWIN)
-
-#include <AvailabilityMacros.h>
-
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
-
-  #pragma GCC diagnostic ignored "-Wdeprecated"
-
-#endif
-
 #include <OpenGL/gl.h>
-#include <GLUT/glut.h>
-
-#else // VSNRAY_OS_DARWIN
-
+#else
 #include <GL/gl.h>
-#include <GL/glut.h>
-
-#endif
-
-#ifdef FREEGLUT
-#include <GL/freeglut_ext.h>
 #endif
 
 #include <visionaray/bvh.h>
@@ -44,31 +26,26 @@
 
 #include <common/model.h>
 #include <common/obj_loader.h>
-
-using std::make_shared;
-using std::shared_ptr;
+#include <common/viewer_glut.h>
 
 using namespace visionaray;
-
-using manipulators = std::vector<shared_ptr<visionaray::camera_manipulator>>;
 
 
 //-------------------------------------------------------------------------------------------------
 // struct with state variables
 //
 
-struct renderer
+struct renderer : viewer_glut
 {
     using host_ray_type = basic_ray<simd::float4>;
 
-    renderer()
-        : host_sched(8)
-        , down_button(mouse::NoButton)
+    renderer(int argc, char** argv)
+        : viewer_glut(512, 512, "Visionaray Ambient Occlusion Example", argc, argv)
+        , host_sched(8)
     {
     }
 
     camera                                      cam;
-    manipulators                                manips;
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
     tiled_sched<host_ray_type>                  host_sched;
 
@@ -76,10 +53,11 @@ struct renderer
     index_bvh<model::triangle_list::value_type> host_bvh;
     unsigned                                    frame_num       = 0;
 
-    mouse::button down_button;
-    mouse::pos motion_pos;
-    mouse::pos down_pos;
-    mouse::pos up_pos;
+protected:
+
+    void on_display();
+    void on_mouse_move(mouse_event const& event);
+
 };
 
 std::unique_ptr<renderer> rend(nullptr);
@@ -89,7 +67,7 @@ std::unique_ptr<renderer> rend(nullptr);
 // Display function, implements the AO kernel
 //
 
-void display_func()
+void renderer::on_display()
 {
     // some setup
 
@@ -186,17 +164,7 @@ void display_func()
 
     rend->host_rt.display_color_buffer();
 
-    glutSwapBuffers();
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// on idle, refresh the viewport
-//
-
-void idle_func()
-{
-    glutPostRedisplay();
+    swap_buffers();
 }
 
 
@@ -204,56 +172,14 @@ void idle_func()
 // mouse handling
 //
 
-void motion_func(int x, int y)
+void renderer::on_mouse_move(mouse_event const& event)
 {
-    using namespace visionaray::mouse;
-
-    rend->frame_num = 0;
-
-    pos p = { x, y };
-    for (auto it = rend->manips.begin(); it != rend->manips.end(); ++it)
+    if (event.get_buttons() != mouse::NoButton)
     {
-        (*it)->handle_mouse_move( visionaray::mouse_event(
-                mouse::Move,
-                NoButton,
-                p,
-                rend->down_button,
-                visionaray::keyboard::NoKey
-                ) );
+        rend->frame_num = 0;
     }
-    rend->motion_pos = p;
-}
 
-void mouse_func(int button, int state, int x, int y)
-{
-    using namespace visionaray::mouse;
-
-    mouse::button b = map_glut_button(button);
-    pos p = { x, y };
-
-    if (state == GLUT_DOWN)
-    {
-        for (auto it = rend->manips.begin(); it != rend->manips.end(); ++it)
-        {
-            (*it)->handle_mouse_down(visionaray::mouse_event(mouse::ButtonDown, b, p));
-        }
-        rend->down_pos = p;
-        rend->down_button = b;
-    }
-    else if (state == GLUT_UP)
-    {
-        for (auto it = rend->manips.begin(); it != rend->manips.end(); ++it)
-        {
-            (*it)->handle_mouse_up(visionaray::mouse_event(mouse::ButtonUp, b, p));
-        }
-        rend->up_pos = p;
-        rend->down_button = mouse::NoButton;
-    }
-}
-
-void passive_motion_func(int x, int y)
-{
-    rend->motion_pos = { x, y };
+    viewer_glut::on_mouse_move(event);
 }
 
 
@@ -263,19 +189,7 @@ void passive_motion_func(int x, int y)
 
 int main(int argc, char** argv)
 {
-    rend = std::unique_ptr<renderer>(new renderer);
-
-    glutInit(&argc, argv);
-
-    glutInitDisplayMode(/*GLUT_3_2_CORE_PROFILE |*/ GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-
-    glutInitWindowSize(512, 512);
-    glutCreateWindow("Visionaray Ambient Occlusion Example");
-    glutDisplayFunc(display_func);
-    glutIdleFunc(idle_func);
-    glutMotionFunc(motion_func);
-    glutMouseFunc(mouse_func);
-    glutPassiveMotionFunc(passive_motion_func);
+    rend = std::unique_ptr<renderer>(new renderer(argc, argv));
 
     glewInit();
 
@@ -304,12 +218,12 @@ int main(int argc, char** argv)
     rend->cam.set_viewport(0, 0, 512, 512);
     rend->cam.view_all( rend->mod.bbox );
 
-    rend->manips.push_back( make_shared<visionaray::arcball_manipulator>(rend->cam, mouse::Left) );
-    rend->manips.push_back( make_shared<visionaray::pan_manipulator>(rend->cam, mouse::Middle) );
-    rend->manips.push_back( make_shared<visionaray::zoom_manipulator>(rend->cam, mouse::Right) );
+    rend->add_manipulator( std::make_shared<arcball_manipulator>(rend->cam, mouse::Left) );
+    rend->add_manipulator( std::make_shared<pan_manipulator>(rend->cam, mouse::Middle) );
+    rend->add_manipulator( std::make_shared<zoom_manipulator>(rend->cam, mouse::Right) );
 
     glViewport(0, 0, 512, 512);
     rend->host_rt.resize(512, 512);
 
-    glutMainLoop();
+    rend->event_loop();
 }

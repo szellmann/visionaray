@@ -9,6 +9,7 @@ set(EX_AO_SOURCES
     ${COMMON_DIR}/manip/zoom_manipulator.cpp
 
     ${COMMON_DIR}/obj_loader.cpp
+    ${COMMON_DIR}/viewer_glut.cpp
 
     main.cpp
 )

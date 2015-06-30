@@ -33,7 +33,7 @@ public:
     virtual void handle_mouse_click(mouse_event const& event) { VSNRAY_UNUSED(event); }
     virtual void handle_mouse_move(mouse_event const& event)  { VSNRAY_UNUSED(event); }
 
-protected:
+public://rotected:
 
     camera& camera_;
 
