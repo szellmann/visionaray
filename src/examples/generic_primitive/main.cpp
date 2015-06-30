@@ -238,7 +238,6 @@ void renderer::on_display()
 
     using R = renderer::host_ray_type;
     using S = typename R::scalar_type;
-    using V = vector<3, S>;
 
     auto sparams = make_sched_params<pixel_sampler::uniform_type>(
             rend->cam,
