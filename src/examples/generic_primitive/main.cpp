@@ -236,9 +236,6 @@ void renderer::on_display()
 {
     // some setup
 
-    using R = renderer::host_ray_type;
-    using S = typename R::scalar_type;
-
     auto sparams = make_sched_params<pixel_sampler::uniform_type>(
             rend->cam,
             rend->host_rt
