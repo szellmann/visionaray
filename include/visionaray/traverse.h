@@ -3,10 +3,10 @@
 
 #pragma once
 
-#ifndef VSNRAY_DETAIL_TRAVERSE_H
-#define VSNRAY_DETAIL_TRAVERSE_H
+#ifndef VSNRAY_TRAVERSE_H
+#define VSNRAY_TRAVERSE_H
 
-#include <visionaray/math/math.h>
+#include "math/math.h"
 
 namespace visionaray
 {
@@ -27,8 +27,6 @@ hit_record<R, primitive<unsigned>> closest_hit(R const& r, P begin, P end);
 
 } // visionaray
 
-#include "traverse_linear.inl"
+#include "detail/traverse_linear.inl"
 
-#endif // VSNRAY_DETAIL_TRAVERSE_H
-
-
+#endif // VSNRAY_TRAVERSE_H

@@ -11,7 +11,7 @@
 #include <array>
 #include <vector>
 
-#include <visionaray/detail/aligned_vector.h>
+#include <visionaray/aligned_vector.h>
 #include <visionaray/pixel_format.h>
 
 #include "../forward.h"

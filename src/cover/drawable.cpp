@@ -27,9 +27,9 @@
 #include <cover/VRSceneGraph.h>
 #include <cover/VRViewer.h>
 
-#include <visionaray/detail/aligned_vector.h>
 #include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
+#include <visionaray/aligned_vector.h>
 #include <visionaray/bvh.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/generic_material.h>

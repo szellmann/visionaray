@@ -42,9 +42,9 @@
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
-#include <visionaray/detail/aligned_vector.h>
 #include <visionaray/gl/util.h>
 #include <visionaray/texture/texture.h>
+#include <visionaray/aligned_vector.h>
 #include <visionaray/bvh.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h>

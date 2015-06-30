@@ -6,9 +6,9 @@
 #ifndef VSNRAY_COMMON_MODEL_H
 #define VSNRAY_COMMON_MODEL_H
 
-#include <visionaray/detail/aligned_vector.h>
 #include <visionaray/math/forward.h>
 #include <visionaray/texture/forward.h>
+#include <visionaray/aligned_vector.h>
 #include <visionaray/generic_material.h>
 
 namespace visionaray

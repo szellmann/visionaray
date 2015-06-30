@@ -13,8 +13,7 @@
 #include <visionaray/gl/compositing.h>
 #include <visionaray/gl/handle.h>
 #include <visionaray/gl/util.h>
-
-#include "aligned_vector.h"
+#include <visionaray/aligned_vector.h>
 
 #define VSNRAY_CPU_BUFFER_TEX 1
 

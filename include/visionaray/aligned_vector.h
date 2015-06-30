@@ -3,15 +3,19 @@
 
 #pragma once
 
-#ifndef VSNRAY_DETAIL_ALIGNED_VECTOR_H
-#define VSNRAY_DETAIL_ALIGNED_VECTOR_H
+#ifndef VSNRAY_ALIGNED_VECTOR_H
+#define VSNRAY_ALIGNED_VECTOR_H
 
 #include <vector>
 
-#include "allocator.h"
+#include "detail/allocator.h"
 
 namespace visionaray
 {
+
+//-------------------------------------------------------------------------------------------------
+// An std::vector that is aligned to A byte boundaries
+//
 
 template <typename T, size_t A = 16>
 using aligned_vector = std::vector<T, aligned_allocator<T, A>>;
@@ -19,5 +23,3 @@ using aligned_vector = std::vector<T, aligned_allocator<T, A>>;
 } // visionaray
 
 #endif // VSNRAY_ALIGNED_VECTOR_H
-
-

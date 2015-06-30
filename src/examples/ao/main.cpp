@@ -31,12 +31,12 @@
 #include <GL/freeglut_ext.h>
 #endif
 
-#include <visionaray/detail/traverse.h>
 #include <visionaray/bvh.h>
 #include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/surface.h>
+#include <visionaray/traverse.h>
 
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>

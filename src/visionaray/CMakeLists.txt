@@ -44,7 +44,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/bvh/traverse.inl
     ${HEADER_DIR}/detail/spd/blackbody.h
     ${HEADER_DIR}/detail/spd/d65.h
-    ${HEADER_DIR}/detail/aligned_vector.h
     ${HEADER_DIR}/detail/allocator.h
     ${HEADER_DIR}/detail/color_conversion.h
     ${HEADER_DIR}/detail/compiler.h
@@ -71,7 +70,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/tags.h
     ${HEADER_DIR}/detail/tiled_sched.h
     ${HEADER_DIR}/detail/tiled_sched.inl
-    ${HEADER_DIR}/detail/traverse.h
     ${HEADER_DIR}/detail/traverse_linear.inl
     ${HEADER_DIR}/detail/whitted.inl
 
@@ -140,6 +138,7 @@ set(VSNRAY_HEADERS
 
     # General library headers
 
+    ${HEADER_DIR}/aligned_vector.h
     ${HEADER_DIR}/brdf.h
     ${HEADER_DIR}/bvh.h
     ${HEADER_DIR}/camera.h
@@ -162,6 +161,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/spectrum.h
     ${HEADER_DIR}/surface.h
     ${HEADER_DIR}/tags.h
+    ${HEADER_DIR}/traverse.h
     ${HEADER_DIR}/variant.h
     ${HEADER_DIR}/version.h
 

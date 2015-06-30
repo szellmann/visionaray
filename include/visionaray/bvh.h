@@ -17,8 +17,8 @@
 #include <thrust/device_vector.h>
 #endif
 
-#include "detail/aligned_vector.h"
 #include "math/math.h"
+#include "aligned_vector.h"
 #include "tags.h"
 
 namespace visionaray

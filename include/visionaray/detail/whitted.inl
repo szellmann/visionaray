@@ -6,8 +6,7 @@
 
 #include <visionaray/result_record.h>
 #include <visionaray/surface.h>
-
-#include "traverse.h"
+#include <visionaray/traverse.h>
 
 namespace visionaray
 {
