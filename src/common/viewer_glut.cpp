@@ -5,9 +5,9 @@
 
 #include <visionaray/detail/platform.h>
 
-#include <AvailabilityMacros.h>
-
 #if defined(VSNRAY_OS_DARWIN)
+
+#include <AvailabilityMacros.h>
 
 #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
 
