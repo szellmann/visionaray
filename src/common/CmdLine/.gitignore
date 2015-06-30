@@ -1,0 +1,7 @@
+/build/
+/build-aux/
+/backups/
+/scratch/
+/test/gtest/
+/CmdLine.sublime-project
+/CmdLine.sublime-workspace
