@@ -3,7 +3,6 @@ find_package(CUDA)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(PTHREAD REQUIRED)
-find_package(Visionaray REQUIRED)
 
 visionaray_use_package(Boost)
 if (CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
@@ -12,7 +11,8 @@ endif()
 visionaray_use_package(GLEW)
 visionaray_use_package(OpenGL)
 visionaray_use_package(PTHREAD)
-visionaray_use_package(Visionaray)
+
+visionaray_link_libraries(visionaray)
 
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
 
