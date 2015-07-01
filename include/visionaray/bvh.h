@@ -368,25 +368,29 @@ private:
 template <typename T>
 struct is_bvh : std::false_type {};
 
-template <typename ...Ts>
-struct is_bvh<bvh_t<Ts...>> : std::true_type {};
+template <typename T1, typename T2>
+struct is_bvh<bvh_t<T1, T2>> : std::true_type {};
 
-template <typename ...Ts>
-struct is_bvh<index_bvh_t<Ts...>> : std::true_type {};
+template <typename T1, typename T2, typename T3>
+struct is_bvh<index_bvh_t<T1, T2, T3>> : std::true_type {};
 
-template <typename ...Ts>
-struct is_bvh<bvh_ref_t<Ts...>> : std::true_type {};
+template <typename T>
+struct is_bvh<bvh_ref_t<T>> : std::true_type {};
 
-template <typename ...Ts>
-struct is_bvh<index_bvh_ref_t<Ts...>> : std::true_type {};
+template <typename T>
+struct is_bvh<index_bvh_ref_t<T>> : std::true_type {};
 
 
-template <typename P> using bvh                 = bvh_t<aligned_vector<P>, aligned_vector<bvh_node>>;
-template <typename P> using index_bvh           = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node>, aligned_vector<unsigned>>;
+template <typename P>
+using bvh               = bvh_t<aligned_vector<P>, aligned_vector<bvh_node>>;
+template <typename P>
+using index_bvh         = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node>, aligned_vector<unsigned>>;
 
 #ifdef __CUDACC__
-template <typename P> using device_bvh          = bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>>;
-template <typename P> using device_index_bvh    = index_bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>, thrust::device_vector<unsigned>>;
+template <typename P>
+using device_bvh        = bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>>;
+template <typename P>
+using device_index_bvh  = index_bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>, thrust::device_vector<unsigned>>;
 #endif
 
 //-------------------------------------------------------------------------------------------------
