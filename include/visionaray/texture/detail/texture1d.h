@@ -7,6 +7,7 @@
 #define VSNRAY_TEXTURE_TEXTURE1D_H
 
 #include <cstddef>
+#include <type_traits>
 
 #include "texture_common.h"
 
@@ -23,7 +24,9 @@ public:
     using base_type = Base;
     using value_type = T;
 
+#ifdef VSNRAY_CXX_HAS_INHERITING_CONSTRUCTORS
     using Base::Base;
+#endif
 
     static const size_t dimensions = 1;
 
@@ -43,6 +46,16 @@ public:
     {
     }
 
+#ifndef VSNRAY_CXX_HAS_INHERITING_CONSTRUCTORS
+    template <
+        typename ...Args,
+        typename = typename std::enable_if<std::is_constructible<Base, Args>::value>::type
+        >
+    texture_iface(Args&&... args)
+        : Base(std::forward<Args>(args)...)
+    {
+    }
+#endif
 
     value_type& operator()(size_t x)
     {
