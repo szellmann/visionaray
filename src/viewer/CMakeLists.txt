@@ -68,6 +68,7 @@ set(VIEWER_SOURCES
 
     ${COMMON_DIR}/jpeg_image.cpp
     ${COMMON_DIR}/obj_loader.cpp
+    ${COMMON_DIR}/util.cpp
     ${COMMON_DIR}/viewer_glut.cpp
 
 )
