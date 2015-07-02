@@ -8,12 +8,6 @@
 
 #include <visionaray/detail/platform.h>
 
-#if defined(VSNRAY_OS_DARWIN)
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
-
 #include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h> // for make_params(...)
