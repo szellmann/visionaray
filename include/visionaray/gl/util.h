@@ -12,7 +12,11 @@
 #include <visionaray/detail/platform.h>
 
 #ifdef _WIN32
+#ifndef APIENTRY
 #include <windows.h> // APIENTRY
+#undef min
+#undef max
+#endif
 #endif
 #if defined(VSNRAY_OS_DARWIN)
 #include <OpenGL/gl.h>
