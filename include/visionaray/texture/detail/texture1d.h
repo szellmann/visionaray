@@ -48,11 +48,12 @@ public:
 
 #ifndef VSNRAY_CXX_HAS_INHERITING_CONSTRUCTORS
     template <
+        typename A,
         typename ...Args,
-        typename = typename std::enable_if<std::is_constructible<Base, Args>::value>::type
+        typename = typename std::enable_if<std::is_constructible<Base, A, Args...>::value>::type
         >
-    texture_iface(Args&&... args)
-        : Base(std::forward<Args>(args)...)
+    texture_iface(A&& a, Args&&... args)
+        : Base(std::forward<A>(a), std::forward<Args>(args)...)
     {
     }
 #endif
