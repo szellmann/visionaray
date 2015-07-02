@@ -110,7 +110,7 @@ void renderer::on_display()
     // some setup
 
     using R = renderer::host_ray_type;
-    using S = typename R::scalar_type;
+    using S = R::scalar_type;
     using C = vector<4, S>;
 
     auto sparams = make_sched_params<pixel_sampler::uniform_type>(

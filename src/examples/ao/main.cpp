@@ -50,7 +50,7 @@ struct renderer : viewer_glut
 protected:
 
     void on_display();
-    void on_mouse_move(mouse_event const& event);
+    void on_mouse_move(visionaray::mouse_event const& event);
 
 };
 
@@ -66,7 +66,7 @@ void renderer::on_display()
     // some setup
 
     using R = renderer::host_ray_type;
-    using S = typename R::scalar_type;
+    using S = R::scalar_type;
     using C = vector<4, S>;
     using V = vector<3, S>;
 
@@ -133,7 +133,7 @@ void renderer::on_display()
                         ao_ray,
                         prims_begin,
                         prims_end,
-                        typename R::scalar_type(radius)
+                        R::scalar_type(radius)
                         );
 
                 clr = select(
@@ -166,7 +166,7 @@ void renderer::on_display()
 // mouse handling
 //
 
-void renderer::on_mouse_move(mouse_event const& event)
+void renderer::on_mouse_move(visionaray::mouse_event const& event)
 {
     if (event.get_buttons() != mouse::NoButton)
     {
