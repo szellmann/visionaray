@@ -41,6 +41,8 @@ set(HEADERS
 )
 
 set(SOURCES
+    ${COMMON_DIR}/util.cpp
+
     visionaray_plugin.cpp
 )
 
