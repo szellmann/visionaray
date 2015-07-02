@@ -153,7 +153,9 @@ template <typename P, typename T> auto test_shade_record_type(R2)
     -> shade_record<typename P::light_type, T>;
 
 template <typename P, typename T>
-using shade_record_type = decltype(test_shade_record_type<P, T>(R1()));
+using shade_record_type
+    = decltype( test_shade_record_type<typename std::decay<P>::type,
+                                       typename std::decay<T>::type>(R1()) );
 
 } // srf
 } // detail
