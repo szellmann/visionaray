@@ -20,6 +20,9 @@
 
 #else // VSNRAY_OS_DARWIN
 
+#if defined(VSNRAY_OS_WIN32)
+#include <windows.h>
+#endif
 #include <GL/gl.h>
 #include <GL/glut.h>
 
@@ -253,7 +256,7 @@ void viewer_glut::on_key_press(unsigned char key)
     VSNRAY_UNUSED(key);
 }
 
-void viewer_glut::on_mouse_move(mouse_event const& event)
+void viewer_glut::on_mouse_move(visionaray::mouse_event const& event)
 {
     for (auto& manip : impl_->manips)
     {
@@ -261,7 +264,7 @@ void viewer_glut::on_mouse_move(mouse_event const& event)
     }
 }
 
-void viewer_glut::on_mouse_down(mouse_event const& event)
+void viewer_glut::on_mouse_down(visionaray::mouse_event const& event)
 {
     for (auto& manip : impl_->manips)
     {
@@ -269,7 +272,7 @@ void viewer_glut::on_mouse_down(mouse_event const& event)
     }
 }
 
-void viewer_glut::on_mouse_up(mouse_event const& event)
+void viewer_glut::on_mouse_up(visionaray::mouse_event const& event)
 {
     for (auto& manip : impl_->manips)
     {
