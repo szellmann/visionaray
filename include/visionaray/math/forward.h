@@ -8,6 +8,9 @@
 
 #include "config.h"
 
+#undef min
+#undef max
+
 
 namespace MATH_NAMESPACE
 {
