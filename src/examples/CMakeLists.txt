@@ -15,6 +15,13 @@ visionaray_use_package(PTHREAD)
 visionaray_link_libraries(visionaray)
 
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
+set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/common/CmdLine)
+set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
+
+if (NOT EXISTS ${CMD_LINE_DIR}/.git)
+    message(SEND_ERROR "Git submodules not initialized.\nPlease run \"git submodule update --init --recursive\"")
+    return()
+endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)

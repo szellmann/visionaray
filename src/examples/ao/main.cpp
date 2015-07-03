@@ -33,8 +33,8 @@ struct renderer : viewer_glut
 {
     using host_ray_type = basic_ray<simd::float4>;
 
-    renderer(int argc, char** argv)
-        : viewer_glut(512, 512, "Visionaray Ambient Occlusion Example", argc, argv)
+    renderer()
+        : viewer_glut(512, 512, "Visionaray Ambient Occlusion Example")
         , host_sched(8)
     {
     }
@@ -183,7 +183,17 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 
 int main(int argc, char** argv)
 {
-    rend = std::unique_ptr<renderer>(new renderer(argc, argv));
+    rend = std::unique_ptr<renderer>(new renderer);
+
+    try
+    {
+        rend->init(argc, argv);
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return EXIT_FAILURE;
+    }
 
     glewInit();
 

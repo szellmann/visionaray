@@ -101,16 +101,48 @@ struct renderer : viewer_glut
     };
 
 
-    renderer(int argc, char** argv)
-        : viewer_glut(800, 800, "Visionaray GLUT Viewer", argc, argv)
+    renderer()
+        : viewer_glut(800, 800, "Visionaray GLUT Viewer")
         , host_sched(get_num_processors())
     {
+        using namespace support;
+
+        add_cmdline_option( cl::makeOption<std::string&>(
+            cl::Parser<>(),
+            "filename",
+            cl::Desc("Input file in wavefront obj format"),
+            cl::Positional,
+            cl::Required,
+            cl::init(this->filename)
+            ) );
+
+        add_cmdline_option( cl::makeOption<algorithm&>({
+                { "simple",             Simple,         "Simple ray casting kernel" },
+                { "whitted",            Whitted,        "Whitted style ray tracing kernel" },
+                { "pathtracing",        Pathtracing,    "Pathtracing global illumination kernel" },
+            },
+            "algorithm",
+            cl::ArgRequired,
+            cl::Desc("Rendering algorithm"),
+            cl::init(this->algo)
+            ) );
+
+#ifdef __CUDACC__
+        add_cmdline_option( cl::makeOption<device_type&>({
+                { "cpu",                CPU,            "Rendering on the CPU" },
+                { "gpu",                GPU,            "Rendering on the GPU" },
+            },
+            "device",
+            cl::ArgRequired,
+            cl::Desc("Rendering device"),
+            cl::init(this->dev_type)
+            ) );
+#endif
     }
 
 
     int w                       = 800;
     int h                       = 800;
-    vec3        bgcolor         = { 0.1, 0.4, 1.0 };
     unsigned    frame           = 0;
     algorithm   algo            = Simple;
     device_type dev_type        = CPU;
@@ -147,10 +179,6 @@ struct renderer : viewer_glut
     visionaray::frame_counter   counter;
     bvh_outline_renderer        outlines;
 
-public:
-
-    bool parse_cmd_line(int argc, char** argv);
-
 protected:
 
     void on_display();
@@ -160,100 +188,6 @@ protected:
 
 };
 
-
-//-------------------------------------------------------------------------------------------------
-// Parse renderer state from the command line
-//
-
-bool renderer::parse_cmd_line(int argc, char** argv)
-{
-    using namespace support;
-
-    cl::CmdLine cmd;
-
-    auto filename_opt = cl::makeOption<std::string&>(
-        cl::Parser<>(),
-        cmd, "filename",
-        cl::Desc("Input file in wavefront obj format"),
-        cl::Positional,
-        cl::Required,
-        cl::init(this->filename)
-        );
-
-    auto w_opt = cl::makeOption<int&>(
-        cl::Parser<>(),
-        cmd, "width",
-        cl::Desc("Window width"),
-        cl::ArgRequired,
-        cl::init(this->w) // TODO
-        );
-
-    auto h_opt = cl::makeOption<int&>(
-        cl::Parser<>(),
-        cmd, "height",
-        cl::Desc("Window height"),
-        cl::ArgRequired,
-        cl::init(this->h) // TODO
-        );
-
-    auto bgcolor = cl::makeOption<vec3&, cl::ScalarType>(
-        [&cmd](StringRef name, StringRef /*arg*/, vec3& value)
-        {
-            cl::Parser<>()(name + "-r", cmd.bump(), value.x);
-            cl::Parser<>()(name + "-g", cmd.bump(), value.y);
-            cl::Parser<>()(name + "-b", cmd.bump(), value.z);
-        },
-        cmd, "bgcolor",
-        cl::Desc("Background color"),
-        cl::ArgDisallowed,
-        cl::init(this->bgcolor)
-        );
-
-    auto algo_opt = cl::makeOption<algorithm&>({
-            { "simple",             Simple,         "Simple ray casting kernel" },
-            { "whitted",            Whitted,        "Whitted style ray tracing kernel" },
-            { "pathtracing",        Pathtracing,    "Pathtracing global illumination kernel" },
-        },
-        cmd, "algorithm",
-        cl::ArgRequired,
-        cl::Desc("Rendering algorithm"),
-        cl::init(this->algo)
-        );
-
-#ifdef __CUDACC__
-    auto dev_opt = cl::makeOption<device_type&>({
-            { "cpu",                CPU,            "Rendering on the CPU" },
-            { "gpu",                GPU,            "Rendering on the GPU" },
-        },
-        cmd, "device",
-        cl::ArgRequired,
-        cl::Desc("Rendering device"),
-        cl::init(this->dev_type)
-        );
-#endif
-
-
-    try
-    {
-        auto args = std::vector<std::string>(argv + 1, argv + argc);
-        cl::expandWildcards(args);
-        cl::expandResponseFiles(args, cl::TokenizeUnix());
-
-        cmd.parse(args);
-    }
-    catch (std::exception& e)
-    {
-        if (filename.empty())
-        {
-            std::cout << cmd.help("viewer") << std::endl;
-            return false;
-        }
-
-        std::cerr << e.what() << std::endl;
-    }
-
-    return true;
-}
 
 std::unique_ptr<renderer> rend(nullptr);
 
@@ -482,7 +416,7 @@ void renderer::on_display()
                 thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
                 bounces,
                 epsilon,
-                vec4(rend->bgcolor, 1.0f),
+                vec4(rend->background_color(), 1.0f),
                 rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                 );
 
@@ -509,7 +443,7 @@ void renderer::on_display()
                 host_lights.data() + host_lights.size(),
                 bounces,
                 epsilon,
-                vec4(rend->bgcolor, 1.0f),
+                vec4(rend->background_color(), 1.0f),
                 rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                 );
 
@@ -690,11 +624,15 @@ void close_func()
 
 int main(int argc, char** argv)
 {
+    rend = std::unique_ptr<renderer>(new renderer);
 
-    rend = std::unique_ptr<renderer>(new renderer(argc, argv));
-
-    if ( !rend->parse_cmd_line(argc, argv) )
+    try
     {
+        rend->init(argc, argv);
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
 

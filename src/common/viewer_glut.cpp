@@ -28,35 +28,46 @@
 
 #endif
 
+#include <Support/CmdLine.h>
+#include <Support/CmdLineUtil.h>
+
 #include "input/keyboard.h"
 #include "input/mouse.h"
 #include "manip/camera_manipulator.h"
 #include "viewer_glut.h"
 
 
+using namespace support;
 using namespace visionaray;
 
-using manipulators = std::vector<std::shared_ptr<camera_manipulator>>;
+using manipulators      = std::vector<std::shared_ptr<camera_manipulator>>;
+using cmdline_options   = std::vector<std::shared_ptr<cl::OptionBase>>;
 
 struct viewer_glut::impl
 {
     static viewer_glut*     viewer;
     static manipulators     manips;
+    static cmdline_options  options;
     static mouse::button    down_button;
     static mouse::pos       motion_pos;
     static mouse::pos       down_pos;
     static mouse::pos       up_pos;
     static int              width;
     static int              height;
+    static vec3             bgcolor;
+    static std::string      window_title;
+    static cl::CmdLine      cmd;
 
     impl(
             viewer_glut* instance,
             int width,
             int height,
-            std::string window_title,
-            int argc,
-            char** argv
+            std::string window_title
             );
+
+    void init(int argc, char** argv);
+
+    void parse_cmd_line(int argc, char** argv);
 
     static void display_func();
     static void idle_func();
@@ -69,28 +80,75 @@ struct viewer_glut::impl
 
 viewer_glut*    viewer_glut::impl::viewer       = nullptr;
 manipulators    viewer_glut::impl::manips       = manipulators();
+cmdline_options viewer_glut::impl::options      = cmdline_options();
 mouse::button   viewer_glut::impl::down_button  = mouse::NoButton;
 mouse::pos      viewer_glut::impl::motion_pos   = { 0, 0 };
 mouse::pos      viewer_glut::impl::down_pos     = { 0, 0 };
 mouse::pos      viewer_glut::impl::up_pos       = { 0, 0 };
 int             viewer_glut::impl::width        = 512;
 int             viewer_glut::impl::height       = 512;
+vec3            viewer_glut::impl::bgcolor      = { 0.1, 0.4, 1.0 };
+std::string     viewer_glut::impl::window_title = "";
+cl::CmdLine     viewer_glut::impl::cmd          = cl::CmdLine();
 
 
 //-------------------------------------------------------------------------------------------------
-// Init GLUT
+// Private implementation methods
 //
 
 viewer_glut::impl::impl(
         viewer_glut* instance,
         int width,
         int height,
-        std::string window_title,
-        int argc,
-        char** argv
+        std::string window_title
         )
 {
-    viewer = instance;
+    viewer_glut::impl::viewer       = instance;
+    viewer_glut::impl::width        = width;
+    viewer_glut::impl::height       = height;
+    viewer_glut::impl::window_title = window_title;
+
+
+    // add default options (-width, -height)
+
+    options.emplace_back( cl::makeOption<int&>(
+        cl::Parser<>(),
+        "width",
+        cl::Desc("Window width"),
+        cl::ArgRequired,
+        cl::init(viewer_glut::impl::width)
+        ) );
+
+    options.emplace_back( cl::makeOption<int&>(
+        cl::Parser<>(),
+        "height",
+        cl::Desc("Window height"),
+        cl::ArgRequired,
+        cl::init(viewer_glut::impl::height)
+        ) );
+
+    options.emplace_back( cl::makeOption<vec3&, cl::ScalarType>(
+        [&](StringRef name, StringRef /*arg*/, vec3& value)
+        {
+            cl::Parser<>()(name + "-r", cmd.bump(), value.x);
+            cl::Parser<>()(name + "-g", cmd.bump(), value.y);
+            cl::Parser<>()(name + "-b", cmd.bump(), value.z);
+        },
+        "bgcolor",
+        cl::Desc("Background color"),
+        cl::ArgDisallowed,
+        cl::init(viewer_glut::impl::bgcolor)
+        ) );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Init GLUT
+//
+
+void viewer_glut::impl::init(int argc, char** argv)
+{
+    parse_cmd_line(argc, argv);
 
     glutInit(&argc, argv);
 
@@ -106,6 +164,25 @@ viewer_glut::impl::impl(
     glutMouseFunc(mouse_func);
     glutPassiveMotionFunc(passive_motion_func);
     glutReshapeFunc(reshape_func);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Parse default command line options
+//
+
+void viewer_glut::impl::parse_cmd_line(int argc, char** argv)
+{
+    for (auto& opt : options)
+    {
+        cmd.add(*opt);
+    }
+
+    auto args = std::vector<std::string>(argv + 1, argv + argc);
+    cl::expandWildcards(args);
+    cl::expandResponseFiles(args, cl::TokenizeUnix());
+
+    cmd.parse(args);
 }
 
 
@@ -190,21 +267,9 @@ void viewer_glut::impl::reshape_func(int w, int h)
 viewer_glut::viewer_glut(
         int width,
         int height,
-        std::string window_title,
-        int argc,
-        char** argv
+        std::string window_title
         )
-    : impl_(new impl(this, width, height, window_title, argc, argv))
-{
-}
-
-viewer_glut::viewer_glut(std::string window_title, int argc, char** argv)
-    : impl_(new impl(this, 512, 512, window_title, argc, argv))
-{
-}
-
-viewer_glut::viewer_glut(int argc, char** argv)
-    : impl_(new impl(this, 512, 512, "Visionaray GLUT Viewer", argc, argv))
+    : impl_(new impl(this, width, height, window_title))
 {
 }
 
@@ -212,9 +277,19 @@ viewer_glut::~viewer_glut()
 {
 }
 
+void viewer_glut::init(int argc, char** argv)
+{
+    impl_->init(argc, argv);
+}
+
 void viewer_glut::add_manipulator( std::shared_ptr<camera_manipulator> manip )
 {
     impl_->manips.push_back(manip);
+}
+
+void viewer_glut::add_cmdline_option( std::shared_ptr<cl::OptionBase> option )
+{
+    impl_->options.emplace_back(option);
 }
 
 void viewer_glut::event_loop()
@@ -235,6 +310,11 @@ int viewer_glut::width()
 int viewer_glut::height()
 {
     return impl_->height;
+}
+
+vec3 viewer_glut::background_color() const
+{
+    return impl_->bgcolor;
 }
 
 

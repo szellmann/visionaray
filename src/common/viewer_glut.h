@@ -7,6 +7,15 @@
 #include <memory>
 #include <string>
 
+namespace support
+{
+namespace cl
+{
+class OptionBase;
+} // cl
+} // support
+
+
 namespace visionaray
 {
 
@@ -17,23 +26,23 @@ class viewer_glut
 {
 public:
 
-    viewer_glut(int argc, char** argv);
-    viewer_glut(std::string window_title, int argc, char** argv);
     viewer_glut(
-            int width,
-            int height,
-            std::string window_title,
-            int argc,
-            char** argv
+            int width                   = 512,
+            int height                  = 512,
+            std::string window_title    = "Visionaray GLUT Viewer"
             );
     virtual ~viewer_glut();
 
+    void init(int argc, char** argv);
+
     void add_manipulator( std::shared_ptr<camera_manipulator> manip );
+    void add_cmdline_option( std::shared_ptr<support::cl::OptionBase> option );
     void event_loop();
     void swap_buffers();
 
     int width();
     int height();
+    vec3 background_color() const;
 
 protected:
 
