@@ -87,7 +87,7 @@ mouse::pos      viewer_glut::impl::down_pos     = { 0, 0 };
 mouse::pos      viewer_glut::impl::up_pos       = { 0, 0 };
 int             viewer_glut::impl::width        = 512;
 int             viewer_glut::impl::height       = 512;
-vec3            viewer_glut::impl::bgcolor      = { 0.1, 0.4, 1.0 };
+vec3            viewer_glut::impl::bgcolor      = { 0.1f, 0.4f, 1.0f };
 std::string     viewer_glut::impl::window_title = "";
 cl::CmdLine     viewer_glut::impl::cmd          = cl::CmdLine();
 
