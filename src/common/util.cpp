@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <visionaray/detail/macros.h>
+#include <visionaray/detail/platform.h>
 
 #if defined(VSNRAY_OS_WIN32)
 #include <windows.h>
