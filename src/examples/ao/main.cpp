@@ -5,6 +5,9 @@
 
 #include <GL/glew.h>
 
+#include <Support/CmdLine.h>
+#include <Support/CmdLineUtil.h>
+
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/bvh.h>
@@ -37,11 +40,23 @@ struct renderer : viewer_glut
         : viewer_glut(512, 512, "Visionaray Ambient Occlusion Example")
         , host_sched(8)
     {
+        using namespace support;
+
+        add_cmdline_option( cl::makeOption<std::string&>(
+            cl::Parser<>(),
+            "filename",
+            cl::Desc("Input file in wavefront obj format"),
+            cl::Positional,
+            cl::Required,
+            cl::init(this->filename)
+            ) );
     }
 
     camera                                      cam;
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
     tiled_sched<host_ray_type>                  host_sched;
+
+    std::string                                 filename;
 
     model mod;
     index_bvh<model::triangle_list::value_type> host_bvh;
@@ -199,7 +214,7 @@ int main(int argc, char** argv)
 
     try
     {
-        visionaray::load_obj(argv[1], rend->mod);
+        visionaray::load_obj(rend->filename, rend->mod);
     }
     catch (std::exception& e)
     {
