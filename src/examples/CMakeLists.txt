@@ -2,7 +2,9 @@ find_package(Boost REQUIRED COMPONENTS chrono filesystem iostreams system thread
 find_package(CUDA)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
+if (NOT APPLE AND NOT WIN32)
 find_package(PTHREAD REQUIRED)
+endif()
 
 visionaray_use_package(Boost)
 if (CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
@@ -10,7 +12,9 @@ visionaray_use_package(CUDA)
 endif()
 visionaray_use_package(GLEW)
 visionaray_use_package(OpenGL)
+if (NOT APPLE AND NOT WIN32)
 visionaray_use_package(PTHREAD)
+endif()
 
 visionaray_link_libraries(visionaray)
 
