@@ -66,6 +66,7 @@ protected:
 
     void on_display();
     void on_mouse_move(visionaray::mouse_event const& event);
+    void on_resize(int w, int h);
 
 };
 
@@ -193,6 +194,23 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 
 
 //-------------------------------------------------------------------------------------------------
+// resize event
+//
+
+void renderer::on_resize(int w, int h)
+{
+    rend->frame_num = 0;
+
+    rend->cam.set_viewport(0, 0, w, h);
+    float aspect = w / static_cast<float>(h);
+    rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    rend->host_rt.resize(w, h);
+
+    viewer_glut::on_resize(w, h);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Main function, performs initialization
 //
 
@@ -231,7 +249,7 @@ int main(int argc, char** argv)
 
     std::cout << "Ready\n";
 
-    float aspect = 1.0f;
+    float aspect = rend->width() / static_cast<float>(rend->height());
 
     rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
     rend->cam.set_viewport(0, 0, 512, 512);
