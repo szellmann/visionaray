@@ -41,29 +41,6 @@ static const vec3 verts[8] = {
         };
 
 
-//-------------------------------------------------------------------------------------------------
-// Stencil texture
-//
-
-static const unsigned char heart[16][16] = {
-        { 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 },
-        { 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
-        { 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 },
-        { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
-        { 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0 },
-        { 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-        };
-
 
 //-------------------------------------------------------------------------------------------------
 // struct with state variables
@@ -72,7 +49,6 @@ static const unsigned char heart[16][16] = {
 struct renderer : viewer_glut
 {
     using host_ray_type = basic_ray<simd::float4>;
-    using tex_ref       = texture_ref<unorm<8>, NormalizedFloat, 2>;
 
     renderer()
         : viewer_glut(512, 512, "Visionaray Custom Intersector Example")
@@ -80,7 +56,6 @@ struct renderer : viewer_glut
         , host_sched(8)
     {
         make_cube();
-        make_texture();
     }
 
     aabb                                        bbox;
@@ -95,7 +70,6 @@ struct renderer : viewer_glut
     std::vector<vec3>                           normals;
     std::vector<vec2>                           tex_coords;
     std::vector<plastic<float>>                 materials;
-    std::vector<tex_ref>                        textures;
 
     void add_tex_coords()
     {
@@ -241,7 +215,7 @@ struct renderer : viewer_glut
         // set prim_id to identify the triangle
         unsigned prim_id = 0;
 
-        // set geometry id to map to triangles to materials and textures
+        // set geometry id to map to triangles to materials
         for (auto& tri : triangles)
         {
             tri.prim_id = prim_id++;
@@ -258,15 +232,6 @@ struct renderer : viewer_glut
         }
     }
 
-
-    void make_texture()
-    {
-        textures.emplace_back(16, 16);
-        auto& tex = textures.back();
-        tex.set_data(reinterpret_cast<unorm<8> const*>(heart));
-        tex.set_filter_mode(Nearest);
-        tex.set_address_mode(Clamp);
-    }
 
 protected:
 
@@ -293,7 +258,6 @@ struct mask_intersector : basic_intersector<mask_intersector>
         -> decltype( intersect(ray, tri) )
     {
         assert( tex_coords );
-        assert( textures );
 
         auto hr = intersect(ray, tri);
 
@@ -316,9 +280,11 @@ struct mask_intersector : basic_intersector<mask_intersector>
                 continue;
             }
 
-            auto const& tex = textures[hr4[i].geom_id];
-            hit4[i] = tex.width() > 0 && tex.height() > 0
-                && static_cast<float>(tex2D(tex, tc4[i])) > 0.0f;
+            auto x = tc4[i].x * 3.0f - 1.5f;
+            auto y = tc4[i].y * 3.0f - 1.5f;
+
+            // heart function
+            hit4[i] = ( pow(x * x + y * y - 1.0f, 3.0f) - x * x * y * y * y ) < 0.0f;
         }
 
         hr.hit &= simd::mask4(hit4[0], hit4[1], hit4[2], hit4[3]);
@@ -326,8 +292,7 @@ struct mask_intersector : basic_intersector<mask_intersector>
         return hr;
     }
 
-    vec2 const*                 tex_coords;
-    renderer::tex_ref const*    textures;
+    vec2 const* tex_coords;
 };
 
 
@@ -373,7 +338,6 @@ void renderer::on_display()
 
     mask_intersector intersector;
     intersector.tex_coords = rend->tex_coords.data();
-    intersector.textures  = rend->textures.data();
 
 
     rend->host_sched.frame([&](R ray) -> result_record<S>
