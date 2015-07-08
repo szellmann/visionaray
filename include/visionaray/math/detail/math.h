@@ -333,6 +333,17 @@ inline T lerp(T const& a, T const& b, S const& x)
     return (S(1.0f) - x) * a + x * b;
 }
 
+template <typename T, typename S>
+MATH_FUNC
+inline T lerp(T const& a, T const& b, T const& c, S const& u, S const& v)
+{
+    auto s2 = c * v;
+    auto s3 = b * u;
+    auto s1 = a * (S(1.0f) - (u + v));
+
+    return s1 + s2 + s3;
+}
+
 template <typename T>
 MATH_FUNC
 inline T rsqrt(T const& x)

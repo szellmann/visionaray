@@ -237,15 +237,13 @@ VSNRAY_FUNC
 inline auto get_normal(Normals normals, HR const& hr, normals_per_vertex_binding)
     -> typename std::iterator_traits<Normals>::value_type
 {
-    auto n1 = normals[hr.prim_id * 3];
-    auto n2 = normals[hr.prim_id * 3 + 1];
-    auto n3 = normals[hr.prim_id * 3 + 2];
-
-    auto s2 = n3 * hr.v;
-    auto s3 = n2 * hr.u;
-    auto s1 = n1 * (1.0f - (hr.u + hr.v));
-
-    return normalize(s1 + s2 + s3);
+    return normalize( lerp(
+            normals[hr.prim_id * 3],
+            normals[hr.prim_id * 3 + 1],
+            normals[hr.prim_id * 3 + 2],
+            hr.u,
+            hr.v
+            ) );
 }
 
 
@@ -320,10 +318,7 @@ inline vector<3, simd::float4> get_normal(
             simd::float4( get_norm(0, 2).z, get_norm(1, 2).z, get_norm(2, 2).z, get_norm(3, 2).z )
             );
 
-    auto s2 = n3 * hr.v;
-    auto s3 = n2 * hr.u;
-    auto s1 = n1 * (simd::float4(1.0) - (hr.u + hr.v));
-    return normalize(s1 + s2 + s3);
+    return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
 }
 
 
@@ -336,15 +331,13 @@ VSNRAY_FUNC
 inline auto get_tex_coord(TexCoords tex_coords, HR const& hr)
     -> typename std::iterator_traits<TexCoords>::value_type
 {
-    auto tc1 = tex_coords[hr.prim_id * 3];
-    auto tc2 = tex_coords[hr.prim_id * 3 + 1];
-    auto tc3 = tex_coords[hr.prim_id * 3 + 2];
-
-    auto s2 = tc3 * hr.v;
-    auto s3 = tc2 * hr.u;
-    auto s1 = tc1 * (1.0f - (hr.u + hr.v));
-
-    return s1 + s2 + s3;
+    return lerp(
+            tex_coords[hr.prim_id * 3],
+            tex_coords[hr.prim_id * 3 + 1],
+            tex_coords[hr.prim_id * 3 + 2],
+            hr.u,
+            hr.v
+            );
 }
 
 
@@ -382,10 +375,7 @@ inline vector<2, simd::float4> get_tex_coord(
             simd::float4( get_coord(0, 2).y, get_coord(1, 2).y, get_coord(2, 2).y, get_coord(3, 2).y )
             );
 
-    auto s2 = tc3 * hr.v;
-    auto s3 = tc2 * hr.u;
-    auto s1 = tc1 * (simd::float4(1.0) - (hr.u + hr.v));
-    return s1 + s2 + s3;
+    return lerp( tc1, tc2, tc3, hr.u, hr.v );
 }
 
 
