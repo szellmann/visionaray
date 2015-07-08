@@ -101,6 +101,7 @@ __global__ void render(
 
 template <typename R, typename SP, typename Viewport, typename ...Args>
 inline void cuda_sched_impl_call_render(
+        std::false_type /* has intersector */,
         SP              /* */,
         Viewport const& viewport,
         Args&&...       args
@@ -127,22 +128,14 @@ inline void cuda_sched_impl_call_render(
     cudaDeviceSynchronize();
 }
 
-template <
-    typename R,
-    template <typename...> class SP,
-    typename Intersector,
-    typename ...SPArgs,
-    typename Viewport,
-    typename ...Args
-    >
+template <typename R, typename SP, typename Viewport, typename ...Args>
 inline void cuda_sched_impl_call_render(
-        SP<sched_params_intersector_base<Intersector>, SPArgs...> sparams,
+        std::true_type  /* has intersector */,
+        SP const&       sparams,
         Viewport const& viewport,
-        Args&&... args
+        Args&&...       args
         )
 {
-    using SPI = SP<sched_params_intersector_base<Intersector>, SPArgs...>;
-
     dim3 block_size(16, 16);
 
     using cuda_dim_t = decltype(block_size.x);
@@ -155,7 +148,7 @@ inline void cuda_sched_impl_call_render(
             div_up(h, block_size.y)
             );
 
-    render<R, typename SPI::pixel_sampler_type, Intersector><<<grid_size, block_size>>>(
+    render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
             detail::have_intersector_tag(),
             sparams.intersector,
             viewport,
@@ -169,10 +162,10 @@ inline void cuda_sched_impl_call_render(
 
 template <typename R, typename K, typename SP>
 inline void cuda_sched_impl_frame(
+        std::true_type  /* has matrix */,
         K               kernel,
         SP              sparams,
-        unsigned        frame_num,
-        std::true_type  /* has matrix */
+        unsigned        frame_num
         )
 {
     auto rt_ref             = sparams.rt.ref();
@@ -181,6 +174,7 @@ inline void cuda_sched_impl_frame(
     auto viewport           = sparams.viewport;
 
     cuda_sched_impl_call_render<R>(
+            typename detail::sched_params_has_intersector<SP>::type(),
             sparams,
             viewport,
             rt_ref,
@@ -195,10 +189,10 @@ inline void cuda_sched_impl_frame(
 
 template <typename R, typename K, typename SP>
 inline void cuda_sched_impl_frame(
+        std::false_type /* has matrix */,
         K               kernel,
         SP              sparams,
-        unsigned        frame_num,
-        std::false_type /* has matrix */
+        unsigned        frame_num
         )
 {
     auto rt_ref             = sparams.rt.ref();
@@ -215,6 +209,7 @@ inline void cuda_sched_impl_frame(
     auto cam_w = -f;
 
     cuda_sched_impl_call_render<R>(
+            typename detail::sched_params_has_intersector<SP>::type(),
             sparams,
             viewport,
             rt_ref,
@@ -237,11 +232,11 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     sched_params.rt.begin_frame();
 
     detail::cuda_sched_impl_frame<R>(
-                kernel,
-                sched_params,
-                frame_num,
-                typename detail::sched_params_has_view_matrix<SP>::type()
-                );
+            typename detail::sched_params_has_view_matrix<SP>::type(),
+            kernel,
+            sched_params,
+            frame_num
+            );
 
     sched_params.rt.end_frame();
 }

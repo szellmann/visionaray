@@ -118,6 +118,23 @@ public:
 };
 
 template <typename SP>
+class sched_params_has_intersector
+{
+private:
+
+    template <typename U>
+    static std::true_type  test(typename std::remove_reference<decltype(U::intersector)>::type*);
+
+    template <typename U>
+    static std::false_type test(...);
+
+public:
+
+    using type = decltype( test<SP>(nullptr) );
+
+};
+
+template <typename SP>
 class sched_params_has_view_matrix
 {
 private:
