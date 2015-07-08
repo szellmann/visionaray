@@ -58,7 +58,7 @@ using triangle_type             = basic_triangle<3, float>;
 using triangle_list             = aligned_vector<triangle_type>;
 using normal_list               = aligned_vector<vec3>;
 using tex_coord_list            = aligned_vector<vec2>;
-using material_type             = generic_material<plastic<float>, emissive<float>>;
+using material_type             = generic_material<matte<float>, plastic<float>, emissive<float>>;
 using material_list             = aligned_vector<material_type>;
 
 using host_tex_type             = texture<vector<4, unorm<8>>, NormalizedFloat, 2>;
@@ -403,6 +403,15 @@ public:
                     vsnray_mat.set_ls( 1.0f );
                     materials_.push_back(vsnray_mat);
                 }
+/*                else if (cs[0] == 0.0f && cs[1] == 0.0f && cs[2] == 0.0f)
+                {
+                    matte<float> vsnray_mat;
+                    vsnray_mat.set_ca( from_rgb(osg_cast(ca).xyz()) );
+                    vsnray_mat.set_cd( from_rgb(osg_cast(cd).xyz()) );
+                    vsnray_mat.set_ka( 1.0f );
+                    vsnray_mat.set_kd( 1.0f );
+                    materials_.push_back(vsnray_mat);
+                }*/
                 else
                 {
                     plastic<float> vsnray_mat;
