@@ -170,9 +170,19 @@ public:
         ca_ = ca;
     }
 
+    VSNRAY_FUNC spectrum<T> get_ca() const
+    {
+        return ca_;
+    }
+
     VSNRAY_FUNC void set_ka(scalar_type ka)
     {
         ka_ = ka;
+    }
+
+    VSNRAY_FUNC scalar_type get_ka() const
+    {
+        return ka_;
     }
 
     VSNRAY_FUNC void set_cd(spectrum<T> const& cd)
@@ -180,9 +190,19 @@ public:
         diffuse_brdf_.cd = cd;
     }
 
+    VSNRAY_FUNC spectrum<T> get_cd() const
+    {
+        return diffuse_brdf_.cd;
+    }
+
     VSNRAY_FUNC void set_kd(scalar_type kd)
     {
         diffuse_brdf_.kd = kd;
+    }
+
+    VSNRAY_FUNC scalar_type get_kd() const
+    {
+        return diffuse_brdf_.kd;
     }
 
 private:

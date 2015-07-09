@@ -10,6 +10,23 @@ namespace simd
 // Functions to pack four materials into a single SIMD material
 //
 
+inline matte<float4> pack(
+        matte<float> const& m1,
+        matte<float> const& m2,
+        matte<float> const& m3,
+        matte<float> const& m4
+        )
+{
+    matte<float4> result;
+
+    result.set_ca( pack(m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca()) );
+    result.set_cd( pack(m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd()) );
+    result.set_ka( float4(m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka()) );
+    result.set_kd( float4(m1.get_kd(), m2.get_kd(), m3.get_kd(), m4.get_kd()) );
+
+    return result;
+}
+
 inline plastic<float4> pack(
         plastic<float> const& m1,
         plastic<float> const& m2,
@@ -25,7 +42,12 @@ inline plastic<float4> pack(
     result.set_ka( float4(m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka()) );
     result.set_kd( float4(m1.get_kd(), m2.get_kd(), m3.get_kd(), m4.get_kd()) );
     result.set_ks( float4(m1.get_ks(), m2.get_ks(), m3.get_ks(), m4.get_ks()) );
-    result.set_specular_exp( float4(m1.get_specular_exp(), m2.get_specular_exp(), m3.get_specular_exp(), m4.get_specular_exp()) );
+    result.set_specular_exp( float4(
+            m1.get_specular_exp(),
+            m2.get_specular_exp(),
+            m3.get_specular_exp(),
+            m4.get_specular_exp()
+            ) );
 
     return result;
 }
