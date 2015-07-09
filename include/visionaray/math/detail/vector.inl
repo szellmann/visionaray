@@ -669,14 +669,12 @@ MATH_FUNC
 inline vector<Dim, T> refract(vector<Dim, T> const& i, vector<Dim, T> const& n, T eta)
 {
     T k = T(1.0) - eta * eta * (T(1.0) - dot(n, i) * dot(n, i));
-    if (k < T(0.0))
-    {
-        return vector<Dim, T>(0.0);
-    }
-    else
-    {
-        return eta * i - (eta * dot(n, i) + sqrt(k)) * n;
-    }
+
+    return select(
+            k < T(0.0),
+            vector<Dim, T>(0.0),
+            (sqrt(k) - eta * dot(n, i)) * n - eta * i
+            );
 }
 
 
