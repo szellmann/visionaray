@@ -403,7 +403,7 @@ public:
                     vsnray_mat.set_ls( 1.0f );
                     materials_.push_back(vsnray_mat);
                 }
-/*                else if (cs[0] == 0.0f && cs[1] == 0.0f && cs[2] == 0.0f)
+                else if (cs[0] == 0.0f && cs[1] == 0.0f && cs[2] == 0.0f)
                 {
                     matte<float> vsnray_mat;
                     vsnray_mat.set_ca( from_rgb(osg_cast(ca).xyz()) );
@@ -411,7 +411,7 @@ public:
                     vsnray_mat.set_ka( 1.0f );
                     vsnray_mat.set_kd( 1.0f );
                     materials_.push_back(vsnray_mat);
-                }*/
+                }
                 else
                 {
                     plastic<float> vsnray_mat;
