@@ -738,9 +738,9 @@ template <typename R, typename K, typename Intersector, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_choose_intersector_impl(
         R*                      /* */,
-        K                       kernel,
         have_intersector_tag    /* */,
         Intersector&            isect,
+        K                       kernel,
         Args&&...               args
         )
 {

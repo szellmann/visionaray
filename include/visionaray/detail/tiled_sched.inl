@@ -67,7 +67,12 @@ struct tiled_sched<R>::impl
     void init_render_func(K kernel, SP sparams, unsigned frame_num, std::false_type /* has matrix */);
 
     template <typename K, typename SP, typename ...Args>
-    void call_sample_pixel(K kernel, SP sparams, Args&&... args)
+    void call_sample_pixel(
+            std::false_type /* has intersector */,
+            K               kernel,
+            SP              sparams,
+            Args&&...       args
+            )
     {
         sample_pixel<R>(
                 kernel,
@@ -77,19 +82,18 @@ struct tiled_sched<R>::impl
                 );
     }
 
-    template <typename K, template <typename...> class SP, typename Intersector, typename ...SPArgs, typename ...Args>
+    template <typename K, typename SP, typename ...Args>
     void call_sample_pixel(
-            K kernel,
-            SP<sched_params_intersector_base<Intersector>, SPArgs...> sparams,
-            Args&&... args)
+            std::true_type  /* has intersector */,
+            K               kernel,
+            SP              sparams,
+            Args&&...       args)
     {
-        using SPI = SP<sched_params_intersector_base<Intersector>, SPArgs...>;
-
         sample_pixel<R>(
-                kernel,
                 detail::have_intersector_tag(),
                 sparams.intersector,
-                typename SPI::pixel_sampler_type(),
+                kernel,
+                typename SP::pixel_sampler_type(),
                 sparams.rt.ref(),
                 std::forward<Args>(args)...
                 );
@@ -227,6 +231,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
             }
 
             call_sample_pixel(
+                    typename detail::sched_params_has_intersector<SP>::type(),
                     kernel,
                     sparams,
                     x,
@@ -283,6 +288,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
             }
 
             call_sample_pixel(
+                    typename detail::sched_params_has_intersector<SP>::type(),
                     kernel,
                     sparams,
                     x,
