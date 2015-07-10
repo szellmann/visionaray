@@ -45,6 +45,13 @@ struct pixel_traits<PF_RGBA8>
 };
 
 template <>
+struct pixel_traits<PF_R32F>
+{
+    static const pixel_format format = PF_R32F;
+    typedef float type;
+};
+
+template <>
 struct pixel_traits<PF_RGB32F>
 {
     static const pixel_format format = PF_RGB32F;
