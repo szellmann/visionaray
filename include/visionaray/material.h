@@ -236,6 +236,85 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
+// Mirror material
+//
+
+template <typename T>
+class mirror
+{
+public:
+
+    using scalar_type = T;
+
+public:
+
+    // TODO: no support for  ambient
+    VSNRAY_FUNC spectrum<T> ambient() const
+    {
+        return spectrum<T>(0.0);
+    }
+
+    template <typename SR>
+    spectrum<typename SR::scalar_type> shade(SR const& sr) const
+    {
+        return specular_brdf_.f(sr.normal, sr.view_dir, sr.light_dir);
+    }
+
+    template <typename SR, typename U, typename Sampler>
+    VSNRAY_FUNC
+    spectrum<U> sample(SR const& sr, vector<3, U>& refl_dir, U& pdf, Sampler& sampler) const
+    {
+        return specular_brdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, sampler);
+    }
+
+    VSNRAY_FUNC void set_cr(spectrum<T> const& cr)
+    {
+        specular_brdf_.cr = cr;
+    }
+
+    VSNRAY_FUNC spectrum<T> get_cr() const
+    {
+        return specular_brdf_.cr;
+    }
+
+    VSNRAY_FUNC void set_kr(scalar_type kr)
+    {
+        specular_brdf_.kr = kr;
+    }
+
+    VSNRAY_FUNC scalar_type get_kr() const
+    {
+        return specular_brdf_.kr;
+    }
+
+    VSNRAY_FUNC void set_ior(spectrum<T> const& ior)
+    {
+        specular_brdf_.ior = ior;
+    }
+
+    VSNRAY_FUNC spectrum<T> get_ior() const
+    {
+        return specular_brdf_.ior;
+    }
+
+    VSNRAY_FUNC void set_absorption(spectrum<T> const& absorption)
+    {
+        specular_brdf_.absorption = absorption;
+    }
+
+    VSNRAY_FUNC spectrum<T> get_absorption() const
+    {
+        return specular_brdf_.absorption;
+    }
+
+private:
+
+    specular_reflection<T>  specular_brdf_;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Plastic material
 //
 

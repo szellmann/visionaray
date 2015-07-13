@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_TAGS_H
-#define VSNRAH_TAGS_H
+#define VSNRAH_TAGS_H 1
 
 
 //-------------------------------------------------------------------------------------------------
@@ -17,11 +17,12 @@ namespace visionaray
 struct bvh_tag {};
 struct index_bvh_tag {};
 
+struct conductor_tag {};
+struct dielectric_tag {};
+
 struct normals_per_face_binding {};
 struct normals_per_vertex_binding {};
 
-}
+} // visionaray
 
 #endif // VSNRAY_TAGS_H
-
-

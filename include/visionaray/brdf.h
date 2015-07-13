@@ -4,14 +4,19 @@
 #pragma once
 
 #ifndef VSNRAY_BRDF_H
-#define VSNRAY_BRDF_H
+#define VSNRAY_BRDF_H 1
 
 #include "math/math.h"
+#include "fresnel.h"
 #include "mc.h"
 #include "spectrum.h"
 
 namespace visionaray
 {
+
+//-------------------------------------------------------------------------------------------------
+// Lambertian reflection
+//
 
 template <typename T>
 class lambertian
@@ -58,6 +63,11 @@ public:
 
 };
 
+
+//-------------------------------------------------------------------------------------------------
+// Phong reflection
+//
+
 template <typename T>
 class phong
 {
@@ -82,6 +92,11 @@ public:
     }
 
 };
+
+
+//-------------------------------------------------------------------------------------------------
+// Blinn reflection
+//
 
 template <typename T>
 class blinn
@@ -134,6 +149,59 @@ public:
 
         return f(n, wo, wi);
     }
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Perfect specular reflection
+//
+
+template <typename T>
+class specular_reflection
+{
+public:
+
+    using scalar_type   = T;
+
+public:
+
+    spectrum<T> cr;
+    scalar_type kr;
+    spectrum<T> ior;
+    spectrum<T> absorption;
+
+    template <typename U>
+    VSNRAY_FUNC
+    spectrum<U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    {
+        VSNRAY_UNUSED(n);
+        VSNRAY_UNUSED(wi);
+        VSNRAY_UNUSED(wo);
+
+        return spectrum<U>(0.0);
+    }
+
+    template <typename U, typename Sampler>
+    VSNRAY_FUNC
+    spectrum<U> sample_f(
+            vector<3, T> const& n,
+            vector<3, U> const& wo,
+            vector<3, U>& wi,
+            U& pdf,
+            Sampler& sampler
+            ) const
+    {
+        wi = reflect(wo, n);
+        pdf = U(1.0);
+
+        return fresnel_reflectance(
+                conductor_tag(),
+                ior,
+                absorption,
+                abs( dot(n, wo) )
+                ) * spectrum<U>(cr * kr) / abs( dot(n, wi) );
+    }
+
 };
 
 } // visionaray
