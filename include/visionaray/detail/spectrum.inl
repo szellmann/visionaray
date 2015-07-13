@@ -119,6 +119,13 @@ inline spectrum<T> operator*(spectrum<T> const& s, spectrum<T> const& t)
     return spectrum<T>( s.samples() * t.samples() );
 }
 
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T> operator/(spectrum<T> const& s, spectrum<T> const& t)
+{
+    return spectrum<T>( s.samples() / t.samples() );
+}
+
 // spectrum op scalar
 
 template <typename T>
@@ -142,6 +149,13 @@ inline spectrum<T> operator*(spectrum<T> const& s, T t)
     return spectrum<T>( s.samples() * t );
 }
 
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T> operator/(spectrum<T> const& s, T t)
+{
+    return spectrum<T>( s.samples() / t );
+}
+
 // scalar op spectrum
 
 template <typename T>
@@ -163,6 +177,13 @@ VSNRAY_FUNC
 inline spectrum<T> operator*(T s, spectrum<T> const& t)
 {
     return spectrum<T>( s * t.samples() );
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T> operator/(T s, spectrum<T> const& t)
+{
+    return spectrum<T>( s / t.samples() );
 }
 
 // append operations
@@ -193,6 +214,14 @@ inline spectrum<T>& operator*=(spectrum<T>& s, spectrum<T> const& t)
 
 template <typename T>
 VSNRAY_FUNC
+inline spectrum<T>& operator/=(spectrum<T>& s, spectrum<T> const& t)
+{
+    s = spectrum<T>(s / t);
+    return s;
+}
+
+template <typename T>
+VSNRAY_FUNC
 inline spectrum<T>& operator+=(spectrum<T>& s, T t)
 {
     s = spectrum<T>(s + t);
@@ -212,6 +241,14 @@ VSNRAY_FUNC
 inline spectrum<T>& operator*=(spectrum<T>& s, T t)
 {
     s = spectrum<T>(s * t);
+    return s;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T>& operator/=(spectrum<T>& s, T t)
+{
+    s = spectrum<T>(s / t);
     return s;
 }
 
