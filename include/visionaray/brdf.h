@@ -191,6 +191,8 @@ public:
             Sampler& sampler
             ) const
     {
+        VSNRAY_UNUSED(sampler);
+
         wi = reflect(wo, n);
         pdf = U(1.0);
 
