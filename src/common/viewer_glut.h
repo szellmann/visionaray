@@ -50,6 +50,7 @@ protected:
     virtual void on_display();
     virtual void on_idle();
     virtual void on_key_press(key_event const& event);
+    virtual void on_key_release(key_event const& event);
     virtual void on_mouse_move(mouse_event const& event);
     virtual void on_mouse_down(mouse_event const& event);
     virtual void on_mouse_up(mouse_event const& event);

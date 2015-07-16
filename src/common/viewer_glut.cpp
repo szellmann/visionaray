@@ -72,6 +72,7 @@ struct viewer_glut::impl
     static void display_func();
     static void idle_func();
     static void keyboard_func(unsigned char key, int, int);
+    static void keyboard_up_func(unsigned char key, int, int);
     static void motion_func(int x, int y);
     static void mouse_func(int button, int state, int x, int y);
     static void passive_motion_func(int x, int y);
@@ -160,6 +161,7 @@ void viewer_glut::impl::init(int argc, char** argv)
     glutDisplayFunc(display_func);
     glutIdleFunc(idle_func);
     glutKeyboardFunc(keyboard_func);
+    glutKeyboardUpFunc(keyboard_up_func);
     glutMotionFunc(motion_func);
     glutMouseFunc(mouse_func);
     glutPassiveMotionFunc(passive_motion_func);
@@ -220,6 +222,14 @@ void viewer_glut::impl::keyboard_func(unsigned char key, int, int)
     auto m = keyboard::map_glut_modifiers(glutGetModifiers());
 
     viewer->on_key_press( key_event(keyboard::KeyPress, k, m) );
+}
+
+void viewer_glut::impl::keyboard_up_func(unsigned char key, int, int)
+{
+    auto k = keyboard::map_glut_key(key);
+    auto m = keyboard::map_glut_modifiers(glutGetModifiers());
+
+    viewer->on_key_release( key_event(keyboard::KeyRelease, k, m) );
 }
 
 void viewer_glut::impl::mouse_func(int button, int state, int x, int y)
@@ -335,6 +345,11 @@ void viewer_glut::on_idle()
 }
 
 void viewer_glut::on_key_press(visionaray::key_event const& event)
+{
+    VSNRAY_UNUSED(event);
+}
+
+void viewer_glut::on_key_release(visionaray::key_event const& event)
 {
     VSNRAY_UNUSED(event);
 }
