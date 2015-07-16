@@ -27,6 +27,7 @@ public:
     virtual ~camera_manipulator() {}
 
     virtual void handle_key_press(key_event const& event)     { VSNRAY_UNUSED(event); }
+    virtual void handle_key_release(key_event const& event)   { VSNRAY_UNUSED(event); }
 
     virtual void handle_mouse_down(mouse_event const& event)  { VSNRAY_UNUSED(event); }
     virtual void handle_mouse_up(mouse_event const& event)    { VSNRAY_UNUSED(event); }

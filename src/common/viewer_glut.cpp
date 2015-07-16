@@ -346,12 +346,18 @@ void viewer_glut::on_idle()
 
 void viewer_glut::on_key_press(visionaray::key_event const& event)
 {
-    VSNRAY_UNUSED(event);
+    for (auto& manip : impl_->manips)
+    {
+        manip->handle_key_press(event);
+    }
 }
 
 void viewer_glut::on_key_release(visionaray::key_event const& event)
 {
-    VSNRAY_UNUSED(event);
+    for (auto& manip : impl_->manips)
+    {
+        manip->handle_key_release(event);
+    }
 }
 
 void viewer_glut::on_mouse_move(visionaray::mouse_event const& event)
