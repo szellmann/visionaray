@@ -217,7 +217,7 @@ void viewer_glut::impl::motion_func(int x, int y)
 void viewer_glut::impl::keyboard_func(unsigned char key, int, int)
 {
     auto k = keyboard::map_glut_key(key);
-    auto m = keyboard::map_glut_modifier(glutGetModifiers());
+    auto m = keyboard::map_glut_modifiers(glutGetModifiers());
 
     viewer->on_key_press( key_event(keyboard::KeyPress, k, m) );
 }
@@ -227,7 +227,7 @@ void viewer_glut::impl::mouse_func(int button, int state, int x, int y)
     mouse::pos p = { x, y };
 
     auto b = mouse::map_glut_button(button);
-    auto m = keyboard::map_glut_modifier(glutGetModifiers());
+    auto m = keyboard::map_glut_modifiers(glutGetModifiers());
 
     if (state == GLUT_DOWN)
     {

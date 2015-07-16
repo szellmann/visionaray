@@ -225,7 +225,7 @@ static inline key map_glut_special(unsigned char code)
 }
 
 
-static inline key_modifiers map_glut_modifier(unsigned char code)
+static inline key_modifiers map_glut_modifiers(unsigned char code)
 {
     key_modifiers result = NoKey;
 
