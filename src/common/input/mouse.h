@@ -56,8 +56,9 @@ struct pos
 };
 
 
-static inline button map_glut_button(int but)
+static inline buttons map_glut_button(int but)
 {
+    // GLUT callbacks don't handle multiple buttons pressed at once
     switch (but)
     {
 

@@ -56,6 +56,48 @@ enum key
 using key_modifiers = key;
 
 
+//-------------------------------------------------------------------------------------------------
+// Bitwise operations on keys
+//
+
+inline key_modifiers operator&(key_modifiers a, key b)
+{
+    return static_cast<key_modifiers>( static_cast<int>(a) & static_cast<int>(b) );
+}
+
+inline key_modifiers operator|(key_modifiers a, key b)
+{
+    return static_cast<key_modifiers>( static_cast<int>(a) | static_cast<int>(b) );
+}
+
+inline key_modifiers operator^(key_modifiers a, key b)
+{
+    return static_cast<key_modifiers>( static_cast<int>(a) ^ static_cast<int>(b) );
+}
+
+inline key_modifiers& operator&=(key_modifiers& a, key b)
+{
+    a = a & b;
+    return a;
+}
+
+inline key_modifiers& operator|=(key_modifiers& a, key b)
+{
+    a = a | b;
+    return a;
+}
+
+inline key_modifiers& operator^=(key_modifiers& a, key b)
+{
+    a = a ^ b;
+    return a;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Map GLUT entities
+//
+
 static inline key map_glut_key(unsigned char code)
 {
 
@@ -141,18 +183,26 @@ static inline key map_glut_special(unsigned char code)
 }
 
 
-static inline key map_glut_modifier(unsigned char code)
+static inline key_modifiers map_glut_modifier(unsigned char code)
 {
-    switch (code)
+    key_modifiers result = NoKey;
+
+    if (code & GLUT_ACTIVE_CTRL)
     {
-
-    case GLUT_ACTIVE_CTRL:      return Ctrl;
-    case GLUT_ACTIVE_ALT:       return Alt;
-    case GLUT_ACTIVE_SHIFT:     return Shift;
-
+        result |= Ctrl;
     }
 
-    return NoKey;
+    if (code & GLUT_ACTIVE_ALT)
+    {
+        result |= Alt;
+    }
+
+    if (code & GLUT_ACTIVE_SHIFT)
+    {
+        result |= Shift;
+    }
+
+    return result;
 }
 
 } // keyboard
