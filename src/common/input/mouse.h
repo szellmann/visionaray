@@ -56,6 +56,48 @@ struct pos
 };
 
 
+//-------------------------------------------------------------------------------------------------
+// Bitwise operations on buttons
+//
+
+inline buttons operator&(buttons a, button b)
+{
+    return static_cast<buttons>( static_cast<int>(a) & static_cast<int>(b) );
+}
+
+inline buttons operator|(buttons a, button b)
+{
+    return static_cast<buttons>( static_cast<int>(a) | static_cast<int>(b) );
+}
+
+inline buttons operator^(buttons a, button b)
+{
+    return static_cast<buttons>( static_cast<int>(a) ^ static_cast<int>(b) );
+}
+
+inline buttons& operator&=(buttons& a, button b)
+{
+    a = a & b;
+    return a;
+}
+
+inline buttons& operator|=(buttons& a, button b)
+{
+    a = a | b;
+    return a;
+}
+
+inline buttons& operator^=(buttons& a, button b)
+{
+    a = a ^ b;
+    return a;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Map GLUT entities
+//
+
 static inline buttons map_glut_button(int but)
 {
     // GLUT callbacks don't handle multiple buttons pressed at once
