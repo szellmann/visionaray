@@ -412,6 +412,11 @@ void viewer_glut::on_key_press(visionaray::key_event const& event)
         toggle_full_screen();
     }
 
+    if (event.key() == keyboard::Escape && impl_->full_screen)
+    {
+        toggle_full_screen();
+    }
+
     for (auto& manip : impl_->manips)
     {
         manip->handle_key_press(event);
