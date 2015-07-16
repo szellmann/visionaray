@@ -53,7 +53,7 @@ enum key
 };
 
 
-typedef std::bitset<4> key_modifiers;
+using key_modifiers = key;
 
 
 static inline key map_glut_key(unsigned char code)

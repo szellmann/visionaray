@@ -206,7 +206,6 @@ void viewer_glut::impl::motion_func(int x, int y)
 
     mouse_event event(
             mouse::Move,
-            mouse::NoButton,
             p,
             down_button,
             keyboard::NoKey
@@ -222,17 +221,19 @@ void viewer_glut::impl::keyboard_func(unsigned char key, int, int)
 
 void viewer_glut::impl::mouse_func(int button, int state, int x, int y)
 {
-    mouse::button b = mouse::map_glut_button(button);
     mouse::pos p = { x, y };
+
+    auto b = mouse::map_glut_button(button);
+    auto m = keyboard::map_glut_modifier(glutGetModifiers());
 
     if (state == GLUT_DOWN)
     {
-        viewer->on_mouse_down( mouse_event(mouse::ButtonDown, b, p) );
+        viewer->on_mouse_down( mouse_event(mouse::ButtonDown, p, b, m) );
         down_button = b;
     }
     else if (state == GLUT_UP)
     {
-        viewer->on_mouse_up( mouse_event(mouse::ButtonUp, b, p) );
+        viewer->on_mouse_up( mouse_event(mouse::ButtonUp, p, b, m) );
         down_button = mouse::NoButton;
     }
 }
@@ -243,7 +244,6 @@ void viewer_glut::impl::passive_motion_func(int x, int y)
 
     mouse_event event(
             mouse::Move,
-            mouse::NoButton,
             p,
             mouse::NoButton,
             keyboard::NoKey
