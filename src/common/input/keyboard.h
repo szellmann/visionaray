@@ -32,6 +32,13 @@ enum key
     U = 0x55, V = 0x56, W = 0x57, X = 0x58, Y = 0x59,
     Z = 0x5A,
 
+    a = 0x61, b = 0x62, c = 0x63, d = 0x64, e = 0x65,
+    f = 0x66, g = 0x67, h = 0x68, i = 0x69, j = 0x6A,
+    k = 0x6B, l = 0x6C, m = 0x6D, n = 0x6E, o = 0x6F,
+    p = 0x70, q = 0x71, r = 0x72, s = 0x73, t = 0x74,
+    u = 0x75, v = 0x76, w = 0x77, x = 0x78, y = 0x79,
+    z = 0x7A,
+
     Zero = 0x30, One = 0x31, Two = 0x32, Three = 0x33, Four = 0x34,
     Five = 0x35, Six = 0x36, Seven = 0x37, Eight = 0x38, Nine = 0x39,
 
@@ -54,6 +61,13 @@ enum key
 
 
 using key_modifiers = key;
+
+
+enum event_type
+{
+    KeyPress = 0,
+    KeyRelease
+};
 
 
 //-------------------------------------------------------------------------------------------------
@@ -104,32 +118,60 @@ static inline key map_glut_key(unsigned char code)
     switch (code)
     {
 
-    case 'a':                   return A;
-    case 'b':                   return B;
-    case 'c':                   return C;
-    case 'd':                   return D;
-    case 'e':                   return E;
-    case 'f':                   return F;
-    case 'g':                   return G;
-    case 'h':                   return H;
-    case 'i':                   return I;
-    case 'j':                   return J;
-    case 'k':                   return K;
-    case 'l':                   return L;
-    case 'm':                   return M;
-    case 'n':                   return N;
-    case 'o':                   return O;
-    case 'p':                   return P;
-    case 'q':                   return Q;
-    case 'r':                   return R;
-    case 's':                   return S;
-    case 't':                   return T;
-    case 'u':                   return U;
-    case 'v':                   return V;
-    case 'w':                   return W;
-    case 'x':                   return X;
-    case 'y':                   return Y;
-    case 'z':                   return Z;
+    case 'A':                   return A;
+    case 'B':                   return B;
+    case 'C':                   return C;
+    case 'D':                   return D;
+    case 'E':                   return E;
+    case 'F':                   return F;
+    case 'G':                   return G;
+    case 'H':                   return H;
+    case 'I':                   return I;
+    case 'J':                   return J;
+    case 'K':                   return K;
+    case 'L':                   return L;
+    case 'M':                   return M;
+    case 'N':                   return N;
+    case 'O':                   return O;
+    case 'P':                   return P;
+    case 'Q':                   return Q;
+    case 'R':                   return R;
+    case 'S':                   return S;
+    case 'T':                   return T;
+    case 'U':                   return U;
+    case 'V':                   return V;
+    case 'W':                   return W;
+    case 'X':                   return X;
+    case 'Y':                   return Y;
+    case 'Z':                   return Z;
+
+    case 'a':                   return a;
+    case 'b':                   return b;
+    case 'c':                   return c;
+    case 'd':                   return d;
+    case 'e':                   return e;
+    case 'f':                   return f;
+    case 'g':                   return g;
+    case 'h':                   return h;
+    case 'i':                   return i;
+    case 'j':                   return j;
+    case 'k':                   return k;
+    case 'l':                   return l;
+    case 'm':                   return m;
+    case 'n':                   return n;
+    case 'o':                   return o;
+    case 'p':                   return p;
+    case 'q':                   return q;
+    case 'r':                   return r;
+    case 's':                   return s;
+    case 't':                   return t;
+    case 'u':                   return u;
+    case 'v':                   return v;
+    case 'w':                   return w;
+    case 'x':                   return x;
+    case 'y':                   return y;
+    case 'z':                   return z;
+
 
     case '1':                   return One;
     case '2':                   return Two;
@@ -212,14 +254,33 @@ class key_event
 {
 public:
 
-    key_event(keyboard::key key) : key_(key), modifiers_(keyboard::NoKey) {}
-    key_event(keyboard::key key, keyboard::key_modifiers modifiers) : key_(key), modifiers_(modifiers) {}
+    key_event(
+            keyboard::event_type type,
+            keyboard::key key
+            )
+        : type_(type)
+        , key_(key)
+        , modifiers_(keyboard::NoKey)
+    {
+    }
 
-    keyboard::key key() const { return key_; }
+    key_event(
+            keyboard::event_type type,
+            keyboard::key key,
+            keyboard::key_modifiers modifiers)
+        : type_(type)
+        , key_(key)
+        , modifiers_(modifiers)
+    {
+    }
+
+    keyboard::event_type get_type()     const { return type_; }
+    keyboard::key key()                 const { return key_; }
     keyboard::key_modifiers modifiers() const { return modifiers_; }
 
 private:
 
+    keyboard::event_type type_;
     keyboard::key key_;
     keyboard::key_modifiers modifiers_;
 

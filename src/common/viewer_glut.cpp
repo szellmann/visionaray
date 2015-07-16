@@ -216,7 +216,10 @@ void viewer_glut::impl::motion_func(int x, int y)
 
 void viewer_glut::impl::keyboard_func(unsigned char key, int, int)
 {
-    viewer->on_key_press(key);
+    auto k = keyboard::map_glut_key(key);
+    auto m = keyboard::map_glut_modifier(glutGetModifiers());
+
+    viewer->on_key_press( key_event(keyboard::KeyPress, k, m) );
 }
 
 void viewer_glut::impl::mouse_func(int button, int state, int x, int y)
@@ -331,9 +334,9 @@ void viewer_glut::on_idle()
     glutPostRedisplay();
 }
 
-void viewer_glut::on_key_press(unsigned char key)
+void viewer_glut::on_key_press(visionaray::key_event const& event)
 {
-    VSNRAY_UNUSED(key);
+    VSNRAY_UNUSED(event);
 }
 
 void viewer_glut::on_mouse_move(visionaray::mouse_event const& event)

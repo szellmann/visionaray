@@ -182,7 +182,7 @@ struct renderer : viewer_glut
 protected:
 
     void on_display();
-    void on_key_press(unsigned char key);
+    void on_key_press(visionaray::key_event const& event);
     void on_mouse_move(visionaray::mouse_event const& event);
     void on_resize(int w, int h);
 
@@ -511,11 +511,11 @@ void renderer::on_display()
     swap_buffers();
 }
 
-void renderer::on_key_press(unsigned char key)
+void renderer::on_key_press(key_event const& event)
 {
     static const std::string camera_filename = "visionaray-camera.txt";
 
-    switch (key)
+    switch (event.key())
     {
     case '1':
         std::cout << "Switching algorithm: simple\n";

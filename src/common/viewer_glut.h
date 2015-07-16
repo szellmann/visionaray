@@ -20,6 +20,7 @@ namespace visionaray
 {
 
 class camera_manipulator;
+class key_event;
 class mouse_event;
 
 class viewer_glut
@@ -48,7 +49,7 @@ protected:
 
     virtual void on_display();
     virtual void on_idle();
-    virtual void on_key_press(unsigned char key); // TODO: keybaord event
+    virtual void on_key_press(key_event const& event);
     virtual void on_mouse_move(mouse_event const& event);
     virtual void on_mouse_down(mouse_event const& event);
     virtual void on_mouse_up(mouse_event const& event);
