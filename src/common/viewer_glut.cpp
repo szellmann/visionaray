@@ -52,6 +52,7 @@ struct viewer_glut::impl
     static mouse::pos       motion_pos;
     static mouse::pos       down_pos;
     static mouse::pos       up_pos;
+    static bool             full_screen;
     static int              width;
     static int              height;
     static vec3             bgcolor;
@@ -88,6 +89,7 @@ mouse::button   viewer_glut::impl::down_button  = mouse::NoButton;
 mouse::pos      viewer_glut::impl::motion_pos   = { 0, 0 };
 mouse::pos      viewer_glut::impl::down_pos     = { 0, 0 };
 mouse::pos      viewer_glut::impl::up_pos       = { 0, 0 };
+bool            viewer_glut::impl::full_screen  = false;
 int             viewer_glut::impl::width        = 512;
 int             viewer_glut::impl::height       = 512;
 vec3            viewer_glut::impl::bgcolor      = { 0.1f, 0.4f, 1.0f };
@@ -112,7 +114,15 @@ viewer_glut::impl::impl(
     viewer_glut::impl::window_title = window_title;
 
 
-    // add default options (-width, -height)
+    // add default options (-fullscreen, -width, -height, -bgcolor)
+
+    options.emplace_back( cl::makeOption<bool&>(
+        cl::Parser<>(),
+        "fullscreen",
+        cl::Desc("Full screen window"),
+        cl::ArgDisallowed,
+        cl::init(viewer_glut::impl::full_screen)
+        ) );
 
     options.emplace_back( cl::makeOption<int&>(
         cl::Parser<>(),
@@ -159,6 +169,11 @@ void viewer_glut::impl::init(int argc, char** argv)
 
     glutInitWindowSize(width, height);
     glutCreateWindow(window_title.c_str());
+
+    if (full_screen)
+    {
+        glutFullScreen();
+    }
 
     glutDisplayFunc(display_func);
     glutIdleFunc(idle_func);
@@ -335,6 +350,32 @@ void viewer_glut::swap_buffers()
     glutSwapBuffers();
 }
 
+void viewer_glut::toggle_full_screen()
+{
+    // OK to use statics, this is GLUT, anyway...
+
+    static int win_x  = glutGet(GLUT_WINDOW_X);
+    static int win_y  = glutGet(GLUT_WINDOW_Y);
+    static int width  = glutGet(GLUT_WINDOW_WIDTH);
+    static int height = glutGet(GLUT_WINDOW_HEIGHT);
+
+    if (impl_->full_screen)
+    {
+        glutReshapeWindow( width, height );
+        glutPositionWindow( win_x, win_y );
+    }
+    else
+    {
+        win_x  = glutGet(GLUT_WINDOW_X);
+        win_y  = glutGet(GLUT_WINDOW_Y);
+        width  = glutGet(GLUT_WINDOW_WIDTH);
+        height = glutGet(GLUT_WINDOW_HEIGHT);
+        glutFullScreen();
+    }
+
+    impl_->full_screen = !impl_->full_screen;
+}
+
 int viewer_glut::width()
 {
     return impl_->width;
@@ -366,6 +407,11 @@ void viewer_glut::on_idle()
 
 void viewer_glut::on_key_press(visionaray::key_event const& event)
 {
+    if (event.key() == keyboard::F5)
+    {
+        toggle_full_screen();
+    }
+
     for (auto& manip : impl_->manips)
     {
         manip->handle_key_press(event);
