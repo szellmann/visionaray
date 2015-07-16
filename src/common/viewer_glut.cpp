@@ -77,6 +77,8 @@ struct viewer_glut::impl
     static void mouse_func(int button, int state, int x, int y);
     static void passive_motion_func(int x, int y);
     static void reshape_func(int w, int h);
+    static void special_func(int key, int, int);
+    static void special_up_func(int key, int, int);
 };
 
 viewer_glut*    viewer_glut::impl::viewer       = nullptr;
@@ -166,6 +168,8 @@ void viewer_glut::impl::init(int argc, char** argv)
     glutMouseFunc(mouse_func);
     glutPassiveMotionFunc(passive_motion_func);
     glutReshapeFunc(reshape_func);
+    glutSpecialFunc(special_func);
+    glutSpecialUpFunc(special_up_func);
 }
 
 
@@ -270,6 +274,22 @@ void viewer_glut::impl::reshape_func(int w, int h)
     width = w;
     height = h;
     viewer->on_resize(w, h);
+}
+
+void viewer_glut::impl::special_func(int key, int, int)
+{
+    auto k = keyboard::map_glut_special(key);
+    auto m = keyboard::map_glut_modifiers(glutGetModifiers());
+
+    viewer->on_key_press( key_event(keyboard::KeyPress, k, m) );
+}
+
+void viewer_glut::impl::special_up_func(int key, int, int)
+{
+    auto k = keyboard::map_glut_special(key);
+    auto m = keyboard::map_glut_modifiers(glutGetModifiers());
+
+    viewer->on_key_release( key_event(keyboard::KeyRelease, k, m) );
 }
 
 

@@ -189,7 +189,7 @@ static inline key map_glut_key(unsigned char code)
 }
 
 
-static inline key map_glut_special(unsigned char code)
+static inline key map_glut_special(int code)
 {
     switch (code)
     {
