@@ -46,7 +46,7 @@ enum key
 
     PageUp, PageDown, Home, End, Insert,
 
-    Space, Escape, Enter, Tab,
+    Space = 0x20, Escape = 0x1B, Enter = 0x0D, Tab = 0x9,
 
     F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
 
@@ -182,6 +182,11 @@ static inline key map_glut_key(unsigned char code)
     case '7':                   return Seven;
     case '8':                   return Eight;
     case '9':                   return Nine;
+
+    case 0x20:                  return Space;
+    case 0x1B:                  return Escape;
+    case 0x0D:                  return Enter;
+    case 0x9:                   return Tab;
 
     }
 
