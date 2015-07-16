@@ -590,6 +590,8 @@ void renderer::on_key_press(key_event const& event)
     default:
         break;
     }
+
+    viewer_glut::on_key_press(event);
 }
 
 void renderer::on_mouse_move(visionaray::mouse_event const& event)
