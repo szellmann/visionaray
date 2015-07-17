@@ -27,6 +27,21 @@ inline matte<float4> pack(
     return result;
 }
 
+inline mirror<float4> pack(
+        mirror<float> const& m1,
+        mirror<float> const& m2,
+        mirror<float> const& m3,
+        mirror<float> const& m4
+        )
+{
+    mirror<float4> result;
+
+    result.set_cr( pack(m1.get_cr(), m2.get_cr(), m3.get_cr(), m4.get_cr()) );
+    result.set_kr( float4(m1.get_kr(), m2.get_kr(), m3.get_kr(), m4.get_kr()) );
+
+    return result;
+}
+
 inline plastic<float4> pack(
         plastic<float> const& m1,
         plastic<float> const& m2,
