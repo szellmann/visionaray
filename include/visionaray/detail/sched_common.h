@@ -8,6 +8,8 @@
 
 #include <chrono>
 
+#include <boost/thread/tss.hpp>
+
 #include <visionaray/mc.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/render_target.h>
@@ -357,9 +359,16 @@ public:
     sampler_gen() = default;
     sampler_gen(unsigned seed) : seed_(seed) {}
 
-    VSNRAY_CPU_FUNC S<T> operator()() const
+    VSNRAY_CPU_FUNC S<T>& operator()() const
     {
-        return S<T>(seed_);
+        static boost::thread_specific_ptr<S<T>> ptr;
+
+        if (!ptr.get())
+        {
+            ptr.reset( new S<T>(seed_) );
+        }
+
+        return *ptr;
     }
 
 private:
@@ -568,15 +577,10 @@ inline void sample_pixel_impl(
 
     using S = typename R::scalar_type;
 
-#if defined(__CUDACC__)
-    auto gen                            = sampler_gen<sampler, S>();
-    auto s                              = gen();
-#else
-    static VSNRAY_THREAD_LOCAL auto gen = sampler_gen<sampler, S>();
-    static VSNRAY_THREAD_LOCAL auto s   = gen();
-#endif
-    auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
-    auto result                         = kernel(r, s);
+    auto gen    = sampler_gen<sampler, S>();
+    auto s      = gen();
+    auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
+    auto result = kernel(r, s);
     color_access::store(x, y, viewport, result, rt_ref.color());
 }
 
@@ -602,16 +606,11 @@ inline void sample_pixel_impl(
     using S     = typename R::scalar_type;
     using Color = vector<4, S>;
 
-#if defined(__CUDACC__)
-    auto gen                            = sampler_gen<sampler, S>(tic());
-    auto s                              = gen();
-#else
-    static VSNRAY_THREAD_LOCAL auto gen = sampler_gen<sampler, S>(tic());
-    static VSNRAY_THREAD_LOCAL auto s   = gen();
-#endif
-    auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
-    auto result                         = kernel(r, s);
-    auto alpha                          = S(1.0) / S(frame);
+    auto gen    = sampler_gen<sampler, S>(tic());
+    auto& s     = gen();
+    auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
+    auto result = kernel(r, s);
+    auto alpha  = S(1.0) / S(frame);
     if (frame <= 1)
     {//TODO: clear method in render target?
         color_access::store(x, y, viewport, Color(0.0), rt_ref.color());
@@ -635,16 +634,11 @@ inline void sample_pixel_impl(
 {
     using S     = typename R::scalar_type;
 
-#if defined(__CUDACC__)
-    auto gen                            = sampler_gen<sampler, S>(tic());
-    auto s                              = gen();
-#else
-    static VSNRAY_THREAD_LOCAL auto gen = sampler_gen<sampler, S>(tic());
-    static VSNRAY_THREAD_LOCAL auto s   = gen();
-#endif
-    auto r                              = jittered_ray_gen<R>(x, y, s, viewport, args...);
-    auto result                         = kernel(r, s);
-    auto alpha                          = S(1.0) / S(frame);
+    auto gen    = sampler_gen<sampler, S>(tic());
+    auto& s     = gen();
+    auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
+    auto result = kernel(r, s);
+    auto alpha  = S(1.0) / S(frame);
 
     result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
 
@@ -678,13 +672,8 @@ inline void sample_pixel_impl(
     using S     = typename R::scalar_type;
     using Color = vector<4, S>;
 
-#if defined(__CUDACC__)
-    auto gen                            = sampler_gen<sampler, S>(tic());
-    auto s                              = gen();
-#else
-    static VSNRAY_THREAD_LOCAL auto gen = sampler_gen<sampler, S>(tic());
-    static VSNRAY_THREAD_LOCAL auto s   = gen();
-#endif
+    auto gen    = sampler_gen<sampler, S>(tic());
+    auto& s     = gen();
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
