@@ -362,12 +362,16 @@ public:
 #if defined(__CUDA_ARCH__)
     VSNRAY_GPU_FUNC S<float>& operator()() const
     {
-        unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
-        unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
-        unsigned w = blockDim.x * gridDim.x;
-
         static __shared__ S<float> samp;
-        samp = S<float>( hash(seed_ + y * w + x) );
+
+        if (threadIdx.x == 0 && threadIdx.y == 0)
+        {
+            unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
+            unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
+            unsigned w = blockDim.x * gridDim.x;
+
+            samp = S<float>( hash(seed_ + y * w + x) );
+        }
 
         __syncThreads();
 
