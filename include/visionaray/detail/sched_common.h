@@ -359,6 +359,21 @@ public:
     sampler_gen() = default;
     sampler_gen(unsigned seed) : seed_(seed) {}
 
+#if defined(__CUDA_ARCH__)
+    VSNRAY_GPU_FUNC S<float>& operator()() const
+    {
+        unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
+        unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
+        unsigned w = blockDim.x * gridDim.x;
+
+        static __shared__ S<float> samp;
+        samp = S<float>( hash(seed_ + y * w + x) );
+
+        __syncThreads();
+
+        return samp;
+    }
+#else
     VSNRAY_CPU_FUNC S<T>& operator()() const
     {
         static boost::thread_specific_ptr<S<T>> ptr;
@@ -370,6 +385,7 @@ public:
 
         return *ptr;
     }
+#endif
 
 private:
 
@@ -385,13 +401,16 @@ public:
     VSNRAY_FUNC sampler_gen() {}
     VSNRAY_FUNC sampler_gen(unsigned seed) : seed_(seed) {}
 
-    VSNRAY_FUNC S<float> operator()() const
+    VSNRAY_FUNC S<float>& operator()() const
     {
 #if defined(__CUDA_ARCH__)
         unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
         unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
         unsigned w = blockDim.x * gridDim.x;
-        return S<float>( hash(seed_ + y * w + x) );
+
+        static __shared__ S<float> samp;
+        samp = S<float>( hash(seed_ + y * w + x) );
+        return samp;
 #else
         return S<float>(seed_);
 #endif

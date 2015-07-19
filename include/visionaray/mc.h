@@ -38,6 +38,8 @@ public:
     typedef std::uniform_real_distribution<T> uniform_dist;
 #endif
 
+    VSNRAY_FUNC sampler() = default;
+
     VSNRAY_FUNC sampler(unsigned seed)
         : rng_(rand_engine(seed))
         , dist_(uniform_dist(0, 1))
