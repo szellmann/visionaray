@@ -351,80 +351,50 @@ inline unsigned tic()
 #endif
 }
 
-template <template <typename> class S, typename T>
-class sampler_gen
-{
-public:
 
-    sampler_gen() = default;
-    sampler_gen(unsigned seed) : seed_(seed) {}
+//-------------------------------------------------------------------------------------------------
+// free function make_sampler() to construct samplers in shared memory
+//
 
 #if defined(__CUDA_ARCH__)
-    VSNRAY_GPU_FUNC S<float>& operator()() const
-    {
-        static __shared__ S<float> samp;
 
-        if (threadIdx.x == 0 && threadIdx.y == 0)
-        {
-            unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
-            unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
-            unsigned w = blockDim.x * gridDim.x;
-
-            samp = S<float>( hash(seed_ + y * w + x) );
-        }
-
-        __syncThreads();
-
-        return samp;
-    }
-#else
-    VSNRAY_CPU_FUNC S<T>& operator()() const
-    {
-        static boost::thread_specific_ptr<S<T>> ptr;
-
-        if (!ptr.get())
-        {
-            ptr.reset( new S<T>(seed_) );
-        }
-
-        return *ptr;
-    }
-#endif
-
-private:
-
-    unsigned seed_ = 0;
-
-};
-
-template <template <typename> class S>
-class sampler_gen<S, float>
+template <typename Sampler>
+__device__ Sampler& make_sampler(unsigned seed)
 {
-public:
+    // FIXME:
+    // Having the Sampler __shared__ is the only way to declare it static.
+    // With this setup, each thread will write to the same shm location ==> possible race
+    // Declaring one sampler per thread (__shared__ Sampler samp[NUM_THREADS]) results
+    // in a tremendous frame rate drop, though
+    //
 
-    VSNRAY_FUNC sampler_gen() {}
-    VSNRAY_FUNC sampler_gen(unsigned seed) : seed_(seed) {}
+    static __shared__ Sampler samp;
 
-    VSNRAY_FUNC S<float>& operator()() const
-    {
-#if defined(__CUDA_ARCH__)
-        unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
-        unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
-        unsigned w = blockDim.x * gridDim.x;
+    unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
+    unsigned w = blockDim.x * gridDim.x;
 
-        static __shared__ S<float> samp;
-        samp = S<float>( hash(seed_ + y * w + x) );
-        return samp;
+    samp = Sampler( hash(seed + y * w + x) );
+
+    return samp;
+}
+
 #else
-        return S<float>(seed_);
-#endif
+
+template <typename Sampler>
+VSNRAY_CPU_FUNC Sampler& make_sampler(unsigned seed)
+{
+    static boost::thread_specific_ptr<Sampler> ptr;
+
+    if (!ptr.get())
+    {
+        ptr.reset( new Sampler(seed) );
     }
 
-private:
+    return *ptr;
+}
 
-    unsigned seed_ = 0;
-
-};
+#endif // __CUDA_ARCH__
 
 
 //-------------------------------------------------------------------------------------------------
@@ -600,8 +570,7 @@ inline void sample_pixel_impl(
 
     using S = typename R::scalar_type;
 
-    auto gen    = sampler_gen<sampler, S>();
-    auto s      = gen();
+    auto& s     = make_sampler<sampler<S>>(tic());
     auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
     auto result = kernel(r, s);
     color_access::store(x, y, viewport, result, rt_ref.color());
@@ -629,8 +598,7 @@ inline void sample_pixel_impl(
     using S     = typename R::scalar_type;
     using Color = vector<4, S>;
 
-    auto gen    = sampler_gen<sampler, S>(tic());
-    auto& s     = gen();
+    auto& s     = make_sampler<sampler<S>>(tic());
     auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
     auto result = kernel(r, s);
     auto alpha  = S(1.0) / S(frame);
@@ -657,8 +625,7 @@ inline void sample_pixel_impl(
 {
     using S     = typename R::scalar_type;
 
-    auto gen    = sampler_gen<sampler, S>(tic());
-    auto& s     = gen();
+    auto& s     = make_sampler<sampler<S>>(tic());
     auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
     auto result = kernel(r, s);
     auto alpha  = S(1.0) / S(frame);
@@ -695,8 +662,7 @@ inline void sample_pixel_impl(
     using S     = typename R::scalar_type;
     using Color = vector<4, S>;
 
-    auto gen    = sampler_gen<sampler, S>(tic());
-    auto& s     = gen();
+    auto& s     = make_sampler<sampler<S>>(tic());
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
