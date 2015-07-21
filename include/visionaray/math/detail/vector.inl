@@ -738,6 +738,20 @@ T hadd(vector<Dim, T> const& u)
     return result;
 }
 
+template <size_t Dim, typename T>
+MATH_FUNC
+T hmul(vector<Dim, T> const& u)
+{
+    T result(1.0);
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result *= u[d];
+    }
+
+    return result;
+}
+
 
 namespace simd
 {
