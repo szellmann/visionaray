@@ -147,7 +147,7 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
 {
     using value_type = T;
 
-    hit_record()
+    MATH_FUNC hit_record()
         : hit(false)
         , prim_id(0)
         , geom_id(0)
@@ -172,7 +172,7 @@ struct hit_record<simd::ray4, primitive<unsigned>>
 {
     using value_type = simd::float4;
 
-    hit_record()
+    MATH_CPU_FUNC hit_record()
         : hit(false)
         , prim_id(0)
         , geom_id(0)
@@ -200,7 +200,7 @@ struct hit_record<simd::ray8, primitive<unsigned>>
 {
     using value_type = simd::float8;
 
-    hit_record()
+    MATH_CPU_FUNC hit_record()
         : hit(false)
         , prim_id(0)
         , geom_id(0)
@@ -342,6 +342,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
 
 // default implementation for hit_record<ray, primitive<unsigned>>
 template <typename HR>
+MATH_FUNC
 auto is_closer(HR const& query, HR const& reference)
     -> decltype(operator<(query.t, reference.t))
 {
@@ -353,6 +354,7 @@ auto is_closer(HR const& query, HR const& reference)
 // query is box, reference is general primitive
 
 template <typename T, typename U, typename HR>
+MATH_FUNC
 auto is_closer(hit_record<basic_ray<T>, basic_aabb<U>> const& query, HR const& reference)
     -> decltype(operator<(query.tnear, reference.t))
 {
@@ -365,6 +367,7 @@ auto is_closer(hit_record<basic_ray<T>, basic_aabb<U>> const& query, HR const& r
 //
 
 template <typename HR, typename T>
+MATH_FUNC
 auto is_closer(HR const& query, HR const& reference, T max_t)
     -> decltype(is_closer(query, reference))
 {
@@ -380,6 +383,7 @@ auto is_closer(HR const& query, HR const& reference, T max_t)
 
 // default implementation for hit_record<ray, primitive<unsigned>>
 template <typename HR, typename Cond>
+MATH_FUNC
 void update_if(HR& dst, HR const& src, Cond const& cond)
 {
     dst.hit        |= cond;
