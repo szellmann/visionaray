@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_BVH_H
-#define VSNRAY_BVH_H
+#define VSNRAY_BVH_H 1
 
 #include <cstddef>
 #include <stdexcept>
@@ -125,6 +125,11 @@ inline bool is_leaf(bvh_node const& node)
 template <typename PrimitiveType>
 class bvh_ref_t
 {
+public:
+
+    using primitive_type = PrimitiveType;
+
+private:
 
     using P = const PrimitiveType;
     using N = const bvh_node;
@@ -162,6 +167,11 @@ public:
 template <typename PrimitiveType>
 class index_bvh_ref_t
 {
+public:
+
+    using primitive_type = PrimitiveType;
+
+private:
 
     using P = const PrimitiveType;
     using N = const bvh_node;
@@ -400,14 +410,6 @@ using device_index_bvh  = index_bvh_t<thrust::device_vector<P>, thrust::device_v
 template <typename Tree, typename P>
 Tree build(P* primitives, size_t num_prims, bool use_spatial_splits = false);
 
-template <typename T, typename B>
-VSNRAY_FUNC
-inline hit_record<basic_ray<T>, primitive<unsigned>> intersect
-(
-    basic_ray<T> const& ray,
-    B const& b
-);
-
 template <typename B, typename F>
 void traverse_depth_first(B const& b, F func);
 
@@ -420,4 +422,4 @@ void traverse_leaves(B const& b, F func);
 #include "detail/bvh/intersect.inl"
 #include "detail/bvh/traverse.inl"
 
-#endif
+#endif // VSNRAY_BVH_H

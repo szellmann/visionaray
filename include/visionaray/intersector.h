@@ -1,10 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#ifndef VSNRAY_INTERSECTOR_H
-#define VSNRAY_INTERSECTOR_H
-
 #pragma once
+
+#ifndef VSNRAY_INTERSECTOR_H
+#define VSNRAY_INTERSECTOR_H 1
 
 #include <type_traits>
 #include <utility>

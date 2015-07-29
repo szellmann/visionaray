@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <utility>
+
 #include "../stack.h"
 
 namespace visionaray
@@ -8,19 +10,18 @@ namespace visionaray
 
 template <typename T, typename BVH, typename Intersector>
 VSNRAY_FUNC
-inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
+inline auto intersect(
         basic_ray<T> const& ray,
         BVH const&          b,
         Intersector&        isect
         )
+    -> decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
 {
 
     using namespace detail;
+    using HR = decltype( isect(ray, std::declval<typename BVH::primitive_type>()) );
 
-    hit_record<basic_ray<T>, primitive<unsigned>> result;
-    result.hit = T(0.0);
-    result.t = T(numeric_limits<float>::max());
-    result.prim_id = T(0.0);
+    HR result;
 
     stack<32> st;
     st.push(0); // address of root node
@@ -43,8 +44,8 @@ next:
             auto hr1 = isect(ray, children[0].bbox, inv_dir);
             auto hr2 = isect(ray, children[1].bbox, inv_dir);
 
-            auto b1 = any( hr1.hit && hr1.tnear < result.t && hr1.tfar >= T(0.0) );
-            auto b2 = any( hr2.hit && hr2.tnear < result.t && hr2.tfar >= T(0.0) );
+            auto b1 = any( is_closer(hr1, result) );
+            auto b2 = any( is_closer(hr2, result) );
 
             if (b1 && b2)
             {

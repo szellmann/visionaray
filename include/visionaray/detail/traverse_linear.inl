@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <utility>
+
 #include <visionaray/intersector.h>
 
 #include "macros.h"
@@ -12,23 +14,20 @@ namespace detail
 
 template <bool AnyHit, typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> traverse(
+auto traverse(
         R const& r,
         P begin,
         P end,
         typename R::scalar_type max_t,
         Intersector& isect
         )
+    -> decltype( isect(r, *begin) )
 {
+    using HR = decltype( isect(r, *begin) );
 
-    typedef P prim_iterator;
+    HR result;
 
-    hit_record<R, primitive<unsigned>> result;
-    result.hit = false;
-    result.t = numeric_limits<float>::max();
-    result.prim_id = 0;
-
-    for (prim_iterator it = begin; it != end; ++it)
+    for (P it = begin; it != end; ++it)
     {
         auto hr = isect(r, *it);
         update_if(result, hr, is_closer(hr, result, max_t));
@@ -40,16 +39,17 @@ hit_record<R, primitive<unsigned>> traverse(
     }
 
     return result;
-
 }
 
 template <bool AnyHit, typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> traverse(
+auto traverse(
         R const& r,
         P begin,
         P end,
-        Intersector& isect)
+        Intersector& isect
+        )
+    -> decltype( isect(r, *begin) )
 {
     return traverse<AnyHit>(r, begin, end, numeric_limits<float>::max(), isect);
 }
@@ -64,19 +64,21 @@ hit_record<R, primitive<unsigned>> traverse(
 
 template <typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> any_hit(
+auto any_hit(
         R const& r,
         P begin,
         P end,
         Intersector& isect
         )
+    -> decltype( isect(r, *begin) )
 {
     return detail::traverse<true>(r, begin, end, isect);
 }
 
 template <typename R, typename P>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> any_hit(R const& r, P begin, P end)
+auto any_hit(R const& r, P begin, P end)
+    -> decltype( intersect(r, *begin) )
 {
     default_intersector ignore;
     return detail::traverse<true>(r, begin, end, ignore);
@@ -89,20 +91,21 @@ hit_record<R, primitive<unsigned>> any_hit(R const& r, P begin, P end)
 
 template <typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> any_hit(
+auto any_hit(
         R const& r,
         P begin,
         P end,
         typename R::scalar_type max_t,
         Intersector& isect
         )
+    -> decltype( isect(r, *begin) )
 {
     return detail::traverse<true>(r, begin, end, max_t, isect);
 }
 
 template <typename R, typename P>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> any_hit(
+hit_record<R, primitive<unsigned>> any_hit(// TODO: support arbitrary hit record
         R const& r,
         P begin,
         P end,
@@ -120,19 +123,20 @@ hit_record<R, primitive<unsigned>> any_hit(
 
 template <typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> closest_hit(
+auto closest_hit(
         R const& r,
         P begin,
         P end,
-        Intersector& isect)
+        Intersector& isect
+        )
+    -> decltype( isect(r, *begin) )
 {
     return detail::traverse<false>(r, begin, end, isect);
 }
 
-
 template <typename R, typename P>
 VSNRAY_FUNC
-hit_record<R, primitive<unsigned>> closest_hit(R const& r, P begin, P end)
+hit_record<R, primitive<unsigned>> closest_hit(R const& r, P begin, P end)// TODO: support arbitrary hit record
 {
     default_intersector ignore;
     return detail::traverse<false>(r, begin, end, ignore);
