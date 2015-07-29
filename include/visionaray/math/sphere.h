@@ -26,5 +26,3 @@ public:
 } // MATH_NAMESPACE
 
 #endif // VSNRAY_MATH_TRIANGLE_H
-
-
