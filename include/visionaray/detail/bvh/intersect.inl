@@ -78,7 +78,7 @@ next:
             auto prim = b.primitive(i);
 
             auto hr  = isect(ray, prim);
-            auto closer = hr.hit && ( hr.t >= T(0.0) && hr.t < result.t );
+            auto closer = is_closer(hr, result);
 
 #ifndef __CUDA_ARCH__
             if (!any(closer))
@@ -87,12 +87,7 @@ next:
             }
 #endif
 
-            result.hit      |= closer;
-            result.t         = select( closer, hr.t, result.t );
-            result.prim_id   = select( closer, hr.prim_id, result.prim_id );
-            result.geom_id   = select( closer, hr.geom_id, result.geom_id );
-            result.u         = select( closer, hr.u, result.u );
-            result.v         = select( closer, hr.v, result.v );
+            update_if(result, hr, closer);
         }
     }
 

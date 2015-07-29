@@ -21,7 +21,6 @@ hit_record<R, primitive<unsigned>> traverse(
         )
 {
 
-    typedef typename R::scalar_type scalar_type;
     typedef P prim_iterator;
 
     hit_record<R, primitive<unsigned>> result;
@@ -32,13 +31,7 @@ hit_record<R, primitive<unsigned>> traverse(
     for (prim_iterator it = begin; it != end; ++it)
     {
         auto hr = isect(r, *it);
-        auto closer = hr.hit & ( hr.t >= scalar_type(0.0) && hr.t < max_t && hr.t < result.t );
-        result.hit |= closer;
-        result.t = select( closer, hr.t, result.t );
-        result.prim_id   = select( closer, hr.prim_id, result.prim_id );
-        result.geom_id   = select( closer, hr.geom_id, result.geom_id );
-        result.u         = select( closer, hr.u, result.u );
-        result.v         = select( closer, hr.v, result.v );
+        update_if(result, hr, is_closer(hr, result, max_t));
 
         if ( AnyHit && all(result.hit) )
         {
