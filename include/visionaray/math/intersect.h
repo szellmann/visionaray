@@ -404,7 +404,7 @@ namespace simd
 
 // SSE general primitive
 
-VSNRAY_CPU_FUNC
+MATH_CPU_FUNC
 inline std::array<hit_record<ray, primitive<unsigned>>, 4> unpack(hit_record<ray4, primitive<unsigned>> const& hr)
 {
     VSNRAY_ALIGN(16) unsigned hit[4];
@@ -444,7 +444,7 @@ inline std::array<hit_record<ray, primitive<unsigned>>, 4> unpack(hit_record<ray
 
 // AVX general primitive
 
-VSNRAY_CPU_FUNC
+MATH_CPU_FUNC
 inline std::array<hit_record<ray, primitive<unsigned>>, 8> unpack(hit_record<ray8, primitive<unsigned>> const& hr)
 {
     VSNRAY_ALIGN(32) unsigned hit[8];
