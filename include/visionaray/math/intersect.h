@@ -344,7 +344,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
 template <typename HR>
 MATH_FUNC
 auto is_closer(HR const& query, HR const& reference)
-    -> decltype(operator<(query.t, reference.t))
+    -> decltype(query.t < reference.t)
 {
     using T = decltype(query.t);
 
@@ -356,7 +356,7 @@ auto is_closer(HR const& query, HR const& reference)
 template <typename T, typename U, typename HR>
 MATH_FUNC
 auto is_closer(hit_record<basic_ray<T>, basic_aabb<U>> const& query, HR const& reference)
-    -> decltype(operator<(query.tnear, reference.t))
+    -> decltype(query.tnear < reference.t)
 {
     return query.hit && query.tnear < reference.t && query.tfar >= U(0.0);
 }
