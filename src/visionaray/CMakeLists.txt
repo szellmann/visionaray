@@ -89,6 +89,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/plane3.inl
     ${HEADER_DIR}/math/detail/quat.inl
     ${HEADER_DIR}/math/detail/rectangle.inl
+    ${HEADER_DIR}/math/detail/sphere.inl
     ${HEADER_DIR}/math/detail/vector.inl
     ${HEADER_DIR}/math/detail/vector2.inl
     ${HEADER_DIR}/math/detail/vector3.inl

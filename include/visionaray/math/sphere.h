@@ -25,4 +25,6 @@ public:
 
 } // MATH_NAMESPACE
 
+#include "detail/sphere.inl"
+
 #endif // VSNRAY_MATH_TRIANGLE_H
