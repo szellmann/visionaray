@@ -83,6 +83,23 @@ inline simd::float4 point(T const* tex, simd::float4 idx, simd::float4 /* result
 
 }
 
+template <typename T>
+inline simd::float8 point(T const* tex, simd::float8 idx, simd::float8 /* result type */)
+{
+    VSNRAY_ALIGN(32) int indices[8];
+    store(&indices[0], idx);
+    return simd::float8(
+            tex[indices[0]],
+            tex[indices[1]],
+            tex[indices[2]],
+            tex[indices[3]],
+            tex[indices[4]],
+            tex[indices[5]],
+            tex[indices[6]],
+            tex[indices[7]]
+            );
+}
+
 inline vector<3, simd::float4> point(
         vector<3, unorm<8>> const*  tex,
         simd::float4                idx,
@@ -125,6 +142,27 @@ inline vector<4, simd::float4> point(
     colors = transpose(colors);
     return colors;
 
+}
+
+inline vector<4, simd::float8> point(
+        vector<4, float> const*     tex,
+        simd::float8                idx,
+        vector<4, simd::float8>     /* result type */
+        )
+{
+    VSNRAY_ALIGN(32) int indices[8];
+    store(&indices[0], idx);
+
+    return simd::pack(
+            tex[indices[0]],
+            tex[indices[1]],
+            tex[indices[2]],
+            tex[indices[3]],
+            tex[indices[4]],
+            tex[indices[5]],
+            tex[indices[6]],
+            tex[indices[7]]
+            );
 }
 
 

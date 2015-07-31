@@ -376,6 +376,29 @@ inline simd::float4 tex3D_impl_expand_types(
             );
 }
 
+template <typename T>
+inline simd::float8 tex3D_impl_expand_types(
+        T const*                                tex,
+        vector<3, simd::float8> const&          coord,
+        vector<3, simd::float8> const&          texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 3> const&  address_mode
+        )
+{
+    using return_type   = simd::float8;
+    using internal_type = simd::float8;
+
+    return tex3D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // tex3D() dispatch function

@@ -268,6 +268,29 @@ inline vector<4, simd::float4> tex1D_impl_expand_types(
             );
 }
 
+template <typename T>
+inline vector<4, simd::float8> tex1D_impl_expand_types(
+        vector<4, T> const*                     tex,
+        simd::float8 const&                     coord,
+        simd::float8 const&                     texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
+        )
+{
+    using return_type   = vector<4, simd::float8>;
+    using internal_type = vector<4, simd::float8>;
+
+    return tex1D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
 
 // SIMD: SoA textures
 
