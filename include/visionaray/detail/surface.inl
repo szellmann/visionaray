@@ -322,6 +322,98 @@ inline vector<3, simd::float4> get_normal(
 }
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+//-------------------------------------------------------------------------------------------------
+// Gather eight face normals with AVX
+//
+
+template <typename Normals>
+inline vector<3, simd::float8> get_normal(
+        Normals                                             normals,
+        hit_record<simd::ray8, primitive<unsigned>> const&  hr,
+        normals_per_face_binding
+        )
+{
+    using N = typename std::iterator_traits<Normals>::value_type;
+
+    auto hr8 = simd::unpack(hr);
+
+    auto get_norm = [&](int x)
+    {
+        return hr8[x].hit ? normals[hr8[x].prim_id] : N();
+    };
+
+    auto n1 = get_norm(0);
+    auto n2 = get_norm(1);
+    auto n3 = get_norm(2);
+    auto n4 = get_norm(3);
+    auto n5 = get_norm(4);
+    auto n6 = get_norm(5);
+    auto n7 = get_norm(6);
+    auto n8 = get_norm(7);
+
+    return vector<3, simd::float8>(
+            simd::float8( n1.x, n2.x, n3.x, n4.x, n5.x, n6.x, n7.x, n8.x ),
+            simd::float8( n1.y, n2.y, n3.y, n4.y, n5.y, n6.y, n7.y, n8.y ),
+            simd::float8( n1.z, n2.z, n3.z, n4.z, n5.z, n6.z, n7.z, n8.z )
+            );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Gather eight vertex normals with AVX
+//
+
+template <typename Normals>
+inline vector<3, simd::float8> get_normal(
+        Normals                                             normals,
+        hit_record<simd::ray8, primitive<unsigned>> const&  hr,
+        normals_per_vertex_binding
+        )
+{
+    using N = typename std::iterator_traits<Normals>::value_type;
+
+    auto hr8 = simd::unpack(hr);
+
+    auto get_norm = [&](int x, int y)
+    {
+        return hr8[x].hit ? normals[hr8[x].prim_id * 3 + y] : N();
+    };
+
+    vector<3, simd::float8> n1(
+            simd::float8( get_norm(0, 0).x, get_norm(1, 0).x, get_norm(2, 0).x, get_norm(3, 0).x,
+                          get_norm(4, 0).x, get_norm(5, 0).x, get_norm(6, 0).x, get_norm(7, 0).x ),
+            simd::float8( get_norm(0, 0).y, get_norm(1, 0).y, get_norm(2, 0).y, get_norm(3, 0).y,
+                          get_norm(4, 0).y, get_norm(5, 0).y, get_norm(6, 0).y, get_norm(7, 0).y ),
+            simd::float8( get_norm(0, 0).z, get_norm(1, 0).z, get_norm(2, 0).z, get_norm(3, 0).z,
+                          get_norm(4, 0).z, get_norm(5, 0).z, get_norm(6, 0).z, get_norm(7, 0).z )
+            );
+
+    vector<3, simd::float8> n2(
+            simd::float8( get_norm(0, 1).x, get_norm(1, 1).x, get_norm(2, 1).x, get_norm(3, 1).x,
+                          get_norm(4, 1).x, get_norm(5, 1).x, get_norm(6, 1).x, get_norm(7, 1).x ),
+            simd::float8( get_norm(0, 1).y, get_norm(1, 1).y, get_norm(2, 1).y, get_norm(3, 1).y,
+                          get_norm(4, 1).y, get_norm(5, 1).y, get_norm(6, 1).y, get_norm(7, 1).y ),
+            simd::float8( get_norm(0, 1).z, get_norm(1, 1).z, get_norm(2, 1).z, get_norm(3, 1).z,
+                          get_norm(4, 1).z, get_norm(5, 1).z, get_norm(6, 1).z, get_norm(7, 1).z )
+            );
+
+    vector<3, simd::float8> n3(
+            simd::float8( get_norm(0, 2).x, get_norm(1, 2).x, get_norm(2, 2).x, get_norm(3, 2).x,
+                          get_norm(4, 2).x, get_norm(5, 2).x, get_norm(6, 2).x, get_norm(7, 2).x ),
+            simd::float8( get_norm(0, 2).y, get_norm(1, 2).y, get_norm(2, 2).y, get_norm(3, 2).y,
+                          get_norm(4, 2).y, get_norm(5, 2).y, get_norm(6, 2).y, get_norm(7, 2).y ),
+            simd::float8( get_norm(0, 2).z, get_norm(1, 2).z, get_norm(2, 2).z, get_norm(3, 2).z,
+                          get_norm(4, 2).z, get_norm(5, 2).z, get_norm(6, 2).z, get_norm(7, 2).z )
+            );
+
+    return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+
 //-------------------------------------------------------------------------------------------------
 // Get texture coordinate from array
 //
