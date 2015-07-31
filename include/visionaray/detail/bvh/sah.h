@@ -6,11 +6,11 @@
 #include <vector>
 
 #include <visionaray/math/aabb.h>
+#include <visionaray/math/sphere.h>
+#include <visionaray/math/triangle.h>
 
 
 namespace visionaray
-{
-namespace sah_impl
 {
 
 static void split_edge(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, float plane, int axis)
@@ -89,7 +89,9 @@ static void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_spher
         float R2 = rad;
 
         if (del < 0)
+        {
             std::swap(R1, R2);
+        }
 
         // Construct left bounding box
 
@@ -121,7 +123,6 @@ static void split_primitive(aabb& L, aabb& R, float plane, int axis, Primitive c
     static_assert(sizeof(Primitive) == 0, "not implemented");
 }
 
-} // namespace sah_impl
 } // namespace visionaray
 
 
@@ -141,13 +142,25 @@ struct sah_builder
         aabb bounds; // Primitive bounds
         int index;   // Primitive index
 
-        template <typename Triangle>
-        void assign(Triangle const& t, int i)
+        // TODO: get_bounds(primitive)
+        template <size_t Dim, typename T, typename P>
+        void assign(basic_triangle<Dim, T, P> const& prim, int i)
         {
             bounds.invalidate();
-            bounds.insert(t.v1);
-            bounds.insert(t.v1 + t.e1);
-            bounds.insert(t.v1 + t.e2);
+            bounds.insert(prim.v1);
+            bounds.insert(prim.v1 + prim.e1);
+            bounds.insert(prim.v1 + prim.e2);
+
+            index = i;
+        }
+
+        // TODO: get_bounds(primitive)
+        template <typename T, typename P>
+        void assign(basic_sphere<T, P> const& prim, int i)
+        {
+            bounds.invalidate();
+            bounds.insert(prim.center - prim.radius);
+            bounds.insert(prim.center + prim.radius);
 
             index = i;
         }
@@ -413,12 +426,6 @@ struct sah_builder
     //--------------------------------------------------------------------------
     // spatial split
     //
-
-    template <typename Primitive>
-    static void split_primitive(aabb& L, aabb& R, float plane, int axis, Primitive const& prim)
-    {
-        sah_impl::split_primitive(L, R, plane, axis, prim);
-    }
 
     template <typename Data>
     static void split_reference(prim_ref& L, prim_ref& R, prim_ref const& ref, float plane, int axis, Data const& data)
