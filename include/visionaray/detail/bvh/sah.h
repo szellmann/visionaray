@@ -120,6 +120,12 @@ static void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_spher
 template <typename Primitive>
 static void split_primitive(aabb& L, aabb& R, float plane, int axis, Primitive const& prim)
 {
+    VSNRAY_UNUSED(L);
+    VSNRAY_UNUSED(R);
+    VSNRAY_UNUSED(plane);
+    VSNRAY_UNUSED(axis);
+    VNNRAY_UNUSED(prim);
+
     static_assert(sizeof(Primitive) == 0, "not implemented");
 }
 
