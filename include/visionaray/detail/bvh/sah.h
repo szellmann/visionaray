@@ -10,6 +10,123 @@
 
 namespace visionaray
 {
+namespace sah_impl
+{
+
+static void split_edge(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, float plane, int axis)
+{
+    auto t0 = v0[axis];
+    auto t1 = v1[axis];
+
+    if (t0 <= plane)
+    {
+        L.insert(v0);
+    }
+
+    if (t0 >= plane)
+    {
+        R.insert(v0);
+    }
+
+    if ((t0 < plane && plane < t1) || (t1 < plane && plane < t0))
+    {
+        auto x = lerp(v0, v1, (plane - t0) / (t1 - t0));
+
+        x[axis] = plane; // Fix numerical inaccuracies...
+
+        L.insert(x);
+        R.insert(x);
+    }
+}
+
+template <size_t Dim, typename T, typename P>
+static void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_triangle<Dim, T, P> const& prim)
+{
+    auto v0 = prim.v1;
+    auto v1 = v0 + prim.e1;
+    auto v2 = v0 + prim.e2;
+
+    L.invalidate();
+    R.invalidate();
+
+    split_edge(L, R, v0, v1, plane, axis);
+    split_edge(L, R, v1, v2, plane, axis);
+    split_edge(L, R, v2, v0, plane, axis);
+}
+
+template <typename T, typename P>
+static void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_sphere<T, P> const& prim)
+{
+    auto cen = prim.center;
+    auto rad = prim.radius;
+
+    L.invalidate();
+    R.invalidate();
+
+    if (plane < cen[axis] - rad)
+    {
+        // Sphere lies completely on the right side of the clipping plane
+
+        R = aabb(cen - rad, cen + rad);
+    }
+    else if (plane > cen[axis] + rad)
+    {
+        // Sphere lies completely on the left side of the clipping plane
+
+        L = aabb(cen - rad, cen + rad);
+    }
+    else
+    {
+        vec3 C; // center
+        vec3 S; // size/2
+
+        float del = cen[axis] - plane;
+
+        float da = 0.5f * (rad - del);
+        float sa = 0.5f * (rad + del);
+
+        float R1 = sqrt(rad * rad - del * del);
+        float R2 = rad;
+
+        if (del < 0)
+            std::swap(R1, R2);
+
+        // Construct left bounding box
+
+        C = cen;
+        C[axis] -= sa;
+
+        S = vec3(R1);
+        S[axis] = da;
+
+        L.insert(C - S);
+        L.insert(C + S);
+
+        // Construct right bounding box
+
+        C = cen;
+        C[axis] += da;
+
+        S = vec3(R2);
+        S[axis] = sa;
+
+        R.insert(C - S);
+        R.insert(C + S);
+    }
+}
+
+template <typename Primitive>
+static void split_primitive(aabb& L, aabb& R, float plane, int axis, Primitive const& prim)
+{
+    static_assert(sizeof(Primitive) == 0, "not implemented");
+}
+
+} // namespace sah_impl
+} // namespace visionaray
+
+
+namespace visionaray
+{
 namespace detail
 {
 
@@ -297,50 +414,16 @@ struct sah_builder
     // spatial split
     //
 
-    static void split_edge(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, float plane, int axis)
+    template <typename Primitive>
+    static void split_primitive(aabb& L, aabb& R, float plane, int axis, Primitive const& prim)
     {
-        auto t0 = v0[axis];
-        auto t1 = v1[axis];
-
-        if (t0 <= plane)
-        {
-            L.insert(v0);
-        }
-
-        if (t0 >= plane)
-        {
-            R.insert(v0);
-        }
-
-        if ((t0 < plane && plane < t1) || (t1 < plane && plane < t0))
-        {
-            auto x = lerp(v0, v1, (plane - t0) / (t1 - t0));
-
-            x[axis] = plane; // Fix numerical inaccuracies...
-
-            L.insert(x);
-            R.insert(x);
-        }
-    }
-
-    static void split_triangle(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, vec3 const& v2, float plane, int axis)
-    {
-        L.invalidate();
-        R.invalidate();
-
-        split_edge(L, R, v0, v1, plane, axis);
-        split_edge(L, R, v1, v2, plane, axis);
-        split_edge(L, R, v2, v0, plane, axis);
+        sah_impl::split_primitive(L, R, plane, axis, prim);
     }
 
     template <typename Data>
     static void split_reference(prim_ref& L, prim_ref& R, prim_ref const& ref, float plane, int axis, Data const& data)
     {
-        auto v0 = data[ref.index].v1;
-        auto v1 = v0 + data[ref.index].e1;
-        auto v2 = v0 + data[ref.index].e2;
-
-        split_triangle(L.bounds, R.bounds, v0, v1, v2, plane, axis);
+        split_primitive(L.bounds, R.bounds, plane, axis, data[ref.index]);
 
         // Clip with current bounds
         L.bounds = intersect(L.bounds, ref.bounds);
@@ -353,10 +436,6 @@ struct sah_builder
     template <typename Data>
     static void split_object(bin_list& bins, prim_ref const& ref, projection pr, Data const& data)
     {
-        auto v0 = data[ref.index].v1;
-        auto v1 = v0 + data[ref.index].e1;
-        auto v2 = v0 + data[ref.index].e2;
-
         // Compute the range of bins this triangle overlaps
         auto imin = pr.project(ref.bounds.min);
         auto imax = pr.project(ref.bounds.max);
@@ -374,7 +453,7 @@ struct sah_builder
             aabb L, R;
 
             // Split triangle into left and right bounds
-            split_triangle(L, R, v0, v1, v2, plane, pr.axis);
+            split_primitive(L, R, plane, pr.axis, data[ref.index]);
 
             // Clip the left triangle to the current triangle bounds and the current bin bounds
             L = intersect(L, clip);
