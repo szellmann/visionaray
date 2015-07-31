@@ -376,6 +376,8 @@ inline simd::float4 tex3D_impl_expand_types(
             );
 }
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
 template <typename T>
 inline simd::float8 tex3D_impl_expand_types(
         T const*                                tex,
@@ -398,6 +400,8 @@ inline simd::float8 tex3D_impl_expand_types(
             address_mode
             );
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
 //-------------------------------------------------------------------------------------------------

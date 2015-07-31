@@ -83,6 +83,8 @@ inline simd::float4 point(T const* tex, simd::float4 idx, simd::float4 /* result
 
 }
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
 template <typename T>
 inline simd::float8 point(T const* tex, simd::float8 idx, simd::float8 /* result type */)
 {
@@ -99,6 +101,8 @@ inline simd::float8 point(T const* tex, simd::float8 idx, simd::float8 /* result
             tex[indices[7]]
             );
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 inline vector<3, simd::float4> point(
         vector<3, unorm<8>> const*  tex,
@@ -144,6 +148,8 @@ inline vector<4, simd::float4> point(
 
 }
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
 inline vector<4, simd::float8> point(
         vector<4, float> const*     tex,
         simd::float8                idx,
@@ -164,6 +170,8 @@ inline vector<4, simd::float8> point(
             tex[indices[7]]
             );
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
 // SIMD: special case, if multi-channel texture, assume SoA
