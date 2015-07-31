@@ -142,25 +142,10 @@ struct sah_builder
         aabb bounds; // Primitive bounds
         int index;   // Primitive index
 
-        // TODO: get_bounds(primitive)
-        template <size_t Dim, typename T, typename P>
-        void assign(basic_triangle<Dim, T, P> const& prim, int i)
+        template <typename Primitive>
+        void assign(Primitive const& prim, int i)
         {
-            bounds.invalidate();
-            bounds.insert(prim.v1);
-            bounds.insert(prim.v1 + prim.e1);
-            bounds.insert(prim.v1 + prim.e2);
-
-            index = i;
-        }
-
-        // TODO: get_bounds(primitive)
-        template <typename T, typename P>
-        void assign(basic_sphere<T, P> const& prim, int i)
-        {
-            bounds.invalidate();
-            bounds.insert(prim.center - prim.radius);
-            bounds.insert(prim.center + prim.radius);
+            bounds = get_bounds(prim);
 
             index = i;
         }

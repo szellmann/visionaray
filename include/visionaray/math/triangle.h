@@ -39,4 +39,6 @@ public:
 
 } // MATH_NAMESPACE
 
+#include "detail/triangle.inl"
+
 #endif // VSNRAY_MATH_TRIANGLE_H

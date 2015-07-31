@@ -11,9 +11,23 @@ namespace MATH_NAMESPACE
 // Geometric functions
 //
 
-template <typename T>
+template <typename T, typename P>
 MATH_FUNC
-T volume(basic_sphere<T> const& s)
+basic_aabb<T> get_bounds(basic_sphere<T, P> const& s)
+{
+    basic_aabb<T> bounds;
+
+    bounds.invalidate();
+    bounds.insert(s.center - s.radius);
+    bounds.insert(s.center + s.radius);
+
+    return bounds;
+}
+
+
+template <typename T, typename P>
+MATH_FUNC
+T volume(basic_sphere<T, P> const& s)
 {
     auto r3 = s.radius * s.radius * s.radius;
     return T(4.0) / T(3.0) * constants::pi<T>() * r3;
