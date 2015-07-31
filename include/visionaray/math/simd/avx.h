@@ -173,8 +173,6 @@ public:
 
 };
 
-typedef basic_float<__m256> float8;
-
 
 inline float8 reinterpret_as_float(int8 const& a)
 {
