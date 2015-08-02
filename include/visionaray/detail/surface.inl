@@ -84,7 +84,7 @@ inline auto pack(
         surface<M, C, Args...> const& s3,
         surface<M, C, Args...> const& s4
         ) -> decltype( detail::make_surface(
-                        pack(
+            pack(
                 s1.normal,
                 s2.normal,
                 s3.normal,
@@ -128,19 +128,40 @@ inline auto pack(
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
-template <template <typename, typename...> class M, typename ...Args>
-inline surface<M<simd::float8>> pack(
-        surface<M<float, Args...>> const& s1,
-        surface<M<float, Args...>> const& s2,
-        surface<M<float, Args...>> const& s3,
-        surface<M<float, Args...>> const& s4,
-        surface<M<float, Args...>> const& s5,
-        surface<M<float, Args...>> const& s6,
-        surface<M<float, Args...>> const& s7,
-        surface<M<float, Args...>> const& s8
-        )
+template <typename M, typename ...Args>
+inline auto pack(
+        surface<M, Args...> const& s1,
+        surface<M, Args...> const& s2,
+        surface<M, Args...> const& s3,
+        surface<M, Args...> const& s4,
+        surface<M, Args...> const& s5,
+        surface<M, Args...> const& s6,
+        surface<M, Args...> const& s7,
+        surface<M, Args...> const& s8
+        ) -> decltype( detail::make_surface(
+            pack(
+                s1.normal,
+                s2.normal,
+                s3.normal,
+                s4.normal,
+                s5.normal,
+                s6.normal,
+                s7.normal,
+                s8.normal
+                ),
+            pack(
+                s1.material,
+                s2.material,
+                s3.material,
+                s4.material,
+                s5.material,
+                s6.material,
+                s7.material,
+                s8.material
+                )
+            ) )
 {
-    return surface<M<simd::float8, Args...>>(
+    return detail::make_surface(
             pack(
                 s1.normal,
                 s2.normal,
@@ -164,19 +185,50 @@ inline surface<M<simd::float8>> pack(
             );
 }
 
-template <template <typename, typename...> class M, typename C, typename ...Args>
-inline surface<M<simd::float8>, vector<3, simd::float8>> pack(
-        surface<M<float, Args...>, C> const& s1,
-        surface<M<float, Args...>, C> const& s2,
-        surface<M<float, Args...>, C> const& s3,
-        surface<M<float, Args...>, C> const& s4,
-        surface<M<float, Args...>, C> const& s5,
-        surface<M<float, Args...>, C> const& s6,
-        surface<M<float, Args...>, C> const& s7,
-        surface<M<float, Args...>, C> const& s8
-        )
+template <typename M, typename C, typename ...Args>
+inline auto pack(
+        surface<M, C, Args...> const& s1,
+        surface<M, C, Args...> const& s2,
+        surface<M, C, Args...> const& s3,
+        surface<M, C, Args...> const& s4,
+        surface<M, C, Args...> const& s5,
+        surface<M, C, Args...> const& s6,
+        surface<M, C, Args...> const& s7,
+        surface<M, C, Args...> const& s8
+        ) -> decltype( detail::make_surface(
+            pack(
+                s1.normal,
+                s2.normal,
+                s3.normal,
+                s4.normal,
+                s5.normal,
+                s6.normal,
+                s7.normal,
+                s8.normal
+                ),
+            pack(
+                s1.material,
+                s2.material,
+                s3.material,
+                s4.material,
+                s5.material,
+                s6.material,
+                s7.material,
+                s8.material
+                ),
+            pack(
+                s1.tex_color_,
+                s2.tex_color_,
+                s3.tex_color_,
+                s4.tex_color_,
+                s5.tex_color_,
+                s6.tex_color_,
+                s7.tex_color_,
+                s8.tex_color_
+                )
+            ) )
 {
-    return surface<M<simd::float8, Args...>, vector<3, simd::float8>>(
+    return detail::make_surface(
             pack(
                 s1.normal,
                 s2.normal,
