@@ -374,13 +374,12 @@ inline vector<4, float4> pack(
         vector<4, float> const& v4
         )
 {
-    return vector<4, float4>
-    (
-        float4(v1.x, v2.x, v3.x, v4.x),
-        float4(v1.y, v2.y, v3.y, v4.y),
-        float4(v1.z, v2.z, v3.z, v4.z),
-        float4(v1.w, v2.w, v3.w, v4.w)
-    );
+    return vector<4, float4>(
+            float4(v1.x, v2.x, v3.x, v4.x),
+            float4(v1.y, v2.y, v3.y, v4.y),
+            float4(v1.z, v2.z, v3.z, v4.z),
+            float4(v1.w, v2.w, v3.w, v4.w)
+            );
 }
 
 inline std::array<vector<4, float>, 4> unpack(vector<4, float4> const& v)
@@ -428,7 +427,51 @@ inline vector<4, float4> transpose(vector<4, float4> const& v)
 
 // AVX
 
-// TODO...
+inline vector<4, float8> pack(
+        vector<4, float> const& v1,
+        vector<4, float> const& v2,
+        vector<4, float> const& v3,
+        vector<4, float> const& v4,
+        vector<4, float> const& v5,
+        vector<4, float> const& v6,
+        vector<4, float> const& v7,
+        vector<4, float> const& v8
+        )
+{
+    return vector<4, float8>(
+            float8(v1.x, v2.x, v3.x, v4.x, v5.x, v6.x, v7.x, v8.x),
+            float8(v1.y, v2.y, v3.y, v4.y, v5.y, v6.y, v7.y, v8.y),
+            float8(v1.z, v2.z, v3.z, v4.z, v5.z, v6.z, v7.z, v8.z),
+            float8(v1.w, v2.w, v3.w, v4.w, v5.w, v6.w, v7.w, v8.w)
+            );
+}
+
+inline std::array<vector<4, float>, 8> unpack(vector<4, float8> const& v)
+{
+    VSNRAY_ALIGN(32) float x[8];
+    VSNRAY_ALIGN(32) float y[8];
+    VSNRAY_ALIGN(32) float z[8];
+    VSNRAY_ALIGN(32) float w[8];
+
+    store(x, v.x);
+    store(y, v.y);
+    store(z, v.z);
+    store(w, v.w);
+
+    return std::array<vector<4, float>, 8>
+    {{
+        vector<4, float>(x[0], y[0], z[0], w[0]),
+        vector<4, float>(x[1], y[1], z[1], w[1]),
+        vector<4, float>(x[2], y[2], z[2], w[2]),
+        vector<4, float>(x[3], y[3], z[3], w[3]),
+        vector<4, float>(x[4], y[4], z[4], w[4]),
+        vector<4, float>(x[5], y[5], z[5], w[5]),
+        vector<4, float>(x[6], y[6], z[6], w[6]),
+        vector<4, float>(x[7], y[7], z[7], w[7])
+    }};
+}
+
+// TODO: transpoose?
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
