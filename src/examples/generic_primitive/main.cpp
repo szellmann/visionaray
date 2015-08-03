@@ -32,7 +32,6 @@ using namespace visionaray;
 struct renderer : viewer_glut
 {
     using host_ray_type     = basic_ray<simd::float4>;
-    using tex_ref           = texture_ref<unorm<8>, NormalizedFloat, 2>;
     using primitive_type    = generic_primitive<basic_triangle<3, float>, basic_sphere<float>>;
 
     renderer()
