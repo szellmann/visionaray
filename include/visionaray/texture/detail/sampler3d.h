@@ -283,6 +283,8 @@ inline ReturnT tex3D_impl_choose_filter(
 // Dispatch function overloads to deduce texture type and internal texture type
 //
 
+// float
+
 template <typename T>
 inline T tex3D_impl_expand_types(
         T const*                                tex,
@@ -353,6 +355,80 @@ inline vector<4, T> tex3D_impl_expand_types(
 }
 
 
+// double
+
+template <typename T>
+inline T tex3D_impl_expand_types(
+        T const*                                tex,
+        vector<3, double> const&                coord,
+        vector<3, double> const&                texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 3> const&  address_mode
+        )
+{
+    using return_type   = T;
+    using internal_type = double;
+
+    return tex3D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+template <typename T>
+inline vector<3, T> tex3D_impl_expand_types(
+        vector<3, T> const*                     tex,
+        vector<3, double> const&                coord,
+        vector<3, double> const&                texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 3> const&  address_mode
+        )
+{
+    using return_type   = vector<3, T>;
+    using internal_type = vector<3, double>;
+
+    return tex3D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+template <typename T>
+inline vector<4, T> tex3D_impl_expand_types(
+        vector<4, T> const*                     tex,
+        vector<3, double> const&                coord,
+        vector<3, double> const&                texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 3> const&  address_mode
+        )
+{
+    using return_type   = vector<4, T>;
+    using internal_type = vector<4, double>;
+
+    return tex3D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+
+// simd::float4
+
 template <typename T>
 inline simd::float4 tex3D_impl_expand_types(
         T const*                                tex,
@@ -377,6 +453,8 @@ inline simd::float4 tex3D_impl_expand_types(
 }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// simd::float8
 
 template <typename T>
 inline simd::float8 tex3D_impl_expand_types(

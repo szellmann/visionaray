@@ -173,6 +173,8 @@ inline ReturnT tex1D_impl_choose_filter(
 // Dispatch function overloads to deduce texture type and internal texture type
 //
 
+// float
+
 template <typename T>
 inline T tex1D_impl_expand_types(
         T const*                                tex,
@@ -230,6 +232,78 @@ inline vector<4, T> tex1D_impl_expand_types(
 {
     using return_type   = vector<4, T>;
     using internal_type = vector<4, float>;
+
+    return tex1D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+
+// double
+
+template <typename T>
+inline T tex1D_impl_expand_types(
+        T const*                                tex,
+        double                                  coord,
+        double                                  texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
+        )
+{
+    using return_type   = T;
+    using internal_type = double;
+
+    return tex1D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+template <typename T>
+inline vector<3, T> tex1D_impl_expand_types(
+        vector<3, T> const*                     tex,
+        double                                  coord,
+        double                                  texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
+        )
+{
+    using return_type   = vector<3, T>;
+    using internal_type = vector<3, double>;
+
+    return tex1D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+template <typename T>
+inline vector<4, T> tex1D_impl_expand_types(
+        vector<4, T> const*                     tex,
+        double                                  coord,
+        double                                  texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
+        )
+{
+    using return_type   = vector<4, T>;
+    using internal_type = vector<4, double>;
 
     return tex1D_impl_choose_filter(
             return_type(),
