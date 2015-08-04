@@ -13,6 +13,8 @@
  */
 #if defined(_MSC_VER)
 #define VSNRAY_ALIGN(X) __declspec(align(X))
+#elif defined(__CUDACC__)
+#define VSNRAY_ALIGN(X) __align__(X)
 #else
 #define VSNRAY_ALIGN(X) __attribute__((aligned(X)))
 #endif
