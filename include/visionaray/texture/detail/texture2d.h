@@ -72,7 +72,10 @@ public:
     }
 
 
-    size_t size() const { return width_ * height_; }
+    vector<2, size_t> size() const
+    {
+        return vector<2, size_t>(width_, height_);
+    }
 
     size_t width() const { return width_; }
     size_t height() const { return height_; }

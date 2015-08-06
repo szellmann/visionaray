@@ -73,7 +73,10 @@ public:
     }
 
 
-    size_t size() const { return width_ * height_ * depth_; }
+    vector<3, size_t> size() const
+    {
+        return vector<3, size_t>(width_, height_, depth_);
+    }
 
     size_t width() const { return width_; }
     size_t height() const { return height_; }
