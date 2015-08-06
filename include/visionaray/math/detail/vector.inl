@@ -724,6 +724,34 @@ size_t max_index(vector<Dim, T> const& u)
     return i;
 }
 
+// Returns the smallest element
+template <size_t Dim, typename T>
+T min_element(vector<Dim, T> const& u)
+{
+    T result = u.x;
+
+    for (size_t n = 1; n < Dim; ++n)
+    {
+        result = u[n] < result ? u[n] : result;
+    }
+
+    return result;
+}
+
+// Returns the largest element
+template <size_t Dim, typename T>
+T max_element(vector<Dim, T> const& u)
+{
+    T result = u.x;
+
+    for (size_t n = 1; n < Dim; ++n)
+    {
+        result = u[n] > result ? u[n] : result;
+    }
+
+    return result;
+}
+
 template <size_t Dim, typename T>
 MATH_FUNC
 T hadd(vector<Dim, T> const& u)
