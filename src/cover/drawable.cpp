@@ -545,36 +545,6 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
-// Helper functions
-//
-
-template <typename T>
-inline vector<3, T> hue_to_rgb(T hue)
-{
-//  assert(hue >= 0.0f && hue <= 1.0f);
-
-    T s = saturate( hue ) * T(6.0f);
-
-    T r = saturate( abs(s - T(3.0)) - T(1.0) );
-    T g = saturate( T(2.0) - abs(s - T(2.0)) );
-    T b = saturate( T(2.0) - abs(s - T(4.0)) );
-
-    return vector<3, T>(r, g, b);
-}
-
-template <typename T>
-inline vector<3, T> temperature_to_rgb(T t)
-{
-    T K = T(4.0f / 6.0f);
-
-    T h = K - K * t;
-    T v = T(0.5f) + T(0.5f) * t;
-
-    return v * hue_to_rgb(h);
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // TODO: use make_intersector(lambda...) instead
 //
 
