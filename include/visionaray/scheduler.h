@@ -65,7 +65,7 @@ struct sched_params<Base, RT, PxSamplerT> : Base
     {
     }
 
-    camera const& cam;
+    camera cam;
     RT& rt;
 };
 
@@ -86,9 +86,9 @@ struct sched_params<Base, MT, V, RT, PxSamplerT> : Base
     {
     }
 
-    MT const& view_matrix;
-    MT const& proj_matrix;
-    V const& viewport;
+    MT view_matrix;
+    MT proj_matrix;
+    V viewport;
     RT& rt;
 };
 
