@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_SCHED_H
-#define VSNRAY_SCHED_H
+#ifndef VSNRAY_SCHEDULER_H
+#define VSNRAY_SCHEDULER_H 1
 
 #include <type_traits>
 #include <utility>
@@ -218,4 +218,4 @@ auto make_sched_params(
 #include "detail/tiled_sched.h"
 #endif
 
-#endif // VSNRAY_SCHED_H
+#endif // VSNRAY_SCHEDULER_H
