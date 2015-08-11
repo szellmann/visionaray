@@ -197,7 +197,7 @@ set(VSNRAY_SOURCES
 # Add library target
 #
 
-add_library(visionaray
+visionaray_add_library(visionaray
     ${VSNRAY_HEADERS}
     ${VSNRAY_SOURCES}
 )

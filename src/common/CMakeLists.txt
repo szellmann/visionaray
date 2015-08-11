@@ -84,7 +84,7 @@ set(CMD_LINE_SOURCES
 # Add library target
 #
 
-add_library(visionaray_common
+visionaray_add_library(visionaray_common
     STATIC
     ${COMMON_HEADERS}
     ${COMMON_SOURCES}
