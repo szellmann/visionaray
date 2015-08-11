@@ -1,4 +1,4 @@
-find_package(Boost REQUIRED COMPONENTS chrono filesystem iostreams system thread)
+find_package(Boost COMPONENTS chrono filesystem iostreams system thread REQUIRED)
 find_package(CUDA)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)

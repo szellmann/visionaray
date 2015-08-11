@@ -1,4 +1,4 @@
-find_package(Boost REQUIRED COMPONENTS chrono filesystem iostreams system thread)
+find_package(Boost COMPONENTS chrono filesystem iostreams system thread REQUIRED)
 if (VSNRAY_ENABLE_CUDA)
 find_package(CUDA)
 endif()
