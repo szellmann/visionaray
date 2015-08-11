@@ -33,45 +33,11 @@ visionaray_use_package(PTHREAD)
 endif()
 
 visionaray_link_libraries(visionaray)
+visionaray_link_libraries(visionaray_common)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${CMD_LINE_INCLUDE_DIR})
-
-set(VIEWER_HEADERS
-
-    ${COMMON_DIR}/input/exception.h
-    ${COMMON_DIR}/input/keyboard.h
-    ${COMMON_DIR}/input/mouse.h
-
-    ${COMMON_DIR}/manip/arcball_manipulator.h
-    ${COMMON_DIR}/manip/camera_manipulator.h
-    ${COMMON_DIR}/manip/pan_manipulator.h
-    ${COMMON_DIR}/manip/zoom_manipulator.h
-
-    ${COMMON_DIR}/call_kernel.h
-    ${COMMON_DIR}/image.h
-    ${COMMON_DIR}/jpeg_image.h
-    ${COMMON_DIR}/obj_loader.h
-    ${COMMON_DIR}/render_bvh.h
-    ${COMMON_DIR}/timer.h
-    ${COMMON_DIR}/util.h
-    ${COMMON_DIR}/viewer_glut.h
-)
-
-set(VIEWER_SOURCES
-
-    ${COMMON_DIR}/manip/arcball_manipulator.cpp
-    ${COMMON_DIR}/manip/camera_manipulator.cpp
-    ${COMMON_DIR}/manip/pan_manipulator.cpp
-    ${COMMON_DIR}/manip/zoom_manipulator.cpp
-
-    ${COMMON_DIR}/jpeg_image.cpp
-    ${COMMON_DIR}/obj_loader.cpp
-    ${COMMON_DIR}/util.cpp
-    ${COMMON_DIR}/viewer_glut.cpp
-
-)
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     visionaray_cuda_compile(VIEWER_CUDA_SOURCES
@@ -79,28 +45,9 @@ if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     )
 else()
     set(VIEWER_SOURCES
-        ${VIEWER_SOURCES}
         viewer.cpp
     )
 endif()
-
-
-set(CMD_LINE_HEADERS
-
-    ${CMD_LINE_INCLUDE_DIR}/Support/CmdLine.h
-    ${CMD_LINE_INCLUDE_DIR}/Support/CmdLineUtil.h
-    ${CMD_LINE_INCLUDE_DIR}/Support/StringRef.h
-    ${CMD_LINE_INCLUDE_DIR}/Support/StringRefStream.h
-    ${CMD_LINE_INCLUDE_DIR}/Support/StringSplit.h
-
-)
-
-set(CMD_LINE_SOURCES
-
-    ${CMD_LINE_DIR}/src/CmdLine.cpp
-    ${CMD_LINE_DIR}/src/CmdLineUtil.cpp
-
-)
 
 
 #--------------------------------------------------------------------------------------------------
@@ -108,11 +55,8 @@ set(CMD_LINE_SOURCES
 #
 
 visionaray_add_executable(viewer
-    ${VIEWER_HEADERS}
     ${VIEWER_SOURCES}
     ${VIEWER_CUDA_SOURCES}
-    ${CMD_LINE_HEADERS}
-    ${CMD_LINE_SOURCES}
 )
 
 

@@ -17,6 +17,7 @@ visionaray_use_package(PTHREAD)
 endif()
 
 visionaray_link_libraries(visionaray)
+visionaray_link_libraries(visionaray_common)
 
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
 set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/common/CmdLine)

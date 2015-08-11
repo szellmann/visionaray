@@ -1,3 +1,5 @@
+add_subdirectory(common)
+
 if(VSNRAY_ENABLE_COVER)
 add_subdirectory(cover)
 endif()
