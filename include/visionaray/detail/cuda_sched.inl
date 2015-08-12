@@ -14,6 +14,35 @@ namespace detail
 {
 
 //-------------------------------------------------------------------------------------------------
+// RNG seed
+//
+
+// https://code.google.com/p/thrust/source/browse/examples/monte_carlo.cu
+
+VSNRAY_GPU_FUNC
+inline unsigned cuda_hash(unsigned a)
+{
+    a = (a + 0x7ed55d16) + (a << 12);
+    a = (a ^ 0xc761c23c) ^ (a >> 19);
+    a = (a + 0x165667b1) + (a << 5);
+    a = (a + 0xd3a2646c) ^ (a << 9);
+    a = (a + 0xfd7046c5) + (a << 3);
+    a = (a ^ 0xb55a4f09) ^ (a >> 16);
+    return a;
+}
+
+VSNRAY_GPU_FUNC
+inline unsigned cuda_seed()
+{
+    unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
+    unsigned w = blockDim.x * gridDim.x;
+
+    return cuda_hash(tic() + y * w + x);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // CUDA kernels
 //
 
@@ -41,9 +70,13 @@ __global__ void render(
         return;
     }
 
+    // TODO: support any sampler
+    sampler<typename R::scalar_type> samp(detail::cuda_seed());
+
     sample_pixel<R>(
             kernel,
             PxSamplerT(),
+            samp,
             rt_ref,
             x,
             y,
@@ -80,11 +113,15 @@ __global__ void render(
         return;
     }
 
+    // TODO: support any sampler
+    sampler<typename R::scalar_type> samp(detail::cuda_seed());
+
     sample_pixel<R>(
             detail::have_intersector_tag(),
             intersector,
             kernel,
             PxSamplerT(),
+            samp,
             rt_ref,
             x,
             y,

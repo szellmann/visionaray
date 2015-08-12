@@ -8,8 +8,6 @@
 
 #include <chrono>
 
-#include <boost/thread/tss.hpp>
-
 #include <visionaray/mc.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/render_target.h>
@@ -323,22 +321,8 @@ struct color_access
 
 
 //-------------------------------------------------------------------------------------------------
-// calc seed from pixel(s) and return initialized sampler
+// TODO: move to a better place
 //
-
-// https://code.google.com/p/thrust/source/browse/examples/monte_carlo.cu
-
-VSNRAY_FUNC
-inline unsigned hash(unsigned a)
-{
-    a = (a + 0x7ed55d16) + (a << 12);
-    a = (a ^ 0xc761c23c) ^ (a >> 19);
-    a = (a + 0x165667b1) + (a << 5);
-    a = (a + 0xd3a2646c) ^ (a << 9);
-    a = (a + 0xfd7046c5) + (a << 3);
-    a = (a ^ 0xb55a4f09) ^ (a >> 16);
-    return a;
-}
 
 VSNRAY_FUNC
 inline unsigned tic()
@@ -350,51 +334,6 @@ inline unsigned tic()
     return t.time_since_epoch().count();
 #endif
 }
-
-
-//-------------------------------------------------------------------------------------------------
-// free function make_sampler() to construct samplers in shared memory
-//
-
-#if defined(__CUDA_ARCH__)
-
-template <typename Sampler>
-__device__ Sampler& make_sampler(unsigned seed)
-{
-    // FIXME:
-    // Having the Sampler __shared__ is the only way to declare it static.
-    // With this setup, each thread will write to the same shm location ==> possible race
-    // Declaring one sampler per thread (__shared__ Sampler samp[NUM_THREADS]) results
-    // in a tremendous frame rate drop, though
-    //
-
-    static __shared__ Sampler samp;
-
-    unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
-    unsigned w = blockDim.x * gridDim.x;
-
-    samp = Sampler( hash(seed + y * w + x) );
-
-    return samp;
-}
-
-#else
-
-template <typename Sampler>
-VSNRAY_CPU_FUNC Sampler& make_sampler(unsigned seed)
-{
-    static boost::thread_specific_ptr<Sampler> ptr;
-
-    if (!ptr.get())
-    {
-        ptr.reset( new Sampler(seed) );
-    }
-
-    return *ptr;
-}
-
-#endif // __CUDA_ARCH__
 
 
 //-------------------------------------------------------------------------------------------------
@@ -453,28 +392,23 @@ template <typename R, typename ...Args>
 VSNRAY_FUNC
 inline R uniform_ray_gen(unsigned x, unsigned y, Args&&... args)
 {
-    typedef typename R::scalar_type scalar_type;
-    return ray_gen<R>(pixel<scalar_type>().x(x), pixel<scalar_type>().y(y), args...);
+    using S = typename R::scalar_type;
+    return ray_gen<R>(pixel<S>().x(x), pixel<S>().y(y), args...);
 }
 
-template <typename R, typename S, typename ...Args>
+template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline R jittered_ray_gen(unsigned x, unsigned y, S& sampler, Args&&... args)
+inline R jittered_ray_gen(unsigned x, unsigned y, Sampler& samp, Args&&... args)
 {
-    typedef typename R::scalar_type scalar_type;
+    using S = typename R::scalar_type;
 
-    vector<2, scalar_type> jitter
-    (
-        sampler.next() - scalar_type(0.5),
-        sampler.next() - scalar_type(0.5)
-    );
+    vector<2, S> jitter( samp.next() - S(0.5), samp.next() - S(0.5) );
 
-    return ray_gen<R>
-    (
-        pixel<scalar_type>().x(x) + jitter.x,
-        pixel<scalar_type>().y(y) + jitter.y,
-        args...
-    );
+    return ray_gen<R>(
+            pixel<S>().x(x) + jitter.x,
+            pixel<S>().y(y) + jitter.y,
+            args...
+            );
 }
 
 
@@ -505,12 +439,20 @@ VSNRAY_FUNC inline T depth_transform(
 // Simple uniform pixel sampler
 //
 
-template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
+template <
+    typename R,
+    typename Sampler,
+    pixel_format CF,
+    typename V,
+    typename K,
+    typename ...Args
+    >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                              /* */,
         K                               kernel,
         pixel_sampler::uniform_type     /* */,
+        Sampler&                        samp,
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
@@ -519,6 +461,7 @@ inline void sample_pixel_impl(
         Args&&...                       args
         )
 {
+    VSNRAY_UNUSED(samp);
     VSNRAY_UNUSED(frame);
 
     auto r = uniform_ray_gen<R>(x, y, viewport, args...);
@@ -526,12 +469,21 @@ inline void sample_pixel_impl(
     color_access::store(x, y, viewport, result, rt_ref.color());
 }
 
-template <typename R, pixel_format CF, pixel_format DF, typename V, typename K, typename ...Args>
+template <
+    typename R,
+    typename Sampler,
+    pixel_format CF,
+    pixel_format DF,
+    typename V,
+    typename K,
+    typename ...Args
+    >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                              /* */,
         K                               kernel,
         pixel_sampler::uniform_type     /* */,
+        Sampler&                        samp,
         render_target_ref<CF, DF>       rt_ref,
         unsigned                        x,
         unsigned                        y,
@@ -540,6 +492,7 @@ inline void sample_pixel_impl(
         Args&&...                       args
         )
 {
+    VSNRAY_UNUSED(samp);
     VSNRAY_UNUSED(frame);
 
     auto r = uniform_ray_gen<R>(x, y, viewport, args...);
@@ -553,12 +506,20 @@ inline void sample_pixel_impl(
 // Jittered pixel sampler, sampler is passed to kernel
 //
 
-template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
+template <
+    typename R,
+    typename Sampler,
+    pixel_format CF,
+    typename V,
+    typename K,
+    typename ...Args
+    >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                              /* */,
         K                               kernel,
         pixel_sampler::jittered_type    /* */,
+        Sampler&                        samp,
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
@@ -571,9 +532,8 @@ inline void sample_pixel_impl(
 
     using S = typename R::scalar_type;
 
-    auto& s     = make_sampler<sampler<S>>(tic());
-    auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
-    auto result = kernel(r, s);
+    auto r      = jittered_ray_gen<R>(x, y, samp, viewport, args...);
+    auto result = kernel(r, samp);
     color_access::store(x, y, viewport, result, rt_ref.color());
 }
 
@@ -582,12 +542,20 @@ inline void sample_pixel_impl(
 // Jittered pixel sampler, result is blended on top of color buffer, sampler is passed to kernel
 //
 
-template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
+template <
+    typename R,
+    typename Sampler,
+    pixel_format CF,
+    typename V,
+    typename K,
+    typename ...Args
+    >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                                  /* */,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
+        Sampler&                            samp,
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
@@ -599,9 +567,8 @@ inline void sample_pixel_impl(
     using S     = typename R::scalar_type;
     using Color = vector<4, S>;
 
-    auto& s     = make_sampler<sampler<S>>(tic());
-    auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
-    auto result = kernel(r, s);
+    auto r      = jittered_ray_gen<R>(x, y, samp, viewport, args...);
+    auto result = kernel(r, samp);
     auto alpha  = S(1.0) / S(frame);
     if (frame <= 1)
     {//TODO: clear method in render target?
@@ -610,12 +577,21 @@ inline void sample_pixel_impl(
     color_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
 }
 
-template <typename R, pixel_format CF, pixel_format DF, typename V, typename K, typename ...Args>
+template <
+    typename R,
+    typename Sampler,
+    pixel_format CF,
+    pixel_format DF,
+    typename V,
+    typename K,
+    typename ...Args
+    >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                                  /* */,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
+        Sampler&                            samp,
         render_target_ref<CF, DF>           rt_ref,
         unsigned                            x,
         unsigned                            y,
@@ -626,9 +602,8 @@ inline void sample_pixel_impl(
 {
     using S     = typename R::scalar_type;
 
-    auto& s     = make_sampler<sampler<S>>(tic());
-    auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
-    auto result = kernel(r, s);
+    auto r      = jittered_ray_gen<R>(x, y, samp, viewport, args...);
+    auto result = kernel(r, samp);
     auto alpha  = S(1.0) / S(frame);
 
     result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
@@ -645,12 +620,20 @@ inline void sample_pixel_impl(
 // jittered pixel sampler, blends several samples at once
 //
 
-template <typename R, pixel_format CF, typename V, typename K, typename ...Args>
+template <
+    typename R,
+    typename Sampler,
+    pixel_format CF,
+    typename V,
+    typename K,
+    typename ...Args
+    >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         R*                                  /* */,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
+        Sampler&                            samp,
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
@@ -663,16 +646,14 @@ inline void sample_pixel_impl(
     using S     = typename R::scalar_type;
     using Color = vector<4, S>;
 
-    auto& s     = make_sampler<sampler<S>>(tic());
-
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
         if (frame <= 1)
         {//TODO: clear method in render target?
             color_access::store(x, y, viewport, Color(0.0), rt_ref.color());
         }
-        auto r      = jittered_ray_gen<R>(x, y, s, viewport, args...);
-        auto result = kernel(r, s);
+        auto r      = jittered_ray_gen<R>(x, y, samp, viewport, args...);
+        auto result = kernel(r, samp);
         auto alpha = S(1.0) / S(frame);
         color_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
     }

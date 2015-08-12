@@ -51,7 +51,8 @@ struct sync_params
 template <typename R>
 struct tiled_sched<R>::impl
 {
-    typedef std::function<void(recti const&)> render_tile_func;
+    // TODO: any sampler
+    typedef std::function<void(recti const&, sampler<typename R::scalar_type>&)> render_tile_func;
 
     impl() = default;
 
@@ -66,27 +67,30 @@ struct tiled_sched<R>::impl
     template <typename K, typename SP>
     void init_render_func(K kernel, SP sparams, unsigned frame_num, std::false_type /* has matrix */);
 
-    template <typename K, typename SP, typename ...Args>
+    template <typename K, typename SP, typename Sampler, typename ...Args>
     void call_sample_pixel(
             std::false_type /* has intersector */,
             K               kernel,
             SP              sparams,
+            Sampler&        samp,
             Args&&...       args
             )
     {
         sample_pixel<R>(
                 kernel,
                 typename SP::pixel_sampler_type(),
+                samp,
                 sparams.rt.ref(),
                 std::forward<Args>(args)...
                 );
     }
 
-    template <typename K, typename SP, typename ...Args>
+    template <typename K, typename SP, typename Sampler, typename ...Args>
     void call_sample_pixel(
             std::true_type  /* has intersector */,
             K               kernel,
             SP              sparams,
+            Sampler&        samp,
             Args&&...       args)
     {
         sample_pixel<R>(
@@ -94,6 +98,7 @@ struct tiled_sched<R>::impl
                 sparams.intersector,
                 kernel,
                 typename SP::pixel_sampler_type(),
+                samp,
                 sparams.rt.ref(),
                 std::forward<Args>(args)...
                 );
@@ -160,6 +165,7 @@ void tiled_sched<R>::impl::render_loop()
         }
 
     // case event.render:
+        sampler<typename R::scalar_type> samp(detail::tic());
         for (;;)
         {
             auto tile_idx = sync_params.tile_idx_counter.fetch_add(1);
@@ -181,7 +187,7 @@ void tiled_sched<R>::impl::render_loop()
                     tileh
                     );
 
-            render_tile(tile);
+            render_tile(tile, samp);
 
             auto num_tiles_fin = sync_params.tile_fin_counter.fetch_add(1);
 
@@ -211,7 +217,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 
     recti xviewport(viewport.x, viewport.y, viewport.w - 1, viewport.h - 1);
 
-    render_tile = [=](recti const& tile)
+    render_tile = [=](recti const& tile, sampler<scalar_type>& samp)
     {
         using namespace detail;
 
@@ -233,6 +239,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                     typename detail::sched_params_has_intersector<SP>::type(),
                     kernel,
                     sparams,
+                    samp,
                     x,
                     y,
                     frame_num,
@@ -268,7 +275,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
     auto cam_v = vector<3, scalar_type>(u) * scalar_type( tan(sparams.cam.fovy() / 2.0f) );
     auto cam_w = vector<3, scalar_type>(-f);
 
-    render_tile = [=](recti const& tile)
+    render_tile = [=](recti const& tile, sampler<scalar_type>& samp)
     {
         using namespace detail;
 
@@ -290,6 +297,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                     typename detail::sched_params_has_intersector<SP>::type(),
                     kernel,
                     sparams,
+                    samp,
                     x,
                     y,
                     frame_num,

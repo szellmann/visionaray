@@ -21,6 +21,9 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     auto inv_proj_matrix        = matrix_type( inverse(sched_params.proj_matrix) );
     auto viewport               = sched_params.viewport;
 
+    // TODO: support any sampler
+    sampler<scalar_type> samp(detail::tic());
+
     for (int y = 0; y < viewport.h; ++y)
     {
         for (int x = 0; x < viewport.w; ++x)
@@ -28,6 +31,7 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             sample_pixel<R>(
                     kernel,
                     typename SP::pixel_sampler_type(),
+                    samp,
                     sched_params.rt.ref(),
                     x,
                     y,
