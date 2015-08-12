@@ -564,7 +564,8 @@ inline void sample_pixel_impl(
         unsigned                        y,
         unsigned                        frame,
         V const&                        viewport,
-        Args&&...                       args)
+        Args&&...                       args
+        )
 {
     VSNRAY_UNUSED(frame);
 

@@ -174,13 +174,12 @@ void tiled_sched<R>::impl::render_loop()
             auto tileh = detail::tile_height;
             auto numtilesx = div_up( w, tilew );
 
-            recti tile
-            (
-                viewport.x + (tile_idx % numtilesx) * tilew,
-                viewport.y + (tile_idx / numtilesx) * tileh,
-                tilew,
-                tileh
-            );
+            recti tile(
+                    viewport.x + (tile_idx % numtilesx) * tilew,
+                    viewport.y + (tile_idx / numtilesx) * tileh,
+                    tilew,
+                    tileh
+                    );
 
             render_tile(tile);
 

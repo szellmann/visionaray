@@ -36,7 +36,7 @@ __global__ void render(
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
     auto y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x >= viewport.w || y >= viewport.h)
+    if (x < viewport.x || y < viewport.y || x >= viewport.w || y >= viewport.h)
     {
         return;
     }
@@ -75,7 +75,7 @@ __global__ void render(
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
     auto y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x >= viewport.w || y >= viewport.h)
+    if (x < viewport.x || y < viewport.y || x >= viewport.w || y >= viewport.h)
     {
         return;
     }
