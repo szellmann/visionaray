@@ -255,6 +255,7 @@ public:
     }
 
     template <typename SR>
+    VSNRAY_FUNC
     spectrum<typename SR::scalar_type> shade(SR const& sr) const
     {
         return specular_brdf_.f(sr.normal, sr.view_dir, sr.light_dir);
