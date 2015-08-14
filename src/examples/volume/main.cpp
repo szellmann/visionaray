@@ -172,7 +172,8 @@ void renderer::on_display()
 
     // display the rendered image
 
-    glClearColor(0.1, 0.4, 1.0, 1.0);
+    auto bgcolor = rend->background_color();
+    glClearColor(bgcolor.x, bgcolor.y, bgcolor.z, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     rend->host_rt.display_color_buffer();

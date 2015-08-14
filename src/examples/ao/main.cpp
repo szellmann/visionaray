@@ -100,10 +100,12 @@ void renderer::on_display()
     auto prims_begin = bvhs.data();
     auto prims_end   = bvhs.data() + bvhs.size();
 
+    auto bgcolor = rend->background_color();
+
     rend->host_sched.frame([&](R ray, sampler<S>& samp) -> result_record<S>
     {
         result_record<S> result;
-        result.color = C(0.1, 0.4, 1.0, 1.0);
+        result.color = C(bgcolor, 1.0f);
 
         auto hit_rec = closest_hit(
                 ray,
@@ -169,7 +171,7 @@ void renderer::on_display()
 
     // display the rendered image
 
-    glClearColor(0.1, 0.4, 1.0, 1.0);
+    glClearColor(bgcolor.x, bgcolor.y, bgcolor.z, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     rend->host_rt.display_color_buffer();
