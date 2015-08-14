@@ -325,15 +325,29 @@ inline vector<4, T> normalize(vector<4, T> const& v)
 
 template <typename M, typename T>
 MATH_FUNC
-inline vector<4, T> select(M const& m, vector<4, T> const& u, vector<4, T> const& v)
+vector<4, T> select(M const& m, vector<4, T> const& u, vector<4, T> const& v)
 {
-    return vector<4, T>
-    (
-        select(m, u.x, v.x),
-        select(m, u.y, v.y),
-        select(m, u.z, v.z),
-        select(m, u.w, v.w)
-    );
+    return vector<4, T>(
+            select(m, u.x, v.x),
+            select(m, u.y, v.y),
+            select(m, u.z, v.z),
+            select(m, u.w, v.w)
+            );
+}
+
+template <typename M, typename T1, typename T2>
+MATH_FUNC
+auto select(M const& m, vector<4, T1> const& u, vector<4, T2> const& v)
+    -> vector<4, decltype(select(m, u.x, v.x))>
+{
+    using T3 = decltype(select(m, u.x, v.x));
+
+    return vector<4, T3>(
+            select(m, u.x, v.x),
+            select(m, u.y, v.y),
+            select(m, u.z, v.z),
+            select(m, u.w, v.w)
+            );
 }
 
 template <typename T>

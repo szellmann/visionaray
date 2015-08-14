@@ -291,11 +291,23 @@ template <typename M, typename T>
 MATH_FUNC
 inline vector<2, T> select(M const& m, vector<2, T> const& u, vector<2, T> const& v)
 {
-    return vector<2, T>
-    (
-        select(m, u.x, v.x),
-        select(m, u.y, v.y)
-    );
+    return vector<2, T>(
+            select(m, u.x, v.x),
+            select(m, u.y, v.y)
+            );
+}
+
+template <typename M, typename T1, typename T2>
+MATH_FUNC
+auto select(M const& m, vector<2, T1> const& u, vector<2, T2> const& v)
+    -> vector<2, decltype(select(m, u.x, v.x))>
+{
+    using T3 = decltype(select(m, u.x, v.x));
+
+    return vector<2, T3>(
+            select(m, u.x, v.x),
+            select(m, u.y, v.y)
+            );
 }
 
 template <typename T>
