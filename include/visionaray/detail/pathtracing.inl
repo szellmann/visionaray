@@ -24,11 +24,11 @@ struct kernel
 
     Params params;
 
-    template <typename Intersector, typename R, template <typename> class SMP>
+    template <typename Intersector, typename R, typename Sampler>
     VSNRAY_FUNC result_record<typename R::scalar_type> operator()(
             Intersector& isect,
             R ray,
-            SMP<typename R::scalar_type>& s
+            Sampler& s
             ) const
     {
 
@@ -116,10 +116,10 @@ struct kernel
         return result;
     }
 
-    template <typename R, template <typename> class SMP>
+    template <typename R, typename Sampler>
     VSNRAY_FUNC result_record<typename R::scalar_type> operator()(
             R ray,
-            SMP<typename R::scalar_type>& s
+            Sampler& s
             ) const 
     {
         default_intersector ignore;
