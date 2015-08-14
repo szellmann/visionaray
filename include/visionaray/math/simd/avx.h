@@ -189,6 +189,16 @@ VSNRAY_FORCE_INLINE float8 select(mask8 const& m, float8 const& a, float8 const&
     return _mm256_blendv_ps(b, a, m.f);
 }
 
+VSNRAY_FORCE_INLINE float8 select(mask8 const& m, float8 const& a, float b)
+{
+    return select(m, a, float8(b));
+}
+
+VSNRAY_FORCE_INLINE float8 select(mask8 const& m, float a, float8 const& b)
+{
+    return select(m, float8(a), b);
+}
+
 VSNRAY_FORCE_INLINE int8 select(mask8 const& m, int8 const& a, int8 const& b)
 {
     return reinterpret_as_int( select(m, reinterpret_as_float(a), reinterpret_as_float(b)) );
