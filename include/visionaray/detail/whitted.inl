@@ -108,7 +108,7 @@ struct kernel
             no_hit_color = C(0.0);
         }
 
-        result.color = to_rgba(color);
+        result.color = select( result.hit, to_rgba(color), params.bg_color );
 
         return result;
 

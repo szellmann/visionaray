@@ -62,7 +62,7 @@ struct kernel
                 shaded_clr     += select( hit_rec.hit, clr, C(0.0) );
             }
 
-            result.color        = to_rgba(shaded_clr);
+            result.color        = select( hit_rec.hit, to_rgba(shaded_clr), params.bg_color );
             result.isect_pos    = hit_rec.isect_pos;
         }
         else
