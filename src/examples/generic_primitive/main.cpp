@@ -315,15 +315,11 @@ int main(int argc, char** argv)
     float aspect = rend->width() / static_cast<float>(rend->height());
 
     rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend->cam.set_viewport(0, 0, 512, 512);
     rend->cam.view_all( rend->bbox );
 
     rend->add_manipulator( std::make_shared<arcball_manipulator>(rend->cam, mouse::Left) );
     rend->add_manipulator( std::make_shared<pan_manipulator>(rend->cam, mouse::Middle) );
     rend->add_manipulator( std::make_shared<zoom_manipulator>(rend->cam, mouse::Right) );
-
-    glViewport(0, 0, 512, 512);
-    rend->host_rt.resize(512, 512);
 
     rend->event_loop();
 }
