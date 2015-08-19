@@ -22,6 +22,11 @@ endif()
 
 visionaray_link_libraries(visionaray)
 
+if (WIN32)
+    add_definitions(-DBOOST_ALL_NO_LIB)
+    set(Boost_USE_STATIC_LIBS ON)
+endif()
+
 set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/common/CmdLine)
 set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
 
