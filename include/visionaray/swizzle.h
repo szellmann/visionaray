@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_TEXTURE_SWIZZLE_H
-#define VSNRAY_TEXTURE_SWIZZLE_H
+#ifndef VSNRAY_SWIZZLE_H
+#define VSNRAY_SWIZZLE_H 1
 
 #include <vector>
 
@@ -103,4 +103,4 @@ inline void swizzle(
 
 } // visionaray
 
-#endif // VSNRAY_TEXTURE_SWIZZLE_H
+#endif // VSNRAY_SWIZZLE_H
