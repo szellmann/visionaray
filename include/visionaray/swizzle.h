@@ -20,6 +20,19 @@ namespace detail
 // Swizzle into 2nd data array
 //
 
+inline void swizzle_RGB32F_to_RGB8(
+        vector<3, unorm<8>>*        dst,
+        vector<3, float> const*     src,
+        size_t                      len
+        )
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        auto rgb = src[i];
+        dst[i] = vector<3, unorm<8>>( rgb.x, rgb.y, rgb.z );
+    }
+}
+
 inline void swizzle_RGBA32F_to_RGBA8(
         vector<4, unorm<8>>*        dst,
         vector<4, float> const*     src,
@@ -60,6 +73,76 @@ inline void swizzle_BGRA8_to_RGBA8(vector<4, unorm<8>>* data, size_t len)
     }
 }
 
+inline void swizzle_RGBA8_to_BGRA8(vector<4, unorm<8>>* data, size_t len)
+{
+    // inverse
+    return swizzle_BGRA8_to_RGBA8( data, len );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Expand types for swizzling
+//
+
+inline void swizzle_expand_types(
+        vector<4, unorm<8>>*        dst,
+        pixel_format                format_dst,
+        vector<3, unorm<8>> const*  src,
+        pixel_format                format_src,
+        size_t                      len
+        )
+{
+    if (format_dst == PF_RGBA8 && format_src == PF_RGB8)
+    {
+        detail::swizzle_RGB8_to_RGBA8( dst, src, len );
+    }
+}
+
+inline void swizzle_expand_types(
+        vector<3, unorm<8>>*    dst,
+        pixel_format            format_dst,
+        vector<3, float> const* src,
+        pixel_format            format_src,
+        size_t                  len
+        )
+{
+    if (format_dst == PF_RGB8 && format_src == PF_RGB32F)
+    {
+        detail::swizzle_RGB32F_to_RGB8( dst, src, len );
+    }
+}
+
+inline void swizzle_expand_types(
+        vector<4, unorm<8>>*    dst,
+        pixel_format            format_dst,
+        vector<4, float> const* src,
+        pixel_format            format_src,
+        size_t                  len
+        )
+{
+    if (format_dst == PF_RGBA8 && format_src == PF_RGBA32F)
+    {
+        detail::swizzle_RGBA32F_to_RGBA8( dst, src, len );
+    }
+}
+
+inline void swizzle_expand_types(
+        vector<4, unorm<8>>*    data,
+        pixel_format            format_dst,
+        pixel_format            format_src,
+        size_t                  len
+        )
+{
+    if (format_dst == PF_RGBA8 && format_src == PF_BGRA8)
+    {
+        detail::swizzle_BGRA8_to_RGBA8( data, len );
+    }
+    else if (format_dst == PF_BGRA8 && format_src == PF_RGBA8)
+    {
+        detail::swizzle_RGBA8_to_BGRA8( data, len );
+    }
+}
+
 } // detail
 
 
@@ -76,10 +159,7 @@ inline void swizzle(
         size_t          len
         )
 {
-    if (format_src == PF_RGB8 && format_dst == PF_RGBA8)
-    {
-        detail::swizzle_RGB8_to_RGBA8( dst, src, len );
-    }
+    detail::swizzle_expand_types( dst, format_dst, src, format_src, len );
 }
 
 
@@ -95,10 +175,7 @@ inline void swizzle(
         size_t          len
         )
 {
-    if (format_src == PF_BGRA8 && format_dst == PF_RGBA8)
-    {
-        detail::swizzle_BGRA8_to_RGBA8( data, len );
-    }
+    detail::swizzle_expand_types( data, format_dst, format_src, len );
 }
 
 } // visionaray
