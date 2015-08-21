@@ -70,13 +70,13 @@ inline void swizzle_BGRA8_to_RGBA8(vector<4, unorm<8>>* data, size_t len)
 template <typename T, typename U>
 inline void swizzle(
         T*              dst,
+        pixel_format    format_dst,
         U const*        src,
-        size_t          len,
-        pixel_format    format_source,
-        pixel_format    format_dest
+        pixel_format    format_src,
+        size_t          len
         )
 {
-    if (format_source == PF_RGB8 && format_dest == PF_RGBA8)
+    if (format_src == PF_RGB8 && format_dst == PF_RGBA8)
     {
         detail::swizzle_RGB8_to_RGBA8( dst, src, len );
     }
@@ -90,12 +90,12 @@ inline void swizzle(
 template <typename T>
 inline void swizzle(
         T*              data,
-        size_t          len,
-        pixel_format    format_source,
-        pixel_format    format_dest
+        pixel_format    format_dst,
+        pixel_format    format_src,
+        size_t          len
         )
 {
-    if (format_source == PF_BGRA8 && format_dest == PF_RGBA8)
+    if (format_src == PF_BGRA8 && format_dst == PF_RGBA8)
     {
         detail::swizzle_BGRA8_to_RGBA8( data, len );
     }

@@ -114,7 +114,7 @@ public:
         {
             // Swizzle in-place
             aligned_vector<T> tmp( data, data + data_.size() );
-            swizzle( tmp.data(), tmp.size(), format, internal_format );
+            swizzle( tmp.data(), internal_format, format, tmp.size() );
             set_data( tmp.data() );
         }
         else
@@ -129,7 +129,7 @@ public:
     {
         // Copy to temporary array, then swizzle
         aligned_vector<T> dst( data_.size() );
-        swizzle( dst.data(), data, dst.size(), format, internal_format );
+        swizzle( dst.data(), internal_format, data, format, dst.size() );
         set_data( dst.data() );
     }
 
