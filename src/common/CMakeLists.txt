@@ -6,6 +6,7 @@ find_package(GLEW REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(JPEG)
 find_package(OpenGL REQUIRED)
+find_package(PNG)
 if (NOT APPLE AND NOT WIN32)
 find_package(PTHREAD REQUIRED)
 endif()
@@ -18,6 +19,7 @@ visionaray_use_package(GLEW)
 visionaray_use_package(GLUT)
 visionaray_use_package(JPEG)
 visionaray_use_package(OpenGL)
+visionaray_use_package(PNG)
 if (NOT APPLE AND NOT WIN32)
 visionaray_use_package(PTHREAD)
 endif()
@@ -48,9 +50,11 @@ set(COMMON_HEADERS
     manip/zoom_manipulator.h
 
     call_kernel.h
+    cfile.h
     image.h
     jpeg_image.h
     obj_loader.h
+    png_image.h
     render_bvh.h
     timer.h
     util.h
@@ -66,6 +70,7 @@ set(COMMON_SOURCES
 
     jpeg_image.cpp
     obj_loader.cpp
+    png_image.cpp
     util.cpp
     viewer_glut.cpp
 

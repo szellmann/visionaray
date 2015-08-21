@@ -3,11 +3,13 @@
 
 #if defined(VSNRAY_HAVE_JPEG)
 
+#include <cstddef>
 #include <csetjmp>
 #include <cstdio>
 
 #include <jpeglib.h>
 
+#include "cfile.h"
 #include "jpeg_image.h"
 
 namespace visionaray
@@ -31,33 +33,6 @@ static void error_exit_func(j_common_ptr info)
 }
 
 
-//-------------------------------------------------------------------------------------------------
-// RAII wrapper for FILE -- jpeg API requires c-style FILE handles
-//
-
-class input_file
-{
-public:
-
-    input_file(std::string const& filename)
-    {
-        file_ = fopen(filename.c_str(), "r");
-    }
-
-   ~input_file()
-    {
-        fclose(file_);
-    }
-
-    FILE* get() const { return file_; }
-    bool good() const { return file_ != 0; }
-
-private:
-
-    FILE* file_;
-
-};
-
 struct decompress_ptr
 {
     jpeg_decompress_struct* info;
@@ -75,7 +50,7 @@ struct decompress_ptr
 
 jpeg_image::jpeg_image(std::string const& filename)
 {
-    detail::input_file file(filename.c_str());
+    cfile file(filename.c_str(), "r");
 
     if (!file.good())
     {
@@ -120,5 +95,3 @@ jpeg_image::jpeg_image(std::string const& filename)
 }
 
 #endif // VSNRAY_HAVE_JPEG
-
-

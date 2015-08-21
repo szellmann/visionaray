@@ -41,6 +41,7 @@ Additionally, in order to compile the viewer application, the following packages
 
 - [GLUT][5] or [FreeGLUT][6]
 - [Libjpeg][7] (optional)
+- [Libpng][8] (optional)
 
 
 
@@ -91,3 +92,4 @@ Visionaray is licensed under the MIT License (MIT)
 [5]:    https://www.opengl.org/resources/libraries/glut/
 [6]:    http://freeglut.sourceforge.net/index.php#download
 [7]:    http://libjpeg.sourceforge.net/
+[8]:    http://libpng.sourceforge.net

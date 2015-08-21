@@ -346,9 +346,13 @@ void load_obj(std::string const& filename, model& mod)
                 boost::filesystem::path p(filename);
                 std::string tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
 
-                static const std::string extensions[] = { ".jpg", ".jpeg", ".JPG", ".JPEG" };
                 auto tex_path = boost::filesystem::path(tex_filename);
-                auto has_jpg_ext = ( std::find(extensions, extensions + 4, tex_path.extension()) != extensions + 4 );
+
+                static const std::string jpg_extensions[] = { ".jpg", ".jpeg", ".JPG", ".JPEG" };
+                static const std::string png_extensions[] = { ".png", ".PNG" };
+
+                auto has_jpg_ext = std::find(jpg_extensions, jpg_extensions + 4, tex_path.extension()) != jpg_extensions + 4;
+                auto has_png_ext = std::find(png_extensions, png_extensions + 2, tex_path.extension()) != png_extensions + 2;
 
                 if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_jpg_ext)
                 {
@@ -360,6 +364,21 @@ void load_obj(std::string const& filename, model& mod)
                     tex.set_filter_mode( Linear );
 
                     auto data_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data());
+                    tex.set_data(data_ptr);
+
+                    mod.textures.push_back(std::move(tex));
+#endif
+                }
+                else if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_png_ext)
+                {
+#if defined(VSNRAY_HAVE_PNG)
+                    png_image png(tex_filename);
+
+                    tex_type tex(png.width(), png.height());
+                    tex.set_address_mode( Wrap );
+                    tex.set_filter_mode( Linear );
+
+                    auto data_ptr = reinterpret_cast<tex_type::value_type const*>(png.data());
                     tex.set_data(data_ptr);
 
                     mod.textures.push_back(std::move(tex));
