@@ -530,8 +530,6 @@ inline void sample_pixel_impl(
 {
     VSNRAY_UNUSED(frame);
 
-    using S = typename R::scalar_type;
-
     auto r      = jittered_ray_gen<R>(x, y, samp, viewport, args...);
     auto result = kernel(r, samp);
     color_access::store(x, y, viewport, result, rt_ref.color());
