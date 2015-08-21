@@ -376,6 +376,13 @@ void viewer_glut::toggle_full_screen()
     impl_->full_screen = !impl_->full_screen;
 }
 
+void viewer_glut::resize(int width, int height)
+{
+    impl_->width = width;
+    impl_->height = height;
+    glutReshapeWindow(width, height);
+}
+
 int viewer_glut::width()
 {
     return impl_->width;

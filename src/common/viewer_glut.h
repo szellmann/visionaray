@@ -40,6 +40,7 @@ public:
     void add_cmdline_option( std::shared_ptr<support::cl::OptionBase> option );
     void event_loop();
     void swap_buffers();
+    void resize(int width, int height);
     void toggle_full_screen();
 
     int width();
