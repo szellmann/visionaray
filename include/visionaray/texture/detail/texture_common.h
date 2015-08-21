@@ -13,9 +13,9 @@
 
 #include <visionaray/aligned_vector.h>
 #include <visionaray/pixel_format.h>
+#include <visionaray/swizzle.h>
 
 #include "../forward.h"
-#include "swizzle.h"
 
 
 namespace visionaray

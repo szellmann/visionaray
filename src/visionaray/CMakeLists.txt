@@ -130,7 +130,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/texture/detail/sampler2d.h
     ${HEADER_DIR}/texture/detail/sampler3d.h
     ${HEADER_DIR}/texture/detail/sampler_common.h
-    ${HEADER_DIR}/texture/detail/swizzle.h
     ${HEADER_DIR}/texture/detail/texture1d.h
     ${HEADER_DIR}/texture/detail/texture2d.h
     ${HEADER_DIR}/texture/detail/texture3d.h
@@ -163,6 +162,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/shade_record.h
     ${HEADER_DIR}/spectrum.h
     ${HEADER_DIR}/surface.h
+    ${HEADER_DIR}/swizzle.h
     ${HEADER_DIR}/tags.h
     ${HEADER_DIR}/traverse.h
     ${HEADER_DIR}/variant.h
