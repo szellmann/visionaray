@@ -4,7 +4,6 @@
 #if defined(VSNRAY_HAVE_PNG)
 
 #include <cassert>
-#include <csetjmp>
 
 #ifndef NDEBUG
 #include <iostream>
