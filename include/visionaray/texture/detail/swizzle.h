@@ -20,11 +20,24 @@ namespace detail
 // Swizzle into 2nd data array
 //
 
+inline void swizzle_RGBA32F_to_RGBA8(
+        vector<4, unorm<8>>*        dst,
+        vector<4, float> const*     src,
+        size_t                      len
+        )
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        auto rgba = src[i];
+        dst[i] = vector<4, unorm<8>>( rgba.x, rgba.y, rgba.z, rgba.w );
+    }
+}
+
 inline void swizzle_RGB8_to_RGBA8(
-            vector<4, unorm<8>>*        dst,
-            vector<3, unorm<8>> const*  src,
-            size_t                      len
-            )
+        vector<4, unorm<8>>*        dst,
+        vector<3, unorm<8>> const*  src,
+        size_t                      len
+        )
 {
     for (size_t i = 0; i < len; ++i)
     {
