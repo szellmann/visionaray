@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <iostream>
 #include <limits>
@@ -348,15 +349,12 @@ void load_obj(std::string const& filename, model& mod)
 
                 auto tex_path = boost::filesystem::path(tex_filename);
 
+#if defined(VSNRAY_HAVE_JPEG)
                 static const std::string jpg_extensions[] = { ".jpg", ".jpeg", ".JPG", ".JPEG" };
-                static const std::string png_extensions[] = { ".png", ".PNG" };
-
                 auto has_jpg_ext = std::find(jpg_extensions, jpg_extensions + 4, tex_path.extension()) != jpg_extensions + 4;
-                auto has_png_ext = std::find(png_extensions, png_extensions + 2, tex_path.extension()) != png_extensions + 2;
 
                 if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_jpg_ext)
                 {
-#if defined(VSNRAY_HAVE_JPEG)
                     jpeg_image jpg(tex_filename);
 
                     tex_type tex(jpg.width(), jpg.height());
@@ -367,11 +365,15 @@ void load_obj(std::string const& filename, model& mod)
                     tex.set_data(data_ptr);
 
                     mod.textures.push_back(std::move(tex));
-#endif
                 }
-                else if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_png_ext)
-                {
+#endif // VSNRAY_HAVE_JPEG
+
 #if defined(VSNRAY_HAVE_PNG)
+                static const std::string png_extensions[] = { ".png", ".PNG" };
+                auto has_png_ext = std::find(png_extensions, png_extensions + 2, tex_path.extension()) != png_extensions + 2;
+
+                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_png_ext)
+                {
                     png_image png(tex_filename);
 
                     tex_type tex(png.width(), png.height());
@@ -382,12 +384,16 @@ void load_obj(std::string const& filename, model& mod)
                     tex.set_data(data_ptr);
 
                     mod.textures.push_back(std::move(tex));
-#endif
                 }
-                else
+#endif // VSNRAY_HAVE_PNG
+
+                // if no texture was loaded, insert an empty dummy
+                if (mod.textures.size() < mod.materials.size())
                 {
                     mod.textures.push_back(tex_type(0, 0));
                 }
+
+                assert( mod.textures.size() == mod.materials.size() );
             }
             geom_id = mod.materials.size() == 0 ? 0 : mod.materials.size() - 1;
         }
