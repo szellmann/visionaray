@@ -13,6 +13,16 @@
 
 namespace visionaray
 {
+
+enum swizzle_hint
+{
+    PremultiplyAlpha,
+    TruncateAlpha,
+    AlphaIsZero,
+    AlphaIsOne
+};
+
+
 namespace detail
 {
 
@@ -43,6 +53,37 @@ inline void swizzle_RGBA32F_to_RGBA8(
     {
         auto rgba = src[i];
         dst[i] = vector<4, unorm<8>>( rgba.x, rgba.y, rgba.z, rgba.w );
+    }
+}
+
+template <typename T, typename U>
+inline void swizzle_RGBA_to_RGB(
+        vector<3, T>*       dst,
+        vector<4, U> const* src,
+        size_t              len,
+        swizzle_hint        hint
+        )
+{
+    if (hint == PremultiplyAlpha)
+    {
+        for (size_t i = 0; i < len; ++i)
+        {
+            auto rgba = src[i];
+            float alpha = static_cast<float>(rgba.w);
+            dst[i] = vector<3, T>(
+                    static_cast<float>(rgba.x) * alpha,
+                    static_cast<float>(rgba.y) * alpha,
+                    static_cast<float>(rgba.z) * alpha
+                    );
+        }
+    }
+    else if (hint == TruncateAlpha)
+    {
+        for (size_t i = 0; i < len; ++i)
+        {
+            auto rgba = src[i];
+            dst[i] = vector<3, T>( rgba.x, rgba.y, rgba.z );
+        }
     }
 }
 
@@ -84,6 +125,25 @@ inline void swizzle_RGBA8_to_BGRA8(vector<4, unorm<8>>* data, size_t len)
 // Expand types for swizzling
 //
 
+// RGBA8 -> RGB8, 8-bit type is unorm<8>
+
+inline void swizzle_expand_types(
+        vector<3, unorm<8>>*        dst,
+        pixel_format                format_dst,
+        vector<4, unorm<8>> const*  src,
+        pixel_format                format_src,
+        size_t                      len,
+        swizzle_hint                hint
+        )
+{
+    if (format_dst == PF_RGB8 && format_src == PF_RGBA8)
+    {
+        swizzle_RGBA_to_RGB( dst, src, len, hint );
+    }
+}
+
+// RGB8 -> RGBA8, 8-bit type is unorm<8>
+
 inline void swizzle_expand_types(
         vector<4, unorm<8>>*        dst,
         pixel_format                format_dst,
@@ -97,6 +157,8 @@ inline void swizzle_expand_types(
         detail::swizzle_RGB8_to_RGBA8( dst, src, len );
     }
 }
+
+// RGB32F -> RGB8, 8-bit type is unorm<8>
 
 inline void swizzle_expand_types(
         vector<3, unorm<8>>*    dst,
@@ -112,6 +174,8 @@ inline void swizzle_expand_types(
     }
 }
 
+// RGBA32F -> RGBA8, 8-bit type is unorm<8>
+
 inline void swizzle_expand_types(
         vector<4, unorm<8>>*    dst,
         pixel_format            format_dst,
@@ -125,6 +189,8 @@ inline void swizzle_expand_types(
         detail::swizzle_RGBA32F_to_RGBA8( dst, src, len );
     }
 }
+
+// RGBA8 <-> BGRA8, 8-bit type is unorm<8>
 
 inline void swizzle_expand_types(
         vector<4, unorm<8>>*    data,
@@ -160,6 +226,24 @@ inline void swizzle(
         )
 {
     detail::swizzle_expand_types( dst, format_dst, src, format_src, len );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Dispatch function with two arrays and a hint about how to handle alpha
+//
+
+template <typename T, typename U>
+inline void swizzle(
+        T*              dst,
+        pixel_format    format_dst,
+        U const*        src,
+        pixel_format    format_src,
+        size_t          len,
+        swizzle_hint    hint
+        )
+{
+    detail::swizzle_expand_types( dst, format_dst, src, format_src, len, hint );
 }
 
 

@@ -65,6 +65,65 @@ TEST(Swizzle, InPlace)
 
 
 //-------------------------------------------------------------------------------------------------
+// Test conversions from RGBA to RGB
+//
+
+TEST(Swizzle, RGBA2RGB)
+{
+    // RGBA8 -> RGB8, unorm8
+
+    std::vector<unorm8_4> rgba8{
+            unorm8_4(0.2f, 0.4f, 0.6f, 0.5f),
+            unorm8_4(0.1f, 0.2f, 0.3f, 1.0f)
+            };
+
+    std::vector<unorm8_3> rgb8(rgba8.size());
+
+    // premultiplied alpha
+
+    swizzle(
+            rgb8.data(),
+            PF_RGB8,
+            rgba8.data(),
+            PF_RGBA8,
+            rgb8.size(),
+            PremultiplyAlpha
+            );
+
+    for (size_t i = 0; i < rgba8.size(); ++i)
+    {
+        float alpha = static_cast<float>(rgba8[i].w);
+
+        unorm<8> x( static_cast<float>(rgba8[i].x) * alpha );
+        unorm<8> y( static_cast<float>(rgba8[i].y) * alpha );
+        unorm<8> z( static_cast<float>(rgba8[i].z) * alpha );
+
+        EXPECT_FLOAT_EQ(rgb8[i].x, x);
+        EXPECT_FLOAT_EQ(rgb8[i].y, y);
+        EXPECT_FLOAT_EQ(rgb8[i].z, z);
+    }
+
+    // truncated alpha
+
+    swizzle(
+            rgb8.data(),
+            PF_RGB8,
+            rgba8.data(),
+            PF_RGBA8,
+            rgb8.size(),
+            TruncateAlpha
+            );
+
+    for (size_t i = 0; i < rgba8.size(); ++i)
+    {
+        EXPECT_FLOAT_EQ(rgb8[i].x, rgba8[i].x);
+        EXPECT_FLOAT_EQ(rgb8[i].y, rgba8[i].y);
+        EXPECT_FLOAT_EQ(rgb8[i].z, rgba8[i].z);
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Test conversions from RGB to RGBA
 //
 
