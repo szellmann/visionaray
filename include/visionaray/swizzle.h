@@ -105,6 +105,15 @@ inline void swizzle_RGB8_to_RGBA8(
 // Swizzle in-place
 //
 
+inline void swizzle_BGR8_to_RGB8(vector<3, unorm<8>>* data, size_t len)
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        auto bgr = data[i];
+        data[i] = vector<3, unorm<8>>( bgr.z, bgr.y, bgr.x );
+    }
+}
+
 inline void swizzle_BGRA8_to_RGBA8(vector<4, unorm<8>>* data, size_t len)
 {
     for (size_t i = 0; i < len; ++i)
@@ -112,6 +121,12 @@ inline void swizzle_BGRA8_to_RGBA8(vector<4, unorm<8>>* data, size_t len)
         auto bgra = data[i];
         data[i] = vector<4, unorm<8>>( bgra.z, bgra.y, bgra.x, bgra.w );
     }
+}
+
+inline void swizzle_RGB8_to_BGR8(vector<3, unorm<8>>* data, size_t len)
+{
+    // inverse
+    return swizzle_BGR8_to_RGB8( data, len );
 }
 
 inline void swizzle_RGBA8_to_BGRA8(vector<4, unorm<8>>* data, size_t len)
@@ -187,6 +202,25 @@ inline void swizzle_expand_types(
     if (format_dst == PF_RGBA8 && format_src == PF_RGBA32F)
     {
         detail::swizzle_RGBA32F_to_RGBA8( dst, src, len );
+    }
+}
+
+// RGB8 <-> BGR8, 8-bit type is unorm<8>
+
+inline void swizzle_expand_types(
+        vector<3, unorm<8>>*    data,
+        pixel_format            format_dst,
+        pixel_format            format_src,
+        size_t                  len
+        )
+{
+    if (format_dst == PF_RGB8 && format_src == PF_BGR8)
+    {
+        detail::swizzle_BGR8_to_RGB8( data, len );
+    }
+    else if (format_dst == PF_BGR8 && format_src == PF_RGB8)
+    {
+        detail::swizzle_RGB8_to_BGR8( data, len );
     }
 }
 

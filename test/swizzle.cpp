@@ -20,6 +20,47 @@ using unorm8_4 = vector<4, unorm<8>>;
 
 TEST(Swizzle, InPlace)
 {
+    // BGR8 -> RGB8
+
+    std::vector<unorm8_3> rgb8{
+            unorm8_3(0.00f, 0.33f, 0.66f),
+            unorm8_3(0.25f, 0.50f, 0.75f)
+            };
+
+    auto rgb8_cpy = rgb8;
+
+    swizzle(
+            rgb8_cpy.data(),
+            PF_RGB8,
+            PF_BGR8,
+            rgb8_cpy.size()
+            );
+
+    for (size_t i = 0; i < rgb8_cpy.size(); ++i)
+    {
+        EXPECT_FLOAT_EQ(rgb8_cpy[i].x, rgb8[i].z);
+        EXPECT_FLOAT_EQ(rgb8_cpy[i].y, rgb8[i].y);
+        EXPECT_FLOAT_EQ(rgb8_cpy[i].z, rgb8[i].x);
+    }
+
+
+    // RGBA8 -> BGRA8
+
+    swizzle(
+            rgb8_cpy.data(),
+            PF_BGR8,
+            PF_RGB8,
+            rgb8_cpy.size()
+            );
+
+    for (size_t i = 0; i < rgb8_cpy.size(); ++i)
+    {
+        EXPECT_FLOAT_EQ(rgb8_cpy[i].x, rgb8[i].x);
+        EXPECT_FLOAT_EQ(rgb8_cpy[i].y, rgb8[i].y);
+        EXPECT_FLOAT_EQ(rgb8_cpy[i].z, rgb8[i].z);
+    }
+
+
     // BGRA8 -> RGBA8
 
     std::vector<unorm8_4> rgba8{
