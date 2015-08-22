@@ -346,6 +346,7 @@ void load_obj(std::string const& filename, model& mod)
                 typedef model::tex_list::value_type tex_type;
                 boost::filesystem::path p(filename);
                 std::string tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
+                std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
 
                 auto tex_path = boost::filesystem::path(tex_filename);
 
@@ -353,7 +354,7 @@ void load_obj(std::string const& filename, model& mod)
                 static const std::string jpg_extensions[] = { ".jpg", ".jpeg", ".JPG", ".JPEG" };
                 auto has_jpg_ext = std::find(jpg_extensions, jpg_extensions + 4, tex_path.extension()) != jpg_extensions + 4;
 
-                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_jpg_ext)
+                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_path.generic_string()) && has_jpg_ext)
                 {
                     jpeg_image jpg(tex_filename);
 
@@ -372,7 +373,7 @@ void load_obj(std::string const& filename, model& mod)
                 static const std::string png_extensions[] = { ".png", ".PNG" };
                 auto has_png_ext = std::find(png_extensions, png_extensions + 2, tex_path.extension()) != png_extensions + 2;
 
-                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_png_ext)
+                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_path.generic_string()) && has_png_ext)
                 {
                     png_image png(tex_filename);
 
