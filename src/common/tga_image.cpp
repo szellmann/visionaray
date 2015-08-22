@@ -63,10 +63,29 @@ void load_true_color(
         uint8_t* dst,
         std::ifstream& file,
         int stride,
-        int height
+        int height,
+        int y_origin
         )
 {
-    file.read(reinterpret_cast<char*>(dst), stride * height * sizeof(uint8_t));
+    if (y_origin == 0)
+    {
+        // Origin is bottom/left corner - same as visionaray image format
+        file.read(reinterpret_cast<char*>(dst), stride * height * sizeof(uint8_t));
+    }
+    else if (y_origin == height)
+    {
+        // Origin is top/left corner - convert to bottom/left
+        for (int y = 0; y < height; ++y)
+        {
+            auto ptr = dst + (height - 1) * stride - y * stride;
+            file.read(reinterpret_cast<char*>(ptr), stride * sizeof(uint8_t));
+        }
+    }
+    else
+    {
+        std::cerr << "Unsupported TGA image, y-origin ("
+                  << y_origin << ") is neither bottom nor top\n";
+    }
 }
 
 
@@ -99,7 +118,7 @@ tga_image::tga_image(std::string const& filename)
     switch (header.image_type)
     {
     default:
-        std::cerr << "Unsupported TGA image type (" << (int)header.image_type << '\n';
+        std::cerr << "Unsupported TGA image type (" << (int)header.image_type << ")\n";
         // fall-through
     case 0:
         // no image data
@@ -110,7 +129,7 @@ tga_image::tga_image(std::string const& filename)
         break;
 
     case 2:
-        load_true_color(data_.data(), file, stride, header.height);
+        load_true_color(data_.data(), file, stride, header.height, header.y_origin);
         break;
 
     }
