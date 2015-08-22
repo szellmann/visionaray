@@ -388,6 +388,36 @@ void load_obj(std::string const& filename, model& mod)
                 }
 #endif // VSNRAY_HAVE_PNG
 
+                static const std::string tga_extensions[] = { ".tga", ".TGA" };
+                auto has_tga_ext = std::find(tga_extensions, tga_extensions + 2, tex_path.extension()) != tga_extensions + 2;
+
+                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_tga_ext)
+                {
+                    tga_image tga(tex_filename);
+
+                    tex_type tex(tga.width(), tga.height());
+                    tex.set_address_mode( Wrap );
+                    tex.set_filter_mode( Linear );
+
+                    if (tga.format() == PF_RGBA8)
+                    {
+                        // Get rid of alpha channel
+                        auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(tga.data());
+                        tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
+                    }
+                    else if (tga.format() == PF_RGB8)
+                    {
+                        auto data_ptr = reinterpret_cast<tex_type::value_type const*>(tga.data());
+                        tex.set_data(data_ptr);
+                    }
+                    else
+                    {
+                        assert( 0 /* TODO */ );
+                    }
+
+                    mod.textures.push_back(std::move(tex));
+                }
+
                 // if no texture was loaded, insert an empty dummy
                 if (mod.textures.size() < mod.materials.size())
                 {

@@ -56,6 +56,7 @@ set(COMMON_HEADERS
     obj_loader.h
     png_image.h
     render_bvh.h
+    tga_image.h
     timer.h
     util.h
     viewer_glut.h
@@ -71,6 +72,7 @@ set(COMMON_SOURCES
     jpeg_image.cpp
     obj_loader.cpp
     png_image.cpp
+    tga_image.cpp
     util.cpp
     viewer_glut.cpp
 
