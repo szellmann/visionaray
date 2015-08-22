@@ -136,7 +136,7 @@ png_image::png_image(std::string const& filename)
 
     for (png_uint_32 y = 0; y < h; ++y)
     {
-        png_bytep row = &data_[y * pitch];
+        png_bytep row = data_.data() + (h - 1) * pitch - y * pitch;
         png_read_rows(context.png, &row, &row, 1);
     }
 
