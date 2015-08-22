@@ -133,6 +133,15 @@ public:
         set_data( dst.data() );
     }
 
+    template <typename U>
+    void set_data(U const* data, pixel_format format, pixel_format internal_format, swizzle_hint hint)
+    {
+        // Copy with temporary array, hint about how to handle alpha
+        aligned_vector<T> dst( data_.size() );
+        swizzle( dst.data(), internal_format, data, format, dst.size(), hint );
+        set_data( dst.data() );
+    }
+
     value_type const* data() const
     {
         return data_.data();
