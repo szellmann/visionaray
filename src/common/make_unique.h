@@ -3,12 +3,13 @@
 
 #pragma once
 
-#ifndef VSNRAY_DETAIL_MAKE_UNIQUE_H
-#define VSNRAY_DETAIL_MAKE_UNIQUE_H
+#ifndef VSNRAY_COMMON_MAKE_UNIQUE_H
+#define VSNRAY_COMMON_MAKE_UNIQUE_H 1
 
 #include <memory>
 
-namespace visionaray { namespace detail {
+namespace visionaray
+{
 
 template <typename T, typename ...Args>
 std::unique_ptr<T> make_unique(Args&&... args)
@@ -16,6 +17,6 @@ std::unique_ptr<T> make_unique(Args&&... args)
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
-}} // namespace visionaray::detail
+} // visionaray
 
-#endif
+#endif // VSNRAY_COMMON_MAKE_UNIQUE_H

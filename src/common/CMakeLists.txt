@@ -53,6 +53,7 @@ set(COMMON_HEADERS
     cfile.h
     image.h
     jpeg_image.h
+    make_unique.h
     obj_loader.h
     png_image.h
     render_bvh.h

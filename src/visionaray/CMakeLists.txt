@@ -54,7 +54,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/generic_primitive.inl
     ${HEADER_DIR}/detail/gpu_buffer_rt.inl
     ${HEADER_DIR}/detail/macros.h
-    ${HEADER_DIR}/detail/make_unique.h
     ${HEADER_DIR}/detail/material.inl
     ${HEADER_DIR}/detail/pathtracing.inl
     ${HEADER_DIR}/detail/pixel_unpack_buffer_rt.inl
