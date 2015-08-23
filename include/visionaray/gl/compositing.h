@@ -9,6 +9,8 @@
 #include <iostream>
 #include <ostream>
 
+#include <GL/glew.h>
+
 #include <visionaray/pixel_format.h>
 
 #include "handle.h"

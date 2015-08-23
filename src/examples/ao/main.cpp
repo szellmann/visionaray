@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include <GL/glew.h>
+
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 

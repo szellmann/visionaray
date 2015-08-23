@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 
+#include <GL/glew.h>
+
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/camera.h>

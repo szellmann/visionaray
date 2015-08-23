@@ -5,6 +5,8 @@
 
 #include <stdexcept>
 
+#include <GL/glew.h>
+
 #include <cuda_gl_interop.h>
 
 #include <visionaray/cuda/graphics_resource.h>
