@@ -2,21 +2,12 @@
 // See the LICENSE file for details.
 
 #ifndef VSNRAY_COMMON_VIEWER_GLUT_H
-#define VSNRAY_COMMON_VIEWER_GLUT_H
+#define VSNRAY_COMMON_VIEWER_GLUT_H 1
 
 #include <memory>
 #include <string>
 
-#include <visionaray/math/vector.h>
-
-namespace support
-{
-namespace cl
-{
-class OptionBase;
-} // cl
-} // support
-
+#include "viewer_base.h"
 
 namespace visionaray
 {
@@ -25,7 +16,7 @@ class camera_manipulator;
 class key_event;
 class mouse_event;
 
-class viewer_glut
+class viewer_glut : public viewer_base
 {
 public:
 
@@ -38,27 +29,14 @@ public:
 
     void init(int argc, char** argv);
 
-    void add_manipulator( std::shared_ptr<camera_manipulator> manip );
-    void add_cmdline_option( std::shared_ptr<support::cl::OptionBase> option );
     void event_loop();
     void swap_buffers();
     void resize(int width, int height);
     void toggle_full_screen();
 
-    int width();
-    int height();
-    vec3 background_color() const;
-
 protected:
 
-    virtual void on_display();
     virtual void on_idle();
-    virtual void on_key_press(key_event const& event);
-    virtual void on_key_release(key_event const& event);
-    virtual void on_mouse_move(mouse_event const& event);
-    virtual void on_mouse_down(mouse_event const& event);
-    virtual void on_mouse_up(mouse_event const& event);
-    virtual void on_resize(int w, int h);
 
 private:
 
