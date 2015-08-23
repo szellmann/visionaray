@@ -21,6 +21,13 @@
 
 #endif // VSNRAY_HAVE_GLUT
 
+
+#if defined(VSNRAY_HAVE_QT5CORE)
+
+#include <Qt>
+
+#endif // VSNRAY_HAVE_QT5CORE
+
 #include "exception.h"
 #include "keyboard.h"
 
@@ -123,6 +130,34 @@ static inline buttons map_glut_button(int but)
 }
 
 #endif // VSNRAY_HAVE_GLUT
+
+#if defined(VSNRAY_HAVE_QT5CORE)
+
+//-------------------------------------------------------------------------------------------------
+// Map Qt entities
+//
+
+static inline buttons map_qt_button(Qt::MouseButton but)
+{
+    // TODO: multiple buttons
+    switch (but)
+    {
+
+    case Qt::LeftButton:
+        return mouse::Left;
+    case Qt::MiddleButton:
+        return mouse::Middle;
+    case Qt::RightButton:
+        return mouse::Right;
+    default:
+        return NoButton;
+
+    }
+
+    return NoButton;
+}
+
+#endif // VSNRAY_HAVE_QT5CORE
 
 } // mouse
 

@@ -10,6 +10,10 @@ find_package(PNG)
 if (NOT APPLE AND NOT WIN32)
 find_package(PTHREAD REQUIRED)
 endif()
+find_package(Qt5Core)
+find_package(Qt5Gui)
+find_package(Qt5OpenGL)
+find_package(Qt5Widgets)
 
 visionaray_use_package(Boost)
 if (VSNRAY_ENABLE_CUDA)
@@ -23,6 +27,10 @@ visionaray_use_package(PNG)
 if (NOT APPLE AND NOT WIN32)
 visionaray_use_package(PTHREAD)
 endif()
+visionaray_use_package(Qt5Core)
+visionaray_use_package(Qt5Gui)
+visionaray_use_package(Qt5OpenGL)
+visionaray_use_package(Qt5Widgets)
 
 visionaray_link_libraries(visionaray)
 
@@ -37,6 +45,8 @@ set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${CMD_LINE_INCLUDE_DIR})
+
+set(CMAKE_AUTOMOC ON)
 
 set(COMMON_HEADERS
 
@@ -62,6 +72,7 @@ set(COMMON_HEADERS
     util.h
     viewer_base.h
     viewer_glut.h
+    viewer_qt.h
 )
 
 set(COMMON_SOURCES
@@ -78,6 +89,7 @@ set(COMMON_SOURCES
     util.cpp
     viewer_base.cpp
     viewer_glut.cpp
+    viewer_qt.cpp
 
 )
 
@@ -110,3 +122,5 @@ visionaray_add_library(visionaray_common
     ${CMD_LINE_HEADERS}
     ${CMD_LINE_SOURCES}
 )
+
+qt5_use_modules(visionaray_common Core Gui OpenGL Widgets)
