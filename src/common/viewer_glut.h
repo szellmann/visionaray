@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include <visionaray/math/vector.h>
+
 namespace support
 {
 namespace cl
