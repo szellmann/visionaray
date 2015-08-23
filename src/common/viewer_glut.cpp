@@ -1,6 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <stdexcept>
+
+#include <GL/glew.h>
+
 #include <visionaray/detail/platform.h>
 
 #if defined(VSNRAY_OS_DARWIN)
@@ -110,6 +114,11 @@ void viewer_glut::impl::init(
     glutReshapeFunc(reshape_func);
     glutSpecialFunc(special_func);
     glutSpecialUpFunc(special_up_func);
+
+    if (glewInit() != GLEW_OK)
+    {
+        throw std::runtime_error("glewInit() failed");
+    }
 }
 
 

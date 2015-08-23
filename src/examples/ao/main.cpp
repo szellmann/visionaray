@@ -3,8 +3,6 @@
 
 #include <memory>
 
-#include <GL/glew.h>
-
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
@@ -229,8 +227,6 @@ int main(int argc, char** argv)
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
-
-    glewInit();
 
     try
     {

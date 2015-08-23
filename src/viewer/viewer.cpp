@@ -11,8 +11,6 @@
 #include <string>
 #include <thread>
 
-#include <GL/glew.h>
-
 #include <visionaray/detail/platform.h>
 
 #if defined(VSNRAY_OS_DARWIN)
@@ -635,12 +633,6 @@ int main(int argc, char** argv)
     catch (std::exception& e)
     {
         std::cerr << e.what() << '\n';
-        return EXIT_FAILURE;
-    }
-
-    if (glewInit() != GLEW_OK)
-    {
-        std::cerr << "glewInit() failed" << std::endl;
         return EXIT_FAILURE;
     }
 

@@ -3,8 +3,6 @@
 
 #include <memory>
 
-#include <GL/glew.h>
-
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/camera.h>
@@ -214,8 +212,6 @@ int main(int argc, char** argv)
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
-
-    glewInit();
 
     float aspect = rend->width() / static_cast<float>(rend->height());
 
