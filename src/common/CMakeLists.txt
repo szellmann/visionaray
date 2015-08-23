@@ -10,10 +10,12 @@ find_package(PNG)
 if (NOT APPLE AND NOT WIN32)
 find_package(PTHREAD REQUIRED)
 endif()
+if (VSNRAY_ENABLE_QT5)
 find_package(Qt5Core)
 find_package(Qt5Gui)
 find_package(Qt5OpenGL)
 find_package(Qt5Widgets)
+endif()
 
 visionaray_use_package(Boost)
 if (VSNRAY_ENABLE_CUDA)
@@ -27,10 +29,12 @@ visionaray_use_package(PNG)
 if (NOT APPLE AND NOT WIN32)
 visionaray_use_package(PTHREAD)
 endif()
+if (VSNRAY_ENABLE_QT5)
 visionaray_use_package(Qt5Core)
 visionaray_use_package(Qt5Gui)
 visionaray_use_package(Qt5OpenGL)
 visionaray_use_package(Qt5Widgets)
+endif()
 
 visionaray_link_libraries(visionaray)
 
@@ -72,7 +76,6 @@ set(COMMON_HEADERS
     util.h
     viewer_base.h
     viewer_glut.h
-    viewer_qt.h
 )
 
 set(COMMON_SOURCES
@@ -89,9 +92,23 @@ set(COMMON_SOURCES
     util.cpp
     viewer_base.cpp
     viewer_glut.cpp
+
+)
+
+if (VSNRAY_ENABLE_QT5)
+
+set(COMMON_HEADERS
+    ${COMMON_HEADERS}
+    viewer_qt.h
+)
+
+set(COMMON_SOURCES
+    ${COMMON_SOURCES}
     viewer_qt.cpp
 
 )
+
+endif()
 
 set(CMD_LINE_HEADERS
 
@@ -123,4 +140,11 @@ visionaray_add_library(visionaray_common
     ${CMD_LINE_SOURCES}
 )
 
+
+#--------------------------------------------------------------------------------------------------
+# Use Qt5 components - probably similar to visionaray_use_package(...)
+#
+
+if (VSNRAY_ENABLE_QT5)
 qt5_use_modules(visionaray_common Core Gui OpenGL Widgets)
+endif()
