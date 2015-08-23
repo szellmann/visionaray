@@ -505,8 +505,6 @@ void renderer::on_display()
         glMatrixMode(GL_PROJECTION);
         glPopMatrix();
     }
-
-    swap_buffers();
 }
 
 void renderer::on_key_press(key_event const& event)

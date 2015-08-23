@@ -30,7 +30,6 @@ public:
     void init(int argc, char** argv);
 
     void event_loop();
-    void swap_buffers();
     void resize(int width, int height);
     void toggle_full_screen();
 

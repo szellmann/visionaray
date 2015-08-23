@@ -164,10 +164,6 @@ void viewer_base::event_loop()
 {
 }
 
-void viewer_base::swap_buffers()
-{
-}
-
 void viewer_base::resize(int width, int height)
 {
     impl_->width = width;

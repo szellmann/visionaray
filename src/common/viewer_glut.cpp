@@ -129,6 +129,8 @@ void viewer_glut::impl::init(
 void viewer_glut::impl::display_func()
 {
     viewer->on_display();
+
+    glutSwapBuffers();
 }
 
 void viewer_glut::impl::idle_func()
@@ -248,11 +250,6 @@ void viewer_glut::init(int argc, char** argv)
 void viewer_glut::event_loop()
 {
     glutMainLoop();
-}
-
-void viewer_glut::swap_buffers()
-{
-    glutSwapBuffers();
 }
 
 void viewer_glut::toggle_full_screen()

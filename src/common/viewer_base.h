@@ -50,7 +50,6 @@ public:
     vec3 background_color() const;
 
     virtual void event_loop();
-    virtual void swap_buffers();
     virtual void resize(int width, int height);
     virtual void toggle_full_screen();
 

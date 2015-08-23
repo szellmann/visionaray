@@ -173,8 +173,6 @@ void renderer::on_display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     rend->host_rt.display_color_buffer();
-
-    swap_buffers();
 }
 
 
