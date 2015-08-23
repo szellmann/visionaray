@@ -22,6 +22,8 @@
 
 using namespace visionaray;
 
+using viewer_type = viewer_glut;
+
 
 //-------------------------------------------------------------------------------------------------
 // Cube geometry
@@ -46,12 +48,12 @@ static const vec3 verts[8] = {
 // struct with state variables
 //
 
-struct renderer : viewer_glut
+struct renderer : viewer_type
 {
     using host_ray_type = basic_ray<simd::float4>;
 
     renderer()
-        : viewer_glut(512, 512, "Visionaray Custom Intersector Example")
+        : viewer_type(512, 512, "Visionaray Custom Intersector Example")
         , bbox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f })
         , host_sched(8)
     {
@@ -408,7 +410,7 @@ void renderer::on_resize(int w, int h)
     rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
     rend->host_rt.resize(w, h);
 
-    viewer_glut::on_resize(w, h);
+    viewer_type::on_resize(w, h);
 }
 
 

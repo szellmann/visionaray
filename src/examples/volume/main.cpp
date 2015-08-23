@@ -21,7 +21,8 @@ using std::shared_ptr;
 
 using namespace visionaray;
 
-using manipulators = std::vector<shared_ptr<visionaray::camera_manipulator>>;
+using manipulators  = std::vector<shared_ptr<visionaray::camera_manipulator>>;
+using viewer_type   = viewer_glut;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -54,12 +55,12 @@ static const vec4 tfdata[4 * 4] = {
 // struct with state variables
 //
 
-struct renderer : viewer_glut
+struct renderer : viewer_type
 {
     using host_ray_type = basic_ray<simd::float4>;
 
     renderer()
-        : viewer_glut(512, 512, "Visionaray Volume Rendering Example")
+        : viewer_type(512, 512, "Visionaray Volume Rendering Example")
         , bbox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f })
         , host_sched(8)
         , down_button(mouse::NoButton)
@@ -191,7 +192,7 @@ void renderer::on_resize(int w, int h)
     rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
     rend->host_rt.resize(w, h);
 
-    viewer_glut::on_resize(w, h);
+    viewer_type::on_resize(w, h);
 }
 
 

@@ -68,12 +68,14 @@
 
 using namespace visionaray;
 
+using viewer_type = viewer_glut;
+
 
 //-------------------------------------------------------------------------------------------------
 // Renderer, stores state, geometry, normals, ...
 //
 
-struct renderer : viewer_glut
+struct renderer : viewer_type
 {
 
 //  using scalar_type_cpu           = float;
@@ -102,7 +104,7 @@ struct renderer : viewer_glut
 
 
     renderer()
-        : viewer_glut(800, 800, "Visionaray GLUT Viewer")
+        : viewer_type(800, 800, "Visionaray Viewer")
         , host_sched(get_num_processors())
     {
         using namespace support;
@@ -589,7 +591,7 @@ void renderer::on_key_press(key_event const& event)
         break;
     }
 
-    viewer_glut::on_key_press(event);
+    viewer_type::on_key_press(event);
 }
 
 void renderer::on_mouse_move(visionaray::mouse_event const& event)
@@ -600,7 +602,7 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
     }
 
     rend->mouse_pos = event.get_pos();
-    viewer_glut::on_mouse_move(event);
+    viewer_type::on_mouse_move(event);
 }
 
 void renderer::on_resize(int w, int h)
@@ -614,7 +616,7 @@ void renderer::on_resize(int w, int h)
 #ifdef __CUDACC__
     rend->device_rt.resize(w, h);
 #endif
-    viewer_glut::on_resize(w, h);
+    viewer_type::on_resize(w, h);
 }
 
 void close_func()
