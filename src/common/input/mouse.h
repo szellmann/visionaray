@@ -11,11 +11,15 @@
 
 #include <visionaray/detail/platform.h>
 
+#if defined(VSNRAY_HAVE_GLUT)
+
 #if defined(VSNRAY_OS_DARWIN)
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
+
+#endif // VSNRAY_HAVE_GLUT
 
 #include "exception.h"
 #include "keyboard.h"
@@ -94,6 +98,8 @@ inline buttons& operator^=(buttons& a, button b)
 }
 
 
+#if defined(VSNRAY_HAVE_GLUT)
+
 //-------------------------------------------------------------------------------------------------
 // Map GLUT entities
 //
@@ -116,6 +122,7 @@ static inline buttons map_glut_button(int but)
     return NoButton;
 }
 
+#endif // VSNRAY_HAVE_GLUT
 
 } // mouse
 

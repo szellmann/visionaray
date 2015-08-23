@@ -11,11 +11,15 @@
 
 #include <visionaray/detail/platform.h>
 
+#if defined(VSNRAY_HAVE_GLUT)
+
 #if defined(VSNRAY_OS_DARWIN)
 #include <GLUT/glut.h>
 #else
 #include <GL/glut.h>
 #endif
+
+#endif // VSNRAY_HAVE_GLUT
 
 
 namespace visionaray
@@ -107,6 +111,8 @@ inline key_modifiers& operator^=(key_modifiers& a, key b)
     return a;
 }
 
+
+#if defined(VSNRAY_HAVE_GLUT)
 
 //-------------------------------------------------------------------------------------------------
 // Map GLUT entities
@@ -251,6 +257,8 @@ static inline key_modifiers map_glut_modifiers(unsigned char code)
 
     return result;
 }
+
+#endif // VSNRAY_HAVE_GLUT
 
 } // keyboard
 
