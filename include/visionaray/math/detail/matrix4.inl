@@ -282,14 +282,33 @@ inline matrix<4, 4, T> transpose(matrix<4, 4, T> const& m)
 
 template <typename T>
 MATH_FUNC
-inline matrix<4, 4, T> translate(matrix<4, 4, T> const& m, vector<3, T> const& v)
+inline matrix<4, 4, T> rotate(matrix<4, 4, T> const& m, vector<3, T> const& axis, T angle)
 {
 
-    matrix<4, 4, T> t = matrix<4, 4, T>::identity();
-    t(0, 3) = v.x;
-    t(1, 3) = v.y;
-    t(2, 3) = v.z;
-    return m * t;
+    auto v = normalize(axis);
+    auto s = sin(angle);
+    auto c = cos(angle);
+
+    auto r = matrix<4, 4, T>(
+            v.x * v.x * (T(1.0) - c) + c,
+            v.x * v.y * (T(1.0) - c) + s * v.z,
+            v.x * v.z * (T(1.0) - c) - s * v.y,
+            T(0.0),
+            v.y * v.x * (T(1.0) - c) - s * v.z,
+            v.y * v.y * (T(1.0) - c) + c,
+            v.y * v.z * (T(1.0) - c) + s * v.x,
+            T(0.0),
+            v.z * v.x * (T(1.0) - c) + s * v.y,
+            v.z * v.y * (T(1.0) - c) - s * v.x,
+            v.z * v.z * (T(1.0) - c) + c,
+            T(0.0),
+            T(0.0),
+            T(0.0),
+            T(0.0),
+            T(1.0)
+            );
+
+    return m * r;
 
 }
 
@@ -306,7 +325,17 @@ inline matrix<4, 4, T> scale(matrix<4, 4, T> const& m, vector<3, T> const& v)
 
 }
 
+template <typename T>
+MATH_FUNC
+inline matrix<4, 4, T> translate(matrix<4, 4, T> const& m, vector<3, T> const& v)
+{
+
+    matrix<4, 4, T> t = matrix<4, 4, T>::identity();
+    t(0, 3) = v.x;
+    t(1, 3) = v.y;
+    t(2, 3) = v.z;
+    return m * t;
+
+}
 
 } // MATH_NAMESPACE
-
-
