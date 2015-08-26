@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VISIONARAY_MATH_RECTANGLE_H
-#define VISIONARAY_MATH_RECTANGLE_H
+#define VISIONARAY_MATH_RECTANGLE_H 1
 
 #include <cstddef>
 
@@ -11,7 +13,6 @@
 
 namespace MATH_NAMESPACE
 {
-
 
 //-------------------------------------------------------------------------------------------------
 // Layout policies
@@ -75,15 +76,12 @@ public:
     T& operator[](size_t i);
     T const& operator[](size_t i) const;
 
-};
+    MATH_FUNC bool contains(vector<2, T> const& v) const;
 
+};
 
 } // MATH_NAMESPACE
 
-
 #include "detail/rectangle.inl"
 
-
 #endif // VISIONARAY_MATH_RECTANGLE
-
-

@@ -50,6 +50,15 @@ inline T const& rectangle<xywh_layout, T>::operator[](size_t i) const
     return data()[i];
 }
 
+template <typename T>
+MATH_FUNC
+inline bool rectangle<xywh_layout, T>::contains(vector<2, T> const& v) const
+{
+    vector<2, T> min(this->x, this->y);
+    vector<2, T> max(this->x + this->w, this->y + this->h);
+    return v.x >= min.x && v.x <= max.x && v.y >= min.y && v.y <= max.y;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Comparisons
@@ -88,12 +97,16 @@ bool overlapping(rectangle<xywh_layout, T> const& a, rectangle<xywh_layout, T> c
 
 
 template <typename T>
-inline rectangle<xywh_layout, T> combine(rectangle<xywh_layout, T> const& a,
-    rectangle<xywh_layout, T> const& b);
+inline rectangle<xywh_layout, T> combine(
+        rectangle<xywh_layout, T> const& a,
+        rectangle<xywh_layout, T> const& b
+        ); // TODO
 
 template <typename T>
-inline rectangle<xywh_layout, T> intersect(rectangle<xywh_layout, T> const& a,
-    rectangle<xywh_layout, T> const& b)
+inline rectangle<xywh_layout, T> intersect(
+        rectangle<xywh_layout, T> const& a,
+        rectangle<xywh_layout, T> const& b
+        )
 {
 
     if (overlapping(a, b))
@@ -104,15 +117,14 @@ inline rectangle<xywh_layout, T> intersect(rectangle<xywh_layout, T> const& a,
         vector<2, T> b1(b.x, b.y);
         vector<2, T> b2(b.x + b.w, b.y + b.h);
 
-        T x = std::max( a1[0], b1[0] );
-        T y = std::max( a1[1], b1[1] );
+        T x = max( a1[0], b1[0] );
+        T y = max( a1[1], b1[1] );
 
-        return rectangle<xywh_layout, T>
-        (
-            x, y,
-            std::min(a2[0], b2[0]) - x,
-            std::min(a2[1], b2[1]) - y
-        );
+        return rectangle<xywh_layout, T>(
+                x, y,
+                min(a2[0], b2[0]) - x,
+                min(a2[1], b2[1]) - y
+                );
     }
     else
     {
@@ -120,7 +132,4 @@ inline rectangle<xywh_layout, T> intersect(rectangle<xywh_layout, T> const& a,
     }
 }
 
-
 } // MATH_NAMESPACE
-
-
