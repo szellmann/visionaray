@@ -112,6 +112,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/matrix.h
     ${HEADER_DIR}/math/norm.h
     ${HEADER_DIR}/math/primitive.h
+    ${HEADER_DIR}/math/project.h
     ${HEADER_DIR}/math/plane.h
     ${HEADER_DIR}/math/quat.h
     ${HEADER_DIR}/math/ray.h

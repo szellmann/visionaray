@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_MATH_H
-#define VSNRAY_MATH_H
+#define VSNRAY_MATH_H 1
 
 #include "simd/simd.h"
 
@@ -16,6 +16,7 @@
 #include "matrix.h"
 #include "norm.h"
 #include "plane.h"
+#include "project.h"
 #include "quat.h"
 #include "ray.h"
 #include "rectangle.h"
