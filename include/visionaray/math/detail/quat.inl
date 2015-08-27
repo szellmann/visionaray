@@ -40,13 +40,12 @@ inline quat operator+(quat const& p, quat const& q)
 
 inline quat operator*(quat const& p, quat const& q)
 {
-    return quat
-    (
+    return quat(
         p.w * q.w - p.x * q.x - p.y * q.y - p.z * q.z,
         p.w * q.x + p.x * q.w + p.y * q.z - p.z * q.y,
         p.w * q.y - p.x * q.z + p.y * q.w + p.z * q.x,
         p.w * q.z + p.x * q.y - p.y * q.x + p.z * q.w
-    );
+        );
 }
 
 inline quat operator*(quat const& p, float s)
@@ -71,7 +70,7 @@ inline quat inverse(quat const& q)
 
 inline float length(quat const& q)
 {
-    return std::sqrt(dot(q, q));
+    return sqrt(dot(q, q));
 }
 
 inline quat normalize(quat const& q)
@@ -81,8 +80,8 @@ inline quat normalize(quat const& q)
 
 inline quat rotation(vec3 const& axis, float angle)
 {
-    float s = std::sin(0.5f * angle) / length(axis);
-    float c = std::cos(0.5f * angle);
+    float s = sin(0.5f * angle) / length(axis);
+    float c = cos(0.5f * angle);
 
     return quat(c, s * axis[0], s * axis[1], s * axis[2]);
 }
@@ -124,7 +123,7 @@ inline mat4 rotation(quat const& q)
 
 inline float rotation_angle(quat const& q)
 {
-    return 2.0f * std::acos(q.w);
+    return 2.0f * acos(q.w);
 }
 
 inline vec3 rotation_axis(quat const& q)

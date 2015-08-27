@@ -141,9 +141,9 @@ vec3 arcball_manipulator::to_sphere_coords(int x, int y)
     float d = normh2(tmp);
     float r2 = radius_ * radius_;
 
-    if (d < radius_ * (1.0f / std::sqrt(2.0)))
+    if (d < radius_ * (1.0f / sqrt(2.0)))
     {
-        v[2] = std::sqrt(r2 - d * d);
+        v[2] = sqrt(r2 - d * d);
     }
     else
     {
@@ -162,14 +162,14 @@ vec3 arcball_manipulator::to_sphere_coords(int x, int y)
 
     if (d > 1.0f)
     {
-        float length = std::sqrt(d);
+        float length = sqrt(d);
 
         v[0] /= length;
         v[1] /= length;
     }
     else
     {
-        v[2] = std::sqrt(1.0f - d);
+        v[2] = sqrt(1.0f - d);
     }
 #endif
 
