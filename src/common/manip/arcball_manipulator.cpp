@@ -46,14 +46,12 @@ arcball_manipulator::~arcball_manipulator()
 void arcball_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
 {
 
-    if (dragging_)
+    if (!dragging_)
     {
-        return;
+        dragging_      = true;
+        down_pos_      = to_sphere_coords(event.get_pos().x, event.get_pos().y);
+        down_rotation_ = rotation_;
     }
-
-    dragging_      = true;
-    down_pos_      = to_sphere_coords(event.get_pos().x, event.get_pos().y);
-    down_rotation_ = rotation_;
 
     camera_manipulator::handle_mouse_down(event);
 
@@ -72,13 +70,7 @@ void arcball_manipulator::handle_mouse_up(visionaray::mouse_event const& event)
 void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
 {
 
-    if (!dragging_)
-    {
-        return;
-    }
-
-
-    if (event.get_buttons() & buttons_)
+    if (dragging_ && event.get_buttons() & buttons_)
     {
 
         // rotation

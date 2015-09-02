@@ -25,15 +25,14 @@ pan_manipulator::~pan_manipulator()
 void pan_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
 {
 
-    if (dragging_)
+    if (!dragging_)
     {
-        return;
+
+        dragging_ = true;
+
+        // TODO: do this in base?
+        last_pos_ = event.get_pos();
     }
-
-    dragging_ = true;
-
-    // TODO: do this in base?
-    last_pos_ = event.get_pos();
 
     camera_manipulator::handle_mouse_down(event);
 
@@ -53,13 +52,7 @@ void pan_manipulator::handle_mouse_up(visionaray::mouse_event const& event)
 void pan_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
 {
 
-    if (!dragging_)
-    {
-        return;
-    }
-
-
-    if (event.get_buttons() & buttons_)
+    if (dragging_ && event.get_buttons() & buttons_)
     {
 
         auto w  =  camera_.get_viewport().w;
