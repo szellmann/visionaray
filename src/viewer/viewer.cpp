@@ -326,6 +326,22 @@ void render_hud_ext()
     auto w = rend->width();
     auto h = rend->height();
 
+    int num_nodes = 0;
+    int num_leaves = 0;
+
+    traverse_depth_first(
+        rend->host_bvh,
+        [&](typename renderer::host_bvh_type::node_type const& node)
+        {
+            ++num_nodes;
+
+            if (is_leaf(node))
+            {
+                ++num_leaves;
+            }
+        }
+        );
+
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
@@ -340,19 +356,19 @@ void render_hud_ext()
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
     }
 
-/*    stream.str(std::string());
-    stream << "# BVH nodes: " << 1000;
+    stream.str(std::string());
+    stream << "# BVH Nodes/Leaves: " << num_nodes << '/' << num_leaves;
     str = stream.str();
     glRasterPos2i(300, h * 2 - 68);
     for (size_t i = 0; i < str.length(); ++i)
     {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }*/
+    }
 
     stream.str(std::string());
     stream << "SPP: " << max(1U, rend->frame);
     str = stream.str();
-    glRasterPos2i(300, h * 2 - 68);
+    glRasterPos2i(300, h * 2 - 102);
     for (size_t i = 0; i < str.length(); ++i)
     {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
@@ -362,7 +378,7 @@ void render_hud_ext()
     stream.str(std::string());
     stream << "Device: " << ( (rend->dev_type == renderer::GPU) ? "GPU" : "CPU" );
     str = stream.str();
-    glRasterPos2i(300, h * 2 - 102);
+    glRasterPos2i(300, h * 2 - 136);
     for (size_t i = 0; i < str.length(); ++i)
     {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
