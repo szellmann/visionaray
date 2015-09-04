@@ -293,6 +293,11 @@ public:
         specular_brdf_.ior = ior;
     }
 
+    VSNRAY_FUNC void set_ior(T ior)
+    {
+        specular_brdf_.ior = spectrum<T>(ior);
+    }
+
     VSNRAY_FUNC spectrum<T> get_ior() const
     {
         return specular_brdf_.ior;
@@ -301,6 +306,11 @@ public:
     VSNRAY_FUNC void set_absorption(spectrum<T> const& absorption)
     {
         specular_brdf_.absorption = absorption;
+    }
+
+    VSNRAY_FUNC void set_absorption(T absorption)
+    {
+        specular_brdf_.absorption = spectrum<T>(absorption);
     }
 
     VSNRAY_FUNC spectrum<T> get_absorption() const
