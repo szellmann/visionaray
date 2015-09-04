@@ -4,10 +4,11 @@
 #pragma once
 
 #ifndef VSNRAY_SURFACE_INL
-#define VSNRAY_SURFACE_INL
+#define VSNRAY_SURFACE_INL 1
 
 #include <iterator>
 #include <stdexcept>
+#include <type_traits>
 
 #include "../generic_material.h"
 #include "../generic_primitive.h"
@@ -632,7 +633,7 @@ inline auto get_surface_with_prims_impl(
 namespace detail
 {
 
-template <typename Normals, typename HR>
+template <typename NormalBinding, typename Normals, typename HR>
 class get_normal_from_generic_primitive_visitor
 {
 public:
@@ -662,7 +663,23 @@ public:
     return_type operator()(Primitive const& primitive) const
     {
         VSNRAY_UNUSED(primitive);
-        return normals_[hr_.prim_id]; // TODO: mind normal binding!
+
+        if (std::is_same<NormalBinding, normals_per_face_binding>::value)
+        {
+            return normals_[hr_.prim_id];
+        }
+        else if (std::is_same<NormalBinding, normals_per_vertex_binding>::value)
+        {
+            return normalize( lerp(
+                    normals_[hr_.prim_id * 3],
+                    normals_[hr_.prim_id * 3 + 1],
+                    normals_[hr_.prim_id * 3 + 2],
+                    hr_.u,
+                    hr_.v
+                    ) );
+        }
+
+        assert(0);
     }
 
 private:
@@ -696,7 +713,7 @@ inline auto get_surface_with_prims_impl(
     using M = typename std::iterator_traits<Materials>::value_type;
     using HR = hit_record<R, primitive<unsigned>>;
 
-    detail::get_normal_from_generic_primitive_visitor<Normals, HR> visitor(
+    detail::get_normal_from_generic_primitive_visitor<NormalBinding, Normals, HR> visitor(
             normals,
             hr
             );
