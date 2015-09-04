@@ -1,6 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <array>
+#include <cassert>
+
 #include <visionaray/material.h>
 
 #pragma once
@@ -123,6 +126,20 @@ public:
     {
     }
 
+    generic_material<Ts...>& get(int i)
+    {
+        assert( i >= 0 && i < 4 );
+
+        return reinterpret_cast<generic_material<Ts...>*>(this)[i];
+    }
+
+    generic_material<Ts...> const& get(int i) const
+    {
+        assert( i >= 0 && i < 4 );
+
+        return reinterpret_cast<generic_material<Ts...> const*>(this)[i];
+    }
+
     simd::mask4 is_emissive() const
     {
         return simd::mask4(
@@ -205,7 +222,11 @@ inline generic_material4<Ts...> pack(
     return generic_material4<Ts...>(m1, m2, m3, m4);
 }
 
-// TODO: unpack
+template <typename ...Ts>
+inline std::array<generic_material<Ts...>, 4> unpack(generic_material4<Ts...> const& m4)
+{
+    return std::array<generic_material<Ts...>, 4>{{ m4.get(0), m4.get(1), m4.get(2), m4.get(3) }};
+}
 
 } // simd
 } // visionaray
