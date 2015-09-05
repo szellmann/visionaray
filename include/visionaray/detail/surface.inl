@@ -8,7 +8,6 @@
 
 #include <iterator>
 #include <stdexcept>
-#include <type_traits>
 
 #include "../generic_material.h"
 #include "../generic_primitive.h"
@@ -664,22 +663,7 @@ public:
     {
         VSNRAY_UNUSED(primitive);
 
-        if (std::is_same<NormalBinding, normals_per_face_binding>::value)
-        {
-            return normals_[hr_.prim_id];
-        }
-        else if (std::is_same<NormalBinding, normals_per_vertex_binding>::value)
-        {
-            return normalize( lerp(
-                    normals_[hr_.prim_id * 3],
-                    normals_[hr_.prim_id * 3 + 1],
-                    normals_[hr_.prim_id * 3 + 2],
-                    hr_.u,
-                    hr_.v
-                    ) );
-        }
-
-        assert(0);
+        return get_normal(normals_, hr_, NormalBinding());
     }
 
 private:
