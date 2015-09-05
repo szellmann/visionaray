@@ -89,6 +89,24 @@ using face_vector       = aligned_vector<face_index_t>;
 
 
 //-------------------------------------------------------------------------------------------------
+// Default gray material
+//
+
+plastic<float> make_default_material()
+{
+    plastic<float> m;
+    m.set_ca( from_rgb(0.2f, 0.2f, 0.2f) );
+    m.set_cd( from_rgb(0.8f, 0.8f, 0.8f) );
+    m.set_cs( from_rgb(0.1f, 0.1f, 0.1f) );
+    m.set_ka( 1.0f );
+    m.set_kd( 1.0f );
+    m.set_ks( 1.0f );
+    m.set_specular_exp( 32.0f );
+    return m;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Map obj indices to unsigned base-0 indices
 //
 
@@ -188,8 +206,21 @@ aabb bounds(model::triangle_list const& tris)
 }
 
 
+//-------------------------------------------------------------------------------------------------
+// Obj material
+//
+
 struct mtl
 {
+    mtl() = default;
+    mtl(plastic<float> m)
+        : ka( to_rgb(m.get_ca() * m.get_ka()) )
+        , kd( to_rgb(m.get_cd() * m.get_kd()) )
+        , ks( to_rgb(m.get_cs() * m.get_ks()) )
+        , ns(m.get_specular_exp())
+    {
+    }
+
     vec3 ka;
     vec3 kd;
     vec3 ks;
@@ -197,6 +228,10 @@ struct mtl
     std::string map_kd;
 };
 
+
+//-------------------------------------------------------------------------------------------------
+// Parse mtllib
+//
 
 void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
 {
@@ -227,7 +262,7 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
     {
         if ( qi::phrase_parse(it, text.cend(), r_newmtl, qi::blank, mtl_name) )
         {
-            auto r = matlib.insert({mtl_name.to_string(), mtl()});
+            auto r = matlib.insert({mtl_name.to_string(), mtl(make_default_material())});
             if (!r.second)
             {
                 // Material already exists...
@@ -465,15 +500,7 @@ void load_obj(std::string const& filename, model& mod)
     {
         for (size_t i = 0; i <= geom_id; ++i)
         {
-            plastic<float> m;
-            m.set_ca( from_rgb(0.2f, 0.2f, 0.2f) );
-            m.set_cd( from_rgb(0.8f, 0.8f, 0.8f) );
-            m.set_cs( from_rgb(0.1f, 0.1f, 0.1f) );
-            m.set_ka( 1.0f );
-            m.set_kd( 1.0f );
-            m.set_ks( 1.0f );
-            m.set_specular_exp( 32.0f );
-            mod.materials.push_back(m);
+            mod.materials.emplace_back(make_default_material());
         }
     }
 // TODO
