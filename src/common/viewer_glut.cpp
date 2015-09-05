@@ -23,7 +23,17 @@
 #else // VSNRAY_OS_DARWIN
 
 #if defined(VSNRAY_OS_WIN32)
+
 #include <windows.h>
+
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
 #endif
 #include <GL/gl.h>
 #include <GL/glut.h>
