@@ -12,8 +12,10 @@
 
 namespace visionaray
 {
+namespace detail
+{
 
-static void split_edge(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, float plane, int axis)
+void split_edge(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, float plane, int axis)
 {
     auto t0 = v0[axis];
     auto t1 = v1[axis];
@@ -39,8 +41,10 @@ static void split_edge(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, float p
     }
 }
 
+} // detail
+
 template <size_t Dim, typename T, typename P>
-static void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_triangle<Dim, T, P> const& prim)
+void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_triangle<Dim, T, P> const& prim)
 {
     auto v0 = prim.v1;
     auto v1 = v0 + prim.e1;
@@ -49,13 +53,13 @@ static void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_trian
     L.invalidate();
     R.invalidate();
 
-    split_edge(L, R, v0, v1, plane, axis);
-    split_edge(L, R, v1, v2, plane, axis);
-    split_edge(L, R, v2, v0, plane, axis);
+    detail::split_edge(L, R, v0, v1, plane, axis);
+    detail::split_edge(L, R, v1, v2, plane, axis);
+    detail::split_edge(L, R, v2, v0, plane, axis);
 }
 
 template <typename T, typename P>
-static void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_sphere<T, P> const& prim)
+void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_sphere<T, P> const& prim)
 {
     auto cen = prim.center;
     auto rad = prim.radius;
@@ -118,7 +122,7 @@ static void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_spher
 }
 
 template <typename Primitive>
-static void split_primitive(aabb& L, aabb& R, float plane, int axis, Primitive const& prim)
+void split_primitive(aabb& L, aabb& R, float plane, int axis, Primitive const& prim)
 {
     VSNRAY_UNUSED(L);
     VSNRAY_UNUSED(R);
