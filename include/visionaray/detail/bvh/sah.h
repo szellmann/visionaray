@@ -15,7 +15,7 @@ namespace visionaray
 namespace detail
 {
 
-void split_edge(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, float plane, int axis)
+inline void split_edge(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, float plane, int axis)
 {
     auto t0 = v0[axis];
     auto t1 = v1[axis];
