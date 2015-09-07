@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_MATH_QUAT_H
-#define VSNRAY_MATH_QUAT_H
+#define VSNRAY_MATH_QUAT_H 1
 
 #include <cstddef>
 
@@ -23,6 +25,7 @@ public:
     quat(float w, vec3 const& v);
 
     static quat identity();
+    static quat from_sphere_coords(vec3 const& from, vec3 const& to);
 
 };
 
@@ -31,5 +34,3 @@ public:
 #include "detail/quat.inl"
 
 #endif // VSNRAY_MATH_QUAT_H
-
-

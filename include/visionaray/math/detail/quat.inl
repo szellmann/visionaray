@@ -7,6 +7,10 @@
 namespace MATH_NAMESPACE
 {
 
+//-------------------------------------------------------------------------------------------------
+// quat members
+//
+
 inline quat::quat()
 {
 }
@@ -33,6 +37,19 @@ inline quat quat::identity()
     return quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
+inline quat quat::from_sphere_coords(vec3 const& from, vec3 const& to)
+{
+    vec3 nfrom = normalize(from);
+    vec3 nto   = normalize(to);
+
+    return quat(dot(nfrom, nto), cross(nfrom, nto));
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// Basic arithmetic
+//
+
 inline quat operator+(quat const& p, quat const& q)
 {
     return quat(p.w + q.w, p.x + q.x, p.y + q.y, p.z + q.z);
@@ -47,6 +64,11 @@ inline quat operator*(quat const& p, quat const& q)
         p.w * q.z + p.x * q.y - p.y * q.x + p.z * q.w
         );
 }
+
+
+//--------------------------------------------------------------------------------------------------
+// Geometric functions
+//
 
 inline quat operator*(quat const& p, float s)
 {
@@ -132,5 +154,3 @@ inline vec3 rotation_axis(quat const& q)
 }
 
 } // MATH_NAMESPACE
-
-

@@ -17,15 +17,6 @@ using namespace visionaray;
 namespace mouse = visionaray::mouse;
 
 
-quat quat_from_sphere_coords(vec3 const& from, vec3 const& to)
-{
-    vec3 nfrom = normalize(from);
-    vec3 nto   = normalize(to);
-
-    return quat(dot(nfrom, nto), cross(nfrom, nto));
-}
-
-
 arcball_manipulator::arcball_manipulator(camera& cam, mouse::buttons buttons)
     : camera_manipulator(cam)
     , buttons_(buttons)
@@ -76,7 +67,7 @@ void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event
         // rotation
 
         vec3 curr_pos = to_sphere_coords(event.get_pos().x, event.get_pos().y);
-        rotation_ = quat_from_sphere_coords(down_pos_, curr_pos) * down_rotation_;
+        rotation_ = quat::from_sphere_coords(down_pos_, curr_pos) * down_rotation_;
 
         if (true)
         {
