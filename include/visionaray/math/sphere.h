@@ -36,4 +36,4 @@ public:
 
 #include "detail/sphere.inl"
 
-#endif // VSNRAY_MATH_TRIANGLE_H
+#endif // VSNRAY_MATH_SPHERE_H
