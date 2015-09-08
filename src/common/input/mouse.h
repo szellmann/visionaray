@@ -4,12 +4,13 @@
 #pragma once
 
 #ifndef VNSRAY_INPUT_MOUSE_H
-#define VSNRAY_INPUT_MOUSE_H
+#define VSNRAY_INPUT_MOUSE_H 1
 
 #include <bitset>
 #include <cassert>
 
 #include <visionaray/detail/platform.h>
+#include <visionaray/math/vector.h>
 
 #if defined(VSNRAY_HAVE_GLUT)
 
@@ -59,12 +60,7 @@ enum event_type
     Move
 };
 
-
-struct pos
-{
-    int x;
-    int y;
-};
+using pos = vector<2, int>;
 
 
 //-------------------------------------------------------------------------------------------------
