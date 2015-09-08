@@ -2,7 +2,7 @@
 // See the LICENSE file for details.
 
 #ifndef VSNRAY_MATH_SPHERE_H
-#define VSNRAY_MATH_SPHERE_H
+#define VSNRAY_MATH_SPHERE_H 1
 
 #include "primitive.h"
 #include "vector.h"
@@ -15,8 +15,17 @@ class basic_sphere : public primitive<P>
 {
 public:
 
-    typedef T scalar_type;
-    typedef vector<3, T> vec_type;
+    using scalar_type   = T;
+    using vec_type      = vector<3, T>;
+
+public:
+
+    MATH_FUNC basic_sphere() = default;
+    MATH_FUNC basic_sphere(vector<3, T> const& c, T r)
+        : center(c)
+        , radius(r)
+    {
+    }
 
     vec_type center;
     scalar_type radius;
