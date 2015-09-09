@@ -4,7 +4,9 @@
 #pragma once
 
 #ifndef VSNRAY_RENDER_BVH_H
-#define VSNRAY_RENDER_BVH_H
+#define VSNRAY_RENDER_BVH_H 1
+
+#include <vector>
 
 #include <visionaray/detail/platform.h>
 
