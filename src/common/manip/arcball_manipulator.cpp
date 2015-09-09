@@ -20,11 +20,7 @@ namespace mouse = visionaray::mouse;
 arcball_manipulator::arcball_manipulator(camera& cam, mouse::buttons buttons)
     : camera_manipulator(cam)
     , buttons_(buttons)
-    , radius_(1.0f)
     , dragging_(false)
-    , down_pos_(0.0f)
-    , rotation_(quat::identity())
-    , down_rotation_(quat::identity())
 {
 }
 
@@ -39,9 +35,13 @@ void arcball_manipulator::handle_mouse_down(visionaray::mouse_event const& event
 
     if (!dragging_)
     {
-        dragging_      = true;
-        down_pos_      = to_sphere_coords(event.get_pos().x, event.get_pos().y);
-        down_rotation_ = rotation_;
+        dragging_ = true;
+        ball_.down_pos = ball_.project(
+                event.get_pos().x,
+                event.get_pos().y,
+                camera_.get_viewport()
+                );
+        ball_.down_rotation = ball_.rotation;
     }
 
     camera_manipulator::handle_mouse_down(event);
@@ -66,15 +66,19 @@ void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event
 
         // rotation
 
-        vec3 curr_pos = to_sphere_coords(event.get_pos().x, event.get_pos().y);
-        rotation_ = quat::from_sphere_coords(down_pos_, curr_pos) * down_rotation_;
+        vec3 curr_pos = ball_.project(
+                event.get_pos().x,
+                event.get_pos().y,
+                camera_.get_viewport()
+                );
+        ball_.rotation = quat::from_sphere_coords(ball_.down_pos, curr_pos) * ball_.down_rotation;
 
         if (true)
         {
 
             // view transform
 
-            mat4 rotation_matrix = rotation(conjugate(rotation_));
+            mat4 rotation_matrix = rotation(conjugate(ball_.rotation));
 
             vec4 eye4(0, 0, camera_.distance(), 1.0);
             eye4 = rotation_matrix * eye4;
@@ -92,7 +96,7 @@ void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event
 
             // model transform
 
-            mat4 model = rotation(rotation_);
+            mat4 model = rotation(ball_.rotation);
             VSNRAY_UNUSED(model);
             //camera_.set_model_matrix(model);
 
@@ -101,61 +105,5 @@ void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event
     }
 
     camera_manipulator::handle_mouse_move(event);
-
-}
-
-
-vec3 arcball_manipulator::to_sphere_coords(int x, int y)
-{
-
-    vec3 v(0.0f);
-
-    int width  = camera_.get_viewport().w;
-    int height = camera_.get_viewport().h;
-
-#if 0
-
-    // trackball
-
-    v[0] =  (x - 0.5f * width ) / width;
-    v[1] = -(y - 0.5f * height) / height;
-
-    vec2 tmp(v[0], v[1]);
-    float d = normh2(tmp);
-    float r2 = radius_ * radius_;
-
-    if (d < radius_ * (1.0f / sqrt(2.0)))
-    {
-        v[2] = sqrt(r2 - d * d);
-    }
-    else
-    {
-        v[2] = r2 / (2.0f * d);
-    }
-#else
-
-    //arcball
-
-    v[0] =  (x - 0.5f * width ) / (radius_ * 0.5f * width );
-    v[1] = -(y - 0.5f * height) / (radius_ * 0.5f * height);
-
-    vec2 tmp(v[0], v[1]);
-    float d = norm2(tmp);
-
-
-    if (d > 1.0f)
-    {
-        float length = sqrt(d);
-
-        v[0] /= length;
-        v[1] /= length;
-    }
-    else
-    {
-        v[2] = sqrt(1.0f - d);
-    }
-#endif
-
-    return v;
 
 }

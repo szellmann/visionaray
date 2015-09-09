@@ -58,6 +58,7 @@ set(COMMON_HEADERS
     input/keyboard.h
     input/mouse.h
 
+    manip/arcball.h
     manip/arcball_manipulator.h
     manip/camera_manipulator.h
     manip/pan_manipulator.h
@@ -80,6 +81,7 @@ set(COMMON_HEADERS
 
 set(COMMON_SOURCES
 
+    manip/arcball.cpp
     manip/arcball_manipulator.cpp
     manip/camera_manipulator.cpp
     manip/pan_manipulator.cpp

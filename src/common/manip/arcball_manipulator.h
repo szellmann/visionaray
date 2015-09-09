@@ -8,8 +8,9 @@
 
 #include <visionaray/math/math.h>
 
-#include "camera_manipulator.h"
 #include "../input/mouse.h"
+#include "arcball.h"
+#include "camera_manipulator.h"
 
 
 namespace visionaray
@@ -33,15 +34,9 @@ private:
 
     mouse::buttons buttons_;
 
-    float radius_;
+    bool dragging_;
 
-    bool  dragging_;
-
-    vec3 down_pos_;
-    quat rotation_;
-    quat down_rotation_;
-
-    vec3 to_sphere_coords(int x, int y);
+    arcball ball_;
 
 };
 
