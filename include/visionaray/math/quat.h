@@ -25,7 +25,7 @@ public:
     quat(float w, vec3 const& v);
 
     static quat identity();
-    static quat from_sphere_coords(vec3 const& from, vec3 const& to);
+    static quat rotation(vec3 const& from, vec3 const& to);
 
 };
 

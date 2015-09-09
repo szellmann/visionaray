@@ -37,7 +37,7 @@ inline quat quat::identity()
     return quat(1.0f, 0.0f, 0.0f, 0.0f);
 }
 
-inline quat quat::from_sphere_coords(vec3 const& from, vec3 const& to)
+inline quat quat::rotation(vec3 const& from, vec3 const& to)
 {
     vec3 nfrom = normalize(from);
     vec3 nto   = normalize(to);

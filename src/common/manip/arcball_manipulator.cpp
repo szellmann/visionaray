@@ -71,7 +71,7 @@ void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event
                 event.get_pos().y,
                 camera_.get_viewport()
                 );
-        ball_.rotation = quat::from_sphere_coords(ball_.down_pos, curr_pos) * ball_.down_rotation;
+        ball_.rotation = quat::rotation(ball_.down_pos, curr_pos) * ball_.down_rotation;
 
         if (true)
         {
