@@ -353,6 +353,17 @@ inline matrix<4, 4, T> get_scaling(matrix<4, 4, T> const& m)
     return s;
 }
 
+template <typename T>
+MATH_FUNC
+inline matrix<4, 4, T> get_translation(matrix<4, 4, T> const& m)
+{
+    auto t = matrix<4, 4, T>::identity();
+    t(0, 3) = m(0, 3);
+    t(1, 3) = m(1, 3);
+    t(2, 3) = m(2, 3);
+    return t;
+}
+
 
 // convenience functions to apply transforms
 
