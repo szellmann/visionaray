@@ -496,6 +496,17 @@ void load_obj(std::string const& filename, model& mod)
         }
     }
 
+    if (mod.tex_coords.size() == 0)
+    {
+        for (size_t i = 0; i < mod.primitives.size(); ++i)
+        {
+            // create dummy tex coords
+            mod.tex_coords.emplace_back(0.0f);
+            mod.tex_coords.emplace_back(0.0f);
+            mod.tex_coords.emplace_back(0.0f);
+        }
+    }
+
     if (mod.materials.size() == 0)
     {
         for (size_t i = 0; i <= geom_id; ++i)
