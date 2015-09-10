@@ -19,7 +19,9 @@ namespace MATH_NAMESPACE
 //
 
 using std::abs;
+using std::ceil;
 using std::cos;
+using std::floor;
 using std::pow;
 using std::sin;
 using std::sqrt;
