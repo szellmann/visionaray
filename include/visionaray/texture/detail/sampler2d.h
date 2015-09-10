@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_TEXTURE_SAMPLER2D_H
-#define VSNRAY_TEXTURE_SAMPLER2D_H
+#define VSNRAY_TEXTURE_SAMPLER2D_H 1
 
 #include "sampler_common.h"
 
@@ -86,6 +86,55 @@ inline ReturnT linear(
 }
 
 
+template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+inline ReturnT cubic4(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
+        TexelT const*                           tex,
+        vector<2, FloatT>                       coord,
+        vector<2, FloatT>                       texsize,
+        std::array<tex_address_mode, 2> const&  address_mode
+        )
+{
+    bspline::w0_func<FloatT> w0;
+    bspline::w1_func<FloatT> w1;
+    bspline::w2_func<FloatT> w2;
+    bspline::w3_func<FloatT> w3;
+
+    auto x = coord.x * texsize.x - FloatT(0.5);
+    auto floorx = floor(x);
+    auto fracx  = x - floor(x);
+
+    auto y = coord.y * texsize.y - FloatT(0.5);
+    auto floory = floor(y);
+    auto fracy  = y - floor(y);
+
+
+    auto tmp00 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
+    auto h_00  = ( floorx - FloatT(0.5) + tmp00 ) / texsize.x;
+
+    auto tmp10 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
+    auto h_10  = ( floorx + FloatT(1.5) + tmp10 ) / texsize.x;
+
+    auto tmp01 = ( w1(fracy) ) / ( w0(fracy) + w1(fracy) );
+    auto h_01  = ( floory - FloatT(0.5) + tmp01 ) / texsize.y;
+
+    auto tmp11 = ( w3(fracy) ) / ( w2(fracy) + w3(fracy) );
+    auto h_11  = ( floory + FloatT(1.5) + tmp11 ) / texsize.y;
+
+
+    auto f_00  = InternalT( linear(ReturnT(), InternalT(), tex, vector<2, FloatT>(h_00, h_01), texsize, address_mode) );
+    auto f_10  = InternalT( linear(ReturnT(), InternalT(), tex, vector<2, FloatT>(h_10, h_01), texsize, address_mode) );
+    auto f_01  = InternalT( linear(ReturnT(), InternalT(), tex, vector<2, FloatT>(h_00, h_11), texsize, address_mode) );
+    auto f_11  = InternalT( linear(ReturnT(), InternalT(), tex, vector<2, FloatT>(h_10, h_11), texsize, address_mode) );
+
+    auto f_0   = g0(fracx) * f_00 + g1(fracx) * f_10;
+    auto f_1   = g0(fracx) * f_01 + g1(fracx) * f_11;
+
+    return ReturnT(g0(fracy) * f_0 + g1(fracy) * f_1);
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // Dispatch function to choose among filtering algorithms
 //
@@ -118,6 +167,16 @@ inline ReturnT tex2D_impl_choose_filter(
 
     case visionaray::Linear:
         return linear(
+                ReturnT(),
+                InternalT(),
+                tex,
+                coord,
+                texsize,
+                address_mode
+                );
+
+    case visionaray::BSpline:
+        return cubic4(
                 ReturnT(),
                 InternalT(),
                 tex,
