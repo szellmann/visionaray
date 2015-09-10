@@ -67,7 +67,7 @@ enum key
     Alt   = 0x00000002,
     Shift = 0x00000004,
 
-    NoKey = 0xF0000000
+    NoKey = 0x80000000
 };
 
 
