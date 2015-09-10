@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_TEXTURE_SAMPLER3D_H
-#define VSNRAY_TEXTURE_SAMPLER3D_H
+#define VSNRAY_TEXTURE_SAMPLER3D_H 1
 
 #include <visionaray/math/math.h>
 
@@ -101,28 +101,32 @@ inline ReturnT linear(
 }
 
 
-template <typename ReturnT, typename FloatT, typename TexelT>
-inline ReturnT cubic8(TexelT const* tex, vector<3, FloatT> coord, vector<3, FloatT> texsize)
+template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+inline ReturnT cubic8(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
+        TexelT const*                           tex,
+        vector<3, FloatT>                       coord,
+        vector<3, FloatT>                       texsize,
+        std::array<tex_address_mode, 3> const&  address_mode
+        )
 {
-
-    typedef vector<3, FloatT> float3;
-
     bspline::w0_func<FloatT> w0;
     bspline::w1_func<FloatT> w1;
     bspline::w2_func<FloatT> w2;
     bspline::w3_func<FloatT> w3;
 
     auto x = coord.x * texsize.x - FloatT(0.5);
-    auto floorx = floor( x );
-    auto fracx  = x - floor( x );
+    auto floorx = floor(x);
+    auto fracx  = x - floor(x);
 
     auto y = coord.y * texsize.y - FloatT(0.5);
-    auto floory = floor( y );
-    auto fracy  = y - floor( y );
+    auto floory = floor(y);
+    auto fracy  = y - floor(y);
 
     auto z = coord.z * texsize.z - FloatT(0.5);
-    auto floorz = floor( z );
-    auto fracz  = z - floor( z );
+    auto floorz = floor(z);
+    auto fracz  = z - floor(z);
 
 
     auto tmp000 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
@@ -144,28 +148,25 @@ inline ReturnT cubic8(TexelT const* tex, vector<3, FloatT> coord, vector<3, Floa
     auto h_101  = ( floorz + FloatT(1.5) + tmp101 ) / texsize.z;
 
 
-    // Implicit cast from return type to float type.
-    // TODO: what if return type is e.g. a float4?
-    auto f_000 = linear<FloatT>( tex, float3(h_000, h_010, h_001), texsize, Clamp /* TODO */ );
-    auto f_100 = linear<FloatT>( tex, float3(h_100, h_010, h_001), texsize, Clamp /* TODO */ );
-    auto f_010 = linear<FloatT>( tex, float3(h_000, h_110, h_001), texsize, Clamp /* TODO */ );
-    auto f_110 = linear<FloatT>( tex, float3(h_100, h_110, h_001), texsize, Clamp /* TODO */ );
+    auto f_000  = InternalT( linear(ReturnT(), InternalT(), tex, vector<3, FloatT>(h_000, h_010, h_001), texsize, address_mode) );
+    auto f_100  = InternalT( linear(ReturnT(), InternalT(), tex, vector<3, FloatT>(h_100, h_010, h_001), texsize, address_mode) );
+    auto f_010  = InternalT( linear(ReturnT(), InternalT(), tex, vector<3, FloatT>(h_000, h_110, h_001), texsize, address_mode) );
+    auto f_110  = InternalT( linear(ReturnT(), InternalT(), tex, vector<3, FloatT>(h_100, h_110, h_001), texsize, address_mode) );
 
-    auto f_001 = linear<FloatT>( tex, float3(h_000, h_010, h_101), texsize, Clamp /* TODO */ );
-    auto f_101 = linear<FloatT>( tex, float3(h_100, h_010, h_101), texsize, Clamp /* TODO */ );
-    auto f_011 = linear<FloatT>( tex, float3(h_000, h_110 ,h_101), texsize, Clamp /* TODO */ );
-    auto f_111 = linear<FloatT>( tex, float3(h_100, h_110, h_101), texsize, Clamp /* TODO */ );
+    auto f_001  = InternalT( linear(ReturnT(), InternalT(), tex, vector<3, FloatT>(h_000, h_010, h_101), texsize, address_mode) );
+    auto f_101  = InternalT( linear(ReturnT(), InternalT(), tex, vector<3, FloatT>(h_100, h_010, h_101), texsize, address_mode) );
+    auto f_011  = InternalT( linear(ReturnT(), InternalT(), tex, vector<3, FloatT>(h_000, h_110 ,h_101), texsize, address_mode) );
+    auto f_111  = InternalT( linear(ReturnT(), InternalT(), tex, vector<3, FloatT>(h_100, h_110, h_101), texsize, address_mode) );
 
-    auto f_00  = g0(fracx) * f_000 + g1(fracx) * f_100;
-    auto f_10  = g0(fracx) * f_010 + g1(fracx) * f_110;
-    auto f_01  = g0(fracx) * f_001 + g1(fracx) * f_101;
-    auto f_11  = g0(fracx) * f_011 + g1(fracx) * f_111;
+    auto f_00   = g0(fracx) * f_000 + g1(fracx) * f_100;
+    auto f_10   = g0(fracx) * f_010 + g1(fracx) * f_110;
+    auto f_01   = g0(fracx) * f_001 + g1(fracx) * f_101;
+    auto f_11   = g0(fracx) * f_011 + g1(fracx) * f_111;
 
-    auto f_0   = g0(fracy) * f_00 + g1(fracy) * f_10;
-    auto f_1   = g0(fracy) * f_01 + g1(fracy) * f_11;
+    auto f_0    = g0(fracy) * f_00 + g1(fracy) * f_10;
+    auto f_1    = g0(fracy) * f_01 + g1(fracy) * f_11;
 
-    return g0(fracz) * f_0 + g1(fracz) * f_1;
-
+    return ReturnT(g0(fracz) * f_0 + g1(fracz) * f_1);
 }
 
 
@@ -268,6 +269,16 @@ inline ReturnT tex3D_impl_choose_filter(
 
     case visionaray::Linear:
         return linear(
+                ReturnT(),
+                InternalT(),
+                tex,
+                coord,
+                texsize,
+                address_mode
+                );
+
+    case visionaray::BSpline:
+        return cubic8(
                 ReturnT(),
                 InternalT(),
                 tex,
