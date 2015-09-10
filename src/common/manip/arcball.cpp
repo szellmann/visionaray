@@ -8,15 +8,27 @@
 
 using namespace visionaray;
 
+
+arcball::arcball()
+    : radius(1.0f)
+    , down_pos(0.0f)
+    , rotation(quat::identity())
+    , down_rotation(quat::identity())
+{
+}
+
+
 //-------------------------------------------------------------------------------------------------
-// Project x/y screen space position to ball coordinates. Need to supply the rectangle in pixel
-// coordinates that spans the sphere.
+// Project x/y screen space position to ball coordinates
 //
 
-vec3 arcball::project(int x, int y, recti const& r)
+vec3 arcball::project(int x, int y, recti const& viewport)
 {
 
     vec3 v(0.0f);
+
+    auto width  = viewport.w;
+    auto height = viewport.h;
 
 #if 0
 
@@ -41,8 +53,8 @@ vec3 arcball::project(int x, int y, recti const& r)
 
     // arcball
 
-    v[0] =  (x - r.x - 0.5f * r.w) / (radius * 0.5f * r.w);
-    v[1] = -(y - r.y - 0.5f * r.h) / (radius * 0.5f * r.h);
+    v[0] =  (x - 0.5f * width ) / (radius * 0.5f * width );
+    v[1] = -(y - 0.5f * height) / (radius * 0.5f * height);
 
     vec2 tmp(v[0], v[1]);
     float d = norm2(tmp);

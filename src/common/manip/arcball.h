@@ -11,18 +11,13 @@
 namespace visionaray
 {
 
-struct arcball
+class arcball
 {
-    arcball()
-        : radius(1.0f)
-        , down_pos(0.0f)
-        , rotation(quat::identity())
-        , down_rotation(quat::identity())
-    {
+public:
 
-    }
+    arcball();
 
-    vec3 project(int x, int y, recti const& r);
+    vec3 project(int x, int y, recti const& viewport);
 
     float radius;
     vec3 down_pos;
