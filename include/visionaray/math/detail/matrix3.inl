@@ -12,14 +12,80 @@ namespace MATH_NAMESPACE
 template <typename T>
 MATH_FUNC
 inline matrix<3, 3, T>::matrix(
-        T m00, T m10, T m20,
-        T m01, T m11, T m21,
-        T m02, T m12, T m22
+        vector<3, T> const& c0,
+        vector<3, T> const& c1,
+        vector<3, T> const& c2
+        )
+    : col0(c0)
+    , col1(c1)
+    , col2(c2)
+{
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<3, 3, T>::matrix(
+        T const& m00, T const& m10, T const& m20,
+        T const& m01, T const& m11, T const& m21,
+        T const& m02, T const& m12, T const& m22
         )
     : col0(m00, m10, m20)
     , col1(m01, m11, m21)
     , col2(m02, m12, m22)
 {
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<3, 3, T>::matrix(T const& m00, T const& m11, T const& m22)
+    : col0(m00,    T(0.0), T(0.0))
+    , col1(T(0.0), m11,    T(0.0))
+    , col2(T(0.0), T(0.0), m22   )
+{
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<3, 3, T>::matrix(T const data[9])
+    : col0(&data[0])
+    , col1(&data[3])
+    , col2(&data[6])
+{
+}
+
+template <typename T>
+template <typename U>
+MATH_FUNC
+inline matrix<3, 3, T>::matrix(matrix<3, 3, U> const& rhs)
+    : col0(rhs.col0)
+    , col1(rhs.col1)
+    , col2(rhs.col2)
+{
+}
+
+template <typename T>
+template <typename U>
+MATH_FUNC
+inline matrix<3, 3, T>& matrix<3, 3, T>::operator=(matrix<3, 3, U> const& rhs)
+{
+    col0 = rhs.col0;
+    col1 = rhs.col1;
+    col2 = rhs.col2;
+    return *this;
+}
+
+template <typename T>
+MATH_FUNC
+inline T* matrix<3, 3, T>::data()
+{
+    return reinterpret_cast<T*>(this);
+}
+
+template <typename T>
+MATH_FUNC
+inline T const* matrix<3, 3, T>::data() const
+{
+    return reinterpret_cast<T const*>(this);
 }
 
 template <typename T>
@@ -48,6 +114,17 @@ MATH_FUNC
 inline T const& matrix<3, 3, T>::operator()(size_t row, size_t col) const
 {
     return (operator()(col))[row];
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<3, 3, T> matrix<3, 3, T>::identity()
+{
+    return matrix<3, 3, T>(
+            T(1.0), T(0.0), T(0.0),
+            T(0.0), T(1.0), T(0.0),
+            T(0.0), T(0.0), T(1.0)
+            );
 }
 
 

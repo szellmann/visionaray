@@ -11,19 +11,12 @@ namespace MATH_NAMESPACE
 
 template <typename T>
 MATH_FUNC
-inline matrix<4, 4, T>::matrix()
-{
-}
-
-template <typename T>
-MATH_FUNC
-inline matrix<4, 4, T>::matrix
-(
-    vector<4, T> const& c0,
-    vector<4, T> const& c1,
-    vector<4, T> const& c2,
-    vector<4, T> const& c3
-)
+inline matrix<4, 4, T>::matrix(
+        vector<4, T> const& c0,
+        vector<4, T> const& c1,
+        vector<4, T> const& c2,
+        vector<4, T> const& c3
+        )
     : col0(c0)
     , col1(c1)
     , col2(c2)
@@ -33,13 +26,12 @@ inline matrix<4, 4, T>::matrix
 
 template <typename T>
 MATH_FUNC
-inline matrix<4, 4, T>::matrix
-(
-    T const& m00, T const& m10, T const& m20, T const& m30,
-    T const& m01, T const& m11, T const& m21, T const& m31,
-    T const& m02, T const& m12, T const& m22, T const& m32,
-    T const& m03, T const& m13, T const& m23, T const& m33
-)
+inline matrix<4, 4, T>::matrix(
+        T const& m00, T const& m10, T const& m20, T const& m30,
+        T const& m01, T const& m11, T const& m21, T const& m31,
+        T const& m02, T const& m12, T const& m22, T const& m32,
+        T const& m03, T const& m13, T const& m23, T const& m33
+        )
     : col0(m00, m10, m20, m30)
     , col1(m01, m11, m21, m31)
     , col2(m02, m12, m22, m32)
@@ -136,13 +128,12 @@ template <typename T>
 MATH_FUNC
 inline matrix<4, 4, T> matrix<4, 4, T>::identity()
 {
-    return matrix<4, 4, T>
-    (
-        T(1.0), T(0.0), T(0.0), T(0.0),
-        T(0.0), T(1.0), T(0.0), T(0.0),
-        T(0.0), T(0.0), T(1.0), T(0.0),
-        T(0.0), T(0.0), T(0.0), T(1.0)
-    );
+    return matrix<4, 4, T>(
+            T(1.0), T(0.0), T(0.0), T(0.0),
+            T(0.0), T(1.0), T(0.0), T(0.0),
+            T(0.0), T(0.0), T(1.0), T(0.0),
+            T(0.0), T(0.0), T(0.0), T(1.0)
+            );
 }
 
 
@@ -155,25 +146,24 @@ MATH_FUNC
 inline matrix<4, 4, T> operator*(matrix<4, 4, T> const& a, matrix<4, 4, T> const& b)
 {
 
-    return matrix<4, 4, T>
-    (
-        a(0, 0) * b(0, 0) + a(0, 1) * b(1, 0) + a(0, 2) * b(2, 0) + a(0, 3) * b(3, 0),
-        a(1, 0) * b(0, 0) + a(1, 1) * b(1, 0) + a(1, 2) * b(2, 0) + a(1, 3) * b(3, 0),
-        a(2, 0) * b(0, 0) + a(2, 1) * b(1, 0) + a(2, 2) * b(2, 0) + a(2, 3) * b(3, 0),
-        a(3, 0) * b(0, 0) + a(3, 1) * b(1, 0) + a(3, 2) * b(2, 0) + a(3, 3) * b(3, 0),
-        a(0, 0) * b(0, 1) + a(0, 1) * b(1, 1) + a(0, 2) * b(2, 1) + a(0, 3) * b(3, 1),
-        a(1, 0) * b(0, 1) + a(1, 1) * b(1, 1) + a(1, 2) * b(2, 1) + a(1, 3) * b(3, 1),
-        a(2, 0) * b(0, 1) + a(2, 1) * b(1, 1) + a(2, 2) * b(2, 1) + a(2, 3) * b(3, 1),
-        a(3, 0) * b(0, 1) + a(3, 1) * b(1, 1) + a(3, 2) * b(2, 1) + a(3, 3) * b(3, 1),
-        a(0, 0) * b(0, 2) + a(0, 1) * b(1, 2) + a(0, 2) * b(2, 2) + a(0, 3) * b(3, 2),
-        a(1, 0) * b(0, 2) + a(1, 1) * b(1, 2) + a(1, 2) * b(2, 2) + a(1, 3) * b(3, 2),
-        a(2, 0) * b(0, 2) + a(2, 1) * b(1, 2) + a(2, 2) * b(2, 2) + a(2, 3) * b(3, 2),
-        a(3, 0) * b(0, 2) + a(3, 1) * b(1, 2) + a(3, 2) * b(2, 2) + a(3, 3) * b(3, 2),
-        a(0, 0) * b(0, 3) + a(0, 1) * b(1, 3) + a(0, 2) * b(2, 3) + a(0, 3) * b(3, 3),
-        a(1, 0) * b(0, 3) + a(1, 1) * b(1, 3) + a(1, 2) * b(2, 3) + a(1, 3) * b(3, 3),
-        a(2, 0) * b(0, 3) + a(2, 1) * b(1, 3) + a(2, 2) * b(2, 3) + a(2, 3) * b(3, 3),
-        a(3, 0) * b(0, 3) + a(3, 1) * b(1, 3) + a(3, 2) * b(2, 3) + a(3, 3) * b(3, 3)
-    );
+    return matrix<4, 4, T>(
+            a(0, 0) * b(0, 0) + a(0, 1) * b(1, 0) + a(0, 2) * b(2, 0) + a(0, 3) * b(3, 0),
+            a(1, 0) * b(0, 0) + a(1, 1) * b(1, 0) + a(1, 2) * b(2, 0) + a(1, 3) * b(3, 0),
+            a(2, 0) * b(0, 0) + a(2, 1) * b(1, 0) + a(2, 2) * b(2, 0) + a(2, 3) * b(3, 0),
+            a(3, 0) * b(0, 0) + a(3, 1) * b(1, 0) + a(3, 2) * b(2, 0) + a(3, 3) * b(3, 0),
+            a(0, 0) * b(0, 1) + a(0, 1) * b(1, 1) + a(0, 2) * b(2, 1) + a(0, 3) * b(3, 1),
+            a(1, 0) * b(0, 1) + a(1, 1) * b(1, 1) + a(1, 2) * b(2, 1) + a(1, 3) * b(3, 1),
+            a(2, 0) * b(0, 1) + a(2, 1) * b(1, 1) + a(2, 2) * b(2, 1) + a(2, 3) * b(3, 1),
+            a(3, 0) * b(0, 1) + a(3, 1) * b(1, 1) + a(3, 2) * b(2, 1) + a(3, 3) * b(3, 1),
+            a(0, 0) * b(0, 2) + a(0, 1) * b(1, 2) + a(0, 2) * b(2, 2) + a(0, 3) * b(3, 2),
+            a(1, 0) * b(0, 2) + a(1, 1) * b(1, 2) + a(1, 2) * b(2, 2) + a(1, 3) * b(3, 2),
+            a(2, 0) * b(0, 2) + a(2, 1) * b(1, 2) + a(2, 2) * b(2, 2) + a(2, 3) * b(3, 2),
+            a(3, 0) * b(0, 2) + a(3, 1) * b(1, 2) + a(3, 2) * b(2, 2) + a(3, 3) * b(3, 2),
+            a(0, 0) * b(0, 3) + a(0, 1) * b(1, 3) + a(0, 2) * b(2, 3) + a(0, 3) * b(3, 3),
+            a(1, 0) * b(0, 3) + a(1, 1) * b(1, 3) + a(1, 2) * b(2, 3) + a(1, 3) * b(3, 3),
+            a(2, 0) * b(0, 3) + a(2, 1) * b(1, 3) + a(2, 2) * b(2, 3) + a(2, 3) * b(3, 3),
+            a(3, 0) * b(0, 3) + a(3, 1) * b(1, 3) + a(3, 2) * b(2, 3) + a(3, 3) * b(3, 3)
+            );
 
 }
 
@@ -182,13 +172,12 @@ MATH_FUNC
 inline vector<4, T> operator*(matrix<4, 4, T> const& m, vector<4, T> const& v)
 {
 
-    return vector<4, T>
-    (
-        m(0, 0) * v.x + m(0, 1) * v.y + m(0, 2) * v.z + m(0, 3) * v.w,
-        m(1, 0) * v.x + m(1, 1) * v.y + m(1, 2) * v.z + m(1, 3) * v.w,
-        m(2, 0) * v.x + m(2, 1) * v.y + m(2, 2) * v.z + m(2, 3) * v.w,
-        m(3, 0) * v.x + m(3, 1) * v.y + m(3, 2) * v.z + m(3, 3) * v.w
-    );
+    return vector<4, T>(
+            m(0, 0) * v.x + m(0, 1) * v.y + m(0, 2) * v.z + m(0, 3) * v.w,
+            m(1, 0) * v.x + m(1, 1) * v.y + m(1, 2) * v.z + m(1, 3) * v.w,
+            m(2, 0) * v.x + m(2, 1) * v.y + m(2, 2) * v.z + m(2, 3) * v.w,
+            m(3, 0) * v.x + m(3, 1) * v.y + m(3, 2) * v.z + m(3, 3) * v.w
+            );
 
 }
 
@@ -235,25 +224,24 @@ inline matrix<4, 4, T> inverse(matrix<4, 4, T> const& m)
 
     T det = s0 * c5 - s1 * c4 + s2 * c3 + s3 * c2 - s4 * c1 + s5 * c0;
 
-    return matrix<4, 4, T>
-    (
-        (+ m(1, 1) * c5 - m(1, 2) * c4 + m(1, 3) * c3) / det,
-        (- m(1, 0) * c5 + m(1, 2) * c2 + m(1, 3) * c1) / det,
-        (+ m(1, 0) * c4 - m(1, 1) * c2 + m(1, 3) * c0) / det,
-        (- m(1, 0) * c3 + m(1, 1) * c1 + m(1, 2) * c0) / det,
-        (- m(0, 1) * c5 + m(0, 2) * c4 - m(0, 3) * c3) / det,
-        (+ m(0, 0) * c5 - m(0, 2) * c2 + m(0, 3) * c1) / det,
-        (- m(0, 0) * c4 + m(0, 1) * c2 - m(0, 3) * c0) / det,
-        (+ m(0, 0) * c3 - m(0, 1) * c1 + m(0, 2) * c0) / det,
-        (+ m(3, 1) * s5 - m(3, 2) * s4 + m(3, 3) * s3) / det,
-        (- m(3, 0) * s5 + m(3, 2) * s2 - m(3, 3) * s1) / det,
-        (+ m(3, 0) * s4 - m(3, 1) * s2 + m(3, 3) * s0) / det,
-        (- m(3, 0) * s3 + m(3, 1) * s1 - m(3, 2) * s0) / det,
-        (- m(2, 1) * s5 + m(2, 2) * s4 - m(2, 3) * s3) / det,
-        (+ m(2, 0) * s5 - m(2, 2) * s2 + m(2, 3) * s1) / det,
-        (- m(2, 0) * s4 + m(2, 1) * s2 - m(2, 3) * s0) / det,
-        (+ m(2, 0) * s3 - m(2, 1) * s1 + m(2, 2) * s0) / det
-    );
+    return matrix<4, 4, T>(
+            (+ m(1, 1) * c5 - m(1, 2) * c4 + m(1, 3) * c3) / det,
+            (- m(1, 0) * c5 + m(1, 2) * c2 + m(1, 3) * c1) / det,
+            (+ m(1, 0) * c4 - m(1, 1) * c2 + m(1, 3) * c0) / det,
+            (- m(1, 0) * c3 + m(1, 1) * c1 + m(1, 2) * c0) / det,
+            (- m(0, 1) * c5 + m(0, 2) * c4 - m(0, 3) * c3) / det,
+            (+ m(0, 0) * c5 - m(0, 2) * c2 + m(0, 3) * c1) / det,
+            (- m(0, 0) * c4 + m(0, 1) * c2 - m(0, 3) * c0) / det,
+            (+ m(0, 0) * c3 - m(0, 1) * c1 + m(0, 2) * c0) / det,
+            (+ m(3, 1) * s5 - m(3, 2) * s4 + m(3, 3) * s3) / det,
+            (- m(3, 0) * s5 + m(3, 2) * s2 - m(3, 3) * s1) / det,
+            (+ m(3, 0) * s4 - m(3, 1) * s2 + m(3, 3) * s0) / det,
+            (- m(3, 0) * s3 + m(3, 1) * s1 - m(3, 2) * s0) / det,
+            (- m(2, 1) * s5 + m(2, 2) * s4 - m(2, 3) * s3) / det,
+            (+ m(2, 0) * s5 - m(2, 2) * s2 + m(2, 3) * s1) / det,
+            (- m(2, 0) * s4 + m(2, 1) * s2 - m(2, 3) * s0) / det,
+            (+ m(2, 0) * s3 - m(2, 1) * s1 + m(2, 2) * s0) / det
+            );
 }
 
 template <typename T>
