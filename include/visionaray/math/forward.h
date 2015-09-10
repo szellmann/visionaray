@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_MATH_FORWARD_H
-#define VSNRAY_MATH_FORWARD_H
+#define VSNRAY_MATH_FORWARD_H 1
 
 #include <cstddef>
 
@@ -79,6 +81,11 @@ typedef vector<4, double>                   vec4d;
 typedef vector<4, float>                    vec4;
 
 
+typedef matrix<3, 3, float>                 mat3f;
+typedef matrix<3, 3, double>                mat3d;
+typedef matrix<3, 3, float>                 mat3;
+
+
 typedef matrix<4, 4, float>                 mat4f;
 typedef matrix<4, 4, double>                mat4d;
 typedef matrix<4, 4, float>                 mat4;
@@ -109,5 +116,3 @@ typedef rectangle<xywh_layout, float>       rect;
 
 
 #endif // VSNRAY_MATH_FORWARD_H
-
-
