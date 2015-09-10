@@ -344,13 +344,13 @@ inline matrix<4, 4, T> make_translation(vector<3, T> const& v)
 
 template <typename T>
 MATH_FUNC
-inline vector<3, T> get_scaling(matrix<4, 4, T> const& m)
+inline matrix<4, 4, T> get_scaling(matrix<4, 4, T> const& m)
 {
-    return vector<3, T>(
-            length(m.col0),
-            length(m.col1),
-            length(m.col2)
-            );
+    auto s = matrix<4, 4, T>::identity();
+    s(0, 0) = length(m.col0);
+    s(1, 1) = length(m.col1);
+    s(2, 2) = length(m.col2);
+    return s;
 }
 
 
