@@ -17,9 +17,14 @@ using namespace visionaray;
 namespace mouse = visionaray::mouse;
 
 
-arcball_manipulator::arcball_manipulator(camera& cam, mouse::buttons buttons)
+arcball_manipulator::arcball_manipulator(
+        camera& cam,
+        mouse::buttons buttons,
+        keyboard::key_modifiers modifiers
+        )
     : camera_manipulator(cam)
     , buttons_(buttons)
+    , modifiers_(modifiers)
     , dragging_(false)
 {
 }
@@ -42,6 +47,8 @@ void arcball_manipulator::handle_mouse_down(visionaray::mouse_event const& event
                 camera_.get_viewport()
                 );
         ball_.down_rotation = ball_.rotation;
+
+        down_modifiers_ = event.get_modifiers();
     }
 
     camera_manipulator::handle_mouse_down(event);
@@ -53,6 +60,8 @@ void arcball_manipulator::handle_mouse_up(visionaray::mouse_event const& event)
 {
 
     dragging_ = false;
+    down_modifiers_ = keyboard::NoKey;
+
     camera_manipulator::handle_mouse_up(event);
 
 }
@@ -61,7 +70,10 @@ void arcball_manipulator::handle_mouse_up(visionaray::mouse_event const& event)
 void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
 {
 
-    if (dragging_ && event.get_buttons() & buttons_)
+    bool buttons   = event.get_buttons() & buttons_;
+    bool modifiers = (modifiers_ == keyboard::NoKey && down_modifiers_ == keyboard::NoKey) || down_modifiers_ & modifiers_;
+
+    if (dragging_ && buttons && modifiers)
     {
 
         // rotation

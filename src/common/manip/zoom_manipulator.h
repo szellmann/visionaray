@@ -4,12 +4,13 @@
 #pragma once
 
 #ifndef VSNRAY_ZOOM_MANIPULATOR_H
-#define VSNRAY_ZOOM_MANIPULATOR_H
+#define VSNRAY_ZOOM_MANIPULATOR_H 1
 
 #include <visionaray/math/math.h>
 
-#include "camera_manipulator.h"
+#include "../input/keyboard.h"
 #include "../input/mouse.h"
+#include "camera_manipulator.h"
 
 
 namespace visionaray
@@ -22,7 +23,11 @@ class zoom_manipulator : public camera_manipulator
 {
 public:
 
-    zoom_manipulator(camera& cam, mouse::buttons buttons);
+    zoom_manipulator(
+            camera& cam,
+            mouse::buttons buttons,
+            keyboard::key_modifiers modifiers = keyboard::NoKey
+            );
    ~zoom_manipulator();
 
     void handle_mouse_down(mouse_event const& event);
@@ -32,10 +37,12 @@ public:
 private:
 
     mouse::buttons buttons_;
+    keyboard::key_modifiers modifiers_;
 
     bool dragging_;
 
     mouse::pos last_pos_;
+    keyboard::key_modifiers down_modifiers_;
 
 };
 

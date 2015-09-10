@@ -4,8 +4,9 @@
 #pragma once
 
 #ifndef VSNRAY_PAN_MANIPULATOR_H
-#define VSNRAY_PAN_MANIPULATOR_H
+#define VSNRAY_PAN_MANIPULATOR_H 1
 
+#include "../input/keyboard.h"
 #include "camera_manipulator.h"
 
 
@@ -19,7 +20,11 @@ class pan_manipulator : public camera_manipulator
 {
 public:
 
-    pan_manipulator(camera& cam, mouse::buttons buttons);
+    pan_manipulator(
+            camera& cam,
+            mouse::buttons buttons,
+            keyboard::key_modifiers modifiers = keyboard::NoKey
+            );
    ~pan_manipulator();
 
     void handle_mouse_down(mouse_event const& event);
@@ -29,10 +34,12 @@ public:
 private:
 
     mouse::buttons buttons_;
+    keyboard::key_modifiers modifiers_;
 
     bool dragging_;
 
     mouse::pos last_pos_;
+    keyboard::key_modifiers down_modifiers_;
 
 };
 

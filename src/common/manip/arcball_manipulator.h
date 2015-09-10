@@ -8,6 +8,7 @@
 
 #include <visionaray/math/math.h>
 
+#include "../input/keyboard.h"
 #include "../input/mouse.h"
 #include "arcball.h"
 #include "camera_manipulator.h"
@@ -23,7 +24,11 @@ class arcball_manipulator : public camera_manipulator
 {
 public:
 
-    arcball_manipulator(camera& cam, mouse::buttons buttons);
+    arcball_manipulator(
+            camera& cam,
+            mouse::buttons buttons,
+            keyboard::key_modifiers modifiers = keyboard::NoKey
+            );
    ~arcball_manipulator();
 
     void handle_mouse_down(mouse_event const& event);
@@ -33,6 +38,9 @@ public:
 private:
 
     mouse::buttons buttons_;
+    keyboard::key_modifiers modifiers_;
+
+    keyboard::key_modifiers down_modifiers_;
 
     bool dragging_;
 

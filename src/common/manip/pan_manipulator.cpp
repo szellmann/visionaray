@@ -9,9 +9,14 @@
 using namespace visionaray;
 
 
-pan_manipulator::pan_manipulator(camera& cam, mouse::buttons buttons)
+pan_manipulator::pan_manipulator(
+        camera& cam,
+        mouse::buttons buttons,
+        keyboard::key_modifiers modifiers
+        )
     : camera_manipulator(cam)
     , buttons_(buttons)
+    , modifiers_(modifiers)
     , dragging_(false)
 {
 }
@@ -32,6 +37,7 @@ void pan_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
 
         // TODO: do this in base?
         last_pos_ = event.get_pos();
+        down_modifiers_ = event.get_modifiers();
     }
 
     camera_manipulator::handle_mouse_down(event);
@@ -43,6 +49,7 @@ void pan_manipulator::handle_mouse_up(visionaray::mouse_event const& event)
 {
 
     dragging_ = false;
+    down_modifiers_ = keyboard::NoKey;
 
     camera_manipulator::handle_mouse_up(event);
 
@@ -52,7 +59,10 @@ void pan_manipulator::handle_mouse_up(visionaray::mouse_event const& event)
 void pan_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
 {
 
-    if (dragging_ && event.get_buttons() & buttons_)
+    bool buttons   = event.get_buttons() & buttons_;
+    bool modifiers = (modifiers_ == keyboard::NoKey && down_modifiers_ == keyboard::NoKey) || down_modifiers_ & modifiers_;
+
+    if (dragging_ && buttons && modifiers)
     {
 
         auto w  =  camera_.get_viewport().w;
