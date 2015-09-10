@@ -280,16 +280,17 @@ inline matrix<4, 4, T> transpose(matrix<4, 4, T> const& m)
 // Transforms
 //
 
+// make transforms
+
 template <typename T>
 MATH_FUNC
-inline matrix<4, 4, T> rotate(matrix<4, 4, T> const& m, vector<3, T> const& axis, T angle)
+inline matrix<4, 4, T> make_rotation(vector<3, T> const& axis, T angle)
 {
-
     auto v = normalize(axis);
     auto s = sin(angle);
     auto c = cos(angle);
 
-    auto r = matrix<4, 4, T>(
+    return matrix<4, 4, T>(
             v.x * v.x * (T(1.0) - c) + c,
             v.x * v.y * (T(1.0) - c) + s * v.z,
             v.x * v.z * (T(1.0) - c) - s * v.y,
@@ -307,35 +308,73 @@ inline matrix<4, 4, T> rotate(matrix<4, 4, T> const& m, vector<3, T> const& axis
             T(0.0),
             T(1.0)
             );
+}
 
-    return m * r;
+template <typename T>
+MATH_FUNC
+inline matrix<4, 4, T> make_scaling(vector<3, T> const& v)
+{
+    auto s = matrix<4, 4, T>::identity();
+    s(0, 0) = v.x;
+    s(1, 1) = v.y;
+    s(2, 2) = v.z;
+    return s;
+}
 
+template <typename T>
+MATH_FUNC
+inline matrix<4, 4, T> make_scaling(T x, T y, T z)
+{
+    return make_scaling(vector<3, T>(x, y, z));
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<4, 4, T> make_translation(vector<3, T> const& v)
+{
+    auto t = matrix<4, 4, T>::identity();
+    t(0, 3) = v.x;
+    t(1, 3) = v.y;
+    t(2, 3) = v.z;
+    return t;
+}
+
+
+// get transforms
+
+template <typename T>
+MATH_FUNC
+inline vector<3, T> get_scaling(matrix<4, 4, T> const& m)
+{
+    return vector<3, T>(
+            length(m.col0),
+            length(m.col1),
+            length(m.col2)
+            );
+}
+
+
+// convenience functions to apply transforms
+
+template <typename T>
+MATH_FUNC
+inline matrix<4, 4, T> rotate(matrix<4, 4, T> const& m, vector<3, T> const& axis, T angle)
+{
+    return m * make_rotation(axis, angle);
 }
 
 template <typename T>
 MATH_FUNC
 inline matrix<4, 4, T> scale(matrix<4, 4, T> const& m, vector<3, T> const& v)
 {
-
-    matrix<4, 4, T> s = matrix<4, 4, T>::identity();
-    s(0, 0) = v.x;
-    s(1, 1) = v.y;
-    s(2, 2) = v.z;
-    return m * s;
-
+    return m * make_scaling(v);
 }
 
 template <typename T>
 MATH_FUNC
 inline matrix<4, 4, T> translate(matrix<4, 4, T> const& m, vector<3, T> const& v)
 {
-
-    matrix<4, 4, T> t = matrix<4, 4, T>::identity();
-    t(0, 3) = v.x;
-    t(1, 3) = v.y;
-    t(2, 3) = v.z;
-    return m * t;
-
+    return m * make_translation(v);
 }
 
 } // MATH_NAMESPACE
