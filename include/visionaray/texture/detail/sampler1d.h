@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_TEXTURE_SAMPLER1D_H
-#define VSNRAY_TEXTURE_SAMPLER1D_H
+#define VSNRAY_TEXTURE_SAMPLER1D_H 1
 
 #include <visionaray/math/math.h>
 
@@ -67,33 +67,35 @@ inline ReturnT linear(
 }
 
 
-template <typename ReturnT, typename FloatT, typename TexelT>
-inline ReturnT cubic2(TexelT const* tex, FloatT coord, FloatT texsize)
+template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+inline ReturnT cubic2(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
+        TexelT const*                           tex,
+        FloatT                                  coord,
+        FloatT                                  texsize,
+        std::array<tex_address_mode, 1> const&  address_mode
+        )
 {
-
     bspline::w0_func<FloatT> w0;
     bspline::w1_func<FloatT> w1;
     bspline::w2_func<FloatT> w2;
     bspline::w3_func<FloatT> w3;
 
-    FloatT x = coord * texsize - FloatT(0.5);
-    FloatT floorx = floor( x );
-    FloatT fracx  = x - floor( x );
+    auto x = coord * texsize - FloatT(0.5);
+    auto floorx = floor(x);
+    auto fracx  = x - floor(x);
 
-    FloatT tmp0 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
-    FloatT h0   = ( floorx - FloatT(0.5) + tmp0 ) / texsize;
+    auto tmp0 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
+    auto h0   = ( floorx - FloatT(0.5) + tmp0 ) / texsize;
 
-    FloatT tmp1 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
-    FloatT h1   = ( floorx + FloatT(1.5) + tmp1 ) / texsize;
+    auto tmp1 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
+    auto h1   = ( floorx + FloatT(1.5) + tmp1 ) / texsize;
 
+    auto f_0  = InternalT( linear(ReturnT(), InternalT(), tex, h0, texsize, address_mode) );
+    auto f_1  = InternalT( linear(ReturnT(), InternalT(), tex, h1, texsize, address_mode) );
 
-    // In visionaray, the return type is a float4.
-    // TODO: what if precision(ReturnT) < precision(FloatT)?
-    ReturnT f_0 = linear<ReturnT>( tex, h0, texsize, Clamp /* TODO */ );
-    ReturnT f_1 = linear<ReturnT>( tex, h1, texsize, Clamp /* TODO */ );
-
-    return g0(fracx) * f_0 + g1(fracx) * f_1;
-
+    return ReturnT(g0(fracx) * f_0 + g1(fracx) * f_1);
 }
 
 
@@ -156,6 +158,16 @@ inline ReturnT tex1D_impl_choose_filter(
 
     case visionaray::Linear:
         return linear(
+                ReturnT(),
+                InternalT(),
+                tex,
+                coord,
+                texsize,
+                address_mode
+                );
+
+    case visionaray::BSpline:
+        return cubic2(
                 ReturnT(),
                 InternalT(),
                 tex,
