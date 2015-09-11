@@ -99,20 +99,41 @@ inline ReturnT cubic2(
 }
 
 
-template <typename ReturnT, typename W0, typename W1, typename W2, typename W3, typename FloatT, typename TexelT>
-inline ReturnT cubic(TexelT const* tex, FloatT coord, FloatT texsize, W0 w0, W1 w1, W2 w2, W3 w3)
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename FloatT,
+    typename TexelT,
+    typename W0,
+    typename W1,
+    typename W2,
+    typename W3
+    >
+inline ReturnT cubic(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
+        TexelT const*                           tex,
+        FloatT                                  coord,
+        FloatT                                  texsize,
+        std::array<tex_address_mode, 1> const&  address_mode,
+        W0                                      w0,
+        W1                                      w1,
+        W2                                      w2,
+        W3                                      w3
+        )
 {
+    coord = map_tex_coord(coord, address_mode);
 
-    FloatT x = coord * texsize - FloatT(0.5);
-    FloatT floorx = floor( x );
-    FloatT fracx = x - floor( x );
+    auto x = coord * texsize - FloatT(0.5);
+    auto floorx = floor(x);
+    auto fracx = x - floor(x);
 
     FloatT pos[4] =
     {
-        FloatT( floorx - 1 ),
-        FloatT( floorx ),
-        FloatT( floorx + 1 ),
-        FloatT( floorx + 2 )
+        floorx - 1,
+        floorx,
+        floorx + 1,
+        floorx + 2
     };
 
     for (size_t i = 0; i < 4; ++i)
@@ -120,9 +141,12 @@ inline ReturnT cubic(TexelT const* tex, FloatT coord, FloatT texsize, W0 w0, W1 
         pos[i] = clamp(pos[i], FloatT(0.0), texsize - FloatT(1.0));
     }
 
-#define TEX(x) (point(tex,x, ReturnT()))
-    return w0(fracx) * TEX(pos[0]) + w1(fracx) * TEX(pos[1]) + w2(fracx) * TEX(pos[2]) + w3(fracx) * TEX(pos[3]);
-#undef TEX
+    auto sample = [&](int i) -> InternalT
+    {
+        return InternalT( point(tex, pos[i], ReturnT()) );
+    };
+
+    return w0(fracx) * sample(0) + w1(fracx) * sample(1) + w2(fracx) * sample(2) + w3(fracx) * sample(3);
 }
 
 
@@ -174,6 +198,20 @@ inline ReturnT tex1D_impl_choose_filter(
                 coord,
                 texsize,
                 address_mode
+                );
+
+    case visionaray::CardinalSpline:
+        return cubic(
+                ReturnT(),
+                InternalT(),
+                tex,
+                coord,
+                texsize,
+                address_mode,
+                cspline::w0_func<FloatT>(),
+                cspline::w1_func<FloatT>(),
+                cspline::w2_func<FloatT>(),
+                cspline::w3_func<FloatT>()
                 );
 
     }
