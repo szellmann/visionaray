@@ -16,6 +16,7 @@ class arcball
 public:
 
     arcball();
+    explicit arcball(float r);
 
     vec3 project(int x, int y, recti const& viewport);
 

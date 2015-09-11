@@ -17,6 +17,14 @@ arcball::arcball()
 {
 }
 
+arcball::arcball(float r)
+    : radius(r)
+    , down_pos(0.0f)
+    , rotation(quat::identity())
+    , down_rotation(quat::identity())
+{
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Project x/y screen space position to ball coordinates
