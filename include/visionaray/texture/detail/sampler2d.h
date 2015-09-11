@@ -135,6 +135,71 @@ inline ReturnT cubic4(
 }
 
 
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename FloatT,
+    typename TexelT,
+    typename W0,
+    typename W1,
+    typename W2,
+    typename W3
+    >
+inline ReturnT cubic(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
+        TexelT const*                           tex,
+        vector<2, FloatT>                       coord,
+        vector<2, FloatT>                       texsize,
+        std::array<tex_address_mode, 2> const&  address_mode,
+        W0                                      w0,
+        W1                                      w1,
+        W2                                      w2,
+        W3                                      w3
+        )
+{
+    coord = map_tex_coord(coord, address_mode);
+
+    auto x = coord.x * texsize.x - FloatT(0.5);
+    auto floorx = floor(x);
+    auto fracx  = x - floor(x);
+
+    auto y = coord.y * texsize.y - FloatT(0.5);
+    auto floory = floor(y);
+    auto fracy  = y - floor(y);
+
+    vector<2, FloatT> pos[4] =
+    {
+        { floorx - 1, floory - 1 },
+        { floorx,     floory     },
+        { floorx + 1, floory + 1 },
+        { floorx + 2, floory + 2 }
+    };
+
+    for (size_t i = 0; i < 4; ++i)
+    {
+        pos[i].x = clamp(pos[i].x, FloatT(0.0), texsize.x - 1);
+        pos[i].y = clamp(pos[i].y, FloatT(0.0), texsize.y - 1);
+    }
+
+    auto sample = [&](int i, int j) -> InternalT
+    {
+        return InternalT( point(
+                tex,
+                index(pos[i].x, pos[j].y, texsize),
+                ReturnT()
+                ) );
+    };
+
+    auto f0 = w0(fracx) * sample(0, 0) + w1(fracx) * sample(1, 0) + w2(fracx) * sample(2, 0) + w3(fracx) * sample(3, 0);
+    auto f1 = w0(fracx) * sample(0, 1) + w1(fracx) * sample(1, 1) + w2(fracx) * sample(2, 1) + w3(fracx) * sample(3, 1);
+    auto f2 = w0(fracx) * sample(0, 2) + w1(fracx) * sample(1, 2) + w2(fracx) * sample(2, 2) + w3(fracx) * sample(3, 2);
+    auto f3 = w0(fracx) * sample(0, 3) + w1(fracx) * sample(1, 3) + w2(fracx) * sample(2, 3) + w3(fracx) * sample(3, 3);
+
+    return ReturnT(w0(fracy) * f0 + w1(fracy) * f1 + w2(fracy) * f2 + w3(fracy) * f3);
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // Dispatch function to choose among filtering algorithms
 //
@@ -183,6 +248,20 @@ inline ReturnT tex2D_impl_choose_filter(
                 coord,
                 texsize,
                 address_mode
+                );
+
+    case visionaray::CardinalSpline:
+        return cubic(
+                ReturnT(),
+                InternalT(),
+                tex,
+                coord,
+                texsize,
+                address_mode,
+                cspline::w0_func<FloatT>(),
+                cspline::w1_func<FloatT>(),
+                cspline::w2_func<FloatT>(),
+                cspline::w3_func<FloatT>()
                 );
 
     }
