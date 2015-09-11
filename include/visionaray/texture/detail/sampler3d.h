@@ -170,33 +170,50 @@ inline ReturnT cubic8(
 }
 
 
-template <typename ReturnT, typename W0, typename W1, typename W2, typename W3, typename FloatT, typename TexelT>
-inline ReturnT cubic(TexelT const* tex, vector<3, FloatT> coord, vector<3, FloatT> texsize, W0 w0, W1 w1, W2 w2, W3 w3)
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename FloatT,
+    typename TexelT,
+    typename W0,
+    typename W1,
+    typename W2,
+    typename W3
+    >
+inline ReturnT cubic(
+        ReturnT                                 /* */,
+        InternalT                               /* */,
+        TexelT const*                           tex,
+        vector<3, FloatT>                       coord,
+        vector<3, FloatT>                       texsize,
+        std::array<tex_address_mode, 3> const&  address_mode,
+        W0                                      w0,
+        W1                                      w1,
+        W2                                      w2,
+        W3                                      w3
+        )
 {
-
-    typedef vector<3, FloatT> float3;
+    coord = map_tex_coord(coord, address_mode);
 
     auto x = coord.x * texsize.x - FloatT(0.5);
-    auto floorx = floor( x );
-    auto fracx  = x - floor( x );
+    auto floorx = floor(x);
+    auto fracx  = x - floor(x);
 
     auto y = coord.y * texsize.y - FloatT(0.5);
-    auto floory = floor( y );
-    auto fracy  = y - floor( y );
+    auto floory = floor(y);
+    auto fracy  = y - floor(y);
 
     auto z = coord.z * texsize.z - FloatT(0.5);
-    auto floorz = floor( z );
-    auto fracz  = z - floor( z );
+    auto floorz = floor(z);
+    auto fracz  = z - floor(z);
 
-    float3 pos[4] =
+    vector<3, FloatT> pos[4] =
     {
-        float3( floorx - 1, floory - 1, floorz - 1 ),
-        float3( floorx,     floory,     floorz ),
-        float3( floorx + 1, floory + 1, floorz + 1 ),
-        float3( floorx + 2, floory + 2, floorz + 2 )
+        { floorx - 1, floory - 1, floorz - 1 },
+        { floorx,     floory,     floorz     },
+        { floorx + 1, floory + 1, floorz + 1 },
+        { floorx + 2, floory + 2, floorz + 2 }
     };
-
-    using visionaray::clamp;
 
     for (size_t i = 0; i < 4; ++i)
     {
@@ -205,35 +222,41 @@ inline ReturnT cubic(TexelT const* tex, vector<3, FloatT> coord, vector<3, Float
         pos[i].z = clamp(pos[i].z, FloatT(0.0), texsize.z - 1);
     }
 
-#define TEX(x,y,z) (point(tex, index(x,y,z,texsize), ReturnT()))
-    auto f00 = w0(fracx) * TEX(pos[0].x, pos[0].y, pos[0].z) + w1(fracx) * TEX(pos[1].x, pos[0].y, pos[0].z) + w2(fracx) * TEX(pos[2].x, pos[0].y, pos[0].z) + w3(fracx) * TEX(pos[3].x, pos[0].y, pos[0].z);
-    auto f01 = w0(fracx) * TEX(pos[0].x, pos[1].y, pos[0].z) + w1(fracx) * TEX(pos[1].x, pos[1].y, pos[0].z) + w2(fracx) * TEX(pos[2].x, pos[1].y, pos[0].z) + w3(fracx) * TEX(pos[3].x, pos[1].y, pos[0].z);
-    auto f02 = w0(fracx) * TEX(pos[0].x, pos[2].y, pos[0].z) + w1(fracx) * TEX(pos[1].x, pos[2].y, pos[0].z) + w2(fracx) * TEX(pos[2].x, pos[2].y, pos[0].z) + w3(fracx) * TEX(pos[3].x, pos[2].y, pos[0].z);
-    auto f03 = w0(fracx) * TEX(pos[0].x, pos[3].y, pos[0].z) + w1(fracx) * TEX(pos[1].x, pos[3].y, pos[0].z) + w2(fracx) * TEX(pos[2].x, pos[3].y, pos[0].z) + w3(fracx) * TEX(pos[3].x, pos[3].y, pos[0].z);
+    auto sample = [&](int i, int j, int k) -> InternalT
+    {
+        return InternalT( point(
+                tex,
+                index(pos[i].x, pos[j].y, pos[k].z, texsize),
+                ReturnT()
+                ) );
+    };
 
-    auto f04 = w0(fracx) * TEX(pos[0].x, pos[0].y, pos[1].z) + w1(fracx) * TEX(pos[1].x, pos[0].y, pos[1].z) + w2(fracx) * TEX(pos[2].x, pos[0].y, pos[1].z) + w3(fracx) * TEX(pos[3].x, pos[0].y, pos[1].z);
-    auto f05 = w0(fracx) * TEX(pos[0].x, pos[1].y, pos[1].z) + w1(fracx) * TEX(pos[1].x, pos[1].y, pos[1].z) + w2(fracx) * TEX(pos[2].x, pos[1].y, pos[1].z) + w3(fracx) * TEX(pos[3].x, pos[1].y, pos[1].z);
-    auto f06 = w0(fracx) * TEX(pos[0].x, pos[2].y, pos[1].z) + w1(fracx) * TEX(pos[1].x, pos[2].y, pos[1].z) + w2(fracx) * TEX(pos[2].x, pos[2].y, pos[1].z) + w3(fracx) * TEX(pos[3].x, pos[2].y, pos[1].z);
-    auto f07 = w0(fracx) * TEX(pos[0].x, pos[3].y, pos[1].z) + w1(fracx) * TEX(pos[1].x, pos[3].y, pos[1].z) + w2(fracx) * TEX(pos[2].x, pos[3].y, pos[1].z) + w3(fracx) * TEX(pos[3].x, pos[3].y, pos[1].z);
+    auto f00 = w0(fracx) * sample(0, 0, 0) + w1(fracx) * sample(1, 0, 0) + w2(fracx) * sample(2, 0, 0) + w3(fracx) * sample(3, 0, 0);
+    auto f01 = w0(fracx) * sample(0, 1, 0) + w1(fracx) * sample(1, 1, 0) + w2(fracx) * sample(2, 1, 0) + w3(fracx) * sample(3, 1, 0);
+    auto f02 = w0(fracx) * sample(0, 2, 0) + w1(fracx) * sample(1, 2, 0) + w2(fracx) * sample(2, 2, 0) + w3(fracx) * sample(3, 2, 0);
+    auto f03 = w0(fracx) * sample(0, 3, 0) + w1(fracx) * sample(1, 3, 0) + w2(fracx) * sample(2, 3, 0) + w3(fracx) * sample(3, 3, 0);
 
-    auto f08 = w0(fracx) * TEX(pos[0].x, pos[0].y, pos[2].z) + w1(fracx) * TEX(pos[1].x, pos[0].y, pos[2].z) + w2(fracx) * TEX(pos[2].x, pos[0].y, pos[2].z) + w3(fracx) * TEX(pos[3].x, pos[0].y, pos[2].z);
-    auto f09 = w0(fracx) * TEX(pos[0].x, pos[1].y, pos[2].z) + w1(fracx) * TEX(pos[1].x, pos[1].y, pos[2].z) + w2(fracx) * TEX(pos[2].x, pos[1].y, pos[2].z) + w3(fracx) * TEX(pos[3].x, pos[1].y, pos[2].z);
-    auto f10 = w0(fracx) * TEX(pos[0].x, pos[2].y, pos[2].z) + w1(fracx) * TEX(pos[1].x, pos[2].y, pos[2].z) + w2(fracx) * TEX(pos[2].x, pos[2].y, pos[2].z) + w3(fracx) * TEX(pos[3].x, pos[2].y, pos[2].z);
-    auto f11 = w0(fracx) * TEX(pos[0].x, pos[3].y, pos[2].z) + w1(fracx) * TEX(pos[1].x, pos[3].y, pos[2].z) + w2(fracx) * TEX(pos[2].x, pos[3].y, pos[2].z) + w3(fracx) * TEX(pos[3].x, pos[3].y, pos[2].z);
+    auto f04 = w0(fracx) * sample(0, 0, 1) + w1(fracx) * sample(1, 0, 1) + w2(fracx) * sample(2, 0, 1) + w3(fracx) * sample(3, 0, 1);
+    auto f05 = w0(fracx) * sample(0, 1, 1) + w1(fracx) * sample(1, 1, 1) + w2(fracx) * sample(2, 1, 1) + w3(fracx) * sample(3, 1, 1);
+    auto f06 = w0(fracx) * sample(0, 2, 1) + w1(fracx) * sample(1, 2, 1) + w2(fracx) * sample(2, 2, 1) + w3(fracx) * sample(3, 2, 1);
+    auto f07 = w0(fracx) * sample(0, 3, 1) + w1(fracx) * sample(1, 3, 1) + w2(fracx) * sample(2, 3, 1) + w3(fracx) * sample(3, 3, 1);
 
-    auto f12 = w0(fracx) * TEX(pos[0].x, pos[0].y, pos[3].z) + w1(fracx) * TEX(pos[1].x, pos[0].y, pos[3].z) + w2(fracx) * TEX(pos[2].x, pos[0].y, pos[3].z) + w3(fracx) * TEX(pos[3].x, pos[0].y, pos[3].z);
-    auto f13 = w0(fracx) * TEX(pos[0].x, pos[1].y, pos[3].z) + w1(fracx) * TEX(pos[1].x, pos[1].y, pos[3].z) + w2(fracx) * TEX(pos[2].x, pos[1].y, pos[3].z) + w3(fracx) * TEX(pos[3].x, pos[1].y, pos[3].z);
-    auto f14 = w0(fracx) * TEX(pos[0].x, pos[2].y, pos[3].z) + w1(fracx) * TEX(pos[1].x, pos[2].y, pos[3].z) + w2(fracx) * TEX(pos[2].x, pos[2].y, pos[3].z) + w3(fracx) * TEX(pos[3].x, pos[2].y, pos[3].z);
-    auto f15 = w0(fracx) * TEX(pos[0].x, pos[3].y, pos[3].z) + w1(fracx) * TEX(pos[1].x, pos[3].y, pos[3].z) + w2(fracx) * TEX(pos[2].x, pos[3].y, pos[3].z) + w3(fracx) * TEX(pos[3].x, pos[3].y, pos[3].z);
-#undef TEX
+    auto f08 = w0(fracx) * sample(0, 0, 2) + w1(fracx) * sample(1, 0, 2) + w2(fracx) * sample(2, 0, 2) + w3(fracx) * sample(3, 0, 2);
+    auto f09 = w0(fracx) * sample(0, 1, 2) + w1(fracx) * sample(1, 1, 2) + w2(fracx) * sample(2, 1, 2) + w3(fracx) * sample(3, 1, 2);
+    auto f10 = w0(fracx) * sample(0, 2, 2) + w1(fracx) * sample(1, 2, 2) + w2(fracx) * sample(2, 2, 2) + w3(fracx) * sample(3, 2, 2);
+    auto f11 = w0(fracx) * sample(0, 3, 2) + w1(fracx) * sample(1, 3, 2) + w2(fracx) * sample(2, 3, 2) + w3(fracx) * sample(3, 3, 2);
 
-    auto f0 = w0(fracy) * f00 + w1(fracy) * f01 + w2(fracy) * f02 + w3(fracy) * f03;
-    auto f1 = w0(fracy) * f04 + w1(fracy) * f05 + w2(fracy) * f06 + w3(fracy) * f07;
-    auto f2 = w0(fracy) * f08 + w1(fracy) * f09 + w2(fracy) * f10 + w3(fracy) * f11;
-    auto f3 = w0(fracy) * f12 + w1(fracy) * f13 + w2(fracy) * f14 + w3(fracy) * f15;
+    auto f12 = w0(fracx) * sample(0, 0, 3) + w1(fracx) * sample(1, 0, 3) + w2(fracx) * sample(2, 0, 3) + w3(fracx) * sample(3, 0, 3);
+    auto f13 = w0(fracx) * sample(0, 1, 3) + w1(fracx) * sample(1, 1, 3) + w2(fracx) * sample(2, 1, 3) + w3(fracx) * sample(3, 1, 3);
+    auto f14 = w0(fracx) * sample(0, 2, 3) + w1(fracx) * sample(1, 2, 3) + w2(fracx) * sample(2, 2, 3) + w3(fracx) * sample(3, 2, 3);
+    auto f15 = w0(fracx) * sample(0, 3, 3) + w1(fracx) * sample(1, 3, 3) + w2(fracx) * sample(2, 3, 3) + w3(fracx) * sample(3, 3, 3);
 
-    return w0(fracz) * f0 + w1(fracz) * f1 + w2(fracz) * f2 + w3(fracz) * f3;
+    auto f0  = w0(fracy) * f00 + w1(fracy) * f01 + w2(fracy) * f02 + w3(fracy) * f03;
+    auto f1  = w0(fracy) * f04 + w1(fracy) * f05 + w2(fracy) * f06 + w3(fracy) * f07;
+    auto f2  = w0(fracy) * f08 + w1(fracy) * f09 + w2(fracy) * f10 + w3(fracy) * f11;
+    auto f3  = w0(fracy) * f12 + w1(fracy) * f13 + w2(fracy) * f14 + w3(fracy) * f15;
 
+    return ReturnT(w0(fracz) * f0 + w1(fracz) * f1 + w2(fracz) * f2 + w3(fracz) * f3);
 }
 
 
@@ -286,6 +309,21 @@ inline ReturnT tex3D_impl_choose_filter(
                 texsize,
                 address_mode
                 );
+
+    case visionaray::CardinalSpline:
+        return cubic(
+                ReturnT(),
+                InternalT(),
+                tex,
+                coord,
+                texsize,
+                address_mode,
+                cspline::w0_func<FloatT>(),
+                cspline::w1_func<FloatT>(),
+                cspline::w2_func<FloatT>(),
+                cspline::w3_func<FloatT>()
+                );
+
     }
 }
 
