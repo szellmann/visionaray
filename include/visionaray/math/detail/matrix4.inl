@@ -327,6 +327,13 @@ inline matrix<4, 4, T> make_translation(vector<3, T> const& v)
     return t;
 }
 
+template <typename T>
+MATH_FUNC
+inline matrix<4, 4, T> make_translation(T x, T y, T z)
+{
+    return make_translation(vector<3, T>(x, y, z));
+}
+
 
 // get transforms
 
