@@ -221,6 +221,8 @@ int main(int argc, char** argv)
 
     rend->add_manipulator( std::make_shared<arcball_manipulator>(rend->cam, mouse::Left) );
     rend->add_manipulator( std::make_shared<pan_manipulator>(rend->cam, mouse::Middle) );
+    // Additional "Alt + LMB" pan manipulator for setups w/o middle mouse button
+    rend->add_manipulator( std::make_shared<pan_manipulator>(rend->cam, mouse::Left, keyboard::Alt) );
     rend->add_manipulator( std::make_shared<zoom_manipulator>(rend->cam, mouse::Right) );
 
     rend->event_loop();
