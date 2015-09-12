@@ -38,7 +38,11 @@ arcball_manipulator::~arcball_manipulator()
 void arcball_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
 {
 
-    if (!dragging_)
+    bool buttons   = event.get_buttons() & buttons_;
+    bool modifiers = (modifiers_ == keyboard::NoKey && event.get_modifiers() == keyboard::NoKey)
+                   || event.get_modifiers()  & modifiers_;
+
+    if (!dragging_ && buttons && modifiers)
     {
         dragging_ = true;
         ball_.down_pos = ball_.project(
@@ -71,7 +75,8 @@ void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event
 {
 
     bool buttons   = event.get_buttons() & buttons_;
-    bool modifiers = (modifiers_ == keyboard::NoKey && down_modifiers_ == keyboard::NoKey) || down_modifiers_ & modifiers_;
+    bool modifiers = (modifiers_ == keyboard::NoKey && down_modifiers_ == keyboard::NoKey)
+                   || down_modifiers_ & modifiers_;
 
     if (dragging_ && buttons && modifiers)
     {

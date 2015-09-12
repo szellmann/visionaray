@@ -30,7 +30,11 @@ pan_manipulator::~pan_manipulator()
 void pan_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
 {
 
-    if (!dragging_)
+    bool buttons   = event.get_buttons() & buttons_;
+    bool modifiers = (modifiers_ == keyboard::NoKey && event.get_modifiers() == keyboard::NoKey)
+                   || event.get_modifiers()  & modifiers_;
+
+    if (!dragging_ && buttons && modifiers)
     {
 
         dragging_ = true;
