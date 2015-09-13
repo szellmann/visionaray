@@ -32,7 +32,7 @@ public:
 
     template <typename U>
     VSNRAY_FUNC
-    spectrum<U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
         VSNRAY_UNUSED(n);
         VSNRAY_UNUSED(wi);
@@ -83,7 +83,7 @@ public:
 
     template <typename U>
     VSNRAY_FUNC
-    spectrum<U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
         auto r = reflect(wo, n);
         auto rdotl = max( U(0.0), dot(r, wi) );
@@ -113,7 +113,7 @@ public:
 
     template <typename U>
     VSNRAY_FUNC
-    spectrum<U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
         auto h = normalize(wo + wi);
         auto hdotn = max( U(0.0), dot(h, n) );
@@ -123,7 +123,7 @@ public:
 
     template <typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler) const
+    spectrum<U> sample_f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler) const
     {
         auto u1 = sampler.next();
         auto u2 = sampler.next();
@@ -172,7 +172,7 @@ public:
 
     template <typename U>
     VSNRAY_FUNC
-    spectrum<U> f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
         VSNRAY_UNUSED(n);
         VSNRAY_UNUSED(wi);
@@ -184,7 +184,7 @@ public:
     template <typename U, typename Sampler>
     VSNRAY_FUNC
     spectrum<U> sample_f(
-            vector<3, T> const& n,
+            vector<3, U> const& n,
             vector<3, U> const& wo,
             vector<3, U>& wi,
             U& pdf,
