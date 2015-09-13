@@ -63,7 +63,6 @@ struct renderer : viewer_type
         : viewer_type(512, 512, "Visionaray Volume Rendering Example")
         , bbox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f })
         , host_sched(8)
-        , down_button(mouse::NoButton)
         , volume({2, 2, 2})
         , transfunc({4})
     {
@@ -81,11 +80,6 @@ struct renderer : viewer_type
     manipulators                                manips;
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
     tiled_sched<host_ray_type>                  host_sched;
-
-    mouse::button down_button;
-    mouse::pos motion_pos;
-    mouse::pos down_pos;
-    mouse::pos up_pos;
 
 
     // texture references
