@@ -182,7 +182,7 @@ inline float4 convert_to_float(int4 const& a)
 
 inline int4 convert_to_int(float4 const& a)
 {
-    return _mm_cvtps_epi32(a);
+    return _mm_cvttps_epi32(a);
 }
 
 
