@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_SIMD_SSE_H
-#define VSNRAY_SIMD_SSE_H
+#define VSNRAY_SIMD_SSE_H 1
 
 #include <visionaray/detail/macros.h>
 
@@ -156,6 +156,10 @@ public:
 };
 
 
+//-------------------------------------------------------------------------------------------------
+// Bitwise cast
+//
+
 inline float4 reinterpret_as_float(int4 const& a)
 {
     return _mm_castsi128_ps(a);
@@ -165,6 +169,26 @@ inline int4 reinterpret_as_int(float4 const& a)
 {
     return _mm_castps_si128(a);
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Static cast
+//
+
+inline float4 convert_to_float(int4 const& a)
+{
+    return _mm_cvtepi32_ps(a);
+}
+
+inline int4 convert_to_int(float4 const& a)
+{
+    return _mm_cvtps_epi32(a);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// select intrinsic
+//
 
 VSNRAY_FORCE_INLINE float4 select(mask4 const& m, float4 const& a, float4 const& b)
 {
@@ -760,7 +784,6 @@ VSNRAY_FORCE_INLINE float4 floor(float4 const& v)
     return r;
 #endif
 }
-
 
 } // simd
 } // MATH_NAMESPACE

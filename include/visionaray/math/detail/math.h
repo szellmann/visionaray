@@ -42,6 +42,23 @@ inline T max(T const& x, T const& y)
 
 
 //-------------------------------------------------------------------------------------------------
+// Convert functions, more useful when used with SIMD types
+//
+
+MATH_FUNC
+inline float convert_to_float(int a)
+{
+    return static_cast<float>(a);
+}
+
+MATH_FUNC
+inline int convert_to_int(float a)
+{
+    return static_cast<int>(a);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Extended versions of min/max
 //
 

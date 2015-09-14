@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_MATH_SIMD_AVX_H
-#define VSNRAY_MATH_SIMD_AVH_H
+#define VSNRAY_MATH_SIMD_AVH_H 1
 
 #include <visionaray/detail/macros.h>
 
@@ -174,6 +174,10 @@ public:
 };
 
 
+//-------------------------------------------------------------------------------------------------
+// Bitwise cast
+//
+
 inline float8 reinterpret_as_float(int8 const& a)
 {
     return _mm256_castsi256_ps(a);
@@ -183,6 +187,18 @@ inline int8 reinterpret_as_int(float8 const& a)
 {
     return _mm256_castps_si256(a);
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Static cast
+//
+
+// TODO
+
+
+//-------------------------------------------------------------------------------------------------
+// select intrinsic
+//
 
 VSNRAY_FORCE_INLINE float8 select(mask8 const& m, float8 const& a, float8 const& b)
 {

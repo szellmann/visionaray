@@ -18,6 +18,10 @@ namespace visionaray
 namespace detail
 {
 
+//-------------------------------------------------------------------------------------------------
+// Remap tex coord based on address mode
+//
+
 template <typename T>
 T map_tex_coord(T const& coord, tex_address_mode mode)
 {
@@ -69,7 +73,7 @@ inline RT point(T const* tex, ptrdiff_t idx, RT = RT())
 // SIMD: if multi-channel texture, assume AoS
 
 template <typename T>
-inline simd::float4 point(T const* tex, simd::float4 idx, simd::float4 /* result type */)
+inline simd::float4 point(T const* tex, simd::int4 idx, simd::float4 /* result type */)
 {
 
     VSNRAY_ALIGN(16) int indices[4];
@@ -86,7 +90,7 @@ inline simd::float4 point(T const* tex, simd::float4 idx, simd::float4 /* result
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 template <typename T>
-inline simd::float8 point(T const* tex, simd::float8 idx, simd::float8 /* result type */)
+inline simd::float8 point(T const* tex, simd::int8 idx, simd::float8 /* result type */)
 {
     VSNRAY_ALIGN(32) int indices[8];
     store(&indices[0], idx);
@@ -106,7 +110,7 @@ inline simd::float8 point(T const* tex, simd::float8 idx, simd::float8 /* result
 
 inline vector<3, simd::float4> point(
         vector<3, unorm<8>> const*  tex,
-        simd::float4                idx,
+        simd::int4                  idx,
         vector<3, simd::float4>     /* result type */
         )
 {
@@ -121,7 +125,7 @@ inline vector<3, simd::float4> point(
 
 inline vector<4, simd::float4> point(
         vector<4, float> const*     tex,
-        simd::float4                idx,
+        simd::int4                  idx,
         vector<4, simd::float4>     /* result type */
         )
 {
@@ -152,7 +156,7 @@ inline vector<4, simd::float4> point(
 
 inline vector<4, simd::float8> point(
         vector<4, float> const*     tex,
-        simd::float8                idx,
+        simd::int8                  idx,
         vector<4, simd::float8>     /* result type */
         )
 {
@@ -178,11 +182,11 @@ inline vector<4, simd::float8> point(
 
 inline simd::float4 point(
         simd::float4 const* tex,
-        float               coord,
+        int                 coord,
         simd::float4        /* result type */
         )
 {
-    return tex[static_cast<int>(coord)];
+    return tex[coord];
 }
 
 

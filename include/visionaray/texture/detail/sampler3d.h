@@ -18,8 +18,8 @@ namespace detail
 {
 
 
-template <typename T>
-inline T index(T x, T y, T z, vector<3, T> texsize)
+template <typename T, typename U>
+inline T index(T x, T y, T z, vector<3, U> texsize)
 {
     return z * texsize[0] * texsize[1] + y * texsize[0] + x;
 }
@@ -47,7 +47,7 @@ inline ReturnT nearest(
     lo[1] = clamp(lo[1], FloatT(0.0f), texsize[1] - 1);
     lo[2] = clamp(lo[2], FloatT(0.0f), texsize[2] - 1);
 
-    FloatT idx = index(lo[0], lo[1], lo[2], texsize);
+    auto idx = index(convert_to_int(lo[0]), convert_to_int(lo[1]), convert_to_int(lo[2]), texsize);
     return point(tex, idx, ReturnT());
 }
 
@@ -73,17 +73,16 @@ inline ReturnT linear(
     vector<3, FloatT> lo( floor(texcoordf[0]), floor(texcoordf[1]), floor(texcoordf[2]) );
     vector<3, FloatT> hi( ceil(texcoordf[0]),  ceil(texcoordf[1]),  ceil(texcoordf[2]) );
 
-
     InternalT samples[8] =
     {
-        InternalT( point(tex, index( lo.x, lo.y, lo.z, texsize ), ReturnT()) ),
-        InternalT( point(tex, index( hi.x, lo.y, lo.z, texsize ), ReturnT()) ),
-        InternalT( point(tex, index( lo.x, hi.y, lo.z, texsize ), ReturnT()) ),
-        InternalT( point(tex, index( hi.x, hi.y, lo.z, texsize ), ReturnT()) ),
-        InternalT( point(tex, index( lo.x, lo.y, hi.z, texsize ), ReturnT()) ),
-        InternalT( point(tex, index( hi.x, lo.y, hi.z, texsize ), ReturnT()) ),
-        InternalT( point(tex, index( lo.x, hi.y, hi.z, texsize ), ReturnT()) ),
-        InternalT( point(tex, index( hi.x, hi.y, hi.z, texsize ), ReturnT()) )
+        InternalT( point(tex, index( convert_to_int(lo.x), convert_to_int(lo.y), convert_to_int(lo.z), texsize ), ReturnT()) ),
+        InternalT( point(tex, index( convert_to_int(hi.x), convert_to_int(lo.y), convert_to_int(lo.z), texsize ), ReturnT()) ),
+        InternalT( point(tex, index( convert_to_int(lo.x), convert_to_int(hi.y), convert_to_int(lo.z), texsize ), ReturnT()) ),
+        InternalT( point(tex, index( convert_to_int(hi.x), convert_to_int(hi.y), convert_to_int(lo.z), texsize ), ReturnT()) ),
+        InternalT( point(tex, index( convert_to_int(lo.x), convert_to_int(lo.y), convert_to_int(hi.z), texsize ), ReturnT()) ),
+        InternalT( point(tex, index( convert_to_int(hi.x), convert_to_int(lo.y), convert_to_int(hi.z), texsize ), ReturnT()) ),
+        InternalT( point(tex, index( convert_to_int(lo.x), convert_to_int(hi.y), convert_to_int(hi.z), texsize ), ReturnT()) ),
+        InternalT( point(tex, index( convert_to_int(hi.x), convert_to_int(hi.y), convert_to_int(hi.z), texsize ), ReturnT()) )
     };
 
 
@@ -226,7 +225,7 @@ inline ReturnT cubic(
     {
         return InternalT( point(
                 tex,
-                index(pos[i].x, pos[j].y, pos[k].z, texsize),
+                index(convert_to_int(pos[i].x), convert_to_int(pos[j].y), convert_to_int(pos[k].z), texsize),
                 ReturnT()
                 ) );
     };
