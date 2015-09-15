@@ -116,23 +116,5 @@ VSNRAY_FORCE_INLINE mask8 operator^(mask8 const& a, mask8 const& b)
     return _mm256_xor_ps(a.f, b.f);
 }
 
-VSNRAY_FORCE_INLINE mask8& operator&=(mask8& a, mask8 const& b)
-{
-    a = a & b;
-    return a;
-}
-
-VSNRAY_FORCE_INLINE mask8& operator|=(mask8& a, mask8 const& b)
-{
-    a = a | b;
-    return a;
-}
-
-VSNRAY_FORCE_INLINE mask8& operator^=(mask8& a, mask8 const& b)
-{
-    a = a ^ b;
-    return a;
-}
-
 } // simd
 } // MATH_NAMESPACE

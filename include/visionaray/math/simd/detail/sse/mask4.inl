@@ -103,23 +103,5 @@ VSNRAY_FORCE_INLINE mask4 operator^(mask4 const& a, mask4 const& b)
     return _mm_xor_si128(a.i, b.i);
 }
 
-VSNRAY_FORCE_INLINE mask4& operator&=(mask4& a, mask4 const& b)
-{
-    a = a & b;
-    return a;
-}
-
-VSNRAY_FORCE_INLINE mask4& operator|=(mask4& a, mask4 const& b)
-{
-    a = a | b;
-    return a;
-}
-
-VSNRAY_FORCE_INLINE mask4& operator^=(mask4& a, mask4 const& b)
-{
-    a = a ^ b;
-    return a;
-}
-
 } // simd
 } // MATH_NAMESPACE

@@ -158,54 +158,6 @@ VSNRAY_FORCE_INLINE int4 operator*(int4 const& u, int4 const& v)
 #endif
 }
 
-VSNRAY_FORCE_INLINE int4& operator+=(int4& u, int4 const& v)
-{
-    u = u + v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int4& operator-=(int4& u, int4 const& v)
-{
-    u = u - v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int4& operator*=(int4& u, int4 const& v)
-{
-    u = u * v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int4& operator&=(int4& u, int4 const& v)
-{
-    u = u & v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int4& operator|=(int4& u, int4 const& v)
-{
-    u = u | v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int4& operator^=(int4& u, int4 const& v)
-{
-    u = u ^ v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int4& operator<<=(int4& a, int count)
-{
-    a << count;
-    return a;
-}
-
-VSNRAY_FORCE_INLINE int4& operator>>=(int4& a, int count)
-{
-    a >> count;
-    return a;
-}
-
 VSNRAY_FORCE_INLINE mask4 operator<(int4 const& u, int4 const& v)
 {
     return _mm_cmplt_epi32(u, v);

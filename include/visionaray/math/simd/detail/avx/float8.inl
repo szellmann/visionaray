@@ -141,48 +141,6 @@ VSNRAY_FORCE_INLINE float8 operator^(float8 const& u, float8 const& v)
     return _mm256_xor_ps(u, v);
 }
 
-VSNRAY_FORCE_INLINE float8& operator+=(float8& u, float8 const& v)
-{
-    u = u + v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE float8& operator-=(float8& u, float8 const& v)
-{
-    u = u - v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE float8& operator*=(float8& u, float8 const& v)
-{
-    u = u * v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE float8& operator/=(float8& u, float8 const& v)
-{
-    u = u / v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE float8& operator&=(float8& u, float8 const& v)
-{
-    u = u & v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE float8& operator|=(float8& u, float8 const& v)
-{
-    u = u | v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE float8& operator^=(float8& u, float8 const& v)
-{
-    u = u ^ v;
-    return u;
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // Comparisons

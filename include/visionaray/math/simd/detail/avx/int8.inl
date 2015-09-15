@@ -178,60 +178,6 @@ VSNRAY_FORCE_INLINE int8 operator>>(int8 const& a, int count)
 #endif
 }
 
-VSNRAY_FORCE_INLINE int8& operator+=(int8& u, int8 const& v)
-{
-    u = u + v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int8& operator-=(int8& u, int8 const& v)
-{
-    u = u - v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int8& operator*=(int8& u, int8 const& v)
-{
-    u = u * v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int8& operator/=(int8& u, int8 const& v)
-{
-    u = u / v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int8& operator&=(int8& u, int8 const& v)
-{
-    u = u & v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int8& operator|=(int8& u, int8 const& v)
-{
-    u = u | v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int8& operator^=(int8& u, int8 const& v)
-{
-    u = u ^ v;
-    return u;
-}
-
-VSNRAY_FORCE_INLINE int8& operator<<=(int8& a, int count)
-{
-    a = a << count;
-    return a;
-}
-
-VSNRAY_FORCE_INLINE int8& operator>>=(int8& a, int count)
-{
-    a = a >> count;
-    return a;
-}
-
 VSNRAY_FORCE_INLINE mask8 operator<(int8 const& u, int8 const& v)
 {
     return _mm256_cmp_ps(float8(u), float8(v), _CMP_LT_OQ);
