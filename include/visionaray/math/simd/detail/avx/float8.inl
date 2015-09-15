@@ -64,7 +64,10 @@ inline int8 reinterpret_as_int(float8 const& a)
 // Static cast
 //
 
-// TODO
+inline int8 convert_to_int(float8 const& a)
+{
+    return _mm256_cvttps_epi32(a);
+}
 
 
 //-------------------------------------------------------------------------------------------------

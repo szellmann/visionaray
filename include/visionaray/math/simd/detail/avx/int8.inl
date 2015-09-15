@@ -69,7 +69,10 @@ inline float8 reinterpret_as_float(int8 const& a)
 // Static cast
 //
 
-// TODO
+inline float8 convert_to_float(int8 const& a)
+{
+    return _mm256_cvtepi32_ps(a);
+}
 
 
 //-------------------------------------------------------------------------------------------------
