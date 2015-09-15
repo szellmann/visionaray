@@ -94,6 +94,12 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/vector2.inl
     ${HEADER_DIR}/math/detail/vector3.inl
     ${HEADER_DIR}/math/detail/vector4.inl
+    ${HEADER_DIR}/math/simd/detail/avx/int8.inl
+    ${HEADER_DIR}/math/simd/detail/avx/float8.inl
+    ${HEADER_DIR}/math/simd/detail/avx/mask8.inl
+    ${HEADER_DIR}/math/simd/detail/sse/int4.inl
+    ${HEADER_DIR}/math/simd/detail/sse/float4.inl
+    ${HEADER_DIR}/math/simd/detail/sse/mask4.inl
     ${HEADER_DIR}/math/simd/avx.h
     ${HEADER_DIR}/math/simd/forward.h
     ${HEADER_DIR}/math/simd/intrinsics.h
