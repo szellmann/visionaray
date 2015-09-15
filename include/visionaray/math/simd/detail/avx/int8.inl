@@ -137,6 +137,11 @@ VSNRAY_FORCE_INLINE int8 operator/(int8 const& u, int8 const& v)
 #endif
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Bitwise operators
+//
+
 VSNRAY_FORCE_INLINE int8 operator&(int8 const& u, int8 const& v)
 {
     return reinterpret_as_int(reinterpret_as_float(u) & reinterpret_as_float(v));
@@ -177,6 +182,11 @@ VSNRAY_FORCE_INLINE int8 operator>>(int8 const& a, int count)
     return _mm256_insertf128_si256(_mm256_castsi128_si256(lo), hi, 1);
 #endif
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Comparisons
+//
 
 VSNRAY_FORCE_INLINE mask8 operator<(int8 const& u, int8 const& v)
 {

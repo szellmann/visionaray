@@ -126,6 +126,11 @@ VSNRAY_FORCE_INLINE float8 operator/(float8 const& u, float8 const& v)
     return _mm256_div_ps(u, v);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Bitwise operators
+//
+
 VSNRAY_FORCE_INLINE float8 operator&(float8 const& u, float8 const& v)
 {
     return _mm256_and_ps(u, v);

@@ -116,6 +116,28 @@ VSNRAY_FORCE_INLINE int4 operator-(int4 const& u, int4 const& v)
     return _mm_sub_epi32(u, v);
 }
 
+VSNRAY_FORCE_INLINE int4 operator*(int4 const& u, int4 const& v)
+{
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
+    return _mm_mullo_epi32(u, v);
+#else
+    __m128i t0 = shuffle<1,0,3,0>(u);             // a1  ... a3  ...
+    __m128i t1 = shuffle<1,0,3,0>(v);             // b1  ... b3  ...
+    __m128i t2 = _mm_mul_epu32(u, v);             // ab0 ... ab2 ...
+    __m128i t3 = _mm_mul_epu32(t0, t1);           // ab1 ... ab3 ...
+    __m128i t4 = _mm_unpacklo_epi32(t2, t3);      // ab0 ab1 ... ...
+    __m128i t5 = _mm_unpackhi_epi32(t2, t3);      // ab2 ab3 ... ...
+    __m128i t6 = _mm_unpacklo_epi64(t4, t5);      // ab0 ab1 ab2 ab3
+
+    return t6;
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Bitwise operators
+//
+
 VSNRAY_FORCE_INLINE int4 operator&(int4 const& u, int4 const& v)
 {
     return _mm_and_si128(u, v);
@@ -141,22 +163,10 @@ VSNRAY_FORCE_INLINE int4 operator>>(int4 const& a, int count)
     return _mm_srli_epi32(a, count);
 }
 
-VSNRAY_FORCE_INLINE int4 operator*(int4 const& u, int4 const& v)
-{
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
-    return _mm_mullo_epi32(u, v);
-#else
-    __m128i t0 = shuffle<1,0,3,0>(u);             // a1  ... a3  ...
-    __m128i t1 = shuffle<1,0,3,0>(v);             // b1  ... b3  ...
-    __m128i t2 = _mm_mul_epu32(u, v);             // ab0 ... ab2 ...
-    __m128i t3 = _mm_mul_epu32(t0, t1);           // ab1 ... ab3 ...
-    __m128i t4 = _mm_unpacklo_epi32(t2, t3);      // ab0 ab1 ... ...
-    __m128i t5 = _mm_unpackhi_epi32(t2, t3);      // ab2 ab3 ... ...
-    __m128i t6 = _mm_unpacklo_epi64(t4, t5);      // ab0 ab1 ab2 ab3
 
-    return t6;
-#endif
-}
+//-------------------------------------------------------------------------------------------------
+// Comparisons
+//
 
 VSNRAY_FORCE_INLINE mask4 operator<(int4 const& u, int4 const& v)
 {

@@ -151,6 +151,11 @@ VSNRAY_FORCE_INLINE float4 operator/(float4 const& u, float4 const& v)
     return _mm_div_ps(u, v);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Bitwise operators
+//
+
 VSNRAY_FORCE_INLINE float4 operator&(float4 const& u, float4 const& v)
 {
     return _mm_and_ps(u, v);

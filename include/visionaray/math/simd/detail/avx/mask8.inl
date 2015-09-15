@@ -93,7 +93,7 @@ VSNRAY_FORCE_INLINE void store(S dst[8], T const& v, mask8 const& mask, T const&
 
 
 //-------------------------------------------------------------------------------------------------
-// Logical operations
+// Bitwise operations
 //
 
 VSNRAY_FORCE_INLINE mask8 operator!(mask8 const& a)
