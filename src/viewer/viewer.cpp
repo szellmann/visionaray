@@ -331,7 +331,7 @@ void render_hud_ext()
 
     traverse_depth_first(
         rend->host_bvh,
-        [&](typename renderer::host_bvh_type::node_type const& node)
+        [&](renderer::host_bvh_type::node_type const& node)
         {
             ++num_nodes;
 
