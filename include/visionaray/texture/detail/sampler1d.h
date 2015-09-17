@@ -63,7 +63,7 @@ inline ReturnT linear(
 
     auto u = texcoordf - lo;
 
-    return lerp( samples[0], samples[1], u );
+    return ReturnT(lerp(samples[0], samples[1], u));
 }
 
 
@@ -146,7 +146,7 @@ inline ReturnT cubic(
         return InternalT( point(tex, pos[i], ReturnT()) );
     };
 
-    return w0(fracx) * sample(0) + w1(fracx) * sample(1) + w2(fracx) * sample(2) + w3(fracx) * sample(3);
+    return ReturnT(w0(fracx) * sample(0) + w1(fracx) * sample(1) + w2(fracx) * sample(2) + w3(fracx) * sample(3));
 }
 
 
