@@ -52,6 +52,51 @@ struct map_texel_type<uchar4, ElementType>
 };
 
 template <>
+struct map_texel_type<unsigned char, NormalizedFloat>
+{
+    using device_type           = unsigned char;
+    using host_type             = unorm<8>;
+
+    using device_return_type    = float;
+    using host_return_type      = float;
+
+    VSNRAY_FUNC static float cast(float value)
+    {
+        return value;
+    }
+};
+
+template <>
+struct map_texel_type<uchar2, NormalizedFloat>
+{
+    using device_type           = uchar2;
+    using host_type             = vector<2, unorm<8>>;
+
+    using device_return_type    = float2;
+    using host_return_type      = vector<2, float>;
+
+    VSNRAY_FUNC static vector<2, float> cast(float2 const& value)
+    {
+        return vector<2, float>( value.x, value.y );
+    }
+};
+
+template <>
+struct map_texel_type<uchar3, NormalizedFloat>
+{
+    using device_type           = uchar3;
+    using host_type             = vector<3, unorm<8>>;
+
+    using device_return_type    = float3;
+    using host_return_type      = vector<3, float>;
+
+    VSNRAY_FUNC static vector<3, float> cast(float3 const& value)
+    {
+        return vector<3, float>( value.x, value.y, value.z );
+    }
+};
+
+template <>
 struct map_texel_type<uchar4, NormalizedFloat>
 {
     using device_type           = uchar4;
@@ -85,6 +130,49 @@ struct map_texel_type<float4, ReadMode>
 //-------------------------------------------------------------------------------------------------
 // cuda <- visionaray
 //
+
+template <tex_read_mode ReadMode>
+struct map_texel_type<unorm<8>, ReadMode>
+{
+    using device_type = unsigned char;
+    using host_type   = unorm<8>;
+
+    VSNRAY_FUNC static unsigned char cast(unorm<8> value)
+    {
+        return static_cast<unsigned char>(value);
+    }
+};
+
+template <tex_read_mode ReadMode>
+struct map_texel_type<vector<2, unorm<8>>, ReadMode>
+{
+    using device_type = uchar2;
+    using host_type   = vector<2, unorm<8>>;
+
+    VSNRAY_FUNC static uchar2 cast(vector<2, unorm<8>> const& value)
+    {
+        return make_uchar2(
+                static_cast<unsigned char>(value.x),
+                static_cast<unsigned char>(value.y)
+                );
+    }
+};
+
+template <tex_read_mode ReadMode>
+struct map_texel_type<vector<3, unorm<8>>, ReadMode>
+{
+    using device_type = uchar3;
+    using host_type   = vector<3, unorm<8>>;
+
+    VSNRAY_FUNC static uchar3 cast(vector<3, unorm<8>> const& value)
+    {
+        return make_uchar3(
+                static_cast<unsigned char>(value.x),
+                static_cast<unsigned char>(value.y),
+                static_cast<unsigned char>(value.z)
+                );
+    }
+};
 
 template <tex_read_mode ReadMode>
 struct map_texel_type<vector<4, unorm<8>>, ReadMode>
