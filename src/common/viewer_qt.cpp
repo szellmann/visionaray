@@ -197,17 +197,17 @@ void viewer_qt::call_on_key_release(key_event const& event)
     on_key_release(event);
 }
 
-void viewer_qt::call_on_mouse_move(mouse_event const& event)
+void viewer_qt::call_on_mouse_move(visionaray::mouse_event const& event)
 {
     on_mouse_move(event);
 }
 
-void viewer_qt::call_on_mouse_down(mouse_event const& event)
+void viewer_qt::call_on_mouse_down(visionaray::mouse_event const& event)
 {
     on_mouse_down(event);
 }
 
-void viewer_qt::call_on_mouse_up(mouse_event const& event)
+void viewer_qt::call_on_mouse_up(visionaray::mouse_event const& event)
 {
     on_mouse_up(event);
 }
