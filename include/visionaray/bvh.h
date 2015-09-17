@@ -398,9 +398,9 @@ using index_bvh         = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node
 
 #ifdef __CUDACC__
 template <typename P>
-using device_bvh        = bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>>;
+using cuda_bvh          = bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>>;
 template <typename P>
-using device_index_bvh  = index_bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>, thrust::device_vector<unsigned>>;
+using cuda_index_bvh    = index_bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>, thrust::device_vector<unsigned>>;
 #endif
 
 //-------------------------------------------------------------------------------------------------

@@ -77,7 +77,7 @@ using device_tex_ref_type       = device_texture_ref<vector<4, unorm<8>>, Normal
 using device_texture_list       = thrust::device_vector<device_tex_ref_type>;
 using device_texture_map        = std::map<std::string, device_tex_type>;
 using device_ray_type           = basic_ray<float>;
-using device_bvh_type           = device_index_bvh<triangle_type>;
+using device_bvh_type           = cuda_index_bvh<triangle_type>;
 using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_DEPTH32F>;
 using device_sched_type         = cuda_sched<device_ray_type>;
 #endif

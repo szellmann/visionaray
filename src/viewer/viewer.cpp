@@ -93,7 +93,7 @@ struct renderer : viewer_type
     using host_bvh_type             = index_bvh<primitive_type>;
 #ifdef __CUDACC__
     using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
-    using device_bvh_type           = device_index_bvh<primitive_type>;
+    using device_bvh_type           = cuda_index_bvh<primitive_type>;
 #endif
 
     enum device_type
