@@ -29,6 +29,11 @@ struct map_texel_type
 
     using device_return_type    = Type;
     using host_return_type      = Type;
+
+    VSNRAY_FUNC static Type cast(Type const& value)
+    {
+        return value;
+    }
 };
 
 
