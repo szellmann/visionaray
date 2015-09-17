@@ -238,7 +238,10 @@ private:
 //
 
 template <typename T, tex_read_mode ReadMode, size_t Dim>
-class cuda_texture_ref
+class cuda_texture_ref;
+
+template <typename T, tex_read_mode ReadMode>
+class cuda_texture_ref<T, ReadMode, 2>
 {
 public:
 
@@ -249,7 +252,7 @@ public:
 
     VSNRAY_FUNC cuda_texture_ref() = default;
 
-    VSNRAY_CPU_FUNC cuda_texture_ref(cuda_texture<T, ReadMode, Dim> const& ref)
+    VSNRAY_CPU_FUNC cuda_texture_ref(cuda_texture<T, ReadMode, 2> const& ref)
         : texture_obj_(ref.texture_object())
         , width_(ref.width())
         , height_(ref.height())
@@ -258,7 +261,7 @@ public:
 
     VSNRAY_FUNC ~cuda_texture_ref() = default;
 
-    VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture<T, ReadMode, Dim> const& rhs)
+    VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture<T, ReadMode, 2> const& rhs)
     {
         texture_obj_ = rhs.texture_object();
         width_ = rhs.width();
