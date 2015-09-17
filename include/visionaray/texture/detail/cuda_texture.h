@@ -11,7 +11,6 @@
 
 #include <array>
 
-#include <visionaray/cuda/pitch2d.h>
 #include <visionaray/cuda/texture_object.h>
 #include <visionaray/cuda/util.h>
 #include <visionaray/detail/macros.h>
@@ -107,6 +106,7 @@ class cuda_texture_ref;
 
 } // visionaray
 
+#include "cuda_texture1d.inl"
 #include "cuda_texture2d.inl"
 
 #endif // VSNRAY_CUDA_TEXTURE_H

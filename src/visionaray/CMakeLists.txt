@@ -32,6 +32,7 @@ set(VSNRAY_HEADERS
 
     # Cuda
 
+    ${HEADER_DIR}/cuda/array.h
     ${HEADER_DIR}/cuda/graphics_resource.h
     ${HEADER_DIR}/cuda/pitch2d.h
     ${HEADER_DIR}/cuda/util.h
@@ -134,6 +135,7 @@ set(VSNRAY_HEADERS
     # Texture access
 
     ${HEADER_DIR}/texture/detail/cuda_texture.h
+    ${HEADER_DIR}/texture/detail/cuda_texture1d.inl
     ${HEADER_DIR}/texture/detail/cuda_texture2d.inl
     ${HEADER_DIR}/texture/detail/prefilter.h
     ${HEADER_DIR}/texture/detail/sampler1d.h
