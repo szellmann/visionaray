@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_GL_COMPOSITING_H
-#define VSNRAY_GL_COMPOSITING_H
+#define VSNRAY_GL_COMPOSITING_H 1
 
 #include <iostream>
 #include <ostream>
@@ -33,16 +33,16 @@ public:
         : program_(glCreateProgram())
         , frag_(glCreateShader(GL_FRAGMENT_SHADER))
     {
-        auto source =
-            "uniform sampler2D color_tex;                                                       \n"
-            "uniform sampler2D depth_tex;                                                       \n"
-            "                                                                                   \n"
-            "void main(void)                                                                    \n"
-            "{                                                                                  \n"
-            "    gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);                        \n"
-            "    gl_FragDepth = texture2D(depth_tex, gl_TexCoord[0].xy).x;                      \n"
-            "}                                                                                  \n"
-            ;
+        auto source = R"(
+            uniform sampler2D color_tex;
+            uniform sampler2D depth_tex;
+
+            void main(void)
+            {
+                gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);
+                gl_FragDepth = texture2D(depth_tex, gl_TexCoord[0].xy).x;
+            }
+            )";
 
         GLint len = static_cast<GLint>(std::strlen(source));
 
