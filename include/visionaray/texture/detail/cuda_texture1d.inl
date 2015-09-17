@@ -59,7 +59,7 @@ public:
 
         cudaTextureObject_t obj = 0;
         cudaCreateTextureObject( &obj, &resource_desc, &texture_desc, 0 );
-        texture_obj_.reset(obj);std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+        texture_obj_.reset(obj);
     }
 
 #if !VSNRAY_CXX_MSVC
