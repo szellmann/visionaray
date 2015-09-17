@@ -65,17 +65,17 @@ void load_true_color_uncompressed(
         int             width,
         int             height,
         int             bytes_per_pixel,
-        int             y_origin
+        bool            flip_y
         )
 {
     int pitch = width * bytes_per_pixel;
 
-    if (y_origin == 0)
+    if (!flip_y)
     {
         // Origin is bottom/left corner - same as visionaray image format
         file.read(reinterpret_cast<char*>(dst), pitch * height * sizeof(uint8_t));
     }
-    else if (y_origin == height)
+    else
     {
         // Origin is top/left corner - convert to bottom/left
         for (int y = 0; y < height; ++y)
@@ -83,11 +83,6 @@ void load_true_color_uncompressed(
             auto ptr = dst + (height - 1) * pitch - y * pitch;
             file.read(reinterpret_cast<char*>(ptr), pitch * sizeof(uint8_t));
         }
-    }
-    else
-    {
-        std::cerr << "Unsupported TGA image, y-origin ("
-                  << y_origin << ") is neither bottom nor top\n";
     }
 }
 
@@ -98,52 +93,54 @@ void load_true_color_rle(
         int             width,
         int             height,
         int             bytes_per_pixel,
-        int             y_origin
+        bool            flip_y
         )
 {
-    if (y_origin != 0 && y_origin != height)
-    {
-        std::cerr << "Unsupported TGA image, y-origin ("
-                  << y_origin << ") is neither bottom nor top\n";
-        return;
-    }
+    assert(width > 0 && height > 0);
 
-    int pixels = 0;
+    int pixels  = 0;
+    int x       = 0;
+    int y       = flip_y ? height - 1 : 0;
+    int yinc    = flip_y ? -1 : 1;
 
     while (pixels < width * height)
     {
-        uint8_t chunk_header = 0;
-        file.read((char*)&chunk_header, sizeof(chunk_header));
+        uint8_t hdr = 0;
 
-        int current_pixel = pixels; // true if y-origin = 0
-        if (y_origin == height)
-        {
-            int x = pixels % width;
-            int y = pixels / width;
-            current_pixel = (height - 1) * width - y * width + x;
-        }
-        auto ptr = dst + current_pixel * bytes_per_pixel;
+        file.read((char*)&hdr, sizeof(hdr));
 
-        if (chunk_header < 128)
+        // Run-length packet or raw packet?
+        bool rle = (hdr & 0x80) != 0;
+
+        // Get number of pixels or repetition count
+        int count = 1 + (hdr & 0x7f);
+
+        pixels += count;
+
+        char buffer[4];
+        if (rle)
         {
-            ++chunk_header;
-            file.read(reinterpret_cast<char*>(ptr), chunk_header * bytes_per_pixel);
-        }
-        else
-        {
-            chunk_header -= 127;
-            char buffer[4];
+            // Read the RGB value for the next COUNT pixels
             file.read(buffer, bytes_per_pixel);
-            for (uint8_t i = 0; i < chunk_header; ++i)
+        }
+
+        while (count-- > 0)
+        {
+            auto p = dst + (x + y * width) * bytes_per_pixel;
+
+            if (rle)
+                memcpy(p, buffer, bytes_per_pixel);
+            else
+                file.read((char*)p, bytes_per_pixel);
+
+            // Adjust current pixel position
+            ++x;
+            if (x >= width)
             {
-                for (int b = 0; b < bytes_per_pixel; ++b)
-                {
-                    *(ptr + i * bytes_per_pixel + b) = buffer[b];
-                }
+                x = 0;
+                y += yinc;
             }
         }
-
-        pixels += chunk_header;
     }
 }
 
@@ -160,9 +157,27 @@ tga_image::tga_image(std::string const& filename)
     // Read header
 
     tga_header header;
+
     memset(&header, 0, sizeof(header));
+
     file.seekg (0, file.beg);
+    //
+    // XXX:
+    // Values are always stored little-endian...
+    //
     file.read(reinterpret_cast<char*>(&header), sizeof(header));
+
+
+    // Check header
+
+    if (header.width <= 0 || header.height <= 0)
+    {
+        std::cerr << "Invalid image dimensions (" << header.width << " x " << header.height << ")\n";
+        return;
+    }
+
+
+    // Allocate storage
 
     width_  = static_cast<size_t>(header.width);
     height_ = static_cast<size_t>(header.height);
@@ -172,7 +187,13 @@ tga_image::tga_image(std::string const& filename)
 
 
     // Read image data
+
     file.seekg(sizeof(header) + header.id_length, file.beg);
+
+    // Bit 5 specifies the screen origin:
+    // 0 = Origin in lower left-hand corner.
+    // 1 = Origin in upper left-hand corner.
+    bool flip_y = (header.image_desc & (1 << 5)) != 0;
 
     switch (header.image_type)
     {
@@ -194,7 +215,7 @@ tga_image::tga_image(std::string const& filename)
                 header.width,
                 header.height,
                 header.bits_per_pixel / 8,
-                header.y_origin
+                flip_y
                 );
         break;
 
@@ -205,7 +226,7 @@ tga_image::tga_image(std::string const& filename)
                 header.width,
                 header.height,
                 header.bits_per_pixel / 8,
-                header.y_origin
+                flip_y
                 );
         break;
 
