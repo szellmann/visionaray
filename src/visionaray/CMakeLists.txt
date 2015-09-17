@@ -133,7 +133,7 @@ set(VSNRAY_HEADERS
 
     # Texture access
 
-    ${HEADER_DIR}/texture/detail/device_texture.h
+    ${HEADER_DIR}/texture/detail/cuda_texture.h
     ${HEADER_DIR}/texture/detail/prefilter.h
     ${HEADER_DIR}/texture/detail/sampler1d.h
     ${HEADER_DIR}/texture/detail/sampler2d.h

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_DEVICE_TEXTURE_H
-#define VSNRAY_DEVICE_TEXTURE_H
+#ifndef VSNRAY_CUDA_TEXTURE_H
+#define VSNRAY_CUDA_TEXTURE_H 1
 
 #include <cstddef>
 #include <cstring> // memset
@@ -95,14 +95,14 @@ cudaTextureReadMode map_read_mode(tex_read_mode mode)
 } // detail
 
 //-------------------------------------------------------------------------------------------------
-// Device texture
+// CUDA texture
 //
 
 template <typename T, tex_read_mode ReadMode, size_t Dim>
-class device_texture;
+class cuda_texture;
 
 template <typename T, tex_read_mode ReadMode>
-class device_texture<T, ReadMode, 2>
+class cuda_texture<T, ReadMode, 2>
 {
 public:
 
@@ -111,11 +111,11 @@ public:
 
 public:
 
-    device_texture() = default;
+    cuda_texture() = default;
 
     // Construct from host texture
     template <typename U>
-    explicit device_texture(texture<U, ReadMode, 2> const& host_tex)
+    explicit cuda_texture(texture<U, ReadMode, 2> const& host_tex)
         : width_(host_tex.width())
         , height_(host_tex.height())
     {
@@ -159,10 +159,10 @@ public:
     }
 
 #if !VSNRAY_CXX_MSVC
-    device_texture(device_texture&&) = default;
-    device_texture& operator=(device_texture&&) = default;
+    cuda_texture(cuda_texture&&) = default;
+    cuda_texture& operator=(cuda_texture&&) = default;
 #else
-    device_texture(device_texture&& rhs)
+    cuda_texture(cuda_texture&& rhs)
         : pitch_(std::move(rhs.pitch_))
         , texture_obj_(std::move(rhs.texture_obj_))
         , width_(rhs.width_)
@@ -170,7 +170,7 @@ public:
     {
     }
 
-    device_texture& operator=(device_texture&& rhs)
+    cuda_texture& operator=(cuda_texture&& rhs)
     {
         pitch_ = std::move(rhs.pitch_);
         texture_obj_ = std::move(rhs.texture_obj_);
@@ -182,8 +182,8 @@ public:
 #endif
 
     // NOT copyable
-    device_texture(device_texture const& rhs) = delete;
-    device_texture& operator=(device_texture const& rhs) = delete;
+    cuda_texture(cuda_texture const& rhs) = delete;
+    cuda_texture& operator=(cuda_texture const& rhs) = delete;
 
 
     cudaTextureObject_t texture_object() const
@@ -234,11 +234,11 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
-// Device texture reference
+// CUDA texture reference
 //
 
 template <typename T, tex_read_mode ReadMode, size_t Dim>
-class device_texture_ref
+class cuda_texture_ref
 {
 public:
 
@@ -247,18 +247,18 @@ public:
 
 public:
 
-    VSNRAY_FUNC device_texture_ref() = default;
+    VSNRAY_FUNC cuda_texture_ref() = default;
 
-    VSNRAY_CPU_FUNC device_texture_ref(device_texture<T, ReadMode, Dim> const& ref)
+    VSNRAY_CPU_FUNC cuda_texture_ref(cuda_texture<T, ReadMode, Dim> const& ref)
         : texture_obj_(ref.texture_object())
         , width_(ref.width())
         , height_(ref.height())
     {
     }
 
-    VSNRAY_FUNC ~device_texture_ref() = default;
+    VSNRAY_FUNC ~cuda_texture_ref() = default;
 
-    VSNRAY_FUNC device_texture_ref& operator=(device_texture<T, ReadMode, Dim> const& rhs)
+    VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture<T, ReadMode, Dim> const& rhs)
     {
         texture_obj_ = rhs.texture_object();
         width_ = rhs.width();
@@ -292,4 +292,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_DEVICE_TEXTURE_H
+#endif // VSNRAY_CUDA_TEXTURE_H

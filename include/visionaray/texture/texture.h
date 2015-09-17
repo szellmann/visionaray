@@ -9,7 +9,7 @@
 #include <visionaray/detail/macros.h>
 
 #ifdef __CUDACC__
-#include "detail/device_texture.h"
+#include "detail/cuda_texture.h"
 #endif
 
 #include "detail/prefilter.h"
@@ -59,10 +59,10 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> coord)
 
 template <typename T, tex_read_mode ReadMode>
 VSNRAY_GPU_FUNC
-inline typename cuda::map_texel_type<typename device_texture_ref<T, ReadMode, 2>::device_type, ReadMode>::host_return_type
-tex2D(device_texture_ref<T, ReadMode, 2> const& tex, vector<2, float> coord)
+inline typename cuda::map_texel_type<typename cuda_texture_ref<T, ReadMode, 2>::device_type, ReadMode>::host_return_type
+tex2D(cuda_texture_ref<T, ReadMode, 2> const& tex, vector<2, float> coord)
 {
-    using tex_type              = device_texture_ref<T, ReadMode, 2>;
+    using tex_type              = cuda_texture_ref<T, ReadMode, 2>;
     using device_type           = typename tex_type::device_type;
     using device_return_type    = typename cuda::map_texel_type<device_type, ReadMode>::device_return_type;
 

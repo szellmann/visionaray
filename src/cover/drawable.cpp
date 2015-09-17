@@ -72,8 +72,8 @@ using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_DEPTH32F>;
 using host_sched_type           = tiled_sched<host_ray_type>;
 
 #ifdef __CUDACC__
-using device_tex_type           = device_texture<vector<4, unorm<8>>, NormalizedFloat, 2>;
-using device_tex_ref_type       = device_texture_ref<vector<4, unorm<8>>, NormalizedFloat, 2>;
+using device_tex_type           = cuda_texture<vector<4, unorm<8>>, NormalizedFloat, 2>;
+using device_tex_ref_type       = cuda_texture_ref<vector<4, unorm<8>>, NormalizedFloat, 2>;
 using device_texture_list       = thrust::device_vector<device_tex_ref_type>;
 using device_texture_map        = std::map<std::string, device_tex_type>;
 using device_ray_type           = basic_ray<float>;
