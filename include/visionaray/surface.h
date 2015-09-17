@@ -17,8 +17,11 @@ namespace visionaray
 template <typename ...Args>
 class surface;
 
-template <typename M, typename ...Args>
-class surface<M, Args...>
+template <typename ...Args>
+class surface;
+
+template <typename M>
+class surface<M>
 {
 public:
 
@@ -54,12 +57,12 @@ public:
 
 };
 
-template <typename M, typename C, typename ...Args>
-class surface<M, C, Args...> : public surface<M, Args...>
+template <typename M, typename C>
+class surface<M, C> : public surface<M>
 {
 public:
 
-    using base_type     = surface<M, Args...>;
+    using base_type     = surface<M>;
     using scalar_type   = typename M::scalar_type;
 
 public:

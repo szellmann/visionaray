@@ -37,6 +37,8 @@ struct sched_params_base {};
 template <typename Intersector>
 struct sched_params_intersector_base
 {
+    using has_intersector = void;
+
     sched_params_intersector_base(Intersector& i) : intersector(i) {}
 
     Intersector& intersector;
@@ -53,6 +55,8 @@ struct sched_params;
 template <typename Base, typename RT, typename PxSamplerT>
 struct sched_params<Base, RT, PxSamplerT> : Base
 {
+    using has_camera = void;
+
     using rt_type               = RT;
     using color_traits          = typename RT::color_traits;
     using pixel_sampler_type    = PxSamplerT;
@@ -72,6 +76,8 @@ struct sched_params<Base, RT, PxSamplerT> : Base
 template <typename Base, typename MT, typename V, typename RT, typename PxSamplerT>
 struct sched_params<Base, MT, V, RT, PxSamplerT> : Base
 {
+    using has_camera_matrices = void;
+
     using rt_type               = RT;
     using color_traits          = typename RT::color_traits;
     using pixel_sampler_type    = PxSamplerT;
@@ -106,14 +112,14 @@ class sched_params_has_cam
 private:
 
     template <typename U>
-    static std::true_type  test(typename std::remove_reference<decltype(U::cam)>::type*);
+    static std::true_type  test(typename U::has_camera*);
 
     template <typename U>
     static std::false_type test(...);
 
 public:
 
-    using type = decltype( test<SP>(nullptr) );
+    using type = decltype( test<typename std::decay<SP>::type>(nullptr) );
 
 };
 
@@ -123,14 +129,14 @@ class sched_params_has_intersector
 private:
 
     template <typename U>
-    static std::true_type  test(typename std::remove_reference<decltype(U::intersector)>::type*);
+    static std::true_type  test(typename U::has_intersector*);
 
     template <typename U>
     static std::false_type test(...);
 
 public:
 
-    using type = decltype( test<SP>(nullptr) );
+    using type = decltype( test<typename std::decay<SP>::type>(nullptr) );
 
 };
 
@@ -140,14 +146,14 @@ class sched_params_has_view_matrix
 private:
 
     template <typename U>
-    static std::true_type  test(typename std::remove_reference<decltype(U::view_matrix)>::type*);
+    static std::true_type  test(typename U::has_camera_matrices*);
 
     template <typename U>
     static std::false_type test(...);
 
 public:
 
-    using type = decltype( test<SP>(nullptr) );
+    using type = decltype( test<typename std::decay<SP>::type>(nullptr) );
 
 };
 

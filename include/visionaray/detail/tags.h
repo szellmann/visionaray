@@ -24,14 +24,22 @@ struct surface_tag {};
 struct has_textures_tag : surface_tag {};
 struct has_no_textures_tag : surface_tag {};
 
-template <typename T> struct always_void { using type = void; };
-template <typename T> using always_void_t = typename always_void<T>::type;
-
-template <typename T, typename = void>
-struct has_textures : has_no_textures_tag {};
-
 template <typename T>
-struct has_textures<T, always_void_t<decltype(T::textures)>> : has_textures_tag {};
+struct has_textures_impl
+{
+    template <typename U>
+    static has_textures_tag  test(typename U::has_textures*);
+
+    template <typename U>
+    static has_no_textures_tag test(...);
+
+    using type = decltype( test<typename std::decay<T>::type>(nullptr) );
+};
+
+template <class T>
+struct has_textures : has_textures_impl<T>::type
+{
+};
 
 
 //-------------------------------------------------------------------------------------------------

@@ -93,6 +93,8 @@ struct kernel_params<
         Args...
         >
 {
+    using has_textures = void;
+
     using normal_binding = NormalBinding;
     using primitive_type    = typename std::iterator_traits<Primitives>::value_type;
     using normal_type       = typename std::iterator_traits<Normals>::value_type;
