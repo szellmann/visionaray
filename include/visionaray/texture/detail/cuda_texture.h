@@ -108,5 +108,6 @@ class cuda_texture_ref;
 
 #include "cuda_texture1d.inl"
 #include "cuda_texture2d.inl"
+#include "cuda_texture3d.inl"
 
 #endif // VSNRAY_CUDA_TEXTURE_H

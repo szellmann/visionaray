@@ -98,6 +98,28 @@ tex2D(cuda_texture_ref<T, ReadMode, 2> const& tex, vector<2, float> coord)
     return cuda::map_texel_type<device_type, ReadMode>::cast( retval );
 }
 
+template <typename T, tex_read_mode ReadMode>
+VSNRAY_GPU_FUNC
+inline typename cuda::map_texel_type<typename cuda_texture_ref<T, ReadMode, 3>::device_type, ReadMode>::host_return_type
+tex3D(cuda_texture_ref<T, ReadMode, 3> const& tex, vector<3, float> coord)
+{
+    using tex_type              = cuda_texture_ref<T, ReadMode, 3>;
+    using device_type           = typename tex_type::device_type;
+    using device_return_type    = typename cuda::map_texel_type<device_type, ReadMode>::device_return_type;
+
+    device_return_type retval;
+
+    ::tex3D(
+            &retval,
+            tex.texture_object(),
+            coord.x,
+            coord.y,
+            coord.z
+            );
+
+    return cuda::map_texel_type<device_type, ReadMode>::cast( retval );
+}
+
 #endif // __CUDACC__
 
 
