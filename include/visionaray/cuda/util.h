@@ -117,6 +117,21 @@ struct map_texel_type<uchar4, NormalizedFloat>
 };
 
 template <tex_read_mode ReadMode>
+struct map_texel_type<float2, ReadMode>
+{
+    using device_type           = float2;
+    using host_type             = vector<2, float>;
+
+    using device_return_type    = float2;
+    using host_return_type      = vector<2, float>;
+
+    VSNRAY_FUNC static vector<2, float> cast(float2 const& value)
+    {
+        return vector<2, float>( value.x, value.y );
+    }
+};
+
+template <tex_read_mode ReadMode>
 struct map_texel_type<float4, ReadMode>
 {
     using device_type           = float4;
@@ -193,6 +208,18 @@ struct map_texel_type<vector<4, unorm<8>>, ReadMode>
                 static_cast<unsigned char>(value.z),
                 static_cast<unsigned char>(value.w)
                 );
+    }
+};
+
+template <tex_read_mode ReadMode>
+struct map_texel_type<vector<2, float>, ReadMode>
+{
+    using device_type = float2;
+    using host_type   = vector<2, float>;
+
+    VSNRAY_FUNC static float2 cast(vector<2, float> const& value)
+    {
+        return make_float2( value.x, value.y );
     }
 };
 
