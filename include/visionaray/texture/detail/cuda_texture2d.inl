@@ -15,8 +15,8 @@ class cuda_texture<T, ReadMode, 2>
 {
 public:
 
-    using device_type = typename cuda::map_texel_type<T, ReadMode>::device_type;
-    using host_type   = typename cuda::map_texel_type<T, ReadMode>::host_type;
+    using cuda_type   = typename cuda::map_texel_type<T, ReadMode>::cuda_type;
+    using vsnray_type = typename cuda::map_texel_type<T, ReadMode>::vsnray_type;
 
 public:
 
@@ -43,7 +43,7 @@ public:
             return;
         }
 
-        auto desc = cudaCreateChannelDesc<device_type>();
+        auto desc = cudaCreateChannelDesc<cuda_type>();
 
         cudaResourceDesc resource_desc;
         memset(&resource_desc, 0, sizeof(resource_desc));
@@ -112,28 +112,28 @@ public:
 
 private:
 
-    cuda::pitch2d<device_type>  pitch_;
+    cuda::pitch2d<cuda_type>    pitch_;
 
     cuda::texture_object        texture_obj_;
 
     size_t width_;
     size_t height_;
 
-    cudaError_t upload_data(host_type const* data)
+    cudaError_t upload_data(vsnray_type const* data)
     {
         // Cast from host type to device type
-        return pitch_.upload( reinterpret_cast<device_type const*>(data), width_, height_ );
+        return pitch_.upload( reinterpret_cast<cuda_type const*>(data), width_, height_ );
     }
 
     template <typename U>
     cudaError_t upload_data(U const* data)
     {
         // First promote to host type
-        aligned_vector<host_type> dst( width_ * height_ );
+        aligned_vector<vsnray_type> dst( width_ * height_ );
 
         for (size_t i = 0; i < width_ * height_; ++i)
         {
-            dst[i] = host_type( data[i] );
+            dst[i] = vsnray_type( data[i] );
         }
 
         return upload_data( dst.data() );
@@ -151,8 +151,8 @@ class cuda_texture_ref<T, ReadMode, 2>
 {
 public:
 
-    using device_type = typename cuda::map_texel_type<T, ReadMode>::device_type;
-    using host_type   = typename cuda::map_texel_type<T, ReadMode>::host_type;
+    using cuda_type   = typename cuda::map_texel_type<T, ReadMode>::cuda_type;
+    using vsnray_type = typename cuda::map_texel_type<T, ReadMode>::vsnray_type;
 
 public:
 

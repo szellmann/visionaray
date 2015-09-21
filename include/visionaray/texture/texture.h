@@ -59,14 +59,14 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> coord)
 
 template <typename T, tex_read_mode ReadMode>
 VSNRAY_GPU_FUNC
-inline typename cuda::map_texel_type<typename cuda_texture_ref<T, ReadMode, 1>::device_type, ReadMode>::host_return_type
+inline typename cuda::map_texel_type<typename cuda_texture_ref<T, ReadMode, 1>::cuda_type, ReadMode>::vsnray_return_type
 tex1D(cuda_texture_ref<T, ReadMode, 1> const& tex, float coord)
 {
-    using tex_type              = cuda_texture_ref<T, ReadMode, 1>;
-    using device_type           = typename tex_type::device_type;
-    using device_return_type    = typename cuda::map_texel_type<device_type, ReadMode>::device_return_type;
+    using tex_type          = cuda_texture_ref<T, ReadMode, 1>;
+    using cuda_type         = typename tex_type::cuda_type;
+    using cuda_return_type  = typename cuda::map_texel_type<cuda_type, ReadMode>::cuda_return_type;
 
-    device_return_type retval;
+    cuda_return_type retval;
 
     ::tex1D(
             &retval,
@@ -74,19 +74,19 @@ tex1D(cuda_texture_ref<T, ReadMode, 1> const& tex, float coord)
             coord
             );
 
-    return cuda::map_texel_type<device_type, ReadMode>::cast( retval );
+    return cuda::map_texel_type<cuda_type, ReadMode>::cast( retval );
 }
 
 template <typename T, tex_read_mode ReadMode>
 VSNRAY_GPU_FUNC
-inline typename cuda::map_texel_type<typename cuda_texture_ref<T, ReadMode, 2>::device_type, ReadMode>::host_return_type
+inline typename cuda::map_texel_type<typename cuda_texture_ref<T, ReadMode, 2>::cuda_type, ReadMode>::vsnray_return_type
 tex2D(cuda_texture_ref<T, ReadMode, 2> const& tex, vector<2, float> coord)
 {
-    using tex_type              = cuda_texture_ref<T, ReadMode, 2>;
-    using device_type           = typename tex_type::device_type;
-    using device_return_type    = typename cuda::map_texel_type<device_type, ReadMode>::device_return_type;
+    using tex_type          = cuda_texture_ref<T, ReadMode, 2>;
+    using cuda_type         = typename tex_type::cuda_type;
+    using cuda_return_type  = typename cuda::map_texel_type<cuda_type, ReadMode>::cuda_return_type;
 
-    device_return_type retval;
+    cuda_return_type retval;
 
     ::tex2D(
             &retval,
@@ -95,19 +95,19 @@ tex2D(cuda_texture_ref<T, ReadMode, 2> const& tex, vector<2, float> coord)
             coord.y
             );
 
-    return cuda::map_texel_type<device_type, ReadMode>::cast( retval );
+    return cuda::map_texel_type<cuda_type, ReadMode>::cast( retval );
 }
 
 template <typename T, tex_read_mode ReadMode>
 VSNRAY_GPU_FUNC
-inline typename cuda::map_texel_type<typename cuda_texture_ref<T, ReadMode, 3>::device_type, ReadMode>::host_return_type
+inline typename cuda::map_texel_type<typename cuda_texture_ref<T, ReadMode, 3>::cuda_type, ReadMode>::vsnray_return_type
 tex3D(cuda_texture_ref<T, ReadMode, 3> const& tex, vector<3, float> coord)
 {
-    using tex_type              = cuda_texture_ref<T, ReadMode, 3>;
-    using device_type           = typename tex_type::device_type;
-    using device_return_type    = typename cuda::map_texel_type<device_type, ReadMode>::device_return_type;
+    using tex_type          = cuda_texture_ref<T, ReadMode, 3>;
+    using cuda_type         = typename tex_type::cuda_type;
+    using cuda_return_type  = typename cuda::map_texel_type<cuda_type, ReadMode>::cuda_return_type;
 
-    device_return_type retval;
+    cuda_return_type retval;
 
     ::tex3D(
             &retval,
@@ -117,7 +117,7 @@ tex3D(cuda_texture_ref<T, ReadMode, 3> const& tex, vector<3, float> coord)
             coord.z
             );
 
-    return cuda::map_texel_type<device_type, ReadMode>::cast( retval );
+    return cuda::map_texel_type<cuda_type, ReadMode>::cast( retval );
 }
 
 #endif // __CUDACC__

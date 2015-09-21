@@ -15,8 +15,8 @@ class cuda_texture<T, ReadMode, 3>
 {
 public:
 
-    using device_type   = typename cuda::map_texel_type<T, ReadMode>::device_type;
-    using host_type     = typename cuda::map_texel_type<T, ReadMode>::host_type;
+    using cuda_type   = typename cuda::map_texel_type<T, ReadMode>::cuda_type;
+    using vsnray_type = typename cuda::map_texel_type<T, ReadMode>::vsnray_type;
 
 public:
 
@@ -35,7 +35,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<device_type>();
+        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
 
         if ( array_.allocate3D(desc, width_, height_, depth_) != cudaSuccess )
         {
@@ -126,21 +126,21 @@ private:
     size_t height_;
     size_t depth_;
 
-    cudaError_t upload_data(host_type const* data)
+    cudaError_t upload_data(vsnray_type const* data)
     {
         // Cast from host type to device type
-        return array_.upload( reinterpret_cast<device_type const*>(data), width_, height_, depth_ );
+        return array_.upload( reinterpret_cast<cuda_type const*>(data), width_, height_, depth_ );
     }
 
     template <typename U>
     cudaError_t upload_data(U const* data)
     {
         // First promote to host type
-        aligned_vector<host_type> dst( width_ );
+        aligned_vector<vsnray_type> dst( width_ );
 
         for (size_t i = 0; i < width_ * height_ * depth_; ++i)
         {
-            dst[i] = host_type( data[i] );
+            dst[i] = vsnray_type( data[i] );
         }
 
         return upload_data( dst.data() );
@@ -158,8 +158,8 @@ class cuda_texture_ref<T, ReadMode, 3>
 {
 public:
 
-    using device_type = typename cuda::map_texel_type<T, ReadMode>::device_type;
-    using host_type   = typename cuda::map_texel_type<T, ReadMode>::host_type;
+    using cuda_type   = typename cuda::map_texel_type<T, ReadMode>::cuda_type;
+    using vsnray_type = typename cuda::map_texel_type<T, ReadMode>::vsnray_type;
 
 public:
 
