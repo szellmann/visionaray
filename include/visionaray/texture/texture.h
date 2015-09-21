@@ -74,7 +74,7 @@ tex1D(cuda_texture_ref<T, ReadMode, 1> const& tex, float coord)
             coord
             );
 
-    return cuda::map_texel_type<cuda_type, ReadMode>::cast( retval );
+    return cuda::map_texel_type<cuda_type, ReadMode>::convert_return_type( retval );
 }
 
 template <typename T, tex_read_mode ReadMode>
@@ -95,7 +95,7 @@ tex2D(cuda_texture_ref<T, ReadMode, 2> const& tex, vector<2, float> coord)
             coord.y
             );
 
-    return cuda::map_texel_type<cuda_type, ReadMode>::cast( retval );
+    return cuda::map_texel_type<cuda_type, ReadMode>::convert_return_type( retval );
 }
 
 template <typename T, tex_read_mode ReadMode>
@@ -117,7 +117,7 @@ tex3D(cuda_texture_ref<T, ReadMode, 3> const& tex, vector<3, float> coord)
             coord.z
             );
 
-    return cuda::map_texel_type<cuda_type, ReadMode>::cast( retval );
+    return cuda::map_texel_type<cuda_type, ReadMode>::convert_return_type( retval );
 }
 
 #endif // __CUDACC__
