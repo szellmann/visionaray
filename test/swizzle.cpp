@@ -253,11 +253,3 @@ TEST(Swizzle, Down)
         EXPECT_FLOAT_EQ(rgba8[i].w, static_cast<float>(unorm<8>(rgba32f[i].w)));
     }
 }
-
-
-int main(int argc, char** argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    ::testing::FLAGS_gtest_death_test_style = "fast";
-    return RUN_ALL_TESTS();
-}

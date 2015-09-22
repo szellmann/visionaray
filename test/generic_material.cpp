@@ -117,11 +117,3 @@ TEST(GenericMaterial, SIMD)
     }
     EXPECT_FLOAT_EQ( m4.get_ls(), em.get_ls() );
 }
-
-
-int main(int argc, char** argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    ::testing::FLAGS_gtest_death_test_style = "fast";
-    return RUN_ALL_TESTS();
-}
