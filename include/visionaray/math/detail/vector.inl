@@ -724,6 +724,21 @@ inline vector<Dim, T> select(M const& m, vector<Dim, T> const& u, vector<Dim, T>
     return result;
 }
 
+template <size_t Dim, typename T>
+MATH_FUNC
+vector<Dim, T> rotate(vector<Dim, T> v, int count = 1)
+{
+    auto tmp = v;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        auto d2 = (d + count) % Dim;
+        v[d2] = tmp[d];
+    }
+
+    return v;
+}
+
 // Returns the index of the smallest element of the vector
 template <size_t Dim, typename T>
 MATH_FUNC
