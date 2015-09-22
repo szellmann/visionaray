@@ -726,6 +726,7 @@ inline vector<Dim, T> select(M const& m, vector<Dim, T> const& u, vector<Dim, T>
 
 // Returns the index of the smallest element of the vector
 template <size_t Dim, typename T>
+MATH_FUNC
 size_t min_index(vector<Dim, T> const& u)
 {
     size_t i = u.y < u.x ? 1 : 0;
@@ -740,6 +741,7 @@ size_t min_index(vector<Dim, T> const& u)
 
 // Returns the index of the largest element of the vector
 template <size_t Dim, typename T>
+MATH_FUNC
 size_t max_index(vector<Dim, T> const& u)
 {
     size_t i = u.y < u.x ? 0 : 1;
@@ -754,6 +756,7 @@ size_t max_index(vector<Dim, T> const& u)
 
 // Returns the smallest element
 template <size_t Dim, typename T>
+MATH_FUNC
 T min_element(vector<Dim, T> const& u)
 {
     T result = u.x;
@@ -768,6 +771,7 @@ T min_element(vector<Dim, T> const& u)
 
 // Returns the largest element
 template <size_t Dim, typename T>
+MATH_FUNC
 T max_element(vector<Dim, T> const& u)
 {
     T result = u.x;
