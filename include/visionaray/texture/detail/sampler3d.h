@@ -18,8 +18,8 @@ namespace detail
 {
 
 
-template <typename T, typename U>
-inline T index(T x, T y, T z, vector<3, U> texsize)
+template <typename T>
+inline T index(T x, T y, T z, vector<3, T> texsize)
 {
     return z * texsize[0] * texsize[1] + y * texsize[0] + x;
 }
