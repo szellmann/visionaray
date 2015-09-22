@@ -29,24 +29,21 @@ template <
     typename ReturnT,
     typename InternalT,
     typename TexelT,
-    typename FloatT
+    typename FloatT,
+    typename SizeT
     >
 inline ReturnT nearest(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<3, FloatT>                       coord,
-        vector<3, FloatT>                       texsize,
+        vector<3, SizeT>                        texsize,
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {
     coord = map_tex_coord(coord, texsize, address_mode);
 
-    vector<3, FloatT> lo(
-            floor(coord.x * texsize.x), // TODO: use integer truncation
-            floor(coord.y * texsize.y),
-            floor(coord.z * texsize.z)
-            );
+    auto lo = convert_to_int(coord * convert_to_float(texsize));
 
     auto idx = index(lo[0], lo[1], lo[2], texsize);
     return point(tex, idx, ReturnT());
@@ -57,31 +54,32 @@ template <
     typename ReturnT,
     typename InternalT,
     typename TexelT,
-    typename FloatT
+    typename FloatT,
+    typename SizeT
     >
 inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<3, FloatT>                       coord,
-        vector<3, FloatT>                       texsize,
+        vector<3, SizeT>                        texsize,
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(0.5) / texsize,
+            coord - FloatT(0.5) / convert_to_float(texsize),
             texsize,
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord + FloatT(0.5) / texsize,
+            coord + FloatT(0.5) / convert_to_float(texsize),
             texsize,
             address_mode
             );
 
-    auto lo = floor(coord1 * texsize);
-    auto hi = floor(coord2 * texsize);
+    auto lo = convert_to_int(coord1 * convert_to_float(texsize));
+    auto hi = convert_to_int(coord2 * convert_to_float(texsize));
 
     InternalT samples[8] =
     {
@@ -96,7 +94,7 @@ inline ReturnT linear(
     };
 
 
-    auto uvw = coord1 * texsize - lo;
+    auto uvw = coord1 * convert_to_float(texsize) - convert_to_float(lo);
 
     auto p1  = lerp(samples[0], samples[1], uvw[0]);
     auto p2  = lerp(samples[2], samples[3], uvw[0]);
@@ -114,14 +112,15 @@ template <
     typename ReturnT,
     typename InternalT,
     typename TexelT,
-    typename FloatT
+    typename FloatT,
+    typename SizeT
     >
 inline ReturnT cubic8(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<3, FloatT>                       coord,
-        vector<3, FloatT>                       texsize,
+        vector<3, SizeT>                        texsize,
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {
@@ -130,36 +129,36 @@ inline ReturnT cubic8(
     bspline::w2_func<FloatT> w2;
     bspline::w3_func<FloatT> w3;
 
-    auto x = coord.x * texsize.x - FloatT(0.5);
+    auto x = coord.x * convert_to_float(texsize.x) - FloatT(0.5);
     auto floorx = floor(x);
     auto fracx  = x - floor(x);
 
-    auto y = coord.y * texsize.y - FloatT(0.5);
+    auto y = coord.y * convert_to_float(texsize.y) - FloatT(0.5);
     auto floory = floor(y);
     auto fracy  = y - floor(y);
 
-    auto z = coord.z * texsize.z - FloatT(0.5);
+    auto z = coord.z * convert_to_float(texsize.z) - FloatT(0.5);
     auto floorz = floor(z);
     auto fracz  = z - floor(z);
 
 
     auto tmp000 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
-    auto h_000  = ( floorx - FloatT(0.5) + tmp000 ) / texsize.x;
+    auto h_000  = ( floorx - FloatT(0.5) + tmp000 ) / convert_to_float(texsize.x);
 
     auto tmp100 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
-    auto h_100  = ( floorx + FloatT(1.5) + tmp100 ) / texsize.x;
+    auto h_100  = ( floorx + FloatT(1.5) + tmp100 ) / convert_to_float(texsize.x);
 
     auto tmp010 = ( w1(fracy) ) / ( w0(fracy) + w1(fracy) );
-    auto h_010  = ( floory - FloatT(0.5) + tmp010 ) / texsize.y;
+    auto h_010  = ( floory - FloatT(0.5) + tmp010 ) / convert_to_float(texsize.y);
 
     auto tmp110 = ( w3(fracy) ) / ( w2(fracy) + w3(fracy) );
-    auto h_110  = ( floory + FloatT(1.5) + tmp110 ) / texsize.y;
+    auto h_110  = ( floory + FloatT(1.5) + tmp110 ) / convert_to_float(texsize.y);
 
     auto tmp001 = ( w1(fracz) ) / ( w0(fracz) + w1(fracz) );
-    auto h_001  = ( floorz - FloatT(0.5) + tmp001 ) / texsize.z;
+    auto h_001  = ( floorz - FloatT(0.5) + tmp001 ) / convert_to_float(texsize.z);
 
     auto tmp101 = ( w3(fracz) ) / ( w2(fracz) + w3(fracz) );
-    auto h_101  = ( floorz + FloatT(1.5) + tmp101 ) / texsize.z;
+    auto h_101  = ( floorz + FloatT(1.5) + tmp101 ) / convert_to_float(texsize.z);
 
 
     auto f_000  = InternalT( linear(ReturnT(), InternalT(), tex, vector<3, FloatT>(h_000, h_010, h_001), texsize, address_mode) );
@@ -189,6 +188,7 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
+    typename SizeT,
     typename W0,
     typename W1,
     typename W2,
@@ -199,7 +199,7 @@ inline ReturnT cubic(
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<3, FloatT>                       coord,
-        vector<3, FloatT>                       texsize,
+        vector<3, SizeT>                        texsize,
         std::array<tex_address_mode, 3> const&  address_mode,
         W0                                      w0,
         W1                                      w1,
@@ -209,15 +209,15 @@ inline ReturnT cubic(
 {
     coord = map_tex_coord(coord, texsize, address_mode);
 
-    auto x = coord.x * texsize.x - FloatT(0.5);
+    auto x = coord.x * convert_to_float(texsize.x) - FloatT(0.5);
     auto floorx = floor(x);
     auto fracx  = x - floor(x);
 
-    auto y = coord.y * texsize.y - FloatT(0.5);
+    auto y = coord.y * convert_to_float(texsize.y) - FloatT(0.5);
     auto floory = floor(y);
     auto fracy  = y - floor(y);
 
-    auto z = coord.z * texsize.z - FloatT(0.5);
+    auto z = coord.z * convert_to_float(texsize.z) - FloatT(0.5);
     auto floorz = floor(z);
     auto fracz  = z - floor(z);
 
@@ -231,9 +231,9 @@ inline ReturnT cubic(
 
     for (size_t i = 0; i < 4; ++i)
     {
-        pos[i].x = clamp(pos[i].x, FloatT(0.0), texsize.x - 1);
-        pos[i].y = clamp(pos[i].y, FloatT(0.0), texsize.y - 1);
-        pos[i].z = clamp(pos[i].z, FloatT(0.0), texsize.z - 1);
+        pos[i].x = clamp(pos[i].x, FloatT(0.0), convert_to_float(texsize.x - 1));
+        pos[i].y = clamp(pos[i].y, FloatT(0.0), convert_to_float(texsize.y - 1));
+        pos[i].z = clamp(pos[i].z, FloatT(0.0), convert_to_float(texsize.z - 1));
     }
 
     auto sample = [&](int i, int j, int k) -> InternalT
@@ -282,14 +282,15 @@ template <
     typename ReturnT,
     typename InternalT,
     typename TexelT,
-    typename FloatT
+    typename FloatT,
+    typename SizeT
     >
 inline ReturnT tex3D_impl_choose_filter(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<3, FloatT> const&                coord,
-        vector<3, FloatT> const&                texsize,
+        vector<3, SizeT> const&                 texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
@@ -357,7 +358,7 @@ template <typename T>
 inline T tex3D_impl_expand_types(
         T const*                                tex,
         vector<3, float> const&                 coord,
-        vector<3, float> const&                 texsize,
+        vector<3, int> const&                   texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
@@ -380,7 +381,7 @@ template <typename T>
 inline vector<3, T> tex3D_impl_expand_types(
         vector<3, T> const*                     tex,
         vector<3, float> const&                 coord,
-        vector<3, float> const&                 texsize,
+        vector<3, int> const&                   texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
@@ -403,7 +404,7 @@ template <typename T>
 inline vector<4, T> tex3D_impl_expand_types(
         vector<4, T> const*                     tex,
         vector<3, float> const&                 coord,
-        vector<3, float> const&                 texsize,
+        vector<3, int> const&                   texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
@@ -429,7 +430,7 @@ template <typename T>
 inline T tex3D_impl_expand_types(
         T const*                                tex,
         vector<3, double> const&                coord,
-        vector<3, double> const&                texsize,
+        vector<3, int> const&                   texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
@@ -452,7 +453,7 @@ template <typename T>
 inline vector<3, T> tex3D_impl_expand_types(
         vector<3, T> const*                     tex,
         vector<3, double> const&                coord,
-        vector<3, double> const&                texsize,
+        vector<3, int> const&                   texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
@@ -475,7 +476,7 @@ template <typename T>
 inline vector<4, T> tex3D_impl_expand_types(
         vector<4, T> const*                     tex,
         vector<3, double> const&                coord,
-        vector<3, double> const&                texsize,
+        vector<3, int> const&                   texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
@@ -501,7 +502,7 @@ template <typename T>
 inline simd::float4 tex3D_impl_expand_types(
         T const*                                tex,
         vector<3, simd::float4> const&          coord,
-        vector<3, simd::float4> const&          texsize,
+        vector<3, simd::int4> const&            texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
@@ -528,7 +529,7 @@ template <typename T>
 inline simd::float8 tex3D_impl_expand_types(
         T const*                                tex,
         vector<3, simd::float8> const&          coord,
-        vector<3, simd::float8> const&          texsize,
+        vector<3, simd::int8> const&            texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
@@ -559,14 +560,20 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> coord)
     -> decltype( tex3D_impl_expand_types(
             tex.data(),
             coord,
-            vector<3, FloatT>(),
+            vector<3, decltype(convert_to_int(std::declval<FloatT>()))>(),
             tex.get_filter_mode(),
             tex.get_address_mode()
             ) )
 {
     static_assert(Tex::dimensions == 3, "Incompatible texture type");
 
-    vector<3, FloatT> texsize( tex.width(), tex.height(), tex.depth() );
+    using I = decltype(convert_to_int(std::declval<FloatT>()));
+
+    vector<3, I> texsize(
+            static_cast<int>(tex.width()),
+            static_cast<int>(tex.height()),
+            static_cast<int>(tex.depth())
+            );
 
     return tex3D_impl_expand_types(
             tex.data(),

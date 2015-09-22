@@ -22,20 +22,21 @@ template <
     typename ReturnT,
     typename InternalT,
     typename TexelT,
-    typename FloatT
+    typename FloatT,
+    typename SizeT
     >
 inline ReturnT nearest(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         FloatT                                  coord,
-        FloatT                                  texsize,
+        SizeT                                   texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
     coord = map_tex_coord(coord, texsize, address_mode);
 
-    FloatT lo = floor(coord * texsize); // TODO: use integer truncation
+    auto lo = convert_to_int(coord * convert_to_float(texsize));
     return point(tex, lo, ReturnT());
 }
 
@@ -44,31 +45,32 @@ template <
     typename ReturnT,
     typename InternalT,
     typename TexelT,
-    typename FloatT
+    typename FloatT,
+    typename SizeT
     >
 inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         FloatT                                  coord,
-        FloatT                                  texsize,
+        SizeT                                   texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(0.5) / texsize,
+            coord - FloatT(0.5) / convert_to_float(texsize),
             texsize,
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord + FloatT(0.5) / texsize,
+            coord + FloatT(0.5) / convert_to_float(texsize),
             texsize,
             address_mode
             );
 
-    auto lo = floor(coord1 * texsize); // TODO: use integer truncation
-    auto hi = floor(coord2 * texsize);
+    auto lo = convert_to_int(coord1 * convert_to_float(texsize));
+    auto hi = convert_to_int(coord2 * convert_to_float(texsize));
 
 
     InternalT samples[2] =
@@ -77,7 +79,7 @@ inline ReturnT linear(
         InternalT( point(tex, hi, ReturnT()) )
     };
 
-    auto u = coord1 * texsize - lo;
+    auto u = coord1 * convert_to_float(texsize) - convert_to_float(lo);
 
     return ReturnT(lerp(samples[0], samples[1], u));
 }
@@ -87,14 +89,15 @@ template <
     typename ReturnT,
     typename InternalT,
     typename TexelT,
-    typename FloatT
+    typename FloatT,
+    typename SizeT
     >
 inline ReturnT cubic2(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         FloatT                                  coord,
-        FloatT                                  texsize,
+        SizeT                                   texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
@@ -103,15 +106,15 @@ inline ReturnT cubic2(
     bspline::w2_func<FloatT> w2;
     bspline::w3_func<FloatT> w3;
 
-    auto x = coord * texsize - FloatT(0.5);
+    auto x = coord * convert_to_float(texsize) - FloatT(0.5);
     auto floorx = floor(x);
     auto fracx  = x - floor(x);
 
     auto tmp0 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
-    auto h0   = ( floorx - FloatT(0.5) + tmp0 ) / texsize;
+    auto h0   = ( floorx - FloatT(0.5) + tmp0 ) / convert_to_float(texsize);
 
     auto tmp1 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
-    auto h1   = ( floorx + FloatT(1.5) + tmp1 ) / texsize;
+    auto h1   = ( floorx + FloatT(1.5) + tmp1 ) / convert_to_float(texsize);
 
     auto f_0  = InternalT( linear(ReturnT(), InternalT(), tex, h0, texsize, address_mode) );
     auto f_1  = InternalT( linear(ReturnT(), InternalT(), tex, h1, texsize, address_mode) );
@@ -125,6 +128,7 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
+    typename SizeT,
     typename W0,
     typename W1,
     typename W2,
@@ -135,7 +139,7 @@ inline ReturnT cubic(
         InternalT                               /* */,
         TexelT const*                           tex,
         FloatT                                  coord,
-        FloatT                                  texsize,
+        SizeT                                   texsize,
         std::array<tex_address_mode, 1> const&  address_mode,
         W0                                      w0,
         W1                                      w1,
@@ -145,7 +149,7 @@ inline ReturnT cubic(
 {
     coord = map_tex_coord(coord, texsize, address_mode);
 
-    auto x = coord * texsize - FloatT(0.5);
+    auto x = coord * convert_to_float(texsize) - FloatT(0.5);
     auto floorx = floor(x);
     auto fracx = x - floor(x);
 
@@ -159,7 +163,7 @@ inline ReturnT cubic(
 
     for (size_t i = 0; i < 4; ++i)
     {
-        pos[i] = clamp(pos[i], FloatT(0.0), texsize - FloatT(1.0));
+        pos[i] = clamp(pos[i], FloatT(0.0), convert_to_float(texsize - 1));
     }
 
     auto sample = [&](int i) -> InternalT
@@ -179,14 +183,15 @@ template <
     typename ReturnT,
     typename InternalT,
     typename TexelT,
-    typename FloatT
+    typename FloatT,
+    typename SizeT
     >
 inline ReturnT tex1D_impl_choose_filter(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const&                           tex,
         FloatT                                  coord,
-        FloatT                                  texsize,
+        SizeT                                   texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -255,7 +260,7 @@ template <typename T>
 inline T tex1D_impl_expand_types(
         T const*                                tex,
         float                                   coord,
-        float                                   texsize,
+        int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -278,7 +283,7 @@ template <typename T>
 inline vector<3, T> tex1D_impl_expand_types(
         vector<3, T> const*                     tex,
         float                                   coord,
-        float                                   texsize,
+        int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -301,7 +306,7 @@ template <typename T>
 inline vector<4, T> tex1D_impl_expand_types(
         vector<4, T> const*                     tex,
         float                                   coord,
-        float                                   texsize,
+        int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -327,7 +332,7 @@ template <typename T>
 inline T tex1D_impl_expand_types(
         T const*                                tex,
         double                                  coord,
-        double                                  texsize,
+        int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -350,7 +355,7 @@ template <typename T>
 inline vector<3, T> tex1D_impl_expand_types(
         vector<3, T> const*                     tex,
         double                                  coord,
-        double                                  texsize,
+        int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -373,7 +378,7 @@ template <typename T>
 inline vector<4, T> tex1D_impl_expand_types(
         vector<4, T> const*                     tex,
         double                                  coord,
-        double                                  texsize,
+        int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -399,7 +404,7 @@ template <typename T>
 inline vector<4, simd::float4> tex1D_impl_expand_types(
         vector<4, T> const*                     tex,
         simd::float4 const&                     coord,
-        simd::float4 const&                     texsize,
+        simd::int4 const&                       texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -424,7 +429,7 @@ template <typename T>
 inline vector<4, simd::float8> tex1D_impl_expand_types(
         vector<4, T> const*                     tex,
         simd::float8 const&                     coord,
-        simd::float8 const&                     texsize,
+        simd::int8 const&                       texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -451,7 +456,7 @@ inline vector<4, simd::float8> tex1D_impl_expand_types(
 inline simd::float4 tex1D_impl_expand_types(
         simd::float4 const*                     tex,
         float                                   coord,
-        float                                   texsize,
+        int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -487,7 +492,7 @@ inline auto tex1D(Tex const& tex, FloatT coord)
 {
     static_assert(Tex::dimensions == 1, "Incompatible texture type");
 
-    auto texsize = FloatT( tex.width() );
+    int texsize = static_cast<int>(tex.width());
 
     return tex1D_impl_expand_types(
             tex.data(),
