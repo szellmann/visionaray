@@ -25,7 +25,12 @@ inline T index(T x, T y, T z, vector<3, U> texsize)
 }
 
 
-template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT nearest(
         ReturnT                                 /* */,
         InternalT                               /* */,
@@ -35,24 +40,25 @@ inline ReturnT nearest(
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {
-    coord = map_tex_coord(coord, address_mode);
+    coord = map_tex_coord(coord, texsize, address_mode);
 
     vector<3, FloatT> lo(
-            floor(coord.x * texsize.x),
+            floor(coord.x * texsize.x), // TODO: use integer truncation
             floor(coord.y * texsize.y),
             floor(coord.z * texsize.z)
             );
 
-    lo[0] = clamp(lo[0], FloatT(0.0f), texsize[0] - 1);
-    lo[1] = clamp(lo[1], FloatT(0.0f), texsize[1] - 1);
-    lo[2] = clamp(lo[2], FloatT(0.0f), texsize[2] - 1);
-
-    auto idx = index(convert_to_int(lo[0]), convert_to_int(lo[1]), convert_to_int(lo[2]), texsize);
+    auto idx = index(lo[0], lo[1], lo[2], texsize);
     return point(tex, idx, ReturnT());
 }
 
 
-template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
@@ -62,31 +68,35 @@ inline ReturnT linear(
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {
-    coord = map_tex_coord(coord, address_mode);
+    auto coord1 = map_tex_coord(
+            coord - FloatT(0.5) / texsize,
+            texsize,
+            address_mode
+            );
 
-    vector<3, FloatT> texcoordf( coord * texsize - FloatT(0.5) );
+    auto coord2 = map_tex_coord(
+            coord + FloatT(0.5) / texsize,
+            texsize,
+            address_mode
+            );
 
-    texcoordf[0] = clamp( texcoordf[0], FloatT(0.0), texsize[0] - 1 );
-    texcoordf[1] = clamp( texcoordf[1], FloatT(0.0), texsize[1] - 1 );
-    texcoordf[2] = clamp( texcoordf[2], FloatT(0.0), texsize[2] - 1 );
-
-    vector<3, FloatT> lo( floor(texcoordf[0]), floor(texcoordf[1]), floor(texcoordf[2]) );
-    vector<3, FloatT> hi( ceil(texcoordf[0]),  ceil(texcoordf[1]),  ceil(texcoordf[2]) );
+    auto lo = floor(coord1 * texsize);
+    auto hi = floor(coord2 * texsize);
 
     InternalT samples[8] =
     {
-        InternalT( point(tex, index( convert_to_int(lo.x), convert_to_int(lo.y), convert_to_int(lo.z), texsize ), ReturnT()) ),
-        InternalT( point(tex, index( convert_to_int(hi.x), convert_to_int(lo.y), convert_to_int(lo.z), texsize ), ReturnT()) ),
-        InternalT( point(tex, index( convert_to_int(lo.x), convert_to_int(hi.y), convert_to_int(lo.z), texsize ), ReturnT()) ),
-        InternalT( point(tex, index( convert_to_int(hi.x), convert_to_int(hi.y), convert_to_int(lo.z), texsize ), ReturnT()) ),
-        InternalT( point(tex, index( convert_to_int(lo.x), convert_to_int(lo.y), convert_to_int(hi.z), texsize ), ReturnT()) ),
-        InternalT( point(tex, index( convert_to_int(hi.x), convert_to_int(lo.y), convert_to_int(hi.z), texsize ), ReturnT()) ),
-        InternalT( point(tex, index( convert_to_int(lo.x), convert_to_int(hi.y), convert_to_int(hi.z), texsize ), ReturnT()) ),
-        InternalT( point(tex, index( convert_to_int(hi.x), convert_to_int(hi.y), convert_to_int(hi.z), texsize ), ReturnT()) )
+        InternalT( point(tex, index( lo.x, lo.y, lo.z, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( hi.x, lo.y, lo.z, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( lo.x, hi.y, lo.z, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( hi.x, hi.y, lo.z, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( lo.x, lo.y, hi.z, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( hi.x, lo.y, hi.z, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( lo.x, hi.y, hi.z, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( hi.x, hi.y, hi.z, texsize ), ReturnT()) )
     };
 
 
-    auto uvw = texcoordf - lo;
+    auto uvw = coord1 * texsize - lo;
 
     auto p1  = lerp(samples[0], samples[1], uvw[0]);
     auto p2  = lerp(samples[2], samples[3], uvw[0]);
@@ -96,11 +106,16 @@ inline ReturnT linear(
     auto p12 = lerp(p1, p2, uvw[1]);
     auto p34 = lerp(p3, p4, uvw[1]);
 
-    return lerp(p12, p34, uvw[2]);
+    return ReturnT(lerp(p12, p34, uvw[2]));
 }
 
 
-template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT cubic8(
         ReturnT                                 /* */,
         InternalT                               /* */,
@@ -172,8 +187,8 @@ inline ReturnT cubic8(
 template <
     typename ReturnT,
     typename InternalT,
-    typename FloatT,
     typename TexelT,
+    typename FloatT,
     typename W0,
     typename W1,
     typename W2,
@@ -192,7 +207,7 @@ inline ReturnT cubic(
         W3                                      w3
         )
 {
-    coord = map_tex_coord(coord, address_mode);
+    coord = map_tex_coord(coord, texsize, address_mode);
 
     auto x = coord.x * texsize.x - FloatT(0.5);
     auto floorx = floor(x);
@@ -263,7 +278,12 @@ inline ReturnT cubic(
 // Dispatch function to choose among filtering algorithms
 //
 
-template <typename ReturnT, typename FloatT, typename TexelT, typename InternalT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT tex3D_impl_choose_filter(
         ReturnT                                 /* */,
         InternalT                               /* */,

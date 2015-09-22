@@ -18,7 +18,12 @@ namespace detail
 {
 
 
-template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT nearest(
         ReturnT                                 /* */,
         InternalT                               /* */,
@@ -28,15 +33,19 @@ inline ReturnT nearest(
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
-    coord = map_tex_coord(coord, address_mode);
+    coord = map_tex_coord(coord, texsize, address_mode);
 
-    FloatT lo = floor(coord * texsize);
-    lo = clamp(lo, FloatT(0.0f), texsize - 1);
+    FloatT lo = floor(coord * texsize); // TODO: use integer truncation
     return point(tex, lo, ReturnT());
 }
 
 
-template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
@@ -46,13 +55,20 @@ inline ReturnT linear(
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
-    coord = map_tex_coord(coord, address_mode);
+    auto coord1 = map_tex_coord(
+            coord - FloatT(0.5) / texsize,
+            texsize,
+            address_mode
+            );
 
-    FloatT texcoordf( coord * texsize - FloatT(0.5) );
-    texcoordf = clamp( texcoordf, FloatT(0.0), texsize - 1 );
+    auto coord2 = map_tex_coord(
+            coord + FloatT(0.5) / texsize,
+            texsize,
+            address_mode
+            );
 
-    FloatT lo = floor(texcoordf);
-    FloatT hi = ceil(texcoordf);
+    auto lo = floor(coord1 * texsize); // TODO: use integer truncation
+    auto hi = floor(coord2 * texsize);
 
 
     InternalT samples[2] =
@@ -61,13 +77,18 @@ inline ReturnT linear(
         InternalT( point(tex, hi, ReturnT()) )
     };
 
-    auto u = texcoordf - lo;
+    auto u = coord1 * texsize - lo;
 
     return ReturnT(lerp(samples[0], samples[1], u));
 }
 
 
-template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT cubic2(
         ReturnT                                 /* */,
         InternalT                               /* */,
@@ -102,8 +123,8 @@ inline ReturnT cubic2(
 template <
     typename ReturnT,
     typename InternalT,
-    typename FloatT,
     typename TexelT,
+    typename FloatT,
     typename W0,
     typename W1,
     typename W2,
@@ -122,7 +143,7 @@ inline ReturnT cubic(
         W3                                      w3
         )
 {
-    coord = map_tex_coord(coord, address_mode);
+    coord = map_tex_coord(coord, texsize, address_mode);
 
     auto x = coord * texsize - FloatT(0.5);
     auto floorx = floor(x);
@@ -154,7 +175,12 @@ inline ReturnT cubic(
 // Dispatch function to choose among filtering algorithms
 //
 
-template <typename ReturnT, typename FloatT, typename TexelT, typename InternalT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT tex1D_impl_choose_filter(
         ReturnT                                 /* */,
         InternalT                               /* */,

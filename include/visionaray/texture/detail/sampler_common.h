@@ -22,9 +22,11 @@ namespace detail
 // Remap tex coord based on address mode
 //
 
-template <typename T>
-T map_tex_coord(T const& coord, tex_address_mode mode)
+template <typename F, typename I>
+F map_tex_coord(F const& coord, I const& texsize, tex_address_mode mode)
 {
+    F N = convert_to_float(texsize);
+
     switch (mode)
     {
 
@@ -34,24 +36,28 @@ T map_tex_coord(T const& coord, tex_address_mode mode)
     case Clamp:
         // fall-through
     default:
-        return clamp( coord, T(0.0), T(1.0) );
+        return clamp( coord, F(0.0), F(1.0) - F(1.0) / N );
     }
 }
 
-template <typename T>
-T map_tex_coord(T const& coord, std::array<tex_address_mode, 1> const& mode)
+template <typename F, typename I>
+F map_tex_coord(F const& coord, I const& texsize, std::array<tex_address_mode, 1> const& mode)
 {
-    return map_tex_coord(coord, mode[0]);
+    return map_tex_coord(coord, texsize, mode[0]);
 }
 
-template <size_t Dim, typename T>
-vector<Dim, T> map_tex_coord(vector<Dim, T> const& coord, std::array<tex_address_mode, Dim> const& mode)
+template <size_t Dim, typename F, typename I>
+vector<Dim, F> map_tex_coord(
+        vector<Dim, F> const&                       coord,
+        vector<Dim, I> const&                       texsize,
+        std::array<tex_address_mode, Dim> const&    mode
+        )
 {
-    vector<Dim, T> result;
+    vector<Dim, F> result;
 
     for (size_t d = 0; d < Dim; ++d)
     {
-        result[d] = map_tex_coord( coord[d], mode[d] );
+        result[d] = map_tex_coord( coord[d], texsize[d], mode[d] );
     }
 
     return result;

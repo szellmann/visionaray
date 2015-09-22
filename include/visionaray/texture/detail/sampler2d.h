@@ -21,7 +21,12 @@ inline T index(T x, T y, vector<2, U> texsize)
 }
 
 
-template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT nearest(
         ReturnT                                 /* */,
         InternalT                               /* */,
@@ -31,22 +36,24 @@ inline ReturnT nearest(
         std::array<tex_address_mode, 2> const&  address_mode
         )
 {
-    coord = map_tex_coord(coord, address_mode);
+    coord = map_tex_coord(coord, texsize, address_mode);
 
     vector<2, FloatT> lo(
-            floor(coord.x * texsize.x),
+            floor(coord.x * texsize.x), // TODO: use integer truncation
             floor(coord.y * texsize.y)
             );
-
-    lo[0] = clamp(lo[0], FloatT(0.0f), texsize[0] - 1);
-    lo[1] = clamp(lo[1], FloatT(0.0f), texsize[1] - 1);
 
     FloatT idx = index(convert_to_int(lo[0]), convert_to_int(lo[1]), texsize);
     return point(tex, idx, ReturnT());
 }
 
 
-template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
@@ -56,26 +63,31 @@ inline ReturnT linear(
         std::array<tex_address_mode, 2> const&  address_mode
         )
 {
-    coord = map_tex_coord(coord, address_mode);
+    auto coord1 = map_tex_coord(
+            coord - FloatT(0.5) / texsize,
+            texsize,
+            address_mode
+            );
 
-    vector<2, FloatT> texcoordf( coord * texsize - FloatT(0.5) );
+    auto coord2 = map_tex_coord(
+            coord + FloatT(0.5) / texsize,
+            texsize,
+            address_mode
+            );
 
-    texcoordf[0] = clamp( texcoordf[0], FloatT(0.0), texsize[0] - 1 );
-    texcoordf[1] = clamp( texcoordf[1], FloatT(0.0), texsize[1] - 1 );
-
-    vector<2, FloatT> lo( floor(texcoordf[0]), floor(texcoordf[1]) );
-    vector<2, FloatT> hi( ceil(texcoordf[0]),  ceil(texcoordf[1]) );
+    auto lo = floor(coord1 * texsize);
+    auto hi = floor(coord2 * texsize);
 
     InternalT samples[4] =
     {
-        InternalT( point(tex, index( convert_to_int(lo.x), convert_to_int(lo.y), texsize ), ReturnT()) ),
-        InternalT( point(tex, index( convert_to_int(hi.x), convert_to_int(lo.y), texsize ), ReturnT()) ),
-        InternalT( point(tex, index( convert_to_int(lo.x), convert_to_int(hi.y), texsize ), ReturnT()) ),
-        InternalT( point(tex, index( convert_to_int(hi.x), convert_to_int(hi.y), texsize ), ReturnT()) )
+        InternalT( point(tex, index( lo.x, lo.y, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( hi.x, lo.y, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( lo.x, hi.y, texsize ), ReturnT()) ),
+        InternalT( point(tex, index( hi.x, hi.y, texsize ), ReturnT()) )
     };
 
 
-    auto uv = texcoordf - lo;
+    auto uv = coord1 * texsize - lo;
 
     auto p1 = lerp(samples[0], samples[1], uv[0]);
     auto p2 = lerp(samples[2], samples[3], uv[0]);
@@ -84,7 +96,12 @@ inline ReturnT linear(
 }
 
 
-template <typename ReturnT, typename InternalT, typename FloatT, typename TexelT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT cubic4(
         ReturnT                                 /* */,
         InternalT                               /* */,
@@ -136,8 +153,8 @@ inline ReturnT cubic4(
 template <
     typename ReturnT,
     typename InternalT,
-    typename FloatT,
     typename TexelT,
+    typename FloatT,
     typename W0,
     typename W1,
     typename W2,
@@ -156,7 +173,7 @@ inline ReturnT cubic(
         W3                                      w3
         )
 {
-    coord = map_tex_coord(coord, address_mode);
+    coord = map_tex_coord(coord, texsize, address_mode);
 
     auto x = coord.x * texsize.x - FloatT(0.5);
     auto floorx = floor(x);
@@ -202,7 +219,12 @@ inline ReturnT cubic(
 // Dispatch function to choose among filtering algorithms
 //
 
-template <typename ReturnT, typename FloatT, typename TexelT, typename InternalT>
+template <
+    typename ReturnT,
+    typename InternalT,
+    typename TexelT,
+    typename FloatT
+    >
 inline ReturnT tex2D_impl_choose_filter(
         ReturnT                                 /* */,
         InternalT                               /* */,
