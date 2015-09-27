@@ -45,6 +45,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/bvh/traverse.inl
     ${HEADER_DIR}/detail/spd/blackbody.h
     ${HEADER_DIR}/detail/spd/d65.h
+    ${HEADER_DIR}/detail/algorithm.h
     ${HEADER_DIR}/detail/allocator.h
     ${HEADER_DIR}/detail/color_conversion.h
     ${HEADER_DIR}/detail/compiler.h
