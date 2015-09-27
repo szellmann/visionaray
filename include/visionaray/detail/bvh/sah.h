@@ -128,7 +128,7 @@ void split_primitive(aabb& L, aabb& R, float plane, int axis, Primitive const& p
     VSNRAY_UNUSED(R);
     VSNRAY_UNUSED(plane);
     VSNRAY_UNUSED(axis);
-    VNNRAY_UNUSED(prim);
+    VSNRAY_UNUSED(prim);
 
     static_assert(sizeof(Primitive) == 0, "not implemented");
 }

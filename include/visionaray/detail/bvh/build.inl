@@ -10,6 +10,7 @@
 #include <visionaray/math/aabb.h>
 
 #include "sah.h"
+#include "../algorithm.h"
 
 
 namespace visionaray
@@ -24,19 +25,17 @@ namespace detail
 // build_tree_impl
 //
 
-template <typename Tree, typename Builder, typename LeafInfo, typename Data>
+template <typename Nodes, typename Indices, typename Builder, typename LeafInfo, typename Data>
 void build_tree_impl(
         int             index,
-        Tree&           tree,
+        Nodes&          nodes,
+        Indices&        indices,
         Builder&        builder,
         LeafInfo const& leaf,
         Data const&     data,
         int             max_leaf_size
         )
 {
-    auto& nodes = tree.nodes();
-    auto& indices = tree.indices();
-
     typename Builder::leaf_infos childs;
 
     auto split = builder.split(childs, leaf, data, max_leaf_size);
@@ -53,7 +52,8 @@ void build_tree_impl(
         // Construct right subtree
         build_tree_impl(
                 first_child_index + 1,
-                tree,
+                nodes,
+                indices,
                 builder,
                 childs[1],
                 data,
@@ -63,7 +63,8 @@ void build_tree_impl(
         // Construct left subtree
         build_tree_impl(
                 first_child_index + 0,
-                tree,
+                nodes,
+                indices,
                 builder,
                 childs[0],
                 data,
@@ -84,8 +85,54 @@ void build_tree_impl(
 // build_tree
 //
 
+template <typename Tree, typename Builder, typename Root, typename I>
+void build_tree_work(Tree& tree, Builder& builder, Root root, I first, I /*last*/, int max_leaf_size, std::true_type/*is_index_bvh*/)
+{
+    build_tree_impl(
+            0, // root node index
+            tree.nodes(),
+            tree.indices(),
+            builder,
+            root,
+            first, // primitive data
+            max_leaf_size
+            );
+}
+
+template <typename Tree, typename Builder, typename Root, typename I>
+void build_tree_work(Tree& tree, Builder& builder, Root root, I first, I /*last*/, int max_leaf_size, std::false_type/*is_index_bvh*/)
+{
+    // TODO:
+    // Maybe rewrite the builder to directly shuffle the primitives?!?!
+
+    std::vector<unsigned> indices;
+
+    //assert(builder.use_spatial_splits == false);
+
+    auto uss = builder.use_spatial_splits;
+
+    builder.use_spatial_splits = false;
+
+    build_tree_impl(
+            0, // root node index
+            tree.nodes(),
+            indices,
+            builder,
+            root,
+            first, // primitive data
+            max_leaf_size
+            );
+
+    builder.use_spatial_splits = uss;
+
+    assert(indices.size() == tree.primitives().size());
+
+    // Reorder the primitives according to the indices.
+    algo::reorder_n(indices.begin(), tree.primitives().begin(), indices.size());
+}
+
 template <typename Tree, typename Builder, typename I>
-void build_tree(Tree& tree, Builder& builder, I first, I last, int max_leaf_size = -1 )
+void build_tree(Tree& tree, Builder& builder, I first, I last, int max_leaf_size = -1)
 {
     if (max_leaf_size <= 0)
     {
@@ -108,14 +155,7 @@ void build_tree(Tree& tree, Builder& builder, I first, I last, int max_leaf_size
     // Create root node
     tree.nodes().emplace_back();
 
-    build_tree_impl(
-            0, // root node index
-            tree,
-            builder,
-            root,
-            first, // primitive data
-            max_leaf_size
-            );
+    build_tree_work(tree, builder, root, first, last, max_leaf_size, is_index_bvh<Tree>());
 }
 
 
