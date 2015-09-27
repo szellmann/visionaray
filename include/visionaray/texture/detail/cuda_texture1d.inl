@@ -67,7 +67,7 @@ public:
     cuda_texture& operator=(cuda_texture&&) = default;
 #else
     cuda_texture(cuda_texture&& rhs)
-        : buffer_(std::move(rhs.buffer_))
+        : array_(std::move(rhs.array_))
         , texture_obj_(std::move(rhs.texture_obj_))
         , width_(rhs.width_)
     {
@@ -75,7 +75,7 @@ public:
 
     cuda_texture& operator=(cuda_texture&& rhs)
     {
-        buffer_ = std::move(rhs.buffer_);
+        array_ = std::move(rhs.array_);
         texture_obj_ = std::move(rhs.texture_obj_);
         width_ = rhs.width_;
 
