@@ -141,6 +141,8 @@ private:
 
 public:
 
+    bvh_ref_t() = default;
+
     bvh_ref_t(P* p0, P* p1, N* n0, N* n1)
         : primitives_first(p0)
         , primitives_last(p1)
@@ -236,8 +238,8 @@ public:
     bvh_t() = default;
 
     template <typename P>
-    explicit bvh_t(P* /*prims*/, size_t count)
-        : primitives_(count)
+    explicit bvh_t(P* prims, size_t count)
+        : primitives_(prims, prims + count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
     {
     }
@@ -381,14 +383,22 @@ struct is_bvh : std::false_type {};
 template <typename T1, typename T2>
 struct is_bvh<bvh_t<T1, T2>> : std::true_type {};
 
-template <typename T1, typename T2, typename T3>
-struct is_bvh<index_bvh_t<T1, T2, T3>> : std::true_type {};
-
 template <typename T>
 struct is_bvh<bvh_ref_t<T>> : std::true_type {};
 
 template <typename T>
-struct is_bvh<index_bvh_ref_t<T>> : std::true_type {};
+struct is_index_bvh : std::false_type {};
+
+template <typename T1, typename T2, typename T3>
+struct is_index_bvh<index_bvh_t<T1, T2, T3>> : std::true_type {};
+
+template <typename T>
+struct is_index_bvh<index_bvh_ref_t<T>> : std::true_type {};
+
+template <typename T>
+struct is_any_bvh : std::integral_constant<bool, is_bvh<T>::value || is_index_bvh<T>::value>
+{
+};
 
 
 template <typename P>

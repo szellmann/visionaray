@@ -30,7 +30,7 @@ struct basic_intersector
         return intersect(ray, prim);
     }
 
-    template <typename R, typename P, typename = typename std::enable_if<is_bvh<P>::value>::type>
+    template <typename R, typename P, typename = typename std::enable_if<is_any_bvh<P>::value>::type>
     VSNRAY_FUNC
     auto operator()(R const& ray, P const& prim)
         -> decltype( intersect(ray, prim, std::declval<Derived&>()) )
