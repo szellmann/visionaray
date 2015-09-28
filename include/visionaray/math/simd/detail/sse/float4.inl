@@ -309,6 +309,29 @@ VSNRAY_FORCE_INLINE float4 sqrt(float4 const& v)
     return _mm_sqrt_ps(v);
 }
 
+VSNRAY_FORCE_INLINE mask4 isinf(float4 const& v)
+{
+    VSNRAY_ALIGN(16) float values[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    store(values, v);
+
+    return mask4(
+            std::isinf(values[0]),
+            std::isinf(values[1]),
+            std::isinf(values[2]),
+            std::isinf(values[3])
+            );
+}
+
+VSNRAY_FORCE_INLINE mask4 isnan(float4 const& v)
+{
+    return v != v;
+}
+
+VSNRAY_FORCE_INLINE mask4 isfinite(float4 const& v)
+{
+    return !(isinf(v) | isnan(v));
+}
+
 
 //-------------------------------------------------------------------------------------------------
 //

@@ -234,5 +234,32 @@ VSNRAY_FORCE_INLINE float8 sqrt(float8 const& v)
     return _mm256_sqrt_ps(v);
 }
 
+VSNRAY_FORCE_INLINE mask8 isinf(float8 const& v)
+{
+    VSNRAY_ALIGN(32) float values[8] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+    store(values, v);
+
+    return mask8(
+            std::isinf(values[0]),
+            std::isinf(values[1]),
+            std::isinf(values[2]),
+            std::isinf(values[3]),
+            std::isinf(values[4]),
+            std::isinf(values[5]),
+            std::isinf(values[6]),
+            std::isinf(values[7])
+            );
+}
+
+VSNRAY_FORCE_INLINE mask8 isnan(float8 const& v)
+{
+    return v != v;
+}
+
+VSNRAY_FORCE_INLINE mask8 isfinite(float8 const& v)
+{
+    return !(isinf(v) | isnan(v));
+}
+
 } // simd
 } // MATH_NAMESPACE

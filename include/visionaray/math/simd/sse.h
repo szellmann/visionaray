@@ -89,9 +89,9 @@ public:
 } // simd
 } // MATH_NAMESPACE
 
+#include "detail/sse/mask4.inl"
 #include "detail/sse/float4.inl"
 #include "detail/sse/int4.inl"
-#include "detail/sse/mask4.inl"
 #include "detail/basic_float.inl"
 #include "detail/basic_int.inl"
 #include "detail/basic_mask.inl"
