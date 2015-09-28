@@ -240,5 +240,8 @@ void viewer_base::on_mouse_up(visionaray::mouse_event const& event)
 
 void viewer_base::on_resize(int w, int h)
 {
+    impl_->width = w;
+    impl_->height = h;
+
     glViewport(0, 0, w, h);
 }
