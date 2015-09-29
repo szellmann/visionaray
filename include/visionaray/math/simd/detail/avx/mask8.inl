@@ -116,5 +116,22 @@ VSNRAY_FORCE_INLINE mask8 operator^(mask8 const& a, mask8 const& b)
     return _mm256_xor_ps(a.f, b.f);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Logical operations
+//
+
+VSNRAY_FORCE_INLINE mask8 operator&&(mask8 const& a, mask8 const& b)
+{
+    // Ok because masks only store booleans
+    return a & b;
+}
+
+VSNRAY_FORCE_INLINE mask8 operator||(mask8 const& a, mask8 const& b)
+{
+    // Ok because masks only store booleans
+    return a | b;
+}
+
 } // simd
 } // MATH_NAMESPACE

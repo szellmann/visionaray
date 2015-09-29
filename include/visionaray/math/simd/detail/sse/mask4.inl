@@ -103,5 +103,22 @@ VSNRAY_FORCE_INLINE mask4 operator^(mask4 const& a, mask4 const& b)
     return _mm_xor_si128(a.i, b.i);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Logical operations
+//
+
+VSNRAY_FORCE_INLINE mask4 operator&&(mask4 const& a, mask4 const& b)
+{
+    // Ok because masks only store booleans
+    return a & b;
+}
+
+VSNRAY_FORCE_INLINE mask4 operator||(mask4 const& a, mask4 const& b)
+{
+    // Ok because masks only store booleans
+    return a | b;
+}
+
 } // simd
 } // MATH_NAMESPACE
