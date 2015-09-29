@@ -124,12 +124,21 @@ Int remap_index(Int idx, Int size)
 void store_triangle(model& result, vertex_vector const& vertices, int i1, int i2, int i3)
 {
     triangle_type tri;
-    tri.prim_id = static_cast<unsigned>(result.primitives.size());
-    tri.geom_id = result.materials.size() == 0 ? 0 : static_cast<unsigned>(result.materials.size() - 1);
+
     tri.v1 = vertices[i1];
     tri.e1 = vertices[i2] - tri.v1;
     tri.e2 = vertices[i3] - tri.v1;
-    result.primitives.push_back(tri);
+
+    if (length(cross(tri.e1, tri.e2)) < numeric_limits<float>::epsilon())
+    {
+        // TODO: implement some kind of error logging
+    }
+    else
+    {
+        tri.prim_id = static_cast<unsigned>(result.primitives.size());
+        tri.geom_id = result.materials.size() == 0 ? 0 : static_cast<unsigned>(result.materials.size() - 1);
+        result.primitives.push_back(tri);
+    }
 }
 
 

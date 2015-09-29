@@ -184,11 +184,19 @@ public:
         auto v3 = (*in.vertices)[i3] * in.trans_mat;
 
         triangle_type tri;
-        tri.prim_id = static_cast<unsigned>(out.triangles->size());
-        tri.geom_id = in.geom_id;
+
         tri.v1 = osg_cast(v1);
         tri.e1 = osg_cast(v2) - tri.v1;
         tri.e2 = osg_cast(v3) - tri.v1;
+
+        if (length(cross(tri.e1, tri.e2)) < numeric_limits<float>::epsilon())
+        {
+            // TODO: implement some kind of error logging
+            return;
+        }
+
+        tri.prim_id = static_cast<unsigned>(out.triangles->size());
+        tri.geom_id = in.geom_id;
         out.triangles->push_back(tri);
 
 
