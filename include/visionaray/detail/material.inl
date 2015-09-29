@@ -10,6 +10,22 @@ namespace simd
 // Functions to pack four materials into a single SIMD material
 //
 
+inline emissive<float4> pack(
+        emissive<float> const& m1,
+        emissive<float> const& m2,
+        emissive<float> const& m3,
+        emissive<float> const& m4
+        )
+{
+    emissive<float4> result;
+
+    result.set_ce( pack(m1.get_ce(), m2.get_ce(), m3.get_ce(), m4.get_ce()) );
+    result.set_ls( float4(m1.get_ls(), m2.get_ls(), m3.get_ls(), m4.get_ls()) );
+
+    return result;
+}
+
+
 inline matte<float4> pack(
         matte<float> const& m1,
         matte<float> const& m2,
@@ -63,32 +79,6 @@ inline plastic<float4> pack(
             m3.get_specular_exp(),
             m4.get_specular_exp()
             ) );
-
-    return result;
-}
-
-inline emissive<float4> pack(
-        emissive<float> const& m1,
-        emissive<float> const& m2,
-        emissive<float> const& m3,
-        emissive<float> const& m4
-        )
-{
-    emissive<float4> result;
-
-    result.set_ce(
-            pack(m1.get_ce(),
-            m2.get_ce(),
-            m3.get_ce(),
-            m4.get_ce())
-            );
-
-    result.set_ls( float4(
-            m1.get_ls(),
-            m2.get_ls(),
-            m3.get_ls(),
-            m4.get_ls())
-            );
 
     return result;
 }
@@ -221,36 +211,18 @@ inline plastic<float8> pack(
     for (size_t d = 0; d < C::num_samples; ++d)
     {
         ca8[d] = float8(
-                ca[0][d],
-                ca[1][d],
-                ca[2][d],
-                ca[3][d],
-                ca[4][d],
-                ca[5][d],
-                ca[6][d],
-                ca[7][d]
+                ca[0][d], ca[1][d], ca[2][d], ca[3][d],
+                ca[4][d], ca[5][d], ca[6][d], ca[7][d]
                 );
 
         cd8[d] = float8(
-                cd[0][d],
-                cd[1][d],
-                cd[2][d],
-                cd[3][d],
-                cd[4][d],
-                cd[5][d],
-                cd[6][d],
-                cd[7][d]
+                cd[0][d], cd[1][d], cd[2][d], cd[3][d],
+                cd[4][d], cd[5][d], cd[6][d], cd[7][d]
                 );
 
         cs8[d] = float8(
-                cs[0][d],
-                cs[1][d],
-                cs[2][d],
-                cs[3][d],
-                cs[4][d],
-                cs[5][d],
-                cs[6][d],
-                cs[7][d]
+                cs[0][d], cs[1][d], cs[2][d], cs[3][d],
+                cs[4][d], cs[5][d], cs[6][d], cs[7][d]
                 );
     }
 
