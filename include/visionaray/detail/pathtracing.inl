@@ -84,7 +84,7 @@ struct kernel
                 auto emissive = has_emissive_material(surf);
 
                 src = mul( src, dot(n, refl_dir) / pdf, !emissive, src ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
-                dst = mul( dst, src, active_rays, dst );
+                dst = mul( dst, src, active_rays && !zero_pdf, dst );
                 dst = mul( dst, C(0.0), zero_pdf && active_rays, dst );
 
                 active_rays &= !emissive;
