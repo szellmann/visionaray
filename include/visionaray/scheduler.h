@@ -24,7 +24,7 @@ namespace pixel_sampler
 {
 struct uniform_type {};
 struct jittered_type {};
-struct jittered_blend_type {};
+struct jittered_blend_type : jittered_type {};
 }
 
 

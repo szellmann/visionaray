@@ -73,13 +73,22 @@ struct tiled_sched<R>::impl
             K               kernel,
             SP              sparams,
             Sampler&        samp,
+            unsigned        frame_num,
             Args&&...       args
             )
     {
-        sample_pixel<R>(
+        auto r = detail::make_primary_ray<R>(
+                typename SP::pixel_sampler_type(),
+                samp,
+                args...
+                );
+
+        sample_pixel(
+                r,
                 kernel,
                 typename SP::pixel_sampler_type(),
                 samp,
+                frame_num,
                 sparams.rt.ref(),
                 std::forward<Args>(args)...
                 );
@@ -91,14 +100,23 @@ struct tiled_sched<R>::impl
             K               kernel,
             SP              sparams,
             Sampler&        samp,
+            unsigned        frame_num,
             Args&&...       args)
     {
-        sample_pixel<R>(
+        auto r = detail::make_primary_ray<R>(
+                typename SP::pixel_sampler_type(),
+                samp,
+                args...
+                );
+
+        sample_pixel(
+                r,
                 detail::have_intersector_tag(),
                 sparams.intersector,
                 kernel,
                 typename SP::pixel_sampler_type(),
                 samp,
+                frame_num,
                 sparams.rt.ref(),
                 std::forward<Args>(args)...
                 );
@@ -240,9 +258,9 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                     kernel,
                     sparams,
                     samp,
+                    frame_num,
                     x,
                     y,
-                    frame_num,
                     viewport,
                     view_matrix,
                     inv_view_matrix,
@@ -298,9 +316,9 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                     kernel,
                     sparams,
                     samp,
+                    frame_num,
                     x,
                     y,
-                    frame_num,
                     viewport,
                     eye,
                     cam_u,

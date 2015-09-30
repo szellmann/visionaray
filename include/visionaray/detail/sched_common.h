@@ -337,12 +337,12 @@ inline unsigned tic()
 
 
 //-------------------------------------------------------------------------------------------------
-// primary ray generators
+// make primary ray
 //
 
 template <typename R, typename T, typename V>
 VSNRAY_FUNC
-inline R ray_gen(
+inline R make_primary_ray_impl(
         T                   x,
         T                   y,
         V const&            viewport,
@@ -363,7 +363,7 @@ inline R ray_gen(
 
 template <typename R, typename T, typename V>
 VSNRAY_FUNC
-inline R ray_gen(
+inline R make_primary_ray_impl(
         T                       x,
         T                       y,
         V const&                viewport,
@@ -388,23 +388,37 @@ inline R ray_gen(
     return r;
 }
 
-template <typename R, typename ...Args>
+template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline R uniform_ray_gen(unsigned x, unsigned y, Args&&... args)
+inline R make_primary_ray(
+        pixel_sampler::uniform_type /* */,
+        Sampler& samp,
+        unsigned x,
+        unsigned y,
+        Args&&... args
+        )
 {
+    VSNRAY_UNUSED(samp);
+
     using S = typename R::scalar_type;
-    return ray_gen<R>(pixel<S>().x(x), pixel<S>().y(y), args...);
+    return make_primary_ray_impl<R>(pixel<S>().x(x), pixel<S>().y(y), args...);
 }
 
 template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline R jittered_ray_gen(unsigned x, unsigned y, Sampler& samp, Args&&... args)
+inline R make_primary_ray(
+        pixel_sampler::jittered_type /* */,
+        Sampler& samp,
+        unsigned x,
+        unsigned y,
+        Args&&... args
+        )
 {
     using S = typename R::scalar_type;
 
     vector<2, S> jitter( samp.next() - S(0.5), samp.next() - S(0.5) );
 
-    return ray_gen<R>(
+    return make_primary_ray_impl<R>(
             pixel<S>().x(x) + jitter.x,
             pixel<S>().y(y) + jitter.y,
             args...
@@ -449,22 +463,21 @@ template <
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R*                              /* */,
+        R const&                        r,
         K                               kernel,
         pixel_sampler::uniform_type     /* */,
         Sampler&                        samp,
+        unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
-        unsigned                        frame,
         V const&                        viewport,
         Args&&...                       args
         )
 {
     VSNRAY_UNUSED(samp);
-    VSNRAY_UNUSED(frame);
+    VSNRAY_UNUSED(frame_num);
 
-    auto r = uniform_ray_gen<R>(x, y, viewport, args...);
     auto result = kernel(r);
     color_access::store(x, y, viewport, result, rt_ref.color());
 }
@@ -480,22 +493,21 @@ template <
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R*                              /* */,
+        R const&                        r,
         K                               kernel,
         pixel_sampler::uniform_type     /* */,
         Sampler&                        samp,
+        unsigned                        frame_num,
         render_target_ref<CF, DF>       rt_ref,
         unsigned                        x,
         unsigned                        y,
-        unsigned                        frame,
         V const&                        viewport,
         Args&&...                       args
         )
 {
     VSNRAY_UNUSED(samp);
-    VSNRAY_UNUSED(frame);
+    VSNRAY_UNUSED(frame_num);
 
-    auto r = uniform_ray_gen<R>(x, y, viewport, args...);
     auto result = kernel(r);
     result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
     color_access::store(x, y, viewport, result, rt_ref.color(), rt_ref.depth());
@@ -516,21 +528,20 @@ template <
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R*                              /* */,
+        R const&                        r,
         K                               kernel,
         pixel_sampler::jittered_type    /* */,
         Sampler&                        samp,
+        unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
-        unsigned                        frame,
         V const&                        viewport,
         Args&&...                       args
         )
 {
-    VSNRAY_UNUSED(frame);
+    VSNRAY_UNUSED(frame_num);
 
-    auto r      = jittered_ray_gen<R>(x, y, samp, viewport, args...);
     auto result = kernel(r, samp);
     color_access::store(x, y, viewport, result, rt_ref.color());
 }
@@ -550,14 +561,14 @@ template <
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R*                                  /* */,
+        R const&                            r,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
         Sampler&                            samp,
+        unsigned                            frame_num,
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
-        unsigned                            frame,
         V const&                            viewport,
         Args&&...                           args
         )
@@ -565,10 +576,9 @@ inline void sample_pixel_impl(
     using S     = typename R::scalar_type;
     using Color = vector<4, S>;
 
-    auto r      = jittered_ray_gen<R>(x, y, samp, viewport, args...);
     auto result = kernel(r, samp);
-    auto alpha  = S(1.0) / S(frame);
-    if (frame <= 1)
+    auto alpha  = S(1.0) / S(frame_num);
+    if (frame_num <= 1)
     {//TODO: clear method in render target?
         color_access::store(x, y, viewport, Color(0.0), rt_ref.color());
     }
@@ -586,27 +596,26 @@ template <
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R*                                  /* */,
+        R const&                            r,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
         Sampler&                            samp,
+        unsigned                            frame_num,
         render_target_ref<CF, DF>           rt_ref,
         unsigned                            x,
         unsigned                            y,
-        unsigned                            frame,
         V const&                            viewport,
         Args&&...                           args
         )
 {
     using S     = typename R::scalar_type;
 
-    auto r      = jittered_ray_gen<R>(x, y, samp, viewport, args...);
     auto result = kernel(r, samp);
-    auto alpha  = S(1.0) / S(frame);
+    auto alpha  = S(1.0) / S(frame_num);
 
     result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
 
-    if (frame <= 1)
+    if (frame_num <= 1)
     {//TODO: clear method in render target?
         color_access::store(x, y, viewport, result, rt_ref.color(), rt_ref.depth());
     }
@@ -628,15 +637,15 @@ template <
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R*                                  /* */,
+        R const&                            r,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
         Sampler&                            samp,
+        unsigned                            frame_begin,
+        unsigned                            frame_end,
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
-        unsigned                            frame_begin,
-        unsigned                            frame_end,
         V const&                            viewport,
         Args&&...                           args
         )
@@ -650,7 +659,7 @@ inline void sample_pixel_impl(
         {//TODO: clear method in render target?
             color_access::store(x, y, viewport, Color(0.0), rt_ref.color());
         }
-        auto r      = jittered_ray_gen<R>(x, y, samp, viewport, args...);
+
         auto result = kernel(r, samp);
         auto alpha = S(1.0) / S(frame);
         color_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
@@ -664,9 +673,9 @@ inline void sample_pixel_impl(
 
 template <typename R, typename ...Args>
 VSNRAY_FUNC
-inline void sample_pixel_choose_intersector_impl(R*, Args&&... args)
+inline void sample_pixel_choose_intersector_impl(R const& r, Args&&... args)
 {
-    detail::sample_pixel_impl((R*)nullptr, std::forward<Args>(args)...);
+    detail::sample_pixel_impl(r, std::forward<Args>(args)...);
 }
 
 
@@ -695,7 +704,7 @@ struct call_kernel_with_intersector
 template <typename R, typename K, typename Intersector, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_choose_intersector_impl(
-        R*                      /* */,
+        R const&                r,
         have_intersector_tag    /* */,
         Intersector&            isect,
         K                       kernel,
@@ -704,7 +713,7 @@ inline void sample_pixel_choose_intersector_impl(
 {
     auto caller = call_kernel_with_intersector<K, Intersector>(kernel, isect);
     detail::sample_pixel_impl(
-            (R*)nullptr,
+            r,
             caller,
             std::forward<Args>(args)...
             );
@@ -719,9 +728,9 @@ inline void sample_pixel_choose_intersector_impl(
 
 template <typename R, typename ...Args>
 VSNRAY_FUNC
-inline void sample_pixel(Args&&...  args)
+inline void sample_pixel(R const& r, Args&&...  args)
 {
-    detail::sample_pixel_choose_intersector_impl((R*)nullptr, std::forward<Args>(args)...);
+    detail::sample_pixel_choose_intersector_impl(r, std::forward<Args>(args)...);
 }
 
 } // visionaray

@@ -73,14 +73,24 @@ __global__ void render(
     // TODO: support any sampler
     sampler<typename R::scalar_type> samp(detail::cuda_seed());
 
-    sample_pixel<R>(
+    auto r = detail::make_primary_ray<R>(
+            PxSamplerT(),
+            samp,
+            x,
+            y,
+            viewport,
+            args...
+            );
+
+    sample_pixel(
+            r,
             kernel,
             PxSamplerT(),
             samp,
+            frame_num,
             rt_ref,
             x,
             y,
-            frame_num,
             viewport,
             args...
             );
@@ -116,16 +126,26 @@ __global__ void render(
     // TODO: support any sampler
     sampler<typename R::scalar_type> samp(detail::cuda_seed());
 
-    sample_pixel<R>(
+    auto r = detail::make_primary_ray<R>(
+            PxSamplerT(),
+            samp,
+            x,
+            y,
+            viewport,
+            args...
+            );
+
+    sample_pixel(
+            r,
             detail::have_intersector_tag(),
             intersector,
             kernel,
             PxSamplerT(),
             samp,
+            frame_num,
             rt_ref,
             x,
             y,
-            frame_num,
             viewport,
             args...
             );
