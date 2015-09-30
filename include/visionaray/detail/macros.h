@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_MACROS_H
-#define VSNRAY_MACROS_H
+#define VSNRAY_MACROS_H 1
 
 #include "compiler.h"
 
@@ -71,7 +71,11 @@
 
 /*! Verbose way to say that a parameter is not used intentionally
  */
-#define VSNRAY_UNUSED(x) ((void)(x))
+template <typename ...Args>
+VSNRAY_FUNC
+inline void VSNRAY_UNUSED(Args...)
+{
+}
 
 
 /*! Mark code section unreachable

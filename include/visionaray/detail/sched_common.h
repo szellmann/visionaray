@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_DETAIL_SCHED_COMMON_H
-#define VSNRAY_DETAIL_SCHED_COMMON_H
+#define VSNRAY_DETAIL_SCHED_COMMON_H 1
 
 #include <chrono>
 
@@ -477,6 +477,7 @@ inline void sample_pixel_impl(
 {
     VSNRAY_UNUSED(samp);
     VSNRAY_UNUSED(frame_num);
+    VSNRAY_UNUSED(args...);
 
     auto result = kernel(r);
     color_access::store(x, y, viewport, result, rt_ref.color());
@@ -541,6 +542,7 @@ inline void sample_pixel_impl(
         )
 {
     VSNRAY_UNUSED(frame_num);
+    VSNRAY_UNUSED(args...);
 
     auto result = kernel(r, samp);
     color_access::store(x, y, viewport, result, rt_ref.color());
@@ -573,6 +575,8 @@ inline void sample_pixel_impl(
         Args&&...                           args
         )
 {
+    VSNRAY_UNUSED(args...);
+
     using S     = typename R::scalar_type;
     using Color = vector<4, S>;
 
@@ -650,6 +654,8 @@ inline void sample_pixel_impl(
         Args&&...                           args
         )
 {
+    VSNRAY_UNUSED(args...);
+
     using S     = typename R::scalar_type;
     using Color = vector<4, S>;
 
