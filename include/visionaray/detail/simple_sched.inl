@@ -28,14 +28,27 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     {
         for (int x = 0; x < viewport.w; ++x)
         {
-            sample_pixel<R>(
-                    kernel,
+            auto r = detail::make_primary_ray<R>(
                     typename SP::pixel_sampler_type(),
                     samp,
+                    x,
+                    y,
+                    viewport,
+                    view_matrix,
+                    inv_view_matrix,
+                    proj_matrix,
+                    inv_proj_matrix
+                    );
+
+            sample_pixel(
+                    kernel,
+                    typename SP::pixel_sampler_type(),
+                    r,
+                    samp,
+                    frame_num,
                     sched_params.rt.ref(),
                     x,
                     y,
-                    frame_num,
                     viewport,
                     view_matrix,
                     inv_view_matrix,
