@@ -84,9 +84,9 @@ struct tiled_sched<R>::impl
                 );
 
         sample_pixel(
-                r,
                 kernel,
                 typename SP::pixel_sampler_type(),
+                r,
                 samp,
                 frame_num,
                 sparams.rt.ref(),
@@ -110,11 +110,11 @@ struct tiled_sched<R>::impl
                 );
 
         sample_pixel(
-                r,
                 detail::have_intersector_tag(),
                 sparams.intersector,
                 kernel,
                 typename SP::pixel_sampler_type(),
+                r,
                 samp,
                 frame_num,
                 sparams.rt.ref(),

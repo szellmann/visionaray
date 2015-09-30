@@ -454,18 +454,18 @@ VSNRAY_FUNC inline T depth_transform(
 //
 
 template <
+    typename K,
     typename R,
     typename Sampler,
     pixel_format CF,
     typename V,
-    typename K,
     typename ...Args
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R const&                        r,
         K                               kernel,
         pixel_sampler::uniform_type     /* */,
+        R const&                        r,
         Sampler&                        samp,
         unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
@@ -483,19 +483,19 @@ inline void sample_pixel_impl(
 }
 
 template <
+    typename K,
     typename R,
     typename Sampler,
     pixel_format CF,
     pixel_format DF,
     typename V,
-    typename K,
     typename ...Args
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R const&                        r,
         K                               kernel,
         pixel_sampler::uniform_type     /* */,
+        R const&                        r,
         Sampler&                        samp,
         unsigned                        frame_num,
         render_target_ref<CF, DF>       rt_ref,
@@ -519,18 +519,18 @@ inline void sample_pixel_impl(
 //
 
 template <
+    typename K,
     typename R,
     typename Sampler,
     pixel_format CF,
     typename V,
-    typename K,
     typename ...Args
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R const&                        r,
         K                               kernel,
         pixel_sampler::jittered_type    /* */,
+        R const&                        r,
         Sampler&                        samp,
         unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
@@ -552,18 +552,18 @@ inline void sample_pixel_impl(
 //
 
 template <
+    typename K,
     typename R,
     typename Sampler,
     pixel_format CF,
     typename V,
-    typename K,
     typename ...Args
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R const&                            r,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
+        R const&                            r,
         Sampler&                            samp,
         unsigned                            frame_num,
         render_target_ref<CF>               rt_ref,
@@ -586,19 +586,19 @@ inline void sample_pixel_impl(
 }
 
 template <
+    typename K,
     typename R,
     typename Sampler,
     pixel_format CF,
     pixel_format DF,
     typename V,
-    typename K,
     typename ...Args
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R const&                            r,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
+        R const&                            r,
         Sampler&                            samp,
         unsigned                            frame_num,
         render_target_ref<CF, DF>           rt_ref,
@@ -628,18 +628,18 @@ inline void sample_pixel_impl(
 //
 
 template <
+    typename K,
     typename R,
     typename Sampler,
     pixel_format CF,
     typename V,
-    typename K,
     typename ...Args
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        R const&                            r,
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
+        R const&                            r,
         Sampler&                            samp,
         unsigned                            frame_begin,
         unsigned                            frame_end,
@@ -671,11 +671,11 @@ inline void sample_pixel_impl(
 // w/o intersector
 //
 
-template <typename R, typename ...Args>
+template <typename ...Args>
 VSNRAY_FUNC
-inline void sample_pixel_choose_intersector_impl(R const& r, Args&&... args)
+inline void sample_pixel_choose_intersector_impl(Args&&... args)
 {
-    detail::sample_pixel_impl(r, std::forward<Args>(args)...);
+    detail::sample_pixel_impl(std::forward<Args>(args)...);
 }
 
 
@@ -701,10 +701,9 @@ struct call_kernel_with_intersector
     }
 };
 
-template <typename R, typename K, typename Intersector, typename ...Args>
+template <typename K, typename Intersector, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_choose_intersector_impl(
-        R const&                r,
         have_intersector_tag    /* */,
         Intersector&            isect,
         K                       kernel,
@@ -713,7 +712,6 @@ inline void sample_pixel_choose_intersector_impl(
 {
     auto caller = call_kernel_with_intersector<K, Intersector>(kernel, isect);
     detail::sample_pixel_impl(
-            r,
             caller,
             std::forward<Args>(args)...
             );
@@ -726,11 +724,11 @@ inline void sample_pixel_choose_intersector_impl(
 // Dispatch pixel sampler
 //
 
-template <typename R, typename ...Args>
+template <typename ...Args>
 VSNRAY_FUNC
-inline void sample_pixel(R const& r, Args&&...  args)
+inline void sample_pixel(Args&&...  args)
 {
-    detail::sample_pixel_choose_intersector_impl(r, std::forward<Args>(args)...);
+    detail::sample_pixel_choose_intersector_impl(std::forward<Args>(args)...);
 }
 
 } // visionaray

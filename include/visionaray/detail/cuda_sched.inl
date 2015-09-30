@@ -83,9 +83,9 @@ __global__ void render(
             );
 
     sample_pixel(
-            r,
             kernel,
             PxSamplerT(),
+            r,
             samp,
             frame_num,
             rt_ref,
@@ -136,11 +136,11 @@ __global__ void render(
             );
 
     sample_pixel(
-            r,
             detail::have_intersector_tag(),
             intersector,
             kernel,
             PxSamplerT(),
+            r,
             samp,
             frame_num,
             rt_ref,
