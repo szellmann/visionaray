@@ -73,7 +73,7 @@
  */
 template <typename ...Args>
 VSNRAY_FUNC
-inline void VSNRAY_UNUSED(Args...)
+inline void VSNRAY_UNUSED(Args&&...)
 {
 }
 
