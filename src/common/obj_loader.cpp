@@ -121,7 +121,7 @@ Int remap_index(Int idx, Int size)
 // Store a triangle and assign visionaray-internal ids
 //
 
-void store_triangle(model& result, vertex_vector const& vertices, int i1, int i2, int i3)
+bool store_triangle(model& result, vertex_vector const& vertices, int i1, int i2, int i3)
 {
     triangle_type tri;
 
@@ -132,6 +132,7 @@ void store_triangle(model& result, vertex_vector const& vertices, int i1, int i2
     if (length(cross(tri.e1, tri.e2)) < numeric_limits<float>::epsilon())
     {
         // TODO: implement some kind of error logging
+        return false;
     }
     else
     {
@@ -139,6 +140,8 @@ void store_triangle(model& result, vertex_vector const& vertices, int i1, int i2
         tri.geom_id = result.materials.size() == 0 ? 0 : static_cast<unsigned>(result.materials.size() - 1);
         result.primitives.push_back(tri);
     }
+
+    return true;
 }
 
 
@@ -159,33 +162,36 @@ void store_faces(model& result, vertex_vector const& vertices,
         // triangle
         auto i2 = remap_index(faces[last - 1].vertex_index, vertices_size);
         auto i3 = remap_index(faces[last].vertex_index, vertices_size);
-        store_triangle(result, vertices, i1, i2, i3);
 
-        // texture coordinates
-        if (faces[0].tex_coord_index && faces[last - 1].tex_coord_index && faces[last].tex_coord_index)
+        if (store_triangle(result, vertices, i1, i2, i3))
         {
-            auto tex_coords_size = static_cast<int>(tex_coords.size());
-            auto ti1 = remap_index(*faces[0].tex_coord_index, tex_coords_size);
-            auto ti2 = remap_index(*faces[last - 1].tex_coord_index, tex_coords_size);
-            auto ti3 = remap_index(*faces[last].tex_coord_index, tex_coords_size);
 
-            result.tex_coords.push_back( tex_coords[ti1] );
-            result.tex_coords.push_back( tex_coords[ti2] );
-            result.tex_coords.push_back( tex_coords[ti3] );
+            // texture coordinates
+            if (faces[0].tex_coord_index && faces[last - 1].tex_coord_index && faces[last].tex_coord_index)
+            {
+                auto tex_coords_size = static_cast<int>(tex_coords.size());
+                auto ti1 = remap_index(*faces[0].tex_coord_index, tex_coords_size);
+                auto ti2 = remap_index(*faces[last - 1].tex_coord_index, tex_coords_size);
+                auto ti3 = remap_index(*faces[last].tex_coord_index, tex_coords_size);
+
+                result.tex_coords.push_back( tex_coords[ti1] );
+                result.tex_coords.push_back( tex_coords[ti2] );
+                result.tex_coords.push_back( tex_coords[ti3] );
+            }
+
+            // normals
+/*            if (faces[0].normal_index && faces[last - 1].normal_index && faces[last].normal_index)
+            {
+                auto normals_size = static_cast<int>(normals.size());
+                auto ni1 = remap_index(*faces[0].normal_index, normals_size);
+                auto ni2 = remap_index(*faces[last - 1].normal_index, normals_size);
+                auto ni3 = remap_index(*faces[last].normal_index, normals_size);
+
+                result.normals.push_back( normals[ni1] );
+                result.normals.push_back( normals[ni2] );
+                result.normals.push_back( normals[ni3] );
+            }*/
         }
-
-        // normals
-/*        if (faces[0].normal_index && faces[last - 1].normal_index && faces[last].normal_index)
-        {
-            auto normals_size = static_cast<int>(normals.size());
-            auto ni1 = remap_index(*faces[0].normal_index, normals_size);
-            auto ni2 = remap_index(*faces[last - 1].normal_index, normals_size);
-            auto ni3 = remap_index(*faces[last].normal_index, normals_size);
-
-            result.normals.push_back( normals[ni1] );
-            result.normals.push_back( normals[ni2] );
-            result.normals.push_back( normals[ni3] );
-        }*/
 
         ++last;
     }
