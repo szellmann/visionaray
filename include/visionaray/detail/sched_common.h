@@ -425,6 +425,38 @@ inline R make_primary_ray(
             );
 }
 
+template <
+    typename R,
+    size_t   Num,
+    typename PxSamplerT,
+    typename Sampler,
+    typename ...Args
+    >
+VSNRAY_FUNC
+inline std::array<R, Num> make_primary_rays(
+        PxSamplerT /* */,
+        Sampler& samp,
+        unsigned x,
+        unsigned y,
+        Args&&... args
+        )
+{
+    std::array<R, Num> result;
+
+    for (size_t i = 0; i < Num; ++i)
+    {
+        result[i] = make_primary_ray<R>(
+                PxSamplerT(),
+                samp,
+                x,
+                y,
+                std::forward<Args>(args)...
+                );
+    }
+
+    return result;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Depth transform
@@ -634,6 +666,7 @@ inline void sample_pixel_impl(
 template <
     typename K,
     typename R,
+    size_t Num,
     typename Sampler,
     pixel_format CF,
     typename V,
@@ -643,7 +676,7 @@ VSNRAY_FUNC
 inline void sample_pixel_impl(
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
-        R const&                            r,
+        std::array<R, Num> const&           rays,
         Sampler&                            samp,
         unsigned                            frame_begin,
         unsigned                            frame_end,
@@ -659,6 +692,8 @@ inline void sample_pixel_impl(
     using S     = typename R::scalar_type;
     using Color = vector<4, S>;
 
+    auto ray_ptr = rays.data();
+
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
         if (frame <= 1)
@@ -666,7 +701,7 @@ inline void sample_pixel_impl(
             color_access::store(x, y, viewport, Color(0.0), rt_ref.color());
         }
 
-        auto result = kernel(r, samp);
+        auto result = kernel(*ray_ptr++, samp);
         auto alpha = S(1.0) / S(frame);
         color_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
     }
