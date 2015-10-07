@@ -856,7 +856,7 @@ auto convert_to_int(vector<Dim, T> const& v)
 
     for (size_t d = 0; d < Dim; ++d)
     {
-        result[d] = convert_to_float(v[d]);
+        result[d] = convert_to_int(v[d]);
     }
 
     return result;
