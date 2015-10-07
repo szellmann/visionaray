@@ -221,8 +221,6 @@ void renderer::generate_frame()
     }
 }
 
-std::unique_ptr<renderer> rend(nullptr);
-
 
 //-------------------------------------------------------------------------------------------------
 // Display function
@@ -233,8 +231,8 @@ void renderer::on_display()
     // some setup
 
     auto sparams = make_sched_params<pixel_sampler::uniform_type>(
-            rend->cam,
-            rend->host_rt
+            cam,
+            host_rt
             );
 
 
@@ -249,13 +247,13 @@ void renderer::on_display()
     lights.push_back(light);
 
 
-    rend->generate_frame();
+    generate_frame();
 
     auto kparams = make_params<normals_per_face_binding>(
-            rend->primitives.data(),
-            rend->primitives.data() + rend->primitives.size(),
-            rend->normals.data(),
-            rend->materials.data(),
+            primitives.data(),
+            primitives.data() + primitives.size(),
+            normals.data(),
+            materials.data(),
             lights.data(),
             lights.data() + lights.size(),
             4,                          // number of reflective bounces
@@ -265,15 +263,15 @@ void renderer::on_display()
     auto kernel = whitted::kernel<decltype(kparams)>();
     kernel.params = kparams;
 
-    rend->host_sched.frame(kernel, sparams);
+    host_sched.frame(kernel, sparams);
 
     // display the rendered image
 
-    auto bgcolor = rend->background_color();
+    auto bgcolor = background_color();
     glClearColor(bgcolor.x, bgcolor.y, bgcolor.z, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    rend->host_rt.display_color_buffer();
+    host_rt.display_color_buffer();
 }
 
 
@@ -283,10 +281,10 @@ void renderer::on_display()
 
 void renderer::on_resize(int w, int h)
 {
-    rend->cam.set_viewport(0, 0, w, h);
+    cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
-    rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend->host_rt.resize(w, h);
+    cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    host_rt.resize(w, h);
 
     viewer_type::on_resize(w, h);
 }
@@ -298,7 +296,7 @@ void renderer::on_resize(int w, int h)
 
 int main(int argc, char** argv)
 {
-    rend = std::unique_ptr<renderer>(new renderer);
+    auto rend = std::unique_ptr<renderer>(new renderer);
 
     try
     {

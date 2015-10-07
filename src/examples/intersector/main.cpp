@@ -242,8 +242,6 @@ protected:
 
 };
 
-std::unique_ptr<renderer> rend(nullptr);
-
 
 //-------------------------------------------------------------------------------------------------
 // An intersector that cuts out parts of the geometry based on a texture lookup
@@ -311,8 +309,8 @@ void renderer::on_display()
     using V = vector<3, S>;
 
     auto sparams = make_sched_params<pixel_sampler::uniform_type>(
-            rend->cam,
-            rend->host_rt
+            cam,
+            host_rt
             );
 
 
@@ -321,17 +319,17 @@ void renderer::on_display()
     point_light<float> light;
     light.set_cl( vec3(1.0f, 1.0f, 1.0f) );
     light.set_kl( 1.0f );
-    light.set_position( rend->cam.eye() );
+    light.set_position( cam.eye() );
 
     std::vector<point_light<float>> lights;
     lights.push_back(light);
 
 
     auto kparams = make_params<normals_per_face_binding>(
-            rend->triangles.data(),
-            rend->triangles.data() + rend->triangles.size(),
-            rend->normals.data(),
-            rend->materials.data(),
+            triangles.data(),
+            triangles.data() + triangles.size(),
+            normals.data(),
+            materials.data(),
             lights.data(),
             lights.data() + lights.size(),
             1,          // num bounces - irrelevant for primary ray shading
@@ -339,10 +337,10 @@ void renderer::on_display()
             );
 
     mask_intersector intersector;
-    intersector.tex_coords = rend->tex_coords.data();
+    intersector.tex_coords = tex_coords.data();
 
 
-    rend->host_sched.frame([&](R ray) -> result_record<S>
+    host_sched.frame([&](R ray) -> result_record<S>
     {
         // basically reimplement the "simple" kernel
 
@@ -391,11 +389,11 @@ void renderer::on_display()
 
     // display the rendered image
 
-    auto bgcolor = rend->background_color();
+    auto bgcolor = background_color();
     glClearColor(bgcolor.x, bgcolor.y, bgcolor.z, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    rend->host_rt.display_color_buffer();
+    host_rt.display_color_buffer();
 }
 
 
@@ -405,10 +403,10 @@ void renderer::on_display()
 
 void renderer::on_resize(int w, int h)
 {
-    rend->cam.set_viewport(0, 0, w, h);
+    cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
-    rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend->host_rt.resize(w, h);
+    cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    host_rt.resize(w, h);
 
     viewer_type::on_resize(w, h);
 }
@@ -420,7 +418,7 @@ void renderer::on_resize(int w, int h)
 
 int main(int argc, char** argv)
 {
-    rend = std::unique_ptr<renderer>(new renderer);
+    auto rend = std::unique_ptr<renderer>(new renderer);
 
     try
     {

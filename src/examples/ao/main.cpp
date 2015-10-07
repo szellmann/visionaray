@@ -72,8 +72,6 @@ protected:
 
 };
 
-std::unique_ptr<renderer> rend(nullptr);
-
 
 //-------------------------------------------------------------------------------------------------
 // Display function, implements the AO kernel
@@ -89,22 +87,22 @@ void renderer::on_display()
     using V = vector<3, S>;
 
     auto sparams = make_sched_params<pixel_sampler::jittered_blend_type>(
-            rend->cam,
-            rend->host_rt
+            cam,
+            host_rt
             );
 
 
     using bvh_ref = index_bvh<model::triangle_list::value_type>::bvh_ref;
 
     std::vector<bvh_ref> bvhs;
-    bvhs.push_back(rend->host_bvh.ref());
+    bvhs.push_back(host_bvh.ref());
 
     auto prims_begin = bvhs.data();
     auto prims_end   = bvhs.data() + bvhs.size();
 
-    auto bgcolor = rend->background_color();
+    auto bgcolor = background_color();
 
-    rend->host_sched.frame([&](R ray, sampler<S>& samp) -> result_record<S>
+    host_sched.frame([&](R ray, sampler<S>& samp) -> result_record<S>
     {
         result_record<S> result;
         result.color = C(bgcolor, 1.0f);
@@ -124,7 +122,7 @@ void renderer::on_display()
 
             C clr(1.0);
 
-            auto n = get_normal(rend->mod.normals.data(), hit_rec, normals_per_face_binding());
+            auto n = get_normal(mod.normals.data(), hit_rec, normals_per_face_binding());
 
             // Make an ortho basis (TODO: move to library)
             auto w = n;
@@ -168,7 +166,7 @@ void renderer::on_display()
         }
 
         return result;
-    }, sparams, ++rend->frame_num);
+    }, sparams, ++frame_num);
 
 
     // display the rendered image
@@ -176,7 +174,7 @@ void renderer::on_display()
     glClearColor(bgcolor.x, bgcolor.y, bgcolor.z, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    rend->host_rt.display_color_buffer();
+    host_rt.display_color_buffer();
 }
 
 
@@ -188,7 +186,7 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 {
     if (event.get_buttons() != mouse::NoButton)
     {
-        rend->frame_num = 0;
+        frame_num = 0;
     }
 
     viewer_type::on_mouse_move(event);
@@ -201,12 +199,12 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 
 void renderer::on_resize(int w, int h)
 {
-    rend->frame_num = 0;
+    frame_num = 0;
 
-    rend->cam.set_viewport(0, 0, w, h);
+    cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
-    rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend->host_rt.resize(w, h);
+    cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    host_rt.resize(w, h);
 
     viewer_type::on_resize(w, h);
 }
@@ -218,7 +216,7 @@ void renderer::on_resize(int w, int h)
 
 int main(int argc, char** argv)
 {
-    rend = std::unique_ptr<renderer>(new renderer);
+    auto rend = std::unique_ptr<renderer>(new renderer);
 
     try
     {

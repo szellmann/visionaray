@@ -94,8 +94,6 @@ protected:
 
 };
 
-std::unique_ptr<renderer> rend(nullptr);
-
 
 //-------------------------------------------------------------------------------------------------
 // Display function, implements the volume rendering algorithm
@@ -110,14 +108,14 @@ void renderer::on_display()
     using C = vector<4, S>;
 
     auto sparams = make_sched_params<pixel_sampler::uniform_type>(
-            rend->cam,
-            rend->host_rt
+            cam,
+            host_rt
             );
 
 
     // call kernel in schedulers' frame() method
 
-    rend->host_sched.frame([&](R ray) -> result_record<S>
+    host_sched.frame([&](R ray) -> result_record<S>
     {
         result_record<S> result;
 
@@ -136,8 +134,8 @@ void renderer::on_display()
                     );
 
             // sample volume and do post-classification
-            auto voxel = tex3D(rend->volume, tex_coord);
-            C color = tex1D(rend->transfunc, voxel);
+            auto voxel = tex3D(volume, tex_coord);
+            C color = tex1D(transfunc, voxel);
 
             // premultiplied alpha
             auto premult = color.xyz() * color.w;
@@ -167,11 +165,11 @@ void renderer::on_display()
 
     // display the rendered image
 
-    auto bgcolor = rend->background_color();
+    auto bgcolor = background_color();
     glClearColor(bgcolor.x, bgcolor.y, bgcolor.z, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    rend->host_rt.display_color_buffer();
+    host_rt.display_color_buffer();
 }
 
 
@@ -181,10 +179,10 @@ void renderer::on_display()
 
 void renderer::on_resize(int w, int h)
 {
-    rend->cam.set_viewport(0, 0, w, h);
+    cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
-    rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend->host_rt.resize(w, h);
+    cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    host_rt.resize(w, h);
 
     viewer_type::on_resize(w, h);
 }
@@ -196,7 +194,7 @@ void renderer::on_resize(int w, int h)
 
 int main(int argc, char** argv)
 {
-    rend = std::unique_ptr<renderer>(new renderer);
+    auto rend = std::unique_ptr<renderer>(new renderer);
 
     try
     {
