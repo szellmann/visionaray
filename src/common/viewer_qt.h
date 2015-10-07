@@ -47,6 +47,7 @@ public:
 
 public slots:
 
+    void call_on_close();
     void call_on_display();
     void call_on_idle();
     void call_on_resize(int width, int height);
@@ -75,6 +76,7 @@ class qgl_widget : public QGLWidget, public viewer_base
 
 signals:
 
+    void close();
     void display();
     void resize(int w, int h);
     void idle();
@@ -98,6 +100,7 @@ private:
     void initializeGL();
     void paintGL();
     void resizeGL(int w, int h);
+    void closeEvent(QCloseEvent* event);
     void timerEvent(QTimerEvent* event);
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);

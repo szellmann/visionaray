@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 
 #include <QApplication>
+#include <QCloseEvent>
 #include <QKeyEvent>
 #include <QMainWindow>
 #include <QMouseEvent>
@@ -85,6 +86,13 @@ void viewer_qt::init(int& argc, char**& argv)
 
 void viewer_qt::event_loop()
 {
+    connect(
+            impl_->gl_widget,
+            SIGNAL(close()),
+            this,
+            SLOT(call_on_close())
+            );
+
     connect(
             impl_->gl_widget,
             SIGNAL(display()),
@@ -172,6 +180,11 @@ void viewer_qt::toggle_full_screen()
 // Qt slots
 //
 
+void viewer_qt::call_on_close()
+{
+    on_close();
+}
+
 void viewer_qt::call_on_display()
 {
     on_display();
@@ -255,6 +268,12 @@ void qgl_widget::resizeGL(int w, int h)
 {
     viewer_base::on_resize(w, h);
     emit resize(w, h);
+}
+
+void qgl_widget::closeEvent(QCloseEvent* /*event*/)
+{
+    viewer_base::on_close();
+    emit close();
 }
 
 void qgl_widget::timerEvent(QTimerEvent* /*event*/)

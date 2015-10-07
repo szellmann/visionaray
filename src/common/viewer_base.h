@@ -55,6 +55,7 @@ public:
 
 protected:
 
+    virtual void on_close();
     virtual void on_display();
     virtual void on_idle();
     virtual void on_key_press(key_event const& event);

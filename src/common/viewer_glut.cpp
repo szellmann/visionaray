@@ -63,6 +63,7 @@ struct viewer_glut::impl
             int height
             );
 
+    static void close_func();
     static void display_func();
     static void idle_func();
     static void keyboard_func(unsigned char key, int, int);
@@ -124,6 +125,11 @@ void viewer_glut::impl::init(
     glutReshapeFunc(reshape_func);
     glutSpecialFunc(special_func);
     glutSpecialUpFunc(special_up_func);
+#ifdef FREEGLUT
+    glutCloseFunc(close_func);
+#else
+    atexit(close_func);
+#endif
 
     if (glewInit() != GLEW_OK)
     {
@@ -135,6 +141,11 @@ void viewer_glut::impl::init(
 //-------------------------------------------------------------------------------------------------
 // Dispatch to virtual event handlers
 //
+
+void viewer_glut::impl::close_func()
+{
+    viewer->on_close();
+}
 
 void viewer_glut::impl::display_func()
 {

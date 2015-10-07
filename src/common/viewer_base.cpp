@@ -180,6 +180,10 @@ void viewer_base::toggle_full_screen()
 // Event handlers
 //
 
+void viewer_base::on_close()
+{
+}
+
 void viewer_base::on_display()
 {
 }
