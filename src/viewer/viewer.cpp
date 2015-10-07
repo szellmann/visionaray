@@ -635,11 +635,6 @@ void renderer::on_resize(int w, int h)
     viewer_type::on_resize(w, h);
 }
 
-void close_func()
-{
-    rend.reset(nullptr);
-}
-
 int main(int argc, char** argv)
 {
     rend = std::unique_ptr<renderer>(new renderer);
