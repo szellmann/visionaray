@@ -188,10 +188,12 @@ protected:
     void on_mouse_move(visionaray::mouse_event const& event);
     void on_resize(int w, int h);
 
+private:
+
+    void render_hud();
+    void render_hud_ext();
+
 };
-
-
-std::unique_ptr<renderer> rend(nullptr);
 
 
 //-------------------------------------------------------------------------------------------------
@@ -219,15 +221,15 @@ std::ostream& operator<<(std::ostream& out, camera const& cam)
 }
 
 
-void render_hud()
+void renderer::render_hud()
 {
 
-    auto w = rend->width();
-    auto h = rend->height();
+    auto w = width();
+    auto h = height();
 
-    int x = visionaray::clamp( rend->mouse_pos.x, 0, w - 1 );
-    int y = visionaray::clamp( rend->mouse_pos.y, 0, h - 1 );
-    auto color = rend->host_rt.color();
+    int x = visionaray::clamp( mouse_pos.x, 0, w - 1 );
+    int y = visionaray::clamp( mouse_pos.y, 0, h - 1 );
+    auto color = host_rt.color();
     auto rgba = color[(h - 1 - y) * w + x];
 
     glMatrixMode(GL_PROJECTION);
@@ -305,7 +307,7 @@ void render_hud()
     }
 
     stream.str(std::string());
-    stream << "FPS: " << rend->counter.register_frame();
+    stream << "FPS: " << counter.register_frame();
     str = stream.str();
     glRasterPos2i(10, h * 2 - 136);
     for (size_t i = 0; i < str.length(); ++i)
@@ -320,17 +322,17 @@ void render_hud()
 
 }
 
-void render_hud_ext()
+void renderer::render_hud_ext()
 {
 
-    auto w = rend->width();
-    auto h = rend->height();
+    auto w = width();
+    auto h = height();
 
     int num_nodes = 0;
     int num_leaves = 0;
 
     traverse_depth_first(
-        rend->host_bvh,
+        host_bvh,
         [&](renderer::host_bvh_type::node_type const& node)
         {
             ++num_nodes;
@@ -348,7 +350,7 @@ void render_hud_ext()
     gluOrtho2D(0, w * 2, 0, h * 2);
 
     std::stringstream stream;
-    stream << "# Triangles: " << rend->mod.primitives.size();
+    stream << "# Triangles: " << mod.primitives.size();
     std::string str = stream.str();
     glRasterPos2i(300, h * 2 - 34);
     for (size_t i = 0; i < str.length(); ++i)
@@ -366,7 +368,7 @@ void render_hud_ext()
     }
 
     stream.str(std::string());
-    stream << "SPP: " << max(1U, rend->frame);
+    stream << "SPP: " << max(1U, frame);
     str = stream.str();
     glRasterPos2i(300, h * 2 - 102);
     for (size_t i = 0; i < str.length(); ++i)
@@ -376,7 +378,7 @@ void render_hud_ext()
 
 
     stream.str(std::string());
-    stream << "Device: " << ( (rend->dev_type == renderer::GPU) ? "GPU" : "CPU" );
+    stream << "Device: " << ( (dev_type == renderer::GPU) ? "GPU" : "CPU" );
     str = stream.str();
     glRasterPos2i(300, h * 2 - 136);
     for (size_t i = 0; i < str.length(); ++i)
@@ -405,50 +407,48 @@ void renderer::on_display()
     light_type light;
     light.set_cl( vec3(1.0, 1.0, 1.0) );
     light.set_kl(1.0);
-    light.set_position( rend->cam.eye() );
+    light.set_position( cam.eye() );
 
     host_lights.push_back( light );
 
-    auto bounds     = rend->mod.bbox;
+    auto bounds     = mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
-    auto bounces    = rend->algo == Pathtracing ? 10U : 4U;
+    auto bounces    = algo == Pathtracing ? 10U : 4U;
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
 
     vec4 bg_color(0.1, 0.4, 1.0, 1.0);
 
-    if (rend->dev_type == renderer::GPU)
+    if (dev_type == renderer::GPU)
     {
 #ifdef __CUDACC__
         thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
 
-        device_primitives.push_back(rend->device_bvh.ref());
+        device_primitives.push_back(device_bvh.ref());
 
         thrust::device_vector<light_type> device_lights = host_lights;
 
         auto kparams = make_params<normals_per_face_binding>(
                 thrust::raw_pointer_cast(device_primitives.data()),
                 thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
-                thrust::raw_pointer_cast(rend->device_normals.data()),
-                thrust::raw_pointer_cast(rend->device_materials.data()),
+                thrust::raw_pointer_cast(device_normals.data()),
+                thrust::raw_pointer_cast(device_materials.data()),
                 thrust::raw_pointer_cast(device_lights.data()),
                 thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
                 bounces,
                 epsilon,
-                vec4(rend->background_color(), 1.0f),
-                rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
+                vec4(background_color(), 1.0f),
+                algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                 );
 
-        call_kernel( rend->algo, rend->device_sched, kparams, rend->frame, rend->cam, rend->device_rt );
+        call_kernel( algo, device_sched, kparams, frame, cam, device_rt );
 #endif
     }
-    else if (rend->dev_type == renderer::CPU)
+    else if (dev_type == renderer::CPU)
     {
 #ifndef __CUDA_ARCH__
         std::vector<renderer::host_bvh_type::bvh_ref> host_primitives;
 
-        host_primitives.push_back(rend->host_bvh.ref());
-
-        auto& mod = rend->mod;
+        host_primitives.push_back(host_bvh.ref());
 
         auto kparams = make_params<normals_per_face_binding>(
                 host_primitives.data(),
@@ -461,11 +461,11 @@ void renderer::on_display()
                 host_lights.data() + host_lights.size(),
                 bounces,
                 epsilon,
-                vec4(rend->background_color(), 1.0f),
-                rend->algo == Pathtracing ? vec4(1.0) : vec4(0.0)
+                vec4(background_color(), 1.0f),
+                algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                 );
 
-        call_kernel( rend->algo, rend->host_sched, kparams, rend->frame, rend->cam, rend->host_rt );
+        call_kernel( algo, host_sched, kparams, frame, cam, host_rt );
 #endif
     }
 
@@ -474,22 +474,22 @@ void renderer::on_display()
 
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-    if (rend->dev_type == renderer::GPU && false /* no direct rendering */)
+    if (dev_type == renderer::GPU && false /* no direct rendering */)
     {
 #ifdef __CUDACC__
-//        rend->host_rt = rend->device_rt;
-//        rend->host_rt.display_color_buffer();
+//        host_rt = device_rt;
+//        host_rt.display_color_buffer();
 #endif
     }
-    else if (rend->dev_type == renderer::GPU && true /* direct rendering */)
+    else if (dev_type == renderer::GPU && true /* direct rendering */)
     {
 #ifdef __CUDACC__
-        rend->device_rt.display_color_buffer();
+        device_rt.display_color_buffer();
 #endif
     }
     else
     {
-        rend->host_rt.display_color_buffer();
+        host_rt.display_color_buffer();
     }
 
 
@@ -497,27 +497,27 @@ void renderer::on_display()
 
     glColor3f(1.0f, 1.0f, 1.0f);
 
-    if (rend->show_hud)
+    if (show_hud)
     {
         render_hud();
     }
 
-    if (rend->show_hud_ext)
+    if (show_hud_ext)
     {
         render_hud_ext();
     }
 
-    if (rend->show_bvh)
+    if (show_bvh)
     {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
-        glLoadMatrixf(rend->cam.get_proj_matrix().data());
+        glLoadMatrixf(cam.get_proj_matrix().data());
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
-        glLoadMatrixf(rend->cam.get_view_matrix().data());
+        glLoadMatrixf(cam.get_view_matrix().data());
 
-        rend->outlines.frame();
+        outlines.frame();
 
         glMatrixMode(GL_MODELVIEW);
         glPopMatrix();
@@ -535,47 +535,47 @@ void renderer::on_key_press(key_event const& event)
     {
     case '1':
         std::cout << "Switching algorithm: simple\n";
-        rend->algo = Simple;
-        rend->counter.reset();
-        rend->frame = 0;
+        algo = Simple;
+        counter.reset();
+        frame = 0;
         break;
 
     case '2':
         std::cout << "Switching algorithm: whitted\n";
-        rend->algo = Whitted;
-        rend->counter.reset();
-        rend->frame = 0;
+        algo = Whitted;
+        counter.reset();
+        frame = 0;
         break;
 
     case '3':
         std::cout << "Switching algorithm: path tracing\n";
-        rend->algo = Pathtracing;
-        rend->counter.reset();
-        rend->frame = 0;
+        algo = Pathtracing;
+        counter.reset();
+        frame = 0;
         break;
 
     case 'b':
-        rend->show_bvh = !rend->show_bvh;
+        show_bvh = !show_bvh;
 
-        if (rend->show_bvh)
+        if (show_bvh)
         {
-            rend->outlines.init(rend->host_bvh);
+            outlines.init(host_bvh);
         }
 
         break;
 
     case 'm':
 #ifdef __CUDACC__
-        if (rend->dev_type == renderer::CPU)
+        if (dev_type == renderer::CPU)
         {
-            rend->dev_type = renderer::GPU;
+            dev_type = renderer::GPU;
         }
         else
         {
-            rend->dev_type = renderer::CPU;
+            dev_type = renderer::CPU;
         }
-        rend->counter.reset();
-        rend->frame = 0;
+        counter.reset();
+        frame = 0;
 #endif
         break;
 
@@ -585,7 +585,7 @@ void renderer::on_key_press(key_event const& event)
             if (file.good())
             {
                 std::cout << "Storing camera to file: " << camera_filename << '\n';
-                file << rend->cam;
+                file << cam;
             }
         }
         break;
@@ -595,9 +595,9 @@ void renderer::on_key_press(key_event const& event)
             std::ifstream file( camera_filename );
             if (file.good())
             {
-                file >> rend->cam;
-                rend->counter.reset();
-                rend->frame = 0;
+                file >> cam;
+                counter.reset();
+                frame = 0;
                 std::cout << "Load camera from file: " << camera_filename << '\n';
             }
         }
@@ -614,30 +614,30 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 {
     if (event.get_buttons() != mouse::NoButton)
     {
-        rend->frame = 0;
+        frame = 0;
     }
 
-    rend->mouse_pos = event.get_pos();
+    mouse_pos = event.get_pos();
     viewer_type::on_mouse_move(event);
 }
 
 void renderer::on_resize(int w, int h)
 {
-    rend->frame = 0;
+    frame = 0;
 
-    rend->cam.set_viewport(0, 0, w, h);
+    cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
-    rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend->host_rt.resize(w, h);
+    cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    host_rt.resize(w, h);
 #ifdef __CUDACC__
-    rend->device_rt.resize(w, h);
+    device_rt.resize(w, h);
 #endif
     viewer_type::on_resize(w, h);
 }
 
 int main(int argc, char** argv)
 {
-    rend = std::unique_ptr<renderer>(new renderer);
+    auto rend = std::unique_ptr<renderer>(new renderer);
 
     try
     {
