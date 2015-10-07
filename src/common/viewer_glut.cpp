@@ -37,6 +37,9 @@
 #endif
 #include <GL/gl.h>
 #include <GL/glut.h>
+#ifdef FREEGLUT
+#include <GL/freeglut_ext.h>
+#endif
 
 #endif
 
