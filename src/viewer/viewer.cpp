@@ -637,11 +637,11 @@ void renderer::on_resize(int w, int h)
 
 int main(int argc, char** argv)
 {
-    auto rend = std::unique_ptr<renderer>(new renderer);
+    renderer rend;
 
     try
     {
-        rend->init(argc, argv);
+        rend.init(argc, argv);
     }
     catch (std::exception& e)
     {
@@ -656,7 +656,7 @@ int main(int argc, char** argv)
 
     try
     {
-        visionaray::load_obj(rend->filename, rend->mod);
+        visionaray::load_obj(rend.filename, rend.mod);
     }
     catch (std::exception& e)
     {
@@ -669,7 +669,7 @@ int main(int argc, char** argv)
     std::cout << "Creating BVH...\n";
 
     // Create the BVH on the host
-    rend->host_bvh = build<renderer::host_bvh_type>(rend->mod.primitives.data(), rend->mod.primitives.size());
+    rend.host_bvh = build<renderer::host_bvh_type>(rend.mod.primitives.data(), rend.mod.primitives.size());
 
     std::cout << "Ready\n";
 
@@ -677,32 +677,32 @@ int main(int argc, char** argv)
     // Copy data to GPU
     try
     {
-        rend->device_bvh = renderer::device_bvh_type(rend->host_bvh);
-        rend->device_normals = rend->mod.normals;
-        rend->device_materials = rend->mod.materials;
+        rend.device_bvh = renderer::device_bvh_type(rend.host_bvh);
+        rend.device_normals = rend.mod.normals;
+        rend.device_materials = rend.mod.materials;
     }
     catch (std::bad_alloc&)
     {
         std::cerr << "GPU memory allocation failed" << std::endl;
-        rend->device_bvh = renderer::device_bvh_type();
-        rend->device_normals.resize(0);
-        rend->device_materials.resize(0);
+        rend.device_bvh = renderer::device_bvh_type();
+        rend.device_normals.resize(0);
+        rend.device_materials.resize(0);
     }
 #endif
 
 //  std::cout << t.elapsed() << std::endl;
 
-    float aspect = rend->width() / static_cast<float>(rend->height());
+    float aspect = rend.width() / static_cast<float>(rend.height());
 
-    rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend->cam.view_all( rend->mod.bbox );
+    rend.cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    rend.cam.view_all( rend.mod.bbox );
 
-    rend->add_manipulator( std::make_shared<arcball_manipulator>(rend->cam, mouse::Left) );
-    rend->add_manipulator( std::make_shared<pan_manipulator>(rend->cam, mouse::Middle) );
+    rend.add_manipulator( std::make_shared<arcball_manipulator>(rend.cam, mouse::Left) );
+    rend.add_manipulator( std::make_shared<pan_manipulator>(rend.cam, mouse::Middle) );
     // Additional "Alt + LMB" pan manipulator for setups w/o middle mouse button
-    rend->add_manipulator( std::make_shared<pan_manipulator>(rend->cam, mouse::Left, keyboard::Alt) );
-    rend->add_manipulator( std::make_shared<zoom_manipulator>(rend->cam, mouse::Right) );
+    rend.add_manipulator( std::make_shared<pan_manipulator>(rend.cam, mouse::Left, keyboard::Alt) );
+    rend.add_manipulator( std::make_shared<zoom_manipulator>(rend.cam, mouse::Right) );
 
-    rend->event_loop();
+    rend.event_loop();
 
 }

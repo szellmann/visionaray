@@ -194,11 +194,11 @@ void renderer::on_resize(int w, int h)
 
 int main(int argc, char** argv)
 {
-    auto rend = std::unique_ptr<renderer>(new renderer);
+    renderer rend;
 
     try
     {
-        rend->init(argc, argv);
+        rend.init(argc, argv);
     }
     catch (std::exception& e)
     {
@@ -206,16 +206,16 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    float aspect = rend->width() / static_cast<float>(rend->height());
+    float aspect = rend.width() / static_cast<float>(rend.height());
 
-    rend->cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend->cam.view_all( rend->bbox );
+    rend.cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    rend.cam.view_all( rend.bbox );
 
-    rend->add_manipulator( std::make_shared<arcball_manipulator>(rend->cam, mouse::Left) );
-    rend->add_manipulator( std::make_shared<pan_manipulator>(rend->cam, mouse::Middle) );
+    rend.add_manipulator( std::make_shared<arcball_manipulator>(rend.cam, mouse::Left) );
+    rend.add_manipulator( std::make_shared<pan_manipulator>(rend.cam, mouse::Middle) );
     // Additional "Alt + LMB" pan manipulator for setups w/o middle mouse button
-    rend->add_manipulator( std::make_shared<pan_manipulator>(rend->cam, mouse::Left, keyboard::Alt) );
-    rend->add_manipulator( std::make_shared<zoom_manipulator>(rend->cam, mouse::Right) );
+    rend.add_manipulator( std::make_shared<pan_manipulator>(rend.cam, mouse::Left, keyboard::Alt) );
+    rend.add_manipulator( std::make_shared<zoom_manipulator>(rend.cam, mouse::Right) );
 
-    rend->event_loop();
+    rend.event_loop();
 }
