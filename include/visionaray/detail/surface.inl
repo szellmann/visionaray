@@ -818,89 +818,23 @@ inline auto get_surface_any_prim_impl(
 
 
 //-------------------------------------------------------------------------------------------------
-// Bvh / float|float4|float8|...
+// Dispatch to surface handlers with precalculated normals
 //
 
 template <
     typename R,
-    typename NormalBinding,
-    template <typename> class B,
-    typename Primitives,
+    typename Primitive,
     typename Normals,
-    typename Materials
-    >
-VSNRAY_FUNC
-inline auto get_surface_with_prims_impl(
-        hit_record<R, primitive<unsigned>> const&   hr,
-        Primitives                                  primitives,
-        Normals                                     normals,
-        Materials                                   materials,
-        B<basic_triangle<3, float>>                 /* */,
-        NormalBinding                               /* */
-        ) -> decltype( get_surface_any_prim_impl(
-                hr,
-                normals,
-                materials,
-                NormalBinding()
-                ) )
-{
-    VSNRAY_UNUSED(primitives);
-    return get_surface_any_prim_impl(hr, normals, materials, NormalBinding());
-}
-
-template <
-    typename R,
-    typename NormalBinding,
-    template <typename> class B,
-    typename Primitives,
-    typename Normals,
-    typename TexCoords,
     typename Materials,
-    typename Textures
+    typename NormalBinding
     >
-VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
         hit_record<R, primitive<unsigned>> const&   hr,
-        Primitives                                  primitives,
+        Primitive const*                            primitives,
         Normals                                     normals,
-        TexCoords                                   tex_coords,
         Materials                                   materials,
-        Textures                                    textures,
-        B<basic_triangle<3, float>>                 /* */,
+        Primitive                                   /* */,
         NormalBinding                               /* */
-        ) -> decltype( get_surface_any_prim_impl(
-                hr,
-                normals,
-                tex_coords,
-                materials,
-                textures,
-                NormalBinding()
-                ) )
-{
-    VSNRAY_UNUSED(primitives);
-    return get_surface_any_prim_impl(
-            hr,
-            normals,
-            tex_coords,
-            materials,
-            textures,
-            NormalBinding()
-            );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Triangle / float4
-//
-
-template <typename NormalBinding, typename Normals, typename Materials>
-inline auto get_surface_with_prims_impl(
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        basic_triangle<3, float> const*                     primitives,
-        Normals                                             normals,
-        Materials                                           materials,
-        basic_triangle<3, float>                            /* */,
-        NormalBinding                                       /* */
         ) -> decltype( get_surface_any_prim_impl(hr, normals, materials, NormalBinding()) )
 {
     VSNRAY_UNUSED(primitives);
@@ -908,21 +842,23 @@ inline auto get_surface_with_prims_impl(
 }
 
 template <
-    typename NormalBinding,
+    typename R,
+    typename Primitive,
     typename Normals,
     typename TexCoords,
     typename Materials,
-    typename Textures
+    typename Textures,
+    typename NormalBinding
     >
 inline auto get_surface_with_prims_impl(
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        basic_triangle<3, float> const*                     primitives,
-        Normals                                             normals,
-        TexCoords                                           tex_coords,
-        Materials                                           materials,
-        Textures                                            textures,
-        basic_triangle<3, float>                            /* */,
-        NormalBinding                                       /* */
+        hit_record<R, primitive<unsigned>> const&   hr,
+        Primitive const*                            primitives,
+        Normals                                     normals,
+        TexCoords                                   tex_coords,
+        Materials                                   materials,
+        Textures                                    textures,
+        Primitive                                   /* */,
+        NormalBinding                               /* */
         ) -> decltype( get_surface_any_prim_impl(
                 hr,
                 normals,
