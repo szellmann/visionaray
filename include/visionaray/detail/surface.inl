@@ -823,18 +823,18 @@ inline auto get_surface_any_prim_impl(
 
 template <
     typename R,
-    typename Primitive,
+    typename Primitives,
     typename Normals,
     typename Materials,
     typename NormalBinding
     >
 inline auto get_surface_with_prims_impl(
-        hit_record<R, primitive<unsigned>> const&   hr,
-        Primitive const*                            primitives,
-        Normals                                     normals,
-        Materials                                   materials,
-        Primitive                                   /* */,
-        NormalBinding                               /* */
+        hit_record<R, primitive<unsigned>> const&               hr,
+        Primitives                                              primitives,
+        Normals                                                 normals,
+        Materials                                               materials,
+        typename std::iterator_traits<Primitives>::value_type   /* */,
+        NormalBinding                                           /* */
         ) -> decltype( get_surface_any_prim_impl(hr, normals, materials, NormalBinding()) )
 {
     VSNRAY_UNUSED(primitives);
@@ -843,7 +843,7 @@ inline auto get_surface_with_prims_impl(
 
 template <
     typename R,
-    typename Primitive,
+    typename Primitives,
     typename Normals,
     typename TexCoords,
     typename Materials,
@@ -851,14 +851,14 @@ template <
     typename NormalBinding
     >
 inline auto get_surface_with_prims_impl(
-        hit_record<R, primitive<unsigned>> const&   hr,
-        Primitive const*                            primitives,
-        Normals                                     normals,
-        TexCoords                                   tex_coords,
-        Materials                                   materials,
-        Textures                                    textures,
-        Primitive                                   /* */,
-        NormalBinding                               /* */
+        hit_record<R, primitive<unsigned>> const&               hr,
+        Primitives                                              primitives,
+        Normals                                                 normals,
+        TexCoords                                               tex_coords,
+        Materials                                               materials,
+        Textures                                                textures,
+        typename std::iterator_traits<Primitives>::value_type   /* */,
+        NormalBinding                                           /* */
         ) -> decltype( get_surface_any_prim_impl(
                 hr,
                 normals,
