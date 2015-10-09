@@ -868,6 +868,7 @@ template <
     typename Materials,
     typename NormalBinding
     >
+VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
         hit_record<R, primitive<unsigned>> const&               hr,
         Primitives                                              primitives,
@@ -890,6 +891,7 @@ template <
     typename Textures,
     typename NormalBinding
     >
+VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
         hit_record<R, primitive<unsigned>> const&               hr,
         Primitives                                              primitives,
