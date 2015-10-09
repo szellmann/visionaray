@@ -599,33 +599,6 @@ inline auto get_surface_any_prim_impl(
 
 
 //-------------------------------------------------------------------------------------------------
-// Triangle / float
-//
-
-template <
-    typename R,
-    typename NormalBinding,
-    typename Primitives,
-    typename Normals,
-    typename Materials
-    >
-VSNRAY_FUNC
-inline auto get_surface_with_prims_impl(
-        hit_record<R, primitive<unsigned>> const&   hr,
-        Primitives                                  primitives,
-        Normals                                     normals,
-        Materials                                   materials,
-        basic_triangle<3, float>                    /* */,
-        NormalBinding                               /* */
-        )
-    -> decltype( get_surface_any_prim_impl(hr, normals, materials, NormalBinding()) )
-{
-    VSNRAY_UNUSED(primitives);
-    return get_surface_any_prim_impl(hr, normals, materials, NormalBinding());
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // Generic primitive / float
 //
 
