@@ -11,6 +11,7 @@
 
 #include "../generic_material.h"
 #include "../generic_primitive.h"
+#include "../get_tex_coord.h"
 #include "../tags.h"
 
 namespace visionaray
@@ -267,6 +268,24 @@ inline auto pack(
 } // simd
 
 
+namespace detail
+{
+
+template <typename T>
+struct primitive_traits
+{
+    using type = T;
+};
+
+template <template <typename> class Accelerator, typename T>
+struct primitive_traits<Accelerator<T>>
+{
+    using type = T;
+};
+
+} // detail
+
+
 //-------------------------------------------------------------------------------------------------
 // Get face normal from array
 //
@@ -467,92 +486,22 @@ inline vector<3, simd::float8> get_normal(
 
 
 //-------------------------------------------------------------------------------------------------
-// Get texture coordinate from array
-//
-
-template <typename TexCoords, typename HR>
-VSNRAY_FUNC
-inline auto get_tex_coord(TexCoords tex_coords, HR const& hr)
-    -> typename std::iterator_traits<TexCoords>::value_type
-{
-    return lerp(
-            tex_coords[hr.prim_id * 3],
-            tex_coords[hr.prim_id * 3 + 1],
-            tex_coords[hr.prim_id * 3 + 2],
-            hr.u,
-            hr.v
-            );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Gather four texture coordinates with SSE
-//
-
-template <typename TexCoords>
-inline vector<2, simd::float4> get_tex_coord(
-        TexCoords                                           coords,
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr
-        )
-{
-    using TC = typename std::iterator_traits<TexCoords>::value_type;
-
-    auto hr4 = simd::unpack(hr);
-
-    auto get_coord = [&](int x, int y)
-    {
-        return hr4[x].hit ? coords[hr4[x].prim_id * 3 + y] : TC();
-    };
-
-    vector<2, simd::float4> tc1(
-            simd::float4( get_coord(0, 0).x, get_coord(1, 0).x, get_coord(2, 0).x, get_coord(3, 0).x ),
-            simd::float4( get_coord(0, 0).y, get_coord(1, 0).y, get_coord(2, 0).y, get_coord(3, 0).y )
-            );
-                
-    vector<2, simd::float4> tc2(
-            simd::float4( get_coord(0, 1).x, get_coord(1, 1).x, get_coord(2, 1).x, get_coord(3, 1).x ),
-            simd::float4( get_coord(0, 1).y, get_coord(1, 1).y, get_coord(2, 1).y, get_coord(3, 1).y )
-            );
-
-    vector<2, simd::float4> tc3(
-            simd::float4( get_coord(0, 2).x, get_coord(1, 2).x, get_coord(2, 2).x, get_coord(3, 2).x ),
-            simd::float4( get_coord(0, 2).y, get_coord(1, 2).y, get_coord(2, 2).y, get_coord(3, 2).y )
-            );
-
-    return lerp( tc1, tc2, tc3, hr.u, hr.v );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Gather four texture coordinates from array
-//
-
-template <typename TexCoords, typename HR>
-inline auto get_tex_coord(TexCoords coords, std::array<HR, 4> const& hr)
-    -> std::array<typename std::iterator_traits<TexCoords>::value_type, 4>
-{
-    using TC = typename std::iterator_traits<TexCoords>::value_type;
-
-    return std::array<TC, 4>
-    {{
-        get_tex_coord(coords, hr[0]),
-        get_tex_coord(coords, hr[1]),
-        get_tex_coord(coords, hr[2]),
-        get_tex_coord(coords, hr[3])
-    }};
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // Primitive with precalculated normals / float
 //
 
-template <typename R, typename NormalBinding, typename Normals, typename Materials>
+template <
+    typename R,
+    typename Normals,
+    typename Materials,
+    typename Primitive,
+    typename NormalBinding
+    >
 VSNRAY_FUNC
 inline auto get_surface_any_prim_impl(
         hit_record<R, primitive<unsigned>> const&   hr,
         Normals                                     normals,
         Materials                                   materials,
+        Primitive                                   /* */,
         NormalBinding                               /* */
         )
     -> surface<typename std::iterator_traits<Materials>::value_type>
@@ -567,11 +516,12 @@ inline auto get_surface_any_prim_impl(
 
 template <
     typename R,
-    typename NormalBinding,
     typename Normals,
     typename TexCoords,
     typename Materials,
-    typename Textures
+    typename Textures,
+    typename Primitive,
+    typename NormalBinding
     >
 VSNRAY_FUNC
 inline auto get_surface_any_prim_impl(
@@ -580,13 +530,14 @@ inline auto get_surface_any_prim_impl(
         TexCoords                                   tex_coords,
         Materials                                   materials,
         Textures                                    textures,
+        Primitive                                   /* */,
         NormalBinding                               /* */
         )
     -> surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>
 {
     using M = typename std::iterator_traits<Materials>::value_type;
 
-    auto tc = get_tex_coord(tex_coords, hr);
+    auto tc = get_tex_coord(tex_coords, hr, typename detail::primitive_traits<Primitive>::type{});
 
     auto const& tex = textures[hr.geom_id];
     auto tex_color = tex.width() > 0 && tex.height() > 0
@@ -684,11 +635,17 @@ inline auto get_surface_with_prims_impl(
 // Primitive with precalculated normals / float4
 //
 
-template <typename NormalBinding, typename Normals, typename Materials>
+template <
+    typename Normals,
+    typename Materials,
+    typename Primitive,
+    typename NormalBinding
+    >
 inline auto get_surface_any_prim_impl(
         hit_record<simd::ray4, primitive<unsigned>> const&  hr,
         Normals                                             normals,
         Materials                                           materials,
+        Primitive                                           /* */,
         NormalBinding                                       /* */
         ) -> decltype( simd::pack(
                 surface<typename std::iterator_traits<Materials>::value_type>(),
@@ -724,11 +681,12 @@ inline auto get_surface_any_prim_impl(
 
 
 template <
-    typename NormalBinding,
     typename Normals,
     typename TexCoords,
     typename Materials,
-    typename Textures
+    typename Textures,
+    typename Primitive,
+    typename NormalBinding
     >
 inline auto get_surface_any_prim_impl(
         hit_record<simd::ray4, primitive<unsigned>> const&  hr,
@@ -736,6 +694,7 @@ inline auto get_surface_any_prim_impl(
         TexCoords                                           tex_coords,
         Materials                                           materials,
         Textures                                            textures,
+        Primitive                                           /* */,
         NormalBinding                                       /* */
         ) -> decltype( simd::pack(
                 surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>(),
@@ -749,7 +708,7 @@ inline auto get_surface_any_prim_impl(
 
     auto hr4 = simd::unpack(hr);
 
-    auto tc4 = get_tex_coord(tex_coords, hr4);
+    auto tc4 = get_tex_coord(tex_coords, hr4, typename detail::primitive_traits<Primitive>::type{});
 
     vector<3, float> tex_color4[4];
     for (unsigned i = 0; i < 4; ++i)
@@ -795,11 +754,17 @@ inline auto get_surface_any_prim_impl(
 // Primitive with precalculated normals / float8
 //
 
-template <typename NormalBinding, typename Normals, typename Materials>
+template <
+    typename Normals,
+    typename Materials,
+    typename Primitive,
+    typename NormalBinding
+    >
 inline auto get_surface_any_prim_impl(
         hit_record<simd::ray8, primitive<unsigned>> const&  hr,
         Normals                                             normals,
         Materials                                           materials,
+        Primitive                                           /* */,
         NormalBinding                                       /* */
         ) -> decltype( simd::pack(
                 surface<typename std::iterator_traits<Materials>::value_type>(),
@@ -876,10 +841,22 @@ inline auto get_surface_with_prims_impl(
         Materials                                               materials,
         typename std::iterator_traits<Primitives>::value_type   /* */,
         NormalBinding                                           /* */
-        ) -> decltype( get_surface_any_prim_impl(hr, normals, materials, NormalBinding()) )
+        ) -> decltype( get_surface_any_prim_impl(
+                hr,
+                normals,
+                materials,
+                typename std::iterator_traits<Primitives>::value_type{},
+                NormalBinding{}
+                ) )
 {
     VSNRAY_UNUSED(primitives);
-    return get_surface_any_prim_impl(hr, normals, materials, NormalBinding());
+    return get_surface_any_prim_impl(
+            hr,
+            normals,
+            materials,
+            typename std::iterator_traits<Primitives>::value_type{},
+            NormalBinding{}
+            );
 }
 
 template <
@@ -907,8 +884,9 @@ inline auto get_surface_with_prims_impl(
                 tex_coords,
                 materials,
                 textures,
-                NormalBinding())
-                )
+                typename std::iterator_traits<Primitives>::value_type{},
+                NormalBinding{}
+                ) )
 {
     VSNRAY_UNUSED(primitives);
     return get_surface_any_prim_impl(
@@ -917,7 +895,8 @@ inline auto get_surface_with_prims_impl(
             tex_coords,
             materials,
             textures,
-            NormalBinding()
+            typename std::iterator_traits<Primitives>::value_type{},
+            NormalBinding{}
             );
 }
 
