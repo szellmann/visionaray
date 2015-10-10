@@ -486,11 +486,11 @@ inline vector<3, simd::float8> get_normal(
 
 
 //-------------------------------------------------------------------------------------------------
-// Primitive with precalculated normals / float
+//
 //
 
 template <
-    typename R,
+    typename HR,
     typename Normals,
     typename Materials,
     typename Primitive,
@@ -498,11 +498,11 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_surface_any_prim_impl(
-        hit_record<R, primitive<unsigned>> const&   hr,
-        Normals                                     normals,
-        Materials                                   materials,
-        Primitive                                   /* */,
-        NormalBinding                               /* */
+        HR const&       hr,
+        Normals         normals,
+        Materials       materials,
+        Primitive       /* */,
+        NormalBinding   /* */
         )
     -> surface<typename std::iterator_traits<Materials>::value_type>
 {
@@ -515,7 +515,7 @@ inline auto get_surface_any_prim_impl(
 }
 
 template <
-    typename R,
+    typename HR,
     typename Normals,
     typename TexCoords,
     typename Materials,
@@ -525,13 +525,13 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_surface_any_prim_impl(
-        hit_record<R, primitive<unsigned>> const&   hr,
-        Normals                                     normals,
-        TexCoords                                   tex_coords,
-        Materials                                   materials,
-        Textures                                    textures,
-        Primitive                                   /* */,
-        NormalBinding                               /* */
+        HR const&       hr,
+        Normals         normals,
+        TexCoords       tex_coords,
+        Materials       materials,
+        Textures        textures,
+        Primitive       /* */,
+        NormalBinding   /* */
         )
     -> surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>
 {
@@ -600,7 +600,7 @@ private:
 } // detail
 
 template <
-    typename R,
+    typename HR,
     typename NormalBinding,
     typename Primitives,
     typename Normals,
@@ -609,17 +609,16 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
-        hit_record<R, primitive<unsigned>> const&   hr,
-        Primitives                                  primitives,
-        Normals                                     normals,
-        Materials                                   materials,
-        generic_primitive<Ts...>                    /* */,
-        NormalBinding                               /* */
+        HR const&                   hr,
+        Primitives                  primitives,
+        Normals                     normals,
+        Materials                   materials,
+        generic_primitive<Ts...>    /* */,
+        NormalBinding               /* */
         )
     -> surface<typename std::iterator_traits<Materials>::value_type>
 {
     using M = typename std::iterator_traits<Materials>::value_type;
-    using HR = hit_record<R, primitive<unsigned>>;
 
     detail::get_normal_from_generic_primitive_visitor<NormalBinding, Normals, HR> visitor(
             normals,
@@ -636,17 +635,19 @@ inline auto get_surface_with_prims_impl(
 //
 
 template <
+    template <typename, typename> class HR,
+    typename HRP,
     typename Normals,
     typename Materials,
     typename Primitive,
     typename NormalBinding
     >
 inline auto get_surface_any_prim_impl(
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        Normals                                             normals,
-        Materials                                           materials,
-        Primitive                                           /* */,
-        NormalBinding                                       /* */
+        HR<simd::ray4, HRP> const&  hr,
+        Normals                     normals,
+        Materials                   materials,
+        Primitive                   /* */,
+        NormalBinding               /* */
         ) -> decltype( simd::pack(
                 surface<typename std::iterator_traits<Materials>::value_type>(),
                 surface<typename std::iterator_traits<Materials>::value_type>(),
@@ -681,6 +682,8 @@ inline auto get_surface_any_prim_impl(
 
 
 template <
+    template <typename, typename> class HR,
+    typename HRP,
     typename Normals,
     typename TexCoords,
     typename Materials,
@@ -689,13 +692,13 @@ template <
     typename NormalBinding
     >
 inline auto get_surface_any_prim_impl(
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        Normals                                             normals,
-        TexCoords                                           tex_coords,
-        Materials                                           materials,
-        Textures                                            textures,
-        Primitive                                           /* */,
-        NormalBinding                                       /* */
+        HR<simd::ray4, HRP> const&  hr,
+        Normals                     normals,
+        TexCoords                   tex_coords,
+        Materials                   materials,
+        Textures                    textures,
+        Primitive                   /* */,
+        NormalBinding               /* */
         ) -> decltype( simd::pack(
                 surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>(),
                 surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>(),
@@ -755,17 +758,19 @@ inline auto get_surface_any_prim_impl(
 //
 
 template <
+    template <typename, typename> class HR,
+    typename HRP,
     typename Normals,
     typename Materials,
     typename Primitive,
     typename NormalBinding
     >
 inline auto get_surface_any_prim_impl(
-        hit_record<simd::ray8, primitive<unsigned>> const&  hr,
-        Normals                                             normals,
-        Materials                                           materials,
-        Primitive                                           /* */,
-        NormalBinding                                       /* */
+        HR<simd::ray8, HRP> const&  hr,
+        Normals                     normals,
+        Materials                   materials,
+        Primitive                   /* */,
+        NormalBinding               /* */
         ) -> decltype( simd::pack(
                 surface<typename std::iterator_traits<Materials>::value_type>(),
                 surface<typename std::iterator_traits<Materials>::value_type>(),
@@ -827,7 +832,7 @@ inline auto get_surface_any_prim_impl(
 //
 
 template <
-    typename R,
+    typename HR,
     typename Primitives,
     typename Normals,
     typename Materials,
@@ -835,7 +840,7 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
-        hit_record<R, primitive<unsigned>> const&               hr,
+        HR const&                                               hr,
         Primitives                                              primitives,
         Normals                                                 normals,
         Materials                                               materials,
@@ -860,7 +865,7 @@ inline auto get_surface_with_prims_impl(
 }
 
 template <
-    typename R,
+    typename HR,
     typename Primitives,
     typename Normals,
     typename TexCoords,
@@ -870,7 +875,7 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
-        hit_record<R, primitive<unsigned>> const&               hr,
+        HR const&                                               hr,
         Primitives                                              primitives,
         Normals                                                 normals,
         TexCoords                                               tex_coords,
@@ -906,18 +911,20 @@ inline auto get_surface_with_prims_impl(
 //
 
 template <
+    template <typename, typename> class HR,
+    typename HRP,
     typename NormalBinding,
     typename Primitives,
     typename Normals,
     typename Materials,
     typename ...Ts>
 inline auto get_surface_with_prims_impl(
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        Primitives                                          primitives,
-        Normals                                             normals,
-        Materials                                           materials,
-        generic_primitive<Ts...>                            /* */,
-        NormalBinding                                       /* */
+        HR<simd::ray4, HRP> const&  hr,
+        Primitives                  primitives,
+        Normals                     normals,
+        Materials                   materials,
+        generic_primitive<Ts...>    /* */,
+        NormalBinding               /* */
         ) -> decltype( simd::pack(
                 surface<typename std::iterator_traits<Materials>::value_type>(),
                 surface<typename std::iterator_traits<Materials>::value_type>(),
