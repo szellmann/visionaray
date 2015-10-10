@@ -11,6 +11,7 @@
 
 #include "../generic_material.h"
 #include "../generic_primitive.h"
+#include "../get_normal.h"
 #include "../get_tex_coord.h"
 #include "../tags.h"
 
@@ -287,205 +288,6 @@ struct primitive_traits<Accelerator<T>>
 
 
 //-------------------------------------------------------------------------------------------------
-// Get face normal from array
-//
-
-template <typename Normals, typename HR>
-VSNRAY_FUNC
-inline auto get_normal(Normals normals, HR const& hr, normals_per_face_binding)
-    -> typename std::iterator_traits<Normals>::value_type
-{
-    return normals[hr.prim_id];
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Get vertex normal from array
-//
-
-template <typename Normals, typename HR>
-VSNRAY_FUNC
-inline auto get_normal(Normals normals, HR const& hr, normals_per_vertex_binding)
-    -> typename std::iterator_traits<Normals>::value_type
-{
-    return normalize( lerp(
-            normals[hr.prim_id * 3],
-            normals[hr.prim_id * 3 + 1],
-            normals[hr.prim_id * 3 + 2],
-            hr.u,
-            hr.v
-            ) );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Gather four face normals with SSE
-//
-
-template <typename Normals>
-inline vector<3, simd::float4> get_normal(
-        Normals                                             normals,
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        normals_per_face_binding
-        )
-{
-    using N = typename std::iterator_traits<Normals>::value_type;
-
-    auto hr4 = simd::unpack(hr);
-
-    auto get_norm = [&](int x)
-    {
-        return hr4[x].hit ? normals[hr4[x].prim_id] : N();
-    };
-
-    auto n1 = get_norm(0);
-    auto n2 = get_norm(1);
-    auto n3 = get_norm(2);
-    auto n4 = get_norm(3);
-
-    return vector<3, simd::float4>(
-            simd::float4( n1.x, n2.x, n3.x, n4.x ),
-            simd::float4( n1.y, n2.y, n3.y, n4.y ),
-            simd::float4( n1.z, n2.z, n3.z, n4.z )
-            );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Gather four vertex normals with SSE
-//
-
-template <typename Normals>
-inline vector<3, simd::float4> get_normal(
-        Normals                                             normals,
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        normals_per_vertex_binding
-        )
-{
-    using N = typename std::iterator_traits<Normals>::value_type;
-
-    auto hr4 = simd::unpack(hr);
-
-    auto get_norm = [&](int x, int y)
-    {
-        return hr4[x].hit ? normals[hr4[x].prim_id * 3 + y] : N();
-    };
-
-    vector<3, simd::float4> n1(
-            simd::float4( get_norm(0, 0).x, get_norm(1, 0).x, get_norm(2, 0).x, get_norm(3, 0).x ),
-            simd::float4( get_norm(0, 0).y, get_norm(1, 0).y, get_norm(2, 0).y, get_norm(3, 0).y ),
-            simd::float4( get_norm(0, 0).z, get_norm(1, 0).z, get_norm(2, 0).z, get_norm(3, 0).z )
-            );
-
-    vector<3, simd::float4> n2(
-            simd::float4( get_norm(0, 1).x, get_norm(1, 1).x, get_norm(2, 1).x, get_norm(3, 1).x ),
-            simd::float4( get_norm(0, 1).y, get_norm(1, 1).y, get_norm(2, 1).y, get_norm(3, 1).y ),
-            simd::float4( get_norm(0, 1).z, get_norm(1, 1).z, get_norm(2, 1).z, get_norm(3, 1).z )
-            );
-
-    vector<3, simd::float4> n3(
-            simd::float4( get_norm(0, 2).x, get_norm(1, 2).x, get_norm(2, 2).x, get_norm(3, 2).x ),
-            simd::float4( get_norm(0, 2).y, get_norm(1, 2).y, get_norm(2, 2).y, get_norm(3, 2).y ),
-            simd::float4( get_norm(0, 2).z, get_norm(1, 2).z, get_norm(2, 2).z, get_norm(3, 2).z )
-            );
-
-    return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
-}
-
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-//-------------------------------------------------------------------------------------------------
-// Gather eight face normals with AVX
-//
-
-template <typename Normals>
-inline vector<3, simd::float8> get_normal(
-        Normals                                             normals,
-        hit_record<simd::ray8, primitive<unsigned>> const&  hr,
-        normals_per_face_binding
-        )
-{
-    using N = typename std::iterator_traits<Normals>::value_type;
-
-    auto hr8 = simd::unpack(hr);
-
-    auto get_norm = [&](int x)
-    {
-        return hr8[x].hit ? normals[hr8[x].prim_id] : N();
-    };
-
-    auto n1 = get_norm(0);
-    auto n2 = get_norm(1);
-    auto n3 = get_norm(2);
-    auto n4 = get_norm(3);
-    auto n5 = get_norm(4);
-    auto n6 = get_norm(5);
-    auto n7 = get_norm(6);
-    auto n8 = get_norm(7);
-
-    return vector<3, simd::float8>(
-            simd::float8( n1.x, n2.x, n3.x, n4.x, n5.x, n6.x, n7.x, n8.x ),
-            simd::float8( n1.y, n2.y, n3.y, n4.y, n5.y, n6.y, n7.y, n8.y ),
-            simd::float8( n1.z, n2.z, n3.z, n4.z, n5.z, n6.z, n7.z, n8.z )
-            );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Gather eight vertex normals with AVX
-//
-
-template <typename Normals>
-inline vector<3, simd::float8> get_normal(
-        Normals                                             normals,
-        hit_record<simd::ray8, primitive<unsigned>> const&  hr,
-        normals_per_vertex_binding
-        )
-{
-    using N = typename std::iterator_traits<Normals>::value_type;
-
-    auto hr8 = simd::unpack(hr);
-
-    auto get_norm = [&](int x, int y)
-    {
-        return hr8[x].hit ? normals[hr8[x].prim_id * 3 + y] : N();
-    };
-
-    vector<3, simd::float8> n1(
-            simd::float8( get_norm(0, 0).x, get_norm(1, 0).x, get_norm(2, 0).x, get_norm(3, 0).x,
-                          get_norm(4, 0).x, get_norm(5, 0).x, get_norm(6, 0).x, get_norm(7, 0).x ),
-            simd::float8( get_norm(0, 0).y, get_norm(1, 0).y, get_norm(2, 0).y, get_norm(3, 0).y,
-                          get_norm(4, 0).y, get_norm(5, 0).y, get_norm(6, 0).y, get_norm(7, 0).y ),
-            simd::float8( get_norm(0, 0).z, get_norm(1, 0).z, get_norm(2, 0).z, get_norm(3, 0).z,
-                          get_norm(4, 0).z, get_norm(5, 0).z, get_norm(6, 0).z, get_norm(7, 0).z )
-            );
-
-    vector<3, simd::float8> n2(
-            simd::float8( get_norm(0, 1).x, get_norm(1, 1).x, get_norm(2, 1).x, get_norm(3, 1).x,
-                          get_norm(4, 1).x, get_norm(5, 1).x, get_norm(6, 1).x, get_norm(7, 1).x ),
-            simd::float8( get_norm(0, 1).y, get_norm(1, 1).y, get_norm(2, 1).y, get_norm(3, 1).y,
-                          get_norm(4, 1).y, get_norm(5, 1).y, get_norm(6, 1).y, get_norm(7, 1).y ),
-            simd::float8( get_norm(0, 1).z, get_norm(1, 1).z, get_norm(2, 1).z, get_norm(3, 1).z,
-                          get_norm(4, 1).z, get_norm(5, 1).z, get_norm(6, 1).z, get_norm(7, 1).z )
-            );
-
-    vector<3, simd::float8> n3(
-            simd::float8( get_norm(0, 2).x, get_norm(1, 2).x, get_norm(2, 2).x, get_norm(3, 2).x,
-                          get_norm(4, 2).x, get_norm(5, 2).x, get_norm(6, 2).x, get_norm(7, 2).x ),
-            simd::float8( get_norm(0, 2).y, get_norm(1, 2).y, get_norm(2, 2).y, get_norm(3, 2).y,
-                          get_norm(4, 2).y, get_norm(5, 2).y, get_norm(6, 2).y, get_norm(7, 2).y ),
-            simd::float8( get_norm(0, 2).z, get_norm(1, 2).z, get_norm(2, 2).z, get_norm(3, 2).z,
-                          get_norm(4, 2).z, get_norm(5, 2).z, get_norm(6, 2).z, get_norm(7, 2).z )
-            );
-
-    return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-
-//-------------------------------------------------------------------------------------------------
 //
 //
 
@@ -509,7 +311,7 @@ inline auto get_surface_any_prim_impl(
     using M = typename std::iterator_traits<Materials>::value_type;
 
     return surface<M>(
-            get_normal(normals, hr, NormalBinding()),
+            get_normal(normals, hr, Primitive{}, NormalBinding{}),
             materials[hr.geom_id]
             );
 }
@@ -536,15 +338,16 @@ inline auto get_surface_any_prim_impl(
     -> surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>
 {
     using M = typename std::iterator_traits<Materials>::value_type;
+    using P = typename detail::primitive_traits<Primitive>::type;
 
-    auto tc = get_tex_coord(tex_coords, hr, typename detail::primitive_traits<Primitive>::type{});
+    auto tc = get_tex_coord(tex_coords, hr, P{});
 
     auto const& tex = textures[hr.geom_id];
     auto tex_color = tex.width() > 0 && tex.height() > 0
                    ? vector<3, float>(tex2D(tex, tc))
                    : vector<3, float>(1.0);
 
-    auto normal = get_normal(normals, hr, NormalBinding());
+    auto normal = get_normal(normals, hr, P{}, NormalBinding{});
     return surface<M, vector<3, float>>( normal, materials[hr.geom_id], tex_color );
 }
 
@@ -578,7 +381,7 @@ public:
     VSNRAY_FUNC
     return_type operator()(basic_sphere<float> const& sphere) const
     {
-        return (hr_.isect_pos - sphere.center) / sphere.radius; // TODO: (custom) get_normal() functions?
+        return get_normal(hr_, sphere, NormalBinding{}); // TODO
     }
 
     template <typename Primitive>
@@ -587,7 +390,7 @@ public:
     {
         VSNRAY_UNUSED(primitive);
 
-        return get_normal(normals_, hr_, NormalBinding());
+        return get_normal(normals_, hr_, primitive, NormalBinding{});
     }
 
 private:
@@ -657,25 +460,26 @@ inline auto get_surface_any_prim_impl(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
+    using P = typename detail::primitive_traits<Primitive>::type;
 
     auto hr4 = simd::unpack(hr);
 
     return simd::pack(
             surface<M>(
-                hr4[0].hit ? get_normal(normals, hr4[0], NormalBinding()) : N(),
-                hr4[0].hit ? materials[hr4[0].geom_id]                    : M()
+                hr4[0].hit ? get_normal(normals, hr4[0], P{}, NormalBinding{}) : N(),
+                hr4[0].hit ? materials[hr4[0].geom_id]                         : M()
                 ),
             surface<M>(
-                hr4[1].hit ? get_normal(normals, hr4[1], NormalBinding()) : N(),
-                hr4[1].hit ? materials[hr4[1].geom_id]                    : M()
+                hr4[1].hit ? get_normal(normals, hr4[1], P{}, NormalBinding{}) : N(),
+                hr4[1].hit ? materials[hr4[1].geom_id]                         : M()
                 ),
             surface<M>(
-                hr4[2].hit ? get_normal(normals, hr4[2], NormalBinding()) : N(),
-                hr4[2].hit ? materials[hr4[2].geom_id]                    : M()
+                hr4[2].hit ? get_normal(normals, hr4[2], P{}, NormalBinding{}) : N(),
+                hr4[2].hit ? materials[hr4[2].geom_id]                         : M()
                 ),
             surface<M>(
-                hr4[3].hit ? get_normal(normals, hr4[3], NormalBinding()) : N(),
-                hr4[3].hit ? materials[hr4[3].geom_id]                    : M()
+                hr4[3].hit ? get_normal(normals, hr4[3], P{}, NormalBinding{}) : N(),
+                hr4[3].hit ? materials[hr4[3].geom_id]                         : M()
                 )
             );
 }
@@ -708,6 +512,7 @@ inline auto get_surface_any_prim_impl(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
+    using P = typename detail::primitive_traits<Primitive>::type;
 
     auto hr4 = simd::unpack(hr);
 
@@ -729,24 +534,24 @@ inline auto get_surface_any_prim_impl(
 
     return simd::pack(
             surface<M, vector<3, float>>(
-                hr4[0].hit ? get_normal(normals, hr4[0], NormalBinding()) : N(),
-                hr4[0].hit ? materials[hr4[0].geom_id]                    : M(),
-                hr4[0].hit ? tex_color4[0]                                : vector<3, float>(1.0)
+                hr4[0].hit ? get_normal(normals, hr4[0], P{}, NormalBinding{}) : N(),
+                hr4[0].hit ? materials[hr4[0].geom_id]                         : M(),
+                hr4[0].hit ? tex_color4[0]                                     : vector<3, float>(1.0)
                 ),
             surface<M, vector<3, float>>(
-                hr4[1].hit ? get_normal(normals, hr4[1], NormalBinding()) : N(),
-                hr4[1].hit ? materials[hr4[1].geom_id]                    : M(),
-                hr4[1].hit ? tex_color4[1]                                : vector<3, float>(1.0)
+                hr4[1].hit ? get_normal(normals, hr4[1], P{}, NormalBinding{}) : N(),
+                hr4[1].hit ? materials[hr4[1].geom_id]                         : M(),
+                hr4[1].hit ? tex_color4[1]                                     : vector<3, float>(1.0)
                 ),
             surface<M, vector<3, float>>(
-                hr4[2].hit ? get_normal(normals, hr4[2], NormalBinding()) : N(),
-                hr4[2].hit ? materials[hr4[2].geom_id]                    : M(),
-                hr4[2].hit ? tex_color4[2]                                : vector<3, float>(1.0)
+                hr4[2].hit ? get_normal(normals, hr4[2], P{}, NormalBinding{}) : N(),
+                hr4[2].hit ? materials[hr4[2].geom_id]                         : M(),
+                hr4[2].hit ? tex_color4[2]                                     : vector<3, float>(1.0)
                 ),
             surface<M, vector<3, float>>(
-                hr4[3].hit ? get_normal(normals, hr4[3], NormalBinding()) : N(),
-                hr4[3].hit ? materials[hr4[3].geom_id]                    : M(),
-                hr4[3].hit ? tex_color4[3]                                : vector<3, float>(1.0)
+                hr4[3].hit ? get_normal(normals, hr4[3], P{}, NormalBinding{}) : N(),
+                hr4[3].hit ? materials[hr4[3].geom_id]                         : M(),
+                hr4[3].hit ? tex_color4[3]                                     : vector<3, float>(1.0)
                 )
             );
 }
@@ -784,41 +589,42 @@ inline auto get_surface_any_prim_impl(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
+    using P = typename detail::primitive_traits<Primitive>::type;
 
     auto hr8 = simd::unpack(hr);
 
     return simd::pack(
             surface<M>(
-                hr8[0].hit ? get_normal(normals, hr8[0], NormalBinding()) : N(),
-                hr8[0].hit ? materials[hr8[0].geom_id]                    : M()
+                hr8[0].hit ? get_normal(normals, hr8[0], P{}, NormalBinding{}) : N(),
+                hr8[0].hit ? materials[hr8[0].geom_id]                         : M()
                 ),
             surface<M>(
-                hr8[1].hit ? get_normal(normals, hr8[1], NormalBinding()) : N(),
-                hr8[1].hit ? materials[hr8[1].geom_id]                    : M()
+                hr8[1].hit ? get_normal(normals, hr8[1], P{}, NormalBinding{}) : N(),
+                hr8[1].hit ? materials[hr8[1].geom_id]                         : M()
                 ),
             surface<M>(
-                hr8[2].hit ? get_normal(normals, hr8[2], NormalBinding()) : N(),
-                hr8[2].hit ? materials[hr8[2].geom_id]                    : M()
+                hr8[2].hit ? get_normal(normals, hr8[2], P{}, NormalBinding{}) : N(),
+                hr8[2].hit ? materials[hr8[2].geom_id]                         : M()
                 ),
             surface<M>(
-                hr8[3].hit ? get_normal(normals, hr8[3], NormalBinding()) : N(),
-                hr8[3].hit ? materials[hr8[3].geom_id]                    : M()
+                hr8[3].hit ? get_normal(normals, hr8[3], P{}, NormalBinding{}) : N(),
+                hr8[3].hit ? materials[hr8[3].geom_id]                         : M()
                 ),
             surface<M>(
-                hr8[4].hit ? get_normal(normals, hr8[4], NormalBinding()) : N(),
-                hr8[4].hit ? materials[hr8[4].geom_id]                    : M()
+                hr8[4].hit ? get_normal(normals, hr8[4], P{}, NormalBinding{}) : N(),
+                hr8[4].hit ? materials[hr8[4].geom_id]                         : M()
                 ),
             surface<M>(
-                hr8[5].hit ? get_normal(normals, hr8[5], NormalBinding()) : N(),
-                hr8[5].hit ? materials[hr8[5].geom_id]                    : M()
+                hr8[5].hit ? get_normal(normals, hr8[5], P{}, NormalBinding{}) : N(),
+                hr8[5].hit ? materials[hr8[5].geom_id]                         : M()
                 ),
             surface<M>(
-                hr8[6].hit ? get_normal(normals, hr8[6], NormalBinding()) : N(),
-                hr8[6].hit ? materials[hr8[6].geom_id]                    : M()
+                hr8[6].hit ? get_normal(normals, hr8[6], P{}, NormalBinding{}) : N(),
+                hr8[6].hit ? materials[hr8[6].geom_id]                         : M()
                 ),
             surface<M>(
-                hr8[7].hit ? get_normal(normals, hr8[7], NormalBinding()) : N(),
-                hr8[7].hit ? materials[hr8[7].geom_id]                    : M()
+                hr8[7].hit ? get_normal(normals, hr8[7], P{}, NormalBinding{}) : N(),
+                hr8[7].hit ? materials[hr8[7].geom_id]                         : M()
                 )
             );
 }
