@@ -189,7 +189,7 @@ public:
         tri.e1 = osg_cast(v2) - tri.v1;
         tri.e2 = osg_cast(v3) - tri.v1;
 
-        if (length(cross(tri.e1, tri.e2)) < numeric_limits<float>::epsilon())
+        if (length(cross(tri.e1, tri.e2)) == 0.0f)
         {
             // TODO: implement some kind of error logging
             return;

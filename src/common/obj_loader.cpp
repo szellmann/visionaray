@@ -129,7 +129,7 @@ bool store_triangle(model& result, vertex_vector const& vertices, int i1, int i2
     tri.e1 = vertices[i2] - tri.v1;
     tri.e2 = vertices[i3] - tri.v1;
 
-    if (length(cross(tri.e1, tri.e2)) < numeric_limits<float>::epsilon())
+    if (length(cross(tri.e1, tri.e2)) == 0.0f)
     {
         // TODO: implement some kind of error logging
         return false;
