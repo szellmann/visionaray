@@ -283,6 +283,7 @@ inline vector<2, T> normalize(vector<2, T> const& v)
     return v * rsqrt( dot(v, v) );
 }
 
+
 //-------------------------------------------------------------------------------------------------
 // Misc.
 //
@@ -308,6 +309,20 @@ auto select(M const& m, vector<2, T1> const& u, vector<2, T2> const& v)
             select(m, u.x, v.x),
             select(m, u.y, v.y)
             );
+}
+
+template <typename T>
+MATH_FUNC
+inline vector<2, T> min(vector<2, T> const& u, vector<2, T> const& v)
+{
+    return vector<2, T>( min(u.x, v.x), min(u.y, v.y) );
+}
+
+template <typename T>
+MATH_FUNC
+inline vector<2, T> max(vector<2, T> const& u, vector<2, T> const& v)
+{
+    return vector<2, T>( max(u.x, v.x), max(u.y, v.y) );
 }
 
 template <typename T>
