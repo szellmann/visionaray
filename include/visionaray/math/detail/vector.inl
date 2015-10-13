@@ -726,6 +726,34 @@ inline vector<Dim, T> select(M const& m, vector<Dim, T> const& u, vector<Dim, T>
 
 template <size_t Dim, typename T>
 MATH_FUNC
+vector<Dim, T> min(vector<Dim, T> const& u, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = min(u[d], v[d]);
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
+vector<Dim, T> max(vector<Dim, T> const& u, vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = max(u[d], v[d]);
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
 vector<Dim, T> rotate(vector<Dim, T> v, int count = 1)
 {
     auto tmp = v;
