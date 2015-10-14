@@ -174,45 +174,55 @@ inline ReturnT cubic(
         W3                                      w3
         )
 {
-    coord = map_tex_coord(coord, texsize, address_mode);
+    auto coord1 = map_tex_coord(
+            coord - FloatT(1.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
 
-    auto x = coord.x * convert_to_float(texsize.x) - FloatT(0.5);
-    auto floorx = floor(x);
-    auto fracx  = x - floor(x);
+    auto coord2 = map_tex_coord(
+            coord - FloatT(0.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
 
-    auto y = coord.y * convert_to_float(texsize.y) - FloatT(0.5);
-    auto floory = floor(y);
-    auto fracy  = y - floor(y);
+    auto coord3 = map_tex_coord(
+            coord + FloatT(0.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
 
-    vector<2, FloatT> pos[4] =
+    auto coord4 = map_tex_coord(
+            coord + FloatT(1.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
+
+    vector<2, decltype(convert_to_int(FloatT{}))> pos[4] =
     {
-        { floorx - 1, floory - 1 },
-        { floorx,     floory     },
-        { floorx + 1, floory + 1 },
-        { floorx + 2, floory + 2 }
+        convert_to_int(coord1 * convert_to_float(texsize)),
+        convert_to_int(coord2 * convert_to_float(texsize)),
+        convert_to_int(coord3 * convert_to_float(texsize)),
+        convert_to_int(coord4 * convert_to_float(texsize))
     };
 
-    for (size_t i = 0; i < 4; ++i)
-    {
-        pos[i].x = clamp(pos[i].x, FloatT(0.0), convert_to_float(texsize.x - 1));
-        pos[i].y = clamp(pos[i].y, FloatT(0.0), convert_to_float(texsize.y - 1));
-    }
+    auto uv = (coord2 * convert_to_float(texsize)) - convert_to_float(pos[1]);
 
     auto sample = [&](int i, int j) -> InternalT
     {
         return InternalT( point(
                 tex,
-                index(convert_to_int(pos[i].x), convert_to_int(pos[j].y), texsize),
+                index(pos[i].x, pos[j].y, texsize),
                 ReturnT()
                 ) );
     };
 
-    auto f0 = w0(fracx) * sample(0, 0) + w1(fracx) * sample(1, 0) + w2(fracx) * sample(2, 0) + w3(fracx) * sample(3, 0);
-    auto f1 = w0(fracx) * sample(0, 1) + w1(fracx) * sample(1, 1) + w2(fracx) * sample(2, 1) + w3(fracx) * sample(3, 1);
-    auto f2 = w0(fracx) * sample(0, 2) + w1(fracx) * sample(1, 2) + w2(fracx) * sample(2, 2) + w3(fracx) * sample(3, 2);
-    auto f3 = w0(fracx) * sample(0, 3) + w1(fracx) * sample(1, 3) + w2(fracx) * sample(2, 3) + w3(fracx) * sample(3, 3);
+    auto f0 = w0(uv.x) * sample(0, 0) + w1(uv.x) * sample(1, 0) + w2(uv.x) * sample(2, 0) + w3(uv.x) * sample(3, 0);
+    auto f1 = w0(uv.x) * sample(0, 1) + w1(uv.x) * sample(1, 1) + w2(uv.x) * sample(2, 1) + w3(uv.x) * sample(3, 1);
+    auto f2 = w0(uv.x) * sample(0, 2) + w1(uv.x) * sample(1, 2) + w2(uv.x) * sample(2, 2) + w3(uv.x) * sample(3, 2);
+    auto f3 = w0(uv.x) * sample(0, 3) + w1(uv.x) * sample(1, 3) + w2(uv.x) * sample(2, 3) + w3(uv.x) * sample(3, 3);
 
-    return ReturnT(w0(fracy) * f0 + w1(fracy) * f1 + w2(fracy) * f2 + w3(fracy) * f3);
+    return ReturnT(w0(uv.y) * f0 + w1(uv.y) * f1 + w2(uv.y) * f2 + w3(uv.y) * f3);
 }
 
 

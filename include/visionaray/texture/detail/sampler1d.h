@@ -147,31 +147,46 @@ inline ReturnT cubic(
         W3                                      w3
         )
 {
-    coord = map_tex_coord(coord, texsize, address_mode);
+    auto coord1 = map_tex_coord(
+            coord - FloatT(1.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
 
-    auto x = coord * convert_to_float(texsize) - FloatT(0.5);
-    auto floorx = floor(x);
-    auto fracx = x - floor(x);
+    auto coord2 = map_tex_coord(
+            coord - FloatT(0.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
 
-    FloatT pos[4] =
+    auto coord3 = map_tex_coord(
+            coord + FloatT(0.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
+
+    auto coord4 = map_tex_coord(
+            coord + FloatT(1.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
+
+    decltype(convert_to_int(FloatT{})) pos[4] =
     {
-        floorx - 1,
-        floorx,
-        floorx + 1,
-        floorx + 2
+        convert_to_int(coord1 * convert_to_float(texsize)),
+        convert_to_int(coord2 * convert_to_float(texsize)),
+        convert_to_int(coord3 * convert_to_float(texsize)),
+        convert_to_int(coord4 * convert_to_float(texsize))
     };
 
-    for (size_t i = 0; i < 4; ++i)
-    {
-        pos[i] = clamp(pos[i], FloatT(0.0), convert_to_float(texsize - 1));
-    }
+    auto u = (coord2 * convert_to_float(texsize)) - convert_to_float(pos[1]);
 
     auto sample = [&](int i) -> InternalT
     {
         return InternalT( point(tex, pos[i], ReturnT()) );
     };
 
-    return ReturnT(w0(fracx) * sample(0) + w1(fracx) * sample(1) + w2(fracx) * sample(2) + w3(fracx) * sample(3));
+    return ReturnT(w0(u) * sample(0) + w1(u) * sample(1) + w2(u) * sample(2) + w3(u) * sample(3));
 }
 
 

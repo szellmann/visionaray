@@ -207,70 +207,75 @@ inline ReturnT cubic(
         W3                                      w3
         )
 {
-    coord = map_tex_coord(coord, texsize, address_mode);
+    auto coord1 = map_tex_coord(
+            coord - FloatT(1.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
 
-    auto x = coord.x * convert_to_float(texsize.x) - FloatT(0.5);
-    auto floorx = floor(x);
-    auto fracx  = x - floor(x);
+    auto coord2 = map_tex_coord(
+            coord - FloatT(0.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
 
-    auto y = coord.y * convert_to_float(texsize.y) - FloatT(0.5);
-    auto floory = floor(y);
-    auto fracy  = y - floor(y);
+    auto coord3 = map_tex_coord(
+            coord + FloatT(0.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
 
-    auto z = coord.z * convert_to_float(texsize.z) - FloatT(0.5);
-    auto floorz = floor(z);
-    auto fracz  = z - floor(z);
+    auto coord4 = map_tex_coord(
+            coord + FloatT(1.5) / convert_to_float(texsize),
+            texsize,
+            address_mode
+            );
 
-    vector<3, FloatT> pos[4] =
+    vector<3, decltype(convert_to_int(FloatT{}))> pos[4] =
     {
-        { floorx - 1, floory - 1, floorz - 1 },
-        { floorx,     floory,     floorz     },
-        { floorx + 1, floory + 1, floorz + 1 },
-        { floorx + 2, floory + 2, floorz + 2 }
+        convert_to_int(coord1 * convert_to_float(texsize)),
+        convert_to_int(coord2 * convert_to_float(texsize)),
+        convert_to_int(coord3 * convert_to_float(texsize)),
+        convert_to_int(coord4 * convert_to_float(texsize))
     };
 
-    for (size_t i = 0; i < 4; ++i)
-    {
-        pos[i].x = clamp(pos[i].x, FloatT(0.0), convert_to_float(texsize.x - 1));
-        pos[i].y = clamp(pos[i].y, FloatT(0.0), convert_to_float(texsize.y - 1));
-        pos[i].z = clamp(pos[i].z, FloatT(0.0), convert_to_float(texsize.z - 1));
-    }
+    auto uvw = (coord2 * convert_to_float(texsize)) - convert_to_float(pos[1]);
 
     auto sample = [&](int i, int j, int k) -> InternalT
     {
         return InternalT( point(
                 tex,
-                index(convert_to_int(pos[i].x), convert_to_int(pos[j].y), convert_to_int(pos[k].z), texsize),
+                index(pos[i].x, pos[j].y, pos[k].z, texsize),
                 ReturnT()
                 ) );
     };
 
-    auto f00 = w0(fracx) * sample(0, 0, 0) + w1(fracx) * sample(1, 0, 0) + w2(fracx) * sample(2, 0, 0) + w3(fracx) * sample(3, 0, 0);
-    auto f01 = w0(fracx) * sample(0, 1, 0) + w1(fracx) * sample(1, 1, 0) + w2(fracx) * sample(2, 1, 0) + w3(fracx) * sample(3, 1, 0);
-    auto f02 = w0(fracx) * sample(0, 2, 0) + w1(fracx) * sample(1, 2, 0) + w2(fracx) * sample(2, 2, 0) + w3(fracx) * sample(3, 2, 0);
-    auto f03 = w0(fracx) * sample(0, 3, 0) + w1(fracx) * sample(1, 3, 0) + w2(fracx) * sample(2, 3, 0) + w3(fracx) * sample(3, 3, 0);
+    auto f00 = w0(uvw.x) * sample(0, 0, 0) + w1(uvw.x) * sample(1, 0, 0) + w2(uvw.x) * sample(2, 0, 0) + w3(uvw.x) * sample(3, 0, 0);
+    auto f01 = w0(uvw.x) * sample(0, 1, 0) + w1(uvw.x) * sample(1, 1, 0) + w2(uvw.x) * sample(2, 1, 0) + w3(uvw.x) * sample(3, 1, 0);
+    auto f02 = w0(uvw.x) * sample(0, 2, 0) + w1(uvw.x) * sample(1, 2, 0) + w2(uvw.x) * sample(2, 2, 0) + w3(uvw.x) * sample(3, 2, 0);
+    auto f03 = w0(uvw.x) * sample(0, 3, 0) + w1(uvw.x) * sample(1, 3, 0) + w2(uvw.x) * sample(2, 3, 0) + w3(uvw.x) * sample(3, 3, 0);
 
-    auto f04 = w0(fracx) * sample(0, 0, 1) + w1(fracx) * sample(1, 0, 1) + w2(fracx) * sample(2, 0, 1) + w3(fracx) * sample(3, 0, 1);
-    auto f05 = w0(fracx) * sample(0, 1, 1) + w1(fracx) * sample(1, 1, 1) + w2(fracx) * sample(2, 1, 1) + w3(fracx) * sample(3, 1, 1);
-    auto f06 = w0(fracx) * sample(0, 2, 1) + w1(fracx) * sample(1, 2, 1) + w2(fracx) * sample(2, 2, 1) + w3(fracx) * sample(3, 2, 1);
-    auto f07 = w0(fracx) * sample(0, 3, 1) + w1(fracx) * sample(1, 3, 1) + w2(fracx) * sample(2, 3, 1) + w3(fracx) * sample(3, 3, 1);
+    auto f04 = w0(uvw.x) * sample(0, 0, 1) + w1(uvw.x) * sample(1, 0, 1) + w2(uvw.x) * sample(2, 0, 1) + w3(uvw.x) * sample(3, 0, 1);
+    auto f05 = w0(uvw.x) * sample(0, 1, 1) + w1(uvw.x) * sample(1, 1, 1) + w2(uvw.x) * sample(2, 1, 1) + w3(uvw.x) * sample(3, 1, 1);
+    auto f06 = w0(uvw.x) * sample(0, 2, 1) + w1(uvw.x) * sample(1, 2, 1) + w2(uvw.x) * sample(2, 2, 1) + w3(uvw.x) * sample(3, 2, 1);
+    auto f07 = w0(uvw.x) * sample(0, 3, 1) + w1(uvw.x) * sample(1, 3, 1) + w2(uvw.x) * sample(2, 3, 1) + w3(uvw.x) * sample(3, 3, 1);
 
-    auto f08 = w0(fracx) * sample(0, 0, 2) + w1(fracx) * sample(1, 0, 2) + w2(fracx) * sample(2, 0, 2) + w3(fracx) * sample(3, 0, 2);
-    auto f09 = w0(fracx) * sample(0, 1, 2) + w1(fracx) * sample(1, 1, 2) + w2(fracx) * sample(2, 1, 2) + w3(fracx) * sample(3, 1, 2);
-    auto f10 = w0(fracx) * sample(0, 2, 2) + w1(fracx) * sample(1, 2, 2) + w2(fracx) * sample(2, 2, 2) + w3(fracx) * sample(3, 2, 2);
-    auto f11 = w0(fracx) * sample(0, 3, 2) + w1(fracx) * sample(1, 3, 2) + w2(fracx) * sample(2, 3, 2) + w3(fracx) * sample(3, 3, 2);
+    auto f08 = w0(uvw.x) * sample(0, 0, 2) + w1(uvw.x) * sample(1, 0, 2) + w2(uvw.x) * sample(2, 0, 2) + w3(uvw.x) * sample(3, 0, 2);
+    auto f09 = w0(uvw.x) * sample(0, 1, 2) + w1(uvw.x) * sample(1, 1, 2) + w2(uvw.x) * sample(2, 1, 2) + w3(uvw.x) * sample(3, 1, 2);
+    auto f10 = w0(uvw.x) * sample(0, 2, 2) + w1(uvw.x) * sample(1, 2, 2) + w2(uvw.x) * sample(2, 2, 2) + w3(uvw.x) * sample(3, 2, 2);
+    auto f11 = w0(uvw.x) * sample(0, 3, 2) + w1(uvw.x) * sample(1, 3, 2) + w2(uvw.x) * sample(2, 3, 2) + w3(uvw.x) * sample(3, 3, 2);
 
-    auto f12 = w0(fracx) * sample(0, 0, 3) + w1(fracx) * sample(1, 0, 3) + w2(fracx) * sample(2, 0, 3) + w3(fracx) * sample(3, 0, 3);
-    auto f13 = w0(fracx) * sample(0, 1, 3) + w1(fracx) * sample(1, 1, 3) + w2(fracx) * sample(2, 1, 3) + w3(fracx) * sample(3, 1, 3);
-    auto f14 = w0(fracx) * sample(0, 2, 3) + w1(fracx) * sample(1, 2, 3) + w2(fracx) * sample(2, 2, 3) + w3(fracx) * sample(3, 2, 3);
-    auto f15 = w0(fracx) * sample(0, 3, 3) + w1(fracx) * sample(1, 3, 3) + w2(fracx) * sample(2, 3, 3) + w3(fracx) * sample(3, 3, 3);
+    auto f12 = w0(uvw.x) * sample(0, 0, 3) + w1(uvw.x) * sample(1, 0, 3) + w2(uvw.x) * sample(2, 0, 3) + w3(uvw.x) * sample(3, 0, 3);
+    auto f13 = w0(uvw.x) * sample(0, 1, 3) + w1(uvw.x) * sample(1, 1, 3) + w2(uvw.x) * sample(2, 1, 3) + w3(uvw.x) * sample(3, 1, 3);
+    auto f14 = w0(uvw.x) * sample(0, 2, 3) + w1(uvw.x) * sample(1, 2, 3) + w2(uvw.x) * sample(2, 2, 3) + w3(uvw.x) * sample(3, 2, 3);
+    auto f15 = w0(uvw.x) * sample(0, 3, 3) + w1(uvw.x) * sample(1, 3, 3) + w2(uvw.x) * sample(2, 3, 3) + w3(uvw.x) * sample(3, 3, 3);
 
-    auto f0  = w0(fracy) * f00 + w1(fracy) * f01 + w2(fracy) * f02 + w3(fracy) * f03;
-    auto f1  = w0(fracy) * f04 + w1(fracy) * f05 + w2(fracy) * f06 + w3(fracy) * f07;
-    auto f2  = w0(fracy) * f08 + w1(fracy) * f09 + w2(fracy) * f10 + w3(fracy) * f11;
-    auto f3  = w0(fracy) * f12 + w1(fracy) * f13 + w2(fracy) * f14 + w3(fracy) * f15;
+    auto f0  = w0(uvw.y) * f00 + w1(uvw.y) * f01 + w2(uvw.y) * f02 + w3(uvw.y) * f03;
+    auto f1  = w0(uvw.y) * f04 + w1(uvw.y) * f05 + w2(uvw.y) * f06 + w3(uvw.y) * f07;
+    auto f2  = w0(uvw.y) * f08 + w1(uvw.y) * f09 + w2(uvw.y) * f10 + w3(uvw.y) * f11;
+    auto f3  = w0(uvw.y) * f12 + w1(uvw.y) * f13 + w2(uvw.y) * f14 + w3(uvw.y) * f15;
 
-    return ReturnT(w0(fracz) * f0 + w1(fracz) * f1 + w2(fracz) * f2 + w3(fracz) * f3);
+    return ReturnT(w0(uvw.z) * f0 + w1(uvw.z) * f1 + w2(uvw.z) * f2 + w3(uvw.z) * f3);
 }
 
 
