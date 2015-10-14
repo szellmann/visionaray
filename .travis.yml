@@ -57,6 +57,6 @@ script:
     - printf "set(GLEW_FOUND TRUE)\n" >> cmake/FindGLEW.cmake
     - mkdir -p build
     - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1" -DVSNRAY_ENABLE_QT5=OFF
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1"
     - make -j5
     - sudo make install
