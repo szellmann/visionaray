@@ -462,7 +462,7 @@ inline auto get_surface_any_prim_impl(
     using M = typename std::iterator_traits<Materials>::value_type;
     using P = typename detail::primitive_traits<Primitive>::type;
 
-    auto hr4 = simd::unpack(hr);
+    auto hr4 = unpack(hr);
 
     return simd::pack(
             surface<M>(
@@ -514,7 +514,7 @@ inline auto get_surface_any_prim_impl(
     using M = typename std::iterator_traits<Materials>::value_type;
     using P = typename detail::primitive_traits<Primitive>::type;
 
-    auto hr4 = simd::unpack(hr);
+    auto hr4 = unpack(hr);
 
     auto tc4 = get_tex_coord(tex_coords, hr4, typename detail::primitive_traits<Primitive>::type{});
 
@@ -591,7 +591,7 @@ inline auto get_surface_any_prim_impl(
     using M = typename std::iterator_traits<Materials>::value_type;
     using P = typename detail::primitive_traits<Primitive>::type;
 
-    auto hr8 = simd::unpack(hr);
+    auto hr8 = unpack(hr);
 
     return simd::pack(
             surface<M>(
@@ -741,7 +741,7 @@ inline auto get_surface_with_prims_impl(
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
 
-    auto hr4 = simd::unpack(hr); 
+    auto hr4 = unpack(hr); 
 
     auto get_surf = [&](unsigned index)
     {

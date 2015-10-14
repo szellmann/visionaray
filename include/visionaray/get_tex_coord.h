@@ -51,7 +51,7 @@ inline vector<2, simd::float4> get_tex_coord(
 {
     using TC = typename std::iterator_traits<TexCoords>::value_type;
 
-    auto hr4 = simd::unpack(hr);
+    auto hr4 = unpack(hr);
 
     auto get_coord = [&](int x, int y)
     {

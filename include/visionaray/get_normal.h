@@ -72,7 +72,7 @@ inline vector<3, simd::float4> get_normal(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
 
-    auto hr4 = simd::unpack(hr);
+    auto hr4 = unpack(hr);
 
     auto get_norm = [&](int x)
     {
@@ -105,7 +105,7 @@ inline vector<3, simd::float4> get_normal(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
 
-    auto hr4 = simd::unpack(hr);
+    auto hr4 = unpack(hr);
 
     auto get_norm = [&](int x, int y)
     {
@@ -155,7 +155,7 @@ inline vector<3, simd::float8> get_normal(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
 
-    auto hr8 = simd::unpack(hr);
+    auto hr8 = unpack(hr);
 
     auto get_norm = [&](int x)
     {
@@ -192,7 +192,7 @@ inline vector<3, simd::float8> get_normal(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
 
-    auto hr8 = simd::unpack(hr);
+    auto hr8 = unpack(hr);
 
     auto get_norm = [&](int x, int y)
     {

@@ -164,7 +164,7 @@ public:
     template <typename SR>
     spectrum<simd::float4> shade(SR const& sr) const
     {
-        auto sr4 = simd::unpack(sr);
+        auto sr4 = unpack(sr);
         return simd::pack(
                 m1_.shade(sr4[0]),
                 m2_.shade(sr4[1]),
@@ -181,7 +181,7 @@ public:
             S&                          samp
             ) const
     {
-        auto sr4 = simd::unpack(sr);
+        auto sr4 = unpack(sr);
         vector<3, float> rd4[4];
         VSNRAY_ALIGN(16) float pdf4[] = { 0.0f, 0.0f, 0.0f, 0.0f };
         auto& s = samp.get_sampler();
