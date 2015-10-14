@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_SAMPLER_COMMON_H
-#define VSNRAY_SAMPLER_COMMON_H
+#define VSNRAY_SAMPLER_COMMON_H 1
 
 
 #include <visionaray/detail/macros.h>
@@ -29,6 +29,13 @@ F map_tex_coord(F const& coord, I const& texsize, tex_address_mode mode)
 
     switch (mode)
     {
+
+    case Mirror:
+        return select(
+                (convert_to_int(floor(coord)) & I(1)) == 1, // if is odd
+                F(1.0f) - (coord - floor(coord)),
+                coord - floor(coord)
+                );
 
     case Wrap:
         return coord - floor(coord);
@@ -315,11 +322,7 @@ inline T h1(T x)
     return ((floor( x ) + T(1.0) + w3(x)) / (w2(x) + w3(x))) - x;
 }
 
-
 } // detail
 } // visionaray
 
-
 #endif // VSNRAY_SAMPLER_COMMON_H
-
-
