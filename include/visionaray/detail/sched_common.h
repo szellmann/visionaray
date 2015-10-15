@@ -678,8 +678,7 @@ inline void sample_pixel_impl(
         pixel_sampler::jittered_blend_type  /* */,
         std::array<R, Num> const&           rays,
         Sampler&                            samp,
-        unsigned                            frame_begin,
-        unsigned                            frame_end,
+        unsigned                            frame_num,
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
@@ -693,6 +692,9 @@ inline void sample_pixel_impl(
     using Color = vector<4, S>;
 
     auto ray_ptr = rays.data();
+
+    auto frame_begin = frame_num;
+    auto frame_end   = frame_num + Num;
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
