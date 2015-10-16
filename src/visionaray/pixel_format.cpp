@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include <map>
+#include <tuple>
 #include <utility>
 
 #include <GL/glew.h>

@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_GL_HANDLE_H
-#define VSNRAY_GL_HANDLE_H
+#define VSNRAY_GL_HANDLE_H 1
 
 #include <visionaray/detail/macros.h>
 #include <visionaray/detail/platform.h>
@@ -52,7 +52,7 @@ class buffer : public handle<buffer>
 {
 public:
 
-    explicit buffer(GLuint name = 0) : handle(name) {}
+    explicit buffer(GLuint name = 0) : handle<buffer>(name) {}
 
     void destroy();
 
@@ -67,7 +67,7 @@ class framebuffer : public handle<framebuffer>
 {
 public:
 
-    explicit framebuffer(GLuint name = 0) : handle(name) {}
+    explicit framebuffer(GLuint name = 0) : handle<framebuffer>(name) {}
 
     void destroy();
 
@@ -82,7 +82,7 @@ class renderbuffer : public handle<renderbuffer>
 {
 public:
 
-    explicit renderbuffer(GLuint name = 0) : handle(name) {}
+    explicit renderbuffer(GLuint name = 0) : handle<renderbuffer>(name) {}
 
     void destroy();
 
@@ -97,7 +97,7 @@ class texture : public handle<texture>
 {
 public:
 
-    explicit texture(GLuint name = 0) : handle(name) {}
+    explicit texture(GLuint name = 0) : handle<texture>(name) {}
 
     void destroy();
 
@@ -117,9 +117,7 @@ GLuint create_framebuffer();
 GLuint create_renderbuffer();
 GLuint create_texture();
 
-
 } // gl
 } // visionaray
-
 
 #endif // VSNRAY_GL_HANDLE_H
