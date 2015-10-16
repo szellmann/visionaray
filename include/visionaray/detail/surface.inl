@@ -642,21 +642,22 @@ template <
     typename Primitives,
     typename Normals,
     typename Materials,
+    typename Primitive,
     typename NormalBinding
     >
 VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
-        HR const&                                               hr,
-        Primitives                                              primitives,
-        Normals                                                 normals,
-        Materials                                               materials,
-        typename std::iterator_traits<Primitives>::value_type   /* */,
-        NormalBinding                                           /* */
+        HR const&       hr,
+        Primitives      primitives,
+        Normals         normals,
+        Materials       materials,
+        Primitive       /* */,
+        NormalBinding   /* */
         ) -> decltype( get_surface_any_prim_impl(
                 hr,
                 normals,
                 materials,
-                typename std::iterator_traits<Primitives>::value_type{},
+                Primitive{},
                 NormalBinding{}
                 ) )
 {
@@ -665,7 +666,7 @@ inline auto get_surface_with_prims_impl(
             hr,
             normals,
             materials,
-            typename std::iterator_traits<Primitives>::value_type{},
+            Primitive{},
             NormalBinding{}
             );
 }
@@ -677,25 +678,26 @@ template <
     typename TexCoords,
     typename Materials,
     typename Textures,
+    typename Primitive,
     typename NormalBinding
     >
 VSNRAY_FUNC
 inline auto get_surface_with_prims_impl(
-        HR const&                                               hr,
-        Primitives                                              primitives,
-        Normals                                                 normals,
-        TexCoords                                               tex_coords,
-        Materials                                               materials,
-        Textures                                                textures,
-        typename std::iterator_traits<Primitives>::value_type   /* */,
-        NormalBinding                                           /* */
+        HR const&       hr,
+        Primitives      primitives,
+        Normals         normals,
+        TexCoords       tex_coords,
+        Materials       materials,
+        Textures        textures,
+        Primitive       /* */,
+        NormalBinding   /* */
         ) -> decltype( get_surface_any_prim_impl(
                 hr,
                 normals,
                 tex_coords,
                 materials,
                 textures,
-                typename std::iterator_traits<Primitives>::value_type{},
+                Primitive{},
                 NormalBinding{}
                 ) )
 {
@@ -706,7 +708,7 @@ inline auto get_surface_with_prims_impl(
             tex_coords,
             materials,
             textures,
-            typename std::iterator_traits<Primitives>::value_type{},
+            Primitive{},
             NormalBinding{}
             );
 }
