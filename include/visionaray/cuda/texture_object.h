@@ -3,6 +3,9 @@
 
 #pragma once
 
+#ifndef VSNRAY_CUDA_TEXTURE_OBJECT_H
+#define VSNRAY_CUDA_TEXTURE_OBJECT_H 1
+
 #include <cuda_runtime_api.h>
 
 namespace visionaray
@@ -74,3 +77,5 @@ private:
 
 } // cuda
 } // visionaray
+
+#endif // VSNRAY_CUDA_TEXTURE_OBJECT_H
