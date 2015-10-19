@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_DETAIL_TAGS_H
-#define VSNRAY_DETAIL_TAGS_H
+#define VSNRAY_DETAIL_TAGS_H 1
 
 
 //-------------------------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ struct has_textures_impl
     using type = decltype( test<typename std::decay<T>::type>(nullptr) );
 };
 
-template <class T>
+template <typename T>
 struct has_textures : has_textures_impl<T>::type
 {
 };

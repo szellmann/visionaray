@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_DETAIL_ALGORITHM_H
 #define VSNRAY_DETAIL_ALGORITHM_H 1
 
@@ -39,7 +41,7 @@ namespace algo
 //      Must be >= 0.
 //
 
-template <class RanIt1, class RanIt2, class Int>
+template <typename RanIt1, typename RanIt2, typename Int>
 void reorder_n(RanIt1 indices, RanIt2 data, Int count)
 {
     for (Int i = 0; i < count; ++i)
@@ -83,7 +85,7 @@ void reorder_n(RanIt1 indices, RanIt2 data, Int count)
     }
 }
 
-template <class RanIt1, class RanIt2>
+template <typename RanIt1, typename RanIt2>
 void reorder(RanIt1 indices_first, RanIt1 indices_last, RanIt2 data)
 {
     auto count = std::distance(indices_first, indices_last);
