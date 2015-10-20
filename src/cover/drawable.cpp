@@ -566,25 +566,6 @@ struct mask_intersector : basic_intersector<mask_intersector<Texture>>
     auto operator()(R const& ray, basic_triangle<3, S> const& tri)
         -> decltype( intersect(ray, tri) )
     {
-        // TODO: support all ISA
-
-#ifdef __CUDA_ARCH__
-
-        auto hr = intersect(ray, tri);
-
-        if (!hr.hit)
-        {
-            return hr;
-        }
-
-        auto tc = get_tex_coord(tex_coords, hr);
-        auto const& tex = textures[hr.geom_id];
-        auto tex_color = tex.width() > 0 && tex.height() > 0
-                       ? vector<4, float>(tex2D(tex, tc))
-                       : vector<4, float>(1.0);
-
-#else
-
         auto hr = intersect(ray, tri);
 
         if ( !any(hr.hit) )
@@ -592,6 +573,31 @@ struct mask_intersector : basic_intersector<mask_intersector<Texture>>
             return hr;
         }
 
+        auto tex_color = get_tex_color(hr); 
+        hr.hit &= tex_color.w >= S(0.01);
+ 
+        return hr;
+    }
+
+    vec2 const*                 tex_coords;
+    Texture const*              textures;
+
+private:
+
+    template <typename HR>
+    VSNRAY_FUNC
+    vector<4, float> get_tex_color(HR const& hr)
+    {
+        auto tc = get_tex_coord(tex_coords, hr);
+        auto const& tex = textures[hr.geom_id];
+        return tex.width() > 0 && tex.height() > 0
+                       ? vector<4, float>(tex2D(tex, tc))
+                       : vector<4, float>(1.0);
+    }
+
+    VSNRAY_CPU_FUNC
+    vector<4, simd::float4> get_tex_color(hit_record<basic_ray<simd::float4>, primitive<unsigned>> const& hr)
+    {
         auto tc = get_tex_coord(tex_coords, hr);
 
         auto hr4 = simd::unpack( hr );
@@ -612,21 +618,13 @@ struct mask_intersector : basic_intersector<mask_intersector<Texture>>
                           : vector<4, float>(1.0);
         }
 
-        auto tex_color = simd::pack(
+        return simd::pack(
                 tex_color4[0],
                 tex_color4[1],
                 tex_color4[2],
                 tex_color4[3]
                 );
-#endif // __CUDA_ARCH__
-  
-        hr.hit &= tex_color.w >= S(0.01);
- 
-        return hr;
     }
-
-    vec2 const*                 tex_coords;
-    Texture const*              textures;
 };
 
 
