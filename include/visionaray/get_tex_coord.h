@@ -109,6 +109,7 @@ inline auto get_tex_coord(
 //
 
 template <typename TexCoords, typename HR>
+VSNRAY_FUNC
 inline auto get_tex_coord(TexCoords coords, HR const& hr)
     -> decltype(get_tex_coord(coords, hr, basic_triangle<3, typename HR::value_type>{}))
 {
