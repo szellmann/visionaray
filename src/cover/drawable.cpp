@@ -715,6 +715,7 @@ struct drawable::impl
     recti                                   viewport;
 
     unsigned                                frame_num       = 0;
+    size_t                                  total_frame_num = 0;
 
     algorithm                               algo_current    = Simple;
     unsigned                                num_bounces     = 4;
@@ -822,6 +823,14 @@ void drawable::impl::update_viewing_params(osg::DisplaySettings::StereoMode mode
     switch (mode)
     {
     // TODO: implement remaining modes
+    case osg::DisplaySettings::ANAGLYPHIC:
+        {
+            if (total_frame_num % 2 == 1)
+            {
+                current_eye = Left;
+            }
+        }
+        break;
     case osg::DisplaySettings::QUAD_BUFFER:
         {
             GLint db = 0;
@@ -869,6 +878,8 @@ void drawable::impl::update_viewing_params(osg::DisplaySettings::StereoMode mode
 
 
     // Update
+
+    ++total_frame_num;
 
     view_matrix  = view;
     proj_matrix  = proj;
