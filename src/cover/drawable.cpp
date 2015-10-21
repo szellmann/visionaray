@@ -150,6 +150,28 @@ tex_filter_mode osg_cast(osg::Texture::FilterMode mode)
 
 
 //-------------------------------------------------------------------------------------------------
+// Get stereo mode from osg::RenderInfo
+//
+
+osg::DisplaySettings::StereoMode get_stereo_mode(osg::RenderInfo const& info)
+{
+    if (auto view = info.getView())
+    {
+        if (auto state = info.getState())
+        {
+            if (auto ds = state->getDisplaySettings())
+            {
+                return ds->getStereoMode();
+            }
+        }
+    }
+
+    // StereoMode unfortunately provides no reasonable default
+    return osg::DisplaySettings::StereoMode();
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Functor that stores triangles from osg::Drawable
 //
 
@@ -732,7 +754,7 @@ struct drawable::impl
 
     void store_gl_state();
     void restore_gl_state();
-    void update_viewing_params();
+    void update_viewing_params(osg::DisplaySettings::StereoMode mode);
     void update_device_data();
     void commit_state();
     
@@ -787,19 +809,48 @@ void drawable::impl::restore_gl_state()
     glMatrixMode(gl_state.matrix_mode);
 }
 
-void drawable::impl::update_viewing_params()
+void drawable::impl::update_viewing_params(osg::DisplaySettings::StereoMode mode)
 {
+    enum eye
+    {
+        Left,
+        Right
+    };
+
+    eye current_eye = Right;
+
+    switch (mode)
+    {
+    // TODO: implement remaining modes
+    case osg::DisplaySettings::QUAD_BUFFER:
+        {
+            GLint db = 0;
+            glGetIntegerv(GL_DRAW_BUFFER, &db);
+            if (db != GL_BACK_RIGHT && db != GL_FRONT_RIGHT && db != GL_RIGHT)
+            {
+                current_eye = Left;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+
     auto osg_cam = opencover::coVRConfig::instance()->channels[0].camera;
 
     // Matrices
 
     auto t = opencover::cover->getXformMat();
     auto s = opencover::cover->getObjectsScale()->getMatrix();
-    // TODO: understand COVER API..
-//  auto v = opencover::cover->getViewerMat();
-    auto v = opencover::coVRConfig::instance()->channels[0].rightView;
+    auto v = current_eye == Right
+            ? opencover::coVRConfig::instance()->channels[0].rightView
+            : opencover::coVRConfig::instance()->channels[0].leftView
+            ;
     auto view = osg_cast( s * t * v );
-    auto proj = osg_cast( opencover::coVRConfig::instance()->channels[0].rightProj );
+    auto proj = current_eye == Right
+            ? osg_cast( opencover::coVRConfig::instance()->channels[0].rightProj )
+            : osg_cast( opencover::coVRConfig::instance()->channels[0].leftProj )
+            ;
 
 
     // Viewport
@@ -1071,7 +1122,7 @@ drawable::drawable(drawable const& rhs, osg::CopyOp const& op)
 // Draw implementation
 //
 
-void drawable::drawImplementation(osg::RenderInfo&) const
+void drawable::drawImplementation(osg::RenderInfo& info) const
 {
     if (!impl_->state || !impl_->dev_state)
     {
@@ -1132,7 +1183,7 @@ void drawable::drawImplementation(osg::RenderInfo&) const
 
     // Camera matrices, viewport, render target resize
 
-    impl_->update_viewing_params();
+    impl_->update_viewing_params(get_stereo_mode(info));
 
     // Copy BVH, normals, etc. if necessary
 
