@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_WHITTED_INL
-#define VSNRAY_WHITTED_INL
+#define VSNRAY_WHITTED_INL 1
 
 #include <visionaray/result_record.h>
 #include <visionaray/surface.h>
@@ -12,6 +14,205 @@ namespace visionaray
 {
 namespace whitted
 {
+
+namespace detail
+{
+
+//-------------------------------------------------------------------------------------------------
+// TODO: consolidate this with "real" brdf sampling
+// TODO: user should be able to customize this behavior
+//
+
+template <typename Mask, typename Vec3, typename Scalar>
+struct bounce_result
+{
+    Mask reflected;
+    Mask refracted;
+
+    Vec3 reflected_dir;
+    Vec3 refracted_dir;
+
+    Scalar kr;
+    Scalar kt;
+};
+
+
+// reflection
+
+template <typename V, typename S>
+VSNRAY_FUNC
+inline auto make_bounce_result(V const& reflected_dir, S kr)
+    -> bounce_result<bool, V, S>
+{
+    return {
+        kr > 0.0f,
+        false,
+        reflected_dir,
+        V(),
+        kr,
+        0.0f
+        };
+}
+
+VSNRAY_CPU_FUNC
+inline auto make_bounce_result(vector<3, simd::float4> const& reflected_dir, simd::float4 kr)
+    -> bounce_result<simd::mask4, vector<3, simd::float4>, simd::float4>
+{
+    return {
+        kr > 0.0f,
+        false,
+        reflected_dir,
+        vector<3, simd::float4>(),
+        kr,
+        0.0f
+        };
+}
+
+// reflection and refraction
+
+template <typename V, typename S>
+VSNRAY_FUNC
+inline auto make_bounce_result(
+        V const& reflected_dir,
+        V const& refracted_dir,
+        S kr,
+        S kt
+        )
+    -> bounce_result<bool, V, S>
+{
+    return {
+        kr > 0.0f,
+        true, // TODO
+        reflected_dir,
+        refracted_dir,
+        kr,
+        kt 
+        };
+}
+
+VSNRAY_CPU_FUNC
+inline auto make_bounce_result(
+        vector<3, simd::float4> const& reflected_dir,
+        vector<3, simd::float4> const& refracted_dir,
+        simd::float4 kr,
+        simd::float4 kt
+        )
+    -> bounce_result<simd::mask4, vector<3, simd::float4>, simd::float4>
+{
+    return {
+        kr > 0.0f,
+        true, // TODO
+        reflected_dir,
+        refracted_dir,
+        kr,
+        kt 
+        };
+}
+
+
+// fall-through, e.g. for plastic, assigns a dflt. reflectivity and no refraction
+template <typename V, typename M>
+VSNRAY_FUNC
+inline auto specular_bounce(
+        M const&    mat,
+        V const&    view_dir,
+        V const&    normal
+        )
+    -> decltype( make_bounce_result(V(), typename V::value_type()) )
+{
+    VSNRAY_UNUSED(mat);
+
+    return make_bounce_result(
+        reflect(view_dir, normal),
+        typename V::value_type(0.1)
+        );
+}
+
+// matte, no specular reflectivity, returns an arbitrary direction
+template <typename V, typename S>
+VSNRAY_FUNC
+inline auto specular_bounce(
+        matte<S> const& mat,
+        V const&        view_dir,
+        V const&        normal
+        )
+    -> decltype( make_bounce_result(V(), typename V::value_type()) )
+{
+    return make_bounce_result(
+        V(),
+        typename V::value_type(0.0)
+        );
+}
+
+//-------------------------------------------------------------------------------------------------
+// some special treatment for generic materials
+//
+
+template <typename V>
+struct visitor
+{
+    using return_type = decltype( make_bounce_result(V(), typename V::value_type()) );
+
+    VSNRAY_FUNC visitor(V const& vd, V const& n)
+        : view_dir(vd)
+        , normal(n)
+    {
+    }
+
+    template <typename X>
+    VSNRAY_FUNC
+    return_type operator()(X const& ref) const
+    {
+        return specular_bounce(ref, view_dir, normal);
+    }
+
+    V const&    view_dir;
+    V const&    normal;
+};
+
+template <typename V, typename ...Ts>
+VSNRAY_FUNC
+inline auto specular_bounce(
+        generic_material<Ts...> const&  mat,
+        V const&                        view_dir,
+        V const&                        normal
+        )
+    -> decltype( make_bounce_result(V(), typename V::value_type()) )
+{
+    return apply_visitor(visitor<V>(view_dir, normal), mat);
+}
+
+template <typename ...Ts>
+inline auto specular_bounce(
+        simd::generic_material4<Ts...> const&   mat,
+        vector<3, simd::float4> const&          view_dir,
+        vector<3, simd::float4> const&          normal
+        )
+    -> bounce_result<simd::mask4, vector<3, simd::float4>, simd::float4>
+{
+    auto m4  = simd::unpack(mat);
+    auto vd4 = simd::unpack(view_dir);
+    auto n4  = simd::unpack(normal);
+
+    auto res1 = specular_bounce(m4[0], vd4[0], n4[0]);
+    auto res2 = specular_bounce(m4[1], vd4[1], n4[1]);
+    auto res3 = specular_bounce(m4[2], vd4[2], n4[2]);
+    auto res4 = specular_bounce(m4[3], vd4[3], n4[3]);
+
+    return make_bounce_result(
+        simd::pack(res1.reflected_dir, res2.reflected_dir, res3.reflected_dir, res4.reflected_dir),
+        simd::pack(res1.refracted_dir, res2.refracted_dir, res3.refracted_dir, res4.refracted_dir),
+        simd::float4(res1.kr, res2.kr, res3.kr, res4.kr),
+        simd::float4(res1.kt, res2.kt, res3.kt, res4.kt)
+        );
+}
+
+} // detail
+
+
+//-------------------------------------------------------------------------------------------------
+// Whitted kernel
+//
 
 template <typename Params>
 struct kernel
@@ -47,8 +248,8 @@ struct kernel
 
         size_t depth = 0;
         auto no_hit_color = C(from_rgba(params.bg_color));
-        auto mirror = S(1.0);
-        while (any(hit_rec.hit) && any(mirror > S(params.epsilon)) && depth++ < params.num_bounces)
+        auto throughput = S(1.0);
+        while (any(hit_rec.hit) && any(throughput > S(params.epsilon)) && depth++ < params.num_bounces)
         {
             hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
 
@@ -87,7 +288,7 @@ struct kernel
                 sr.active       = active_rays;
                 sr.isect_pos    = hit_rec.isect_pos;
                 sr.normal       = n;
-                sr.view_dir     = -ray.dir;
+                sr.view_dir     = view_dir;
                 sr.light_dir    = light_dir;
                 sr.light        = *it;
                 auto clr        = surf.shade(sr);
@@ -95,16 +296,20 @@ struct kernel
                 shaded_clr += select( active_rays, clr, C(0.0) );
             }
 
-            color += select( hit_rec.hit, shaded_clr, no_hit_color ) * mirror;
+            color += select( hit_rec.hit, shaded_clr, no_hit_color ) * throughput;
 
-            auto dir = reflect(view_dir, surf.normal);
-            ray = R
-            (
-                hit_rec.isect_pos + dir * S(params.epsilon),
-                dir
-            );
-            hit_rec = closest_hit(ray, params.prims.begin, params.prims.end, isect);
-            mirror *= S(0.1);
+            auto directions = detail::specular_bounce(surf.material, view_dir, surf.normal);
+
+            if (any(directions.reflected))
+            {
+                auto dir = directions.reflected_dir;
+                ray = R(
+                    hit_rec.isect_pos + dir * S(params.epsilon),
+                    dir
+                    );
+                hit_rec = closest_hit(ray, params.prims.begin, params.prims.end, isect);
+            }
+            throughput *= directions.kr; // zero if ray was not reflected
             no_hit_color = C(0.0);
         }
 
