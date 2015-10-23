@@ -23,12 +23,9 @@ namespace detail
 // TODO: user should be able to customize this behavior
 //
 
-template <typename Mask, typename Vec3, typename Scalar>
+template <typename Vec3, typename Scalar>
 struct bounce_result
 {
-    Mask reflected;
-    Mask refracted;
-
     Vec3 reflected_dir;
     Vec3 refracted_dir;
 
@@ -38,15 +35,12 @@ struct bounce_result
 
 
 // reflection
-
 template <typename V, typename S>
 VSNRAY_FUNC
 inline auto make_bounce_result(V const& reflected_dir, S kr)
-    -> bounce_result<bool, V, S>
+    -> bounce_result<V, S>
 {
     return {
-        kr > 0.0f,
-        false,
         reflected_dir,
         V(),
         kr,
@@ -54,22 +48,7 @@ inline auto make_bounce_result(V const& reflected_dir, S kr)
         };
 }
 
-VSNRAY_CPU_FUNC
-inline auto make_bounce_result(vector<3, simd::float4> const& reflected_dir, simd::float4 kr)
-    -> bounce_result<simd::mask4, vector<3, simd::float4>, simd::float4>
-{
-    return {
-        kr > 0.0f,
-        false,
-        reflected_dir,
-        vector<3, simd::float4>(),
-        kr,
-        0.0f
-        };
-}
-
 // reflection and refraction
-
 template <typename V, typename S>
 VSNRAY_FUNC
 inline auto make_bounce_result(
@@ -78,30 +57,9 @@ inline auto make_bounce_result(
         S kr,
         S kt
         )
-    -> bounce_result<bool, V, S>
+    -> bounce_result<V, S>
 {
     return {
-        kr > 0.0f,
-        true, // TODO
-        reflected_dir,
-        refracted_dir,
-        kr,
-        kt 
-        };
-}
-
-VSNRAY_CPU_FUNC
-inline auto make_bounce_result(
-        vector<3, simd::float4> const& reflected_dir,
-        vector<3, simd::float4> const& refracted_dir,
-        simd::float4 kr,
-        simd::float4 kt
-        )
-    -> bounce_result<simd::mask4, vector<3, simd::float4>, simd::float4>
-{
-    return {
-        kr > 0.0f,
-        true, // TODO
         reflected_dir,
         refracted_dir,
         kr,
@@ -213,7 +171,7 @@ inline auto specular_bounce(
         vector<3, simd::float4> const&          view_dir,
         vector<3, simd::float4> const&          normal
         )
-    -> bounce_result<simd::mask4, vector<3, simd::float4>, simd::float4>
+    -> bounce_result<vector<3, simd::float4>, simd::float4>
 {
     auto m4  = simd::unpack(mat);
     auto vd4 = simd::unpack(view_dir);
@@ -323,18 +281,18 @@ struct kernel
 
             color += select( hit_rec.hit, shaded_clr, no_hit_color ) * throughput;
 
-            auto directions = detail::specular_bounce(surf.material, view_dir, surf.normal);
+            auto bounce = detail::specular_bounce(surf.material, view_dir, surf.normal);
 
-            if (any(directions.reflected))
+            if (any(bounce.kr > S(0.0)))
             {
-                auto dir = directions.reflected_dir;
+                auto dir = bounce.reflected_dir;
                 ray = R(
                     hit_rec.isect_pos + dir * S(params.epsilon),
                     dir
                     );
                 hit_rec = closest_hit(ray, params.prims.begin, params.prims.end, isect);
             }
-            throughput *= directions.kr; // zero if ray was not reflected
+            throughput *= bounce.kr;
             no_hit_color = C(0.0);
         }
 
