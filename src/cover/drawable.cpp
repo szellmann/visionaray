@@ -155,14 +155,11 @@ tex_filter_mode osg_cast(osg::Texture::FilterMode mode)
 
 osg::DisplaySettings::StereoMode get_stereo_mode(osg::RenderInfo const& info)
 {
-    if (auto view = info.getView())
+    if (auto state = info.getState())
     {
-        if (auto state = info.getState())
+        if (auto ds = state->getDisplaySettings())
         {
-            if (auto ds = state->getDisplaySettings())
-            {
-                return ds->getStereoMode();
-            }
+            return ds->getStereoMode();
         }
     }
 
