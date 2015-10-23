@@ -110,6 +110,10 @@ inline auto make_bounce_result(
 }
 
 
+//-------------------------------------------------------------------------------------------------
+// specular_bounce() overloads for some materials
+//
+
 // fall-through, e.g. for plastic, assigns a dflt. reflectivity and no refraction
 template <typename V, typename M>
 VSNRAY_FUNC
@@ -138,11 +142,32 @@ inline auto specular_bounce(
         )
     -> decltype( make_bounce_result(V(), typename V::value_type()) )
 {
+    VSNRAY_UNUSED(mat);
+    VSNRAY_UNUSED(view_dir);
+    VSNRAY_UNUSED(normal);
+
     return make_bounce_result(
         V(),
         typename V::value_type(0.0)
         );
 }
+
+// mirror material, here we know kr
+template <typename V, typename S>
+VSNRAY_FUNC
+inline auto specular_bounce(
+        mirror<S> const&    mat,
+        V const&            view_dir,
+        V const&            normal
+        )
+    -> decltype( make_bounce_result(V(), typename V::value_type()) )
+{
+    return make_bounce_result(
+        reflect(view_dir, normal),
+        mat.get_kr()
+        );
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // some special treatment for generic materials
