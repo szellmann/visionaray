@@ -826,29 +826,32 @@ void drawable::impl::update_viewing_params(osg::DisplaySettings::StereoMode mode
 {
     current_eye = Right; // default if no stereo
 
-    switch (mode)
+    if (opencover::coVRConfig::instance()->stereoState())
     {
-    // TODO: implement remaining modes
-    case osg::DisplaySettings::ANAGLYPHIC:
+        switch (mode)
         {
-            if (total_frame_num % 2 == 1)
+        // TODO: implement remaining modes
+        case osg::DisplaySettings::ANAGLYPHIC:
             {
-                current_eye = Left;
+                if (total_frame_num % 2 == 1)
+                {
+                    current_eye = Left;
+                }
             }
-        }
-        break;
-    case osg::DisplaySettings::QUAD_BUFFER:
-        {
-            GLint db = 0;
-            glGetIntegerv(GL_DRAW_BUFFER, &db);
-            if (db != GL_BACK_RIGHT && db != GL_FRONT_RIGHT && db != GL_RIGHT)
+            break;
+        case osg::DisplaySettings::QUAD_BUFFER:
             {
-                current_eye = Left;
+                GLint db = 0;
+                glGetIntegerv(GL_DRAW_BUFFER, &db);
+                if (db != GL_BACK_RIGHT && db != GL_FRONT_RIGHT && db != GL_RIGHT)
+                {
+                    current_eye = Left;
+                }
             }
+            break;
+        default:
+            break;
         }
-        break;
-    default:
-        break;
     }
 
     auto osg_cam = opencover::coVRConfig::instance()->channels[0].camera;
