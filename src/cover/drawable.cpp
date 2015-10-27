@@ -882,7 +882,14 @@ void drawable::impl::update_viewing_params(osg::DisplaySettings::StereoMode mode
         state->data_var     == Dynamic      ||
         state->algo         != algo_current ||
         state->device       != device       ||
-        state->num_bounces  != num_bounces  ||
+        state->num_bounces  != num_bounces
+        )
+    {
+        eye_params[Left ].frame_num = 0;
+        eye_params[Right].frame_num = 0;
+    }
+
+    if (
         vparams.view_matrix != view         ||
         vparams.proj_matrix != proj         ||
         vparams.viewport    != vp
