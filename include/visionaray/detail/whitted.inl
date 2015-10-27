@@ -190,6 +190,45 @@ inline auto specular_bounce(
         );
 }
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+template <typename ...Ts>
+inline auto specular_bounce(
+        simd::generic_material8<Ts...> const&   mat,
+        vector<3, simd::float8> const&          view_dir,
+        vector<3, simd::float8> const&          normal
+        )
+    -> bounce_result<vector<3, simd::float8>, simd::float8>
+{
+    auto m8  = simd::unpack(mat);
+    auto vd8 = simd::unpack(view_dir);
+    auto n8  = simd::unpack(normal);
+
+    auto res1 = specular_bounce(m8[0], vd8[0], n8[0]);
+    auto res2 = specular_bounce(m8[1], vd8[1], n8[1]);
+    auto res3 = specular_bounce(m8[2], vd8[2], n8[2]);
+    auto res4 = specular_bounce(m8[3], vd8[3], n8[3]);
+    auto res5 = specular_bounce(m8[4], vd8[4], n8[4]);
+    auto res6 = specular_bounce(m8[5], vd8[5], n8[5]);
+    auto res7 = specular_bounce(m8[6], vd8[6], n8[6]);
+    auto res8 = specular_bounce(m8[7], vd8[7], n8[7]);
+
+    return make_bounce_result(
+        simd::pack(
+            res1.reflected_dir, res2.reflected_dir, res3.reflected_dir, res4.reflected_dir,
+            res5.reflected_dir, res6.reflected_dir, res7.reflected_dir, res8.reflected_dir
+            ),
+        simd::pack(
+            res1.refracted_dir, res2.refracted_dir, res3.refracted_dir, res4.refracted_dir,
+            res5.refracted_dir, res6.refracted_dir, res7.refracted_dir, res8.refracted_dir
+            ),
+        simd::float8(res1.kr, res2.kr, res3.kr, res4.kr, res5.kr, res6.kr, res7.kr, res8.kr),
+        simd::float8(res1.kt, res2.kt, res3.kt, res4.kt, res5.kt, res6.kt, res7.kt, res8.kt)
+        );
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
 } // detail
 
 

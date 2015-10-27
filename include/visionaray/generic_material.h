@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_GENERIC_MATERIAL_H
-#define VSNRAY_GENERIC_MATERIAL_H
+#define VSNRAY_GENERIC_MATERIAL_H 1
 
 #include "detail/macros.h"
 #include "spectrum.h"

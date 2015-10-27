@@ -97,19 +97,19 @@ struct generic_material<T, Ts...>::sample_visitor
 };
 
 
+namespace simd
+{
+
 //-------------------------------------------------------------------------------------------------
 // SSE type used internally. Contains four generic materials
 //
-
-namespace simd
-{
 
 template <typename ...Ts>
 class generic_material4
 {
 public:
 
-    using scalar_type   = simd::float4;
+    using scalar_type = simd::float4;
 
 public:
 
@@ -206,6 +206,150 @@ private:
 
 };
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+//-------------------------------------------------------------------------------------------------
+// AVX type used internally. Contains eight generic materials
+//
+
+template <typename ...Ts>
+class generic_material8
+{
+public:
+
+    using scalar_type = simd::float8;
+
+public:
+
+    generic_material8(
+            generic_material<Ts...> const& m1,
+            generic_material<Ts...> const& m2,
+            generic_material<Ts...> const& m3,
+            generic_material<Ts...> const& m4,
+            generic_material<Ts...> const& m5,
+            generic_material<Ts...> const& m6,
+            generic_material<Ts...> const& m7,
+            generic_material<Ts...> const& m8
+            )
+        : m1_(m1)
+        , m2_(m2)
+        , m3_(m3)
+        , m4_(m4)
+        , m5_(m5)
+        , m6_(m6)
+        , m7_(m7)
+        , m8_(m8)
+    {
+    }
+
+    generic_material<Ts...>& get(int i)
+    {
+        assert( i >= 0 && i < 8 );
+
+        return reinterpret_cast<generic_material<Ts...>*>(this)[i];
+    }
+
+    generic_material<Ts...> const& get(int i) const
+    {
+        assert( i >= 0 && i < 8 );
+
+        return reinterpret_cast<generic_material<Ts...> const*>(this)[i];
+    }
+
+    simd::mask8 is_emissive() const
+    {
+        return simd::mask8(
+                m1_.is_emissive(),
+                m2_.is_emissive(),
+                m3_.is_emissive(),
+                m4_.is_emissive(),
+                m5_.is_emissive(),
+                m6_.is_emissive(),
+                m7_.is_emissive(),
+                m8_.is_emissive()
+                );
+    }
+
+    spectrum<simd::float8> ambient() const
+    {
+        return simd::pack(
+                spectrum<float>( m1_.ambient() ),
+                spectrum<float>( m2_.ambient() ),
+                spectrum<float>( m3_.ambient() ),
+                spectrum<float>( m4_.ambient() ),
+                spectrum<float>( m5_.ambient() ),
+                spectrum<float>( m6_.ambient() ),
+                spectrum<float>( m7_.ambient() ),
+                spectrum<float>( m8_.ambient() )
+                );
+    }
+
+
+    template <typename SR>
+    spectrum<simd::float8> shade(SR const& sr) const
+    {
+        auto sr8 = unpack(sr);
+        return simd::pack(
+                m1_.shade(sr8[0]),
+                m2_.shade(sr8[1]),
+                m3_.shade(sr8[2]),
+                m4_.shade(sr8[3]),
+                m5_.shade(sr8[4]),
+                m6_.shade(sr8[5]),
+                m7_.shade(sr8[6]),
+                m8_.shade(sr8[7])
+                );
+    }
+
+    template <typename SR, typename S /* sampler */>
+    spectrum<simd::float8> sample(
+            SR const&                   sr,
+            vector<3, simd::float8>&    refl_dir,
+            simd::float8&               pdf,
+            S&                          samp
+            ) const
+    {
+        auto sr8 = unpack(sr);
+        vector<3, float> rd8[8];
+        VSNRAY_ALIGN(32) float pdf8[] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+        auto& s = samp.get_sampler();
+        spectrum<float> v[] =
+        {
+            spectrum<float>( m1_.sample(sr8[0], rd8[0], pdf8[0], s) ),
+            spectrum<float>( m2_.sample(sr8[1], rd8[1], pdf8[1], s) ),
+            spectrum<float>( m3_.sample(sr8[2], rd8[2], pdf8[2], s) ),
+            spectrum<float>( m4_.sample(sr8[3], rd8[3], pdf8[3], s) ),
+            spectrum<float>( m5_.sample(sr8[4], rd8[4], pdf8[4], s) ),
+            spectrum<float>( m6_.sample(sr8[5], rd8[5], pdf8[5], s) ),
+            spectrum<float>( m7_.sample(sr8[6], rd8[6], pdf8[6], s) ),
+            spectrum<float>( m8_.sample(sr8[7], rd8[7], pdf8[7], s) )
+        };
+        refl_dir = simd::pack(
+                rd8[0], rd8[1], rd8[2], rd8[3],
+                rd8[4], rd8[5], rd8[6], rd8[7]
+                );
+        pdf = simd::float8(pdf8);
+        return simd::pack(
+                v[0], v[1], v[2], v[3],
+                v[4], v[5], v[6], v[7]
+                );
+    }
+
+private:
+
+    generic_material<Ts...> m1_;
+    generic_material<Ts...> m2_;
+    generic_material<Ts...> m3_;
+    generic_material<Ts...> m4_;
+    generic_material<Ts...> m5_;
+    generic_material<Ts...> m6_;
+    generic_material<Ts...> m7_;
+    generic_material<Ts...> m8_;
+
+};
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
 
 //-------------------------------------------------------------------------------------------------
 // Pack and unpack
@@ -227,6 +371,34 @@ inline std::array<generic_material<Ts...>, 4> unpack(generic_material4<Ts...> co
 {
     return std::array<generic_material<Ts...>, 4>{{ m4.get(0), m4.get(1), m4.get(2), m4.get(3) }};
 }
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+template <typename ...Ts>
+inline generic_material8<Ts...> pack(
+        generic_material<Ts...> const& m1,
+        generic_material<Ts...> const& m2,
+        generic_material<Ts...> const& m3,
+        generic_material<Ts...> const& m4,
+        generic_material<Ts...> const& m5,
+        generic_material<Ts...> const& m6,
+        generic_material<Ts...> const& m7,
+        generic_material<Ts...> const& m8
+        )
+{
+    return generic_material8<Ts...>(m1, m2, m3, m4, m5, m6, m7, m8);
+}
+
+template <typename ...Ts>
+inline std::array<generic_material<Ts...>, 8> unpack(generic_material8<Ts...> const& m8)
+{
+    return std::array<generic_material<Ts...>, 8>{{
+            m8.get(0), m8.get(1), m8.get(2), m8.get(3),
+            m8.get(4), m8.get(5), m8.get(6), m8.get(7)
+            }};
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 } // simd
 } // visionaray

@@ -128,8 +128,42 @@ struct shade_record<L, simd::float8> : public shade_record_base<L, simd::float8>
     simd::mask8 active;
 };
 
-#endif
+namespace simd
+{
 
+//-------------------------------------------------------------------------------------------------
+// Unpack AVX shade record
+//
+
+template <typename L>
+std::array<shade_record<L, float>, 8> unpack(shade_record<L, float8> const& sr)
+{
+    auto isect_pos8 = unpack(sr.isect_pos);
+    auto normal8    = unpack(sr.normal);
+    auto view_dir8  = unpack(sr.view_dir);
+    auto light_dir8 = unpack(sr.light_dir);
+
+    VSNRAY_ALIGN(32) int active[8];
+    simd::store(active, sr.active.i);
+
+    std::array<shade_record<L, float>, 8> result;
+
+    for (unsigned i = 0; i < 8; ++i)
+    {
+        result[i].isect_pos = isect_pos8[i];
+        result[i].normal    = normal8[i];
+        result[i].view_dir  = view_dir8[i];
+        result[i].light_dir = light_dir8[i];
+        result[i].light     = sr.light;
+        result[i].active    = active[i] != 0;
+    }
+
+    return result;
+}
+
+} // simd
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 //-------------------------------------------------------------------------------------------------
 // Shade record factory
