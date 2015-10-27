@@ -692,7 +692,6 @@ struct drawable::impl
     texture_list                            texture_refs;
     host_bvh_type                           host_bvh;
     host_sched_type                         host_sched;
-    host_render_target_type                 host_rt;
     mask_intersector<host_tex_ref_type>     host_intersector;
 
 #ifdef __CUDACC__
@@ -703,15 +702,31 @@ struct drawable::impl
     device_texture_list                     device_texture_refs;
     device_bvh_type                         device_bvh;
     device_sched_type                       device_sched;
-    device_render_target_type               device_rt;
     mask_intersector<device_tex_ref_type>   device_intersector;
 #endif
 
-    mat4                                    view_matrix;
-    mat4                                    proj_matrix;
-    recti                                   viewport;
+    enum eye
+    {
+        Left,
+        Right
+    };
 
-    unsigned                                frame_num       = 0;
+    struct viewing_params
+    {
+        host_render_target_type             host_rt;
+#ifdef __CUDACC__
+        device_render_target_type           device_rt;
+#endif
+        mat4                                view_matrix;
+        mat4                                proj_matrix;
+        recti                               viewport;
+        unsigned                            frame_num       = 0;
+    };
+
+    viewing_params                          eye_params[2]; // for left and right eye
+
+    eye                                     current_eye     = Right;
+
     size_t                                  total_frame_num = 0;
 
     algorithm                               algo_current    = Simple;
@@ -809,13 +824,7 @@ void drawable::impl::restore_gl_state()
 
 void drawable::impl::update_viewing_params(osg::DisplaySettings::StereoMode mode)
 {
-    enum eye
-    {
-        Left,
-        Right
-    };
-
-    eye current_eye = Right;
+    current_eye = Right; // default if no stereo
 
     switch (mode)
     {
@@ -867,10 +876,19 @@ void drawable::impl::update_viewing_params(osg::DisplaySettings::StereoMode mode
 
     // Reset frame counter on change or if scene is dynamic
 
-    if (state->data_var == Dynamic || state->algo != algo_current || state->device != device
-     || state->num_bounces != num_bounces || view_matrix != view || proj_matrix != proj || viewport != vp)
+    auto& vparams = eye_params[current_eye];
+
+    if (
+        state->data_var     == Dynamic      ||
+        state->algo         != algo_current ||
+        state->device       != device       ||
+        state->num_bounces  != num_bounces  ||
+        vparams.view_matrix != view         ||
+        vparams.proj_matrix != proj         ||
+        vparams.viewport    != vp
+        )
     {
-        frame_num = 0;
+        vparams.frame_num = 0;
     }
 
 
@@ -878,15 +896,15 @@ void drawable::impl::update_viewing_params(osg::DisplaySettings::StereoMode mode
 
     ++total_frame_num;
 
-    view_matrix  = view;
-    proj_matrix  = proj;
+    vparams.view_matrix  = view;
+    vparams.proj_matrix  = proj;
 
-    if (viewport != vp)
+    if (vparams.viewport != vp)
     {
-        viewport = vp;
-        host_rt.resize(viewport[2], viewport[3]);
+        vparams.viewport = vp;
+        vparams.host_rt.resize(vparams.viewport[2], vparams.viewport[3]);
 #ifdef __CUDACC__
-        device_rt.resize(viewport[2], viewport[3]);
+        vparams.device_rt.resize(vparams.viewport[2], vparams.viewport[3]);
 #endif
     }
 }
@@ -950,6 +968,7 @@ void drawable::impl::call_kernel(KParams const& params)
     }
     else
     {
+        auto& vparams = eye_params[current_eye];
         if (state->device == GPU)
         {
 #ifdef __CUDACC__
@@ -957,11 +976,11 @@ void drawable::impl::call_kernel(KParams const& params)
                     state->algo,
                     device_sched,
                     params,
-                    frame_num,
-                    view_matrix,
-                    proj_matrix,
-                    viewport,
-                    device_rt,
+                    vparams.frame_num,
+                    vparams.view_matrix,
+                    vparams.proj_matrix,
+                    vparams.viewport,
+                    vparams.device_rt,
                     device_intersector
                     );
 #endif
@@ -973,11 +992,11 @@ void drawable::impl::call_kernel(KParams const& params)
                     state->algo,
                     host_sched,
                     params,
-                    frame_num,
-                    view_matrix,
-                    proj_matrix,
-                    viewport,
-                    host_rt,
+                    vparams.frame_num,
+                    vparams.view_matrix,
+                    vparams.proj_matrix,
+                    vparams.viewport,
+                    vparams.host_rt,
                     host_intersector
                     );
 #endif
@@ -1004,7 +1023,14 @@ void drawable::impl::call_kernel_debug(KParams const& params)
     using S = typename R::scalar_type;
     using C = vector<4, S>;
 
-    auto sparams = make_sched_params<pixel_sampler::uniform_type>( view_matrix, proj_matrix, viewport, host_rt );
+    auto& vparams = eye_params[current_eye];
+
+    auto sparams = make_sched_params<pixel_sampler::uniform_type>(
+            vparams.view_matrix,
+            vparams.proj_matrix,
+            vparams.viewport,
+            vparams.host_rt
+            );
 
     if (dev_state->show_bvh_costs)
     {
@@ -1268,6 +1294,8 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
         glDisable(GL_FRAMEBUFFER_SRGB);
     }
 
+    auto& vparams = impl_->eye_params[impl_->current_eye];
+
     if (impl_->state->device == GPU)
     {
 #ifdef __CUDACC__
@@ -1297,7 +1325,7 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
 
         impl_->call_kernel(kparams);
 
-        impl_->device_rt.display_color_buffer();
+        vparams.device_rt.display_color_buffer();
 #endif
     }
     else if (impl_->state->device == CPU)
@@ -1323,7 +1351,7 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
 
         impl_->call_kernel(kparams);
 
-        impl_->host_rt.display_color_buffer();
+        vparams.host_rt.display_color_buffer();
 #endif
     }
 
@@ -1334,11 +1362,11 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
 
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
-        glLoadMatrixf(impl_->proj_matrix.data());
+        glLoadMatrixf(vparams.proj_matrix.data());
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();
-        glLoadMatrixf(impl_->view_matrix.data());
+        glLoadMatrixf(vparams.view_matrix.data());
 
         glColor3f(1.0f, 1.0f, 1.0f);
         impl_->outlines.frame();
