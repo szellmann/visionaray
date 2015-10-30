@@ -65,6 +65,7 @@ struct Visionaray::impl : vrui::coMenuListener
 
         // main menu
         check_box                   toggle_update_mode;
+        check_box                   toggle_color_space;
         slider                      bounces_slider;
 
         // algo menu
@@ -102,6 +103,7 @@ struct Visionaray::impl : vrui::coMenuListener
     // control state
 
     void set_data_variance(data_variance var);
+    void set_color_space(color_space cs);
     void set_algorithm(algorithm algo);
     void set_num_bounces(unsigned num_bounces);
     void set_device(device_type dev);
@@ -217,6 +219,11 @@ void Visionaray::impl::init_ui()
     ui.main_menu->add(ui.toggle_update_mode.get());
 
 
+    ui.toggle_color_space.reset(new coCheckboxMenuItem("Output sRGB", state->clr_space == sRGB));
+    ui.toggle_color_space->setMenuListener(this);
+    ui.main_menu->add(ui.toggle_color_space.get());
+
+
     ui.bounces_slider.reset(new coSliderMenuItem("Number of bounces", state->min_bounces, state->max_bounces, state->num_bounces));
     ui.bounces_slider->setInteger(true);
     ui.bounces_slider->setMenuListener(this);
@@ -307,6 +314,11 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
         set_data_variance(ui.toggle_update_mode->getState() ? Dynamic : Static);
     }
 
+    if (item == ui.toggle_color_space.get())
+    {
+        set_color_space(ui.toggle_color_space->getState() ? sRGB : RGB);
+    }
+
     // algorithm submenu
     if (item == ui.simple_button.get())
     {
@@ -365,6 +377,12 @@ void Visionaray::impl::set_data_variance(data_variance var)
 {
     state->data_var = var;
     ui.toggle_update_mode->setState( var == Dynamic, false );
+}
+
+void Visionaray::impl::set_color_space(color_space cs)
+{
+    state->clr_space = cs;
+    ui.toggle_color_space->setState( cs == sRGB, false );
 }
 
 void Visionaray::impl::set_algorithm(algorithm algo)

@@ -729,6 +729,7 @@ struct drawable::impl
 
     size_t                                  total_frame_num = 0;
 
+    color_space                             clr_space       = RGB;
     algorithm                               algo_current    = Simple;
     unsigned                                num_bounces     = 4;
     device_type                             device          = CPU;
@@ -883,6 +884,7 @@ void drawable::impl::update_viewing_params(osg::DisplaySettings::StereoMode mode
 
     if (
         state->data_var     == Dynamic      ||
+        state->clr_space    != clr_space    ||
         state->algo         != algo_current ||
         state->device       != device       ||
         state->num_bounces  != num_bounces
@@ -959,6 +961,7 @@ void drawable::impl::update_device_data()
 
 void drawable::impl::commit_state()
 {
+    clr_space       = state->clr_space;
     algo_current    = state->algo;
     num_bounces     = state->num_bounces;
     device          = state->device;
