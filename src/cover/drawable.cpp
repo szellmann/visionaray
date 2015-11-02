@@ -60,6 +60,8 @@ using normal_list               = aligned_vector<vec3>;
 using tex_coord_list            = aligned_vector<vec2>;
 using material_type             = generic_material<matte<float>, plastic<float>, emissive<float>>;
 using material_list             = aligned_vector<material_type>;
+using color_type                = vector<3, float>;
+using color_list                = aligned_vector<color_type>;
 
 using host_tex_type             = texture<vector<4, unorm<8>>, NormalizedFloat, 2>;
 using host_tex_ref_type         = texture_ref<vector<4, unorm<8>>, NormalizedFloat, 2>;
@@ -176,17 +178,28 @@ class store_triangle
 {
 public:
 
-    void init(osg::Vec3Array const* in_vertices, osg::Vec3Array const* in_normals,
-        osg::Vec2Array const* in_tex_coords, osg::Matrix const& in_trans_mat, unsigned in_geom_id,
-        triangle_list& out_triangles, normal_list& out_normals, tex_coord_list& out_tex_coords)
+    void init(
+            osg::Vec3Array const*   in_vertices,
+            osg::Vec3Array const*   in_normals,
+            osg::Vec4Array const*   in_colors,
+            osg::Vec2Array const*   in_tex_coords,
+            osg::Matrix const&      in_trans_mat,
+            unsigned                in_geom_id,
+            triangle_list&          out_triangles,
+            normal_list&            out_normals,
+            color_list&             out_colors,
+            tex_coord_list&         out_tex_coords
+            )
     {
         in.vertices     = in_vertices;
         in.normals      = in_normals;
+        in.colors       = in_colors;
         in.tex_coords   = in_tex_coords;
         in.trans_mat    = in_trans_mat;
         in.geom_id      = in_geom_id;
         out.triangles   = &out_triangles;
         out.normals     = &out_normals;
+        out.colors      = &out_colors;
         out.tex_coords  = &out_tex_coords;
     }
 
@@ -224,6 +237,7 @@ public:
         assert( in.normals && out.normals );
         assert( in.normals->size() > i1 && in.normals->size() > i2 && in.normals->size() > i3 );
 
+
         auto inv_trans_mat = osg::Matrix::inverse(in.trans_mat);
 
         // mul left instead of transposing the matrix
@@ -239,6 +253,28 @@ public:
         assert( out.triangles->size() == out.normals->size() / 3 );
 
 
+        // colors
+
+        if (in.colors && in.colors->getBinding() == osg::Array::BIND_PER_VERTEX && in.colors->size() > max(i1, i2, i3) )
+        {
+            out.colors->push_back(osg_cast((*in.colors)[i1]).xyz());
+            out.colors->push_back(osg_cast((*in.colors)[i2]).xyz());
+            out.colors->push_back(osg_cast((*in.colors)[i3]).xyz());
+        }
+        else if (in.colors && in.colors->getBinding() == osg::Array::BIND_OVERALL && in.colors->size() >= 1)
+        {
+            out.colors->push_back(osg_cast((*in.colors)[0]).xyz());
+            out.colors->push_back(osg_cast((*in.colors)[0]).xyz());
+            out.colors->push_back(osg_cast((*in.colors)[0]).xyz());
+        }
+        else
+        {
+            out.colors->emplace_back(1.0f);
+            out.colors->emplace_back(1.0f);
+            out.colors->emplace_back(1.0f);
+        }
+
+
         // tex coords
 
         if ( in.tex_coords && in.tex_coords->size() > max(i1, i2, i3) )
@@ -249,9 +285,9 @@ public:
         }
         else
         {
-            out.tex_coords->push_back( vec2(0.0) );
-            out.tex_coords->push_back( vec2(0.0) );
-            out.tex_coords->push_back( vec2(0.0) );
+            out.tex_coords->emplace_back(0.0f);
+            out.tex_coords->emplace_back(0.0f);
+            out.tex_coords->emplace_back(0.0f);
         }
     }
 
@@ -263,6 +299,7 @@ private:
     {
         osg::Vec3Array const*   vertices    = nullptr;
         osg::Vec3Array const*   normals     = nullptr;
+        osg::Vec4Array const*   colors      = nullptr;
         osg::Vec2Array const*   tex_coords  = nullptr;
         osg::Matrix             trans_mat;
         unsigned                geom_id;
@@ -272,6 +309,7 @@ private:
     {
         triangle_list*          triangles   = nullptr;
         normal_list*            normals     = nullptr;
+        color_list*             colors      = nullptr;
         tex_coord_list*         tex_coords  = nullptr;
     } out;
 
@@ -349,6 +387,7 @@ public:
     get_scene_visitor(
             triangle_list&  triangles,
             normal_list&    normals,
+            color_list&     colors,
             tex_coord_list& tex_coords,
             material_list&  materials,
             texture_map&    textures,
@@ -358,6 +397,7 @@ public:
         : base_type(tm)
         , triangles_(triangles)
         , normals_(normals)
+        , colors_(colors)
         , tex_coords_(tex_coords)
         , materials_(materials)
         , textures_(textures)
@@ -392,6 +432,9 @@ public:
             {
                 continue;
             }
+
+            auto node_colors = dynamic_cast<osg::Vec4Array*>(geom->getColorArray());
+            // ok if node_colors == 0
 
 
             // Simple checks are done - traverse parents to see if node is visible
@@ -551,9 +594,20 @@ public:
             assert( static_cast<material_list::size_type>(static_cast<unsigned>(materials_.size()) == materials_.size()) );
             unsigned geom_id = static_cast<unsigned>(materials_.size() - 1);
 
-            osg::TriangleIndexFunctor<store_triangle> tf;
-            tf.init( node_vertices, node_normals, node_tex_coords, world_transform, geom_id, triangles_, normals_, tex_coords_ );
-            geom->accept(tf);
+            osg::TriangleIndexFunctor<store_triangle> tif;
+            tif.init(
+                    node_vertices,
+                    node_normals,
+                    node_colors,
+                    node_tex_coords,
+                    world_transform,
+                    geom_id,
+                    triangles_,
+                    normals_,
+                    colors_,
+                    tex_coords_
+                    );
+            geom->accept(tif);
         }
 
         base_type::traverse(geode);
@@ -563,6 +617,7 @@ private:
 
     triangle_list&  triangles_;
     normal_list&    normals_;
+    color_list&     colors_;
     tex_coord_list& tex_coords_;
     material_list&  materials_;
     texture_map&    textures_;
@@ -688,6 +743,7 @@ struct drawable::impl
     normal_list                             normals;
     tex_coord_list                          tex_coords;
     material_list                           materials;
+    color_list                              colors;
     texture_map                             textures;
     texture_list                            texture_refs;
     host_bvh_type                           host_bvh;
@@ -698,6 +754,7 @@ struct drawable::impl
     thrust::device_vector<vec3>             device_normals;
     thrust::device_vector<vec2>             device_tex_coords;
     thrust::device_vector<material_type>    device_materials;
+    thrust::device_vector<color_type>       device_colors;
     device_texture_map                      device_textures;
     device_texture_list                     device_texture_refs;
     device_bvh_type                         device_bvh;
@@ -928,6 +985,7 @@ void drawable::impl::update_device_data()
     {
         device_bvh          = device_bvh_type(host_bvh);
         device_normals      = normals;
+        device_colors       = colors;
         device_tex_coords   = tex_coords;
         device_materials    = materials;
 
@@ -1199,6 +1257,7 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
 
         impl_->triangles.clear();
         impl_->normals.clear();
+        impl_->colors.clear();
         impl_->tex_coords.clear();
         impl_->materials.clear();
         impl_->texture_refs.clear();
@@ -1206,6 +1265,7 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
         get_scene_visitor visitor(
                 impl_->triangles,
                 impl_->normals,
+                impl_->colors,
                 impl_->tex_coords,
                 impl_->materials,
                 impl_->textures,
@@ -1318,12 +1378,13 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
 
         thrust::device_vector<light_type> device_lights = lights;
 
-        auto kparams = make_params<normals_per_vertex_binding>(
+        auto kparams = make_params<normals_per_vertex_binding, colors_per_vertex_binding>(
                 thrust::raw_pointer_cast(device_primitives.data()),
                 thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
                 thrust::raw_pointer_cast(impl_->device_normals.data()),
                 thrust::raw_pointer_cast(impl_->device_tex_coords.data()),
                 thrust::raw_pointer_cast(impl_->device_materials.data()),
+                thrust::raw_pointer_cast(impl_->device_colors.data()),
                 thrust::raw_pointer_cast(impl_->device_texture_refs.data()),
                 thrust::raw_pointer_cast(device_lights.data()),
                 thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
@@ -1344,12 +1405,13 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
     else if (impl_->state->device == CPU)
     {
 #ifndef __CUDA_ARCH__
-        auto kparams = make_params<normals_per_vertex_binding>(
+        auto kparams = make_params<normals_per_vertex_binding, colors_per_vertex_binding>(
                 host_primitives.data(),
                 host_primitives.data() + host_primitives.size(),
                 impl_->normals.data(),
                 impl_->tex_coords.data(),
                 impl_->materials.data(),
+                impl_->colors.data(),
                 impl_->texture_refs.data(),
                 lights.data(),
                 lights.data() + lights.size(),
