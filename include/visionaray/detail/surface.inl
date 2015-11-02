@@ -352,6 +352,46 @@ inline auto get_surface_any_prim_impl(
     return surface<M, vector<3, float>>( normal, materials[hr.geom_id], tex_color );
 }
 
+template <
+    typename HR,
+    typename Normals,
+    typename TexCoords,
+    typename Materials,
+    typename Colors,
+    typename Textures,
+    typename Primitive,
+    typename NormalBinding,
+    typename ColorBinding
+    >
+VSNRAY_FUNC
+inline auto get_surface_any_prim_impl(
+        HR const&       hr,
+        Normals         normals,
+        TexCoords       tex_coords,
+        Materials       materials,
+        Colors          colors,
+        Textures        textures,
+        Primitive       /* */,
+        NormalBinding   /* */,
+        ColorBinding    /* */
+        )
+    -> surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>
+{
+    using M = typename std::iterator_traits<Materials>::value_type;
+    using P = typename detail::primitive_traits<Primitive>::type;
+
+    auto color = get_color(colors, hr, P{}, ColorBinding{});
+    auto tc = get_tex_coord(tex_coords, hr, P{});
+
+    auto const& tex = textures[hr.geom_id];
+    auto tex_color = tex.width() > 0 && tex.height() > 0
+                   ? vector<3, float>(tex2D(tex, tc))
+                   : vector<3, float>(1.0);
+
+    auto normal = get_normal(normals, hr, P{}, NormalBinding{});
+    return surface<M, vector<3, float>>( normal, materials[hr.geom_id], color * tex_color );
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Generic primitive / float

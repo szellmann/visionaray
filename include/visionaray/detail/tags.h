@@ -32,7 +32,7 @@ template <typename T>
 struct has_colors_impl
 {
     template <typename U>
-    static has_colors_tag  test(typename U::has_colors*);
+    static has_colors_tag test(typename U::has_colors*);
 
     template <typename U>
     static has_no_colors_tag test(...);
@@ -49,7 +49,7 @@ template <typename T>
 struct has_textures_impl
 {
     template <typename U>
-    static has_textures_tag  test(typename U::has_textures*);
+    static has_textures_tag test(typename U::has_textures*);
 
     template <typename U>
     static has_no_textures_tag test(...);
