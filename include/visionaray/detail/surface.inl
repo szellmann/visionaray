@@ -11,6 +11,7 @@
 
 #include "../generic_material.h"
 #include "../generic_primitive.h"
+#include "../get_color.h"
 #include "../get_normal.h"
 #include "../get_tex_coord.h"
 #include "../tags.h"
@@ -556,6 +557,85 @@ inline auto get_surface_any_prim_impl(
             );
 }
 
+template <
+    template <typename, typename> class HR,
+    typename HRP,
+    typename Normals,
+    typename TexCoords,
+    typename Materials,
+    typename Colors,
+    typename Textures,
+    typename Primitive,
+    typename NormalBinding,
+    typename ColorBinding
+    >
+inline auto get_surface_any_prim_impl(
+        HR<simd::ray4, HRP> const&  hr,
+        Normals                     normals,
+        TexCoords                   tex_coords,
+        Materials                   materials,
+        Colors                      colors,
+        Textures                    textures,
+        Primitive                   /* */,
+        NormalBinding               /* */,
+        ColorBinding                /* */
+        ) -> decltype( simd::pack(
+                surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>(),
+                surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>(),
+                surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>(),
+                surface<typename std::iterator_traits<Materials>::value_type, vector<3, float>>()
+                ) )
+{
+    using N = typename std::iterator_traits<Normals>::value_type;
+    using M = typename std::iterator_traits<Materials>::value_type;
+    using C = typename std::iterator_traits<Colors>::value_type;
+    using P = typename detail::primitive_traits<Primitive>::type;
+
+    auto hr4 = unpack(hr);
+
+    auto color4 = get_color(colors, hr4, typename detail::primitive_traits<Primitive>::type{}, ColorBinding{});
+
+    auto tc4 = get_tex_coord(tex_coords, hr4, typename detail::primitive_traits<Primitive>::type{});
+
+    vector<3, float> tex_color4[4];
+    for (unsigned i = 0; i < 4; ++i)
+    {
+        if (!hr4[i].hit)
+        {
+            continue;
+        }
+
+        auto const& tex = textures[hr4[i].geom_id];
+        tex_color4[i] = tex.width() > 0 && tex.height() > 0
+                      ? vector<3, float>(tex2D(tex, tc4[i]))
+                      : vector<3, float>(1.0);
+    }
+
+    return simd::pack(
+            surface<M, vector<3, float>>(
+                hr4[0].hit ? get_normal(normals, hr4[0], P{}, NormalBinding{}) : N(),
+                hr4[0].hit ? materials[hr4[0].geom_id]                         : M(),
+                hr4[0].hit ? color4[0] * tex_color4[0]                         : vector<3, float>(1.0)
+                ),
+            surface<M, vector<3, float>>(
+                hr4[1].hit ? get_normal(normals, hr4[1], P{}, NormalBinding{}) : N(),
+                hr4[1].hit ? materials[hr4[1].geom_id]                         : M(),
+                hr4[1].hit ? color4[1] * tex_color4[1]                         : vector<3, float>(1.0)
+                ),
+            surface<M, vector<3, float>>(
+                hr4[2].hit ? get_normal(normals, hr4[2], P{}, NormalBinding{}) : N(),
+                hr4[2].hit ? materials[hr4[2].geom_id]                         : M(),
+                hr4[2].hit ? color4[2] * tex_color4[2]                         : vector<3, float>(1.0)
+                ),
+            surface<M, vector<3, float>>(
+                hr4[3].hit ? get_normal(normals, hr4[3], P{}, NormalBinding{}) : N(),
+                hr4[3].hit ? materials[hr4[3].geom_id]                         : M(),
+                hr4[3].hit ? color4[3] * tex_color4[3]                         : vector<3, float>(1.0)
+                )
+            );
+}
+
+
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 //-------------------------------------------------------------------------------------------------
@@ -713,6 +793,56 @@ inline auto get_surface_with_prims_impl(
             );
 }
 
+template <
+    typename HR,
+    typename Primitives,
+    typename Normals,
+    typename TexCoords,
+    typename Materials,
+    typename Colors,
+    typename Textures,
+    typename Primitive,
+    typename NormalBinding,
+    typename ColorBinding
+    >
+VSNRAY_FUNC
+inline auto get_surface_with_prims_impl(
+        HR const&       hr,
+        Primitives      primitives,
+        Normals         normals,
+        TexCoords       tex_coords,
+        Materials       materials,
+        Colors          colors,
+        Textures        textures,
+        Primitive       /* */,
+        NormalBinding   /* */,
+        ColorBinding    /* */
+        ) -> decltype( get_surface_any_prim_impl(
+                hr,
+                normals,
+                tex_coords,
+                materials,
+                colors,
+                textures,
+                Primitive{},
+                NormalBinding{},
+                ColorBinding{}
+                ) )
+{
+    VSNRAY_UNUSED(primitives);
+    return get_surface_any_prim_impl(
+            hr,
+            normals,
+            tex_coords,
+            materials,
+            colors,
+            textures,
+            Primitive{},
+            NormalBinding{},
+            ColorBinding{}
+            );
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Generic primitive / float4
@@ -721,11 +851,12 @@ inline auto get_surface_with_prims_impl(
 template <
     template <typename, typename> class HR,
     typename HRP,
-    typename NormalBinding,
     typename Primitives,
     typename Normals,
     typename Materials,
-    typename ...Ts>
+    typename ...Ts,
+    typename NormalBinding
+    >
 inline auto get_surface_with_prims_impl(
         HR<simd::ray4, HRP> const&  hr,
         Primitives                  primitives,
@@ -773,13 +904,18 @@ inline auto get_surface_with_prims_impl(
 
 template <typename HR, typename Params>
 VSNRAY_FUNC
-inline auto get_surface_unroll_params_impl(HR const& hr, Params const& p, detail::has_no_textures_tag)
+inline auto get_surface_unroll_params_impl(
+        HR const& hr,
+        Params const& p,
+        detail::has_no_colors_tag,
+        detail::has_no_textures_tag
+        )
     -> decltype( get_surface_with_prims_impl(
             hr,
             p.prims.begin,
             p.normals,
             p.materials,
-            typename Params::primitive_type(),
+            typename Params::primitive_type{},
             typename Params::normal_binding{}
             ) )
 {
@@ -788,14 +924,19 @@ inline auto get_surface_unroll_params_impl(HR const& hr, Params const& p, detail
             p.prims.begin,
             p.normals,
             p.materials,
-            typename Params::primitive_type(),
+            typename Params::primitive_type{},
             typename Params::normal_binding{}
             );
 }
 
 template <typename HR, typename Params>
 VSNRAY_FUNC
-inline auto get_surface_unroll_params_impl(HR const& hr, Params const& p, detail::has_textures_tag)
+inline auto get_surface_unroll_params_impl(
+        HR const& hr,
+        Params const& p,
+        detail::has_no_colors_tag,
+        detail::has_textures_tag
+        )
     -> decltype( get_surface_with_prims_impl(
             hr,
             p.prims.begin,
@@ -803,7 +944,7 @@ inline auto get_surface_unroll_params_impl(HR const& hr, Params const& p, detail
             p.tex_coords,
             p.materials,
             p.textures,
-            typename Params::primitive_type(),
+            typename Params::primitive_type{},
             typename Params::normal_binding{}
             ) )
 {
@@ -814,10 +955,46 @@ inline auto get_surface_unroll_params_impl(HR const& hr, Params const& p, detail
             p.tex_coords,
             p.materials,
             p.textures,
-            typename Params::primitive_type(),
+            typename Params::primitive_type{},
             typename Params::normal_binding{}
             );
 }
+
+template <typename HR, typename Params>
+VSNRAY_FUNC
+inline auto get_surface_unroll_params_impl(
+        HR const& hr,
+        Params const& p,
+        detail::has_colors_tag,
+        detail::has_textures_tag
+        )
+    -> decltype( get_surface_with_prims_impl(
+            hr,
+            p.prims.begin,
+            p.normals,
+            p.tex_coords,
+            p.materials,
+            p.colors,
+            p.textures,
+            typename Params::primitive_type{},
+            typename Params::normal_binding{},
+            typename Params::color_binding{}
+            ) )
+{
+    return get_surface_with_prims_impl(
+            hr,
+            p.prims.begin,
+            p.normals,
+            p.tex_coords,
+            p.materials,
+            p.colors,
+            p.textures,
+            typename Params::primitive_type{},
+            typename Params::normal_binding{},
+            typename Params::color_binding{}
+            );
+}
+
 
 template <typename HR, typename Params>
 VSNRAY_FUNC
@@ -825,12 +1002,14 @@ inline auto get_surface(HR const& hr, Params const& p)
     -> decltype( get_surface_unroll_params_impl(
             hr,
             p,
+            detail::has_colors<Params>{},
             detail::has_textures<Params>{}
             ) )
 {
     return get_surface_unroll_params_impl(
             hr,
             p,
+            detail::has_colors<Params>{},
             detail::has_textures<Params>{}
             );
 }

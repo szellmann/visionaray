@@ -20,6 +20,9 @@ struct index_bvh_tag {};
 struct conductor_tag {};
 struct dielectric_tag {};
 
+struct colors_per_face_binding {};
+struct colors_per_vertex_binding {};
+
 struct normals_per_face_binding {};
 struct normals_per_vertex_binding {};
 

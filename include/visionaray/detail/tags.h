@@ -21,8 +21,29 @@ namespace detail
 //
 
 struct surface_tag {};
-struct has_textures_tag : surface_tag {};
-struct has_no_textures_tag : surface_tag {};
+
+struct has_colors_tag       : surface_tag {};
+struct has_no_colors_tag    : surface_tag {};
+
+struct has_textures_tag     : surface_tag {};
+struct has_no_textures_tag  : surface_tag {};
+
+template <typename T>
+struct has_colors_impl
+{
+    template <typename U>
+    static has_colors_tag  test(typename U::has_colors*);
+
+    template <typename U>
+    static has_no_colors_tag test(...);
+
+    using type = decltype( test<typename std::decay<T>::type>(nullptr) );
+};
+
+template <typename T>
+struct has_colors : has_colors_impl<T>::type
+{
+};
 
 template <typename T>
 struct has_textures_impl
