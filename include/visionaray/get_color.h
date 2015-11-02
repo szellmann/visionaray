@@ -112,6 +112,7 @@ inline auto get_color(
 //
 
 template <typename Colors, typename HR, typename ColorBinding>
+VSNRAY_FUNC
 inline auto get_color(Colors colors, HR const& hr, ColorBinding /* */)
     -> decltype( get_color(
             colors,

@@ -237,6 +237,7 @@ inline vector<3, simd::float8> get_normal(
 //
 
 template <typename HR, typename T, typename NormalBinding>
+VSNRAY_FUNC
 inline vector<3, T> get_normal(
         HR const&               hr,
         basic_sphere<T> const&  sphere,
@@ -252,6 +253,7 @@ inline vector<3, T> get_normal(
 //
 
 template <typename Normals, typename HR, typename NormalBinding>
+VSNRAY_FUNC
 inline auto get_normal(Normals normals, HR const& hr, NormalBinding /* */)
     -> decltype( get_normal(
             normals,
