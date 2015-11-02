@@ -628,7 +628,6 @@ inline auto get_surface_any_prim_impl(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using C = typename std::iterator_traits<Colors>::value_type;
     using P = typename detail::primitive_traits<Primitive>::type;
 
     auto hr4 = unpack(hr);
