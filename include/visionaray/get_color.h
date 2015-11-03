@@ -6,6 +6,7 @@
 #ifndef VSNRAY_GET_COLOR_H
 #define VSNRAY_GET_COLOR_H 1
 
+#include <array>
 #include <iterator>
 
 #include "math/math.h"

@@ -6,6 +6,8 @@
 #ifndef VSNRAY_GET_NORMAL
 #define VSNRAY_GET_NORMAL 1
 
+#include <iterator>
+
 #include "math/math.h"
 
 namespace visionaray
