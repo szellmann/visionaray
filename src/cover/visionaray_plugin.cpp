@@ -129,7 +129,7 @@ void Visionaray::impl::init_state_from_config()
     //     <NumBounces   value="4" min="1" max="10" />      <!-- value:Integer | [min:Integer|max:Integer]  -->
     //     <Device       value="CPU"     />                 <!-- "CPU"    | "GPU"     -->
     //     <CPUScheduler numThreads="16" />                 <!-- numThreads:Integer   -->
-    // </Visioaray>
+    // </Visionaray>
     //
     //
 
