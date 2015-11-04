@@ -102,13 +102,29 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             tile2d( x0, x1, y0, y1, pw, ph,
                 [=](int i0, int /*i1*/, int j0, int /*j1*/)
                 {
-                    sample_pixel<R>(
+                    sampler<typename R::scalar_type> samp(detail::tic());
+
+                    auto r = make_primary_ray<R>(
+                        typename SP::pixel_sampler_type(),
+                        samp,
+                        i0,
+                        j0,
+                        viewport,
+                        eye,
+                        cam_u,
+                        cam_v,
+                        cam_w
+                        );
+
+                    sample_pixel(
                         kernel,
                         typename SP::pixel_sampler_type(),
+                        r,
+                        samp,
+                        frame_num,
                         sched_params.rt.ref(),
                         i0,
                         j0,
-                        frame_num,
                         viewport,
                         eye,
                         cam_u,
