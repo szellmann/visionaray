@@ -207,7 +207,7 @@ void rotate_manipulator::render()
     // TODO: reset GL state
 }
 
-bool rotate_manipulator::handle_mouse_down(mouse_event const& event)
+bool rotate_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
 {
     auto bdisc = flip( bounding_disc(), camera_.get_viewport() );
 
@@ -234,14 +234,14 @@ bool rotate_manipulator::handle_mouse_down(mouse_event const& event)
     }
 }
 
-bool rotate_manipulator::handle_mouse_up(mouse_event const& event)
+bool rotate_manipulator::handle_mouse_up(visionaray::mouse_event const& event)
 {
     dragging_ = false;
     selected_ = -1;
     return false;
 }
 
-bool rotate_manipulator::handle_mouse_move(mouse_event const& event)
+bool rotate_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
 {
     auto bdisc = flip( bounding_disc(), camera_.get_viewport() );
 
@@ -283,7 +283,7 @@ bool rotate_manipulator::handle_mouse_move(mouse_event const& event)
     }
 }
 
-int rotate_manipulator::select_from_mouse_pointer(mouse_event const& event)
+int rotate_manipulator::select_from_mouse_pointer(visionaray::mouse_event const& event)
 {
     auto scaling = get_scaling(model_matrix_);
     auto radius = length((scaling * vec4(size_, 1.0f)).xyz()) / 2.0f;
