@@ -61,7 +61,9 @@ set(COMMON_HEADERS
     manip/arcball.h
     manip/arcball_manipulator.h
     manip/camera_manipulator.h
+    manip/model_manipulator.h
     manip/pan_manipulator.h
+    manip/rotate_manipulator.h
     manip/zoom_manipulator.h
 
     call_kernel.h
@@ -84,7 +86,9 @@ set(COMMON_SOURCES
     manip/arcball.cpp
     manip/arcball_manipulator.cpp
     manip/camera_manipulator.cpp
+    manip/model_manipulator.cpp
     manip/pan_manipulator.cpp
+    manip/rotate_manipulator.cpp
     manip/zoom_manipulator.cpp
 
     jpeg_image.cpp
