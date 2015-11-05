@@ -35,6 +35,9 @@ vec3 arcball::project(int x, int y, recti const& viewport)
 
     vec3 v(0.0f);
 
+    x -= viewport.x;
+    y -= viewport.y;
+
     auto width  = viewport.w;
     auto height = viewport.h;
 
