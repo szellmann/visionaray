@@ -66,6 +66,8 @@ make install
 
 The headers, libraries and viewer application will then be located in the standard install path of your operating system (usually /usr/local).
 
+See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Getting-started) in the [Wiki](https://github.com/szellmann/visionaray/wiki) for further information.
+
 
 Visionaray Viewer
 -----------------
@@ -78,6 +80,11 @@ vsnray-viewer <filename.obj>
 ```
 
 where filename.obj is a wavefront obj file.
+
+Documentation
+-------------
+
+Thorough documentation can be found in the [Wiki](https://github.com/szellmann/visionaray/wiki).
 
 License
 -------
