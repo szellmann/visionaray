@@ -64,14 +64,14 @@ void for_each_line(F func, vec3 vx, vec3 vy, vec3 center = { 0.0f, 0.0f, 0.0f } 
 // Convert from Visionaray / GL window coordinates to left/upper origin coordinates
 //
 
-disci flip(disci const& d, recti const& viewport)
+static disci flip(disci const& d, recti const& viewport)
 {
     disci result = d;
     result.center.y = viewport.h - d.center.y - 1;
     return result;
 }
 
-recti flip(recti const& r, recti const& viewport)
+static recti flip(recti const& r, recti const& viewport)
 {
     recti result = r;
     result.y = viewport.h - r.h - r.y - 1;
