@@ -143,9 +143,6 @@ struct pixel_access
     VSNRAY_CPU_FUNC
     static void store(int x, int y, recti const& viewport, vector<4, simd::float4> const& color, vector<4, float>* buffer)
     {
-        static_assert( packet_size<simd::float4>::w == 2, "incompatible packet width" );
-        static_assert( packet_size<simd::float4>::h == 2, "incompatible packet height" );
-
         using simd::store;
 
         auto c = transpose(color);
@@ -276,9 +273,6 @@ struct pixel_access
     VSNRAY_CPU_FUNC
     static void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, OutputColor const* buffer)
     {
-        static_assert( packet_size<simd::float4>::w == 2, "incompatible packet width" );
-        static_assert( packet_size<simd::float4>::h == 2, "incompatible packet height" );
-
         auto c00 = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
         auto c01 = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
         auto c10 = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
@@ -300,8 +294,6 @@ struct pixel_access
     {
         const int w = packet_size<simd::float8>::w;
         const int h = packet_size<simd::float8>::h;
-
-        static_assert(w * h == 8, "invalid packet size");
 
         vec4 v[w * h];
 
