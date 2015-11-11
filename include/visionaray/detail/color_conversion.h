@@ -183,6 +183,22 @@ inline void convert(vector<Dim, unorm<Bits>>& target, vector<Dim, float> const& 
 // Ok.
 
 
+// RGBA to RGB conversion, multiply by alpha
+template <typename T, typename U>
+VSNRAY_FUNC
+inline void convert(vector<3, T>& target, vector<4, U> const& source)
+{
+    convert(target, source.xyz() * source.w);
+}
+
+// RGB to RGBA conversion, let alpha = 1.0
+template <typename T, typename U>
+VSNRAY_FUNC
+inline void convert(vector<4, T>& target, vector<3, U> const& source)
+{
+    convert(target, vector<4, U>(source, U(1.0)));
+}
+
 } // visionaray
 
 

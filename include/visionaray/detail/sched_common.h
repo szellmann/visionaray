@@ -281,6 +281,24 @@ struct pixel_access
         color = simd::pack(vec4(c00), vec4(c01), vec4(c10), vec4(c11));
     }
 
+    //-------------------------------------------------------------------------
+    // Get SSE rgba color from RGB32F color buffer, let alpha = 1.0
+    //
+
+    template <typename T>
+    VSNRAY_CPU_FUNC
+    static void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, vector<3, T> const* buffer)
+    {
+        using OutputColor = vector<3, T>;
+
+        auto c00 = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
+        auto c01 = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
+        auto c10 = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
+        auto c11 = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
+
+        color = simd::pack(vec4(c00, 1.0f), vec4(c01, 1.0f), vec4(c10, 1.0f), vec4(c11, 1.0f));
+    }
+
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
     //-------------------------------------------------------------------------
@@ -672,7 +690,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = vector<pixel_traits<CF>::components, S>;
+    using Color = vector<4, S>; // TODO: obtain num color components from kernel
 
     auto result = kernel(r, samp);
     auto alpha  = S(1.0) / S(frame_num);
@@ -751,7 +769,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = vector<pixel_traits<CF>::components, S>;
+    using Color = vector<4, S>; // TODO: obtain num color components from kernel
 
     auto ray_ptr = rays.data();
 
