@@ -79,10 +79,10 @@ struct pixel<simd::float8>
 
 
 //-------------------------------------------------------------------------------------------------
-// color access
+// Store, get and blend pixel values (color and depth)
 //
 
-struct color_access
+struct pixel_access
 {
     // Store ------------------------------------------------------------------
 
@@ -582,7 +582,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     auto result = kernel(r);
-    color_access::store(x, y, viewport, result, rt_ref.color());
+    pixel_access::store(x, y, viewport, result, rt_ref.color());
 }
 
 template <
@@ -613,7 +613,7 @@ inline void sample_pixel_impl(
 
     auto result = kernel(r);
     result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
-    color_access::store(x, y, viewport, result, rt_ref.color(), rt_ref.depth());
+    pixel_access::store(x, y, viewport, result, rt_ref.color(), rt_ref.depth());
 }
 
 
@@ -647,7 +647,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     auto result = kernel(r, samp);
-    color_access::store(x, y, viewport, result, rt_ref.color());
+    pixel_access::store(x, y, viewport, result, rt_ref.color());
 }
 
 
@@ -686,9 +686,9 @@ inline void sample_pixel_impl(
     auto alpha  = S(1.0) / S(frame_num);
     if (frame_num <= 1)
     {//TODO: clear method in render target?
-        color_access::store(x, y, viewport, Color(0.0), rt_ref.color());
+        pixel_access::store(x, y, viewport, Color(0.0), rt_ref.color());
     }
-    color_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
+    pixel_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
 }
 
 template <
@@ -723,9 +723,9 @@ inline void sample_pixel_impl(
 
     if (frame_num <= 1)
     {//TODO: clear method in render target?
-        color_access::store(x, y, viewport, result, rt_ref.color(), rt_ref.depth());
+        pixel_access::store(x, y, viewport, result, rt_ref.color(), rt_ref.depth());
     }
-    color_access::blend(x, y, viewport, result, rt_ref.color(), rt_ref.depth(), alpha, S(1.0) - alpha);
+    pixel_access::blend(x, y, viewport, result, rt_ref.color(), rt_ref.depth(), alpha, S(1.0) - alpha);
 }
 
 
@@ -770,12 +770,12 @@ inline void sample_pixel_impl(
     {
         if (frame <= 1)
         {//TODO: clear method in render target?
-            color_access::store(x, y, viewport, Color(0.0), rt_ref.color());
+            pixel_access::store(x, y, viewport, Color(0.0), rt_ref.color());
         }
 
         auto result = kernel(*ray_ptr++, samp);
         auto alpha = S(1.0) / S(frame);
-        color_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
+        pixel_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
     }
 }
 
