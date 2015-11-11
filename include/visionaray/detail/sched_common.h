@@ -84,12 +84,24 @@ struct pixel<simd::float8>
 
 struct color_access
 {
+    // Store ------------------------------------------------------------------
+
+
+    //-------------------------------------------------------------------------
+    // Store an input color to an output color buffer, apply color conversion
+    //
+
     template <typename InputColor, typename OutputColor>
     VSNRAY_FUNC
     static void store(int x, int y, recti const& viewport, InputColor const& color, OutputColor* buffer)
     {
         convert(buffer[y * viewport.w + x], color);
     }
+
+    //-------------------------------------------------------------------------
+    // Store SSE rgba color, apply conversion
+    // OutputColor must be rgba
+    //
 
     template <typename OutputColor>
     VSNRAY_CPU_FUNC
@@ -123,6 +135,11 @@ struct color_access
         }
     }
 
+    //-------------------------------------------------------------------------
+    // Store SSE rgba color to RGBA32F color buffer, no conversion necessary
+    // Special treatment, can convert from SoA to AoS using transpose
+    //
+
     VSNRAY_CPU_FUNC
     static void store(int x, int y, recti const& viewport, vector<4, simd::float4> const& color, vector<4, float>* buffer)
     {
@@ -138,6 +155,11 @@ struct color_access
         if ( x      < viewport.w && (y + 1) < viewport.h) store( buffer[(y + 1) * viewport.w +  x     ].data(), c.z);
         if ((x + 1) < viewport.w && (y + 1) < viewport.h) store( buffer[(y + 1) * viewport.w + (x + 1)].data(), c.w);
     }
+
+    //-------------------------------------------------------------------------
+    // Store single SSE channel to 32-bit FP buffer, no conversion
+    // Can be used for color and depth
+    //
 
     VSNRAY_CPU_FUNC
     static void store(int x, int y, recti const& viewport, simd::float4 const& value, float* buffer)
@@ -162,6 +184,12 @@ struct color_access
     }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+    //-------------------------------------------------------------------------
+    // Store AVX rgba color, apply conversion
+    // OutputColor must be rgba
+    //
+
     template <typename OutputColor>
     VSNRAY_CPU_FUNC
     static void store(int x, int y, recti const& viewport, vector<4, simd::float8> const& color, OutputColor* buffer)
@@ -195,12 +223,20 @@ struct color_access
     }
 #endif
 
+    //-------------------------------------------------------------------------
+    // Store color from result record to output color buffer
+    //
+
     template <typename T, typename OutputColor>
     VSNRAY_FUNC
     static void store(int x, int y, recti const& viewport, result_record<T> const& rr, OutputColor* buffer)
     {
         store(x, y, viewport, rr.color, buffer);
     }
+
+    //-------------------------------------------------------------------------
+    // Store color and depth from result record to output buffers
+    //
 
     template <typename T, typename Color, typename Depth>
     VSNRAY_FUNC
@@ -218,12 +254,23 @@ struct color_access
     }
 
 
+    // Get -------------------------------------------------------------------
+
+
+    //-------------------------------------------------------------------------
+    // Get a color from an output color buffer, apply conversion
+    //
+
     template <typename InputColor, typename OutputColor>
     VSNRAY_FUNC
     static void get(int x, int y, recti const& viewport, InputColor& color, OutputColor const* buffer)
     {
         convert(color, buffer[y * viewport.w + x]);
     }
+
+    //-------------------------------------------------------------------------
+    // Get SSE rgba color from RGBA32F color buffer, no conversion necessary
+    //
 
     template <typename OutputColor>
     VSNRAY_CPU_FUNC
@@ -241,6 +288,12 @@ struct color_access
     }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+    //-------------------------------------------------------------------------
+    // Get AVX rgba color from output color buffer, apply conversion
+    // OutputColor must be rgba
+    //
+
     template <typename OutputColor>
     VSNRAY_CPU_FUNC
     static void get(int x, int y, recti const& viewport, vector<4, simd::float8>& color, OutputColor const* buffer)
@@ -273,6 +326,14 @@ struct color_access
     }
 #endif
 
+
+    // Blend ------------------------------------------------------------------
+
+
+    //-------------------------------------------------------------------------
+    // Blend input and output colors, store in output buffer
+    //
+
     template <typename InputColor, typename OutputColor, typename T>
     VSNRAY_FUNC
     static void blend(int x, int y, recti const& viewport, InputColor const& color, OutputColor* buffer, T sfactor, T dfactor)
@@ -285,6 +346,11 @@ struct color_access
 
         store(x, y, viewport, dst, buffer);
     }
+
+
+    //-------------------------------------------------------------------------
+    // Blend color from result record on top of output color buffer
+    //
 
     template <typename S, typename OutputColor, typename T>
     VSNRAY_FUNC
@@ -300,6 +366,10 @@ struct color_access
     {
         blend(x, y, viewport, rr.color, color_buffer, sfactor, dfactor);
     }
+
+    //-------------------------------------------------------------------------
+    // Blend color and depth from result record on top of output buffers
+    //
 
     template <typename S, typename OutputColor, typename Depth, typename T>
     VSNRAY_FUNC
@@ -644,12 +714,12 @@ inline void sample_pixel_impl(
         Args&&...                           args
         )
 {
-    using S     = typename R::scalar_type;
+    using S = typename R::scalar_type;
 
     auto result = kernel(r, samp);
     auto alpha  = S(1.0) / S(frame_num);
 
-    result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
+    result.depth = select( result.hit, depth_transform(result.isect_pos, args...), S(1.0) );
 
     if (frame_num <= 1)
     {//TODO: clear method in render target?
