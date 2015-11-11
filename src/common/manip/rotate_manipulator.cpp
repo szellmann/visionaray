@@ -236,6 +236,8 @@ bool rotate_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
 
 bool rotate_manipulator::handle_mouse_up(visionaray::mouse_event const& event)
 {
+    VSNRAY_UNUSED(event);
+
     dragging_ = false;
     selected_ = -1;
     return false;
@@ -249,8 +251,6 @@ bool rotate_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
 
     if (dragging_ && event.get_buttons() & buttons_)
     {
-        auto axis = rotate( vec3(1.0f, 0.0f, 0.0f), selected_ );
-
         auto brect = flip( bounding_rect(), camera_.get_viewport() );
 
         vec3 curr_pos = ball_.project(
