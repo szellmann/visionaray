@@ -99,8 +99,45 @@ struct pixel_access
     }
 
     //-------------------------------------------------------------------------
+    // Store SSE rgb color, apply conversion
+    // OutputColor must be rgb
+    // TODO: consolidate with rgba version
+    //
+
+    template <typename OutputColor>
+    VSNRAY_CPU_FUNC
+    static void store(int x, int y, recti const& viewport, vector<3, simd::float4> const& color, OutputColor* buffer)
+    {
+        VSNRAY_ALIGN(16) float r[4];
+        VSNRAY_ALIGN(16) float g[4];
+        VSNRAY_ALIGN(16) float b[4];
+
+        using simd::store;
+
+        store(r, color.x);
+        store(g, color.y);
+        store(b, color.z);
+
+        auto w = packet_size<simd::float4>::w;
+        auto h = packet_size<simd::float4>::h;
+
+        for (auto row = 0; row < h; ++row)
+        {
+            for (auto col = 0; col < w; ++col)
+            {
+                if (x + col < viewport.w && y + row < viewport.h)
+                {
+                    auto idx = row * w + col;
+                    convert( buffer[(y + row) * viewport.w + (x + col)], vec3(r[idx], g[idx], b[idx]) );
+                }
+            }
+        }
+    }
+
+    //-------------------------------------------------------------------------
     // Store SSE rgba color, apply conversion
     // OutputColor must be rgba
+    // TODO: consolidate with rgb version
     //
 
     template <typename OutputColor>
