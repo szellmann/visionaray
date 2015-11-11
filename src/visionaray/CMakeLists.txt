@@ -63,6 +63,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/sched_common.h
     ${HEADER_DIR}/detail/semaphore.h
     ${HEADER_DIR}/detail/simple.inl
+    ${HEADER_DIR}/detail/simple_buffer_rt.inl
     ${HEADER_DIR}/detail/simple_sched.h
     ${HEADER_DIR}/detail/simple_sched.inl
     ${HEADER_DIR}/detail/spectrum.inl
@@ -177,6 +178,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/render_target.h
     ${HEADER_DIR}/scheduler.h
     ${HEADER_DIR}/shade_record.h
+    ${HEADER_DIR}/simple_buffer_rt.h
     ${HEADER_DIR}/spectrum.h
     ${HEADER_DIR}/surface.h
     ${HEADER_DIR}/swizzle.h
