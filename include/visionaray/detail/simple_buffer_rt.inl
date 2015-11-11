@@ -61,13 +61,11 @@ void simple_buffer_rt<CF, DF>::resize(size_t w, size_t h)
     render_target::resize(w, h);
 
 
-    pixel_format_info cinfo = map_pixel_format(color_traits::format);
-    color_buffer.resize( w * h * cinfo.size );
+    color_buffer.resize(w * h);
 
     if (depth_traits::format != PF_UNSPECIFIED)
     {
-        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
-        depth_buffer.resize( w * h * dinfo.size );
+        depth_buffer.resize(w * h);
     }
 }
 

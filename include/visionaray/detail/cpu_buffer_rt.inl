@@ -99,13 +99,11 @@ void cpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 
     // Allocate storage
 
-    pixel_format_info cinfo = map_pixel_format(color_traits::format);
-    impl_->color_buffer.resize( w * h * cinfo.size );
+    impl_->color_buffer.resize(w * h);
 
     if (depth_traits::format != PF_UNSPECIFIED)
     {
-        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
-        impl_->depth_buffer.resize( w * h * dinfo.size );
+        impl_->depth_buffer.resize(w * h);
     }
 
 #if VSNRAY_CPU_BUFFER_TEX
@@ -118,6 +116,8 @@ void cpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
     }
 
     // Allocate texture storage
+
+    pixel_format_info cinfo = map_pixel_format(color_traits::format);
 
     impl_->compositor->setup_color_texture(cinfo, w, h);
 
