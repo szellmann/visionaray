@@ -2,8 +2,8 @@
 // See the LICENSE file for details.
 
 #include <visionaray/camera.h>
-#include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/scheduler.h>
+#include <visionaray/simple_buffer_rt.h>
 
 int main()
 {
@@ -38,9 +38,9 @@ int main()
     );
 
 // 3.)
-    // The CPU buffer render target provides storage
+    // The simple buffer render target provides storage
     // for the color buffer and depth buffer.
-    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> render_target;
+    simple_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> render_target;
     render_target.resize(100, 100);
 
 // 4.)
