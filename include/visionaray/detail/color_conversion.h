@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_DETAIL_COLOR_CONVERSION_H
-#define VSNRAY_DETAIL_COLOR_CONVERSION_H
+#define VSNRAY_DETAIL_COLOR_CONVERSION_H 1
 
 #include <visionaray/math/math.h>
 #include <visionaray/spectrum.h>
@@ -170,15 +170,16 @@ inline void convert(TargetType& target, SourceType const& source)
 }
 
 
-// RGBAX <-- RGBA32F
-template <unsigned Bits>
+// float to unorm conversion
+template <unsigned Bits, size_t Dim>
 VSNRAY_FUNC
-inline void convert(vector<4, unorm<Bits>>& target, vec4 const& source)
+inline void convert(vector<Dim, unorm<Bits>>& target, vector<Dim, float> const& source)
 {
-    target = vector<4, unorm<Bits>>(clamp(source, vec4(0.0), vec4(1.0)));
+    using V = vector<Dim, float>;
+    target = vector<4, unorm<Bits>>(clamp(source, V(0.0), V(1.0)));
 }
 
-// RGBA32F <-- RGBA8
+// unorm to float conversion
 // Ok.
 
 
