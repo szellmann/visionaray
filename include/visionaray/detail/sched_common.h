@@ -610,7 +610,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = vector<4, S>;
+    using Color = vector<pixel_traits<CF>::components, S>;
 
     auto result = kernel(r, samp);
     auto alpha  = S(1.0) / S(frame_num);
@@ -689,7 +689,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = vector<4, S>;
+    using Color = vector<pixel_traits<CF>::components, S>;
 
     auto ray_ptr = rays.data();
 
