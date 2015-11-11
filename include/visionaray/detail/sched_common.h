@@ -690,7 +690,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = vector<4, S>; // TODO: obtain num color components from kernel
+    using Color = typename decltype(kernel(r, samp))::color_type;
 
     auto result = kernel(r, samp);
     auto alpha  = S(1.0) / S(frame_num);
@@ -769,7 +769,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = vector<4, S>; // TODO: obtain num color components from kernel
+    using Color = typename decltype(kernel(R(), samp))::color_type;
 
     auto ray_ptr = rays.data();
 
