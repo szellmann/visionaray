@@ -52,6 +52,7 @@ public:
     virtual void event_loop();
     virtual void resize(int width, int height);
     virtual void toggle_full_screen();
+    virtual void quit();
 
 protected:
 

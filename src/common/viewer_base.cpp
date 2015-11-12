@@ -175,6 +175,10 @@ void viewer_base::toggle_full_screen()
     impl_->full_screen = !impl_->full_screen;
 }
 
+void viewer_base::quit()
+{
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Event handlers
@@ -202,6 +206,11 @@ void viewer_base::on_key_press(visionaray::key_event const& event)
     if (event.key() == keyboard::Escape && impl_->full_screen)
     {
         toggle_full_screen();
+    }
+
+    if (event.key() == keyboard::q)
+    {
+        quit();
     }
 
     for (auto& manip : impl_->manips)

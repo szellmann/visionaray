@@ -175,6 +175,13 @@ void viewer_qt::toggle_full_screen()
     viewer_base::toggle_full_screen();
 }
 
+void viewer_qt::quit()
+{
+    impl_->main_window->close();
+
+    viewer_base::quit();
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Qt slots

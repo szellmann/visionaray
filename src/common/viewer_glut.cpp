@@ -54,6 +54,7 @@ struct viewer_glut::impl
 {
     static viewer_glut*     viewer;
     static mouse::button    down_button;
+    static int              win_id;
 
     impl(viewer_glut* instance);
 
@@ -81,6 +82,7 @@ struct viewer_glut::impl
 
 viewer_glut*    viewer_glut::impl::viewer       = nullptr;
 mouse::button   viewer_glut::impl::down_button  = mouse::NoButton;
+int             viewer_glut::impl::win_id       = 0;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -111,7 +113,7 @@ void viewer_glut::impl::init(
     glutInitDisplayMode(/*GLUT_3_2_CORE_PROFILE |*/ GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 
     glutInitWindowSize(width, height);
-    glutCreateWindow(window_title.c_str());
+    win_id = glutCreateWindow(window_title.c_str());
 
     if (full_screen)
     {
@@ -300,6 +302,18 @@ void viewer_glut::toggle_full_screen()
     }
 
     viewer_base::toggle_full_screen();
+}
+
+void viewer_glut::quit()
+{
+    glutDestroyWindow(impl_->win_id);
+#ifdef FREEGLUT
+    glutLeaveMainLoop();
+    viewer_base::quit();
+#else
+    viewer_base::quit();
+    exit(EXIT_SUCCESS); // TODO
+#endif
 }
 
 void viewer_glut::resize(int width, int height)
