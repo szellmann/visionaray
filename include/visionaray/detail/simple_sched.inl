@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <type_traits>
+#include <utility>
 
 #include "sched_common.h"
 
@@ -20,6 +21,9 @@ struct simple_sched<R>::impl
 
     template <typename K, typename SP>
     void frame(K kernel, SP sched_params, unsigned frame_num, std::false_type /* has matrix */);
+
+    template <typename K, typename SP, typename V, typename ...Args>
+    void sample_pixels(K kernel, SP sched_params, unsigned frame_num, V viewport, Args&&... args);
 };
 
 
@@ -37,42 +41,17 @@ void simple_sched<R>::impl::frame(K kernel, SP sched_params, unsigned frame_num,
     auto inv_proj_matrix        = matrix_type( inverse(sched_params.proj_matrix) );
     auto viewport               = sched_params.viewport;
 
-    // TODO: support any sampler
-    sampler<scalar_type> samp(detail::tic());
-
-    for (int y = 0; y < viewport.h; ++y)
-    {
-        for (int x = 0; x < viewport.w; ++x)
-        {
-            auto r = detail::make_primary_ray<R>(
-                    typename SP::pixel_sampler_type(),
-                    samp,
-                    x,
-                    y,
-                    viewport,
-                    view_matrix,
-                    inv_view_matrix,
-                    proj_matrix,
-                    inv_proj_matrix
-                    );
-
-            sample_pixel(
-                    kernel,
-                    typename SP::pixel_sampler_type(),
-                    r,
-                    samp,
-                    frame_num,
-                    sched_params.rt.ref(),
-                    x,
-                    y,
-                    viewport,
-                    view_matrix,
-                    inv_view_matrix,
-                    proj_matrix,
-                    inv_proj_matrix
-                    );
-        }
-    }
+    // Iterate over all pixels
+    sample_pixels(
+            kernel,
+            sched_params,
+            frame_num,
+            viewport,
+            view_matrix,
+            inv_view_matrix,
+            proj_matrix,
+            inv_proj_matrix
+            );
 }
 
 
@@ -95,12 +74,31 @@ void simple_sched<R>::impl::frame(K kernel, SP sched_params, unsigned frame_num,
     auto cam_v = vector<3, scalar_type>(u) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) );
     auto cam_w = vector<3, scalar_type>(-f);
 
+    // Iterate over all pixels
+    sample_pixels(
+            kernel,
+            sched_params,
+            frame_num,
+            viewport,
+            eye,
+            cam_u,
+            cam_v,
+            cam_w
+            );
+}
+
+
+// Iterate over all pixels in a loop
+template <typename R>
+template <typename K, typename SP, typename V, typename ...Args>
+void simple_sched<R>::impl::sample_pixels(K kernel, SP sched_params, unsigned frame_num, V viewport, Args&&... args)
+{
     // TODO: support any sampler
-    sampler<scalar_type> samp(detail::tic());
+    sampler<typename R::scalar_type> samp(detail::tic());
 
     for (int y = 0; y < viewport.h; ++y)
     {
-        for (int x = 0; x < viewport.w; ++x)
+        for (int x = 0; x < viewport.h; ++x)
         {
             auto r = detail::make_primary_ray<R>(
                     typename SP::pixel_sampler_type(),
@@ -108,10 +106,7 @@ void simple_sched<R>::impl::frame(K kernel, SP sched_params, unsigned frame_num,
                     x,
                     y,
                     viewport,
-                    eye,
-                    cam_u,
-                    cam_v,
-                    cam_w
+                    std::forward<Args>(args)...
                     );
 
             sample_pixel(
@@ -124,10 +119,7 @@ void simple_sched<R>::impl::frame(K kernel, SP sched_params, unsigned frame_num,
                     x,
                     y,
                     viewport,
-                    eye,
-                    cam_u,
-                    cam_v,
-                    cam_w
+                    std::forward<Args>(args)...
                     );
         }
     }

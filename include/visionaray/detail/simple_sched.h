@@ -33,5 +33,3 @@ private:
 #include "simple_sched.inl"
 
 #endif // VSNRAY_DETAIL_SIMPLE_SCHED_H
-
-
