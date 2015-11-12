@@ -4,7 +4,9 @@
 #pragma once
 
 #ifndef VSNRAY_DETAIL_SIMPLE_SCHED_H
-#define VSNRAY_DETAIL_SIMPLE_SCHED_H
+#define VSNRAY_DETAIL_SIMPLE_SCHED_H 1
+
+#include <memory>
 
 namespace visionaray
 {
@@ -14,8 +16,15 @@ class simple_sched
 {
 public:
 
+    simple_sched();
+
     template <typename K, typename SP>
     void frame(K kernel, SP sched_params, unsigned frame_num = 0);
+
+private:
+
+    struct impl;
+    std::unique_ptr<impl> impl_;
 
 };
 
