@@ -98,7 +98,7 @@ void simple_sched<R>::impl::sample_pixels(K kernel, SP sched_params, unsigned fr
 
     for (int y = 0; y < viewport.h; ++y)
     {
-        for (int x = 0; x < viewport.h; ++x)
+        for (int x = 0; x < viewport.w; ++x)
         {
             auto r = detail::make_primary_ray<R>(
                     typename SP::pixel_sampler_type(),
