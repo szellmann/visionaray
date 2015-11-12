@@ -54,8 +54,6 @@ struct tiled_sched<R>::impl
     // TODO: any sampler
     typedef std::function<void(recti const&, sampler<typename R::scalar_type>&)> render_tile_func;
 
-    impl() = default;
-
     void init_threads(unsigned num_threads);
     void destroy_threads();
 
