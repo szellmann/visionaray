@@ -1,10 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#ifndef VSNRAY_ARRAY_REF_H
-#define VSNRAY_ARRAY_REF_H
-
 #pragma once
+
+#ifndef VSNRAY_ARRAY_REF_H
+#define VSNRAY_ARRAY_REF_H 1
 
 #include <cassert>
 #include <algorithm>
@@ -94,7 +94,7 @@ public:
     }
 
     // Array access.
-    reference operator [](size_t Index) const
+    reference operator[](size_t Index) const
     {
         assert(Index < size() && "index out of range");
         return data()[Index];
@@ -184,37 +184,37 @@ using const_array_ref = array_ref<typename std::add_const<T>::type>;
 //
 
 template <class T>
-inline bool operator ==(array_ref<T> lhs, array_ref<T> rhs)
+inline bool operator==(array_ref<T> lhs, array_ref<T> rhs)
 {
     return lhs.equals(rhs);
 }
 
 template <class T>
-inline bool operator !=(array_ref<T> lhs, array_ref<T> rhs)
+inline bool operator!=(array_ref<T> lhs, array_ref<T> rhs)
 {
     return !(lhs == rhs);
 }
 
 template <class T>
-inline bool operator <(array_ref<T> lhs, array_ref<T> rhs)
+inline bool operator<(array_ref<T> lhs, array_ref<T> rhs)
 {
     return lhs.less(rhs);
 }
 
 template <class T>
-inline bool operator <=(array_ref<T> lhs, array_ref<T> rhs)
+inline bool operator<=(array_ref<T> lhs, array_ref<T> rhs)
 {
     return !(rhs < lhs);
 }
 
 template <class T>
-inline bool operator >(array_ref<T> lhs, array_ref<T> rhs)
+inline bool operator>(array_ref<T> lhs, array_ref<T> rhs)
 {
     return rhs < lhs;
 }
 
 template <class T>
-inline bool operator >=(array_ref<T> lhs, array_ref<T> rhs)
+inline bool operator>=(array_ref<T> lhs, array_ref<T> rhs)
 {
     return !(lhs < rhs);
 }
