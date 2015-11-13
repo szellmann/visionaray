@@ -674,8 +674,8 @@ private:
     {
         auto tc = get_tex_coord(tex_coords, hr);
 
-        auto hr4 = simd::unpack( hr );
-        auto tc4 = simd::unpack( tc );
+        auto hr4 = unpack( hr );
+        auto tc4 = unpack( tc );
 
         vector<4, float> tex_color4[4];
 

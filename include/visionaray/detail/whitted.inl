@@ -173,9 +173,9 @@ inline auto specular_bounce(
         )
     -> bounce_result<vector<3, simd::float4>, simd::float4>
 {
-    auto m4  = simd::unpack(mat);
-    auto vd4 = simd::unpack(view_dir);
-    auto n4  = simd::unpack(normal);
+    auto m4  = unpack(mat);
+    auto vd4 = unpack(view_dir);
+    auto n4  = unpack(normal);
 
     auto res1 = specular_bounce(m4[0], vd4[0], n4[0]);
     auto res2 = specular_bounce(m4[1], vd4[1], n4[1]);
@@ -200,9 +200,9 @@ inline auto specular_bounce(
         )
     -> bounce_result<vector<3, simd::float8>, simd::float8>
 {
-    auto m8  = simd::unpack(mat);
-    auto vd8 = simd::unpack(view_dir);
-    auto n8  = simd::unpack(normal);
+    auto m8  = unpack(mat);
+    auto vd8 = unpack(view_dir);
+    auto n8  = unpack(normal);
 
     auto res1 = specular_bounce(m8[0], vd8[0], n8[0]);
     auto res2 = specular_bounce(m8[1], vd8[1], n8[1]);

@@ -268,8 +268,8 @@ struct mask_intersector : basic_intersector<mask_intersector>
 
         auto tc = get_tex_coord(tex_coords, hr);
 
-        auto hr4 = simd::unpack( hr );
-        auto tc4 = simd::unpack( tc );
+        auto hr4 = unpack( hr );
+        auto tc4 = unpack( tc );
 
         bool hit4[4] = { false, false, false, false };
 

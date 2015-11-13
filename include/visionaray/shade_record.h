@@ -68,7 +68,7 @@ std::array<shade_record<L, float>, 4> unpack(shade_record<L, float4> const& sr)
     auto light_dir4 = unpack(sr.light_dir);
 
     VSNRAY_ALIGN(16) int active[4];
-    simd::store(active, sr.active.i);
+    store(active, sr.active.i);
 
     std::array<shade_record<L, float>, 4> result;
 
@@ -100,7 +100,7 @@ std::array<shade_record<L, vector<3, float>, float>, 4> unpack(shade_record<L, v
     auto tex_color4 = unpack(sr.tex_color);
 
     VSNRAY_ALIGN(16) int active[4];
-    simd::store(active, sr.active.i);
+    store(active, sr.active.i);
 
     std::array<shade_record<L, vector<3, float>, float>, 4> result;
 
@@ -144,7 +144,7 @@ std::array<shade_record<L, float>, 8> unpack(shade_record<L, float8> const& sr)
     auto light_dir8 = unpack(sr.light_dir);
 
     VSNRAY_ALIGN(32) int active[8];
-    simd::store(active, sr.active.i);
+    store(active, sr.active.i);
 
     std::array<shade_record<L, float>, 8> result;
 
