@@ -402,7 +402,7 @@ void renderer::on_display()
 {
     using light_type = point_light<float>;
 
-    std::vector<light_type> host_lights;
+    aligned_vector<light_type> host_lights;
 
     light_type light;
     light.set_cl( vec3(1.0, 1.0, 1.0) );
@@ -446,7 +446,7 @@ void renderer::on_display()
     else if (dev_type == renderer::CPU)
     {
 #ifndef __CUDA_ARCH__
-        std::vector<renderer::host_bvh_type::bvh_ref> host_primitives;
+        aligned_vector<renderer::host_bvh_type::bvh_ref> host_primitives;
 
         host_primitives.push_back(host_bvh.ref());
 

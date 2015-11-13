@@ -161,7 +161,7 @@ struct sah_builder
         }
     };
 
-    using prim_refs = std::vector<prim_ref>;
+    using prim_refs = aligned_vector<prim_ref>;
 
     template <typename I>
     static void init(prim_refs& refs, aabb& prim_bounds, aabb& cent_bounds, I first, I last)

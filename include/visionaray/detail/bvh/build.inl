@@ -105,7 +105,7 @@ void build_tree_work(Tree& tree, Builder& builder, Root root, I first, I /*last*
     // TODO:
     // Maybe rewrite the builder to directly shuffle the primitives?!?!
 
-    std::vector<unsigned> indices;
+    aligned_vector<unsigned> indices;
 
     //assert(builder.use_spatial_splits == false);
 

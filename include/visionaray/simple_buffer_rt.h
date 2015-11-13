@@ -6,8 +6,7 @@
 #ifndef VSNRAY_SIMPLE_BUFFER_RT
 #define VSNRAY_SIMPLE_BUFFER_RT 1
 
-#include <vector>
-
+#include "aligned_vector.h"
 #include "pixel_traits.h"
 #include "render_target.h"
 
@@ -47,8 +46,8 @@ public:
 
 private:
 
-    std::vector<color_type> color_buffer;
-    std::vector<depth_type> depth_buffer;
+    aligned_vector<color_type> color_buffer;
+    aligned_vector<depth_type> depth_buffer;
 
 };
 
