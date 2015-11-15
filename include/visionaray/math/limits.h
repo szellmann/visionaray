@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_MATH_LIMITS_H
-#define VSNRAY_MATH_LIMITS_H
+#define VSNRAY_MATH_LIMITS_H 1
 
 namespace MATH_NAMESPACE
 {
@@ -74,6 +74,17 @@ public:
     MATH_FUNC static double lowest();
     MATH_FUNC static double max();
     MATH_FUNC static double epsilon();
+
+};
+
+template <unsigned Bits>
+class numeric_limits<unorm<Bits>>
+{
+public:
+
+    MATH_FUNC static unorm<Bits> min();
+    MATH_FUNC static unorm<Bits> lowest();
+    MATH_FUNC static unorm<Bits> max();
 
 };
 

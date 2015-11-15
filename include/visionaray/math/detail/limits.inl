@@ -126,4 +126,27 @@ MATH_FUNC inline double numeric_limits<double>::epsilon()
     return DBL_EPSILON;
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// unorm limits
+//
+
+template <unsigned Bits>
+MATH_FUNC inline unorm<Bits> numeric_limits<unorm<Bits>>::min()
+{
+    return unorm<Bits>(0.0f);
+}
+
+template <unsigned Bits>
+MATH_FUNC inline unorm<Bits> numeric_limits<unorm<Bits>>::lowest()
+{
+    return unorm<Bits>(0.0f);
+}
+
+template <unsigned Bits>
+MATH_FUNC inline unorm<Bits> numeric_limits<unorm<Bits>>::max()
+{
+    return unorm<Bits>(1.0f);
+}
+
 } // MATH_NAMESPACE
