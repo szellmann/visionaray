@@ -25,6 +25,7 @@ arcball_manipulator::arcball_manipulator(
     : camera_manipulator(cam)
     , buttons_(buttons)
     , modifiers_(modifiers)
+    , down_modifiers_(keyboard::key_modifiers::NoKey)
     , dragging_(false)
 {
 }

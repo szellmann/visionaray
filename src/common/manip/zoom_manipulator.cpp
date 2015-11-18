@@ -23,6 +23,7 @@ zoom_manipulator::zoom_manipulator(
     , buttons_(buttons)
     , modifiers_(modifiers)
     , dragging_(false)
+    , down_modifiers_(keyboard::key_modifiers::NoKey)
 {
 }
 

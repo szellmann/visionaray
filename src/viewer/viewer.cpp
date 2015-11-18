@@ -106,6 +106,7 @@ struct renderer : viewer_type
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
         , host_sched(get_num_processors())
+        , mouse_pos(0)
     {
         using namespace support;
 
