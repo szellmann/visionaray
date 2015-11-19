@@ -113,6 +113,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/simd/simd.h
     ${HEADER_DIR}/math/simd/sse.h
     ${HEADER_DIR}/math/simd/trans.h
+    ${HEADER_DIR}/math/simd/type_traits.h
     ${HEADER_DIR}/math/aabb.h
     ${HEADER_DIR}/math/axis.h
     ${HEADER_DIR}/math/config.h
