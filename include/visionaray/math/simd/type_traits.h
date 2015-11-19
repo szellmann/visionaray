@@ -26,6 +26,10 @@ namespace simd
 //      get a compatible mask type for a SIMD vector type
 //      default: type := bool
 //
+//  - is_simd_vector
+//      check if T is a SIMD vector type
+//      default: type := false
+//
 //  - element_type:
 //      get the elementary type of a SIMD vector component
 //      default: T <= T
@@ -135,6 +139,63 @@ template <>
 struct mask_type<simd::int8>
 {
     using type = simd::mask8;
+};
+
+#endif
+
+
+//-------------------------------------------------------------------------------------------------
+// Check if a given type T is a SIMD vector type
+//
+
+// general ------------------------------------------------
+
+template <typename T>
+struct is_simd_vector
+{
+    enum { value = false };
+};
+
+// SSE ----------------------------------------------------
+
+template <>
+struct is_simd_vector<simd::float4>
+{
+    enum { value = true };
+};
+
+template <>
+struct is_simd_vector<simd::int4>
+{
+    enum { value = true };
+};
+
+template <>
+struct is_simd_vector<simd::mask4>
+{
+    enum { value = true };
+};
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// AVX ----------------------------------------------------
+
+template <>
+struct is_simd_vector<simd::float8>
+{
+    enum { value = true };
+};
+
+template <>
+struct is_simd_vector<simd::int8>
+{
+    enum { value = true };
+};
+
+template <>
+struct is_simd_vector<simd::mask8>
+{
+    enum { value = true };
 };
 
 #endif
