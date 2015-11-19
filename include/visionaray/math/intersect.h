@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_MATH_INTERSECT_H
-#define VSNRAY_MATH_INTERSECT_H
+#define VSNRAY_MATH_INTERSECT_H 1
 
 #include "simd/avx.h"
 #include "simd/sse.h"
@@ -32,7 +34,12 @@ struct hit_record<basic_ray<T>, basic_plane<3, T>>
 
     typedef T value_type;
 
-    MATH_FUNC hit_record() : hit(false) {}
+    MATH_FUNC hit_record()
+        : hit(false)
+        , t(numeric_limits<float>::max())
+        , pos(T(0.0))
+    {
+    }
 
     bool                    hit;
     value_type              t;
@@ -76,7 +83,12 @@ struct hit_record<basic_ray<T>, basic_aabb<U>>
 
     typedef T value_type;
 
-    MATH_FUNC hit_record() : hit(false) {}
+    MATH_FUNC hit_record()
+        : hit(false)
+        , tnear(numeric_limits<float>::max())
+        , tfar(-numeric_limits<float>::max())
+    {
+    }
 
     bool            hit;
     value_type      tnear;
@@ -87,11 +99,18 @@ struct hit_record<basic_ray<T>, basic_aabb<U>>
 template <typename U>
 struct hit_record<basic_ray<simd::float4>, basic_aabb<U>>
 {
+    using value_type = simd::float4;
+
+    hit_record()
+        : hit(false)
+        , tnear(numeric_limits<float>::max())
+        , tfar(-numeric_limits<float>::max())
+    {
+    }
 
     simd::mask4     hit;
     simd::float4    tnear;
     simd::float4    tfar;
-
 };
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -99,6 +118,15 @@ struct hit_record<basic_ray<simd::float4>, basic_aabb<U>>
 template <typename U>
 struct hit_record<basic_ray<simd::float8>, basic_aabb<U>>
 {
+    using value_type = simd::float8;
+
+    hit_record()
+        : hit(false)
+        , tnear(numeric_limits<float>::max())
+        , tfar(-numeric_limits<float>::max())
+    {
+    }
+
     simd::mask8     hit;
     simd::float8    tnear;
     simd::float8    tfar;

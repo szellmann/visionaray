@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_RESULT_RECORD_H
-#define VSNRAY_RESULT_RECORD_H
+#define VSNRAY_RESULT_RECORD_H 1
 
 #include "math/math.h"
 
@@ -26,7 +26,15 @@ public:
 
 public:
 
-    bool        hit = false;
+    VSNRAY_FUNC result_record()
+        : hit(false)
+        , color(0.0)
+        , depth(0.0)
+        , isect_pos(0.0)
+    {
+    }
+
+    bool        hit;
     color_type  color;
     scalar_type depth;
     vec_type    isect_pos;
@@ -44,7 +52,15 @@ public:
 
 public:
 
-    simd::mask4 hit = false;
+    result_record()
+        : hit(false)
+        , color(0.0)
+        , depth(0.0)
+        , isect_pos(0.0)
+    {
+    }
+
+    simd::mask4 hit;
     color_type  color;
     scalar_type depth;
     vec_type    isect_pos;
@@ -64,7 +80,15 @@ public:
 
 public:
 
-    simd::mask8 hit = false;
+    result_record()
+        : hit(false)
+        , color(0.0)
+        , depth(0.0)
+        , isect_pos(0.0)
+    {
+    }
+
+    simd::mask8 hit;
     color_type  color;
     scalar_type depth;
     vec_type    isect_pos;
