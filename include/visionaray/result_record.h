@@ -21,6 +21,7 @@ class result_record
 public:
 
     using scalar_type = T;
+    using mask_type = typename simd::mask_type<T>::type;
     using vec_type    = vector<3, T>;
     using color_type  = vector<4, T>;
 
@@ -34,68 +35,12 @@ public:
     {
     }
 
-    bool        hit;
+    mask_type   hit;
     color_type  color;
     scalar_type depth;
     vec_type    isect_pos;
 
 };
-
-template <>
-class result_record<simd::float4>
-{
-public:
-
-    using scalar_type = simd::float4;
-    using vec_type    = vector<3, simd::float4>;
-    using color_type  = vector<4, simd::float4>;
-
-public:
-
-    result_record()
-        : hit(false)
-        , color(0.0)
-        , depth(0.0)
-        , isect_pos(0.0)
-    {
-    }
-
-    simd::mask4 hit;
-    color_type  color;
-    scalar_type depth;
-    vec_type    isect_pos;
-
-};
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-template <>
-class result_record<simd::float8>
-{
-public:
-
-    using scalar_type = simd::float4;
-    using vec_type    = vector<3, simd::float8>;
-    using color_type  = vector<4, simd::float8>;
-
-public:
-
-    result_record()
-        : hit(false)
-        , color(0.0)
-        , depth(0.0)
-        , isect_pos(0.0)
-    {
-    }
-
-    simd::mask8 hit;
-    color_type  color;
-    scalar_type depth;
-    vec_type    isect_pos;
-
-};
-
-#endif
 
 } // visionaray
 

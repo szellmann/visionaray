@@ -80,8 +80,8 @@ inline hit_record<basic_ray<T>, basic_plane<3, T>> intersect(
 template <typename T, typename U>
 struct hit_record<basic_ray<T>, basic_aabb<U>>
 {
-
-    typedef T value_type;
+    using value_type = T;
+    using mask_type = typename simd::mask_type<T>::type;
 
     MATH_FUNC hit_record()
         : hit(false)
@@ -90,49 +90,11 @@ struct hit_record<basic_ray<T>, basic_aabb<U>>
     {
     }
 
-    bool            hit;
-    value_type      tnear;
-    value_type      tfar;
+    mask_type   hit;
+    value_type  tnear;
+    value_type  tfar;
 
 };
-
-template <typename U>
-struct hit_record<basic_ray<simd::float4>, basic_aabb<U>>
-{
-    using value_type = simd::float4;
-
-    hit_record()
-        : hit(false)
-        , tnear(numeric_limits<float>::max())
-        , tfar(-numeric_limits<float>::max())
-    {
-    }
-
-    simd::mask4     hit;
-    simd::float4    tnear;
-    simd::float4    tfar;
-};
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-template <typename U>
-struct hit_record<basic_ray<simd::float8>, basic_aabb<U>>
-{
-    using value_type = simd::float8;
-
-    hit_record()
-        : hit(false)
-        , tnear(numeric_limits<float>::max())
-        , tfar(-numeric_limits<float>::max())
-    {
-    }
-
-    simd::mask8     hit;
-    simd::float8    tnear;
-    simd::float8    tfar;
-};
-
-#endif
 
 template <typename T, typename U>
 MATH_FUNC
