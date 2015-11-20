@@ -9,8 +9,11 @@
 #include "compiler.h"
 
 
-/*! Align data on X-byte boundaries
- */
+//-------------------------------------------------------------------------------------------------
+// VSNRAY_ALIGN(X)
+// Align data on X-byte boundaries
+//
+
 #if defined(_MSC_VER)
 #define VSNRAY_ALIGN(X) __declspec(align(X))
 #elif defined(__CUDACC__)
@@ -20,8 +23,11 @@
 #endif
 
 
-/*! Force function inlining
- */
+//-------------------------------------------------------------------------------------------------
+// VSNRAY_FORCE_INLINE
+// Force function inlining
+//
+
 #if VSNRAY_CXX_INTEL
 #define VSNRAY_FORCE_INLINE __forceinline
 #elif VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
@@ -33,8 +39,11 @@
 #endif
 
 
-/*! mark CPU and GPU functions
- */
+//-------------------------------------------------------------------------------------------------
+// VSNRAY_FUNC|VSNRAY_CPU_FUNC|VSNRAY_GPU_FUNC
+// Mark CPU and GPU functions
+//
+
 #ifdef __CUDACC__
 #define VSNRAY_FUNC __device__ __host__
 #define VSNRAY_GPU_FUNC __device__
@@ -46,8 +55,11 @@
 #endif // __CUDACC__
 
 
-/*! constexpr macros
- */
+//-------------------------------------------------------------------------------------------------
+// VSNRAY_CONSTEXPR|VSNRAY_DECL_CONSTEXPR
+// Annotate expressions with C++11 constexpr if supported by the compiler
+//
+
 #ifdef VSNRAY_CXX_HAS_CONSTEXPR
 #define VSNRAY_CONSTEXPR constexpr
 #define VSNRAY_DECL_CONSTEXPR constexpr
@@ -57,20 +69,28 @@
 #endif
 
 
-/*! mark functions that are not expected to throw an exception
- */
+//-------------------------------------------------------------------------------------------------
+// VSNRAY_NOEXCEPT
+// Mark functions that are not expected to throw an exception (TODO: support C++-11 noexcept)
+//
+
 #define VSNRAY_NOEXCEPT throw()
 
 
-/*! Place in private section of class to disallow copying and assignment
- */
+//-------------------------------------------------------------------------------------------------
+// VSNRAY_NOT_COPYABLE
+// Place in private section of class to disallow copying and assignment
+//
+
 #define VSNRAY_NOT_COPYABLE(T)                                      \
   T(T const& rhs);                                                  \
   T& operator=(T const& rhs);
 
 
-/*! mark variables thread-local
- */
+//-------------------------------------------------------------------------------------------------
+// VSNRAY_THREAD_LOCAL
+// Mark variables thread-local
+//
 
 #if VSNRAY_CXX_MSVC
 #define VSNRAY_THREAD_LOCAL __declspec(thread)
@@ -80,8 +100,12 @@
 #define VSNRAY_THREAD_LOCAL
 #endif
 
-/*! Verbose way to say that a parameter is not used intentionally
- */
+
+//-------------------------------------------------------------------------------------------------
+// VSNRAY_UNUSED(...)
+// Verbose way to say that a parameter is not used intentionally
+//
+
 template <typename ...Args>
 VSNRAY_FUNC
 inline void VSNRAY_UNUSED(Args&&...)
@@ -89,8 +113,11 @@ inline void VSNRAY_UNUSED(Args&&...)
 }
 
 
-/*! Mark code section unreachable
- */
+//-------------------------------------------------------------------------------------------------
+// VSNRAY_UNREACHABLE
+// Mark code section unreachable
+//
+
 #if VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
 #define VSNRAY_UNREACHABLE() __builtin_unreachable()
 #elif VSNRAY_CXX_MSVC
