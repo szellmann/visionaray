@@ -18,9 +18,9 @@ namespace simd
 // Traits have default implementations that are compatible with elementary C++ types
 //
 //
-//  - min_align:
-//      get the minimum alignment necessary for data used with SIMD vector type
-//      default: value := 16
+//  - alignment_of:
+//      get the required alignment for the SIMD vector type
+//      default: value := alignof(T)
 //
 //  - float_type:
 //      get a compatible float type for a SIMD vector type
@@ -51,33 +51,33 @@ namespace simd
 
 
 //-------------------------------------------------------------------------------------------------
-// Minimum alignment, use when allocating data used with SIMD vector types
+// Required alignment, use when allocating data used with SIMD vector types
 //
 
 // general ------------------------------------------------
 
 template <typename T>
-struct min_align
+struct alignment_of
 {
-    enum { value = 16 };
+    enum { value = alignof(T) };
 };
 
 // SSE ----------------------------------------------------
 
 template <>
-struct min_align<simd::float4>
+struct alignment_of<simd::float4>
 {
     enum { value = 16 };
 };
 
 template <>
-struct min_align<simd::int4>
+struct alignment_of<simd::int4>
 {
     enum { value = 16 };
 };
 
 template <>
-struct min_align<simd::mask4>
+struct alignment_of<simd::mask4>
 {
     enum { value = 16 };
 };
@@ -87,19 +87,19 @@ struct min_align<simd::mask4>
 // AVX ----------------------------------------------------
 
 template <>
-struct min_align<simd::float8>
+struct alignment_of<simd::float8>
 {
     enum { value = 32 };
 };
 
 template <>
-struct min_align<simd::int8>
+struct alignment_of<simd::int8>
 {
     enum { value = 32 };
 };
 
 template <>
-struct min_align<simd::mask8>
+struct alignment_of<simd::mask8>
 {
     enum { value = 32 };
 };
