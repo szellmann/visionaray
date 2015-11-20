@@ -46,6 +46,17 @@
 #endif // __CUDACC__
 
 
+/*! constexpr macros
+ */
+#ifdef VSNRAY_CXX_HAS_CONSTEXPR
+#define VSNRAY_CONSTEXPR constexpr
+#define VSNRAY_DECL_CONSTEXPR constexpr
+#else
+#define VSNRAY_CONSTEXPR const
+#define VSNRAY_DECL_CONSTEXPR
+#endif
+
+
 /*! mark functions that are not expected to throw an exception
  */
 #define VSNRAY_NOEXCEPT throw()
