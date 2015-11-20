@@ -127,19 +127,19 @@ struct aligned_array;
 template <>
 struct aligned_array<simd::float4>
 {
-    using type alignas(16) = float[4];
+    using type VSNRAY_ALIGN(16) = float[4];
 };
 
 template <>
 struct aligned_array<simd::int4>
 {
-    using type alignas(16) = int[4];
+    using type VSNRAY_ALIGN(16) = int[4];
 };
 
 template <>
 struct aligned_array<simd::mask4>
 {
-    using type alignas(16) = int[4];
+    using type VSNRAY_ALIGN(16) = int[4];
 };
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -149,19 +149,19 @@ struct aligned_array<simd::mask4>
 template <>
 struct aligned_array<simd::float8>
 {
-    using type alignas(32) = float[8];
+    using type VSNRAY_ALIGN(32) = float[8];
 };
 
 template <>
 struct aligned_array<simd::int8>
 {
-    using type alignas(32) = int[8];
+    using type VSNRAY_ALIGN(32) = int[8];
 };
 
 template <>
 struct aligned_array<simd::mask8>
 {
-    using type alignas(32) = int[8];
+    using type VSNRAY_ALIGN(32) = int[8];
 };
 
 #endif
