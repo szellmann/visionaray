@@ -2,11 +2,13 @@
 // See the LICENSE file for details.
 
 #include <array>
+#include <type_traits>
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 #include "../simd/avx.h"
 #endif
 #include "../simd/sse.h"
+#include "../simd/type_traits.h"
 
 namespace MATH_NAMESPACE
 {
@@ -382,7 +384,7 @@ namespace simd
 // SIMD conversions
 //
 
-// SSE
+// pack ---------------------------------------------------
 
 inline vector<3, float4> pack(
         vector<3, float> const& v1,
@@ -391,36 +393,14 @@ inline vector<3, float4> pack(
         vector<3, float> const& v4
         )
 {
-    return vector<3, float4>
-    (
+    return vector<3, float4>(
         float4(v1.x, v2.x, v3.x, v4.x),
         float4(v1.y, v2.y, v3.y, v4.y),
         float4(v1.z, v2.z, v3.z, v4.z)
-    );
-}
-
-inline std::array<vector<3, float>, 4> unpack(vector<3, float4> const& v)
-{
-    VSNRAY_ALIGN(16) float x[4];
-    VSNRAY_ALIGN(16) float y[4];
-    VSNRAY_ALIGN(16) float z[4];
-
-    store(x, v.x);
-    store(y, v.y);
-    store(z, v.z);
-
-    return std::array<vector<3, float>, 4>
-    {{
-        vector<3, float>(x[0], y[0], z[0]),
-        vector<3, float>(x[1], y[1], z[1]),
-        vector<3, float>(x[2], y[2], z[2]),
-        vector<3, float>(x[3], y[3], z[3])
-    }};
+        );
 }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-// AVX
 
 inline vector<3, float8> pack(
         vector<3, float> const& v1,
@@ -433,38 +413,46 @@ inline vector<3, float8> pack(
         vector<3, float> const& v8
         )
 {
-    return vector<3, float8>
-    (
+    return vector<3, float8>(
         float8(v1.x, v2.x, v3.x, v4.x, v5.x, v6.x, v7.x, v8.x),
         float8(v1.y, v2.y, v3.y, v4.y, v5.y, v6.y, v7.y, v8.y),
         float8(v1.z, v2.z, v3.z, v4.z, v5.z, v6.z, v7.z, v8.z)
-    );
+        );
 }
 
-inline std::array<vector<3, float>, 8> unpack(vector<3, float8> const& v)
+#endif
+
+// unpack -------------------------------------------------
+
+template <
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline std::array<vector<3, float>, num_elements<FloatT>::value> unpack(
+        vector<3, FloatT> const& v
+        )
 {
-    VSNRAY_ALIGN(32) float x[8];
-    VSNRAY_ALIGN(32) float y[8];
-    VSNRAY_ALIGN(32) float z[8];
+    using float_array = typename aligned_array<FloatT>::type;
+
+    float_array x;
+    float_array y;
+    float_array z;
 
     store(x, v.x);
     store(y, v.y);
     store(z, v.z);
 
-    return std::array<vector<3, float>, 8>
-    {{
-        vector<3, float>(x[0], y[0], z[0]),
-        vector<3, float>(x[1], y[1], z[1]),
-        vector<3, float>(x[2], y[2], z[2]),
-        vector<3, float>(x[3], y[3], z[3]),
-        vector<3, float>(x[4], y[4], z[4]),
-        vector<3, float>(x[5], y[5], z[5]),
-        vector<3, float>(x[6], y[6], z[6]),
-        vector<3, float>(x[7], y[7], z[7])
-    }};
-}
+    std::array<vector<3, float>, num_elements<FloatT>::value> result;
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+    for (int i = 0; i < num_elements<FloatT>::value; ++i)
+    {
+        result[i].x = x[i];
+        result[i].y = y[i];
+        result[i].z = z[i];
+    }
+
+    return result;
+}
 
 } // simd
 

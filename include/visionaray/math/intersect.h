@@ -6,6 +6,8 @@
 #ifndef VSNRAY_MATH_INTERSECT_H
 #define VSNRAY_MATH_INTERSECT_H 1
 
+#include <type_traits>
+
 #include "simd/avx.h"
 #include "simd/sse.h"
 
@@ -392,33 +394,41 @@ void update_if(HR& dst, HR const& src, Cond const& cond)
 namespace simd
 {
 
-// SSE general primitive
+// general primitive --------------------------------------
 
-MATH_CPU_FUNC
-inline std::array<hit_record<ray, primitive<unsigned>>, 4> unpack(hit_record<ray4, primitive<unsigned>> const& hr)
+template <
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> unpack(
+        hit_record<basic_ray<FloatT>, primitive<unsigned>> const& hr
+        )
 {
-    VSNRAY_ALIGN(16) unsigned hit[4];
+    using float_array = typename aligned_array<FloatT>::type;
+    using int_array = typename aligned_array<typename int_type<FloatT>::type>::type;
+
+    int_array hit;
     store(hit, hr.hit.i);
 
-    VSNRAY_ALIGN(16) unsigned prim_id[4];
+    int_array prim_id;
     store(prim_id, hr.prim_id);
 
-    VSNRAY_ALIGN(16) unsigned geom_id[4];
+    int_array geom_id;
     store(geom_id, hr.geom_id);
 
-    VSNRAY_ALIGN(16) float t[4];
+    float_array t;
     store(t, hr.t);
 
     auto isect_pos = unpack(hr.isect_pos);
 
-    VSNRAY_ALIGN(16) float u[4];
+    float_array u;
     store(u, hr.u);
 
-    VSNRAY_ALIGN(16) float v[4];
+    float_array v;
     store(v, hr.v);
 
-    std::array<hit_record<ray, primitive<unsigned>>, 4> result;
-    for (size_t i = 0; i < 4; ++i)
+    std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
+    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i].hit       = hit[i] != 0;
         result[i].prim_id   = prim_id[i];
@@ -429,48 +439,6 @@ inline std::array<hit_record<ray, primitive<unsigned>>, 4> unpack(hit_record<ray
     }
     return result;
 }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-// AVX general primitive
-
-MATH_CPU_FUNC
-inline std::array<hit_record<ray, primitive<unsigned>>, 8> unpack(hit_record<ray8, primitive<unsigned>> const& hr)
-{
-    VSNRAY_ALIGN(32) unsigned hit[8];
-    store(hit, hr.hit.i);
-
-    VSNRAY_ALIGN(32) unsigned prim_id[8];
-    store(prim_id, hr.prim_id);
-
-    VSNRAY_ALIGN(32) unsigned geom_id[8];
-    store(geom_id, hr.geom_id);
-
-    VSNRAY_ALIGN(32) float t[8];
-    store(t, hr.t);
-
-    auto isect_pos = unpack(hr.isect_pos);
-
-    VSNRAY_ALIGN(32) float u[8];
-    store(u, hr.u);
-
-    VSNRAY_ALIGN(32) float v[8];
-    store(v, hr.v);
-
-    std::array<hit_record<ray, primitive<unsigned>>, 8> result;
-    for (size_t i = 0; i < 8; ++i)
-    {
-        result[i].hit       = hit[i] != 0;
-        result[i].prim_id   = prim_id[i];
-        result[i].geom_id   = geom_id[i];
-        result[i].isect_pos = isect_pos[i];
-        result[i].u         = u[i];
-        result[i].v         = v[i];
-    }
-    return result;
-}
-
-#endif
 
 } // simd
 

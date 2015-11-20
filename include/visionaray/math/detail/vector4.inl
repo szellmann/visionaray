@@ -2,11 +2,13 @@
 // See the LICENSE file for details.
 
 #include <array>
+#include <type_traits>
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 #include "../simd/avx.h"
 #endif
 #include "../simd/sse.h"
+#include "../simd/type_traits.h"
 
 namespace MATH_NAMESPACE
 {
@@ -379,7 +381,7 @@ namespace simd
 // SIMD conversions
 //
 
-// SSE
+// pack ---------------------------------------------------
 
 inline vector<4, float4> pack(
         vector<4, float> const& v1,
@@ -396,26 +398,64 @@ inline vector<4, float4> pack(
             );
 }
 
-inline std::array<vector<4, float>, 4> unpack(vector<4, float4> const& v)
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+inline vector<4, float8> pack(
+        vector<4, float> const& v1,
+        vector<4, float> const& v2,
+        vector<4, float> const& v3,
+        vector<4, float> const& v4,
+        vector<4, float> const& v5,
+        vector<4, float> const& v6,
+        vector<4, float> const& v7,
+        vector<4, float> const& v8
+        )
 {
-    VSNRAY_ALIGN(16) float x[4];
-    VSNRAY_ALIGN(16) float y[4];
-    VSNRAY_ALIGN(16) float z[4];
-    VSNRAY_ALIGN(16) float w[4];
+    return vector<4, float8>(
+            float8(v1.x, v2.x, v3.x, v4.x, v5.x, v6.x, v7.x, v8.x),
+            float8(v1.y, v2.y, v3.y, v4.y, v5.y, v6.y, v7.y, v8.y),
+            float8(v1.z, v2.z, v3.z, v4.z, v5.z, v6.z, v7.z, v8.z),
+            float8(v1.w, v2.w, v3.w, v4.w, v5.w, v6.w, v7.w, v8.w)
+            );
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// unpack -------------------------------------------------
+
+template <
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline std::array<vector<4, float>, num_elements<FloatT>::value> unpack(
+        vector<4, FloatT> const& v
+        )
+{
+    using float_array = typename aligned_array<FloatT>::type;
+
+    float_array x;
+    float_array y;
+    float_array z;
+    float_array w;
 
     store(x, v.x);
     store(y, v.y);
     store(z, v.z);
     store(w, v.w);
 
-    return std::array<vector<4, float>, 4>
-    {{
-        vector<4, float>(x[0], y[0], z[0], w[0]),
-        vector<4, float>(x[1], y[1], z[1], w[1]),
-        vector<4, float>(x[2], y[2], z[2], w[2]),
-        vector<4, float>(x[3], y[3], z[3], w[3])
-    }};
+    std::array<vector<4, float>, num_elements<FloatT>::value> result;
+
+    for (int i = 0; i < num_elements<FloatT>::value; ++i)
+    {
+        result[i].x = x[i];
+        result[i].y = y[i];
+        result[i].z = z[i];
+        result[i].w = w[i];
+    }
+
+    return result;
 }
+
 
 // Transpose to get from SoA to AoS (and vice versa)
 // Similar to mat4 transpose
@@ -437,57 +477,7 @@ inline vector<4, float4> transpose(vector<4, float4> const& v)
 
 }
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-// AVX
-
-inline vector<4, float8> pack(
-        vector<4, float> const& v1,
-        vector<4, float> const& v2,
-        vector<4, float> const& v3,
-        vector<4, float> const& v4,
-        vector<4, float> const& v5,
-        vector<4, float> const& v6,
-        vector<4, float> const& v7,
-        vector<4, float> const& v8
-        )
-{
-    return vector<4, float8>(
-            float8(v1.x, v2.x, v3.x, v4.x, v5.x, v6.x, v7.x, v8.x),
-            float8(v1.y, v2.y, v3.y, v4.y, v5.y, v6.y, v7.y, v8.y),
-            float8(v1.z, v2.z, v3.z, v4.z, v5.z, v6.z, v7.z, v8.z),
-            float8(v1.w, v2.w, v3.w, v4.w, v5.w, v6.w, v7.w, v8.w)
-            );
-}
-
-inline std::array<vector<4, float>, 8> unpack(vector<4, float8> const& v)
-{
-    VSNRAY_ALIGN(32) float x[8];
-    VSNRAY_ALIGN(32) float y[8];
-    VSNRAY_ALIGN(32) float z[8];
-    VSNRAY_ALIGN(32) float w[8];
-
-    store(x, v.x);
-    store(y, v.y);
-    store(z, v.z);
-    store(w, v.w);
-
-    return std::array<vector<4, float>, 8>
-    {{
-        vector<4, float>(x[0], y[0], z[0], w[0]),
-        vector<4, float>(x[1], y[1], z[1], w[1]),
-        vector<4, float>(x[2], y[2], z[2], w[2]),
-        vector<4, float>(x[3], y[3], z[3], w[3]),
-        vector<4, float>(x[4], y[4], z[4], w[4]),
-        vector<4, float>(x[5], y[5], z[5], w[5]),
-        vector<4, float>(x[6], y[6], z[6], w[6]),
-        vector<4, float>(x[7], y[7], z[7], w[7])
-    }};
-}
-
-// TODO: transpoose?
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+// TODO: transpose for AVX?
 
 } // simd
 

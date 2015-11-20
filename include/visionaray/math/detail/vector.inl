@@ -3,11 +3,13 @@
 
 #include <algorithm>
 #include <array>
+#include <type_traits>
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 #include "../simd/avx.h"
 #endif
 #include "../simd/sse.h"
+#include "../simd/type_traits.h"
 
 namespace MATH_NAMESPACE
 {
@@ -898,7 +900,7 @@ namespace simd
 // SIMD conversions
 //
 
-// SSE
+// pack ---------------------------------------------------
 
 template <size_t Dim>
 inline vector<Dim, float4> pack(
@@ -918,28 +920,7 @@ inline vector<Dim, float4> pack(
     return result;
 }
 
-template <size_t Dim>
-inline std::array<vector<Dim, float>, 4> unpack(vector<Dim, float4> const& v)
-{
-    std::array<vector<Dim, float>, 4> result;
-
-    for (size_t d = 0; d < Dim; ++d)
-    {
-        VSNRAY_ALIGN(16) float data[4];
-        store(data, v[d]);
-
-        result[0][d] = data[0];
-        result[1][d] = data[1];
-        result[2][d] = data[2];
-        result[3][d] = data[3];
-    }
-
-    return result;
-}
-
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-// AVX
 
 template <size_t Dim>
 inline vector<Dim, float8> pack(
@@ -972,30 +953,36 @@ inline vector<Dim, float8> pack(
     return result;
 }
 
-template <size_t Dim>
-inline std::array<vector<Dim, float>, 8> unpack(vector<Dim, float8> const& v)
+#endif
+
+// unpack -------------------------------------------------
+
+template <
+    size_t Dim,
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline std::array<vector<Dim, float>, num_elements<FloatT>::value> unpack(
+        vector<Dim, FloatT> const& v
+        )
 {
-    std::array<vector<Dim, float>, 8> result;
+    using float_array = typename aligned_array<FloatT>::type;
+
+    std::array<vector<Dim, float>, num_elements<FloatT>::value> result;
 
     for (size_t d = 0; d < Dim; ++d)
     {
-        VSNRAY_ALIGN(32) float data[8];
+        float_array data;
         store(data, v[d]);
 
-        result[0][d] = data[0];
-        result[1][d] = data[1];
-        result[2][d] = data[2];
-        result[3][d] = data[3];
-        result[4][d] = data[4];
-        result[5][d] = data[5];
-        result[6][d] = data[6];
-        result[7][d] = data[7];
+        for (int i = 0; i < num_elements<FloatT>::value; ++i)
+        {
+            result[i][d] = data[i];
+        }
     }
 
     return result;
 }
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 } // simd
 

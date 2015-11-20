@@ -4,9 +4,10 @@
 #pragma once
 
 #ifndef VSNRAY_SHADE_RECORD_H
-#define VSNRAY_SHADE_RECORD_H
+#define VSNRAY_SHADE_RECORD_H 1
 
 #include <array>
+#include <type_traits>
 
 #include "detail/tags.h"
 #include "math/math.h"
@@ -17,8 +18,10 @@ namespace visionaray
 template <typename L, typename T, typename ...Args>
 struct shade_record_base
 {
-    typedef T scalar_type;
+    using scalar_type = T;
+    using mask_type = typename simd::mask_type<T>::type;
 
+    mask_type active;
     vector<3, T> isect_pos;
     vector<3, T> normal;
     vector<3, T> view_dir;
@@ -29,55 +32,48 @@ struct shade_record_base
 template <typename L, typename T, typename ...Args>
 struct shade_record : public shade_record_base<L, T, Args...>
 {
-    bool active;
 };
 
 template <typename L, typename C, typename T, typename ...Args>
 struct shade_record<L, C, T, Args...> : public shade_record_base<L, T, Args...>
 {
     C tex_color;
-    bool active;
-};
-
-template <typename L, typename ...Args>
-struct shade_record<L, simd::float4, Args...> : public shade_record_base<L, simd::float4, Args...>
-{
-    simd::mask4 active;
-};
-
-template <typename L, typename C, typename ...Args>
-struct shade_record<L, C, simd::float4, Args...> : public shade_record_base<L, simd::float4, Args...>
-{
-    C tex_color;
-    simd::mask4 active;
 };
 
 namespace simd
 {
 
 //-------------------------------------------------------------------------------------------------
-// Unpack SSE shade record
+// Unpack SIMD shade record
 //
 
-template <typename L>
-std::array<shade_record<L, float>, 4> unpack(shade_record<L, float4> const& sr)
+template <
+    typename L,
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline std::array<shade_record<L, float>, num_elements<FloatT>::value> unpack(
+        shade_record<L, FloatT> const& sr
+        )
 {
-    auto isect_pos4 = unpack(sr.isect_pos);
-    auto normal4    = unpack(sr.normal);
-    auto view_dir4  = unpack(sr.view_dir);
-    auto light_dir4 = unpack(sr.light_dir);
+    using int_array = typename aligned_array<typename int_type<FloatT>::type>::type;
 
-    VSNRAY_ALIGN(16) int active[4];
+    auto isect_pos  = unpack(sr.isect_pos);
+    auto normal     = unpack(sr.normal);
+    auto view_dir   = unpack(sr.view_dir);
+    auto light_dir  = unpack(sr.light_dir);
+
+    int_array active;
     store(active, sr.active.i);
 
-    std::array<shade_record<L, float>, 4> result;
+    std::array<shade_record<L, float>, num_elements<FloatT>::value> result;
 
-    for (unsigned i = 0; i < 4; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
-        result[i].isect_pos = isect_pos4[i];
-        result[i].normal    = normal4[i];
-        result[i].view_dir  = view_dir4[i];
-        result[i].light_dir = light_dir4[i];
+        result[i].isect_pos = isect_pos[i];
+        result[i].normal    = normal[i];
+        result[i].view_dir  = view_dir[i];
+        result[i].light_dir = light_dir[i];
         result[i].light     = sr.light;
         result[i].active    = active[i] != 0;
     }
@@ -87,31 +83,39 @@ std::array<shade_record<L, float>, 4> unpack(shade_record<L, float4> const& sr)
 
 
 //-------------------------------------------------------------------------------------------------
-// Unpack SSE shade record with texture color
+// Unpack SIMD shade record with texture color
 //
 
-template <typename L>
-std::array<shade_record<L, vector<3, float>, float>, 4> unpack(shade_record<L, vector<3, float4>, float4> const& sr)
+template <
+    typename L,
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline std::array<shade_record<L, vector<3, float>, float>, num_elements<FloatT>::value> unpack(
+        shade_record<L, vector<3, FloatT>, FloatT> const& sr
+        )
 {
-    auto isect_pos4 = unpack(sr.isect_pos);
-    auto normal4    = unpack(sr.normal);
-    auto view_dir4  = unpack(sr.view_dir);
-    auto light_dir4 = unpack(sr.light_dir);
-    auto tex_color4 = unpack(sr.tex_color);
+    using int_array = typename aligned_array<typename int_type<FloatT>::type>::type;
 
-    VSNRAY_ALIGN(16) int active[4];
+    auto isect_pos  = unpack(sr.isect_pos);
+    auto normal     = unpack(sr.normal);
+    auto view_dir   = unpack(sr.view_dir);
+    auto light_dir  = unpack(sr.light_dir);
+    auto tex_color  = unpack(sr.tex_color);
+
+    int_array active;
     store(active, sr.active.i);
 
-    std::array<shade_record<L, vector<3, float>, float>, 4> result;
+    std::array<shade_record<L, vector<3, float>, float>, num_elements<FloatT>::value> result;
 
-    for (unsigned i = 0; i < 4; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
-        result[i].isect_pos = isect_pos4[i];
-        result[i].normal    = normal4[i];
-        result[i].view_dir  = view_dir4[i];
-        result[i].light_dir = light_dir4[i];
+        result[i].isect_pos = isect_pos[i];
+        result[i].normal    = normal[i];
+        result[i].view_dir  = view_dir[i];
+        result[i].light_dir = light_dir[i];
         result[i].light     = sr.light;
-        result[i].tex_color = tex_color4[i];
+        result[i].tex_color = tex_color[i];
         result[i].active    = active[i] != 0;
     }
 
@@ -120,50 +124,6 @@ std::array<shade_record<L, vector<3, float>, float>, 4> unpack(shade_record<L, v
 
 } // simd
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-template <typename L>
-struct shade_record<L, simd::float8> : public shade_record_base<L, simd::float8>
-{
-    simd::mask8 active;
-};
-
-namespace simd
-{
-
-//-------------------------------------------------------------------------------------------------
-// Unpack AVX shade record
-//
-
-template <typename L>
-std::array<shade_record<L, float>, 8> unpack(shade_record<L, float8> const& sr)
-{
-    auto isect_pos8 = unpack(sr.isect_pos);
-    auto normal8    = unpack(sr.normal);
-    auto view_dir8  = unpack(sr.view_dir);
-    auto light_dir8 = unpack(sr.light_dir);
-
-    VSNRAY_ALIGN(32) int active[8];
-    store(active, sr.active.i);
-
-    std::array<shade_record<L, float>, 8> result;
-
-    for (unsigned i = 0; i < 8; ++i)
-    {
-        result[i].isect_pos = isect_pos8[i];
-        result[i].normal    = normal8[i];
-        result[i].view_dir  = view_dir8[i];
-        result[i].light_dir = light_dir8[i];
-        result[i].light     = sr.light;
-        result[i].active    = active[i] != 0;
-    }
-
-    return result;
-}
-
-} // simd
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 //-------------------------------------------------------------------------------------------------
 // Shade record factory
