@@ -22,6 +22,14 @@ namespace simd
 //      get the minimum alignment necessary for data used with SIMD vector type
 //      default: value := 16
 //
+//  - float_type:
+//      get a compatible float type for a SIMD vector type
+//      default: float
+//
+//  - int_type
+//      get a compatible int type for a SIMD vector type
+//      default: int
+//
 //  - mask_type:
 //      get a compatible mask type for a SIMD vector type
 //      default: type := bool
@@ -94,6 +102,96 @@ template <>
 struct min_align<simd::mask8>
 {
     enum { value = 32 };
+};
+
+#endif
+
+
+//-------------------------------------------------------------------------------------------------
+// Deduce float type from SIMD vector types
+//
+
+// general ------------------------------------------------
+
+template <typename T>
+struct float_type
+{
+    using type = float;
+};
+
+// SSE ----------------------------------------------------
+
+template <>
+struct float_type<simd::int4>
+{
+    using type = simd::float4;
+};
+
+template <>
+struct float_type<simd::mask4>
+{
+    using type = simd::float4;
+};
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// AVX ----------------------------------------------------
+
+template <>
+struct float_type<simd::int8>
+{
+    using type = simd::float8;
+};
+
+template <>
+struct float_type<simd::mask8>
+{
+    using type = simd::float8;
+};
+
+#endif
+
+
+//-------------------------------------------------------------------------------------------------
+// Deduce int type from SIMD vector types
+//
+
+// general ------------------------------------------------
+
+template <typename T>
+struct int_type
+{
+    using type = int;
+};
+
+// SSE ----------------------------------------------------
+
+template <>
+struct int_type<simd::float4>
+{
+    using type = simd::int4;
+};
+
+template <>
+struct int_type<simd::mask4>
+{
+    using type = simd::int4;
+};
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// AVX ----------------------------------------------------
+
+template <>
+struct int_type<simd::float8>
+{
+    using type = simd::int8;
+};
+
+template <>
+struct int_type<simd::mask8>
+{
+    using type = simd::int8;
 };
 
 #endif
