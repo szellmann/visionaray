@@ -4,15 +4,17 @@
 #pragma once
 
 #ifndef VSNRAY_MATH_SIMD_TRANS_H
-#define VSNRAY_MATH_SIMD_TRANS_H
+#define VSNRAY_MATH_SIMD_TRANS_H 1
 
 //-------------------------------------------------------------------------------------------------
 // minimax polynomial approximations for transcendental functions
 // cf. David H. Eberly: GPGPU Programming for Games and Science, pp. 120
 //
 
+#include <type_traits>
 
 #include "sse.h"
+#include "type_traits.h"
 #include "../detail/math.h"
 
 
@@ -234,23 +236,19 @@ struct pow2_t<7> : public poly_t<7>
 };
 
 
-inline float4 pow2(float4 x)
+template <
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline FloatT pow2(FloatT x)
 {
-    float4 xi = floor(x);
-    float4 xf = x - xi;
-    return detail::scalbn(float4(1.0), int4(xi)) * pow2_t<7>::value(xf);
+    using IntT = typename int_type<FloatT>::type;
+
+    FloatT xi = floor(x);
+    FloatT xf = x - xi;
+    return detail::scalbn(FloatT(1.0), IntT(xi)) * pow2_t<7>::value(xf);
 }
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-inline float8 pow2(float8 x)
-{
-    float8 xi = floor(x);
-    float8 xf = x - xi;
-    return detail::scalbn(float8(1.0), int8(xi)) * pow2_t<7>::value(xf);
-}
-
-#endif
 
 //-------------------------------------------------------------------------------------------------
 // log2(1 + x), x in [0,1)
@@ -330,24 +328,8 @@ inline T log2(T x)
 
 
 //-------------------------------------------------------------------------------------------------
-// API
-//
-
-float4 exp(float4 x);
-float4 log(float4 x);
-float4 log2(float4 x);
-float4 pow(float4 x, float4 y);
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-float8 exp(float8 x);
-float8 log(float8 x);
-float8 log2(float8 x);
-float8 pow(float8 x, float8 y);
-#endif
-
-
-//-------------------------------------------------------------------------------------------------
-// impl
+// cos() / sin()
+// TODO: implement w/o context switch
 //
 
 inline float4 cos(float4 x)
@@ -366,34 +348,6 @@ inline float4 sin(float4 x)
     return float4( std::sin(tmp[0]), std::sin(tmp[1]), std::sin(tmp[2]), std::sin(tmp[3]) );
 }
 
-inline float4 exp(float4 x)
-{
-    float4 y = x * constants::log2_e<float4>();
-    return detail::pow2(y);
-}
-
-inline float4 log(float4 x)
-{
-    return log2(x) / constants::log2_e<float4>();
-}
-
-inline float4 log2(float4 x)
-{
-    int4 n = 0;
-    float4 m = detail::frexp(x, &n);
-    m *= 2.0f;
-    return float4(n - 1) + detail::log2(m - 1.0f);
-}
-
-inline float4 pow(float4 x, float4 y)
-{
-#if VSNRAY_SIMD_HAS_SVML
-    return _mm_pow_ps(x, y);
-#else
-    return exp( y * log(x) );
-#endif
-}
-
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 // TODO: consolidate stuff with float4 (template)
@@ -403,11 +357,10 @@ inline float8 cos(float8 x)
     VSNRAY_ALIGN(32) float tmp[8];
     store(tmp, x);
 
-    return float8
-    (
+    return float8(
         std::cos(tmp[0]), std::cos(tmp[1]), std::cos(tmp[2]), std::cos(tmp[3]),
         std::cos(tmp[4]), std::cos(tmp[5]), std::cos(tmp[6]), std::cos(tmp[7])
-    );
+        );
 }
 
 inline float8 sin(float8 x)
@@ -415,42 +368,73 @@ inline float8 sin(float8 x)
     VSNRAY_ALIGN(32) float tmp[8];
     store(tmp, x);
 
-    return float8
-    (
+    return float8(
         std::sin(tmp[0]), std::sin(tmp[1]), std::sin(tmp[2]), std::sin(tmp[3]),
         std::sin(tmp[4]), std::sin(tmp[5]), std::sin(tmp[6]), std::sin(tmp[7])
-    );
+        );
 }
 
-inline float8 exp(float8 x)
+#endif
+
+
+//-------------------------------------------------------------------------------------------------
+// exp() / log() / log2()
+//
+
+template <
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    > 
+inline FloatT exp(FloatT x)
 {
-    float8 y = x * constants::log2_e<float8>();
+    FloatT y = x * constants::log2_e<FloatT>();
     return detail::pow2(y);
 }
 
-inline float8 log(float8 x)
+template <
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline FloatT log(FloatT x)
 {
-    return log2(x) / constants::log2_e<float8>();
+    return log2(x) / constants::log2_e<FloatT>();
 }
 
-inline float8 log2(float8 x)
+template <
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline FloatT log2(FloatT x)
 {
-    int8 n = 0;
-    float8 m = detail::frexp(x, &n);
+    using IntT = typename int_type<FloatT>::type;
+
+    IntT n = 0;
+    FloatT m = detail::frexp(x, &n);
     m *= 2.0f;
-    return float8(n - 1) + detail::log2(m - 1.0f);
+    return FloatT(n - 1) + detail::log2(m - 1.0f);
 }
 
-inline float8 pow(float8 x, float8 y)
+
+//-------------------------------------------------------------------------------------------------
+// pow()
+//
+
+template <
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline FloatT pow(FloatT x, FloatT y)
 {
 #if VSNRAY_SIMD_HAS_SVML
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
     return _mm256_pow_ps(x, y);
+#else
+    return _mm_pow_ps(x, y);
+#endif
 #else
     return exp( y * log(x) );
 #endif
 }
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 } // simd
 } // MATH_NAMESPACE
