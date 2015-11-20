@@ -33,8 +33,8 @@ struct hit_record;
 template <typename T>
 struct hit_record<basic_ray<T>, basic_plane<3, T>>
 {
-
-    typedef T value_type;
+    using value_type = T;
+    using mask_type = typename simd::mask_type<T>::type;
 
     MATH_FUNC hit_record()
         : hit(false)
@@ -43,7 +43,7 @@ struct hit_record<basic_ray<T>, basic_plane<3, T>>
     {
     }
 
-    bool                    hit;
+    mask_type               hit;
     value_type              t;
     vector<3, value_type>   pos;
 
