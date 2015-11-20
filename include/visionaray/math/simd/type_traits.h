@@ -22,6 +22,11 @@ namespace simd
 //      get the required alignment for the SIMD vector type
 //      default: value := alignof(T)
 //
+//  - aligned_array:
+//      get an array that adheres to the alignment requirements and that can store
+//      the contents of a SIMD vector type
+//      default: n/a
+//
 //  - float_type:
 //      get a compatible float type for a SIMD vector type
 //      default: float
@@ -102,6 +107,61 @@ template <>
 struct alignment_of<simd::mask8>
 {
     enum { value = 32 };
+};
+
+#endif
+
+
+//-------------------------------------------------------------------------------------------------
+// Get an array that adheres to the alignment requirements and that can store
+// the contents of a SIMD vector type
+//
+
+// general (n/a) ------------------------------------------
+
+template <typename T>
+struct aligned_array;
+
+// SSE ----------------------------------------------------
+
+template <>
+struct aligned_array<simd::float4>
+{
+    using type alignas(16) = float[4];
+};
+
+template <>
+struct aligned_array<simd::int4>
+{
+    using type alignas(16) = int[4];
+};
+
+template <>
+struct aligned_array<simd::mask4>
+{
+    using type alignas(16) = int[4];
+};
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// AVX ----------------------------------------------------
+
+template <>
+struct aligned_array<simd::float8>
+{
+    using type alignas(32) = float[8];
+};
+
+template <>
+struct aligned_array<simd::int8>
+{
+    using type alignas(32) = int[8];
+};
+
+template <>
+struct aligned_array<simd::mask8>
+{
+    using type alignas(32) = int[8];
 };
 
 #endif
