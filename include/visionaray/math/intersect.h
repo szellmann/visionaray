@@ -138,6 +138,8 @@ template <typename T>
 struct hit_record<basic_ray<T>, primitive<unsigned>>
 {
     using value_type = T;
+    using int_type = typename simd::int_type<T>::type;
+    using mask_type = typename simd::mask_type<T>::type;
 
     MATH_FUNC hit_record()
         : hit(false)
@@ -148,9 +150,9 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
     }
 
 
-    bool hit;
-    unsigned prim_id;
-    unsigned geom_id;
+    mask_type hit;
+    int_type prim_id;
+    int_type geom_id;
 
     value_type t;
     vector<3, value_type> isect_pos;
@@ -158,61 +160,6 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
     value_type u;
     value_type v;
 };
-
-template <>
-struct hit_record<simd::ray4, primitive<unsigned>>
-{
-    using value_type = simd::float4;
-
-    MATH_CPU_FUNC hit_record()
-        : hit(false)
-        , prim_id(0)
-        , geom_id(0)
-        , t(numeric_limits<float>::max())
-    {
-    }
-
-
-    simd::mask4 hit;
-    simd::int4 prim_id;
-    simd::int4 geom_id;
-
-    value_type t;
-    vector<3, value_type> isect_pos;
-
-    value_type u;
-    value_type v;
-};
-
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-template <>
-struct hit_record<simd::ray8, primitive<unsigned>>
-{
-    using value_type = simd::float8;
-
-    MATH_CPU_FUNC hit_record()
-        : hit(false)
-        , prim_id(0)
-        , geom_id(0)
-        , t(numeric_limits<float>::max())
-    {
-    }
-
-
-    simd::mask8 hit;
-    simd::int8 prim_id;
-    simd::int8 geom_id;
-
-    value_type t;
-    vector<3, value_type> isect_pos;
-
-    value_type u;
-    value_type v;
-};
-
-#endif
 
 
 //-------------------------------------------------------------------------------------------------
