@@ -146,6 +146,8 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
         , prim_id(0)
         , geom_id(0)
         , t(numeric_limits<float>::max())
+        , u(0.0)
+        , v(0.0)
     {
     }
 

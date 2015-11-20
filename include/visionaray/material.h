@@ -487,14 +487,14 @@ private:
     VSNRAY_FUNC
     spectrum<U> sample_impl(SR const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler) const
     {
-        U pdf1;
-        U pdf2;
+        U pdf1(0.0);
+        U pdf2(0.0);
 
-        vector<3, U> refl1;
-        vector<3, U> refl2;
+        vector<3, U> refl1(0.0);
+        vector<3, U> refl2(0.0);
 
-        spectrum<U>  diff;
-        spectrum<U>  spec;
+        spectrum<U>  diff(0.0);
+        spectrum<U>  spec(0.0);
 
         auto prob_diff = mean_value( diffuse_brdf_.cd ) * diffuse_brdf_.kd;
         auto prob_spec = mean_value( specular_brdf_.cs ) * specular_brdf_.ks;
