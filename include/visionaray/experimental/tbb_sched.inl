@@ -57,8 +57,6 @@ template <typename K, typename SP>
 void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     using scalar_type   = typename R::scalar_type;
-    using color_traits  = typename SP::color_traits;
-    using matrix_type   = matrix<4, 4, scalar_type>;
 
     auto viewport = sched_params.cam.get_viewport();
 
