@@ -1171,6 +1171,7 @@ drawable::drawable()
 
 drawable::~drawable()
 {
+    impl_->outlines.destroy();
 }
 
 void drawable::update_state(
