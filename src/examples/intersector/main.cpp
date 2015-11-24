@@ -309,7 +309,6 @@ void renderer::on_display()
     using V = vector<3, S>;
 
     auto sparams = make_sched_params(
-            pixel_sampler::uniform_type{},
             cam,
             host_rt
             );

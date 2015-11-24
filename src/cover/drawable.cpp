@@ -1097,7 +1097,6 @@ void drawable::impl::call_kernel_debug(KParams const& params)
     auto& vparams = eye_params[current_eye];
 
     auto sparams = make_sched_params(
-            pixel_sampler::uniform_type(),
             vparams.view_matrix,
             vparams.proj_matrix,
             vparams.viewport,

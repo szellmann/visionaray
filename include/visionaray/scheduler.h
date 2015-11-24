@@ -22,8 +22,9 @@ class render_target;
 
 namespace pixel_sampler
 {
-struct uniform_type {};
-struct jittered_type {};
+struct base_type {};
+struct uniform_type : base_type {};
+struct jittered_type : base_type {};
 struct jittered_blend_type : jittered_type {};
 }
 
@@ -223,6 +224,17 @@ auto make_sched_params(
             rt,
             isect
             };
+}
+
+template <
+    typename First,
+    typename = typename std::enable_if<!std::is_base_of<pixel_sampler::base_type, First>::value>::type,
+    typename ...Args
+    >
+auto make_sched_params(First first, Args&&... args)
+    -> decltype(make_sched_params(pixel_sampler::uniform_type{}, first, std::forward<Args>(args)...))
+{
+    return make_sched_params(pixel_sampler::uniform_type{}, first, std::forward<Args>(args)...);
 }
 
 } // visionaray
