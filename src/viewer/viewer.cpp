@@ -193,6 +193,7 @@ struct renderer : viewer_type
 
 protected:
 
+    void on_close();
     void on_display();
     void on_key_press(visionaray::key_event const& event);
     void on_mouse_move(visionaray::mouse_event const& event);
@@ -410,6 +411,11 @@ void renderer::render_hud_ext()
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
 
+}
+
+void renderer::on_close()
+{
+    outlines.destroy();
 }
 
 void renderer::on_display()

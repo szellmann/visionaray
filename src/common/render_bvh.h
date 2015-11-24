@@ -25,13 +25,6 @@ class bvh_outline_renderer
 {
 public:
 
-    bvh_outline_renderer() = default;
-
-   ~bvh_outline_renderer()
-    {
-        glDeleteBuffers(1, &vbo_);
-    }
-
     void frame()
     {
         glBindBuffer(GL_ARRAY_BUFFER, vbo_);
@@ -42,6 +35,7 @@ public:
         glDrawArrays(GL_LINES, 0, (GLsizei)(num_vertices));
         glDisableClientState(GL_VERTEX_ARRAY);
     }
+
 
     template <typename BVH>
     void init(BVH const& b)
@@ -102,6 +96,12 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         num_vertices = vertices.size() / 3;
+    }
+
+
+    void destroy()
+    {
+        glDeleteBuffers(1, &vbo_);
     }
 
     GLuint vbo_ = 0;
