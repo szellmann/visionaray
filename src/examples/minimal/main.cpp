@@ -47,8 +47,9 @@ int main()
     // Scheduler instance, probably a class member
     // in a real-world example.
     sched_type sched;
-    auto sparams = make_sched_params<pixel_sampler::uniform_type>
+    auto sparams = make_sched_params
     (
+        pixel_sampler::uniform_type{},
         cam.get_view_matrix(),
         cam.get_proj_matrix(),
         cam.get_viewport(),

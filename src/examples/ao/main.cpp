@@ -86,7 +86,8 @@ void renderer::on_display()
     using C = vector<4, S>;
     using V = vector<3, S>;
 
-    auto sparams = make_sched_params<pixel_sampler::jittered_blend_type>(
+    auto sparams = make_sched_params(
+            pixel_sampler::jittered_blend_type{},
             cam,
             host_rt
             );

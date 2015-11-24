@@ -107,7 +107,8 @@ void renderer::on_display()
     using S = R::scalar_type;
     using C = vector<4, S>;
 
-    auto sparams = make_sched_params<pixel_sampler::uniform_type>(
+    auto sparams = make_sched_params(
+            pixel_sampler::uniform_type{},
             cam,
             host_rt
             );

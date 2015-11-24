@@ -165,14 +165,23 @@ public:
 //
 
 template <typename PxSamplerT, typename RT>
-auto make_sched_params(camera const& cam, RT& rt)
+auto make_sched_params(
+        PxSamplerT      /* */,
+        camera const&   cam,
+        RT&             rt
+        )
     -> sched_params<sched_params_base, RT, PxSamplerT>
 {
     return sched_params<sched_params_base, RT, PxSamplerT>{ cam, rt };
 }
 
 template <typename PxSamplerT, typename Intersector, typename RT>
-auto make_sched_params(camera const& cam, RT& rt, Intersector& isect)
+auto make_sched_params(
+        PxSamplerT      /* */,
+        camera const&   cam,
+        RT&             rt,
+        Intersector&    isect
+        )
     -> sched_params<sched_params_intersector_base<Intersector>, RT, PxSamplerT>
 {
     return sched_params<sched_params_intersector_base<Intersector>, RT, PxSamplerT>{
@@ -185,10 +194,11 @@ auto make_sched_params(camera const& cam, RT& rt, Intersector& isect)
 
 template <typename PxSamplerT, typename MT, typename V, typename RT>
 auto make_sched_params(
-        MT const& view_matrix,
-        MT const& proj_matrix,
-        V const& viewport,
-        RT& rt
+        PxSamplerT      /* */,
+        MT const&       view_matrix,
+        MT const&       proj_matrix,
+        V const&        viewport,
+        RT&             rt
         )
     -> sched_params<sched_params_base, MT, V, RT, PxSamplerT>
 {
@@ -197,11 +207,12 @@ auto make_sched_params(
 
 template <typename PxSamplerT, typename Intersector, typename MT, typename V, typename RT>
 auto make_sched_params(
-        MT const& view_matrix,
-        MT const& proj_matrix,
-        V const& viewport,
-        RT& rt,
-        Intersector& isect
+        PxSamplerT      /* */,
+        MT const&       view_matrix,
+        MT const&       proj_matrix,
+        V const&        viewport,
+        RT&             rt,
+        Intersector&    isect
         )
     -> sched_params<sched_params_intersector_base<Intersector>, MT, V, RT, PxSamplerT>
 {
