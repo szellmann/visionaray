@@ -41,7 +41,7 @@ public:
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         glEnableClientState(GL_VERTEX_ARRAY);
-        glDrawArrays(GL_LINES, 0, (GLsizei)(num_vertices));
+        glDrawArrays(GL_LINES, 0, (GLsizei)(num_vertices_));
         glDisableClientState(GL_VERTEX_ARRAY);
     }
 
@@ -109,7 +109,7 @@ public:
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        num_vertices = vertices.size() / 3;
+        num_vertices_ = vertices.size() / 3;
     }
 
 
@@ -123,8 +123,11 @@ public:
         glDeleteBuffers(1, &vbo_);
     }
 
+
+private:
+
     GLuint vbo_ = 0;
-    size_t num_vertices = 0;
+    size_t num_vertices_ = 0;
 
 };
 
