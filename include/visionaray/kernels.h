@@ -19,6 +19,81 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
+// Parameter structs for built-in kernels
+//
+// Use the make_kernel_params() factory function to create:
+//
+// Parameters:
+//      primitives [..), normals, materials, lights [..)
+//      num_bounces:        depth of the ray tree (applies only to recursive algorithms)
+//      scene_epsilon:      used as an offset to bias ray origins to avoid self intersections
+//      background_color:   RGBA
+//      ambient_color:      RGBA
+//
+// Default:
+//
+//  make_kernel_params(
+//      primitives_begin,
+//      primitives_end,
+//      normals,
+//      materials,
+//      lights_begin,
+//      lights_end,
+//      num_bounces,
+//      scene_epsilon,
+//      background_color,
+//      ambient_color
+//      );
+//
+//
+// w/ textures:
+//
+//  make_kernel_params(
+//      primitives_begin,
+//      primitives_end,
+//      normals,
+//      texture_coordinates,
+//      materials,
+//      textures,
+//      lights_begin,
+//      lights_end,
+//      num_bounces,
+//      scene_epsilon,
+//      background_color,
+//      ambient_color
+//      );
+//
+// w/ textures and colors:
+//
+//  make_kernel_params(
+//      primitives_begin,
+//      primitives_end,
+//      normals,
+//      texture_coordinates,
+//      materials,
+//      colors,
+//      textures,
+//      lights_begin,
+//      lights_end,
+//      num_bounces,
+//      scene_epsilon,
+//      background_color,
+//      ambient_color
+//      );
+//
+//
+// Default normal binding is "per face". If you desire differently, specify, e.g.:
+//
+// make_kernel_params(
+//      normals_per_vertex_binding{},
+//      ...
+//      );
+//
+// TODO: colors_per_face_binding, make this default!
+//
+//-------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------
 // Param structs
 //
 
@@ -199,6 +274,8 @@ struct kernel_params<
 // Factory for param structs
 //
 
+// default ------------------------------------------------
+
 template <
     typename NormalBinding,
     typename Primitives,
@@ -232,6 +309,9 @@ auto make_kernel_params(
             ambient_color
             };
 }
+
+
+// w/ textures ------------------------------------------
 
 template <
     typename NormalBinding,
@@ -272,6 +352,9 @@ auto make_kernel_params(
             ambient_color
             };
 }
+
+
+// w/ textures and colors ---------------------------------
 
 template <
     typename NormalBinding,
@@ -339,6 +422,8 @@ auto make_kernel_params(
             ambient_color
             };
 }
+
+// default w/o explicit normal binding --------------------
 
 template <
     typename First,
