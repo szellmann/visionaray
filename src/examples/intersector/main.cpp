@@ -326,7 +326,6 @@ void renderer::on_display()
 
 
     auto kparams = make_kernel_params(
-            normals_per_face_binding(),
             triangles.data(),
             triangles.data() + triangles.size(),
             normals.data(),

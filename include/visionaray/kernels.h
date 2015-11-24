@@ -8,6 +8,8 @@
 
 #include <iterator>
 #include <limits>
+#include <type_traits>
+#include <utility>
 
 #include <visionaray/math/math.h>
 #include <visionaray/scheduler.h>
@@ -336,6 +338,17 @@ auto make_kernel_params(
             bg_color,
             ambient_color
             };
+}
+
+template <
+    typename First,
+    typename = typename std::enable_if<!std::is_base_of<normals_binding, First>::value>::type,
+    typename ...Args
+    >
+auto make_kernel_params(First first, Args&&... args)
+    -> decltype(make_kernel_params(normals_per_face_binding{}, first, std::forward<Args>(args)...))
+{
+    return make_kernel_params(normals_per_face_binding{}, first, std::forward<Args>(args)...);
 }
 
 } // visionaray

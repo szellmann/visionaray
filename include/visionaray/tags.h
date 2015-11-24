@@ -20,11 +20,13 @@ struct index_bvh_tag {};
 struct conductor_tag {};
 struct dielectric_tag {};
 
-struct colors_per_face_binding {};
-struct colors_per_vertex_binding {};
+struct colors_binding {};
+struct colors_per_face_binding : colors_binding {};
+struct colors_per_vertex_binding : colors_binding {};
 
-struct normals_per_face_binding {};
-struct normals_per_vertex_binding {};
+struct normals_binding {};
+struct normals_per_face_binding : normals_binding {};
+struct normals_per_vertex_binding : normals_binding {};
 
 } // visionaray
 

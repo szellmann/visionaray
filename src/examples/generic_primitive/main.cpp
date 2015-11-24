@@ -250,7 +250,6 @@ void renderer::on_display()
     generate_frame();
 
     auto kparams = make_kernel_params(
-            normals_per_face_binding(),
             primitives.data(),
             primitives.data() + primitives.size(),
             normals.data(),
