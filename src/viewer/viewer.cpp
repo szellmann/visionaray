@@ -119,6 +119,14 @@ struct renderer : viewer_type
             cl::init(this->filename)
             ) );
 
+        add_cmdline_option( cl::makeOption<std::string&>(
+            cl::Parser<>(),
+            "camera",
+            cl::Desc("Text file with camera parameters"),
+            cl::ArgRequired,
+            cl::init(this->initial_camera)
+            ) );
+
         add_cmdline_option( cl::makeOption<algorithm&>({
                 { "simple",             Simple,         "Simple ray casting kernel" },
                 { "whitted",            Whitted,        "Whitted style ray tracing kernel" },
@@ -155,6 +163,7 @@ struct renderer : viewer_type
 
 
     std::string filename;
+    std::string initial_camera;
 
     model mod;
 
@@ -221,6 +230,10 @@ std::ostream& operator<<(std::ostream& out, camera const& cam)
     return out;
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// HUD
+//
 
 void renderer::render_hud()
 {
@@ -696,7 +709,17 @@ int main(int argc, char** argv)
     float aspect = rend.width() / static_cast<float>(rend.height());
 
     rend.cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    rend.cam.view_all( rend.mod.bbox );
+
+    // Load camera from file or set view-all
+    std::ifstream file(rend.initial_camera);
+    if (file.good())
+    {
+        file >> rend.cam;
+    }
+    else
+    {
+        rend.cam.view_all( rend.mod.bbox );
+    }
 
     rend.add_manipulator( std::make_shared<arcball_manipulator>(rend.cam, mouse::Left) );
     rend.add_manipulator( std::make_shared<pan_manipulator>(rend.cam, mouse::Middle) );
