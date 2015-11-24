@@ -205,6 +205,7 @@ template <
     typename Lights
     >
 auto make_kernel_params(
+        NormalBinding       /* */,
         Primitives const&   begin,
         Primitives const&   end,
         Normals const&      normals,
@@ -240,6 +241,7 @@ template <
     typename Lights
     >
 auto make_kernel_params(
+        NormalBinding       /* */,
         Primitives const&   begin,
         Primitives const&   end,
         Normals const&      normals,
@@ -281,6 +283,8 @@ template <
     typename Lights
     >
 auto make_kernel_params(
+        NormalBinding       /* */,
+        ColorBinding        /* */,
         Primitives const&   begin,
         Primitives const&   end,
         Normals const&      normals,

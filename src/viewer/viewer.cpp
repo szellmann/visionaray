@@ -447,7 +447,8 @@ void renderer::on_display()
 
         thrust::device_vector<light_type> device_lights = host_lights;
 
-        auto kparams = make_kernel_params<normals_per_face_binding>(
+        auto kparams = make_kernel_params(
+                normals_per_face_binding(),
                 thrust::raw_pointer_cast(device_primitives.data()),
                 thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
                 thrust::raw_pointer_cast(device_normals.data()),
@@ -470,7 +471,8 @@ void renderer::on_display()
 
         host_primitives.push_back(host_bvh.ref());
 
-        auto kparams = make_kernel_params<normals_per_face_binding>(
+        auto kparams = make_kernel_params(
+                normals_per_face_binding(),
                 host_primitives.data(),
                 host_primitives.data() + host_primitives.size(),
                 mod.normals.data(),
