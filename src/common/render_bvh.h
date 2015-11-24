@@ -21,9 +21,18 @@
 namespace visionaray
 {
 
+//-------------------------------------------------------------------------------------------------
+// OpenGL BVH outline renderer
+// Call init() and destroy() with a valid OpenGL context!
+//
+
 class bvh_outline_renderer
 {
 public:
+
+    //-------------------------------------------------------------------------
+    // Render BVH outlines
+    //
 
     void frame()
     {
@@ -36,6 +45,11 @@ public:
         glDisableClientState(GL_VERTEX_ARRAY);
     }
 
+
+    //-------------------------------------------------------------------------
+    // init()
+    // Call with a valid OpenGL context!
+    //
 
     template <typename BVH>
     void init(BVH const& b)
@@ -98,6 +112,11 @@ public:
         num_vertices = vertices.size() / 3;
     }
 
+
+    //-------------------------------------------------------------------------
+    // destroy()
+    // Call while OpenGL context is still valid!
+    //
 
     void destroy()
     {
