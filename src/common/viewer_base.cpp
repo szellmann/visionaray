@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <iostream>
+#include <ostream>
 #include <vector>
 
 #include <Support/CmdLine.h>
@@ -84,7 +86,15 @@ viewer_base::impl::impl(int width, int height, std::string window_title)
 
 void viewer_base::impl::init(int argc, char** argv)
 {
-    parse_cmd_line(argc, argv);
+    try
+    {
+        parse_cmd_line(argc, argv);
+    }
+    catch (...)
+    {
+        std::cout << cmd.help(argv[0]) << std::endl;
+        throw;
+    }
 }
 
 
