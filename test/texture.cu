@@ -333,8 +333,7 @@ TEST(TextureCU, Tex1DR8NormalizedFloatNearest)
 
         float expected = sampler.data[index] / 255.0f;
         // host
-        // TODO: Mirror not implemented yet for host textures
-//      EXPECT_FLOAT_EQ(expected, tex1D(sampler.h_texture, sampler.h_coords[i]));
+        EXPECT_FLOAT_EQ(expected, tex1D(sampler.h_texture, sampler.h_coords[i]));
         // device
         EXPECT_FLOAT_EQ(expected, sampler.h_result[i]);
     }
@@ -394,7 +393,6 @@ TEST(TextureCU, Tex1DR8NormalizedFloatLinear)
         float expected = tex1D(sampler.h_texture, sampler.h_coords[i]);
 
         // check if CPU lookup matches GPU lookup
-        // TODO: Mirror not implemented yet for host textures
-//      EXPECT_FLOAT_EQ(expected, sampler.h_result[i]);
+        EXPECT_FLOAT_EQ(expected, sampler.h_result[i]);
     }
 }
