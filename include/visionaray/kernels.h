@@ -204,7 +204,7 @@ template <
     typename Materials,
     typename Lights
     >
-auto make_params(
+auto make_kernel_params(
         Primitives const&   begin,
         Primitives const&   end,
         Normals const&      normals,
@@ -239,7 +239,7 @@ template <
     typename Textures,
     typename Lights
     >
-auto make_params(
+auto make_kernel_params(
         Primitives const&   begin,
         Primitives const&   end,
         Normals const&      normals,
@@ -280,7 +280,7 @@ template <
     typename Textures,
     typename Lights
     >
-auto make_params(
+auto make_kernel_params(
         Primitives const&   begin,
         Primitives const&   end,
         Normals const&      normals,
