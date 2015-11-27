@@ -242,13 +242,28 @@ public:
 
         // mul left instead of transposing the matrix
         // see http://forum.openscenegraph.org/viewtopic.php?t=2494
-        auto n1 = inv_trans_mat * osg::Vec4((*in.normals)[i1], 1.0);
-        auto n2 = inv_trans_mat * osg::Vec4((*in.normals)[i2], 1.0);
-        auto n3 = inv_trans_mat * osg::Vec4((*in.normals)[i3], 1.0);
+        auto osg_n1 = inv_trans_mat * osg::Vec4((*in.normals)[i1], 1.0);
+        auto osg_n2 = inv_trans_mat * osg::Vec4((*in.normals)[i2], 1.0);
+        auto osg_n3 = inv_trans_mat * osg::Vec4((*in.normals)[i3], 1.0);
 
-        out.normals->push_back( osg_cast(n1).xyz() );
-        out.normals->push_back( osg_cast(n2).xyz() );
-        out.normals->push_back( osg_cast(n3).xyz() );
+        auto n1 = osg_cast(osg_n1).xyz();
+        auto n2 = osg_cast(osg_n2).xyz();
+        auto n3 = osg_cast(osg_n3).xyz();
+
+        // assign normalize(vec3(1, 1, 1)) to zero-length normals
+        auto validate = [=](vec3 n) -> vec3
+        {
+            vec3 result = n;
+            if (length(result) < numeric_limits<float>::epsilon())
+            {
+                result = vec3(1.0f);
+            }
+            return normalize(result);
+        };
+
+        out.normals->push_back(validate(n1));
+        out.normals->push_back(validate(n2));
+        out.normals->push_back(validate(n3));
 
         assert( out.triangles->size() == out.normals->size() / 3 );
 
