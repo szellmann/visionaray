@@ -32,10 +32,10 @@ F map_tex_coord(F const& coord, I const& texsize, tex_address_mode mode)
 
     case Mirror:
         return select(
-                (convert_to_int(floor(coord)) & I(1)) == 1, // if is odd
-                F(1.0f) - (coord - floor(coord)),
-                coord - floor(coord)
-                );
+            (convert_to_int(floor(coord)) & I(1)) == 1, // if is odd
+            F(texsize - 1) / F(texsize) - (coord - floor(coord)),
+            coord - floor(coord)
+            );
 
     case Wrap:
         return coord - floor(coord);
