@@ -372,13 +372,14 @@ inline auto get_surface_any_prim_impl(
     -> typename detail::decl_surface<Normals, Materials, vector<3, float>>::type
 {
     using P = typename detail::primitive_traits<Primitive>::type;
+    using C = vector<3, float>;
 
     auto tc = get_tex_coord(tex_coords, hr, P{});
 
     auto const& tex = textures[hr.geom_id];
     auto tex_color = tex.width() > 0 && tex.height() > 0
-                   ? vector<3, float>(tex2D(tex, tc))
-                   : vector<3, float>(1.0);
+                   ? C(tex2D(tex, tc))
+                   : C(1.0);
 
     auto normal = get_normal(normals, hr, P{}, NormalBinding{});
     return detail::make_surface( normal, materials[hr.geom_id], tex_color );
@@ -410,14 +411,15 @@ inline auto get_surface_any_prim_impl(
     -> typename detail::decl_surface<Normals, Materials, vector<3, float>>::type
 {
     using P = typename detail::primitive_traits<Primitive>::type;
+    using C = vector<3, float>;
 
     auto color = get_color(colors, hr, P{}, ColorBinding{});
     auto tc = get_tex_coord(tex_coords, hr, P{});
 
     auto const& tex = textures[hr.geom_id];
     auto tex_color = tex.width() > 0 && tex.height() > 0
-                   ? vector<3, float>(tex2D(tex, tc))
-                   : vector<3, float>(1.0);
+                   ? C(tex2D(tex, tc))
+                   : C(1.0);
 
     auto normal = get_normal(normals, hr, P{}, NormalBinding{});
     return detail::make_surface( normal, materials[hr.geom_id], color * tex_color );
@@ -583,12 +585,13 @@ inline auto get_surface_any_prim_impl(
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
     using P = typename detail::primitive_traits<Primitive>::type;
+    using C = vector<3, float>;
 
     auto hr4 = unpack(hr);
 
     auto tc4 = get_tex_coord(tex_coords, hr4, typename detail::primitive_traits<Primitive>::type{});
 
-    vector<3, float> tex_color4[4];
+    C tex_color4[4];
     for (unsigned i = 0; i < 4; ++i)
     {
         if (!hr4[i].hit)
@@ -598,30 +601,30 @@ inline auto get_surface_any_prim_impl(
 
         auto const& tex = textures[hr4[i].geom_id];
         tex_color4[i] = tex.width() > 0 && tex.height() > 0
-                      ? vector<3, float>(tex2D(tex, tc4[i]))
-                      : vector<3, float>(1.0);
+                      ? C(tex2D(tex, tc4[i]))
+                      : C(1.0);
     }
 
     return simd::pack(
         detail::make_surface(
             hr4[0].hit ? get_normal(normals, hr4[0], P{}, NormalBinding{}) : N{},
             hr4[0].hit ? materials[hr4[0].geom_id]                         : M{},
-            hr4[0].hit ? tex_color4[0]                                     : vector<3, float>(1.0)
+            hr4[0].hit ? tex_color4[0]                                     : C(1.0)
             ),
         detail::make_surface(
             hr4[1].hit ? get_normal(normals, hr4[1], P{}, NormalBinding{}) : N{},
             hr4[1].hit ? materials[hr4[1].geom_id]                         : M{},
-            hr4[1].hit ? tex_color4[1]                                     : vector<3, float>(1.0)
+            hr4[1].hit ? tex_color4[1]                                     : C(1.0)
             ),
         detail::make_surface(
             hr4[2].hit ? get_normal(normals, hr4[2], P{}, NormalBinding{}) : N{},
             hr4[2].hit ? materials[hr4[2].geom_id]                         : M{},
-            hr4[2].hit ? tex_color4[2]                                     : vector<3, float>(1.0)
+            hr4[2].hit ? tex_color4[2]                                     : C(1.0)
             ),
         detail::make_surface(
             hr4[3].hit ? get_normal(normals, hr4[3], P{}, NormalBinding{}) : N{},
             hr4[3].hit ? materials[hr4[3].geom_id]                         : M{},
-            hr4[3].hit ? tex_color4[3]                                     : vector<3, float>(1.0)
+            hr4[3].hit ? tex_color4[3]                                     : C(1.0)
             )
         );
 }
@@ -658,6 +661,7 @@ inline auto get_surface_any_prim_impl(
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
     using P = typename detail::primitive_traits<Primitive>::type;
+    using C = vector<3, float>;
 
     auto hr4 = unpack(hr);
 
@@ -665,7 +669,7 @@ inline auto get_surface_any_prim_impl(
 
     auto tc4 = get_tex_coord(tex_coords, hr4, typename detail::primitive_traits<Primitive>::type{});
 
-    vector<3, float> tex_color4[4];
+    C tex_color4[4];
     for (unsigned i = 0; i < 4; ++i)
     {
         if (!hr4[i].hit)
@@ -675,30 +679,30 @@ inline auto get_surface_any_prim_impl(
 
         auto const& tex = textures[hr4[i].geom_id];
         tex_color4[i] = tex.width() > 0 && tex.height() > 0
-                      ? vector<3, float>(tex2D(tex, tc4[i]))
-                      : vector<3, float>(1.0);
+                      ? C(tex2D(tex, tc4[i]))
+                      : C(1.0);
     }
 
     return simd::pack(
         detail::make_surface(
             hr4[0].hit ? get_normal(normals, hr4[0], P{}, NormalBinding{}) : N{},
             hr4[0].hit ? materials[hr4[0].geom_id]                         : M{},
-            hr4[0].hit ? color4[0] * tex_color4[0]                         : vector<3, float>(1.0)
+            hr4[0].hit ? color4[0] * tex_color4[0]                         : C(1.0)
             ),
         detail::make_surface(
             hr4[1].hit ? get_normal(normals, hr4[1], P{}, NormalBinding{}) : N{},
             hr4[1].hit ? materials[hr4[1].geom_id]                         : M{},
-            hr4[1].hit ? color4[1] * tex_color4[1]                         : vector<3, float>(1.0)
+            hr4[1].hit ? color4[1] * tex_color4[1]                         : C(1.0)
             ),
         detail::make_surface(
             hr4[2].hit ? get_normal(normals, hr4[2], P{}, NormalBinding{}) : N{},
             hr4[2].hit ? materials[hr4[2].geom_id]                         : M{},
-            hr4[2].hit ? color4[2] * tex_color4[2]                         : vector<3, float>(1.0)
+            hr4[2].hit ? color4[2] * tex_color4[2]                         : C(1.0)
             ),
         detail::make_surface(
             hr4[3].hit ? get_normal(normals, hr4[3], P{}, NormalBinding{}) : N{},
             hr4[3].hit ? materials[hr4[3].geom_id]                         : M{},
-            hr4[3].hit ? color4[3] * tex_color4[3]                         : vector<3, float>(1.0)
+            hr4[3].hit ? color4[3] * tex_color4[3]                         : C(1.0)
             )
         );
 }
