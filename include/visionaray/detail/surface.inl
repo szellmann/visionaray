@@ -70,6 +70,21 @@ struct decl_surface<Normals, Materials, DiffuseColor>
 };
 
 
+// identify accelerators ----------------------------------
+
+template <typename T>
+struct primitive_traits
+{
+    using type = T;
+};
+
+template <template <typename> class Accelerator, typename T>
+struct primitive_traits<Accelerator<T>>
+{
+    using type = T;
+};
+
+
 } // detail
 
 
@@ -306,24 +321,6 @@ inline auto pack(
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 } // simd
-
-
-namespace detail
-{
-
-template <typename T>
-struct primitive_traits
-{
-    using type = T;
-};
-
-template <template <typename> class Accelerator, typename T>
-struct primitive_traits<Accelerator<T>>
-{
-    using type = T;
-};
-
-} // detail
 
 
 //-------------------------------------------------------------------------------------------------
