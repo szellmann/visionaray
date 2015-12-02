@@ -25,16 +25,16 @@ namespace detail
 // Helper functions
 //
 
-template <typename M, typename N>
-surface<M> make_surface(N const& n, M const& m)
+template <typename N, typename M>
+surface<N, M> make_surface(N const& n, M const& m)
 {
-    return surface<M>(n, m);
+    return surface<N, M>(n, m);
 }
 
-template <typename M, typename C, typename N>
-surface<M, C> make_surface(N const& n, M const m, C const& tex_color)
+template <typename N, typename M, typename C>
+surface<N, M, C> make_surface(N const& n, M const m, C const& tex_color)
 {
-    return surface<M, C>(n, m, tex_color);
+    return surface<N, M, C>(n, m, tex_color);
 }
 
 
@@ -50,6 +50,7 @@ template <
 struct decl_surface<Normals, Materials>
 {
     using type = surface<
+        typename std::iterator_traits<Normals>::value_type,
         typename std::iterator_traits<Materials>::value_type
         >;
 };
@@ -62,6 +63,7 @@ template <
 struct decl_surface<Normals, Materials, DiffuseColor>
 {
     using type = surface<
+        typename std::iterator_traits<Normals>::value_type,
         typename std::iterator_traits<Materials>::value_type,
         DiffuseColor
         >;
@@ -78,12 +80,12 @@ namespace simd
 // Functions to pack and unpack SIMD surfaces
 //
 
-template <typename M, typename ...Args>
+template <typename N, typename M, typename ...Args>
 inline auto pack(
-        surface<M, Args...> const& s1,
-        surface<M, Args...> const& s2,
-        surface<M, Args...> const& s3,
-        surface<M, Args...> const& s4
+        surface<N, M, Args...> const& s1,
+        surface<N, M, Args...> const& s2,
+        surface<N, M, Args...> const& s3,
+        surface<N, M, Args...> const& s4
         ) -> decltype( visionaray::detail::make_surface(
             pack(
                 s1.normal,
@@ -116,12 +118,12 @@ inline auto pack(
             );
 }
 
-template <typename M, typename C, typename ...Args>
+template <typename N, typename M, typename C, typename ...Args>
 inline auto pack(
-        surface<M, C, Args...> const& s1,
-        surface<M, C, Args...> const& s2,
-        surface<M, C, Args...> const& s3,
-        surface<M, C, Args...> const& s4
+        surface<N, M, C, Args...> const& s1,
+        surface<N, M, C, Args...> const& s2,
+        surface<N, M, C, Args...> const& s3,
+        surface<N, M, C, Args...> const& s4
         ) -> decltype( visionaray::detail::make_surface(
             pack(
                 s1.normal,
@@ -167,16 +169,16 @@ inline auto pack(
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
-template <typename M, typename ...Args>
+template <typename N, typename M, typename ...Args>
 inline auto pack(
-        surface<M, Args...> const& s1,
-        surface<M, Args...> const& s2,
-        surface<M, Args...> const& s3,
-        surface<M, Args...> const& s4,
-        surface<M, Args...> const& s5,
-        surface<M, Args...> const& s6,
-        surface<M, Args...> const& s7,
-        surface<M, Args...> const& s8
+        surface<N, M, Args...> const& s1,
+        surface<N, M, Args...> const& s2,
+        surface<N, M, Args...> const& s3,
+        surface<N, M, Args...> const& s4,
+        surface<N, M, Args...> const& s5,
+        surface<N, M, Args...> const& s6,
+        surface<N, M, Args...> const& s7,
+        surface<N, M, Args...> const& s8
         ) -> decltype( visionaray::detail::make_surface(
             pack(
                 s1.normal,
@@ -224,16 +226,16 @@ inline auto pack(
             );
 }
 
-template <typename M, typename C, typename ...Args>
+template <typename N, typename M, typename C, typename ...Args>
 inline auto pack(
-        surface<M, C, Args...> const& s1,
-        surface<M, C, Args...> const& s2,
-        surface<M, C, Args...> const& s3,
-        surface<M, C, Args...> const& s4,
-        surface<M, C, Args...> const& s5,
-        surface<M, C, Args...> const& s6,
-        surface<M, C, Args...> const& s7,
-        surface<M, C, Args...> const& s8
+        surface<N, M, C, Args...> const& s1,
+        surface<N, M, C, Args...> const& s2,
+        surface<N, M, C, Args...> const& s3,
+        surface<N, M, C, Args...> const& s4,
+        surface<N, M, C, Args...> const& s5,
+        surface<N, M, C, Args...> const& s6,
+        surface<N, M, C, Args...> const& s7,
+        surface<N, M, C, Args...> const& s8
         ) -> decltype( visionaray::detail::make_surface(
             pack(
                 s1.normal,
@@ -1088,33 +1090,33 @@ inline auto get_surface(HR const& hr, Params const& p)
 // General surface functions
 //
 
-template <typename M>
+template <typename ...Args>
 VSNRAY_FUNC
-inline bool has_emissive_material(surface<M> const& surf)
+inline bool has_emissive_material(surface<Args...> const& surf)
 {
     VSNRAY_UNUSED(surf);
     return false;
 }
 
-template <typename T>
+template <typename N, typename T>
 VSNRAY_FUNC
-inline bool has_emissive_material(surface<emissive<T>> const& surf)
+inline bool has_emissive_material(surface<N, emissive<T>> const& surf)
 {
     VSNRAY_UNUSED(surf);
     return true;
 }
 
-template <typename ...Ts>
+template <typename N, typename ...Ts>
 VSNRAY_FUNC
-inline auto has_emissive_material(surface<generic_material<Ts...>> const& surf)
+inline auto has_emissive_material(surface<N, generic_material<Ts...>> const& surf)
     -> decltype( surf.material.is_emissive() )
 {
     return surf.material.is_emissive();
 }
 
-template <typename ...Ts>
+template <typename N, typename ...Ts>
 VSNRAY_FUNC
-inline auto has_emissive_material(surface<simd::generic_material4<Ts...>> const& surf)
+inline auto has_emissive_material(surface<N, simd::generic_material4<Ts...>> const& surf)
     -> decltype( surf.material.is_emissive() )
 {
     return surf.material.is_emissive();

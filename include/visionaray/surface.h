@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_SURFACE_H
-#define VSNRAY_SURFACE_H
+#define VSNRAY_SURFACE_H 1
 
 #include "detail/macros.h"
 #include "detail/tags.h"
@@ -20,8 +20,8 @@ class surface;
 template <typename ...Args>
 class surface;
 
-template <typename M>
-class surface<M>
+template <typename N, typename M>
+class surface<N, M>
 {
 public:
 
@@ -32,14 +32,14 @@ public:
     VSNRAY_FUNC surface() = default;
 
     VSNRAY_FUNC
-    surface(vector<3, scalar_type> const& n, M const& m)
+    surface(N const& n, M const& m)
         : normal(n)
         , material(m)
     {
     }
 
-    vector<3, scalar_type>  normal;
-    M                       material;
+    N normal;
+    M material;
 
     template <typename SR>
     VSNRAY_FUNC
@@ -57,12 +57,12 @@ public:
 
 };
 
-template <typename M, typename C>
-class surface<M, C> : public surface<M>
+template <typename N, typename M, typename C>
+class surface<N, M, C> : public surface<N, M>
 {
 public:
 
-    using base_type     = surface<M>;
+    using base_type     = surface<N, M>;
     using scalar_type   = typename M::scalar_type;
 
 public:
@@ -70,7 +70,7 @@ public:
     VSNRAY_FUNC surface() = default;
 
     VSNRAY_FUNC
-    surface(vector<3, scalar_type> const& n, M const& m, C const& tex_color)
+    surface(N const& n, M const& m, C const& tex_color)
         : base_type(n, m)
         , tex_color_(tex_color)
     {
