@@ -17,6 +17,18 @@ using namespace visionaray;
 // nested for loop over matrices --------------------------
 
 template <typename Func>
+void for_each_mat3_e(Func f)
+{
+    for (int i = 0; i < 3; ++i)
+    {
+        for (int j = 0; j < 3; ++j)
+        {
+            f(i, j);
+        }
+    }
+}
+
+template <typename Func>
 void for_each_mat4_e(Func f)
 {
     for (int i = 0; i < 4; ++i)
@@ -31,19 +43,23 @@ void for_each_mat4_e(Func f)
 
 // get rows and columns -----------------------------------
 
-vec4 get_row(mat4 const& m, int i)
+template <size_t Dim>
+vector<Dim, float> get_row(matrix<Dim, Dim, float> const& m, int i)
 {
     assert( i >= 0 && i < 4 );
 
-    return vec4(
-        m(i, 0),
-        m(i, 1),
-        m(i, 2),
-        m(i, 3)
-        );
+    vector<Dim, float> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = m(i, d);
+    }
+
+    return result;
 }
 
-vec4 get_col(mat4 const& m, int j)
+template <size_t Dim>
+vector<Dim, float> get_col(matrix<Dim, Dim, float> const& m, int j)
 {
     assert( j >= 0 && j < 4 );
 
@@ -77,38 +93,87 @@ TEST(Matrix, Mult)
 {
 
     //-------------------------------------------------------------------------
+    // mat3
+    //
+
+    {
+
+        // make some matrices
+        mat3 A = mat3::identity(); A(0, 0) = 2.0f;  A(1, 0) = 3.14f; A(1, 1) = 3.0f;
+        mat3 B = mat3::identity(); B(0, 1) = 11.0f; B(2, 1) = 6.28f; B(2, 2) = 3.0f;
+        mat3 C = A * B;
+
+        for_each_mat3_e(
+            [&](int i, int j)
+            {
+                float d = dot(get_row(A, i), get_col(B, j));
+                EXPECT_FLOAT_EQ(C(i, j), d);
+            }
+            );
+    }
+
+
+    //-------------------------------------------------------------------------
     // mat4
     //
 
-    // make some non-singular matrices
-    mat4 A = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
-    mat4 B = make_translation(vec3(3, 4, 5));
-    mat4 C = A * B;
+    {
 
-    for_each_mat4_e(
-        [&](int i, int j)
-        {
-            float d = dot(get_row(A, i), get_col(B, j));
-            EXPECT_FLOAT_EQ(C(i, j), d);
-        }
-        );
+        // make some matrices
+        mat4 A = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
+        mat4 B = make_translation(vec3(3, 4, 5));
+        mat4 C = A * B;
+
+        for_each_mat4_e(
+            [&](int i, int j)
+            {
+                float d = dot(get_row(A, i), get_col(B, j));
+                EXPECT_FLOAT_EQ(C(i, j), d);
+            }
+            );
+
+    }
 }
 
 TEST(Matrix, Transpose)
 {
 
     //-------------------------------------------------------------------------
+    // mat3
+    //
+
+    {
+
+        // make some non-singular matrix
+        mat3 A = mat3::identity(); A(0, 0) = 2.0f;  A(1, 0) = 3.14f; A(1, 1) = 3.0f;
+        mat3 B = transpose(A);
+
+        for_each_mat3_e(
+            [&](int i, int j)
+            {
+                EXPECT_FLOAT_EQ(A(i, j), B(j, i));
+            }
+            );
+
+    }
+
+
+    //-------------------------------------------------------------------------
     // mat4
     //
 
-    // make some non-singular matrix
-    mat4 A = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
-    mat4 B = transpose(A);
+    {
 
-    for_each_mat4_e(
-        [&](int i, int j)
-        {
-            EXPECT_FLOAT_EQ(A(i, j), B(j, i));
-        }
-        );
+        // make some non-singular matrix
+        mat4 A = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
+        mat4 B = transpose(A);
+
+        for_each_mat4_e(
+            [&](int i, int j)
+            {
+                EXPECT_FLOAT_EQ(A(i, j), B(j, i));
+            }
+            );
+
+    }
 }
