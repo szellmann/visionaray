@@ -1109,17 +1109,17 @@ inline bool has_emissive_material(surface<N, emissive<T>> const& surf)
     return true;
 }
 
-template <typename N, typename ...Ts>
+template <typename N, typename ...Ms, typename ...Ts>
 VSNRAY_FUNC
-inline auto has_emissive_material(surface<N, generic_material<Ts...>> const& surf)
+inline auto has_emissive_material(surface<N, generic_material<Ms...>, Ts...> const& surf)
     -> decltype( surf.material.is_emissive() )
 {
     return surf.material.is_emissive();
 }
 
-template <typename N, typename ...Ts>
+template <typename N, typename ...Ms, typename ...Ts>
 VSNRAY_FUNC
-inline auto has_emissive_material(surface<N, simd::generic_material4<Ts...>> const& surf)
+inline auto has_emissive_material(surface<N, simd::generic_material4<Ms...>, Ts...> const& surf)
     -> decltype( surf.material.is_emissive() )
 {
     return surf.material.is_emissive();
