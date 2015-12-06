@@ -100,7 +100,24 @@ template <typename T>
 inline rectangle<xywh_layout, T> combine(
         rectangle<xywh_layout, T> const& a,
         rectangle<xywh_layout, T> const& b
-        ); // TODO
+        )
+{
+    vector<2, T> a1(a.x, a.y);
+    vector<2, T> a2(a.x + a.w, a.y + a.h);
+
+    vector<2, T> b1(b.x, b.y);
+    vector<2, T> b2(b.x + b.w, b.y + b.h);
+
+    vector<2, T> c1(min(a1, b1));
+    vector<2, T> c2(max(a2, b2));
+
+    return rectangle<xywh_layout, T>(
+            c1.x,
+            c1.y,
+            c2.x - c1.x,
+            c2.y - c1.y
+            );
+}
 
 template <typename T>
 inline rectangle<xywh_layout, T> intersect(
