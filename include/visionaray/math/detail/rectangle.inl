@@ -12,11 +12,6 @@ namespace MATH_NAMESPACE
 //
 
 template <typename T>
-inline rectangle<xywh_layout, T>::rectangle()
-{
-}
-
-template <typename T>
 inline rectangle<xywh_layout, T>::rectangle(T x, T y, T w, T h)
     : xywh_layout<T>(x, y, w, h)
 {

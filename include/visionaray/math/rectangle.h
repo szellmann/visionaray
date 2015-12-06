@@ -25,7 +25,7 @@ public:
 
     typedef vector<Dim, T> vector_type;
 
-    min_max_layout() {}
+    min_max_layout() = default;
     min_max_layout(vector_type const& min, vector_type const& max) : min(min), max(max) {}
 
     vector_type min;
@@ -37,7 +37,7 @@ class xywh_layout
 {
 public:
 
-    xywh_layout() {}
+    xywh_layout() = default;
     xywh_layout(T x, T y, T w, T h) : x(x), y(y), w(w), h(h) {}
 
     explicit xywh_layout(T const data[4]) : x(data[0]), y(data[1]), w(data[2]), h(data[3]) {}
@@ -65,7 +65,7 @@ public:
     typedef T value_type;
 
 
-    rectangle();
+    rectangle() = default;
     rectangle(T x, T y, T w, T h);
 
     explicit rectangle(T const data[4]);
