@@ -12,36 +12,42 @@ namespace MATH_NAMESPACE
 //
 
 template <typename T>
+MATH_FUNC
 inline rectangle<xywh_layout, T>::rectangle(T x, T y, T w, T h)
     : xywh_layout<T>(x, y, w, h)
 {
 }
 
 template <typename T>
+MATH_FUNC
 inline rectangle<xywh_layout, T>::rectangle(T const data[4])
     : xywh_layout<T>(data)
 {
 }
 
 template <typename T>
+MATH_FUNC
 inline T* rectangle<xywh_layout, T>::data()
 {
     return reinterpret_cast<T*>(this);
 }
 
 template <typename T>
+MATH_FUNC
 inline T const* rectangle<xywh_layout, T>::data() const
 {
     return reinterpret_cast<T const*>(this);
 }
 
 template <typename T>
+MATH_FUNC
 inline T& rectangle<xywh_layout, T>::operator[](size_t i)
 {
     return data()[i];
 }
 
 template <typename T>
+MATH_FUNC
 inline T const& rectangle<xywh_layout, T>::operator[](size_t i) const
 {
     return data()[i];
@@ -93,12 +99,14 @@ inline bool rectangle<xywh_layout, T>::contains(vector<2, T> const& v) const
 //
 
 template <typename T>
+MATH_FUNC
 bool operator==(rectangle<xywh_layout, T> const& a, rectangle<xywh_layout, T> const& b)
 {
     return a.x == b.x && a.y == b.y && a.w == b.w && a.h == b.h;
 }
 
 template <typename T>
+MATH_FUNC
 bool operator!=(rectangle<xywh_layout, T> const& a, rectangle<xywh_layout, T> const& b)
 {
     return !(a == b);
@@ -110,6 +118,7 @@ bool operator!=(rectangle<xywh_layout, T> const& a, rectangle<xywh_layout, T> co
 //
 
 template <typename T>
+MATH_FUNC
 bool overlapping(rectangle<xywh_layout, T> const& a, rectangle<xywh_layout, T> const& b)
 {
 
@@ -125,6 +134,7 @@ bool overlapping(rectangle<xywh_layout, T> const& a, rectangle<xywh_layout, T> c
 
 
 template <typename T>
+MATH_FUNC
 inline rectangle<xywh_layout, T> combine(
         rectangle<xywh_layout, T> const& a,
         rectangle<xywh_layout, T> const& b
@@ -148,6 +158,7 @@ inline rectangle<xywh_layout, T> combine(
 }
 
 template <typename T>
+MATH_FUNC
 inline rectangle<xywh_layout, T> intersect(
         rectangle<xywh_layout, T> const& a,
         rectangle<xywh_layout, T> const& b
