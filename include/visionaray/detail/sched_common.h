@@ -99,18 +99,24 @@ struct pixel_access
     }
 
     //-------------------------------------------------------------------------
-    // Store SSE rgb color, apply conversion
+    // Store SIMD rgb color, apply conversion
     // OutputColor must be rgb
     // TODO: consolidate with rgba version
     //
 
-    template <typename OutputColor>
+    template <
+        typename OutputColor,
+        typename FloatT,
+        typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+        >
     VSNRAY_CPU_FUNC
-    static void store(int x, int y, recti const& viewport, vector<3, simd::float4> const& color, OutputColor* buffer)
+    static void store(int x, int y, recti const& viewport, vector<3, FloatT> const& color, OutputColor* buffer)
     {
-        VSNRAY_ALIGN(16) float r[4];
-        VSNRAY_ALIGN(16) float g[4];
-        VSNRAY_ALIGN(16) float b[4];
+        using float_array = typename simd::aligned_array<FloatT>::type;
+
+        float_array r;
+        float_array g;
+        float_array b;
 
         using simd::store;
 
@@ -118,8 +124,8 @@ struct pixel_access
         store(g, color.y);
         store(b, color.z);
 
-        auto w = packet_size<simd::float4>::w;
-        auto h = packet_size<simd::float4>::h;
+        auto w = packet_size<FloatT>::w;
+        auto h = packet_size<FloatT>::h;
 
         for (auto row = 0; row < h; ++row)
         {
@@ -135,19 +141,25 @@ struct pixel_access
     }
 
     //-------------------------------------------------------------------------
-    // Store SSE rgba color, apply conversion
+    // Store SIMD rgba color, apply conversion
     // OutputColor must be rgba
     // TODO: consolidate with rgb version
     //
 
-    template <typename OutputColor>
+    template <
+        typename OutputColor,
+        typename FloatT,
+        typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+        >
     VSNRAY_CPU_FUNC
-    static void store(int x, int y, recti const& viewport, vector<4, simd::float4> const& color, OutputColor* buffer)
+    static void store(int x, int y, recti const& viewport, vector<4, FloatT> const& color, OutputColor* buffer)
     {
-        VSNRAY_ALIGN(16) float r[4];
-        VSNRAY_ALIGN(16) float g[4];
-        VSNRAY_ALIGN(16) float b[4];
-        VSNRAY_ALIGN(16) float a[4];
+        using float_array = typename simd::aligned_array<FloatT>::type;
+
+        float_array r;
+        float_array g;
+        float_array b;
+        float_array a;
 
         using simd::store;
 
@@ -156,8 +168,8 @@ struct pixel_access
         store(b, color.z);
         store(a, color.w);
 
-        auto w = packet_size<simd::float4>::w;
-        auto h = packet_size<simd::float4>::h;
+        auto w = packet_size<FloatT>::w;
+        auto h = packet_size<FloatT>::h;
 
         for (auto row = 0; row < h; ++row)
         {
@@ -216,46 +228,6 @@ struct pixel_access
             }
         }
     }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-    //-------------------------------------------------------------------------
-    // Store AVX rgba color, apply conversion
-    // OutputColor must be rgba
-    //
-
-    template <typename OutputColor>
-    VSNRAY_CPU_FUNC
-    static void store(int x, int y, recti const& viewport, vector<4, simd::float8> const& color, OutputColor* buffer)
-    {
-        VSNRAY_ALIGN(32) float r[8];
-        VSNRAY_ALIGN(32) float g[8];
-        VSNRAY_ALIGN(32) float b[8];
-        VSNRAY_ALIGN(32) float a[8];
-
-        using simd::store;
-
-        store(r, color.x);
-        store(g, color.y);
-        store(b, color.z);
-        store(a, color.w);
-
-        const int w = packet_size<simd::float8>::w;
-        const int h = packet_size<simd::float8>::h;
-
-        for (auto row = 0; row < h; ++row)
-        {
-            for (auto col = 0; col < w; ++col)
-            {
-                if (x + col < viewport.w && y + row < viewport.h)
-                {
-                    auto idx = row * w + col;
-                    convert( buffer[(y + row) * viewport.w + (x + col)], vec4(r[idx], g[idx], b[idx], a[idx]) );
-                }
-            }
-        }
-    }
-#endif
 
     //-------------------------------------------------------------------------
     // Store color from result record to output color buffer
