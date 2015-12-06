@@ -93,6 +93,15 @@ inline bool rectangle<xywh_layout, T>::contains(vector<2, T> const& v) const
     return v.x >= min.x && v.x <= max.x && v.y >= min.y && v.y <= max.y;
 }
 
+template <typename T>
+MATH_FUNC
+inline bool rectangle<xywh_layout, T>::contains(rectangle<xywh_layout, T> const& r) const
+{
+    vector<2, T> v1(r.x, r.y);
+    vector<2, T> v2(r.x + r.w, r.y + r.h);
+    return this->contains(v1) && this->contains(v2);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Comparisons

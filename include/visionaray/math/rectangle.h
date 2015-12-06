@@ -84,6 +84,7 @@ public:
     MATH_FUNC bool empty() const;
 
     MATH_FUNC bool contains(vector<2, T> const& v) const;
+    MATH_FUNC bool contains(rectangle const& r) const;
 
 };
 
