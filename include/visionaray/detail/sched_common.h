@@ -203,19 +203,25 @@ struct pixel_access
     }
 
     //-------------------------------------------------------------------------
-    // Store single SSE channel to 32-bit FP buffer, no conversion
+    // Store single SIMD channel to 32-bit FP buffer, no conversion
     // Can be used for color and depth
     //
 
+    template <
+        typename FloatT,
+        typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+        >
     VSNRAY_CPU_FUNC
-    static void store(int x, int y, recti const& viewport, simd::float4 const& value, float* buffer)
+    static void store(int x, int y, recti const& viewport, FloatT const& value, float* buffer)
     {
-        VSNRAY_ALIGN(32) float v[4];
+        using float_array = typename simd::aligned_array<FloatT>::type;
+
+        float_array v;
 
         simd::store(v, value);
 
-        auto w = packet_size<simd::float4>::w;
-        auto h = packet_size<simd::float4>::h;
+        auto w = packet_size<FloatT>::w;
+        auto h = packet_size<FloatT>::h;
 
         for (auto row = 0; row < h; ++row)
         {
