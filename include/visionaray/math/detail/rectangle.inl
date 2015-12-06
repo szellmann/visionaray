@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include "../limits.h"
+
 namespace MATH_NAMESPACE
 {
 
@@ -48,6 +50,37 @@ template <typename T>
 inline T const& rectangle<xywh_layout, T>::operator[](size_t i) const
 {
     return data()[i];
+}
+
+template <typename T>
+MATH_FUNC
+inline void rectangle<xywh_layout, T>::invalidate()
+{
+    this->x = numeric_limits<T>::max();
+    this->y = numeric_limits<T>::max();
+    this->w = numeric_limits<T>::lowest();
+    this->h = numeric_limits<T>::lowest();
+}
+
+template <typename T>
+MATH_FUNC
+inline bool rectangle<xywh_layout, T>::invalid() const
+{
+    return this->w < 0 || this->h < 0;
+}
+
+template <typename T>
+MATH_FUNC
+inline bool rectangle<xywh_layout, T>::valid() const
+{
+    return this->w >= 0 && this->h >= 0;
+}
+
+template <typename T>
+MATH_FUNC
+inline bool rectangle<xywh_layout, T>::empty() const
+{
+    return this->w <= 0 || this->h <= 0;
 }
 
 template <typename T>

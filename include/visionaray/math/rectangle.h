@@ -76,6 +76,13 @@ public:
     T& operator[](size_t i);
     T const& operator[](size_t i) const;
 
+    MATH_FUNC void invalidate();
+
+    MATH_FUNC bool invalid() const;
+    MATH_FUNC bool valid() const;
+
+    MATH_FUNC bool empty() const;
+
     MATH_FUNC bool contains(vector<2, T> const& v) const;
 
 };
