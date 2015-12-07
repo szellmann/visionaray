@@ -88,6 +88,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/limits.inl
     ${HEADER_DIR}/math/detail/math.h
     ${HEADER_DIR}/math/detail/matrix4.inl
+    ${HEADER_DIR}/math/detail/norm.inl
     ${HEADER_DIR}/math/detail/plane3.inl
     ${HEADER_DIR}/math/detail/quat.inl
     ${HEADER_DIR}/math/detail/rectangle.inl
