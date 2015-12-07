@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-namespace visionaray
+namespace MATH_NAMESPACE
 {
 namespace detail
 {
@@ -28,7 +28,7 @@ template <> struct best_uint<32> { typedef uint32_t type; };
 //
 
 template <unsigned Bits>
-VSNRAY_FUNC
+MATH_FUNC
 inline uint32_t float_to_unorm(float f)
 {
     f = saturate(f);
@@ -36,7 +36,7 @@ inline uint32_t float_to_unorm(float f)
 }
 
 template <unsigned Bits>
-VSNRAY_FUNC
+MATH_FUNC
 inline float unorm_to_float(uint32_t u)
 {
     return static_cast<float>(u) / ((1 << Bits) - 1);
@@ -51,21 +51,21 @@ public:
 
     using value_type = typename detail::best_uint<Bits>::type;
 
-    VSNRAY_FUNC unorm() = default;
+    MATH_FUNC unorm() = default;
 
-    VSNRAY_FUNC
+    MATH_FUNC
     /* implicit */ unorm(float f)
         : value(detail::float_to_unorm<Bits>(f))
     {
     }
 
-    VSNRAY_FUNC
+    MATH_FUNC
     operator value_type() const
     {
         return value;
     }
 
-    VSNRAY_FUNC
+    MATH_FUNC
     operator float() const
     {
         return detail::unorm_to_float<Bits>(value);
@@ -75,6 +75,6 @@ public:
 
 };
 
-} // visionaray
+} // MATH_NAMESPACE
 
 #endif // VSNRAY_MATH_NORM_H
