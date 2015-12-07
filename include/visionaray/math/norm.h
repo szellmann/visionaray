@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_NORM_H
-#define VSNRAY_NORM_H
+#ifndef VSNRAY_MATH_NORM_H
+#define VSNRAY_MATH_NORM_H 1
 
 #include <cstdint>
 
@@ -77,4 +77,4 @@ public:
 
 } // visionaray
 
-#endif // VSNRAY_NORM_H
+#endif // VSNRAY_MATH_NORM_H
