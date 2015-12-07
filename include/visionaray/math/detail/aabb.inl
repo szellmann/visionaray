@@ -62,9 +62,9 @@ inline typename basic_aabb<T>::vec_type basic_aabb<T>::safe_size() const
 {
     auto s = max - min;
 
-    s.x = visionaray::max(T(0.0), s.x);
-    s.y = visionaray::max(T(0.0), s.y);
-    s.z = visionaray::max(T(0.0), s.z);
+    s.x = MATH_NAMESPACE::max(T(0.0), s.x);
+    s.y = MATH_NAMESPACE::max(T(0.0), s.y);
+    s.z = MATH_NAMESPACE::max(T(0.0), s.z);
 
     return s;
 }
@@ -118,16 +118,16 @@ template <typename T>
 MATH_FUNC
 inline void basic_aabb<T>::insert(vec_type const& v)
 {
-    min = visionaray::min(min, v);
-    max = visionaray::max(max, v);
+    min = MATH_NAMESPACE::min(min, v);
+    max = MATH_NAMESPACE::max(max, v);
 }
 
 template <typename T>
 MATH_FUNC
 inline void basic_aabb<T>::insert(basic_aabb const& v)
 {
-    min = visionaray::min(min, v.min);
-    max = visionaray::max(max, v.max);
+    min = MATH_NAMESPACE::min(min, v.min);
+    max = MATH_NAMESPACE::max(max, v.max);
 }
 
 
