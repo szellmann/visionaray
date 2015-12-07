@@ -31,7 +31,7 @@
     !( VSNRAY_VERSION_EQ(MAJOR, MINOR, PATCH) )
 
 #define VSNRAY_VERSION_LT(MAJOR, MINOR, PATCH)                      \
-       (VNSRAY_VERSION_MAJOR < MAJOR)                               \
+       (VSNRAY_VERSION_MAJOR < MAJOR)                               \
     || ( (VSNRAY_VERSION_MAJOR == MAJOR)                            \
       && (VSNRAY_VERSION_MINOR < MINOR) )                           \
     || ( (VSNRAY_VERSION_MAJOR == MAJOR)                            \

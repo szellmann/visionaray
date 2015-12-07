@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VNSRAY_VARIANT_H
-#define VSNRAY_VARIANT_H
+#ifndef VSNRAY_VARIANT_H
+#define VSNRAY_VARIANT_H 1
 
 #include "detail/macros.h"
 

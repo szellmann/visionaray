@@ -3,7 +3,7 @@
 
 #pragma once
 
-#ifndef VNSRAY_INPUT_MOUSE_H
+#ifndef VSNRAY_INPUT_MOUSE_H
 #define VSNRAY_INPUT_MOUSE_H 1
 
 #include <bitset>

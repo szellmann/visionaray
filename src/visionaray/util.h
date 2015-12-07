@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VNSRAY_UTIL_H
-#define VSNRAY_UTIL_H
+#ifndef VSNRAY_UTIL_H
+#define VSNRAY_UTIL_H 1
 
 #include <string>
 
