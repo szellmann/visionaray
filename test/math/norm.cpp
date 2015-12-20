@@ -94,10 +94,11 @@ TEST(Unorm, Initialization)
 // Test comparison operators
 //
 
-TEST(Unorm, Comparisons)
+template <unsigned Bits>
+void test_cmp()
 {
-    unorm< 8> a;
-    unorm< 8> b;
+    unorm<Bits> a;
+    unorm<Bits> b;
 
     a = 0.5f;
     b = 1.0f;
@@ -128,6 +129,13 @@ TEST(Unorm, Comparisons)
     EXPECT_TRUE( a <= b);
     EXPECT_FALSE(a  > b);
     EXPECT_TRUE( a >= b);
+}
+
+TEST(Unorm, Comparisons)
+{
+    test_cmp< 8>();
+    test_cmp<16>();
+    test_cmp<32>();
 }
 
 
