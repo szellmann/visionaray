@@ -10,6 +10,11 @@
 
 using namespace visionaray;
 
+
+//-------------------------------------------------------------------------------------------------
+// Test initialization (single values, arrays)
+//
+
 TEST(Unorm, Initialization)
 {
     // Some convenience -----------------------------------
@@ -84,6 +89,11 @@ TEST(Unorm, Initialization)
     }
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Test comparison operators
+//
+
 TEST(Unorm, Comparisons)
 {
     unorm< 8> a;
@@ -118,4 +128,72 @@ TEST(Unorm, Comparisons)
     EXPECT_TRUE( a <= b);
     EXPECT_FALSE(a  > b);
     EXPECT_TRUE( a >= b);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Test numeric limits
+// All representations (norm, int, float)
+//
+
+TEST(Unorm, NumericLimits)
+{
+    // Some convenience -----------------------------------
+
+    static const uint8_t   uint8_max = numeric_limits<uint8_t>::max();
+    static const uint16_t uint16_max = numeric_limits<uint16_t>::max();
+    static const uint32_t uint32_max = numeric_limits<uint32_t>::max();
+
+    static const uint8_t   uint8_low = numeric_limits<uint8_t>::lowest();
+    static const uint16_t uint16_low = numeric_limits<uint16_t>::lowest();
+    static const uint32_t uint32_low = numeric_limits<uint32_t>::lowest();
+
+    static const uint8_t   uint8_min = numeric_limits<uint8_t>::min();
+    static const uint16_t uint16_min = numeric_limits<uint16_t>::min();
+    static const uint32_t uint32_min = numeric_limits<uint32_t>::min();
+
+
+    // Normalized reprentation ----------------------------
+
+    EXPECT_TRUE(numeric_limits<unorm< 8>>::max() == unorm< 8>(1.0f));
+    EXPECT_TRUE(numeric_limits<unorm<16>>::max() == unorm<16>(1.0f));
+    EXPECT_TRUE(numeric_limits<unorm<32>>::max() == unorm<32>(1.0f));
+
+    EXPECT_TRUE(numeric_limits<unorm< 8>>::lowest() == unorm< 8>(0.0f));
+    EXPECT_TRUE(numeric_limits<unorm<16>>::lowest() == unorm<16>(0.0f));
+    EXPECT_TRUE(numeric_limits<unorm<32>>::lowest() == unorm<32>(0.0f));
+
+    EXPECT_TRUE(numeric_limits<unorm< 8>>::min() == unorm< 8>(0.0f));
+    EXPECT_TRUE(numeric_limits<unorm<16>>::min() == unorm<16>(0.0f));
+    EXPECT_TRUE(numeric_limits<unorm<32>>::min() == unorm<32>(0.0f));
+
+
+    // Integer representation -----------------------------
+
+    EXPECT_EQ(static_cast< uint8_t>(numeric_limits<unorm< 8>>::max()), uint8_max);
+    EXPECT_EQ(static_cast<uint16_t>(numeric_limits<unorm<16>>::max()), uint16_max);
+    EXPECT_EQ(static_cast<uint32_t>(numeric_limits<unorm<32>>::max()), uint32_max);
+
+    EXPECT_EQ(static_cast< uint8_t>(numeric_limits<unorm< 8>>::lowest()), uint8_low);
+    EXPECT_EQ(static_cast<uint16_t>(numeric_limits<unorm<16>>::lowest()), uint16_low);
+    EXPECT_EQ(static_cast<uint32_t>(numeric_limits<unorm<32>>::lowest()), uint32_low);
+
+    EXPECT_EQ(static_cast< uint8_t>(numeric_limits<unorm< 8>>::min()), uint8_min);
+    EXPECT_EQ(static_cast<uint16_t>(numeric_limits<unorm<16>>::min()), uint16_min);
+    EXPECT_EQ(static_cast<uint32_t>(numeric_limits<unorm<32>>::min()), uint32_min);
+
+
+    // Float representation -------------------------------
+
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<unorm< 8>>::max()),    1.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<unorm<16>>::max()),    1.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<unorm<32>>::max()),    1.0f);
+
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<unorm< 8>>::lowest()), 0.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<unorm<16>>::lowest()), 0.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<unorm<32>>::lowest()), 0.0f);
+
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<unorm< 8>>::min()),    0.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<unorm<16>>::min()),    0.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<unorm<32>>::min()),    0.0f);
 }
