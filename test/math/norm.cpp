@@ -10,7 +10,7 @@
 
 using namespace visionaray;
 
-TEST(Norm, Unsigned)
+TEST(Unorm, Initialization)
 {
     // Some convenience -----------------------------------
 
@@ -82,4 +82,40 @@ TEST(Norm, Unsigned)
         EXPECT_FLOAT_EQ(float(un16s[i]), static_cast<float>(arr16[i]) / max16);
         EXPECT_FLOAT_EQ(float(un32s[i]), static_cast<float>(arr32[i]) / max32);
     }
+}
+
+TEST(Unorm, Comparisons)
+{
+    unorm< 8> a;
+    unorm< 8> b;
+
+    a = 0.5f;
+    b = 1.0f;
+
+    EXPECT_FALSE(a == b);
+    EXPECT_TRUE( a != b);
+    EXPECT_TRUE( a  < b);
+    EXPECT_TRUE( a <= b);
+    EXPECT_FALSE(a  > b);
+    EXPECT_FALSE(a >= b);
+
+    a = 1.0f;
+    b = 0.5f;
+
+    EXPECT_FALSE(a == b);
+    EXPECT_TRUE( a != b);
+    EXPECT_FALSE(a  < b);
+    EXPECT_FALSE(a <= b);
+    EXPECT_TRUE( a  > b);
+    EXPECT_TRUE( a >= b);
+
+    a = 1.0f;
+    b = 1.0f;
+
+    EXPECT_TRUE( a == b);
+    EXPECT_FALSE(a != b);
+    EXPECT_FALSE(a  < b);
+    EXPECT_TRUE( a <= b);
+    EXPECT_FALSE(a  > b);
+    EXPECT_TRUE( a >= b);
 }

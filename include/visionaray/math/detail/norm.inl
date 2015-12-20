@@ -53,4 +53,63 @@ unorm<Bits>::operator float() const
     return detail::unorm_to_float<Bits>(value);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+template <unsigned Bits>
+MATH_FUNC
+inline bool operator==(unorm<Bits> a, unorm<Bits> b)
+{
+    using T = typename unorm<Bits>::value_type;
+
+    return static_cast<T>(a) == static_cast<T>(b);
+}
+
+template <unsigned Bits>
+MATH_FUNC
+inline bool operator!=(unorm<Bits> a, unorm<Bits> b)
+{
+    using T = typename unorm<Bits>::value_type;
+
+    return static_cast<T>(a) != static_cast<T>(b);
+}
+
+template <unsigned Bits>
+MATH_FUNC
+inline bool operator<(unorm<Bits> a, unorm<Bits> b)
+{
+    using T = typename unorm<Bits>::value_type;
+
+    return static_cast<T>(a) < static_cast<T>(b);
+}
+
+template <unsigned Bits>
+MATH_FUNC
+inline bool operator<=(unorm<Bits> a, unorm<Bits> b)
+{
+    using T = typename unorm<Bits>::value_type;
+
+    return static_cast<T>(a) <= static_cast<T>(b);
+}
+
+template <unsigned Bits>
+MATH_FUNC
+inline bool operator>(unorm<Bits> a, unorm<Bits> b)
+{
+    using T = typename unorm<Bits>::value_type;
+
+    return static_cast<T>(a) > static_cast<T>(b);
+}
+
+template <unsigned Bits>
+MATH_FUNC
+inline bool operator>=(unorm<Bits> a, unorm<Bits> b)
+{
+    using T = typename unorm<Bits>::value_type;
+
+    return static_cast<T>(a) >= static_cast<T>(b);
+}
+
 } // MATH_NAMESPACE
