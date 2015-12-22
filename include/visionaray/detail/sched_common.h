@@ -14,7 +14,6 @@
 #include <visionaray/result_record.h>
 #include <visionaray/scheduler.h>
 
-#include "color_conversion.h"
 #include "macros.h"
 #include "pixel_access.h"
 #include "tags.h"
