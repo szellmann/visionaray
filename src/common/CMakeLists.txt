@@ -16,6 +16,7 @@ find_package(Qt5Gui)
 find_package(Qt5OpenGL)
 find_package(Qt5Widgets)
 endif()
+find_package(TIFF)
 
 visionaray_use_package(Boost)
 if (VSNRAY_ENABLE_CUDA)
@@ -35,6 +36,7 @@ visionaray_use_package(Qt5Gui)
 visionaray_use_package(Qt5OpenGL)
 visionaray_use_package(Qt5Widgets)
 endif()
+visionaray_use_package(TIFF)
 
 visionaray_link_libraries(visionaray)
 
@@ -76,6 +78,7 @@ set(COMMON_HEADERS
     png_image.h
     render_bvh.h
     tga_image.h
+    tiff_image.h
     timer.h
     util.h
     viewer_base.h
@@ -96,6 +99,7 @@ set(COMMON_SOURCES
     obj_loader.cpp
     png_image.cpp
     tga_image.cpp
+    tiff_image.cpp
     util.cpp
     viewer_base.cpp
     viewer_glut.cpp

@@ -441,6 +441,25 @@ void load_obj(std::string const& filename, model& mod)
                 }
 #endif // VSNRAY_HAVE_PNG
 
+#if defined(VSNRAY_HAVE_TIFF)
+                static const std::string tiff_extensions[] = { ".tif", ".tiff", ".TIF", ".TIFF" };
+                auto has_tiff_ext = std::find(tiff_extensions, tiff_extensions + 4, tex_path.extension()) != tiff_extensions + 4;
+
+                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_path.generic_string()) && has_tiff_ext)
+                {
+                    tiff_image tiff(tex_filename);
+
+                    tex_type tex(tiff.width(), tiff.height());
+                    tex.set_address_mode( Wrap );
+                    tex.set_filter_mode( Linear );
+
+                    auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(tiff.data()); // TIFF has an alpha channel
+                    tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
+
+                    mod.textures.push_back(std::move(tex));
+                }
+#endif // VSNRAY_HAVE_JPEG
+
                 static const std::string tga_extensions[] = { ".tga", ".TGA" };
                 auto has_tga_ext = std::find(tga_extensions, tga_extensions + 2, tex_path.extension()) != tga_extensions + 2;
 

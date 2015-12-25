@@ -9,5 +9,6 @@
 #include "jpeg_image.h"
 #include "png_image.h"
 #include "tga_image.h"
+#include "tiff_image.h"
 
 #endif // VSNRAY_COMMON_IMAGE_H
