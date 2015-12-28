@@ -3,7 +3,7 @@
 
 #if defined(VSNRAY_HAVE_TIFF)
 
-#if 1//ndef NDEBUG
+#ifndef NDEBUG
 #include <iostream>
 #include <ostream>
 #endif
