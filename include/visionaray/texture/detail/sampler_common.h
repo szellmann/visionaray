@@ -148,16 +148,16 @@ inline vector<4, simd::float4> point(
     // to SoA after memory lookup.
 
     simd::float4 iidx( idx * 4 );
-    VSNRAY_ALIGN(16) int indices[4];
+    VSNRAY_ALIGN(16) float indices[4];
     store(&indices[0], iidx);
 
     float const* tmp = reinterpret_cast<float const*>(tex);
 
     vector<4, simd::float4> colors(
-            &tmp[0] + indices[0],
-            &tmp[0] + indices[1],
-            &tmp[0] + indices[2],
-            &tmp[0] + indices[3]
+            &tmp[0] + static_cast<int>(indices[0]),
+            &tmp[0] + static_cast<int>(indices[1]),
+            &tmp[0] + static_cast<int>(indices[2]),
+            &tmp[0] + static_cast<int>(indices[3])
             );
 
     colors = transpose(colors);
