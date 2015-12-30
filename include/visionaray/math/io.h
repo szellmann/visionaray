@@ -1,20 +1,21 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_MATH_OUTPUT_H
-#define VSNRAY_MATH_OUTPUT_H
+#define VSNRAY_MATH_OUTPUT_H 1
 
 #include <cstddef>
 #include <istream>
 #include <ostream>
 #include <sstream>
 
-#include "forward.h"
+#include "quat.h"
 
 
 namespace MATH_NAMESPACE
 {
-
 namespace simd
 {
 
@@ -152,6 +153,27 @@ operator<<(std::basic_ostream<CharT, Traits>& out, basic_mask<__m256, __m256i> c
 #endif
 
 } // simd
+
+
+//-------------------------------------------------------------------------------------------------
+// quaternions
+//
+
+template <typename CharT, typename Traits>
+std::basic_ostream<CharT, Traits>&
+operator<<(std::basic_ostream<CharT, Traits>& out, quat q)
+{
+
+    std::basic_ostringstream<CharT, Traits> s;
+    s.flags(out.flags());
+    s.imbue(out.getloc());
+    s.precision(out.precision());
+
+    s << '(' << q.w << ',' << q.x << ',' << q.y << ',' << q.z << ')';
+
+    return out << s.str();
+
+}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -301,8 +323,6 @@ operator<<(std::basic_ostream<CharT, Traits>& out, rectangle<xywh_layout, T> con
 
 }
 
-
 } // MATH_NAMESPACE
-
 
 #endif // VSNRAY_MATH_OUTPUT_H
