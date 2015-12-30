@@ -13,7 +13,7 @@
 
 #include "matrix.h"
 #include "quat.h"
-#include "rect.h"
+#include "rectangle.h"
 #include "vector.h"
 
 
