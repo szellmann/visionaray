@@ -11,6 +11,7 @@
 #include <ostream>
 #include <sstream>
 
+#include "simd/type_traits.h"
 #include "matrix.h"
 #include "quat.h"
 #include "rectangle.h"
@@ -23,137 +24,62 @@ namespace simd
 {
 
 //-------------------------------------------------------------------------------------------------
-// SSE types
+// SIMD type
 //
 
-template <typename CharT, typename Traits>
-std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, basic_float<__m128> const& v)
+namespace detail
 {
+
+// helper function to convert SIMD mask to SIMD int
+
+template <typename T>
+T int_from_mask(T const& a)
+{
+    return a;
+};
+
+template <typename F, typename I>
+basic_int<I> int_from_mask(basic_mask<F, I> const& m)
+{
+    return m.i;
+}
+
+} // detail
+
+template <
+    typename CharT,
+    typename Traits,
+    typename VecT,
+    typename = typename std::enable_if<is_simd_vector<VecT>::value>::type
+    >
+std::basic_ostream<CharT, Traits>&
+operator<<(std::basic_ostream<CharT, Traits>& out, VecT const& v)
+{
+    using array_t = typename aligned_array<VecT>::type;
+    using elem_t  = typename element_type<VecT>::type;
+    int vec_size  = num_elements<VecT>::value;
 
     std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
     s.precision(out.precision());
 
-    VSNRAY_ALIGN(16) float vals[4];
-    store(vals, v);
-    s << '(' << vals[0] << ',' << vals[1] << ',' << vals[2] << ',' << vals[3] << ')';
+    array_t vals;
+    store(vals, detail::int_from_mask(v));
+
+    s << '(';
+    for (int i = 0; i < vec_size; ++i)
+    {
+        s << static_cast<elem_t>(vals[i]); // e.g. cast mask element to bool
+        if (i < vec_size - 1)
+        {
+            s << ',';
+        }
+    }
+    s << ')';
 
     return out << s.str();
-
 }
-
-template <typename CharT, typename Traits>
-std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, basic_int<__m128i> const& v)
-{
-
-    std::basic_ostringstream<CharT, Traits> s;
-    s.flags(out.flags());
-    s.imbue(out.getloc());
-    s.precision(out.precision());
-
-    VSNRAY_ALIGN(16) int vals[4];
-    store(vals, v);
-    s << '(' << vals[0] << ',' << vals[1] << ',' << vals[2] << ',' << vals[3] << ')';
-
-    return out << s.str();
-
-}
-
-template <typename CharT, typename Traits>
-std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, basic_mask<__m128, __m128i> const& v)
-{
-
-    std::basic_ostringstream<CharT, Traits> s;
-    s.flags(out.flags());
-    s.imbue(out.getloc());
-    s.precision(out.precision());
-
-    VSNRAY_ALIGN(16) int vals[4];
-    store(vals, v.i);
-    s << '(' << static_cast<bool>(vals[0]) << ','
-             << static_cast<bool>(vals[1]) << ','
-             << static_cast<bool>(vals[2]) << ','
-             << static_cast<bool>(vals[3]) << ')';
-
-    return out << s.str();
-
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// AVX types
-//
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-template <typename CharT, typename Traits>
-std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, basic_float<__m256> const& v)
-{
-
-    std::basic_ostringstream<CharT, Traits> s;
-    s.flags(out.flags());
-    s.imbue(out.getloc());
-    s.precision(out.precision());
-
-    VSNRAY_ALIGN(32) float vals[8];
-    store(vals, v);
-    s << '(' << vals[0] << ',' << vals[1] << ',' << vals[2] << ',' << vals[3] << ','
-             << vals[4] << ',' << vals[5] << ',' << vals[6] << ',' << vals[7] << ')';
-
-    return out << s.str();
-
-}
-
-template <typename CharT, typename Traits>
-std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits >& out, basic_int<__m256i> const& v)
-{
-
-    std::basic_ostringstream<CharT, Traits> s;
-    s.flags(out.flags());
-    s.imbue(out.getloc());
-    s.precision(out.precision());
-
-    VSNRAY_ALIGN(32) int vals[8];
-    store(vals, v);
-    s << '(' << vals[0] << ',' << vals[1] << ',' << vals[2] << ',' << vals[3] << ','
-             << vals[4] << ',' << vals[5] << ',' << vals[6] << ',' << vals[7] << ')';
-
-    return out << s.str();
-
-}
-
-template <typename CharT, typename Traits>
-std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, basic_mask<__m256, __m256i> const& v)
-{
-
-    std::basic_ostringstream<CharT, Traits> s;
-    s.flags(out.flags());
-    s.imbue(out.getloc());
-    s.precision(out.precision());
-
-    VSNRAY_ALIGN(32) int vals[8];
-    store(vals, v.i);
-    s << '(' << static_cast<bool>(vals[0]) << ','
-             << static_cast<bool>(vals[1]) << ','
-             << static_cast<bool>(vals[2]) << ','
-             << static_cast<bool>(vals[3]) << ','
-             << static_cast<bool>(vals[4]) << ','
-             << static_cast<bool>(vals[5]) << ','
-             << static_cast<bool>(vals[6]) << ','
-             << static_cast<bool>(vals[7]) << ')';
-
-    return out << s.str();
-
-}
-
-#endif
 
 } // simd
 
