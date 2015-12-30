@@ -39,6 +39,11 @@ namespace simd
 //      get a compatible mask type for a SIMD vector type
 //      default: type := bool
 //
+//  - native_type:
+//      get the native type for a SIMD vectory type
+//      mask types that are based on unions may map to int_type<T>
+//      default: n/a
+//
 //  - is_simd_vector
 //      check if T is a SIMD vector type
 //      default: type := false
@@ -297,6 +302,60 @@ template <>
 struct mask_type<simd::int8>
 {
     using type = simd::mask8;
+};
+
+#endif
+
+
+//-------------------------------------------------------------------------------------------------
+// Deduce native type from SIMD vector types
+//
+
+// general (n/a) ------------------------------------------
+
+template <typename T>
+struct native_type;
+
+// SSE ----------------------------------------------------
+
+template <>
+struct native_type<simd::float4>
+{
+    using type = __m128;
+};
+
+template <>
+struct native_type<simd::int4>
+{
+    using type = __m128i;
+};
+
+template <>
+struct native_type<simd::mask4>
+{
+    using type = __m128i;
+};
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// AVX ----------------------------------------------------
+
+template <>
+struct native_type<simd::float8>
+{
+    using type = __m256;
+};
+
+template <>
+struct native_type<simd::int8>
+{
+    using type = __m256i;
+};
+
+template <>
+struct native_type<simd::mask8>
+{
+    using type = __m256i;
 };
 
 #endif
