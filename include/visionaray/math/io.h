@@ -11,7 +11,10 @@
 #include <ostream>
 #include <sstream>
 
+#include "matrix.h"
 #include "quat.h"
+#include "rect.h"
+#include "vector.h"
 
 
 namespace MATH_NAMESPACE
