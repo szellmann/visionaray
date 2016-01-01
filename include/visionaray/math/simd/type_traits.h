@@ -444,6 +444,12 @@ struct element_type<simd::int4>
     using type = int;
 };
 
+template <>
+struct element_type<simd::mask4>
+{
+    using type = bool;
+};
+
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 // AVX ----------------------------------------------------
@@ -458,6 +464,12 @@ template <>
 struct element_type<simd::int8>
 {
     using type = int;
+};
+
+template <>
+struct element_type<simd::mask8>
+{
+    using type = bool;
 };
 
 #endif
