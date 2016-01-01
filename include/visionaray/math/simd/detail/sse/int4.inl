@@ -135,7 +135,7 @@ VSNRAY_FORCE_INLINE int4 operator*(int4 const& u, int4 const& v)
 
 
 //-------------------------------------------------------------------------------------------------
-// Bitwise operators
+// Bitwise operations
 //
 
 VSNRAY_FORCE_INLINE int4 operator&(int4 const& u, int4 const& v)
@@ -161,6 +161,16 @@ VSNRAY_FORCE_INLINE int4 operator<<(int4 const& a, int count)
 VSNRAY_FORCE_INLINE int4 operator>>(int4 const& a, int count)
 {
     return _mm_srli_epi32(a, count);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Logical operations
+//
+
+VSNRAY_FORCE_INLINE mask4 operator&&(int4 const& u, int4 const& v)
+{
+    return _mm_and_si128(u, v);
 }
 
 
@@ -191,11 +201,6 @@ VSNRAY_FORCE_INLINE mask4 operator>=(int4 const& u, int4 const& v)
 VSNRAY_FORCE_INLINE mask4 operator==(int4 const& u, int4 const& v)
 {
     return _mm_cmpeq_epi32(u, v);
-}
-
-VSNRAY_FORCE_INLINE mask4 operator&&(int4 const& u, int4 const& v)
-{
-    return _mm_and_si128(u, v);
 }
 
 

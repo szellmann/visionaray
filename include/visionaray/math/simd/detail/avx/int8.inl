@@ -142,7 +142,7 @@ VSNRAY_FORCE_INLINE int8 operator/(int8 const& u, int8 const& v)
 
 
 //-------------------------------------------------------------------------------------------------
-// Bitwise operators
+// Bitwise operations
 //
 
 VSNRAY_FORCE_INLINE int8 operator&(int8 const& u, int8 const& v)

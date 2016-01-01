@@ -153,7 +153,7 @@ VSNRAY_FORCE_INLINE float4 operator/(float4 const& u, float4 const& v)
 
 
 //-------------------------------------------------------------------------------------------------
-// Bitwise operators
+// Bitwise operations
 //
 
 VSNRAY_FORCE_INLINE float4 operator&(float4 const& u, float4 const& v)
@@ -169,6 +169,21 @@ VSNRAY_FORCE_INLINE float4 operator|(float4 const& u, float4 const& v)
 VSNRAY_FORCE_INLINE float4 operator^(float4 const& u, float4 const& v)
 {
     return _mm_xor_ps(u, v);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Logical operations
+//
+
+VSNRAY_FORCE_INLINE mask4 operator&&(float4 const& u, float4 const& v)
+{
+    return _mm_and_ps(u, v);
+}
+
+VSNRAY_FORCE_INLINE mask4 operator||(float4 const& u, float4 const& v)
+{
+    return _mm_and_ps(u, v);
 }
 
 
@@ -204,16 +219,6 @@ VSNRAY_FORCE_INLINE mask4 operator==(float4 const& u, float4 const& v)
 VSNRAY_FORCE_INLINE mask4 operator!=(float4 const& u, float4 const& v)
 {
     return _mm_cmpneq_ps(u, v);
-}
-
-VSNRAY_FORCE_INLINE mask4 operator&&(float4 const& u, float4 const& v)
-{
-    return _mm_and_ps(u, v);
-}
-
-VSNRAY_FORCE_INLINE mask4 operator||(float4 const& u, float4 const& v)
-{
-    return _mm_and_ps(u, v);
 }
 
 
