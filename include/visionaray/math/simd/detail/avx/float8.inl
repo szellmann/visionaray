@@ -258,7 +258,7 @@ VSNRAY_FORCE_INLINE mask8 isinf(float8 const& v)
 
 VSNRAY_FORCE_INLINE mask8 isnan(float8 const& v)
 {
-    return v != v;
+    return _mm256_cmp_ps(v, v, _CMP_NEQ_UQ); // v != v unordered
 }
 
 VSNRAY_FORCE_INLINE mask8 isfinite(float8 const& v)
