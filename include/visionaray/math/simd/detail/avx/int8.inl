@@ -221,5 +221,20 @@ VSNRAY_FORCE_INLINE mask8 operator==(int8 const& u, int8 const& v)
     return _mm256_cmp_ps(reinterpret_as_float(u), reinterpret_as_float(v), _CMP_EQ_OQ);
 }
 
+VSNRAY_FORCE_INLINE mask8 operator<=(int8 const& u, int8 const& v)
+{
+    return u < v || u == v;
+}
+
+VSNRAY_FORCE_INLINE mask8 operator>=(int8 const& u, int8 const& v)
+{
+    return u > v || u == v;
+}
+
+VSNRAY_FORCE_INLINE mask8 operator!=(int8 const& u, int8 const& v)
+{
+    return !(u == v);
+}
+
 } // simd
 } // MATH_NAMESPACE

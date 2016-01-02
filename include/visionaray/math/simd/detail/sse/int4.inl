@@ -193,19 +193,24 @@ VSNRAY_FORCE_INLINE mask4 operator>(int4 const& u, int4 const& v)
     return _mm_cmpgt_epi32(u, v);
 }
 
+VSNRAY_FORCE_INLINE mask4 operator==(int4 const& u, int4 const& v)
+{
+    return _mm_cmpeq_epi32(u, v);
+}
+
 VSNRAY_FORCE_INLINE mask4 operator<=(int4 const& u, int4 const& v)
 {
-    return _mm_or_si128(_mm_cmplt_epi32(u, v), _mm_cmpeq_epi32(u, v));
+    return u < v || u == v;
 }
 
 VSNRAY_FORCE_INLINE mask4 operator>=(int4 const& u, int4 const& v)
 {
-    return _mm_or_si128(_mm_cmpgt_epi32(u, v), _mm_cmpeq_epi32(u, v));
+    return u > v || u == v;
 }
 
-VSNRAY_FORCE_INLINE mask4 operator==(int4 const& u, int4 const& v)
+VSNRAY_FORCE_INLINE mask4 operator!=(int4 const& u, int4 const& v)
 {
-    return _mm_cmpeq_epi32(u, v);
+    return !(u == v);
 }
 
 
