@@ -34,7 +34,7 @@ class vector;
 template <size_t N /* rows */, size_t M /* columns */, typename T>
 class matrix;
 
-template <size_t Dim, typename T>
+template <size_t Dim, typename T, typename P = unsigned>
 class basic_plane;
 
 template <typename T>

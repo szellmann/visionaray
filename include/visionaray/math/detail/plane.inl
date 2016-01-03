@@ -4,30 +4,22 @@
 namespace MATH_NAMESPACE
 {
 
-
 //--------------------------------------------------------------------------------------------------
-// plnae3 members
+// plane3 members
 //
 
-template <typename T>
-inline basic_plane<3, T>::basic_plane()
-{
-}
-
-template <typename T>
-inline basic_plane<3, T>::basic_plane(vector<3, T> const& n, T o)
+template <size_t Dim, typename T, typename P>
+inline basic_plane<Dim, T, P>::basic_plane(vector<Dim, T> const& n, T o)
     : normal(n)
     , offset(o)
 {
 }
 
-template <typename T>
-inline basic_plane<3, T>::basic_plane(vector<3, T> const& n, vector<3, T> const& p)
+template <size_t Dim, typename T, typename P>
+inline basic_plane<Dim, T, P>::basic_plane(vector<Dim, T> const& n, vector<Dim, T> const& p)
     : normal(n)
     , offset(dot(n, p))
 {
 }
 
 } // MATH_NAMESPACE
-
-

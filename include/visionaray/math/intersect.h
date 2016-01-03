@@ -27,55 +27,6 @@ struct hit_record;
 
 
 //-------------------------------------------------------------------------------------------------
-// ray / plane
-//
-
-template <typename T>
-struct hit_record<basic_ray<T>, basic_plane<3, T>>
-{
-    using value_type = T;
-    using mask_type = typename simd::mask_type<T>::type;
-
-    MATH_FUNC hit_record()
-        : hit(false)
-        , t(numeric_limits<float>::max())
-        , pos(T(0.0))
-    {
-    }
-
-    mask_type               hit;
-    value_type              t;
-    vector<3, value_type>   pos;
-
-};
-
-template <typename T>
-MATH_FUNC
-inline hit_record<basic_ray<T>, basic_plane<3, T>> intersect(
-        basic_ray<T> const&         ray,
-        basic_plane<3, T> const&    p
-        )
-{
-
-    hit_record<basic_ray<T>, basic_plane<3, T>> result;
-    T s = dot(p.normal, ray.dir);
-
-    if (s == T(0.0))
-    {
-        result.hit = false;
-    }
-    else
-    {
-        result.hit = true;
-        result.t   = ( p.offset - dot(p.normal, ray.ori) ) / s;
-        result.pos = ray.ori + result.t * ray.dir;
-    }
-    return result;
-
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // ray / aabb
 //
 
@@ -266,6 +217,45 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
     result.prim_id = sphere.prim_id;
     result.geom_id = sphere.geom_id;
     result.t = select( valid, select( t1 > t2, t2, t1 ), T(-1.0) );
+    return result;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// ray / plane
+//
+
+template <typename T, typename U>
+MATH_FUNC
+inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
+        basic_ray<T> const&                 ray,
+        basic_plane<3, U, unsigned> const&  p
+        )
+{
+    hit_record<basic_ray<T>, primitive<unsigned>> result;
+
+    vector<3, T> normal(p.normal);
+    T offset(p.offset);
+
+    T s = dot(normal, ray.dir);
+
+    result.hit = (s != T(0.0));
+
+    result.prim_id = p.prim_id;
+    result.geom_id = p.geom_id;
+
+    result.t = select(
+            result.hit,
+            ( offset - dot(normal, ray.ori) ) / s,
+            T(-1.0)
+            );
+
+    result.isect_pos = select(
+            result.hit,
+            ray.ori + result.t * ray.dir,
+            result.isect_pos
+            ); // TODO: sphere/triangle don't assign isect_pos in intersect
+
     return result;
 }
 

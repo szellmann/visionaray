@@ -235,6 +235,24 @@ inline vector<3, simd::float8> get_normal(
 
 
 //-------------------------------------------------------------------------------------------------
+// Get normal from plane primitive
+//
+
+template <typename HR, typename T, typename NormalBinding>
+VSNRAY_FUNC
+inline vector<3, T> get_normal(
+        HR const&                   hr,
+        basic_plane<3, T> const&    plane,
+        NormalBinding               /* */
+        )
+{
+    VSNRAY_UNUSED(hr);
+
+    return plane.normal;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Get normal on sphere surface
 //
 

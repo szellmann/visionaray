@@ -454,6 +454,15 @@ public:
     {
     }
 
+    // TODO: with get_normal() having a streamlined interface,
+    // we won't require explicit specializations for planes and spheres,
+    // thus making 'generic_primitive' really generic..
+    VSNRAY_FUNC
+    return_type operator()(basic_plane<3, float> const& plane) const
+    {
+        return get_normal(hr_, plane, NormalBinding{}); // TODO
+    }
+
     VSNRAY_FUNC
     return_type operator()(basic_sphere<float> const& sphere) const
     {
