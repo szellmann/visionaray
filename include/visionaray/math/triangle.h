@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_MATH_TRIANGLE_H
-#define VSNRAY_MATH_TRIANGLE_H
+#define VSNRAY_MATH_TRIANGLE_H 1
 
 #include "primitive.h"
 #include "vector.h"
@@ -25,12 +27,7 @@ public:
             vector<Dim, T> const& v1,
             vector<Dim, T> const& e1,
             vector<Dim, T> const& e2
-            )
-        : v1(v1)
-        , e1(e1)
-        , e2(e2)
-    {
-    }
+            );
 
     vec_type v1;
     vec_type e1;

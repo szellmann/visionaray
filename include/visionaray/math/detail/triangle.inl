@@ -8,6 +8,23 @@ namespace MATH_NAMESPACE
 {
 
 //-------------------------------------------------------------------------------------------------
+// Triangle members
+//
+
+template <size_t Dim, typename T, typename P>
+basic_triangle<Dim, T, P>::basic_triangle(
+        vector<Dim, T> const& v1,
+        vector<Dim, T> const& e1,
+        vector<Dim, T> const& e2
+        )
+    : v1(v1)
+    , e1(e1)
+    , e2(e2)
+{
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Geometric functions
 //
 
