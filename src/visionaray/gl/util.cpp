@@ -54,13 +54,34 @@ static void debug_callback(
         GLenum          /*source*/,
         GLenum          type,
         GLuint          /*id*/,
-        GLenum          /*severity*/,
+        GLenum          severity,
         GLsizei         /*length*/,
         const GLchar*   message,
-        GLvoid*         /*userParam*/
+        GLvoid*         user_param
         )
 {
-    std::cerr << "GL " << get_debug_type_string(type) << " " << message << std::endl;
+    using namespace gl;
+
+    debug_params params = *static_cast<debug_params*>(user_param);
+
+    if (
+        // severity
+        ( severity == GL_DEBUG_SEVERITY_NOTIFICATION    && params.severity <= debug_severity::Notification    ) ||
+        ( severity == GL_DEBUG_SEVERITY_LOW             && params.severity <= debug_severity::Low             ) ||
+        ( severity == GL_DEBUG_SEVERITY_MEDIUM          && params.severity <= debug_severity::Medium          ) ||
+        ( severity == GL_DEBUG_SEVERITY_HIGH            && params.severity <= debug_severity::High            ) ||
+
+        // whitelisted message types, override severity param
+        ( type     == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR && (params.types    & debug_type::DeprecatedBehavior) ) ||
+        ( type     == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR  && (params.types    & debug_type::UndefinedBehavior)  ) ||
+        ( type     == GL_DEBUG_TYPE_PORTABILITY         && (params.types    & debug_type::Portability)        ) ||
+        ( type     == GL_DEBUG_TYPE_PERFORMANCE         && (params.types    & debug_type::Performance)        ) ||
+        ( type     == GL_DEBUG_TYPE_OTHER               && (params.types    & debug_type::Other)              )
+        )
+    {
+        std::cerr << "GL " << get_debug_type_string(type) << " " << message << '\n';
+    }
+
     if (type == GL_DEBUG_TYPE_ERROR)
     {
 #ifdef _WIN32
@@ -69,7 +90,7 @@ static void debug_callback(
             DebugBreak();
         }
 #else
-        std::cerr << visionaray::util::backtrace() << std::endl;
+        std::cerr << visionaray::util::backtrace() << '\n';
         throw std::runtime_error("OpenGL error");
 #endif
     }
@@ -82,7 +103,7 @@ static void debug_callback(
 namespace visionaray
 {
 
-void gl::init_debug_callback()
+void gl::init_debug_callback(gl::debug_params params)
 {
 #if defined(GL_KHR_debug)
     if (GLEW_KHR_debug)
@@ -90,7 +111,9 @@ void gl::init_debug_callback()
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
-        glDebugMessageCallback((GLDEBUGPROC)debug_callback, 0);
+        static VSNRAY_THREAD_LOCAL gl::debug_params p = params;
+
+        glDebugMessageCallback((GLDEBUGPROC)debug_callback, (GLvoid*)&p);
     }
 #elif defined(GL_ARB_debug_output)
     if (GLEW_ARB_debug_output)
