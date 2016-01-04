@@ -1263,7 +1263,27 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
         return;
     }
 
-    impl_->gl_debug_callback.activate();
+
+    // Activate debug callback
+
+    gl::debug_params params;
+    if (opencover::cover->debugLevel(4))
+    {
+        params.severity = gl::debug_severity::Notification;
+    }
+    else if (opencover::cover->debugLevel(2))
+    {
+        params.severity = gl::debug_severity::Low;
+    }
+    else if (opencover::cover->debugLevel(1))
+    {
+        params.severity = gl::debug_severity::Medium;
+    }
+    else if (opencover::cover->debugLevel(0))
+    {
+        params.severity = gl::debug_severity::High;
+    }
+    impl_->gl_debug_callback.activate(params);
 
     impl_->store_gl_state();
 
