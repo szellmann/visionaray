@@ -95,7 +95,7 @@ inline bool rectangle<xywh_layout, T>::contains(vector<2, T> const& v) const
 
 template <typename T>
 MATH_FUNC
-inline bool rectangle<xywh_layout, T>::contains(rectangle<xywh_layout, T> const& r) const
+inline bool rectangle<xywh_layout, T>::contains(rectangle const& r) const
 {
     vector<2, T> v1(r.x, r.y);
     vector<2, T> v2(r.x + r.w, r.y + r.h);
