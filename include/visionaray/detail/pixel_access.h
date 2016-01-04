@@ -88,7 +88,7 @@ namespace pixel_access
 
 template <typename InputColor, typename OutputColor>
 VSNRAY_FUNC
-void store(int x, int y, recti const& viewport, InputColor const& color, OutputColor* buffer)
+inline void store(int x, int y, recti const& viewport, InputColor const& color, OutputColor* buffer)
 {
     convert(buffer[y * viewport.w + x], color);
 }
@@ -105,7 +105,7 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 VSNRAY_CPU_FUNC
-void store(int x, int y, recti const& viewport, vector<3, FloatT> const& color, OutputColor* buffer)
+inline void store(int x, int y, recti const& viewport, vector<3, FloatT> const& color, OutputColor* buffer)
 {
     using float_array = typename simd::aligned_array<FloatT>::type;
 
@@ -147,7 +147,7 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 VSNRAY_CPU_FUNC
-void store(int x, int y, recti const& viewport, vector<4, FloatT> const& color, OutputColor* buffer)
+inline void store(int x, int y, recti const& viewport, vector<4, FloatT> const& color, OutputColor* buffer)
 {
     using float_array = typename simd::aligned_array<FloatT>::type;
 
@@ -185,7 +185,7 @@ void store(int x, int y, recti const& viewport, vector<4, FloatT> const& color, 
 //
 
 VSNRAY_CPU_FUNC
-void store(int x, int y, recti const& viewport, vector<4, simd::float4> const& color, vector<4, float>* buffer)
+inline void store(int x, int y, recti const& viewport, vector<4, simd::float4> const& color, vector<4, float>* buffer)
 {
     using simd::store;
 
@@ -207,7 +207,7 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 VSNRAY_CPU_FUNC
-void store(int x, int y, recti const& viewport, FloatT const& value, float* buffer)
+inline void store(int x, int y, recti const& viewport, FloatT const& value, float* buffer)
 {
     using float_array = typename simd::aligned_array<FloatT>::type;
 
@@ -236,7 +236,7 @@ void store(int x, int y, recti const& viewport, FloatT const& value, float* buff
 
 template <typename T, typename OutputColor>
 VSNRAY_FUNC
-void store(int x, int y, recti const& viewport, result_record<T> const& rr, OutputColor* buffer)
+inline void store(int x, int y, recti const& viewport, result_record<T> const& rr, OutputColor* buffer)
 {
     store(x, y, viewport, rr.color, buffer);
 }
@@ -247,7 +247,7 @@ void store(int x, int y, recti const& viewport, result_record<T> const& rr, Outp
 
 template <typename T, typename Color, typename Depth>
 VSNRAY_FUNC
-void store(
+inline void store(
         int                     x,
         int                     y,
         recti const&            viewport,
@@ -270,7 +270,7 @@ void store(
 
 template <typename InputColor, typename OutputColor>
 VSNRAY_FUNC
-void get(int x, int y, recti const& viewport, InputColor& color, OutputColor const* buffer)
+inline void get(int x, int y, recti const& viewport, InputColor& color, OutputColor const* buffer)
 {
     convert(color, buffer[y * viewport.w + x]);
 }
@@ -281,7 +281,7 @@ void get(int x, int y, recti const& viewport, InputColor& color, OutputColor con
 
 template <typename OutputColor>
 VSNRAY_CPU_FUNC
-void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, OutputColor const* buffer)
+inline void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, OutputColor const* buffer)
 {
     auto c00 = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
     auto c01 = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
@@ -297,7 +297,7 @@ void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, Ou
 
 template <typename T>
 VSNRAY_CPU_FUNC
-void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, vector<3, T> const* buffer)
+inline void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, vector<3, T> const* buffer)
 {
     using OutputColor = vector<3, T>;
 
@@ -318,7 +318,7 @@ void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, ve
 
 template <typename OutputColor>
 VSNRAY_CPU_FUNC
-void get(int x, int y, recti const& viewport, vector<4, simd::float8>& color, OutputColor const* buffer)
+inline void get(int x, int y, recti const& viewport, vector<4, simd::float8>& color, OutputColor const* buffer)
 {
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
@@ -356,7 +356,7 @@ void get(int x, int y, recti const& viewport, vector<4, simd::float8>& color, Ou
 
 template <typename InputColor, typename OutputColor, typename T>
 VSNRAY_FUNC
-void blend(int x, int y, recti const& viewport, InputColor const& color, OutputColor* buffer, T sfactor, T dfactor)
+inline void blend(int x, int y, recti const& viewport, InputColor const& color, OutputColor* buffer, T sfactor, T dfactor)
 {
     InputColor dst;
 
@@ -374,7 +374,7 @@ void blend(int x, int y, recti const& viewport, InputColor const& color, OutputC
 
 template <typename S, typename OutputColor, typename T>
 VSNRAY_FUNC
-void blend(
+inline void blend(
         int                     x,
         int                     y,
         recti const&            viewport,
@@ -393,7 +393,7 @@ void blend(
 
 template <typename S, typename OutputColor, typename Depth, typename T>
 VSNRAY_FUNC
-void blend(
+inline void blend(
         int                     x,
         int                     y,
         recti const&            viewport,
