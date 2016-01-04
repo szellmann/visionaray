@@ -36,7 +36,7 @@ template <typename T>
 T int_from_mask(T const& a)
 {
     return a;
-};
+}
 
 template <typename F, typename I>
 basic_int<I> int_from_mask(basic_mask<F, I> const& m)
