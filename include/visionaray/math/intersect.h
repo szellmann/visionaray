@@ -8,8 +8,7 @@
 
 #include <type_traits>
 
-#include "simd/avx.h"
-#include "simd/sse.h"
+#include "simd/type_traits.h"
 
 #include "aabb.h"
 #include "limits.h"
