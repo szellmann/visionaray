@@ -24,11 +24,11 @@ public:
     vec_type normal;
     value_type offset;
 
-    basic_plane() = default;
+    MATH_FUNC basic_plane() = default;
 
     // NOTE: n must be normalized!
-    basic_plane(vec_type const& n, value_type o);
-    basic_plane(vec_type const& n, vec_type const& p);
+    MATH_FUNC basic_plane(vec_type const& n, value_type o);
+    MATH_FUNC basic_plane(vec_type const& n, vec_type const& p);
 
 };
 
