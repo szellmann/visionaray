@@ -120,5 +120,40 @@ VSNRAY_FORCE_INLINE mask4 operator||(mask4 const& a, mask4 const& b)
     return a | b;
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+VSNRAY_FORCE_INLINE mask4 operator<(mask4 const& u, mask4 const& v)
+{
+    return _mm_cmplt_epi32(u.i, v.i);
+}
+
+VSNRAY_FORCE_INLINE mask4 operator>(mask4 const& u, mask4 const& v)
+{
+    return _mm_cmpgt_epi32(u.i, v.i);
+}
+
+VSNRAY_FORCE_INLINE mask4 operator==(mask4 const& u, mask4 const& v)
+{
+    return _mm_cmpeq_epi32(u.i, v.i);
+}
+
+VSNRAY_FORCE_INLINE mask4 operator<=(mask4 const& u, mask4 const& v)
+{
+    return u < v || u == v;
+}
+
+VSNRAY_FORCE_INLINE mask4 operator>=(mask4 const& u, mask4 const& v)
+{
+    return u > v || u == v;
+}
+
+VSNRAY_FORCE_INLINE mask4 operator!=(mask4 const& u, mask4 const& v)
+{
+    return !(u == v);
+}
+
 } // simd
 } // MATH_NAMESPACE
