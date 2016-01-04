@@ -47,15 +47,125 @@ void test_representability()
     EXPECT_TRUE ( all(isfinite(T(DBL_MIN / 2.0))) );
 }
 
+static void test_pred_4()
+{
+    using M = simd::mask4;
+
+    M z(0,0,0,0);
+    M a(1,1,0,0);
+    M i(1,1,1,1);
+
+    EXPECT_TRUE(!any(z) );
+    EXPECT_TRUE(!all(z) );
+    EXPECT_TRUE( any(a) );
+    EXPECT_TRUE(!all(a) );
+    EXPECT_TRUE( any(i) );
+    EXPECT_TRUE( all(i) );
+}
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+static void test_pred_8()
+{
+    using M = simd::mask8;
+
+    M z(0,0,0,0, 0,0,0,0);
+    M a(1,1,0,0, 1,1,0,0);
+    M i(1,1,1,1, 1,1,1,1);
+
+    EXPECT_TRUE(!any(z) );
+    EXPECT_TRUE(!all(z) );
+    EXPECT_TRUE( any(a) );
+    EXPECT_TRUE(!all(a) );
+    EXPECT_TRUE( any(i) );
+    EXPECT_TRUE( all(i) );
+}
+#endif
+
+static void test_logical_4()
+{
+    using M = simd::mask4;
+
+    M a(1,1,0,0);
+    M b(1,0,1,0);
+    M c(0,0,1,1);
+
+    EXPECT_TRUE( all((a && b) == M(1,0,0,0)) );
+    EXPECT_TRUE( all((a && c) == M(0,0,0,0)) );
+    EXPECT_TRUE( all((a || b) == M(1,1,1,0)) );
+    EXPECT_TRUE( all((a || c) == M(1,1,1,1)) );
+
+    EXPECT_TRUE( any(a && b) );
+    EXPECT_TRUE(!any(a && c) );
+    EXPECT_TRUE( any(a || b) );
+    EXPECT_TRUE( all(a || c) );
+
+    EXPECT_TRUE( any(!(a && b)) );
+    EXPECT_TRUE( all(!(a && c)) );
+    EXPECT_TRUE( any(!(a || b)) );
+    EXPECT_TRUE(!any(!(a || c)) );
+}
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+static void test_logical_8()
+{
+    using M = simd::mask8;
+
+    M a(1,1,0,0, 1,1,0,0);
+    M b(1,0,1,0, 1,0,1,0);
+    M c(0,0,1,1, 0,0,1,1);
+
+    EXPECT_TRUE( all((a && b) == M(1,0,0,0, 1,0,0,0)) );
+    EXPECT_TRUE( all((a && c) == M(0,0,0,0, 0,0,0,0)) );
+    EXPECT_TRUE( all((a || b) == M(1,1,1,0, 1,1,1,0)) );
+    EXPECT_TRUE( all((a || c) == M(1,1,1,1, 1,1,1,1)) );
+
+    EXPECT_TRUE( any(a && b) );
+    EXPECT_TRUE(!any(a && c) );
+    EXPECT_TRUE( any(a || b) );
+    EXPECT_TRUE( all(a || c) );
+
+    EXPECT_TRUE( any(!(a && b)) );
+    EXPECT_TRUE( all(!(a && c)) );
+    EXPECT_TRUE( any(!(a || b)) );
+    EXPECT_TRUE(!any(!(a || c)) );
+}
+#endif
+
 
 //-------------------------------------------------------------------------------------------------
 // Test isnan(), isinf(), and isfinite()
 //
 
-TEST(SSE, Representability)
+TEST(SIMD, Representability)
 {
     test_representability<simd::float4>();
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
     test_representability<simd::float8>();
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Test all() and any()
+//
+
+TEST(SIMD, Pred)
+{
+    test_pred_4();
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+    test_pred_8();
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Test logical operations
+//
+
+TEST(SIMD, Logical)
+{
+    test_logical_4();
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+    test_logical_8();
 #endif
 }
