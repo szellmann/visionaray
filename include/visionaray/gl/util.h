@@ -7,7 +7,6 @@
 #define VSNRAY_GL_UTIL_H 1
 
 #include <string>
-#include <vector>
 
 #include <visionaray/detail/platform.h>
 
@@ -32,53 +31,6 @@ namespace visionaray
 {
 namespace gl
 {
-
-//-------------------------------------------------------------------------------------------------
-// Flags used in debug callback function
-//
-
-enum debug_severity
-{
-    Notification,
-    Low,
-    Medium,
-    High
-};
-
-enum debug_type
-{
-    // can be combined bitwise
-
-    Error               = 0x00000001,
-    DeprecatedBehavior  = 0x00000002,
-    UndefinedBehavior   = 0x00000004,
-    Portability         = 0x00000008,
-    Performance         = 0x00000010,
-    Other               = 0x00000020,
-
-    None                = 0x00000000
-};
-
-
-//-------------------------------------------------------------------------------------------------
-// Debug parameters passed to debug callback function
-//
-//  param severity
-//      filter messages by severity
-//
-//  param types
-//      overrides param severity
-//      whitelist several debug message types
-//      bitwise combination of debug_type values
-//
-
-struct debug_params
-{
-    debug_severity  severity    = debug_severity::High;
-    debug_type      types       = debug_type::None;
-};
-
-void init_debug_callback(debug_params params = debug_params());
 
 std::string last_error();
 
@@ -119,7 +71,6 @@ void blend_pixels(
         );
 
 recti viewport();
-
 
 } // gl
 } // visionaray

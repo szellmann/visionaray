@@ -1,18 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <cstdio>
-
-#include <iostream>
-#include <ostream>
-#include <stdexcept>
-
-#include <visionaray/detail/platform.h>
-
-#ifdef VSNRAY_OS_WIN32
-#include <windows.h>
-#endif
-
 #include <GL/glew.h>
 
 #include <visionaray/gl/util.h>
@@ -24,103 +12,8 @@
 namespace gl = visionaray::gl;
 
 
-#if defined(GL_KHR_debug)
-
-
-static char const* get_debug_type_string(GLenum type)
-{
-    switch (type)
-    {
-    case GL_DEBUG_TYPE_ERROR:
-        return "error";
-    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-        return "deprecated behavior detected";
-    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-        return "undefined behavior detected";
-    case GL_DEBUG_TYPE_PORTABILITY:
-        return "portablility warning";
-    case GL_DEBUG_TYPE_PERFORMANCE:
-        return "performance warning";
-    case GL_DEBUG_TYPE_OTHER:
-        return "other";
-    case GL_DEBUG_TYPE_MARKER:
-        return "marker";
-    }
-
-    return "{unknown type}";
-}
-
-static void debug_callback(
-        GLenum          /*source*/,
-        GLenum          type,
-        GLuint          /*id*/,
-        GLenum          severity,
-        GLsizei         /*length*/,
-        const GLchar*   message,
-        GLvoid*         user_param
-        )
-{
-    using namespace gl;
-
-    debug_params params = *static_cast<debug_params*>(user_param);
-
-    if (
-        // severity
-        ( severity == GL_DEBUG_SEVERITY_NOTIFICATION    && params.severity <= debug_severity::Notification    ) ||
-        ( severity == GL_DEBUG_SEVERITY_LOW             && params.severity <= debug_severity::Low             ) ||
-        ( severity == GL_DEBUG_SEVERITY_MEDIUM          && params.severity <= debug_severity::Medium          ) ||
-        ( severity == GL_DEBUG_SEVERITY_HIGH            && params.severity <= debug_severity::High            ) ||
-
-        // whitelisted message types, override severity param
-        ( type     == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR && (params.types    & debug_type::DeprecatedBehavior) ) ||
-        ( type     == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR  && (params.types    & debug_type::UndefinedBehavior)  ) ||
-        ( type     == GL_DEBUG_TYPE_PORTABILITY         && (params.types    & debug_type::Portability)        ) ||
-        ( type     == GL_DEBUG_TYPE_PERFORMANCE         && (params.types    & debug_type::Performance)        ) ||
-        ( type     == GL_DEBUG_TYPE_OTHER               && (params.types    & debug_type::Other)              )
-        )
-    {
-        std::cerr << "GL " << get_debug_type_string(type) << " " << message << '\n';
-    }
-
-    if (type == GL_DEBUG_TYPE_ERROR)
-    {
-#ifdef _WIN32
-        if (IsDebuggerPresent())
-        {
-            DebugBreak();
-        }
-#else
-        std::cerr << visionaray::util::backtrace() << '\n';
-        throw std::runtime_error("OpenGL error");
-#endif
-    }
-}
-
-
-#endif // GL_KHR_debug
-
-
 namespace visionaray
 {
-
-void gl::init_debug_callback(gl::debug_params params)
-{
-#if defined(GL_KHR_debug)
-    if (GLEW_KHR_debug)
-    {
-        glEnable(GL_DEBUG_OUTPUT);
-        glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-
-        static VSNRAY_THREAD_LOCAL gl::debug_params p = params;
-
-        glDebugMessageCallback((GLDEBUGPROC)debug_callback, (GLvoid*)&p);
-    }
-#elif defined(GL_ARB_debug_output)
-    if (GLEW_ARB_debug_output)
-    {
-    }
-#endif
-}
 
 std::string gl::last_error()
 {

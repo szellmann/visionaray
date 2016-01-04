@@ -27,6 +27,7 @@
 #include <cover/VRSceneGraph.h>
 #include <cover/VRViewer.h>
 
+#include <visionaray/gl/debug_callback.h>
 #include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
@@ -808,6 +809,8 @@ struct drawable::impl
 
     bvh_outline_renderer                    outlines;
 
+    gl::debug_callback                      gl_debug_callback;
+
     bool                                    glew_init       = false;
 
     std::shared_ptr<render_state>           state           = nullptr;
@@ -1260,7 +1263,7 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
         return;
     }
 
-    gl::init_debug_callback();
+    impl_->gl_debug_callback.activate();
 
     impl_->store_gl_state();
 

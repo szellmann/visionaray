@@ -79,6 +79,7 @@ set(VSNRAY_HEADERS
     # OpenGL
 
     ${HEADER_DIR}/gl/compositing.h
+    ${HEADER_DIR}/gl/debug_callback.h
     ${HEADER_DIR}/gl/handle.h
     ${HEADER_DIR}/gl/util.h
 
@@ -204,6 +205,7 @@ set(VSNRAY_SOURCES
 
     detail/spd/d65.cpp
 
+    gl/debug_callback.cpp
     gl/handle.cpp
     gl/util.cpp
 

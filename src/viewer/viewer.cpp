@@ -36,7 +36,7 @@
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
-#include <visionaray/gl/util.h>
+#include <visionaray/gl/debug_callback.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
 #include <visionaray/bvh.h>
@@ -190,6 +190,7 @@ struct renderer : viewer_type
 
     visionaray::frame_counter   counter;
     bvh_outline_renderer        outlines;
+    gl::debug_callback          gl_debug_callback;
 
 protected:
 
@@ -669,7 +670,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    gl::init_debug_callback();
+    rend.gl_debug_callback.activate();
 
     // Load the scene
     std::cout << "Loading model...\n";
