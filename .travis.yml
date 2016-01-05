@@ -62,7 +62,6 @@ script:
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then printf "set(GLEW_FOUND TRUE)\n" >> cmake/FindGLEW.cmake; fi
     - mkdir -p build
     - cd build
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1"; fi
-    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1" -DGLEW_LIBRARY:FILEPATH=/usr/local/lib/libGLEW.dylib -DGLEW_INCLUDE_DIR:PATH=/usr/local/include; fi
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1"
     - make -j5
     - sudo make install
