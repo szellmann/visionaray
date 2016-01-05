@@ -33,7 +33,6 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${CMD_LINE_INCLUDE_DIR})
 
 add_subdirectory(ao)
-add_subdirectory(collision)
 add_subdirectory(generic_primitive)
 add_subdirectory(intersector)
 add_subdirectory(minimal)
