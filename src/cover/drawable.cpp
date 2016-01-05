@@ -1269,19 +1269,19 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
     gl::debug_params params;
     if (opencover::cover->debugLevel(4))
     {
-        params.severity = gl::debug_severity::Notification;
+        params.level = gl::debug_level::Notification;
     }
     else if (opencover::cover->debugLevel(2))
     {
-        params.severity = gl::debug_severity::Low;
+        params.level = gl::debug_level::Low;
     }
     else if (opencover::cover->debugLevel(1))
     {
-        params.severity = gl::debug_severity::Medium;
+        params.level = gl::debug_level::Medium;
     }
     else if (opencover::cover->debugLevel(0))
     {
-        params.severity = gl::debug_severity::High;
+        params.level = gl::debug_level::High;
     }
     impl_->gl_debug_callback.activate(params);
 

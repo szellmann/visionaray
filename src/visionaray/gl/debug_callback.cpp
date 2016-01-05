@@ -70,17 +70,17 @@ static void debug_callback_func(
 
     if (
         // severity
-        ( severity == GL_DEBUG_SEVERITY_NOTIFICATION    && params.severity <= debug_severity::Notification    ) ||
-        ( severity == GL_DEBUG_SEVERITY_LOW             && params.severity <= debug_severity::Low             ) ||
-        ( severity == GL_DEBUG_SEVERITY_MEDIUM          && params.severity <= debug_severity::Medium          ) ||
-        ( severity == GL_DEBUG_SEVERITY_HIGH            && params.severity <= debug_severity::High            ) ||
+        ( severity == GL_DEBUG_SEVERITY_NOTIFICATION    && params.level <= debug_level::Notification       ) ||
+        ( severity == GL_DEBUG_SEVERITY_LOW             && params.level <= debug_level::Low                ) ||
+        ( severity == GL_DEBUG_SEVERITY_MEDIUM          && params.level <= debug_level::Medium             ) ||
+        ( severity == GL_DEBUG_SEVERITY_HIGH            && params.level <= debug_level::High               ) ||
 
-        // whitelisted message types, override severity param
-        ( type     == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR && (params.types    & debug_type::DeprecatedBehavior) ) ||
-        ( type     == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR  && (params.types    & debug_type::UndefinedBehavior)  ) ||
-        ( type     == GL_DEBUG_TYPE_PORTABILITY         && (params.types    & debug_type::Portability)        ) ||
-        ( type     == GL_DEBUG_TYPE_PERFORMANCE         && (params.types    & debug_type::Performance)        ) ||
-        ( type     == GL_DEBUG_TYPE_OTHER               && (params.types    & debug_type::Other)              )
+        // whitelisted message types, override level param
+        ( type     == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR && (params.types & debug_type::DeprecatedBehavior) ) ||
+        ( type     == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR  && (params.types & debug_type::UndefinedBehavior)  ) ||
+        ( type     == GL_DEBUG_TYPE_PORTABILITY         && (params.types & debug_type::Portability)        ) ||
+        ( type     == GL_DEBUG_TYPE_PERFORMANCE         && (params.types & debug_type::Performance)        ) ||
+        ( type     == GL_DEBUG_TYPE_OTHER               && (params.types & debug_type::Other)              )
         )
     {
         std::cerr << "GL " << get_debug_type_string(type) << " " << message << '\n';

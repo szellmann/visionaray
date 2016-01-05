@@ -29,7 +29,7 @@ namespace gl
 // Flags used in debug callback function
 //
 
-enum debug_severity
+enum debug_level
 {
     Notification,
     Low,
@@ -55,19 +55,19 @@ enum debug_type
 //-------------------------------------------------------------------------------------------------
 // Debug parameters passed to debug callback function
 //
-//  param severity
+//  param level
 //      filter messages by severity
 //
 //  param types
-//      overrides param severity
+//      overrides param level
 //      whitelist several debug message types
 //      bitwise combination of debug_type values
 //
 
 struct debug_params
 {
-    debug_severity  severity    = debug_severity::High;
-    debug_type      types       = debug_type::None;
+    debug_level level   = debug_level::High;
+    debug_type  types   = debug_type::None;
 };
 
 
