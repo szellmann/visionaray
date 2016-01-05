@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <cfloat>
+#include <limits>
 
 #include <visionaray/math/math.h>
 
@@ -81,6 +82,190 @@ static void test_pred_8()
 }
 #endif
 
+static void test_cmp_4()
+{
+    using F = simd::float4;
+    using I = simd::int4;
+    using M = simd::mask4;
+
+    // float
+
+    {
+        F a(1.0f, 2.0f, 3.0f, 4.0f);
+        F b(5.0f, 6.0f, 7.0f, 8.0f);
+        F c(1.0f, 0.0f, 3.0f, 0.0f);
+        F x(std::numeric_limits<float>::max());
+        F y(std::numeric_limits<float>::min());
+        F z(std::numeric_limits<float>::lowest());
+
+        EXPECT_TRUE( all(a == a) );
+        EXPECT_TRUE( all(a != b) );
+        EXPECT_TRUE( all(a <  b) );
+        EXPECT_TRUE( all(a <= b) );
+        EXPECT_TRUE( all(b >  a) );
+        EXPECT_TRUE( all(b >= a) );
+        EXPECT_TRUE( all(c <= a) );
+        EXPECT_TRUE( all(a >= c) );
+
+        EXPECT_TRUE( all((a > c) == M(0,1,0,1)) );
+        EXPECT_TRUE( all((c < a) == M(0,1,0,1)) );
+
+        EXPECT_TRUE( all(x >  F(0.0f)) );
+        EXPECT_TRUE( all(y >  F(0.0f)) );
+        EXPECT_TRUE( all(z <  F(0.0f)) );
+        EXPECT_TRUE( all(x >= F(0.0f)) );
+        EXPECT_TRUE( all(y >= F(0.0f)) );
+        EXPECT_TRUE( all(z <= F(0.0f)) );
+
+
+        EXPECT_TRUE( all(y  < x) );
+        EXPECT_TRUE( all(z  < y) );
+        EXPECT_TRUE( all(z  < x) );
+        EXPECT_TRUE( all(y <= x) );
+        EXPECT_TRUE( all(z <= y) );
+        EXPECT_TRUE( all(z <= x) );
+
+    }
+
+
+    // int
+
+    {
+        I a(1, 2, 3, 4);
+        I b(5, 6, 7, 8);
+        I c(1, 0, 3, 0);
+        I x(std::numeric_limits<int>::max());
+        I y(std::numeric_limits<int>::min());
+
+        EXPECT_TRUE( all(a == a) );
+        EXPECT_TRUE( all(a != b) );
+        EXPECT_TRUE( all(a <  b) );
+        EXPECT_TRUE( all(a <= b) );
+        EXPECT_TRUE( all(b >  a) );
+        EXPECT_TRUE( all(b >= a) );
+        EXPECT_TRUE( all(c <= a) );
+        EXPECT_TRUE( all(a >= c) );
+
+        EXPECT_TRUE( all((a > c) == M(0,1,0,1)) );
+        EXPECT_TRUE( all((c < a) == M(0,1,0,1)) );
+
+        EXPECT_TRUE( all(x >  I(0)) );
+        EXPECT_TRUE( all(y <  I(0)) );
+        EXPECT_TRUE( all(x >= I(0)) );
+        EXPECT_TRUE( all(y <= I(0)) );
+
+        EXPECT_TRUE( all(y <  x) );
+        EXPECT_TRUE( all(y <= x) );
+    }
+
+
+    // mask
+
+    {
+        M a(0,0,0,0);
+        M b(1,1,1,1);
+        M c(1,0,1,0);
+
+        EXPECT_TRUE( all(a == a) );
+        EXPECT_TRUE( all(a != b) );
+
+        EXPECT_TRUE( all((a == c) == M(0,1,0,1)) );
+        EXPECT_TRUE( all((a != c) == M(1,0,1,0)) );
+    }
+}
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+static void test_cmp_8()
+{
+    using F = simd::float8;
+    using I = simd::int8;
+    using M = simd::mask8;
+
+    // float
+
+    {
+        F a( 1.0f,  2.0f,  3.0f,  4.0f,   5.0f,  6.0f,  7.0f,  8.0f);
+        F b( 9.0f, 10.0f, 11.0f, 12.0f,  13.0f, 14.0f, 15.0f, 16.0f);
+        F c( 1.0f,  0.0f,  3.0f,  0.0f,   5.0f,  0.0f,  7.0f,  0.0f);
+        F x(std::numeric_limits<float>::max());
+        F y(std::numeric_limits<float>::min());
+        F z(std::numeric_limits<float>::lowest());
+
+        EXPECT_TRUE( all(a == a) );
+        EXPECT_TRUE( all(a != b) );
+        EXPECT_TRUE( all(a <  b) );
+        EXPECT_TRUE( all(a <= b) );
+        EXPECT_TRUE( all(b >  a) );
+        EXPECT_TRUE( all(b >= a) );
+        EXPECT_TRUE( all(c <= a) );
+        EXPECT_TRUE( all(a >= c) );
+
+        EXPECT_TRUE( all((a > c) == M(0,1,0,1, 0,1,0,1)) );
+        EXPECT_TRUE( all((c < a) == M(0,1,0,1, 0,1,0,1)) );
+
+        EXPECT_TRUE( all(x >  F(0.0f)) );
+        EXPECT_TRUE( all(y >  F(0.0f)) );
+        EXPECT_TRUE( all(z <  F(0.0f)) );
+        EXPECT_TRUE( all(x >= F(0.0f)) );
+        EXPECT_TRUE( all(y >= F(0.0f)) );
+        EXPECT_TRUE( all(z <= F(0.0f)) );
+
+        EXPECT_TRUE( all(y  < x) );
+        EXPECT_TRUE( all(z  < y) );
+        EXPECT_TRUE( all(z  < x) );
+        EXPECT_TRUE( all(y <= x) );
+        EXPECT_TRUE( all(z <= y) );
+        EXPECT_TRUE( all(z <= x) );
+    }
+
+
+    // int
+
+    {
+        I a( 1,  2,  3,   4,  5,  6,  7,  8);
+        I b( 9, 10, 11,  12, 13, 14, 15, 16);
+        I c( 1,  0,  3,  0,   5,  0,  7,  0);
+        I x(std::numeric_limits<int>::max());
+        I y(std::numeric_limits<int>::min());
+
+        EXPECT_TRUE( all(a == a) );
+        EXPECT_TRUE( all(a != b) );
+        EXPECT_TRUE( all(a <  b) );
+        EXPECT_TRUE( all(a <= b) );
+        EXPECT_TRUE( all(b >  a) );
+        EXPECT_TRUE( all(b >= a) );
+        EXPECT_TRUE( all(c <= a) );
+        EXPECT_TRUE( all(a >= c) );
+
+        EXPECT_TRUE( all((a > c) == M(0,1,0,1, 0,1,0,1)) );
+        EXPECT_TRUE( all((c < a) == M(0,1,0,1, 0,1,0,1)) );
+
+        EXPECT_TRUE( all(x >  I(0)) );
+        EXPECT_TRUE( all(y <  I(0)) );
+        EXPECT_TRUE( all(x >= I(0)) );
+        EXPECT_TRUE( all(y <= I(0)) );
+
+        EXPECT_TRUE( all(y <  x) );
+        EXPECT_TRUE( all(y <= x) );
+    }
+
+
+    // mask
+
+    {
+        M a(0,0,0,0, 0,0,0,0);
+        M b(1,1,1,1, 1,1,1,1);
+        M c(1,0,1,0, 1,0,1,0);
+
+        EXPECT_TRUE( all(a == a) );
+        EXPECT_TRUE( all(a != b) );
+
+        EXPECT_TRUE( all((a == c) == M(0,1,0,1, 0,1,0,1)) );
+        EXPECT_TRUE( all((a != c) == M(1,0,1,0, 1,0,1,0)) );
+    }
+}
+#endif
+
 static void test_logical_4()
 {
     using M = simd::mask4;
@@ -154,6 +339,19 @@ TEST(SIMD, Pred)
     test_pred_4();
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
     test_pred_8();
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Test comparisons
+//
+
+TEST(SIMD, Comparison)
+{
+    test_cmp_4();
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+    test_cmp_8();
 #endif
 }
 
