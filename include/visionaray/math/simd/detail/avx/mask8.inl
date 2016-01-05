@@ -138,29 +138,9 @@ VSNRAY_FORCE_INLINE mask8 operator||(mask8 const& a, mask8 const& b)
 // Comparisons
 //
 
-VSNRAY_FORCE_INLINE mask8 operator<(mask8 const& u, mask8 const& v)
-{
-    return _mm256_cmp_ps(float8(u.i), float8(v.i), _CMP_LT_OQ);
-}
-
-VSNRAY_FORCE_INLINE mask8 operator>(mask8 const& u, mask8 const& v)
-{
-    return _mm256_cmp_ps(float8(u.i), float8(v.i), _CMP_GT_OQ);
-}
-
 VSNRAY_FORCE_INLINE mask8 operator==(mask8 const& u, mask8 const& v)
 {
     return _mm256_cmp_ps(float8(u.i), float8(v.i), _CMP_EQ_OQ);
-}
-
-VSNRAY_FORCE_INLINE mask8 operator<=(mask8 const& u, mask8 const& v)
-{
-    return u < v || u == v;
-}
-
-VSNRAY_FORCE_INLINE mask8 operator>=(mask8 const& u, mask8 const& v)
-{
-    return u > v || u == v;
 }
 
 VSNRAY_FORCE_INLINE mask8 operator!=(mask8 const& u, mask8 const& v)
