@@ -6,6 +6,7 @@
 #ifndef VSNRAY_SCHEDULER_H
 #define VSNRAY_SCHEDULER_H 1
 
+#include <cstddef>
 #include <type_traits>
 #include <utility>
 
@@ -22,10 +23,27 @@ class render_target;
 
 namespace pixel_sampler
 {
+
+// Pixel sampler tag base ---------------------------------
+
 struct base_type {};
-struct uniform_type : base_type {};
+
+
+// Built-in pixel sampler types ---------------------------
+
+// Supersampling anti-aliasing
+template <size_t NumSamples>
+struct ssaa_type : base_type {};
+
+// 1x SSAA (no supersampling)
+using uniform_type = ssaa_type<1>;
+
+// Jittered pixel positions
 struct jittered_type : base_type {};
+
+// Jittered and successive blending
 struct jittered_blend_type : jittered_type {};
+
 }
 
 

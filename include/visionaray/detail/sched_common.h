@@ -128,6 +128,82 @@ inline R make_primary_ray(
             );
 }
 
+
+// 2x SSAA ------------------------------------------------
+
+template <typename R, typename Sampler, typename ...Args>
+VSNRAY_FUNC
+inline std::array<R, 2> make_primary_ray(
+        pixel_sampler::ssaa_type<2> /* */,
+        Sampler& samp,
+        unsigned x,
+        unsigned y,
+        Args&&... args
+        )
+{
+    VSNRAY_UNUSED(samp);
+
+    using S = typename R::scalar_type;
+
+    return {{
+        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.25), pixel<S>().y(y) - S(0.25), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.25), pixel<S>().y(y) + S(0.25), args...),
+        }};
+}
+
+// 4x SSAA ------------------------------------------------
+
+template <typename R, typename Sampler, typename ...Args>
+VSNRAY_FUNC
+inline std::array<R, 4> make_primary_ray(
+        pixel_sampler::ssaa_type<4> /* */,
+        Sampler& samp,
+        unsigned x,
+        unsigned y,
+        Args&&... args
+        )
+{
+    VSNRAY_UNUSED(samp);
+
+    using S = typename R::scalar_type;
+
+    return {{
+        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.125), pixel<S>().y(y) - S(0.375), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.375), pixel<S>().y(y) - S(0.125), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.125), pixel<S>().y(y) + S(0.375), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.375), pixel<S>().y(y) + S(0.125), args...)
+        }};
+}
+
+// 8x SSAA ------------------------------------------------
+
+template <typename R, typename Sampler, typename ...Args>
+VSNRAY_FUNC
+inline std::array<R, 8> make_primary_ray(
+        pixel_sampler::ssaa_type<8> /* */,
+        Sampler& samp,
+        unsigned x,
+        unsigned y,
+        Args&&... args
+        )
+{
+    VSNRAY_UNUSED(samp);
+
+    using S = typename R::scalar_type;
+
+    return {{
+        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.125), pixel<S>().y(y) - S(0.4375), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.375), pixel<S>().y(y) - S(0.3125), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.375), pixel<S>().y(y) - S(0.1875), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.125), pixel<S>().y(y) - S(0.0625), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.125), pixel<S>().y(y) + S(0.0625), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.375), pixel<S>().y(y) + S(0.1825), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.375), pixel<S>().y(y) + S(0.3125), args...),
+        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.125), pixel<S>().y(y) + S(0.4375), args...)
+        }};
+}
+
+
 template <
     typename R,
     size_t   Num,
@@ -412,6 +488,103 @@ inline void sample_pixel_impl(
     }
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// SSAA pixel sampler
+//
+
+template <
+    typename K,
+    typename R,
+    size_t Num,
+    typename Sampler,
+    pixel_format CF,
+    typename V,
+    typename ...Args
+    >
+VSNRAY_FUNC
+inline void sample_pixel_impl(
+        K                               kernel,
+        pixel_sampler::ssaa_type<Num>   /* */,
+        std::array<R, Num> const&       rays,
+        Sampler&                        samp,
+        unsigned                        frame_num,
+        render_target_ref<CF>           rt_ref,
+        unsigned                        x,
+        unsigned                        y,
+        V const&                        viewport,
+        Args&&...                       args
+        )
+{
+    VSNRAY_UNUSED(samp);
+    VSNRAY_UNUSED(frame_num);
+    VSNRAY_UNUSED(args...);
+
+    using S     = typename R::scalar_type;
+    using Color = typename decltype(kernel(R()))::color_type;
+
+    auto ray_ptr = rays.data();
+
+    auto frame_begin = 0;
+    auto frame_end   = Num;
+
+    //TODO: clear method in render target?
+    pixel_access::store(x, y, viewport, Color(0.0), rt_ref.color());
+
+    for (size_t frame = frame_begin; frame < frame_end; ++frame)
+    {
+        auto result = kernel(*ray_ptr++);
+        auto alpha = S(1.0) / S(Num);
+        pixel_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0));
+    }
+}
+
+template <
+    typename K,
+    typename R,
+    size_t Num,
+    typename Sampler,
+    pixel_format CF,
+    pixel_format DF,
+    typename V,
+    typename ...Args
+    >
+VSNRAY_FUNC
+inline void sample_pixel_impl(
+        K                               kernel,
+        pixel_sampler::ssaa_type<Num>   /* */,
+        std::array<R, Num> const&       rays,
+        Sampler&                        samp,
+        unsigned                        frame_num,
+        render_target_ref<CF, DF>       rt_ref,
+        unsigned                        x,
+        unsigned                        y,
+        V const&                        viewport,
+        Args&&...                       args
+        )
+{
+    VSNRAY_UNUSED(samp);
+    VSNRAY_UNUSED(args...);
+
+    using S      = typename R::scalar_type;
+    using Result = decltype(kernel(R{}));
+
+    auto ray_ptr = rays.data();
+
+    auto frame_begin = frame_num;
+    auto frame_end   = frame_num + Num;
+
+    //TODO: clear method in render target?
+    pixel_access::store(x, y, viewport, Result{}, rt_ref.color(), rt_ref.depth());
+
+    for (size_t frame = frame_begin; frame < frame_end; ++frame)
+    {
+        auto result = kernel(*ray_ptr++);
+        result.depth = select( result.hit, depth_transform(result.isect_pos, args...), S(1.0) );
+        auto alpha = S(1.0) / S(Num);
+        pixel_access::blend(x, y, viewport, result, rt_ref.color(), rt_ref.depth(), alpha, S(1.0));
+    }
+}
 
 //-------------------------------------------------------------------------------------------------
 // w/o intersector
