@@ -23,7 +23,7 @@ Build requirements
 
 - C++11 compliant compiler
    (tested with g++-4.8.2 on Ubuntu 14.04 x86_64,
-    tested with clang++-6.0 on Mac OS X 10.10)
+    tested with clang++-7.0 on Mac OS X 10.10)
 
 - [CMake][1] version 2.8 or newer
 - [Boost][2]
@@ -42,6 +42,7 @@ Additionally, in order to compile the viewer application, the following packages
 - [GLUT][5] or [FreeGLUT][6]
 - [Libjpeg][7] (optional)
 - [Libpng][8] (optional)
+- [LibTIFF][9] (optional)
 
 
 
@@ -100,3 +101,4 @@ Visionaray is licensed under the MIT License (MIT)
 [6]:    http://freeglut.sourceforge.net/index.php#download
 [7]:    http://libjpeg.sourceforge.net/
 [8]:    http://libpng.sourceforge.net
+[9]:    http://www.libtiff.org
