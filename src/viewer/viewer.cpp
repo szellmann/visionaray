@@ -130,12 +130,24 @@ struct renderer : viewer_type
         add_cmdline_option( cl::makeOption<algorithm&>({
                 { "simple",             Simple,         "Simple ray casting kernel" },
                 { "whitted",            Whitted,        "Whitted style ray tracing kernel" },
-                { "pathtracing",        Pathtracing,    "Pathtracing global illumination kernel" },
+                { "pathtracing",        Pathtracing,    "Pathtracing global illumination kernel" }
             },
             "algorithm",
-            cl::ArgRequired,
             cl::Desc("Rendering algorithm"),
+            cl::ArgRequired,
             cl::init(this->algo)
+            ) );
+
+        add_cmdline_option( cl::makeOption<unsigned&>({
+                { "1",      1,      "1x supersampling" },
+                { "2",      2,      "2x supersampling" },
+                { "4",      4,      "4x supersampling" },
+                { "8",      8,      "8x supersampling" }
+            },
+            "ssaa",
+            cl::Desc("Supersampling anti-aliasing factor"),
+            cl::ArgRequired,
+            cl::init(this->ssaa_samples)
             ) );
 
 #ifdef __CUDACC__
@@ -144,8 +156,8 @@ struct renderer : viewer_type
                 { "gpu",                GPU,            "Rendering on the GPU" },
             },
             "device",
-            cl::ArgRequired,
             cl::Desc("Rendering device"),
+            cl::ArgRequired,
             cl::init(this->dev_type)
             ) );
 #endif
@@ -155,6 +167,7 @@ struct renderer : viewer_type
     int w                       = 800;
     int h                       = 800;
     unsigned    frame           = 0;
+    unsigned    ssaa_samples    = 1;
     algorithm   algo            = Simple;
     device_type dev_type        = CPU;
     bool        show_hud        = true;
@@ -461,7 +474,7 @@ void renderer::on_display()
                 algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                 );
 
-        call_kernel( algo, device_sched, kparams, frame, cam, device_rt );
+        call_kernel( algo, device_sched, kparams, frame, ssaa_samples, cam, device_rt );
 #endif
     }
     else if (dev_type == renderer::CPU)
@@ -486,7 +499,7 @@ void renderer::on_display()
                 algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                 );
 
-        call_kernel( algo, host_sched, kparams, frame, cam, host_rt );
+        call_kernel( algo, host_sched, kparams, frame, ssaa_samples, cam, host_rt );
 #endif
     }
 
@@ -598,6 +611,16 @@ void renderer::on_key_press(key_event const& event)
         counter.reset();
         frame = 0;
 #endif
+        break;
+
+    case 's':
+        ssaa_samples *= 2;
+        if (ssaa_samples > 8)
+        {
+            ssaa_samples = 1;
+        }
+        std::cout << "Use " << ssaa_samples << "x supersampling anti-aliasing\n";
+        counter.reset();
         break;
 
     case 'u':
