@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_TEXTURE_COMMON_H
-#define VSNRAY_TEXTURE_COMMON_H
+#define VSNRAY_TEXTURE_COMMON_H 1
 
 #include <cassert>
 #include <cstddef>
@@ -20,7 +22,6 @@
 
 namespace visionaray
 {
-
 namespace detail
 {
 
@@ -97,6 +98,10 @@ class texture_base : public texture_params_base<Dim>
 public:
 
     using value_type = T;
+
+public:
+
+    texture_base() = default;
 
     texture_base(size_t size)
         : data_(aligned_vector<T>(size))
@@ -222,8 +227,6 @@ protected:
 
 };
 
-
 } // visionaray
-
 
 #endif // VSNRAY_TEXTURE_COMMON_H
