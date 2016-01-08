@@ -186,6 +186,7 @@ static inline key map_glut_key(unsigned char code)
     case 'z':                   return z;
 
 
+    case '0':                   return Zero;
     case '1':                   return One;
     case '2':                   return Two;
     case '3':                   return Three;
