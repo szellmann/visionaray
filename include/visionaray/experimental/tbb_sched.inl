@@ -102,8 +102,9 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                 {
                     sampler<typename R::scalar_type> samp(detail::tic());
 
-                    auto r = make_primary_ray<R>(
-                        typename SP::pixel_sampler_type(),
+                    auto r = make_primary_rays(
+                        R{},
+                        typename SP::pixel_sampler_type{},
                         samp,
                         i0,
                         j0,

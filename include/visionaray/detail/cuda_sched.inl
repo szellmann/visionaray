@@ -73,8 +73,9 @@ __global__ void render(
     // TODO: support any sampler
     sampler<typename R::scalar_type> samp(detail::cuda_seed());
 
-    auto r = detail::make_primary_ray<R>(
-            PxSamplerT(),
+    auto r = detail::make_primary_rays(
+            R{},
+            PxSamplerT{},
             samp,
             x,
             y,
@@ -126,8 +127,9 @@ __global__ void render(
     // TODO: support any sampler
     sampler<typename R::scalar_type> samp(detail::cuda_seed());
 
-    auto r = detail::make_primary_ray<R>(
-            PxSamplerT(),
+    auto r = detail::make_primary_rays(
+            R{},
+            PxSamplerT{},
             samp,
             x,
             y,

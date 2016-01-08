@@ -75,8 +75,9 @@ struct tiled_sched<R>::impl
             Args&&...       args
             )
     {
-        auto r = detail::make_primary_ray<R>(
-                typename SP::pixel_sampler_type(),
+        auto r = detail::make_primary_rays(
+                R{},
+                typename SP::pixel_sampler_type{},
                 samp,
                 args...
                 );
@@ -101,8 +102,9 @@ struct tiled_sched<R>::impl
             unsigned        frame_num,
             Args&&...       args)
     {
-        auto r = detail::make_primary_ray<R>(
-                typename SP::pixel_sampler_type(),
+        auto r = detail::make_primary_rays(
+                R{},
+                typename SP::pixel_sampler_type{},
                 samp,
                 args...
                 );

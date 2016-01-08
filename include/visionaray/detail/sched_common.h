@@ -40,7 +40,10 @@ inline unsigned tic()
 
 
 //-------------------------------------------------------------------------------------------------
-// make primary ray
+// make primary rays
+//
+// Generates a single (or several when using anti-aliased rendering) primary rays
+// for a pixel position
 //
 
 template <typename R, typename T, typename V>
@@ -93,12 +96,13 @@ inline R make_primary_ray_impl(
 
 template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline R make_primary_ray(
+inline R make_primary_rays(
+        R                           /* */,
         pixel_sampler::uniform_type /* */,
-        Sampler& samp,
-        unsigned x,
-        unsigned y,
-        Args&&... args
+        Sampler&                    samp,
+        unsigned                    x,
+        unsigned                    y,
+        Args&&...                   args
         )
 {
     VSNRAY_UNUSED(samp);
@@ -109,12 +113,13 @@ inline R make_primary_ray(
 
 template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline R make_primary_ray(
-        pixel_sampler::jittered_type /* */,
-        Sampler& samp,
-        unsigned x,
-        unsigned y,
-        Args&&... args
+inline R make_primary_rays(
+        R                               /* */,
+        pixel_sampler::jittered_type    /* */,
+        Sampler&                        samp,
+        unsigned                        x,
+        unsigned                        y,
+        Args&&...                       args
         )
 {
     using S = typename R::scalar_type;
@@ -133,12 +138,13 @@ inline R make_primary_ray(
 
 template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline std::array<R, 2> make_primary_ray(
+inline std::array<R, 2> make_primary_rays(
+        R                           /* */,
         pixel_sampler::ssaa_type<2> /* */,
-        Sampler& samp,
-        unsigned x,
-        unsigned y,
-        Args&&... args
+        Sampler&                    samp,
+        unsigned                    x,
+        unsigned                    y,
+        Args&&...                   args
         )
 {
     VSNRAY_UNUSED(samp);
@@ -155,12 +161,13 @@ inline std::array<R, 2> make_primary_ray(
 
 template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline std::array<R, 4> make_primary_ray(
+inline std::array<R, 4> make_primary_rays(
+        R                           /* */,
         pixel_sampler::ssaa_type<4> /* */,
-        Sampler& samp,
-        unsigned x,
-        unsigned y,
-        Args&&... args
+        Sampler&                    samp,
+        unsigned                    x,
+        unsigned                    y,
+        Args&&...                   args
         )
 {
     VSNRAY_UNUSED(samp);
@@ -179,12 +186,13 @@ inline std::array<R, 4> make_primary_ray(
 
 template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline std::array<R, 8> make_primary_ray(
+inline std::array<R, 8> make_primary_rays(
+        R                           /* */,
         pixel_sampler::ssaa_type<8> /* */,
-        Sampler& samp,
-        unsigned x,
-        unsigned y,
-        Args&&... args
+        Sampler&                    samp,
+        unsigned                    x,
+        unsigned                    y,
+        Args&&...                   args
         )
 {
     VSNRAY_UNUSED(samp);
@@ -213,19 +221,21 @@ template <
     >
 VSNRAY_FUNC
 inline std::array<R, Num> make_primary_rays(
-        PxSamplerT /* */,
-        Sampler& samp,
-        unsigned x,
-        unsigned y,
-        Args&&... args
+        R               /* */,
+        PxSamplerT      /* */,
+        Sampler&        samp,
+        unsigned        x,
+        unsigned        y,
+        Args&&...       args
         )
 {
     std::array<R, Num> result;
 
     for (size_t i = 0; i < Num; ++i)
     {
-        result[i] = make_primary_ray<R>(
-                PxSamplerT(),
+        result[i] = make_primary_rays(
+                R{},
+                PxSamplerT{},
                 samp,
                 x,
                 y,
