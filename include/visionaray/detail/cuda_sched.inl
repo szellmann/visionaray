@@ -162,12 +162,11 @@ template <typename R, typename SP, typename Viewport, typename ...Args>
 inline void cuda_sched_impl_call_render(
         std::false_type /* has intersector */,
         SP              /* */,
+        dim3 const&     block_size,
         Viewport const& viewport,
         Args&&...       args
         )
 {
-    dim3 block_size(16, 16);
-
     using cuda_dim_t = decltype(block_size.x);
 
     auto w = static_cast<cuda_dim_t>(viewport.w);
@@ -191,12 +190,11 @@ template <typename R, typename SP, typename Viewport, typename ...Args>
 inline void cuda_sched_impl_call_render(
         std::true_type  /* has intersector */,
         SP const&       sparams,
+        dim3 const&     block_size,
         Viewport const& viewport,
         Args&&...       args
         )
 {
-    dim3 block_size(16, 16);
-
     using cuda_dim_t = decltype(block_size.x);
 
     auto w = static_cast<cuda_dim_t>(viewport.w);
@@ -224,6 +222,7 @@ inline void cuda_sched_impl_frame(
         std::true_type  /* has matrix */,
         K               kernel,
         SP              sparams,
+        dim3 const&     block_size,
         unsigned        frame_num
         )
 {
@@ -235,6 +234,7 @@ inline void cuda_sched_impl_frame(
     cuda_sched_impl_call_render<R>(
             typename detail::sched_params_has_intersector<SP>::type(),
             sparams,
+            block_size,
             viewport,
             rt_ref,
             kernel,
@@ -251,6 +251,7 @@ inline void cuda_sched_impl_frame(
         std::false_type /* has matrix */,
         K               kernel,
         SP              sparams,
+        dim3 const&     block_size,
         unsigned        frame_num
         )
 {
@@ -270,6 +271,7 @@ inline void cuda_sched_impl_frame(
     cuda_sched_impl_call_render<R>(
             typename detail::sched_params_has_intersector<SP>::type(),
             sparams,
+            block_size,
             viewport,
             rt_ref,
             kernel,
@@ -284,6 +286,16 @@ inline void cuda_sched_impl_frame(
 } // detail
 
 
+//-------------------------------------------------------------------------------------------------
+// cuda_sched implementation
+//
+
+template <typename R>
+cuda_sched<R>::cuda_sched(vec2ui block_size)
+    : block_size_(block_size)
+{
+}
+
 template <typename R>
 template <typename K, typename SP>
 void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
@@ -294,6 +306,7 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             typename detail::sched_params_has_view_matrix<SP>::type(),
             kernel,
             sched_params,
+            dim3(block_size_.x, block_size_.y),
             frame_num
             );
 
