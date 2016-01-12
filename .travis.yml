@@ -8,16 +8,16 @@ os:
 
 env:
     matrix:
-        - COMPILER="g++-4.8" STD="CPP11" BUILD_TYPE="None"
-        - COMPILER="g++-4.8" STD="CPP11" BUILD_TYPE="Debug"
-        - COMPILER="g++-4.8" STD="CPP11" BUILD_TYPE="RelWithDebInfo"
-        - COMPILER="g++-4.8" STD="CPP11" BUILD_TYPE="Release"
-        - COMPILER="g++-4.8" STD="CPP11" BUILD_TYPE="MinSizeRel"
-        - COMPILER="g++-4.8" STD="CPP14" BUILD_TYPE="None"
-        - COMPILER="g++-4.8" STD="CPP14" BUILD_TYPE="Debug"
-        - COMPILER="g++-4.8" STD="CPP14" BUILD_TYPE="RelWithDebInfo"
-        - COMPILER="g++-4.8" STD="CPP14" BUILD_TYPE="Release"
-        - COMPILER="g++-4.8" STD="CPP14" BUILD_TYPE="MinSizeRel"
+        - GCC_VER="4.8" STD="CPP11" BUILD_TYPE="None"
+        - GCC_VER="4.8" STD="CPP11" BUILD_TYPE="Debug"
+        - GCC_VER="4.8" STD="CPP11" BUILD_TYPE="RelWithDebInfo"
+        - GCC_VER="4.8" STD="CPP11" BUILD_TYPE="Release"
+        - GCC_VER="4.8" STD="CPP11" BUILD_TYPE="MinSizeRel"
+        - GCC_VER="4.8" STD="CPP14" BUILD_TYPE="None"
+        - GCC_VER="4.8" STD="CPP14" BUILD_TYPE="Debug"
+        - GCC_VER="4.8" STD="CPP14" BUILD_TYPE="RelWithDebInfo"
+        - GCC_VER="4.8" STD="CPP14" BUILD_TYPE="Release"
+        - GCC_VER="4.8" STD="CPP14" BUILD_TYPE="MinSizeRel"
 
 addons:
     apt: 
@@ -38,7 +38,7 @@ before_install:
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget http://launchpadlibrarian.net/161405670/libglew-dev_1.10.0-3_amd64.deb; fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo dpkg -i libglew1.10_1.10.0-3_amd64.deb; fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo dpkg -i libglew-dev_1.10.0-3_amd64.deb; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then if [ "$CXX" = "g++" ]; then export CXX="${COMPILER}"; fi; fi
+    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VER}"; fi; fi
 script:
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then printf "set(GLEW_INCLUDE_DIR \"/usr/include\")\n" > cmake/FindGLEW.cmake; fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then printf "set(GLEW_LIBRARY \"/usr/lib/x86_64-linux-gnu/libGLEW.so\")\n" >> cmake/FindGLEW.cmake; fi
