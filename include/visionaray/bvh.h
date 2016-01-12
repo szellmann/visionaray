@@ -26,17 +26,18 @@ namespace visionaray
 namespace detail
 {
 
-template <typename T>
-T* pointer_cast(T* ptr)
+template <typename Container>
+auto get_pointer(Container const& vec)
+    -> decltype(vec.data())
 {
-    return ptr;
+    return vec.data();
 }
 
 #ifdef __CUDACC__
 template <typename T>
-T* pointer_cast(thrust::device_ptr<T> const& ptr)
+T const* get_pointer(thrust::device_vector<T> const& vec)
 {
-    return thrust::raw_pointer_cast(ptr);
+    return thrust::raw_pointer_cast(vec.data());
 }
 #endif
 } // detail
@@ -259,10 +260,10 @@ public:
 
     bvh_ref ref() const
     {
-        auto p0 = detail::pointer_cast(primitives().data());
+        auto p0 = detail::get_pointer(primitives());
         auto p1 = p0 + primitives().size();
 
-        auto n0 = detail::pointer_cast(nodes().data());
+        auto n0 = detail::get_pointer(nodes());
         auto n1 = n0 + nodes().size();
 
         return { p0, p1, n0, n1 };
@@ -337,13 +338,13 @@ public:
 
     bvh_ref ref() const
     {
-        auto p0 = detail::pointer_cast(primitives().data());
+        auto p0 = detail::get_pointer(primitives());
         auto p1 = p0 + primitives().size();
 
-        auto n0 = detail::pointer_cast(nodes().data());
+        auto n0 = detail::get_pointer(nodes());
         auto n1 = n0 + nodes().size();
 
-        auto i0 = detail::pointer_cast(indices().data());
+        auto i0 = detail::get_pointer(indices());
         auto i1 = i0 + indices().size();
 
         return { p0, p1, n0, n1, i0, i1 };
