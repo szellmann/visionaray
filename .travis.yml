@@ -38,6 +38,7 @@ before_install:
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget http://launchpadlibrarian.net/161405670/libglew-dev_1.10.0-3_amd64.deb; fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo dpkg -i libglew1.10_1.10.0-3_amd64.deb; fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo dpkg -i libglew-dev_1.10.0-3_amd64.deb; fi
+    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then if [ "$CXX" = "g++" ]; then export CXX="${COMPILER}"; fi; fi
 script:
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then printf "set(GLEW_INCLUDE_DIR \"/usr/include\")\n" > cmake/FindGLEW.cmake; fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then printf "set(GLEW_LIBRARY \"/usr/lib/x86_64-linux-gnu/libGLEW.so\")\n" >> cmake/FindGLEW.cmake; fi
@@ -50,6 +51,6 @@ script:
 
     - mkdir -p build
     - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_COMPILER=${COMPILER} "-DCMAKE_CXX_FLAGS=${COMPILER_FLAGS}" -DVSNRAY_ENABLE_EXAMPLES=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} "-DCMAKE_CXX_FLAGS=${COMPILER_FLAGS}" -DVSNRAY_ENABLE_EXAMPLES=ON
     - make VERBOSE=1
     - sudo make install
