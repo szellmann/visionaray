@@ -51,5 +51,5 @@ script:
     - mkdir -p build
     - cd build
     - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_CXX_COMPILER=${COMPILER} "-DCMAKE_CXX_FLAGS=${COMPILER_FLAGS}" -DVSNRAY_ENABLE_EXAMPLES=ON
-    - make
+    - make VERBOSE=1
     - sudo make install
