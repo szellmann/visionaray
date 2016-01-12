@@ -28,6 +28,7 @@ using std::isnan;
 using std::pow;
 using std::sin;
 using std::sqrt;
+using std::tan;
 
 template <typename T>
 MATH_FUNC
