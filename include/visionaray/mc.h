@@ -42,7 +42,7 @@ public:
 
     VSNRAY_FUNC sampler(unsigned seed)
         : rng_(rand_engine(seed))
-        , dist_(uniform_dist(0, 1))
+        , dist_(uniform_dist(T(0.0), T(1.0)))
     {
     }
 
