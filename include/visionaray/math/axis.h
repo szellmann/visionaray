@@ -1,12 +1,13 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_MATH_AXIS_H
 #define VSNRAY_MATH_AXIS_H 1
 
 #include <cstddef>
 
-#include <vector>
 
 namespace MATH_NAMESPACE
 {
@@ -61,6 +62,5 @@ vector<Dim, float> to_vector(cartesian_axis<Dim> const& a)
 }
 
 } // MATH_NAMESPACE
-
 
 #endif // VSNRAY_MATH_AXIS_H

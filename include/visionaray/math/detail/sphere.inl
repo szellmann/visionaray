@@ -8,6 +8,18 @@ namespace MATH_NAMESPACE
 {
 
 //-------------------------------------------------------------------------------------------------
+// Sphere members
+//
+
+template <typename T, typename P>
+MATH_FUNC basic_sphere<T, P>::basic_sphere(vector<3, T> const& c, T r)
+    : center(c)
+    , radius(r)
+{
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Geometric functions
 //
 

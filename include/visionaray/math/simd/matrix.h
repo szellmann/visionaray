@@ -23,7 +23,7 @@ public:
     column_type col3;
 
 
-    matrix();
+    matrix() = default;
     matrix(column_type const& c0,
            column_type const& c1,
            column_type const& c2,
@@ -49,11 +49,15 @@ public:
 // Free function declarations
 //
 
-matrix<4, 4, simd::float4> operator*(matrix<4, 4, simd::float4> const& a,
-    matrix<4, 4, simd::float4> const& b);
+matrix<4, 4, simd::float4> operator*(
+        matrix<4, 4, simd::float4> const& a,
+        matrix<4, 4, simd::float4> const& b
+        );
 
-vector<4, simd::float4> operator*(matrix<4, 4, simd::float4> const& m,
-    vector<4, simd::float4> const& v);
+vector<4, simd::float4> operator*(
+        matrix<4, 4, simd::float4> const& m,
+        vector<4, simd::float4> const& v
+        );
 
 matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m);
 

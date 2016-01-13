@@ -7,14 +7,9 @@
 namespace MATH_NAMESPACE
 {
 
-
 //--------------------------------------------------------------------------------------------------
 // matrix4 members
 //
-
-VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix()
-{
-}
 
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix
 (
@@ -69,13 +64,12 @@ VSNRAY_FORCE_INLINE simd::float4 const& matrix<4, 4, simd::float4>::operator()(s
 
 inline matrix<4, 4, simd::float4> matrix<4, 4, simd::float4>::identity()
 {
-    return matrix<4, 4, simd::float4>
-    (
-        simd::float4(1.0f, 0.0f, 0.0f, 0.0f),
-        simd::float4(0.0f, 1.0f, 0.0f, 0.0f),
-        simd::float4(0.0f, 0.0f, 1.0f, 0.0f),
-        simd::float4(0.0f, 0.0f, 0.0f, 1.0f)
-    );
+    return matrix<4, 4, simd::float4>(
+            simd::float4(1.0f, 0.0f, 0.0f, 0.0f),
+            simd::float4(0.0f, 1.0f, 0.0f, 0.0f),
+            simd::float4(0.0f, 0.0f, 1.0f, 0.0f),
+            simd::float4(0.0f, 0.0f, 0.0f, 1.0f)
+            );
 }
 
 
@@ -83,8 +77,10 @@ inline matrix<4, 4, simd::float4> matrix<4, 4, simd::float4>::identity()
 // Basic arithmetic
 //
 
-VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> operator*(matrix<4, 4, simd::float4> const& a,
-    matrix<4, 4, simd::float4> const& b)
+VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> operator*(
+        matrix<4, 4, simd::float4> const& a,
+        matrix<4, 4, simd::float4> const& b
+        )
 {
 
     using simd::shuffle;
@@ -103,8 +99,10 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> operator*(matrix<4, 4, simd::floa
 
 }
 
-VSNRAY_FORCE_INLINE vector<4, simd::float4> operator*(matrix<4, 4, simd::float4> const& m,
-    vector<4, simd::float4> const& v)
+VSNRAY_FORCE_INLINE vector<4, simd::float4> operator*(
+        matrix<4, 4, simd::float4> const& m,
+        vector<4, simd::float4> const& v
+        )
 {
 
     matrix<4, 4, simd::float4> tmp(v.x, v.y, v.z, v.w);
@@ -128,17 +126,13 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::floa
     float4 tmp2 = _mm_unpackhi_ps( m(0), m(1) );
     float4 tmp3 = _mm_unpackhi_ps( m(2), m(3) );
 
-    return matrix<4, 4, simd::float4>
-    (
-        _mm_movelh_ps(tmp0, tmp1),
-        _mm_movehl_ps(tmp1, tmp0),
-        _mm_movelh_ps(tmp2, tmp3),
-        _mm_movehl_ps(tmp3, tmp2)
-    );
+    return matrix<4, 4, simd::float4>(
+            _mm_movelh_ps(tmp0, tmp1),
+            _mm_movehl_ps(tmp1, tmp0),
+            _mm_movelh_ps(tmp2, tmp3),
+            _mm_movehl_ps(tmp3, tmp2)
+            );
 
 }
 
-
 } // MATH_NAMESPACE
-
-
