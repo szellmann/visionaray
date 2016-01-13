@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <ostream>
+#include <vector>
 
 #include <GL/glew.h>
 
