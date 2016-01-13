@@ -46,7 +46,7 @@ namespace simd
 //
 //  - is_simd_vector
 //      check if T is a SIMD vector type
-//      default: type := false
+//      default: value := false
 //
 //  - element_type:
 //      get the elementary type of a SIMD vector component
