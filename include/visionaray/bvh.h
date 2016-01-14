@@ -378,6 +378,10 @@ private:
 };
 
 
+//-------------------------------------------------------------------------------------------------
+// bvh traits
+//
+
 template <typename T>
 struct is_bvh : std::false_type {};
 
@@ -402,6 +406,10 @@ struct is_any_bvh : std::integral_constant<bool, is_bvh<T>::value || is_index_bv
 };
 
 
+//-------------------------------------------------------------------------------------------------
+// Typedefs
+//
+
 template <typename P>
 using bvh               = bvh_t<aligned_vector<P>, aligned_vector<bvh_node>>;
 template <typename P>
@@ -414,12 +422,20 @@ template <typename P>
 using cuda_index_bvh    = index_bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>, thrust::device_vector<unsigned>>;
 #endif
 
+
 //-------------------------------------------------------------------------------------------------
-//
+// build() interface
 //
 
 template <typename Tree, typename P>
 Tree build(P* primitives, size_t num_prims, bool use_spatial_splits = false);
+
+
+//-------------------------------------------------------------------------------------------------
+// Traversal algorithms
+//
+// NOTE: use intersect(ray, bvh) for *ray* / bvh traversal
+//
 
 template <typename B, typename F>
 void traverse_depth_first(B const& b, F func);
