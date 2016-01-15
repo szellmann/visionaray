@@ -6,6 +6,8 @@
 #ifndef VSNRAY_TEXTURE_SAMPLER1D_H
 #define VSNRAY_TEXTURE_SAMPLER1D_H 1
 
+#include <type_traits>
+
 #include <visionaray/math/math.h>
 
 #include "sampler_common.h"
@@ -415,17 +417,21 @@ inline vector<4, T> tex1D_impl_expand_types(
 
 // SIMD: AoS textures
 
-template <typename T>
-inline vector<4, simd::float4> tex1D_impl_expand_types(
-        vector<4, T> const*                     tex,
-        simd::float4 const&                     coord,
-        simd::int4 const&                       texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 1> const&  address_mode
+template <
+    typename T,
+    typename FloatT,
+    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+    >
+inline vector<4, FloatT> tex1D_impl_expand_types(
+        vector<4, T> const*                             tex,
+        FloatT const&                                   coord,
+        typename simd::int_type<FloatT>::type const&    texsize,
+        tex_filter_mode                                 filter_mode,
+        std::array<tex_address_mode, 1> const&          address_mode
         )
 {
-    using return_type   = vector<4, simd::float4>;
-    using internal_type = vector<4, simd::float4>;
+    using return_type   = vector<4, FloatT>;
+    using internal_type = vector<4, FloatT>;
 
     return tex1D_impl_choose_filter(
             return_type(),
@@ -437,33 +443,6 @@ inline vector<4, simd::float4> tex1D_impl_expand_types(
             address_mode
             );
 }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-template <typename T>
-inline vector<4, simd::float8> tex1D_impl_expand_types(
-        vector<4, T> const*                     tex,
-        simd::float8 const&                     coord,
-        simd::int8 const&                       texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 1> const&  address_mode
-        )
-{
-    using return_type   = vector<4, simd::float8>;
-    using internal_type = vector<4, simd::float8>;
-
-    return tex1D_impl_choose_filter(
-            return_type(),
-            internal_type(),
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
 // SIMD: SoA textures

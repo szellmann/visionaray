@@ -6,6 +6,8 @@
 #ifndef VSNRAY_TEXTURE_SAMPLER3D_H
 #define VSNRAY_TEXTURE_SAMPLER3D_H 1
 
+#include <type_traits>
+
 #include <visionaray/math/math.h>
 
 #include "sampler_common.h"
@@ -501,19 +503,23 @@ inline vector<4, T> tex3D_impl_expand_types(
 }
 
 
-// simd::float4
+// simd
 
-template <typename T>
-inline simd::float4 tex3D_impl_expand_types(
-        T const*                                tex,
-        vector<3, simd::float4> const&          coord,
-        vector<3, simd::int4> const&            texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 3> const&  address_mode
+template <
+    typename T,
+    typename FloatT,
+    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+    >
+inline FloatT tex3D_impl_expand_types(
+        T const*                                                tex,
+        vector<3, FloatT> const&                                coord,
+        vector<3, typename simd::int_type<FloatT>::type> const& texsize,
+        tex_filter_mode                                         filter_mode,
+        std::array<tex_address_mode, 3> const&                  address_mode
         )
 {
-    using return_type   = simd::float4;
-    using internal_type = simd::float4;
+    using return_type   = FloatT;
+    using internal_type = FloatT;
 
     return tex3D_impl_choose_filter(
             return_type(),
@@ -525,35 +531,6 @@ inline simd::float4 tex3D_impl_expand_types(
             address_mode
             );
 }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-// simd::float8
-
-template <typename T>
-inline simd::float8 tex3D_impl_expand_types(
-        T const*                                tex,
-        vector<3, simd::float8> const&          coord,
-        vector<3, simd::int8> const&            texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 3> const&  address_mode
-        )
-{
-    using return_type   = simd::float8;
-    using internal_type = simd::float8;
-
-    return tex3D_impl_choose_filter(
-            return_type(),
-            internal_type(),
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
 //-------------------------------------------------------------------------------------------------
