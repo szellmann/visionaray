@@ -980,6 +980,71 @@ inline auto get_surface_with_prims_impl(
             );
 }
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+//-------------------------------------------------------------------------------------------------
+// Generic primitive / float4
+//
+
+template <
+    template <typename, typename> class HR,
+    typename HRP,
+    typename Primitives,
+    typename Normals,
+    typename Materials,
+    typename ...Ts,
+    typename NormalBinding
+    >
+inline auto get_surface_with_prims_impl(
+        HR<simd::ray8, HRP> const&  hr,
+        Primitives                  primitives,
+        Normals                     normals,
+        Materials                   materials,
+        generic_primitive<Ts...>    /* */,
+        NormalBinding               /* */
+        ) -> decltype( simd::pack(
+            typename detail::decl_surface<Normals, Materials>::type{},
+            typename detail::decl_surface<Normals, Materials>::type{},
+            typename detail::decl_surface<Normals, Materials>::type{},
+            typename detail::decl_surface<Normals, Materials>::type{},
+            typename detail::decl_surface<Normals, Materials>::type{},
+            typename detail::decl_surface<Normals, Materials>::type{},
+            typename detail::decl_surface<Normals, Materials>::type{},
+            typename detail::decl_surface<Normals, Materials>::type{}
+            ) )
+{
+    using N = typename std::iterator_traits<Normals>::value_type;
+    using M = typename std::iterator_traits<Materials>::value_type;
+
+    auto hr8 = unpack(hr); 
+
+    auto get_surf = [&](unsigned index)
+    {
+        // dispatch to scalar version of this function
+        return get_surface_with_prims_impl(
+                hr8[index],
+                primitives,
+                normals,
+                materials,
+                generic_primitive<Ts...>(),
+                NormalBinding()
+                );
+    };
+
+    return simd::pack(
+            hr8[0].hit ? get_surf(0) : detail::make_surface( N(), M() ),
+            hr8[1].hit ? get_surf(1) : detail::make_surface( N(), M() ),
+            hr8[2].hit ? get_surf(2) : detail::make_surface( N(), M() ),
+            hr8[3].hit ? get_surf(3) : detail::make_surface( N(), M() ),
+            hr8[4].hit ? get_surf(4) : detail::make_surface( N(), M() ),
+            hr8[5].hit ? get_surf(5) : detail::make_surface( N(), M() ),
+            hr8[6].hit ? get_surf(6) : detail::make_surface( N(), M() ),
+            hr8[7].hit ? get_surf(7) : detail::make_surface( N(), M() )
+            );
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
 
 //-------------------------------------------------------------------------------------------------
 // Functions to deduce appropriate surface via parameter inspection
