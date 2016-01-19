@@ -41,7 +41,7 @@ namespace visionaray
 //  - emissive:
 //      shade() returns radiance emitted by the surface
 //      mind that radiance for emitters beyond 1.0 cd/m^2 is physically plausible
-//      no reflective properties, sample() will call no valid reflection
+//      no reflective properties, sample() will provide no valid reflection result
 //
 //  - matte:
 //      material with only diffuse reflection properties
