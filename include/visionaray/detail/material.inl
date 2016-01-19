@@ -237,9 +237,7 @@ inline plastic<float8> pack(
     return result;
 }
 
-
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
 
 } // simd
 } // visioanray

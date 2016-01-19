@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_MATERIAL_H
-#define VSNRAY_MATERIAL_H
+#define VSNRAY_MATERIAL_H 1
 
 #include "detail/macros.h"
 #include "math/math.h"
@@ -26,73 +26,38 @@ class emissive
 {
 public:
 
-    using scalar_type   = T;
+    using scalar_type = T;
 
 public:
 
-    VSNRAY_FUNC spectrum<T> ambient() const
-    {
-        return spectrum<T>();
-    }
-
-    template <typename SR, typename U, typename S /* sampler */>
-    VSNRAY_FUNC
-    spectrum<U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler) const
-    {
-        VSNRAY_UNUSED(refl_dir); // TODO?
-        VSNRAY_UNUSED(sampler);
-        pdf = U(1.0);
-        return shade(shade_rec);
-    }
+    VSNRAY_FUNC spectrum<T> ambient() const;
 
     template <typename SR>
-    VSNRAY_FUNC
-    spectrum<typename SR::scalar_type> shade(SR const& sr) const
-    {
-        using U = typename SR::scalar_type;
-        return select( dot(sr.normal, sr.view_dir) >= U(0.0), ce(sr), spectrum<U>(0.0) );
-    }
+    VSNRAY_FUNC spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
+    template <typename SR, typename U, typename Sampler>
+    VSNRAY_FUNC spectrum<U> sample(
+            SR const&       shade_rec,
+            vector<3, U>&   refl_dir,
+            U&              pdf,
+            Sampler&        sampler) const;
 
-    VSNRAY_FUNC void set_ce(spectrum<T> const& ce)
-    {
-        ce_ = ce;
-    }
+    VSNRAY_FUNC void set_ce(spectrum<T> const& ce);
+    VSNRAY_FUNC spectrum<T> get_ce() const;
 
-    VSNRAY_FUNC spectrum<T> get_ce() const
-    {
-        return ce_;
-    }
-
-    VSNRAY_FUNC void set_ls(scalar_type const& ls)
-    {
-        ls_ = ls;
-    }
-
-    VSNRAY_FUNC scalar_type get_ls() const
-    {
-        return ls_;
-    }
+    VSNRAY_FUNC void set_ls(T ls);
+    VSNRAY_FUNC T get_ls() const;
 
 private:
 
     spectrum<T> ce_;
-    scalar_type ls_;
+    T           ls_;
 
     template <typename SR>
-    VSNRAY_FUNC
-    spectrum<T> ce(SR const& sr) const
-    {
-        VSNRAY_UNUSED(sr);
-        return ce_ * ls_;
-    }
+    VSNRAY_FUNC spectrum<T> ce(SR const& sr) const;
 
     template <typename L, typename C, typename S>
-    VSNRAY_FUNC
-    spectrum<T> ce(shade_record<L, C, S> const& sr) const
-    {
-        return spectrum<T>(from_rgb(sr.tex_color)) * ce_ * ls_;
-    }
+    VSNRAY_FUNC spectrum<T> ce(shade_record<L, C, S> const& sr) const;
 
 };
 
@@ -106,132 +71,65 @@ class matte
 {
 public:
 
-    using scalar_type   = T;
+    using scalar_type = T;
 
 public:
 
-    VSNRAY_FUNC spectrum<T> ambient() const
-    {
-        return ca_ * ka_;
-    }
+    VSNRAY_FUNC spectrum<T> ambient() const;
 
     template <typename SR>
     VSNRAY_FUNC
-    spectrum<typename SR::scalar_type> shade(SR const& sr) const
-    {
-        using U = typename SR::scalar_type;
-        using V = vector<3, U>;
+    spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
-        spectrum<U> result(0.0);
+    template <typename SR, typename U, typename Sampler>
+    VSNRAY_FUNC spectrum<U> sample(
+            SR const&       shade_rec,
+            vector<3, U>&   refl_dir,
+            U&              pdf,
+            Sampler&        sampler
+            ) const;
 
-        auto l = sr.light;
-        auto wi = sr.light_dir;
-        auto wo = sr.view_dir;
-        auto n = sr.normal;
-        auto ndotl = max( U(0.0), dot(n, wi) );
-
-        U att(1.0);
-
-#if 1 // use attenuation
-        auto dist = length(V(l.position()) - sr.isect_pos);
-        att = U(
-                1.0 / (l.constant_attenuation()
-                     + l.linear_attenuation() * dist
-                     + l.quadratic_attenuation() * dist * dist)
-            );
-#endif
-
-        return spectrum<U>(
-                constants::pi<U>()
-              * cd(sr, n, wo, wi)
-              * spectrum<U>(from_rgb(l.color()))
-              * ndotl
-              * att
-                );
-    }
-
-    template <typename SR, typename U, typename S /* sampler */>
-    VSNRAY_FUNC
-    spectrum<U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler) const
-    {
-        return sample_impl(shade_rec, refl_dir, pdf, sampler);
-    }
-
-    template <typename L, typename C, typename U, typename S /* sampler */>
-    VSNRAY_FUNC
-    spectrum<U> sample(shade_record<L, C, U> const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler) const
-    {
-        return spectrum<U>(from_rgb(sr.tex_color)) * sample_impl(sr, refl_dir, pdf, sampler);
-    }
+    template <typename L, typename C, typename U, typename Sampler>
+    VSNRAY_FUNC spectrum<U> sample(
+            shade_record<L, C, U> const&    sr,
+            vector<3, U>&                   refl_dir,
+            U&                              pdf,
+            Sampler&                        sampler
+            ) const;
 
 
-    VSNRAY_FUNC void set_ca(spectrum<T> const& ca)
-    {
-        ca_ = ca;
-    }
+    VSNRAY_FUNC void set_ca(spectrum<T> const& ca);
+    VSNRAY_FUNC spectrum<T> get_ca() const;
 
-    VSNRAY_FUNC spectrum<T> get_ca() const
-    {
-        return ca_;
-    }
+    VSNRAY_FUNC void set_ka(T ka);
+    VSNRAY_FUNC T get_ka() const;
 
-    VSNRAY_FUNC void set_ka(scalar_type ka)
-    {
-        ka_ = ka;
-    }
+    VSNRAY_FUNC void set_cd(spectrum<T> const& cd);
+    VSNRAY_FUNC spectrum<T> get_cd() const;
 
-    VSNRAY_FUNC scalar_type get_ka() const
-    {
-        return ka_;
-    }
-
-    VSNRAY_FUNC void set_cd(spectrum<T> const& cd)
-    {
-        diffuse_brdf_.cd = cd;
-    }
-
-    VSNRAY_FUNC spectrum<T> get_cd() const
-    {
-        return diffuse_brdf_.cd;
-    }
-
-    VSNRAY_FUNC void set_kd(scalar_type kd)
-    {
-        diffuse_brdf_.kd = kd;
-    }
-
-    VSNRAY_FUNC scalar_type get_kd() const
-    {
-        return diffuse_brdf_.kd;
-    }
+    VSNRAY_FUNC void set_kd(T kd);
+    VSNRAY_FUNC T get_kd() const;
 
 private:
 
     spectrum<T>     ca_;
-    scalar_type     ka_;
+    T               ka_;
     lambertian<T>   diffuse_brdf_;
 
     template <typename SR, typename V>
-    VSNRAY_FUNC
-    spectrum<T> cd(SR const& sr, V const& n, V const& wo, V const& wi) const
-    {
-        VSNRAY_UNUSED(sr);
-        return diffuse_brdf_.f(n, wo, wi);
-    }
+    VSNRAY_FUNC spectrum<T> cd(SR const& sr, V const& n, V const& wo, V const& wi) const;
 
     template <typename L, typename C, typename S, typename V>
-    VSNRAY_FUNC
-    spectrum<T> cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const
-    {
-        return spectrum<T>(from_rgb(sr.tex_color)) * diffuse_brdf_.f(n, wo, wi);
-    }
+    VSNRAY_FUNC spectrum<T> cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const;
 
-    template <typename SR, typename U, typename S /* sampler */>
+    template <typename SR, typename U, typename Sampler>
     VSNRAY_FUNC
-    spectrum<U> sample_impl(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler) const
-    {
-        return diffuse_brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl_dir, pdf, sampler);
-    }
+    spectrum<U> sample_impl(
+            SR const&       shade_rec,
+            vector<3, U>&   refl_dir,
+            U&              pdf,
+            Sampler&        sampler
+            ) const;
 };
 
 
@@ -248,75 +146,34 @@ public:
 
 public:
 
-    // TODO: no support for  ambient
-    VSNRAY_FUNC spectrum<T> ambient() const
-    {
-        return spectrum<T>(0.0);
-    }
+    // TODO: no support for  ambient (function returns 0.0)
+    VSNRAY_FUNC spectrum<T> ambient() const;
 
     template <typename SR>
     VSNRAY_FUNC
-    spectrum<typename SR::scalar_type> shade(SR const& sr) const
-    {
-        return specular_brdf_.f(sr.normal, sr.view_dir, sr.light_dir);
-    }
+    spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
     template <typename SR, typename U, typename Sampler>
-    VSNRAY_FUNC
-    spectrum<U> sample(SR const& sr, vector<3, U>& refl_dir, U& pdf, Sampler& sampler) const
-    {
-        return specular_brdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, sampler);
-    }
+    VSNRAY_FUNC spectrum<U> sample(
+            SR const&       sr,
+            vector<3, U>&   refl_dir,
+            U&              pdf,
+            Sampler&        sampler
+            ) const;
 
-    VSNRAY_FUNC void set_cr(spectrum<T> const& cr)
-    {
-        specular_brdf_.cr = cr;
-    }
+    VSNRAY_FUNC void set_cr(spectrum<T> const& cr);
+    VSNRAY_FUNC spectrum<T> get_cr() const;
 
-    VSNRAY_FUNC spectrum<T> get_cr() const
-    {
-        return specular_brdf_.cr;
-    }
+    VSNRAY_FUNC void set_kr(T const& kr);
+    VSNRAY_FUNC T get_kr() const;
 
-    VSNRAY_FUNC void set_kr(scalar_type kr)
-    {
-        specular_brdf_.kr = kr;
-    }
+    VSNRAY_FUNC void set_ior(spectrum<T> const& ior);
+    VSNRAY_FUNC void set_ior(T ior);
+    VSNRAY_FUNC spectrum<T> get_ior() const;
 
-    VSNRAY_FUNC scalar_type get_kr() const
-    {
-        return specular_brdf_.kr;
-    }
-
-    VSNRAY_FUNC void set_ior(spectrum<T> const& ior)
-    {
-        specular_brdf_.ior = ior;
-    }
-
-    VSNRAY_FUNC void set_ior(T ior)
-    {
-        specular_brdf_.ior = spectrum<T>(ior);
-    }
-
-    VSNRAY_FUNC spectrum<T> get_ior() const
-    {
-        return specular_brdf_.ior;
-    }
-
-    VSNRAY_FUNC void set_absorption(spectrum<T> const& absorption)
-    {
-        specular_brdf_.absorption = absorption;
-    }
-
-    VSNRAY_FUNC void set_absorption(T absorption)
-    {
-        specular_brdf_.absorption = spectrum<T>(absorption);
-    }
-
-    VSNRAY_FUNC spectrum<T> get_absorption() const
-    {
-        return specular_brdf_.absorption;
-    }
+    VSNRAY_FUNC void set_absorption(spectrum<T> const& absorption);
+    VSNRAY_FUNC void set_absorption(T absorption);
+    VSNRAY_FUNC spectrum<T> get_absorption() const;
 
 private:
 
@@ -334,201 +191,82 @@ class plastic
 {
 public:
 
-    using scalar_type   = T;
+    using scalar_type = T;
 
 public:
 
-    VSNRAY_FUNC spectrum<T> ambient() const
-    {
-        return ca_ * ka_;
-    }
+    VSNRAY_FUNC spectrum<T> ambient() const;
 
     template <typename SR>
     VSNRAY_FUNC
-    spectrum<typename SR::scalar_type> shade(SR const& sr) const
-    {
-        using U = typename SR::scalar_type;
-        using V = vector<3, U>;
+    spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
-        auto l = sr.light;
-        auto wi = sr.light_dir;
-        auto wo = sr.view_dir;
-        auto n = sr.normal;
-        auto ndotl = max( U(0.0), dot(n, wi) );
+    template <typename SR, typename U, typename Sampler>
+    VSNRAY_FUNC spectrum<U> sample(
+            SR const&       shade_rec,
+            vector<3, U>&   refl_dir,
+            U&              pdf,
+            Sampler&        sampler
+            ) const;
 
-        U att(1.0);
+    template <typename L, typename C, typename U, typename Sampler>
+    VSNRAY_FUNC spectrum<U> sample(
+            shade_record<L, C, U> const&    sr,
+            vector<3, U>&                   refl_dir,
+            U&                              pdf,
+            Sampler&                        sampler
+            ) const;
 
-#if 1 // use attenuation
-        auto dist = length(V(l.position()) - sr.isect_pos);
-        att = U(
-                1.0 / (l.constant_attenuation()
-                     + l.linear_attenuation() * dist
-                     + l.quadratic_attenuation() * dist * dist)
-            );
-#endif
+    VSNRAY_FUNC void set_ca(spectrum<T> const& ca);
+    VSNRAY_FUNC spectrum<T> get_ca() const;
 
-        return spectrum<U>(
-                constants::pi<U>()
-              * ( cd(sr, n, wo, wi) + specular_brdf_.f(n, wo, wi) )
-              * spectrum<U>(from_rgb(l.color()))
-              * ndotl
-              * att
-                );
-    }
+    VSNRAY_FUNC void set_ka(T ka);
+    VSNRAY_FUNC T get_ka() const;
 
-    template <typename SR, typename U, typename S /* sampler */>
-    VSNRAY_FUNC
-    spectrum<U> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler) const
-    {
-        return sample_impl(shade_rec, refl_dir, pdf, sampler);
-    }
+    VSNRAY_FUNC void set_cd(spectrum<T> const& cd);
+    VSNRAY_FUNC spectrum<T> get_cd() const;
 
-    template <typename L, typename C, typename U, typename S /* sampler */>
-    VSNRAY_FUNC
-    spectrum<U> sample(shade_record<L, C, U> const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler) const
-    {
-        return spectrum<U>(from_rgb(sr.tex_color)) * sample_impl(sr, refl_dir, pdf, sampler);
-    }
+    VSNRAY_FUNC void set_kd(T kd);
+    VSNRAY_FUNC T get_kd() const;
 
+    VSNRAY_FUNC void set_cs(spectrum<T> const& cs);
+    VSNRAY_FUNC spectrum<T> get_cs() const;
 
-    VSNRAY_FUNC void set_ca(spectrum<T> const& ca)
-    {
-        ca_ = ca;
-    }
+    VSNRAY_FUNC void set_ks(T ks);
+    VSNRAY_FUNC T get_ks() const;
 
-    VSNRAY_FUNC spectrum<T> get_ca() const
-    {
-        return ca_;
-    }
-
-    VSNRAY_FUNC void set_ka(scalar_type ka)
-    {
-        ka_ = ka;
-    }
-
-    VSNRAY_FUNC scalar_type get_ka() const
-    {
-        return ka_;
-    }
-
-    VSNRAY_FUNC void set_cd(spectrum<T> const& cd)
-    {
-        diffuse_brdf_.cd = cd;
-    }
-
-    VSNRAY_FUNC spectrum<T> get_cd() const
-    {
-        return diffuse_brdf_.cd;
-    }
-
-    VSNRAY_FUNC void set_kd(scalar_type kd)
-    {
-        diffuse_brdf_.kd = kd;
-    }
-
-    VSNRAY_FUNC scalar_type get_kd() const
-    {
-        return diffuse_brdf_.kd;
-    }
-
-    VSNRAY_FUNC void set_cs(spectrum<T> const& cs)
-    {
-        specular_brdf_.cs = cs;
-    }
-
-    VSNRAY_FUNC spectrum<T> get_cs() const
-    {
-        return specular_brdf_.cs;
-    }
-
-    VSNRAY_FUNC void set_ks(scalar_type ks)
-    {
-        specular_brdf_.ks = ks;
-    }
-
-    VSNRAY_FUNC scalar_type get_ks() const
-    {
-        return specular_brdf_.ks;
-    }
-
-    VSNRAY_FUNC void set_specular_exp(scalar_type exp)
-    {
-        specular_brdf_.exp = exp;
-    }
-
-    VSNRAY_FUNC scalar_type get_specular_exp() const
-    {
-        return specular_brdf_.exp;
-    }
+    VSNRAY_FUNC void set_specular_exp(T exp);
+    VSNRAY_FUNC T get_specular_exp() const;
 
 private:
 
     spectrum<T>     ca_;
-    scalar_type     ka_;
+    T               ka_;
     lambertian<T>   diffuse_brdf_;
     blinn<T>        specular_brdf_;
 
     template <typename SR, typename V>
-    VSNRAY_FUNC
-    spectrum<T> cd(SR const& sr, V const& n, V const& wo, V const& wi) const
-    {
-        VSNRAY_UNUSED(sr);
-        return diffuse_brdf_.f(n, wo, wi);
-    }
+    VSNRAY_FUNC spectrum<T> cd(SR const& sr, V const& n, V const& wo, V const& wi) const;
 
     template <typename L, typename C, typename S, typename V>
-    VSNRAY_FUNC
-    spectrum<T> cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const
-    {
-        return spectrum<T>(from_rgb(sr.tex_color)) * diffuse_brdf_.f(n, wo, wi);
-    }
+    VSNRAY_FUNC spectrum<T> cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const;
 
-    template <typename SR, typename U, typename S /* sampler */>
-    VSNRAY_FUNC
-    spectrum<U> sample_impl(SR const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler) const
-    {
-        U pdf1(0.0);
-        U pdf2(0.0);
-
-        vector<3, U> refl1(0.0);
-        vector<3, U> refl2(0.0);
-
-        spectrum<U>  diff(0.0);
-        spectrum<U>  spec(0.0);
-
-        auto prob_diff = mean_value( diffuse_brdf_.cd ) * diffuse_brdf_.kd;
-        auto prob_spec = mean_value( specular_brdf_.cs ) * specular_brdf_.ks;
-
-        auto all_zero  = prob_diff == U(0.0) && prob_spec == U(0.0);
-
-        prob_diff      = select( all_zero, U(0.5), prob_diff );
-        prob_spec      = select( all_zero, U(0.5), prob_spec );
-
-        prob_diff      = prob_diff / (prob_diff + prob_spec);
-
-
-        auto u         = sampler.next();
-
-        if ( any(sr.active && u < U(prob_diff)) )
-        {
-            diff       = diffuse_brdf_.sample_f(sr.normal, sr.view_dir, refl1, pdf1, sampler);
-        }
-
-        if ( any(sr.active && u >= U(prob_diff)) )
-        {
-            spec       = specular_brdf_.sample_f(sr.normal, sr.view_dir, refl2, pdf2, sampler);
-        }
-
-        pdf            = select( u < U(prob_diff), pdf1,  pdf2  );
-        refl_dir       = select( u < U(prob_diff), refl1, refl2 );
-
-        return           select( u < U(prob_diff), diff,  spec  );
-    }
+    template <typename SR, typename U, typename Sampler>
+    VSNRAY_FUNC spectrum<U> sample_impl(
+            SR const&       sr,
+            vector<3, U>&   refl_dir,
+            U&              pdf,
+            Sampler&        sampler
+            ) const;
 
 };
 
 } // visionaray
 
+#include "detail/material/emissive.inl"
+#include "detail/material/matte.inl"
+#include "detail/material/mirror.inl"
+#include "detail/material/plastic.inl"
 #include "detail/material.inl"
 
 #endif // VSNRAY_MATERIAL_H
