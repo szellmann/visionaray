@@ -12,6 +12,53 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
+// Public interface
+//
+
+template <typename T, typename ...Ts>
+template <template <typename> class M>
+inline generic_material<T, Ts...>::generic_material(M<typename T::scalar_type> const& material)
+    : generic_material<T, Ts...>::base_type(material)
+{
+}
+
+template <typename T, typename ...Ts>
+VSNRAY_FUNC
+inline bool generic_material<T, Ts...>::is_emissive() const
+{
+    return apply_visitor( is_emissive_visitor(), *this );
+}
+
+template <typename T, typename ...Ts>
+VSNRAY_FUNC
+inline spectrum<typename T::scalar_type> generic_material<T, Ts...>::ambient() const
+{
+    return apply_visitor( ambient_visitor(), *this );
+}
+
+template <typename T, typename ...Ts>
+template <typename SR>
+VSNRAY_FUNC
+inline spectrum<typename SR::scalar_type> generic_material<T, Ts...>::shade(SR const& sr) const
+{
+    return apply_visitor( shade_visitor<SR>(sr), *this );
+}
+
+template <typename T, typename ...Ts>
+template <typename SR, typename U, typename Sampler>
+VSNRAY_FUNC
+inline spectrum<U> generic_material<T, Ts...>::sample(
+        SR const&       sr,
+        vector<3, U>&   refl_dir,
+        U&              pdf,
+        Sampler&        sampler
+        ) const
+{
+    return apply_visitor( sample_visitor<SR, U, Sampler>(sr, refl_dir, pdf, sampler), *this );
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Private variant visitors
 //
 
@@ -69,13 +116,13 @@ struct generic_material<T, Ts...>::shade_visitor
 };
 
 template <typename T, typename ...Ts>
-template <typename SR, typename U, typename S>
+template <typename SR, typename U, typename Sampler>
 struct generic_material<T, Ts...>::sample_visitor
 {
     using return_type = spectrum<typename SR::scalar_type>;
 
     VSNRAY_FUNC
-    sample_visitor(SR const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    sample_visitor(SR const& sr, vector<3, U>& refl_dir, U& pdf, Sampler& sampler)
         : sr_(sr)
         , refl_dir_(refl_dir)
         , pdf_(pdf)
@@ -93,7 +140,7 @@ struct generic_material<T, Ts...>::sample_visitor
     SR const&       sr_;
     vector<3, U>&   refl_dir_;
     U&              pdf_;
-    S&              sampler_;
+    Sampler&        sampler_;
 };
 
 

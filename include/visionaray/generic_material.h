@@ -33,34 +33,22 @@ public:
     generic_material() = default;
 
     template <template <typename> class M>
-    /* implicit */ generic_material(M<scalar_type> const& material)
-        : base_type(material)
-    {
-    }
+    /* implicit */ generic_material(M<scalar_type> const& material);
 
-    VSNRAY_FUNC bool is_emissive() const
-    {
-        return apply_visitor( is_emissive_visitor(), *this );
-    }
+    VSNRAY_FUNC bool is_emissive() const;
 
-    VSNRAY_FUNC spectrum<scalar_type> ambient() const
-    {
-        return apply_visitor( ambient_visitor(), *this );
-    }
+    VSNRAY_FUNC spectrum<scalar_type> ambient() const;
 
     template <typename SR>
-    VSNRAY_FUNC
-    spectrum<typename SR::scalar_type> shade(SR const& sr) const
-    {
-        return apply_visitor( shade_visitor<SR>(sr), *this );
-    }
+    VSNRAY_FUNC spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
-    template <typename SR, typename U, typename S /* sampler */>
-    VSNRAY_FUNC
-    spectrum<U> sample(SR const& sr, vector<3, U>& refl_dir, U& pdf, S& sampler) const
-    {
-        return apply_visitor( sample_visitor<SR, U, S>(sr, refl_dir, pdf, sampler), *this );
-    }
+    template <typename SR, typename U, typename Sampler>
+    VSNRAY_FUNC spectrum<U> sample(
+            SR const&       sr,
+            vector<3, U>&   refl_dir,
+            U&              pdf,
+            Sampler&        sampler
+            ) const;
 
 private:
 
