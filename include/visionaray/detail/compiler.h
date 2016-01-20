@@ -165,6 +165,53 @@
 #endif
 
 
+//-------------------------------------------------------------------------------------------------
+// Detect stdlib features
+//
+
+// VSNRAY_CXXLIB_HAS_HDR_ARRAY
+// VSNRAY_CXXLIB_HAS_HDR_CHRONO
+// VSNRAY_CXXLIB_HAS_HDR_TYPE_TRAITS
+// VSNRAY_CXXLIB_HAS_COPYSIGN
+// VSNRAY_CXXLIB_HAS_ROUND
+// VSNRAY_CXXLIB_HAS_TRUNC
+
+#if defined(_CPPLIB_VER)
+#  if (_CPPLIB_VER >= 520) // vc10
+#    define VSNRAY_CXXLIB_HAS_HDR_ARRAY 1
+#    define VSNRAY_CXXLIB_HAS_HDR_TYPE_TRAITS 1
+#  endif
+#  if (_CPPLIB_VER >= 540) // vc11
+#    define VSNRAY_CXXLIB_HAS_HDR_CHRONO 1
+#  endif
+#  if (_CPPLIB_VER >= 610) // vc12
+#    define VSNRAY_CXXLIB_HAS_COPYSIGN 1
+#    define VSNRAY_CXXLIB_HAS_ROUND 1
+#    define VSNRAY_CXXLIB_HAS_TRUNC 1
+#  endif
+#endif
+
+#if defined(__GLIBCXX__)
+#  ifdef __GXX_EXPERIMENTAL_CXX0X__
+#    define VSNRAY_CXXLIB_HAS_HDR_ARRAY 1
+#    define VSNRAY_CXXLIB_HAS_HDR_CHRONO 1
+#    define VSNRAY_CXXLIB_HAS_HDR_TYPE_TRAITS 1
+#    define VSNRAY_CXXLIB_HAS_COPYSIGN 1
+#    define VSNRAY_CXXLIB_HAS_ROUND 1
+#    define MATH_CXXLIB_HAS_TRUNC 1
+#  endif
+#endif
+
+#if defined(_LIBCPP_VERSION)
+#  define VSNRAY_CXXLIB_HAS_HDR_ARRAY 1
+#  define VSNRAY_CXXLIB_HAS_HDR_CHRONO 1
+#  define VSNRAY_CXXLIB_HAS_HDR_TYPE_TRAITS 1
+#  define VSNRAY_CXXLIB_HAS_COPYSIGN 1
+#  define VSNRAY_CXXLIB_HAS_ROUND 1
+#  define VSNRAY_CXXLIB_HAS_TRUNC 1
+#endif
+
+
 //
 // Macros to work with compiler warnings/errors
 //
