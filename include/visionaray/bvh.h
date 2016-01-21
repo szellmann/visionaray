@@ -118,6 +118,13 @@ inline bool is_leaf(bvh_node const& node)
     return node.is_leaf();
 }
 
+VSNRAY_FUNC
+inline bool operator==(bvh_node const& a, bvh_node const& b)
+{
+    return (is_inner(a) && is_inner(b) && a.first_child == b.first_child)
+        || ( is_leaf(a) && is_leaf(b)  &&  a.first_prim == b.first_prim );
+}
+
 
 //--------------------------------------------------------------------------------------------------
 // [index_]bvh_ref_t
@@ -442,6 +449,9 @@ void traverse_depth_first(B const& b, F func);
 
 template <typename B, typename F>
 void traverse_leaves(B const& b, F func);
+
+template <typename B, typename N, typename F>
+void traverse_parents(B const& b, N const& n, F func);
 
 } // visionaray
 

@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_DETAIL_STACK_H
-#define VSNRAY_DETAIL_STACK_H
+#define VSNRAY_DETAIL_STACK_H 1
 
 #include "macros.h"
    
@@ -26,6 +26,16 @@ struct stack
         return ptr == 0;
     }
 
+    VSNRAY_FUNC unsigned size() const
+    {
+        return ptr;
+    }
+
+    VSNRAY_FUNC void clear()
+    {
+        ptr = 0;
+    }
+
     VSNRAY_FUNC void push(unsigned v)
     {
         data[++ptr] = v;
@@ -42,6 +52,5 @@ struct stack
 
 } // detail
 } // visionaray
-
 
 #endif // VSNRAY_DETAIL_STACK_H
