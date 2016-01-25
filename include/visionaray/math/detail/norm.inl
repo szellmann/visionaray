@@ -7,7 +7,7 @@ namespace detail
 {
 
 //-------------------------------------------------------------------------------------------------
-// Convert float to unorm (cf. OpenGL 4.4, 2.3.4.1
+// Convert float to unorm (cf. OpenGL 4.4, 2.3.4.1)
 //
 
 template <unsigned Bits>
