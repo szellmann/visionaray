@@ -33,9 +33,9 @@ addons:
 
 
 before_install:
-    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install glew ;fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget http://launchpadlibrarian.net/161405671/libglew1.10_1.10.0-3_amd64.deb; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget http://launchpadlibrarian.net/161405670/libglew-dev_1.10.0-3_amd64.deb; fi
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then travis_retry brew install glew ;fi
+    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then travis_retry wget http://launchpadlibrarian.net/161405671/libglew1.10_1.10.0-3_amd64.deb; fi
+    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then travis_retry wget http://launchpadlibrarian.net/161405670/libglew-dev_1.10.0-3_amd64.deb; fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo dpkg -i libglew1.10_1.10.0-3_amd64.deb; fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo dpkg -i libglew-dev_1.10.0-3_amd64.deb; fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VER}"; fi; fi
