@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_TEXTURE_TEXTURE3D_H
-#define VSNRAY_TEXTURE_TEXTURE3D_H
+#define VSNRAY_TEXTURE_TEXTURE3D_H 1
 
 #include <cstddef>
 #include <type_traits>
@@ -14,7 +14,6 @@
 
 namespace visionaray
 {
-
 
 template <typename Base, typename T, tex_read_mode ReadMode>
 class texture_iface<Base, T, ReadMode, 3> : public Base
@@ -27,8 +26,6 @@ public:
 #ifdef VSNRAY_CXX_HAS_INHERITING_CONSTRUCTORS
     using Base::Base;
 #endif
-
-    static const size_t dimensions = 3;
 
 public:
 
@@ -98,8 +95,6 @@ private:
 
 };
 
-
 } // visionaray
-
 
 #endif // VSNRAY_TEXTURE_TEXTURE3D_H

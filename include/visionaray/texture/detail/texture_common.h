@@ -98,6 +98,7 @@ class texture_base : public texture_params_base<Dim>
 public:
 
     using value_type = T;
+    enum { dimensions = Dim };
 
 public:
 
@@ -165,6 +166,7 @@ public:
 
     using value_type = T;
     using base_type  = texture_params_base<Dim>;
+    enum { dimensions = Dim };
 
 public:
 
