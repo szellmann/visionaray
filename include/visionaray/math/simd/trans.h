@@ -419,22 +419,28 @@ inline FloatT log2(FloatT x)
 // pow()
 //
 
-template <
-    typename FloatT,
-    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
-    >
-inline FloatT pow(FloatT x, FloatT y)
+inline float4 pow(float4 x, float4 y)
 {
 #if VSNRAY_SIMD_HAS_SVML
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-    return _mm256_pow_ps(x, y);
-#else
     return _mm_pow_ps(x, y);
-#endif
 #else
     return exp( y * log(x) );
 #endif
 }
+
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+inline float8 pow(float8 x, float8 y)
+{
+#if VSNRAY_SIMD_HAS_SVML
+    return _mm256_pow_ps(x, y);
+#else
+    return exp( y * log(x) );
+#endif
+}
+
+#endif
 
 } // simd
 } // MATH_NAMESPACE
