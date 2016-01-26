@@ -8,7 +8,12 @@
 namespace visionaray
 {
 
-template <typename T, typename BVH, typename Intersector>
+template <
+    typename T,
+    typename BVH,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename Intersector
+    >
 VSNRAY_FUNC
 inline auto intersect(
         basic_ray<T> const& ray,
