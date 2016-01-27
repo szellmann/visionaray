@@ -6,6 +6,7 @@
 #ifndef VSNRAY_SURFACE_INL
 #define VSNRAY_SURFACE_INL 1
 
+#include <array>
 #include <iterator>
 #include <stdexcept>
 
@@ -98,88 +99,80 @@ namespace simd
 //
 
 template <typename N, typename M, typename ...Args>
-inline auto pack(
-        surface<N, M, Args...> const& s1,
-        surface<N, M, Args...> const& s2,
-        surface<N, M, Args...> const& s3,
-        surface<N, M, Args...> const& s4
-        ) -> decltype( visionaray::detail::make_surface(
+inline auto pack(std::array<surface<N, M, Args...>, 4> const& surfs)
+    -> decltype( visionaray::detail::make_surface(
             pack(
-                s1.normal,
-                s2.normal,
-                s3.normal,
-                s4.normal
+                surfs[0].normal,
+                surfs[1].normal,
+                surfs[2].normal,
+                surfs[3].normal
                 ),
             pack(
-                s1.material,
-                s2.material,
-                s3.material,
-                s4.material
+                surfs[0].material,
+                surfs[1].material,
+                surfs[2].material,
+                surfs[3].material
                 )
             ) )
 
 {
     return visionaray::detail::make_surface(
             pack(
-                s1.normal,
-                s2.normal,
-                s3.normal,
-                s4.normal
+                surfs[0].normal,
+                surfs[1].normal,
+                surfs[2].normal,
+                surfs[3].normal
                 ),
             pack(
-                s1.material,
-                s2.material,
-                s3.material,
-                s4.material
+                surfs[0].material,
+                surfs[1].material,
+                surfs[2].material,
+                surfs[3].material
                 )
             );
 }
 
 template <typename N, typename M, typename C, typename ...Args>
-inline auto pack(
-        surface<N, M, C, Args...> const& s1,
-        surface<N, M, C, Args...> const& s2,
-        surface<N, M, C, Args...> const& s3,
-        surface<N, M, C, Args...> const& s4
-        ) -> decltype( visionaray::detail::make_surface(
+inline auto pack(std::array<surface<N, M, C, Args...>, 4> const& surfs)
+    -> decltype( visionaray::detail::make_surface(
             pack(
-                s1.normal,
-                s2.normal,
-                s3.normal,
-                s4.normal
+                surfs[0].normal,
+                surfs[1].normal,
+                surfs[2].normal,
+                surfs[3].normal
                 ),
             pack(
-                s1.material,
-                s2.material,
-                s3.material,
-                s4.material
+                surfs[0].material,
+                surfs[1].material,
+                surfs[2].material,
+                surfs[3].material
                 ),
             pack(
-                s1.tex_color_,
-                s2.tex_color_,
-                s3.tex_color_,
-                s4.tex_color_
+                surfs[0].tex_color_,
+                surfs[1].tex_color_,
+                surfs[2].tex_color_,
+                surfs[3].tex_color_
                 )
             ) )
 {
     return visionaray::detail::make_surface(
             pack(
-                s1.normal,
-                s2.normal,
-                s3.normal,
-                s4.normal
+                surfs[0].normal,
+                surfs[1].normal,
+                surfs[2].normal,
+                surfs[3].normal
                 ),
             pack(
-                s1.material,
-                s2.material,
-                s3.material,
-                s4.material
+                surfs[0].material,
+                surfs[1].material,
+                surfs[2].material,
+                surfs[3].material
                 ),
             pack(
-                s1.tex_color_,
-                s2.tex_color_,
-                s3.tex_color_,
-                s4.tex_color_
+                surfs[0].tex_color_,
+                surfs[1].tex_color_,
+                surfs[2].tex_color_,
+                surfs[3].tex_color_
                 )
             );
 }
@@ -187,135 +180,119 @@ inline auto pack(
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 template <typename N, typename M, typename ...Args>
-inline auto pack(
-        surface<N, M, Args...> const& s1,
-        surface<N, M, Args...> const& s2,
-        surface<N, M, Args...> const& s3,
-        surface<N, M, Args...> const& s4,
-        surface<N, M, Args...> const& s5,
-        surface<N, M, Args...> const& s6,
-        surface<N, M, Args...> const& s7,
-        surface<N, M, Args...> const& s8
-        ) -> decltype( visionaray::detail::make_surface(
+inline auto pack(std::array<surface<N, M, Args...>, 8> const& surfs)
+    -> decltype( visionaray::detail::make_surface(
             pack(
-                s1.normal,
-                s2.normal,
-                s3.normal,
-                s4.normal,
-                s5.normal,
-                s6.normal,
-                s7.normal,
-                s8.normal
+                surfs[0].normal,
+                surfs[1].normal,
+                surfs[2].normal,
+                surfs[3].normal,
+                surfs[4].normal,
+                surfs[5].normal,
+                surfs[6].normal,
+                surfs[7].normal
                 ),
             pack(
-                s1.material,
-                s2.material,
-                s3.material,
-                s4.material,
-                s5.material,
-                s6.material,
-                s7.material,
-                s8.material
+                surfs[0].material,
+                surfs[1].material,
+                surfs[2].material,
+                surfs[3].material,
+                surfs[4].material,
+                surfs[5].material,
+                surfs[6].material,
+                surfs[7].material
                 )
             ) )
 {
     return visionaray::detail::make_surface(
             pack(
-                s1.normal,
-                s2.normal,
-                s3.normal,
-                s4.normal,
-                s5.normal,
-                s6.normal,
-                s7.normal,
-                s8.normal
+                surfs[0].normal,
+                surfs[1].normal,
+                surfs[2].normal,
+                surfs[3].normal,
+                surfs[4].normal,
+                surfs[5].normal,
+                surfs[6].normal,
+                surfs[7].normal
                 ),
             pack(
-                s1.material,
-                s2.material,
-                s3.material,
-                s4.material,
-                s5.material,
-                s6.material,
-                s7.material,
-                s8.material
+                surfs[0].material,
+                surfs[1].material,
+                surfs[2].material,
+                surfs[3].material,
+                surfs[4].material,
+                surfs[5].material,
+                surfs[6].material,
+                surfs[7].material
                 )
             );
 }
 
 template <typename N, typename M, typename C, typename ...Args>
-inline auto pack(
-        surface<N, M, C, Args...> const& s1,
-        surface<N, M, C, Args...> const& s2,
-        surface<N, M, C, Args...> const& s3,
-        surface<N, M, C, Args...> const& s4,
-        surface<N, M, C, Args...> const& s5,
-        surface<N, M, C, Args...> const& s6,
-        surface<N, M, C, Args...> const& s7,
-        surface<N, M, C, Args...> const& s8
-        ) -> decltype( visionaray::detail::make_surface(
+inline auto pack(std::array<surface<N, M, C, Args...>, 8> const& surfs)
+    -> decltype( visionaray::detail::make_surface(
             pack(
-                s1.normal,
-                s2.normal,
-                s3.normal,
-                s4.normal,
-                s5.normal,
-                s6.normal,
-                s7.normal,
-                s8.normal
+                surfs[0].normal,
+                surfs[1].normal,
+                surfs[2].normal,
+                surfs[3].normal,
+                surfs[4].normal,
+                surfs[5].normal,
+                surfs[6].normal,
+                surfs[7].normal
                 ),
             pack(
-                s1.material,
-                s2.material,
-                s3.material,
-                s4.material,
-                s5.material,
-                s6.material,
-                s7.material,
-                s8.material
+                surfs[0].material,
+                surfs[1].material,
+                surfs[2].material,
+                surfs[3].material,
+                surfs[4].material,
+                surfs[5].material,
+                surfs[6].material,
+                surfs[7].material
                 ),
             pack(
-                s1.tex_color_,
-                s2.tex_color_,
-                s3.tex_color_,
-                s4.tex_color_,
-                s5.tex_color_,
-                s6.tex_color_,
-                s7.tex_color_,
-                s8.tex_color_
+                surfs[0].tex_color_,
+                surfs[1].tex_color_,
+                surfs[2].tex_color_,
+                surfs[3].tex_color_,
+                surfs[4].tex_color_,
+                surfs[5].tex_color_,
+                surfs[6].tex_color_,
+                surfs[7].tex_color_
                 )
             ) )
 {
     return visionaray::detail::make_surface(
             pack(
-                s1.normal,
-                s2.normal,
-                s3.normal,
-                s4.normal,
-                s5.normal,
-                s6.normal,
-                s7.normal,
-                s8.normal
+                surfs[0].normal,
+                surfs[1].normal,
+                surfs[2].normal,
+                surfs[3].normal,
+                surfs[4].normal,
+                surfs[5].normal,
+                surfs[6].normal,
+                surfs[7].normal
                 ),
             pack(
-                s1.material,
-                s2.material,
-                s3.material,
-                s4.material,
-                s5.material,
-                s6.material,
-                s7.material,
-                s8.material
+                surfs[0].material,
+                surfs[1].material,
+                surfs[2].material,
+                surfs[3].material,
+                surfs[4].material,
+                surfs[5].material,
+                surfs[6].material,
+                surfs[7].material
                 ),
             pack(
-                s1.tex_color_,
-                s2.tex_color_,
-                s3.tex_color_,
-                s4.tex_color_,
-                s5.tex_color_,
-                s6.tex_color_,
-                s7.tex_color_,
-                s8.tex_color_
+                surfs[0].tex_color_,
+                surfs[1].tex_color_,
+                surfs[2].tex_color_,
+                surfs[3].tex_color_,
+                surfs[4].tex_color_,
+                surfs[5].tex_color_,
+                surfs[6].tex_color_,
+                surfs[7].tex_color_
                 )
             );
 }
@@ -535,10 +512,7 @@ inline auto get_surface_any_prim_impl(
         Primitive                   /* */,
         NormalBinding               /* */
         ) -> decltype( simd::pack(
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{}
+            std::array<typename detail::decl_surface<Normals, Materials>::type, 4>{}
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -547,24 +521,17 @@ inline auto get_surface_any_prim_impl(
 
     auto hr4 = unpack(hr);
 
-    return simd::pack(
-        detail::make_surface(
-            hr4[0].hit ? get_normal(normals, hr4[0], P{}, NormalBinding{}) : N{},
-            hr4[0].hit ? materials[hr4[0].geom_id]                         : M{}
-            ),
-        detail::make_surface(
-            hr4[1].hit ? get_normal(normals, hr4[1], P{}, NormalBinding{}) : N{},
-            hr4[1].hit ? materials[hr4[1].geom_id]                         : M{}
-            ),
-        detail::make_surface(
-            hr4[2].hit ? get_normal(normals, hr4[2], P{}, NormalBinding{}) : N{},
-            hr4[2].hit ? materials[hr4[2].geom_id]                         : M{}
-            ),
-        detail::make_surface(
-            hr4[3].hit ? get_normal(normals, hr4[3], P{}, NormalBinding{}) : N{},
-            hr4[3].hit ? materials[hr4[3].geom_id]                         : M{}
-            )
-        );
+    std::array<typename detail::decl_surface<Normals, Materials>::type, 4> surfs;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        surfs[i] = detail::make_surface(
+            hr4[i].hit ? get_normal(normals, hr4[i], P{}, NormalBinding{}) : N{},
+            hr4[i].hit ? materials[hr4[i].geom_id]                         : M{}
+            );
+    }
+
+    return simd::pack(surfs);
 }
 
 
@@ -587,10 +554,7 @@ inline auto get_surface_any_prim_impl(
         Primitive                   /* */,
         NormalBinding               /* */
         ) -> decltype( simd::pack(
-            typename detail::decl_surface<Normals, Materials, vector<3, float>>::type{},
-            typename detail::decl_surface<Normals, Materials, vector<3, float>>::type{},
-            typename detail::decl_surface<Normals, Materials, vector<3, float>>::type{},
-            typename detail::decl_surface<Normals, Materials, vector<3, float>>::type{}
+            std::array<typename detail::decl_surface<Normals, Materials, vector<3, float>>::type, 4>{}
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -616,28 +580,18 @@ inline auto get_surface_any_prim_impl(
                       : C(1.0);
     }
 
-    return simd::pack(
-        detail::make_surface(
-            hr4[0].hit ? get_normal(normals, hr4[0], P{}, NormalBinding{}) : N{},
-            hr4[0].hit ? materials[hr4[0].geom_id]                         : M{},
-            hr4[0].hit ? tex_color4[0]                                     : C(1.0)
-            ),
-        detail::make_surface(
-            hr4[1].hit ? get_normal(normals, hr4[1], P{}, NormalBinding{}) : N{},
-            hr4[1].hit ? materials[hr4[1].geom_id]                         : M{},
-            hr4[1].hit ? tex_color4[1]                                     : C(1.0)
-            ),
-        detail::make_surface(
-            hr4[2].hit ? get_normal(normals, hr4[2], P{}, NormalBinding{}) : N{},
-            hr4[2].hit ? materials[hr4[2].geom_id]                         : M{},
-            hr4[2].hit ? tex_color4[2]                                     : C(1.0)
-            ),
-        detail::make_surface(
-            hr4[3].hit ? get_normal(normals, hr4[3], P{}, NormalBinding{}) : N{},
-            hr4[3].hit ? materials[hr4[3].geom_id]                         : M{},
-            hr4[3].hit ? tex_color4[3]                                     : C(1.0)
-            )
-        );
+    std::array<typename detail::decl_surface<Normals, Materials, vector<3, float>>::type, 4> surfs;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        surfs[i] = detail::make_surface(
+            hr4[i].hit ? get_normal(normals, hr4[i], P{}, NormalBinding{}) : N{},
+            hr4[i].hit ? materials[hr4[i].geom_id]                         : M{},
+            hr4[i].hit ? tex_color4[i]                                     : C(1.0)
+            );
+    }
+
+    return simd::pack(surfs);
 }
 
 template <
@@ -663,10 +617,7 @@ inline auto get_surface_any_prim_impl(
         NormalBinding               /* */,
         ColorBinding                /* */
         ) -> decltype( simd::pack(
-            typename detail::decl_surface<Normals, Materials, vector<3, float>>::type{},
-            typename detail::decl_surface<Normals, Materials, vector<3, float>>::type{},
-            typename detail::decl_surface<Normals, Materials, vector<3, float>>::type{},
-            typename detail::decl_surface<Normals, Materials, vector<3, float>>::type{}
+            std::array<typename detail::decl_surface<Normals, Materials, vector<3, float>>::type, 4>{}
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -694,28 +645,18 @@ inline auto get_surface_any_prim_impl(
                       : C(1.0);
     }
 
-    return simd::pack(
-        detail::make_surface(
-            hr4[0].hit ? get_normal(normals, hr4[0], P{}, NormalBinding{}) : N{},
-            hr4[0].hit ? materials[hr4[0].geom_id]                         : M{},
-            hr4[0].hit ? color4[0] * tex_color4[0]                         : C(1.0)
-            ),
-        detail::make_surface(
-            hr4[1].hit ? get_normal(normals, hr4[1], P{}, NormalBinding{}) : N{},
-            hr4[1].hit ? materials[hr4[1].geom_id]                         : M{},
-            hr4[1].hit ? color4[1] * tex_color4[1]                         : C(1.0)
-            ),
-        detail::make_surface(
-            hr4[2].hit ? get_normal(normals, hr4[2], P{}, NormalBinding{}) : N{},
-            hr4[2].hit ? materials[hr4[2].geom_id]                         : M{},
-            hr4[2].hit ? color4[2] * tex_color4[2]                         : C(1.0)
-            ),
-        detail::make_surface(
-            hr4[3].hit ? get_normal(normals, hr4[3], P{}, NormalBinding{}) : N{},
-            hr4[3].hit ? materials[hr4[3].geom_id]                         : M{},
-            hr4[3].hit ? color4[3] * tex_color4[3]                         : C(1.0)
-            )
-        );
+    std::array<typename detail::decl_surface<Normals, Materials, vector<3, float>>::type, 4> surfs;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        surfs[i] = detail::make_surface(
+            hr4[i].hit ? get_normal(normals, hr4[i], P{}, NormalBinding{}) : N{},
+            hr4[i].hit ? materials[hr4[i].geom_id]                         : M{},
+            hr4[i].hit ? color4[i] * tex_color4[i]                         : C(1.0)
+            );
+    }
+
+    return simd::pack(surfs);
 }
 
 
@@ -740,14 +681,7 @@ inline auto get_surface_any_prim_impl(
         Primitive                   /* */,
         NormalBinding               /* */
         ) -> decltype( simd::pack(
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{}
+            std::array<typename detail::decl_surface<Normals, Materials>::type, 8>{}
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -756,40 +690,17 @@ inline auto get_surface_any_prim_impl(
 
     auto hr8 = unpack(hr);
 
-    return simd::pack(
-        detail::make_surface(
-            hr8[0].hit ? get_normal(normals, hr8[0], P{}, NormalBinding{}) : N{},
-            hr8[0].hit ? materials[hr8[0].geom_id]                         : M{}
-            ),
-        detail::make_surface(
-            hr8[1].hit ? get_normal(normals, hr8[1], P{}, NormalBinding{}) : N{},
-            hr8[1].hit ? materials[hr8[1].geom_id]                         : M{}
-            ),
-        detail::make_surface(
-            hr8[2].hit ? get_normal(normals, hr8[2], P{}, NormalBinding{}) : N{},
-            hr8[2].hit ? materials[hr8[2].geom_id]                         : M{}
-            ),
-        detail::make_surface(
-            hr8[3].hit ? get_normal(normals, hr8[3], P{}, NormalBinding{}) : N{},
-            hr8[3].hit ? materials[hr8[3].geom_id]                         : M{}
-            ),
-        detail::make_surface(
-            hr8[4].hit ? get_normal(normals, hr8[4], P{}, NormalBinding{}) : N{},
-            hr8[4].hit ? materials[hr8[4].geom_id]                         : M{}
-            ),
-        detail::make_surface(
-            hr8[5].hit ? get_normal(normals, hr8[5], P{}, NormalBinding{}) : N{},
-            hr8[5].hit ? materials[hr8[5].geom_id]                         : M{}
-            ),
-        detail::make_surface(
-            hr8[6].hit ? get_normal(normals, hr8[6], P{}, NormalBinding{}) : N{},
-            hr8[6].hit ? materials[hr8[6].geom_id]                         : M{}
-            ),
-        detail::make_surface(
-            hr8[7].hit ? get_normal(normals, hr8[7], P{}, NormalBinding{}) : N{},
-            hr8[7].hit ? materials[hr8[7].geom_id]                         : M{}
-            )
-        );
+    std::array<typename detail::decl_surface<Normals, Materials>::type, 8> surfs;
+
+    for (int i = 0; i < 8; ++i)
+    {
+        surfs[i] = detail::make_surface(
+            hr8[i].hit ? get_normal(normals, hr8[i], P{}, NormalBinding{}) : N{},
+            hr8[i].hit ? materials[hr8[i].geom_id]                         : M{}
+            );
+    }
+
+    return simd::pack(surfs);
 }
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -948,10 +859,7 @@ inline auto get_surface_with_prims_impl(
         generic_primitive<Ts...>    /* */,
         NormalBinding               /* */
         ) -> decltype( simd::pack(
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{}
+            std::array<typename detail::decl_surface<Normals, Materials>::type, 4>{}
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -959,25 +867,24 @@ inline auto get_surface_with_prims_impl(
 
     auto hr4 = unpack(hr); 
 
-    auto get_surf = [&](unsigned index)
+    std::array<typename detail::decl_surface<Normals, Materials>::type, 4> surfs;
+
+    for (int i = 0; i < 4; ++i)
     {
-        // dispatch to scalar version of this function
-        return get_surface_with_prims_impl(
-                hr4[index],
+        surfs[i] = hr4[i].hit
+            ? get_surface_with_prims_impl( // dispatch to scalar version of this function
+                hr4[i],
                 primitives,
                 normals,
                 materials,
                 generic_primitive<Ts...>(),
                 NormalBinding()
-                );
-    };
+                )
+            : detail::make_surface( N{}, M{} )
+            ;
+    }
 
-    return simd::pack(
-            hr4[0].hit ? get_surf(0) : detail::make_surface( N(), M() ),
-            hr4[1].hit ? get_surf(1) : detail::make_surface( N(), M() ),
-            hr4[2].hit ? get_surf(2) : detail::make_surface( N(), M() ),
-            hr4[3].hit ? get_surf(3) : detail::make_surface( N(), M() )
-            );
+    return simd::pack(surfs);
 }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -1003,14 +910,7 @@ inline auto get_surface_with_prims_impl(
         generic_primitive<Ts...>    /* */,
         NormalBinding               /* */
         ) -> decltype( simd::pack(
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{},
-            typename detail::decl_surface<Normals, Materials>::type{}
+            std::array<typename detail::decl_surface<Normals, Materials>::type, 8>{}
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -1018,29 +918,24 @@ inline auto get_surface_with_prims_impl(
 
     auto hr8 = unpack(hr); 
 
-    auto get_surf = [&](unsigned index)
+    std::array<typename detail::decl_surface<Normals, Materials>::type, 8> surfs;
+
+    for (int i = 0; i < 8; ++i)
     {
-        // dispatch to scalar version of this function
-        return get_surface_with_prims_impl(
-                hr8[index],
+        surfs[i] = hr8[i].hit
+            ? get_surface_with_prims_impl( // dispatch to scalar version of this function
+                hr8[i],
                 primitives,
                 normals,
                 materials,
                 generic_primitive<Ts...>(),
                 NormalBinding()
-                );
-    };
+                )
+            : detail::make_surface( N{}, M{} )
+            ;
+    }
 
-    return simd::pack(
-            hr8[0].hit ? get_surf(0) : detail::make_surface( N(), M() ),
-            hr8[1].hit ? get_surf(1) : detail::make_surface( N(), M() ),
-            hr8[2].hit ? get_surf(2) : detail::make_surface( N(), M() ),
-            hr8[3].hit ? get_surf(3) : detail::make_surface( N(), M() ),
-            hr8[4].hit ? get_surf(4) : detail::make_surface( N(), M() ),
-            hr8[5].hit ? get_surf(5) : detail::make_surface( N(), M() ),
-            hr8[6].hit ? get_surf(6) : detail::make_surface( N(), M() ),
-            hr8[7].hit ? get_surf(7) : detail::make_surface( N(), M() )
-            );
+    return simd::pack(surfs);
 }
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
