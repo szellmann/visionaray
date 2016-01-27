@@ -9,6 +9,7 @@
 #include <array>
 #include <iterator>
 #include <stdexcept>
+#include <type_traits>
 
 #include "../generic_material.h"
 #include "../generic_primitive.h"
