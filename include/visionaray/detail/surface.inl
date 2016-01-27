@@ -577,28 +577,19 @@ inline auto get_surface_any_prim_impl(
 
     auto tcs = get_tex_coord(tex_coords, hrs, typename detail::primitive_traits<Primitive>::type{});
 
-    C tex_colors[simd::num_elements<T>::value];
-    for (unsigned i = 0; i < simd::num_elements<T>::value; ++i)
-    {
-        if (!hrs[i].hit)
-        {
-            continue;
-        }
-
-        auto const& tex = textures[hrs[i].geom_id];
-        tex_colors[i] = tex.width() > 0 && tex.height() > 0
-                      ? C(tex2D(tex, tcs[i]))
-                      : C(1.0);
-    }
-
     std::array<typename detail::decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
+        auto const& tex = textures[hrs[i].geom_id];
+        C tex_color = hrs[i].hit && tex.width() > 0 && tex.height() > 0
+                    ? C(tex2D(tex, tcs[i]))
+                    : C(1.0);
+
         surfs[i] = detail::make_surface(
             hrs[i].hit ? get_normal(normals, hrs[i], P{}, NormalBinding{}) : N{},
             hrs[i].hit ? materials[hrs[i].geom_id]                         : M{},
-            hrs[i].hit ? tex_colors[i]                                     : C(1.0)
+            hrs[i].hit ? tex_color                                         : C(1.0)
             );
     }
 
@@ -647,28 +638,19 @@ inline auto get_surface_any_prim_impl(
 
     auto tcs = get_tex_coord(tex_coords, hrs, typename detail::primitive_traits<Primitive>::type{});
 
-    C tex_colors[simd::num_elements<T>::value];
-    for (unsigned i = 0; i < simd::num_elements<T>::value; ++i)
-    {
-        if (!hrs[i].hit)
-        {
-            continue;
-        }
-
-        auto const& tex = textures[hrs[i].geom_id];
-        tex_colors[i] = tex.width() > 0 && tex.height() > 0
-                      ? C(tex2D(tex, tcs[i]))
-                      : C(1.0);
-    }
-
     std::array<typename detail::decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
+        auto const& tex = textures[hrs[i].geom_id];
+        C tex_color = hrs[i].hit && tex.width() > 0 && tex.height() > 0
+                    ? C(tex2D(tex, tcs[i]))
+                    : C(1.0);
+
         surfs[i] = detail::make_surface(
             hrs[i].hit ? get_normal(normals, hrs[i], P{}, NormalBinding{}) : N{},
             hrs[i].hit ? materials[hrs[i].geom_id]                         : M{},
-            hrs[i].hit ? colorss[i] * tex_colors[i]                        : C(1.0)
+            hrs[i].hit ? colorss[i] * tex_color                            : C(1.0)
             );
     }
 
