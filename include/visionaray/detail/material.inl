@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <array>
+
 namespace visionaray
 {
 namespace simd
@@ -10,74 +12,54 @@ namespace simd
 // Functions to pack four materials into a single SIMD material
 //
 
-inline emissive<float4> pack(
-        emissive<float> const& m1,
-        emissive<float> const& m2,
-        emissive<float> const& m3,
-        emissive<float> const& m4
-        )
+inline emissive<float4> pack(std::array<emissive<float>, 4> const& mats)
 {
     emissive<float4> result;
 
-    result.set_ce( pack(m1.get_ce(), m2.get_ce(), m3.get_ce(), m4.get_ce()) );
-    result.set_ls( float4(m1.get_ls(), m2.get_ls(), m3.get_ls(), m4.get_ls()) );
+    result.set_ce( pack(mats[0].get_ce(), mats[1].get_ce(), mats[2].get_ce(), mats[3].get_ce()) );
+    result.set_ls( float4(mats[0].get_ls(), mats[1].get_ls(), mats[2].get_ls(), mats[3].get_ls()) );
 
     return result;
 }
 
 
-inline matte<float4> pack(
-        matte<float> const& m1,
-        matte<float> const& m2,
-        matte<float> const& m3,
-        matte<float> const& m4
-        )
+inline matte<float4> pack(std::array<matte<float>, 4> const& mats)
 {
     matte<float4> result;
 
-    result.set_ca( pack(m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca()) );
-    result.set_cd( pack(m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd()) );
-    result.set_ka( float4(m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka()) );
-    result.set_kd( float4(m1.get_kd(), m2.get_kd(), m3.get_kd(), m4.get_kd()) );
+    result.set_ca( pack(mats[0].get_ca(), mats[1].get_ca(), mats[2].get_ca(), mats[3].get_ca()) );
+    result.set_cd( pack(mats[0].get_cd(), mats[1].get_cd(), mats[2].get_cd(), mats[3].get_cd()) );
+    result.set_ka( float4(mats[0].get_ka(), mats[1].get_ka(), mats[2].get_ka(), mats[3].get_ka()) );
+    result.set_kd( float4(mats[0].get_kd(), mats[1].get_kd(), mats[2].get_kd(), mats[3].get_kd()) );
 
     return result;
 }
 
-inline mirror<float4> pack(
-        mirror<float> const& m1,
-        mirror<float> const& m2,
-        mirror<float> const& m3,
-        mirror<float> const& m4
-        )
+inline mirror<float4> pack(std::array<mirror<float>, 4> const& mats)
 {
     mirror<float4> result;
 
-    result.set_cr( pack(m1.get_cr(), m2.get_cr(), m3.get_cr(), m4.get_cr()) );
-    result.set_kr( float4(m1.get_kr(), m2.get_kr(), m3.get_kr(), m4.get_kr()) );
+    result.set_cr( pack(mats[0].get_cr(), mats[1].get_cr(), mats[2].get_cr(), mats[3].get_cr()) );
+    result.set_kr( float4(mats[0].get_kr(), mats[1].get_kr(), mats[2].get_kr(), mats[3].get_kr()) );
 
     return result;
 }
 
-inline plastic<float4> pack(
-        plastic<float> const& m1,
-        plastic<float> const& m2,
-        plastic<float> const& m3,
-        plastic<float> const& m4
-        )
+inline plastic<float4> pack(std::array<plastic<float>, 4> const& mats)
 {
     plastic<float4> result;
 
-    result.set_ca( pack(m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca()) );
-    result.set_cd( pack(m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd()) );
-    result.set_cs( pack(m1.get_cs(), m2.get_cs(), m3.get_cs(), m4.get_cs()) );
-    result.set_ka( float4(m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka()) );
-    result.set_kd( float4(m1.get_kd(), m2.get_kd(), m3.get_kd(), m4.get_kd()) );
-    result.set_ks( float4(m1.get_ks(), m2.get_ks(), m3.get_ks(), m4.get_ks()) );
+    result.set_ca( pack(mats[0].get_ca(), mats[1].get_ca(), mats[2].get_ca(), mats[3].get_ca()) );
+    result.set_cd( pack(mats[0].get_cd(), mats[1].get_cd(), mats[2].get_cd(), mats[3].get_cd()) );
+    result.set_cs( pack(mats[0].get_cs(), mats[1].get_cs(), mats[2].get_cs(), mats[3].get_cs()) );
+    result.set_ka( float4(mats[0].get_ka(), mats[1].get_ka(), mats[2].get_ka(), mats[3].get_ka()) );
+    result.set_kd( float4(mats[0].get_kd(), mats[1].get_kd(), mats[2].get_kd(), mats[3].get_kd()) );
+    result.set_ks( float4(mats[0].get_ks(), mats[1].get_ks(), mats[2].get_ks(), mats[3].get_ks()) );
     result.set_specular_exp( float4(
-            m1.get_specular_exp(),
-            m2.get_specular_exp(),
-            m3.get_specular_exp(),
-            m4.get_specular_exp()
+            mats[0].get_specular_exp(),
+            mats[1].get_specular_exp(),
+            mats[2].get_specular_exp(),
+            mats[3].get_specular_exp()
             ) );
 
     return result;
@@ -90,117 +72,81 @@ inline plastic<float4> pack(
 // Functions to pack eight materials into a single SIMD material
 //
 
-inline emissive<float8> pack(
-        emissive<float> const& m1,
-        emissive<float> const& m2,
-        emissive<float> const& m3,
-        emissive<float> const& m4,
-        emissive<float> const& m5,
-        emissive<float> const& m6,
-        emissive<float> const& m7,
-        emissive<float> const& m8
-        )
+inline emissive<float8> pack(std::array<emissive<float>, 8> const& mats)
 {
     emissive<float8> result;
 
     result.set_ce(pack(
-            m1.get_ce(), m2.get_ce(), m3.get_ce(), m4.get_ce(),
-            m5.get_ce(), m6.get_ce(), m7.get_ce(), m8.get_ce()
+            mats[0].get_ce(), mats[1].get_ce(), mats[2].get_ce(), mats[3].get_ce(),
+            mats[4].get_ce(), mats[5].get_ce(), mats[6].get_ce(), mats[7].get_ce()
             ));
 
     result.set_ls(float8(
-            m1.get_ls(), m2.get_ls(), m3.get_ls(), m4.get_ls(),
-            m5.get_ls(), m6.get_ls(), m7.get_ls(), m8.get_ls()
+            mats[0].get_ls(), mats[1].get_ls(), mats[2].get_ls(), mats[3].get_ls(),
+            mats[4].get_ls(), mats[5].get_ls(), mats[6].get_ls(), mats[7].get_ls()
             ));
 
     return result;
 }
 
-inline matte<float8> pack(
-        matte<float> const& m1,
-        matte<float> const& m2,
-        matte<float> const& m3,
-        matte<float> const& m4,
-        matte<float> const& m5,
-        matte<float> const& m6,
-        matte<float> const& m7,
-        matte<float> const& m8
-        )
+inline matte<float8> pack(std::array<matte<float>, 8> const& mats)
 {
     matte<float8> result;
 
     result.set_ca(pack(
-            m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca(),
-            m5.get_ca(), m6.get_ca(), m7.get_ca(), m8.get_ca()
+            mats[0].get_ca(), mats[1].get_ca(), mats[2].get_ca(), mats[3].get_ca(),
+            mats[4].get_ca(), mats[5].get_ca(), mats[6].get_ca(), mats[7].get_ca()
             ));
     result.set_cd(pack(
-            m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd(),
-            m5.get_cd(), m6.get_cd(), m7.get_cd(), m8.get_cd()
+            mats[0].get_cd(), mats[1].get_cd(), mats[2].get_cd(), mats[3].get_cd(),
+            mats[4].get_cd(), mats[5].get_cd(), mats[6].get_cd(), mats[7].get_cd()
             ));
     result.set_ka(float8(
-            m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka(),
-            m5.get_ka(), m6.get_ka(), m7.get_ka(), m8.get_ka()
+            mats[0].get_ka(), mats[1].get_ka(), mats[2].get_ka(), mats[3].get_ka(),
+            mats[4].get_ka(), mats[5].get_ka(), mats[6].get_ka(), mats[7].get_ka()
             ));
     result.set_kd(float8(
-            m1.get_kd(), m2.get_kd(), m3.get_kd(), m4.get_kd(),
-            m5.get_kd(), m6.get_kd(), m7.get_kd(), m8.get_kd()
+            mats[0].get_kd(), mats[1].get_kd(), mats[2].get_kd(), mats[3].get_kd(),
+            mats[4].get_kd(), mats[5].get_kd(), mats[6].get_kd(), mats[7].get_kd()
             ));
 
     return result;
 }
 
-inline mirror<float8> pack(
-        mirror<float> const& m1,
-        mirror<float> const& m2,
-        mirror<float> const& m3,
-        mirror<float> const& m4,
-        mirror<float> const& m5,
-        mirror<float> const& m6,
-        mirror<float> const& m7,
-        mirror<float> const& m8
-        )
+inline mirror<float8> pack(std::array<mirror<float>, 8> const& mats)
 {
     mirror<float8> result;
 
     result.set_cr(pack(
-            m1.get_cr(), m2.get_cr(), m3.get_cr(), m4.get_cr(),
-            m5.get_cr(), m6.get_cr(), m7.get_cr(), m8.get_cr()
+            mats[0].get_cr(), mats[1].get_cr(), mats[2].get_cr(), mats[3].get_cr(),
+            mats[4].get_cr(), mats[5].get_cr(), mats[6].get_cr(), mats[7].get_cr()
             ));
     result.set_kr(float8(
-            m1.get_kr(), m2.get_kr(), m3.get_kr(), m4.get_kr(),
-            m5.get_kr(), m6.get_kr(), m7.get_kr(), m8.get_kr()
+            mats[0].get_kr(), mats[1].get_kr(), mats[2].get_kr(), mats[3].get_kr(),
+            mats[4].get_kr(), mats[5].get_kr(), mats[6].get_kr(), mats[7].get_kr()
             ));
 
     return result;
 }
 
-inline plastic<float8> pack(
-        plastic<float> const& m1,
-        plastic<float> const& m2,
-        plastic<float> const& m3,
-        plastic<float> const& m4,
-        plastic<float> const& m5,
-        plastic<float> const& m6,
-        plastic<float> const& m7,
-        plastic<float> const& m8
-        )
+inline plastic<float8> pack(std::array<plastic<float>, 8> const& mats)
 {
     using C = spectrum<float>;
 
-    C ca[8]                         = { m1.get_ca(), m2.get_ca(), m3.get_ca(), m4.get_ca(),
-                                        m5.get_ca(), m6.get_ca(), m7.get_ca(), m8.get_ca() };
-    C cd[8]                         = { m1.get_cd(), m2.get_cd(), m3.get_cd(), m4.get_cd(),
-                                        m5.get_cd(), m6.get_cd(), m7.get_cd(), m8.get_cd() };
-    C cs[8]                         = { m1.get_cs(), m2.get_cs(), m3.get_cs(), m4.get_cs(),
-                                        m5.get_cs(), m6.get_cs(), m7.get_cs(), m8.get_cs() };
-    VSNRAY_ALIGN(32) float ka[8]    = { m1.get_ka(), m2.get_ka(), m3.get_ka(), m4.get_ka(),
-                                        m5.get_ka(), m6.get_ka(), m7.get_ka(), m8.get_ka() };
-    VSNRAY_ALIGN(32) float kd[8]    = { m1.get_kd(), m2.get_kd(), m3.get_kd(), m4.get_kd(),
-                                        m5.get_kd(), m6.get_kd(), m7.get_kd(), m8.get_kd() };
-    VSNRAY_ALIGN(32) float ks[8]    = { m1.get_ks(), m2.get_ks(), m3.get_ks(), m4.get_ks(),
-                                        m5.get_ks(), m6.get_ks(), m7.get_ks(), m8.get_ks() };
-    VSNRAY_ALIGN(32) float exp[8]   = { m1.get_specular_exp(), m2.get_specular_exp(), m3.get_specular_exp(), m4.get_specular_exp(),
-                                        m5.get_specular_exp(), m6.get_specular_exp(), m7.get_specular_exp(), m8.get_specular_exp() };
+    C ca[8]                         = { mats[0].get_ca(), mats[1].get_ca(), mats[2].get_ca(), mats[3].get_ca(),
+                                        mats[4].get_ca(), mats[5].get_ca(), mats[6].get_ca(), mats[7].get_ca() };
+    C cd[8]                         = { mats[0].get_cd(), mats[1].get_cd(), mats[2].get_cd(), mats[3].get_cd(),
+                                        mats[4].get_cd(), mats[5].get_cd(), mats[6].get_cd(), mats[7].get_cd() };
+    C cs[8]                         = { mats[0].get_cs(), mats[1].get_cs(), mats[2].get_cs(), mats[3].get_cs(),
+                                        mats[4].get_cs(), mats[5].get_cs(), mats[6].get_cs(), mats[7].get_cs() };
+    VSNRAY_ALIGN(32) float ka[8]    = { mats[0].get_ka(), mats[1].get_ka(), mats[2].get_ka(), mats[3].get_ka(),
+                                        mats[4].get_ka(), mats[5].get_ka(), mats[6].get_ka(), mats[7].get_ka() };
+    VSNRAY_ALIGN(32) float kd[8]    = { mats[0].get_kd(), mats[1].get_kd(), mats[2].get_kd(), mats[3].get_kd(),
+                                        mats[4].get_kd(), mats[5].get_kd(), mats[6].get_kd(), mats[7].get_kd() };
+    VSNRAY_ALIGN(32) float ks[8]    = { mats[0].get_ks(), mats[1].get_ks(), mats[2].get_ks(), mats[3].get_ks(),
+                                        mats[4].get_ks(), mats[5].get_ks(), mats[6].get_ks(), mats[7].get_ks() };
+    VSNRAY_ALIGN(32) float exp[8]   = { mats[0].get_specular_exp(), mats[1].get_specular_exp(), mats[2].get_specular_exp(), mats[3].get_specular_exp(),
+                                        mats[4].get_specular_exp(), mats[5].get_specular_exp(), mats[6].get_specular_exp(), mats[7].get_specular_exp() };
 
     plastic<float8> result;
 

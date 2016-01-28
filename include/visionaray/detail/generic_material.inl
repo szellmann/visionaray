@@ -2,7 +2,6 @@
 // See the LICENSE file for details.
 
 #include <array>
-#include <cassert>
 
 #include <visionaray/material.h>
 
@@ -160,50 +159,38 @@ public:
 
 public:
 
-    generic_material4(
-            generic_material<Ts...> const& m1,
-            generic_material<Ts...> const& m2,
-            generic_material<Ts...> const& m3,
-            generic_material<Ts...> const& m4
-            )
-        : m1_(m1)
-        , m2_(m2)
-        , m3_(m3)
-        , m4_(m4)
+    generic_material4(std::array<generic_material<Ts...>, 4> const& mats)
+        : mats_(mats)
     {
     }
 
     generic_material<Ts...>& get(int i)
     {
-        assert( i >= 0 && i < 4 );
-
-        return reinterpret_cast<generic_material<Ts...>*>(this)[i];
+        return mats_[i];
     }
 
     generic_material<Ts...> const& get(int i) const
     {
-        assert( i >= 0 && i < 4 );
-
-        return reinterpret_cast<generic_material<Ts...> const*>(this)[i];
+        return mats_[i];
     }
 
     simd::mask4 is_emissive() const
     {
         return simd::mask4(
-                m1_.is_emissive(),
-                m2_.is_emissive(),
-                m3_.is_emissive(),
-                m4_.is_emissive()
+                mats_[0].is_emissive(),
+                mats_[1].is_emissive(),
+                mats_[2].is_emissive(),
+                mats_[3].is_emissive()
                 );
     }
 
     spectrum<simd::float4> ambient() const
     {
         return simd::pack(
-                spectrum<float>( m1_.ambient() ),
-                spectrum<float>( m2_.ambient() ),
-                spectrum<float>( m3_.ambient() ),
-                spectrum<float>( m4_.ambient() )
+                spectrum<float>( mats_[0].ambient() ),
+                spectrum<float>( mats_[1].ambient() ),
+                spectrum<float>( mats_[2].ambient() ),
+                spectrum<float>( mats_[3].ambient() )
                 );
     }
 
@@ -213,10 +200,10 @@ public:
     {
         auto sr4 = unpack(sr);
         return simd::pack(
-                m1_.shade(sr4[0]),
-                m2_.shade(sr4[1]),
-                m3_.shade(sr4[2]),
-                m4_.shade(sr4[3])
+                mats_[0].shade(sr4[0]),
+                mats_[1].shade(sr4[1]),
+                mats_[2].shade(sr4[2]),
+                mats_[3].shade(sr4[3])
                 );
     }
 
@@ -234,10 +221,10 @@ public:
         auto& s = samp.get_sampler();
         spectrum<float> v[] =
         {
-            spectrum<float>( m1_.sample(sr4[0], rd4[0], pdf4[0], s) ),
-            spectrum<float>( m2_.sample(sr4[1], rd4[1], pdf4[1], s) ),
-            spectrum<float>( m3_.sample(sr4[2], rd4[2], pdf4[2], s) ),
-            spectrum<float>( m4_.sample(sr4[3], rd4[3], pdf4[3], s) )
+            spectrum<float>( mats_[0].sample(sr4[0], rd4[0], pdf4[0], s) ),
+            spectrum<float>( mats_[1].sample(sr4[1], rd4[1], pdf4[1], s) ),
+            spectrum<float>( mats_[2].sample(sr4[2], rd4[2], pdf4[2], s) ),
+            spectrum<float>( mats_[3].sample(sr4[3], rd4[3], pdf4[3], s) )
         };
         refl_dir = simd::pack( rd4[0], rd4[1], rd4[2], rd4[3] );
         pdf = simd::float4(pdf4);
@@ -246,10 +233,7 @@ public:
 
 private:
 
-    generic_material<Ts...> m1_;
-    generic_material<Ts...> m2_;
-    generic_material<Ts...> m3_;
-    generic_material<Ts...> m4_;
+    std::array<generic_material<Ts...>, 4> mats_;
 
 };
 
@@ -268,66 +252,46 @@ public:
 
 public:
 
-    generic_material8(
-            generic_material<Ts...> const& m1,
-            generic_material<Ts...> const& m2,
-            generic_material<Ts...> const& m3,
-            generic_material<Ts...> const& m4,
-            generic_material<Ts...> const& m5,
-            generic_material<Ts...> const& m6,
-            generic_material<Ts...> const& m7,
-            generic_material<Ts...> const& m8
-            )
-        : m1_(m1)
-        , m2_(m2)
-        , m3_(m3)
-        , m4_(m4)
-        , m5_(m5)
-        , m6_(m6)
-        , m7_(m7)
-        , m8_(m8)
+    generic_material8(std::array<generic_material<Ts...>, 8> const& mats)
+        : mats_(mats)
     {
     }
 
     generic_material<Ts...>& get(int i)
     {
-        assert( i >= 0 && i < 8 );
-
-        return reinterpret_cast<generic_material<Ts...>*>(this)[i];
+        return mats_[i];
     }
 
     generic_material<Ts...> const& get(int i) const
     {
-        assert( i >= 0 && i < 8 );
-
-        return reinterpret_cast<generic_material<Ts...> const*>(this)[i];
+        return mats_[i];
     }
 
     simd::mask8 is_emissive() const
     {
         return simd::mask8(
-                m1_.is_emissive(),
-                m2_.is_emissive(),
-                m3_.is_emissive(),
-                m4_.is_emissive(),
-                m5_.is_emissive(),
-                m6_.is_emissive(),
-                m7_.is_emissive(),
-                m8_.is_emissive()
+                mats_[0].is_emissive(),
+                mats_[1].is_emissive(),
+                mats_[2].is_emissive(),
+                mats_[3].is_emissive(),
+                mats_[4].is_emissive(),
+                mats_[5].is_emissive(),
+                mats_[6].is_emissive(),
+                mats_[7].is_emissive()
                 );
     }
 
     spectrum<simd::float8> ambient() const
     {
         return simd::pack(
-                spectrum<float>( m1_.ambient() ),
-                spectrum<float>( m2_.ambient() ),
-                spectrum<float>( m3_.ambient() ),
-                spectrum<float>( m4_.ambient() ),
-                spectrum<float>( m5_.ambient() ),
-                spectrum<float>( m6_.ambient() ),
-                spectrum<float>( m7_.ambient() ),
-                spectrum<float>( m8_.ambient() )
+                spectrum<float>( mats_[0].ambient() ),
+                spectrum<float>( mats_[1].ambient() ),
+                spectrum<float>( mats_[2].ambient() ),
+                spectrum<float>( mats_[3].ambient() ),
+                spectrum<float>( mats_[4].ambient() ),
+                spectrum<float>( mats_[5].ambient() ),
+                spectrum<float>( mats_[6].ambient() ),
+                spectrum<float>( mats_[7].ambient() )
                 );
     }
 
@@ -337,14 +301,14 @@ public:
     {
         auto sr8 = unpack(sr);
         return simd::pack(
-                m1_.shade(sr8[0]),
-                m2_.shade(sr8[1]),
-                m3_.shade(sr8[2]),
-                m4_.shade(sr8[3]),
-                m5_.shade(sr8[4]),
-                m6_.shade(sr8[5]),
-                m7_.shade(sr8[6]),
-                m8_.shade(sr8[7])
+                mats_[0].shade(sr8[0]),
+                mats_[1].shade(sr8[1]),
+                mats_[2].shade(sr8[2]),
+                mats_[3].shade(sr8[3]),
+                mats_[4].shade(sr8[4]),
+                mats_[5].shade(sr8[5]),
+                mats_[6].shade(sr8[6]),
+                mats_[7].shade(sr8[7])
                 );
     }
 
@@ -362,14 +326,14 @@ public:
         auto& s = samp.get_sampler();
         spectrum<float> v[] =
         {
-            spectrum<float>( m1_.sample(sr8[0], rd8[0], pdf8[0], s) ),
-            spectrum<float>( m2_.sample(sr8[1], rd8[1], pdf8[1], s) ),
-            spectrum<float>( m3_.sample(sr8[2], rd8[2], pdf8[2], s) ),
-            spectrum<float>( m4_.sample(sr8[3], rd8[3], pdf8[3], s) ),
-            spectrum<float>( m5_.sample(sr8[4], rd8[4], pdf8[4], s) ),
-            spectrum<float>( m6_.sample(sr8[5], rd8[5], pdf8[5], s) ),
-            spectrum<float>( m7_.sample(sr8[6], rd8[6], pdf8[6], s) ),
-            spectrum<float>( m8_.sample(sr8[7], rd8[7], pdf8[7], s) )
+            spectrum<float>( mats_[0].sample(sr8[0], rd8[0], pdf8[0], s) ),
+            spectrum<float>( mats_[1].sample(sr8[1], rd8[1], pdf8[1], s) ),
+            spectrum<float>( mats_[2].sample(sr8[2], rd8[2], pdf8[2], s) ),
+            spectrum<float>( mats_[3].sample(sr8[3], rd8[3], pdf8[3], s) ),
+            spectrum<float>( mats_[4].sample(sr8[4], rd8[4], pdf8[4], s) ),
+            spectrum<float>( mats_[5].sample(sr8[5], rd8[5], pdf8[5], s) ),
+            spectrum<float>( mats_[6].sample(sr8[6], rd8[6], pdf8[6], s) ),
+            spectrum<float>( mats_[7].sample(sr8[7], rd8[7], pdf8[7], s) )
         };
         refl_dir = simd::pack(
                 rd8[0], rd8[1], rd8[2], rd8[3],
@@ -384,14 +348,7 @@ public:
 
 private:
 
-    generic_material<Ts...> m1_;
-    generic_material<Ts...> m2_;
-    generic_material<Ts...> m3_;
-    generic_material<Ts...> m4_;
-    generic_material<Ts...> m5_;
-    generic_material<Ts...> m6_;
-    generic_material<Ts...> m7_;
-    generic_material<Ts...> m8_;
+    std::array<generic_material<Ts...>, 8> mats_;
 
 };
 
@@ -403,14 +360,9 @@ private:
 //
 
 template <typename ...Ts>
-inline generic_material4<Ts...> pack(
-        generic_material<Ts...> const& m1,
-        generic_material<Ts...> const& m2,
-        generic_material<Ts...> const& m3,
-        generic_material<Ts...> const& m4
-        )
+inline generic_material4<Ts...> pack(std::array<generic_material<Ts...>, 4> const& mats)
 {
-    return generic_material4<Ts...>(m1, m2, m3, m4);
+    return generic_material4<Ts...>(mats);
 }
 
 template <typename ...Ts>
@@ -422,18 +374,9 @@ inline std::array<generic_material<Ts...>, 4> unpack(generic_material4<Ts...> co
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 template <typename ...Ts>
-inline generic_material8<Ts...> pack(
-        generic_material<Ts...> const& m1,
-        generic_material<Ts...> const& m2,
-        generic_material<Ts...> const& m3,
-        generic_material<Ts...> const& m4,
-        generic_material<Ts...> const& m5,
-        generic_material<Ts...> const& m6,
-        generic_material<Ts...> const& m7,
-        generic_material<Ts...> const& m8
-        )
+inline generic_material8<Ts...> pack(std::array<generic_material<Ts...>, 8> const& mats)
 {
-    return generic_material8<Ts...>(m1, m2, m3, m4, m5, m6, m7, m8);
+    return generic_material8<Ts...>(mats);
 }
 
 template <typename ...Ts>

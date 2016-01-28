@@ -108,15 +108,16 @@ inline auto pack(std::array<surface<N, M, Args...>, 4> const& surfs)
                 surfs[2].normal,
                 surfs[3].normal
                 ),
-            pack(
-                surfs[0].material,
-                surfs[1].material,
-                surfs[2].material,
-                surfs[3].material
-                )
+            pack(std::array<M, 4>{})
             ) )
-
 {
+    std::array<M, 4> mats;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        mats[i] = surfs[i].material;
+    }
+
     return visionaray::detail::make_surface(
             pack(
                 surfs[0].normal,
@@ -124,12 +125,7 @@ inline auto pack(std::array<surface<N, M, Args...>, 4> const& surfs)
                 surfs[2].normal,
                 surfs[3].normal
                 ),
-            pack(
-                surfs[0].material,
-                surfs[1].material,
-                surfs[2].material,
-                surfs[3].material
-                )
+            pack(mats)
             );
 }
 
@@ -142,12 +138,7 @@ inline auto pack(std::array<surface<N, M, C, Args...>, 4> const& surfs)
                 surfs[2].normal,
                 surfs[3].normal
                 ),
-            pack(
-                surfs[0].material,
-                surfs[1].material,
-                surfs[2].material,
-                surfs[3].material
-                ),
+            pack(std::array<M, 4>{}),
             pack(
                 surfs[0].tex_color_,
                 surfs[1].tex_color_,
@@ -156,6 +147,13 @@ inline auto pack(std::array<surface<N, M, C, Args...>, 4> const& surfs)
                 )
             ) )
 {
+    std::array<M, 4> mats;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        mats[i] = surfs[i].material;
+    }
+
     return visionaray::detail::make_surface(
             pack(
                 surfs[0].normal,
@@ -163,12 +161,7 @@ inline auto pack(std::array<surface<N, M, C, Args...>, 4> const& surfs)
                 surfs[2].normal,
                 surfs[3].normal
                 ),
-            pack(
-                surfs[0].material,
-                surfs[1].material,
-                surfs[2].material,
-                surfs[3].material
-                ),
+            pack(mats),
             pack(
                 surfs[0].tex_color_,
                 surfs[1].tex_color_,
@@ -193,18 +186,16 @@ inline auto pack(std::array<surface<N, M, Args...>, 8> const& surfs)
                 surfs[6].normal,
                 surfs[7].normal
                 ),
-            pack(
-                surfs[0].material,
-                surfs[1].material,
-                surfs[2].material,
-                surfs[3].material,
-                surfs[4].material,
-                surfs[5].material,
-                surfs[6].material,
-                surfs[7].material
-                )
+            pack(std::array<M, 8>{})
             ) )
 {
+    std::array<M, 8> mats;
+
+    for (int i = 0; i < 8; ++i)
+    {
+        mats[i] = surfs[i].material;
+    }
+
     return visionaray::detail::make_surface(
             pack(
                 surfs[0].normal,
@@ -216,16 +207,7 @@ inline auto pack(std::array<surface<N, M, Args...>, 8> const& surfs)
                 surfs[6].normal,
                 surfs[7].normal
                 ),
-            pack(
-                surfs[0].material,
-                surfs[1].material,
-                surfs[2].material,
-                surfs[3].material,
-                surfs[4].material,
-                surfs[5].material,
-                surfs[6].material,
-                surfs[7].material
-                )
+            pack(mats)
             );
 }
 
@@ -242,16 +224,7 @@ inline auto pack(std::array<surface<N, M, C, Args...>, 8> const& surfs)
                 surfs[6].normal,
                 surfs[7].normal
                 ),
-            pack(
-                surfs[0].material,
-                surfs[1].material,
-                surfs[2].material,
-                surfs[3].material,
-                surfs[4].material,
-                surfs[5].material,
-                surfs[6].material,
-                surfs[7].material
-                ),
+            pack(std::array<M, 8>{}),
             pack(
                 surfs[0].tex_color_,
                 surfs[1].tex_color_,
@@ -264,6 +237,13 @@ inline auto pack(std::array<surface<N, M, C, Args...>, 8> const& surfs)
                 )
             ) )
 {
+    std::array<M, 8> mats;
+
+    for (int i = 0; i < 8; ++i)
+    {
+        mats[i] = surfs[i].material;
+    }
+
     return visionaray::detail::make_surface(
             pack(
                 surfs[0].normal,
@@ -275,16 +255,7 @@ inline auto pack(std::array<surface<N, M, C, Args...>, 8> const& surfs)
                 surfs[6].normal,
                 surfs[7].normal
                 ),
-            pack(
-                surfs[0].material,
-                surfs[1].material,
-                surfs[2].material,
-                surfs[3].material,
-                surfs[4].material,
-                surfs[5].material,
-                surfs[6].material,
-                surfs[7].material
-                ),
+            pack(mats),
             pack(
                 surfs[0].tex_color_,
                 surfs[1].tex_color_,
