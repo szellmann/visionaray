@@ -386,6 +386,15 @@ namespace simd
 
 // pack ---------------------------------------------------
 
+inline vector<3, float4> pack(std::array<vector<3, float>, 4> const& vecs)
+{
+    return vector<3, float4>(
+            float4(vecs[0].x, vecs[1].x, vecs[2].x, vecs[3].x),
+            float4(vecs[0].y, vecs[1].y, vecs[2].y, vecs[3].y),
+            float4(vecs[0].z, vecs[1].z, vecs[2].z, vecs[3].z)
+            );
+}
+
 inline vector<3, float4> pack(
         vector<3, float> const& v1,
         vector<3, float> const& v2,
@@ -418,6 +427,15 @@ inline vector<3, float8> pack(
         float8(v1.y, v2.y, v3.y, v4.y, v5.y, v6.y, v7.y, v8.y),
         float8(v1.z, v2.z, v3.z, v4.z, v5.z, v6.z, v7.z, v8.z)
         );
+}
+
+inline vector<3, float8> pack(std::array<vector<3, float>, 8> const& vecs)
+{
+    return vector<3, float8>(
+            float8(vecs[0].x, vecs[1].x, vecs[2].x, vecs[3].x, vecs[4].x, vecs[5].x, vecs[6].x, vecs[7].x),
+            float8(vecs[0].y, vecs[1].y, vecs[2].y, vecs[3].y, vecs[4].y, vecs[5].y, vecs[6].y, vecs[7].y),
+            float8(vecs[0].z, vecs[1].z, vecs[2].z, vecs[3].z, vecs[4].z, vecs[5].z, vecs[6].z, vecs[7].z)
+            );
 }
 
 #endif
