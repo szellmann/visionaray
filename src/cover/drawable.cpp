@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <type_traits>
 
 #include <GL/glew.h>
 
@@ -685,35 +686,34 @@ private:
                        : vector<4, float>(1.0);
     }
 
+    template <
+        typename T,
+        typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+        >
     VSNRAY_CPU_FUNC
-    vector<4, simd::float4> get_tex_color(hit_record<basic_ray<simd::float4>, primitive<unsigned>> const& hr)
+    vector<4, T> get_tex_color(hit_record<basic_ray<T>, primitive<unsigned>> const& hr)
     {
         auto tc = get_tex_coord(tex_coords, hr);
 
-        auto hr4 = unpack( hr );
-        auto tc4 = unpack( tc );
+        auto hrs = unpack( hr );
+        auto tcs = unpack( tc );
 
-        vector<4, float> tex_color4[4];
+        std::array<vector<4, float>, simd::num_elements<T>::value> tex_colors;
 
-        for (unsigned i = 0; i < 4; ++i)
+        for (unsigned i = 0; i < simd::num_elements<T>::value; ++i)
         {
-            if (!hr4[i].hit)
+            if (!hrs[i].hit)
             {
                 continue;
             }
 
-            auto const& tex = textures[hr4[i].geom_id];
-            tex_color4[i] = tex.width() > 0 && tex.height() > 0
-                          ? vector<4, float>(tex2D(tex, tc4[i]))
+            auto const& tex = textures[hrs[i].geom_id];
+            tex_colors[i] = tex.width() > 0 && tex.height() > 0
+                          ? vector<4, float>(tex2D(tex, tcs[i]))
                           : vector<4, float>(1.0);
         }
 
-        return simd::pack(
-                tex_color4[0],
-                tex_color4[1],
-                tex_color4[2],
-                tex_color4[3]
-                );
+        return simd::pack(tex_colors);
     }
 };
 
