@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <array>
 #include <ostream>
 
 #include <visionaray/texture/texture.h>
@@ -430,6 +431,17 @@ namespace simd
 // SIMD conversions
 //
 
+inline spectrum<float4> pack(std::array<spectrum<float>, 4> const& specs)
+{
+    return spectrum<float4>(pack(
+            specs[0].samples(),
+            specs[1].samples(),
+            specs[2].samples(),
+            specs[3].samples()
+            )
+        );
+}
+
 inline spectrum<float4> pack(
         spectrum<float> const& s1,
         spectrum<float> const& s2,
@@ -447,6 +459,21 @@ inline spectrum<float4> pack(
 }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+inline spectrum<float8> pack(std::array<spectrum<float>, 8> const& specs)
+{
+    return spectrum<float8>(pack(
+            specs[0].samples(),
+            specs[1].samples(),
+            specs[2].samples(),
+            specs[3].samples(),
+            specs[4].samples(),
+            specs[5].samples(),
+            specs[6].samples(),
+            specs[7].samples()
+            )
+        );
+}
 
 inline spectrum<float8> pack(
         spectrum<float> const& s1,
