@@ -99,177 +99,53 @@ namespace simd
 // Functions to pack and unpack SIMD surfaces
 //
 
-template <typename N, typename M, typename ...Args>
-inline auto pack(std::array<surface<N, M, Args...>, 4> const& surfs)
+template <typename N, typename M, typename ...Args, size_t Size>
+inline auto pack(std::array<surface<N, M, Args...>, Size> const& surfs)
     -> decltype( visionaray::detail::make_surface(
-            pack(
-                surfs[0].normal,
-                surfs[1].normal,
-                surfs[2].normal,
-                surfs[3].normal
-                ),
-            pack(std::array<M, 4>{})
+            pack(std::array<N, Size>{}),
+            pack(std::array<M, Size>{})
             ) )
 {
-    std::array<M, 4> mats;
+    std::array<N, Size> normals;
+    std::array<M, Size> materials;
 
-    for (int i = 0; i < 4; ++i)
+    for (size_t i = 0; i < Size; ++i)
     {
-        mats[i] = surfs[i].material;
+        normals[i]      = surfs[i].normal;
+        materials[i]    = surfs[i].material;
     }
 
     return visionaray::detail::make_surface(
-            pack(
-                surfs[0].normal,
-                surfs[1].normal,
-                surfs[2].normal,
-                surfs[3].normal
-                ),
-            pack(mats)
+            pack(normals),
+            pack(materials)
             );
 }
 
-template <typename N, typename M, typename C, typename ...Args>
-inline auto pack(std::array<surface<N, M, C, Args...>, 4> const& surfs)
+template <typename N, typename M, typename C, typename ...Args, size_t Size>
+inline auto pack(std::array<surface<N, M, C, Args...>, Size> const& surfs)
     -> decltype( visionaray::detail::make_surface(
-            pack(
-                surfs[0].normal,
-                surfs[1].normal,
-                surfs[2].normal,
-                surfs[3].normal
-                ),
-            pack(std::array<M, 4>{}),
-            pack(
-                surfs[0].tex_color_,
-                surfs[1].tex_color_,
-                surfs[2].tex_color_,
-                surfs[3].tex_color_
-                )
+            pack(std::array<N, Size>{}),
+            pack(std::array<M, Size>{}),
+            pack(std::array<C, Size>{})
             ) )
 {
-    std::array<M, 4> mats;
+    std::array<N, Size> normals;
+    std::array<M, Size> materials;
+    std::array<C, Size> tex_colors;
 
-    for (int i = 0; i < 4; ++i)
+    for (size_t i = 0; i < Size; ++i)
     {
-        mats[i] = surfs[i].material;
+        normals[i]      = surfs[i].normal;
+        materials[i]    = surfs[i].material;
+        tex_colors[i]   = surfs[i].tex_color_;
     }
 
     return visionaray::detail::make_surface(
-            pack(
-                surfs[0].normal,
-                surfs[1].normal,
-                surfs[2].normal,
-                surfs[3].normal
-                ),
-            pack(mats),
-            pack(
-                surfs[0].tex_color_,
-                surfs[1].tex_color_,
-                surfs[2].tex_color_,
-                surfs[3].tex_color_
-                )
+            pack(normals),
+            pack(materials),
+            pack(tex_colors)
             );
 }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-template <typename N, typename M, typename ...Args>
-inline auto pack(std::array<surface<N, M, Args...>, 8> const& surfs)
-    -> decltype( visionaray::detail::make_surface(
-            pack(
-                surfs[0].normal,
-                surfs[1].normal,
-                surfs[2].normal,
-                surfs[3].normal,
-                surfs[4].normal,
-                surfs[5].normal,
-                surfs[6].normal,
-                surfs[7].normal
-                ),
-            pack(std::array<M, 8>{})
-            ) )
-{
-    std::array<M, 8> mats;
-
-    for (int i = 0; i < 8; ++i)
-    {
-        mats[i] = surfs[i].material;
-    }
-
-    return visionaray::detail::make_surface(
-            pack(
-                surfs[0].normal,
-                surfs[1].normal,
-                surfs[2].normal,
-                surfs[3].normal,
-                surfs[4].normal,
-                surfs[5].normal,
-                surfs[6].normal,
-                surfs[7].normal
-                ),
-            pack(mats)
-            );
-}
-
-template <typename N, typename M, typename C, typename ...Args>
-inline auto pack(std::array<surface<N, M, C, Args...>, 8> const& surfs)
-    -> decltype( visionaray::detail::make_surface(
-            pack(
-                surfs[0].normal,
-                surfs[1].normal,
-                surfs[2].normal,
-                surfs[3].normal,
-                surfs[4].normal,
-                surfs[5].normal,
-                surfs[6].normal,
-                surfs[7].normal
-                ),
-            pack(std::array<M, 8>{}),
-            pack(
-                surfs[0].tex_color_,
-                surfs[1].tex_color_,
-                surfs[2].tex_color_,
-                surfs[3].tex_color_,
-                surfs[4].tex_color_,
-                surfs[5].tex_color_,
-                surfs[6].tex_color_,
-                surfs[7].tex_color_
-                )
-            ) )
-{
-    std::array<M, 8> mats;
-
-    for (int i = 0; i < 8; ++i)
-    {
-        mats[i] = surfs[i].material;
-    }
-
-    return visionaray::detail::make_surface(
-            pack(
-                surfs[0].normal,
-                surfs[1].normal,
-                surfs[2].normal,
-                surfs[3].normal,
-                surfs[4].normal,
-                surfs[5].normal,
-                surfs[6].normal,
-                surfs[7].normal
-                ),
-            pack(mats),
-            pack(
-                surfs[0].tex_color_,
-                surfs[1].tex_color_,
-                surfs[2].tex_color_,
-                surfs[3].tex_color_,
-                surfs[4].tex_color_,
-                surfs[5].tex_color_,
-                surfs[6].tex_color_,
-                surfs[7].tex_color_
-                )
-            );
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 } // simd
 
