@@ -4,15 +4,10 @@
 #include <array>
 #include <type_traits>
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-#include "../simd/avx.h"
-#endif
-#include "../simd/sse.h"
 #include "../simd/type_traits.h"
 
 namespace MATH_NAMESPACE
 {
-
 
 //--------------------------------------------------------------------------------------------------
 // vector3 members
@@ -386,27 +381,27 @@ namespace simd
 
 // pack ---------------------------------------------------
 
-inline vector<3, float4> pack(std::array<vector<3, float>, 4> const& vecs)
+template <size_t N>
+inline vector<3, typename float_from_simd_width<N>::type> pack(
+        std::array<vector<3, float>, N> const& vecs
+        )
 {
-    return vector<3, float4>(
-            float4(vecs[0].x, vecs[1].x, vecs[2].x, vecs[3].x),
-            float4(vecs[0].y, vecs[1].y, vecs[2].y, vecs[3].y),
-            float4(vecs[0].z, vecs[1].z, vecs[2].z, vecs[3].z)
-            );
+    using T = typename float_from_simd_width<N>::type;
+    using float_array = typename simd::aligned_array<T>::type;
+
+    float_array x;
+    float_array y;
+    float_array z;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        x[i] = vecs[i].x;
+        y[i] = vecs[i].y;
+        z[i] = vecs[i].z;
+    }
+
+    return vector<3, T>(x, y, z);
 }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-inline vector<3, float8> pack(std::array<vector<3, float>, 8> const& vecs)
-{
-    return vector<3, float8>(
-            float8(vecs[0].x, vecs[1].x, vecs[2].x, vecs[3].x, vecs[4].x, vecs[5].x, vecs[6].x, vecs[7].x),
-            float8(vecs[0].y, vecs[1].y, vecs[2].y, vecs[3].y, vecs[4].y, vecs[5].y, vecs[6].y, vecs[7].y),
-            float8(vecs[0].z, vecs[1].z, vecs[2].z, vecs[3].z, vecs[4].z, vecs[5].z, vecs[6].z, vecs[7].z)
-            );
-}
-
-#endif
 
 // unpack -------------------------------------------------
 
@@ -441,5 +436,4 @@ inline std::array<vector<3, float>, num_elements<FloatT>::value> unpack(
 }
 
 } // simd
-
 } // MATH_NAMESPACE

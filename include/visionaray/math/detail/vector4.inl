@@ -4,15 +4,10 @@
 #include <array>
 #include <type_traits>
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-#include "../simd/avx.h"
-#endif
-#include "../simd/sse.h"
 #include "../simd/type_traits.h"
 
 namespace MATH_NAMESPACE
 {
-
 
 //--------------------------------------------------------------------------------------------------
 // vector4 members
@@ -383,29 +378,28 @@ namespace simd
 
 // pack ---------------------------------------------------
 
-inline vector<4, float4> pack(std::array<vector<4, float>, 4> const& vecs)
+template <size_t N>
+inline vector<4, typename float_from_simd_width<N>::type> pack(
+        std::array<vector<4, float>, N> const& vecs
+        )
 {
-    return vector<4, float4>(
-            float4(vecs[0].x, vecs[1].x, vecs[2].x, vecs[3].x),
-            float4(vecs[0].y, vecs[1].y, vecs[2].y, vecs[3].y),
-            float4(vecs[0].z, vecs[1].z, vecs[2].z, vecs[3].z),
-            float4(vecs[0].w, vecs[1].w, vecs[2].w, vecs[3].w)
-            );
+    using T = typename float_from_simd_width<N>::type;
+    using float_array = typename simd::aligned_array<T>::type;
+
+    float_array x;
+    float_array y;
+    float_array z;
+    float_array w;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        x[i] = vecs[i].x;
+        y[i] = vecs[i].y;
+        z[i] = vecs[i].z;
+        w[i] = vecs[i].w;
+    }
+    return vector<4, float4>(x, y, z, w);
 }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-inline vector<4, float8> pack(std::array<vector<4, float>, 8> const& vecs)
-{
-    return vector<4, float8>(
-            float8(vecs[0].x, vecs[1].x, vecs[2].x, vecs[3].x, vecs[4].x, vecs[5].x, vecs[6].x, vecs[7].x),
-            float8(vecs[0].y, vecs[1].y, vecs[2].y, vecs[3].y, vecs[4].y, vecs[5].y, vecs[6].y, vecs[7].y),
-            float8(vecs[0].z, vecs[1].z, vecs[2].z, vecs[3].z, vecs[4].z, vecs[5].z, vecs[6].z, vecs[7].z),
-            float8(vecs[0].w, vecs[1].w, vecs[2].w, vecs[3].w, vecs[4].w, vecs[5].w, vecs[6].w, vecs[7].w)
-            );
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 // unpack -------------------------------------------------
 
@@ -466,5 +460,4 @@ inline vector<4, float4> transpose(vector<4, float4> const& v)
 // TODO: transpose for AVX?
 
 } // simd
-
 } // MATH_NAMESPACE
