@@ -10,6 +10,7 @@
 #include <iterator>
 #include <stdexcept>
 #include <type_traits>
+#include <utility>
 
 #include "../generic_material.h"
 #include "../generic_primitive.h"
@@ -102,8 +103,8 @@ namespace simd
 template <typename N, typename M, typename ...Args, size_t Size>
 inline auto pack(std::array<surface<N, M, Args...>, Size> const& surfs)
     -> decltype( visionaray::detail::make_surface(
-            pack(std::array<N, Size>{}),
-            pack(std::array<M, Size>{})
+            pack(std::declval<std::array<N, Size>>()),
+            pack(std::declval<std::array<M, Size>>())
             ) )
 {
     std::array<N, Size> normals;
@@ -124,9 +125,9 @@ inline auto pack(std::array<surface<N, M, Args...>, Size> const& surfs)
 template <typename N, typename M, typename C, typename ...Args, size_t Size>
 inline auto pack(std::array<surface<N, M, C, Args...>, Size> const& surfs)
     -> decltype( visionaray::detail::make_surface(
-            pack(std::array<N, Size>{}),
-            pack(std::array<M, Size>{}),
-            pack(std::array<C, Size>{})
+            pack(std::declval<std::array<N, Size>>()),
+            pack(std::declval<std::array<M, Size>>()),
+            pack(std::declval<std::array<C, Size>>())
             ) )
 {
     std::array<N, Size> normals;
@@ -362,10 +363,10 @@ inline auto get_surface_any_prim_impl(
         Primitive                       /* */,
         NormalBinding                   /* */
         ) -> decltype( simd::pack(
-            std::array<
+            std::declval<std::array<
                 typename detail::decl_surface<Normals, Materials>::type,
                 simd::num_elements<T>::value
-                >{}
+                >>()
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -409,10 +410,10 @@ inline auto get_surface_any_prim_impl(
         Primitive                       /* */,
         NormalBinding                   /* */
         ) -> decltype( simd::pack(
-            std::array<
+            std::declval<std::array<
                 typename detail::decl_surface<Normals, Materials, vector<3, float>>::type,
                 simd::num_elements<T>::value
-                >{}
+                >>()
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -468,10 +469,10 @@ inline auto get_surface_any_prim_impl(
         NormalBinding                   /* */,
         ColorBinding                    /* */
         ) -> decltype( simd::pack(
-            std::array<
+            std::declval<std::array<
                 typename detail::decl_surface<Normals, Materials, vector<3, float>>::type,
                 simd::num_elements<T>::value
-                >{}
+                >>()
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -659,10 +660,10 @@ inline auto get_surface_with_prims_impl(
         generic_primitive<Ts...>        /* */,
         NormalBinding                   /* */
         ) -> decltype( simd::pack(
-            std::array<
+            std::declval<std::array<
                 typename detail::decl_surface<Normals, Materials>::type,
                 simd::num_elements<T>::value
-                >{}
+                >>()
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
