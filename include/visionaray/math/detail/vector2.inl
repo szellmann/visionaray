@@ -332,4 +332,64 @@ inline vector<2, T> hadd(vector<2, T> const& u)
     return u.x + u.y;
 }
 
+
+namespace simd
+{
+
+//-------------------------------------------------------------------------------------------------
+// SIMD conversions
+//
+
+// pack ---------------------------------------------------
+
+template <size_t N>
+inline vector<2, typename float_from_simd_width<N>::type> pack(
+        std::array<vector<2, float>, N> const& vecs
+        )
+{
+    using T = typename float_from_simd_width<N>::type;
+    using float_array = typename simd::aligned_array<T>::type;
+
+    float_array x;
+    float_array y;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        x[i] = vecs[i].x;
+        y[i] = vecs[i].y;
+    }
+
+    return vector<2, T>(x, y);
+}
+
+// unpack -------------------------------------------------
+
+template <
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline std::array<vector<2, float>, num_elements<FloatT>::value> unpack(
+        vector<2, FloatT> const& v
+        )
+{
+    using float_array = typename aligned_array<FloatT>::type;
+
+    float_array x;
+    float_array y;
+
+    store(x, v.x);
+    store(y, v.y);
+
+    std::array<vector<2, float>, num_elements<FloatT>::value> result;
+
+    for (int i = 0; i < num_elements<FloatT>::value; ++i)
+    {
+        result[i].x = x[i];
+        result[i].y = y[i];
+    }
+
+    return result;
+}
+
+} // simd
 } // MATH_NAMESPACE
