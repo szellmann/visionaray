@@ -186,12 +186,14 @@ public:
 
     spectrum<simd::float4> ambient() const
     {
-        return simd::pack(
-                spectrum<float>( mats_[0].ambient() ),
-                spectrum<float>( mats_[1].ambient() ),
-                spectrum<float>( mats_[2].ambient() ),
-                spectrum<float>( mats_[3].ambient() )
-                );
+        std::array<spectrum<float>, 4> amb;
+
+        for (size_t i = 0; i < 4; ++i)
+        {
+            amb[i] = mats_[i].ambient();
+        }
+
+        return simd::pack(amb);
     }
 
 
@@ -199,12 +201,15 @@ public:
     spectrum<simd::float4> shade(SR const& sr) const
     {
         auto sr4 = unpack(sr);
-        return simd::pack(
-                mats_[0].shade(sr4[0]),
-                mats_[1].shade(sr4[1]),
-                mats_[2].shade(sr4[2]),
-                mats_[3].shade(sr4[3])
-                );
+
+        std::array<spectrum<float>, 4> shaded;
+
+        for (size_t i = 0; i < 4; ++i)
+        {
+            shaded[i] = mats_[i].shade(sr4[i]);
+        }
+
+        return simd::pack(shaded);
     }
 
     template <typename SR, typename S /* sampler */>
@@ -215,20 +220,23 @@ public:
             S&                          samp
             ) const
     {
+        using float_array = typename simd::aligned_array<simd::float4>::type;
+
         auto sr4 = unpack(sr);
-        vector<3, float> rd4[4];
-        VSNRAY_ALIGN(16) float pdf4[] = { 0.0f, 0.0f, 0.0f, 0.0f };
         auto& s = samp.get_sampler();
-        spectrum<float> v[] =
+
+        std::array<vector<3, float>, 4> rd4;
+        float_array                     pdf4;
+        std::array<spectrum<float>, 4>  sampled;
+
+        for (size_t i = 0; i < 4; ++i)
         {
-            spectrum<float>( mats_[0].sample(sr4[0], rd4[0], pdf4[0], s) ),
-            spectrum<float>( mats_[1].sample(sr4[1], rd4[1], pdf4[1], s) ),
-            spectrum<float>( mats_[2].sample(sr4[2], rd4[2], pdf4[2], s) ),
-            spectrum<float>( mats_[3].sample(sr4[3], rd4[3], pdf4[3], s) )
-        };
-        refl_dir = simd::pack( rd4[0], rd4[1], rd4[2], rd4[3] );
+            sampled[i] = mats_[i].sample(sr4[i], rd4[i], pdf4[i], s);
+        }
+
+        refl_dir = simd::pack(rd4);
         pdf = simd::float4(pdf4);
-        return simd::pack( v[0], v[1], v[2], v[3] );
+        return simd::pack(sampled);
     }
 
 private:
@@ -283,16 +291,14 @@ public:
 
     spectrum<simd::float8> ambient() const
     {
-        return simd::pack(
-                spectrum<float>( mats_[0].ambient() ),
-                spectrum<float>( mats_[1].ambient() ),
-                spectrum<float>( mats_[2].ambient() ),
-                spectrum<float>( mats_[3].ambient() ),
-                spectrum<float>( mats_[4].ambient() ),
-                spectrum<float>( mats_[5].ambient() ),
-                spectrum<float>( mats_[6].ambient() ),
-                spectrum<float>( mats_[7].ambient() )
-                );
+        std::array<spectrum<float>, 8> amb;
+
+        for (size_t i = 0; i < 8; ++i)
+        {
+            amb[i] = mats_[i].ambient();
+        }
+
+        return simd::pack(amb);
     }
 
 
@@ -300,16 +306,15 @@ public:
     spectrum<simd::float8> shade(SR const& sr) const
     {
         auto sr8 = unpack(sr);
-        return simd::pack(
-                mats_[0].shade(sr8[0]),
-                mats_[1].shade(sr8[1]),
-                mats_[2].shade(sr8[2]),
-                mats_[3].shade(sr8[3]),
-                mats_[4].shade(sr8[4]),
-                mats_[5].shade(sr8[5]),
-                mats_[6].shade(sr8[6]),
-                mats_[7].shade(sr8[7])
-                );
+
+        std::array<spectrum<float>, 8> shaded;
+
+        for (size_t i = 0; i < 8; ++i)
+        {
+            shaded[i] = mats_[i].shade(sr8[i]);
+        }
+
+        return simd::pack(shaded);
     }
 
     template <typename SR, typename S /* sampler */>
@@ -320,30 +325,23 @@ public:
             S&                          samp
             ) const
     {
+        using float_array = typename simd::aligned_array<simd::float8>::type;
+
         auto sr8 = unpack(sr);
-        vector<3, float> rd8[8];
-        VSNRAY_ALIGN(32) float pdf8[] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
         auto& s = samp.get_sampler();
-        spectrum<float> v[] =
+
+        std::array<vector<3, float>, 4> rd8;
+        float_array                     pdf8;
+        std::array<spectrum<float>, 8>  sampled;
+
+        for (size_t i = 0; i < 8; ++i)
         {
-            spectrum<float>( mats_[0].sample(sr8[0], rd8[0], pdf8[0], s) ),
-            spectrum<float>( mats_[1].sample(sr8[1], rd8[1], pdf8[1], s) ),
-            spectrum<float>( mats_[2].sample(sr8[2], rd8[2], pdf8[2], s) ),
-            spectrum<float>( mats_[3].sample(sr8[3], rd8[3], pdf8[3], s) ),
-            spectrum<float>( mats_[4].sample(sr8[4], rd8[4], pdf8[4], s) ),
-            spectrum<float>( mats_[5].sample(sr8[5], rd8[5], pdf8[5], s) ),
-            spectrum<float>( mats_[6].sample(sr8[6], rd8[6], pdf8[6], s) ),
-            spectrum<float>( mats_[7].sample(sr8[7], rd8[7], pdf8[7], s) )
-        };
-        refl_dir = simd::pack(
-                rd8[0], rd8[1], rd8[2], rd8[3],
-                rd8[4], rd8[5], rd8[6], rd8[7]
-                );
+            sampled[i] = mats_[i].sample(sr8[i], rd8[i], pdf8[i], s);
+        }
+
+        refl_dir = simd::pack(rd8);
         pdf = simd::float8(pdf8);
-        return simd::pack(
-                v[0], v[1], v[2], v[3],
-                v[4], v[5], v[6], v[7]
-                );
+        return simd::pack(sampled);
     }
 
 private:

@@ -6,6 +6,8 @@
 #ifndef VSNRAY_DETAIL_PIXEL_ACCESS_H
 #define VSNRAY_DETAIL_PIXEL_ACCESS_H 1
 
+#include <array>
+
 #include <visionaray/pixel_format.h>
 #include <visionaray/render_target.h>
 
@@ -283,12 +285,14 @@ template <typename OutputColor>
 VSNRAY_CPU_FUNC
 inline void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, OutputColor const* buffer)
 {
-    auto c00 = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
-    auto c01 = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
-    auto c10 = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
-    auto c11 = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
+    std::array<OutputColor, 4> out;
 
-    color = simd::pack(vec4(c00), vec4(c01), vec4(c10), vec4(c11));
+    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
+    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
+    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
+    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
+
+    color = simd::pack(out);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -301,12 +305,14 @@ inline void get(int x, int y, recti const& viewport, vector<4, simd::float4>& co
 {
     using OutputColor = vector<3, T>;
 
-    auto c00 = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
-    auto c01 = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
-    auto c10 = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
-    auto c11 = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
+    std::array<OutputColor, 4> out;
 
-    color = simd::pack(vec4(c00, 1.0f), vec4(c01, 1.0f), vec4(c10, 1.0f), vec4(c11, 1.0f));
+    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
+    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
+    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
+    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
+
+    color = simd::pack(out);
 }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX

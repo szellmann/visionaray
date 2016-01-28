@@ -393,21 +393,6 @@ inline vector<4, float4> pack(std::array<vector<4, float>, 4> const& vecs)
             );
 }
 
-inline vector<4, float4> pack(
-        vector<4, float> const& v1,
-        vector<4, float> const& v2,
-        vector<4, float> const& v3,
-        vector<4, float> const& v4
-        )
-{
-    return vector<4, float4>(
-            float4(v1.x, v2.x, v3.x, v4.x),
-            float4(v1.y, v2.y, v3.y, v4.y),
-            float4(v1.z, v2.z, v3.z, v4.z),
-            float4(v1.w, v2.w, v3.w, v4.w)
-            );
-}
-
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 inline vector<4, float8> pack(std::array<vector<4, float>, 8> const& vecs)
@@ -417,25 +402,6 @@ inline vector<4, float8> pack(std::array<vector<4, float>, 8> const& vecs)
             float8(vecs[0].y, vecs[1].y, vecs[2].y, vecs[3].y, vecs[4].y, vecs[5].y, vecs[6].y, vecs[7].y),
             float8(vecs[0].z, vecs[1].z, vecs[2].z, vecs[3].z, vecs[4].z, vecs[5].z, vecs[6].z, vecs[7].z),
             float8(vecs[0].w, vecs[1].w, vecs[2].w, vecs[3].w, vecs[4].w, vecs[5].w, vecs[6].w, vecs[7].w)
-            );
-}
-
-inline vector<4, float8> pack(
-        vector<4, float> const& v1,
-        vector<4, float> const& v2,
-        vector<4, float> const& v3,
-        vector<4, float> const& v4,
-        vector<4, float> const& v5,
-        vector<4, float> const& v6,
-        vector<4, float> const& v7,
-        vector<4, float> const& v8
-        )
-{
-    return vector<4, float8>(
-            float8(v1.x, v2.x, v3.x, v4.x, v5.x, v6.x, v7.x, v8.x),
-            float8(v1.y, v2.y, v3.y, v4.y, v5.y, v6.y, v7.y, v8.y),
-            float8(v1.z, v2.z, v3.z, v4.z, v5.z, v6.z, v7.z, v8.z),
-            float8(v1.w, v2.w, v3.w, v4.w, v5.w, v6.w, v7.w, v8.w)
             );
 }
 

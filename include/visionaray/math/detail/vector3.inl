@@ -395,39 +395,7 @@ inline vector<3, float4> pack(std::array<vector<3, float>, 4> const& vecs)
             );
 }
 
-inline vector<3, float4> pack(
-        vector<3, float> const& v1,
-        vector<3, float> const& v2,
-        vector<3, float> const& v3,
-        vector<3, float> const& v4
-        )
-{
-    return vector<3, float4>(
-        float4(v1.x, v2.x, v3.x, v4.x),
-        float4(v1.y, v2.y, v3.y, v4.y),
-        float4(v1.z, v2.z, v3.z, v4.z)
-        );
-}
-
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-inline vector<3, float8> pack(
-        vector<3, float> const& v1,
-        vector<3, float> const& v2,
-        vector<3, float> const& v3,
-        vector<3, float> const& v4,
-        vector<3, float> const& v5,
-        vector<3, float> const& v6,
-        vector<3, float> const& v7,
-        vector<3, float> const& v8
-        )
-{
-    return vector<3, float8>(
-        float8(v1.x, v2.x, v3.x, v4.x, v5.x, v6.x, v7.x, v8.x),
-        float8(v1.y, v2.y, v3.y, v4.y, v5.y, v6.y, v7.y, v8.y),
-        float8(v1.z, v2.z, v3.z, v4.z, v5.z, v6.z, v7.z, v8.z)
-        );
-}
 
 inline vector<3, float8> pack(std::array<vector<3, float>, 8> const& vecs)
 {

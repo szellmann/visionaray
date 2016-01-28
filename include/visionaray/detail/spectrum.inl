@@ -442,22 +442,6 @@ inline spectrum<float4> pack(std::array<spectrum<float>, 4> const& specs)
         );
 }
 
-inline spectrum<float4> pack(
-        spectrum<float> const& s1,
-        spectrum<float> const& s2,
-        spectrum<float> const& s3,
-        spectrum<float> const& s4
-        )
-{
-    return spectrum<float4>(pack(
-            s1.samples(),
-            s2.samples(),
-            s3.samples(),
-            s4.samples()
-            )
-        );
-}
-
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 inline spectrum<float8> pack(std::array<spectrum<float>, 8> const& specs)
@@ -471,30 +455,6 @@ inline spectrum<float8> pack(std::array<spectrum<float>, 8> const& specs)
             specs[5].samples(),
             specs[6].samples(),
             specs[7].samples()
-            )
-        );
-}
-
-inline spectrum<float8> pack(
-        spectrum<float> const& s1,
-        spectrum<float> const& s2,
-        spectrum<float> const& s3,
-        spectrum<float> const& s4,
-        spectrum<float> const& s5,
-        spectrum<float> const& s6,
-        spectrum<float> const& s7,
-        spectrum<float> const& s8
-        )
-{
-    return spectrum<float8>(pack(
-            s1.samples(),
-            s2.samples(),
-            s3.samples(),
-            s4.samples(),
-            s5.samples(),
-            s6.samples(),
-            s7.samples(),
-            s8.samples()
             )
         );
 }
