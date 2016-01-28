@@ -44,6 +44,21 @@ namespace simd
 //      mask types that are based on unions may map to int_type<T>
 //      default: n/a
 //
+//  - float_from_simd_width:
+//      get the best matching floating point type for a given SIMD width
+//      the returned type depends on the ISA compiled for
+//      default: float
+//
+//  - int_from_simd_width:
+//      get the best matching signed integer type for a given SIMD width
+//      the returned type depends on the ISA compiled for
+//      default: int
+//
+//  - mask4_from_simd_width:
+//      get the best matching mask type for a given SIMD width
+//      the returned type depends on the ISA compiled for
+//      default: bool
+//
 //  - is_simd_vector
 //      check if T is a SIMD vector type
 //      default: value := false
@@ -356,6 +371,105 @@ template <>
 struct native_type<simd::mask8>
 {
     using type = __m256i;
+};
+
+#endif
+
+
+//-------------------------------------------------------------------------------------------------
+// Deduce SIMD floating point type from a given SIMD width
+//
+
+// general ------------------------------------------------
+
+template <unsigned Width>
+struct float_from_simd_width
+{
+    using type = float;
+};
+
+// SSE ----------------------------------------------------
+
+template <>
+struct float_from_simd_width<4>
+{
+    using type = simd::float4;
+};
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// AVX ----------------------------------------------------
+
+template <>
+struct float_from_simd_width<8>
+{
+    using type = simd::float8;
+};
+
+#endif
+
+
+//-------------------------------------------------------------------------------------------------
+// Deduce SIMD signed integer type from a given SIMD width
+//
+
+// general ------------------------------------------------
+
+template <unsigned Width>
+struct int_from_simd_width
+{
+    using type = int;
+};
+
+// SSE ----------------------------------------------------
+
+template <>
+struct int_from_simd_width<4>
+{
+    using type = simd::int4;
+};
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// AVX ----------------------------------------------------
+
+template <>
+struct int_from_simd_width<8>
+{
+    using type = simd::int8;
+};
+
+#endif
+
+
+//-------------------------------------------------------------------------------------------------
+// Deduce SIMD mask type from a given SIMD width
+//
+
+// general ------------------------------------------------
+
+template <unsigned Width>
+struct mask_from_simd_width
+{
+    using type = bool;
+};
+
+// SSE ----------------------------------------------------
+
+template <>
+struct mask_from_simd_width<4>
+{
+    using type = simd::mask4;
+};
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// AVX ----------------------------------------------------
+
+template <>
+struct mask_from_simd_width<8>
+{
+    using type = simd::mask8;
 };
 
 #endif
