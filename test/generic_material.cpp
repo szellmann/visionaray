@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <array>
 #include <vector>
 
 #include <visionaray/generic_material.h>
@@ -65,12 +66,14 @@ TEST(GenericMaterial, SIMD)
     em.set_ce( from_rgb(vec3(3.0f, 3.0f, 3.0f)) );
     em.set_ls( 5.0f );
 
-    auto simd_material = simd::pack(
+    std::array<material_type, 4> mats{{
             material_type(pl),
             material_type(mi),
             material_type(ma),
             material_type(em)
-            );
+            }};
+
+    auto simd_material = simd::pack(mats);
 
     auto arr = simd::unpack(simd_material);
 
