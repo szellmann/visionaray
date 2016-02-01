@@ -398,7 +398,7 @@ inline vector<4, typename float_from_simd_width<N>::type> pack(
         z[i] = vecs[i].z;
         w[i] = vecs[i].w;
     }
-    return vector<4, float4>(x, y, z, w);
+    return vector<4, T>(x, y, z, w);
 }
 
 // unpack -------------------------------------------------
