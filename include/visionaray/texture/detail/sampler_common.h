@@ -176,7 +176,7 @@ inline vector<4, simd::float8> point(
     VSNRAY_ALIGN(32) int indices[8];
     store(&indices[0], idx);
 
-    return simd::pack(
+    std::array<vector<4, float>, 8> arr{{
             tex[indices[0]],
             tex[indices[1]],
             tex[indices[2]],
@@ -185,7 +185,10 @@ inline vector<4, simd::float8> point(
             tex[indices[5]],
             tex[indices[6]],
             tex[indices[7]]
-            );
+            }};
+
+
+    return simd::pack(arr);
 }
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX

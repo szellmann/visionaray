@@ -6,6 +6,8 @@
 #ifndef VSNRAY_WHITTED_INL
 #define VSNRAY_WHITTED_INL 1
 
+#include <array>
+
 #include <visionaray/result_record.h>
 #include <visionaray/surface.h>
 #include <visionaray/traverse.h>
@@ -173,20 +175,31 @@ inline auto specular_bounce(
         )
     -> bounce_result<vector<3, simd::float4>, simd::float4>
 {
+    using float_array = typename simd::aligned_array<simd::float4>::type;
+
     auto m4  = unpack(mat);
     auto vd4 = unpack(view_dir);
     auto n4  = unpack(normal);
 
-    auto res1 = specular_bounce(m4[0], vd4[0], n4[0]);
-    auto res2 = specular_bounce(m4[1], vd4[1], n4[1]);
-    auto res3 = specular_bounce(m4[2], vd4[2], n4[2]);
-    auto res4 = specular_bounce(m4[3], vd4[3], n4[3]);
+    std::array<vector<3, float>, 4> refl_dir;
+    std::array<vector<3, float>, 4> refr_dir;
+    float_array                     kr;
+    float_array                     kt;
+
+    for (size_t i = 0; i < 4; ++i)
+    {
+        auto res = specular_bounce(m4[i], vd4[i], n4[i]);
+        refl_dir[i] = res.reflected_dir;
+        refr_dir[i] = res.refracted_dir;
+        kr[i]       = res.kr;
+        kt[i]       = res.kt;
+    }
 
     return make_bounce_result(
-        simd::pack(res1.reflected_dir, res2.reflected_dir, res3.reflected_dir, res4.reflected_dir),
-        simd::pack(res1.refracted_dir, res2.refracted_dir, res3.refracted_dir, res4.refracted_dir),
-        simd::float4(res1.kr, res2.kr, res3.kr, res4.kr),
-        simd::float4(res1.kt, res2.kt, res3.kt, res4.kt)
+        simd::pack(refl_dir),
+        simd::pack(refr_dir),
+        simd::float4(kr),
+        simd::float4(kt)
         );
 }
 
@@ -200,30 +213,31 @@ inline auto specular_bounce(
         )
     -> bounce_result<vector<3, simd::float8>, simd::float8>
 {
+    using float_array = typename simd::aligned_array<simd::float8>::type;
+
     auto m8  = unpack(mat);
     auto vd8 = unpack(view_dir);
     auto n8  = unpack(normal);
 
-    auto res1 = specular_bounce(m8[0], vd8[0], n8[0]);
-    auto res2 = specular_bounce(m8[1], vd8[1], n8[1]);
-    auto res3 = specular_bounce(m8[2], vd8[2], n8[2]);
-    auto res4 = specular_bounce(m8[3], vd8[3], n8[3]);
-    auto res5 = specular_bounce(m8[4], vd8[4], n8[4]);
-    auto res6 = specular_bounce(m8[5], vd8[5], n8[5]);
-    auto res7 = specular_bounce(m8[6], vd8[6], n8[6]);
-    auto res8 = specular_bounce(m8[7], vd8[7], n8[7]);
+    std::array<vector<3, float>, 8> refl_dir;
+    std::array<vector<3, float>, 8> refr_dir;
+    float_array                     kr;
+    float_array                     kt;
+
+    for (size_t i = 0; i < 8; ++i)
+    {
+        auto res = specular_bounce(m8[i], vd8[i], n8[i]);
+        refl_dir[i] = res.reflected_dir;
+        refr_dir[i] = res.refracted_dir;
+        kr[i]       = res.kr;
+        kt[i]       = res.kt;
+    }
 
     return make_bounce_result(
-        simd::pack(
-            res1.reflected_dir, res2.reflected_dir, res3.reflected_dir, res4.reflected_dir,
-            res5.reflected_dir, res6.reflected_dir, res7.reflected_dir, res8.reflected_dir
-            ),
-        simd::pack(
-            res1.refracted_dir, res2.refracted_dir, res3.refracted_dir, res4.refracted_dir,
-            res5.refracted_dir, res6.refracted_dir, res7.refracted_dir, res8.refracted_dir
-            ),
-        simd::float8(res1.kr, res2.kr, res3.kr, res4.kr, res5.kr, res6.kr, res7.kr, res8.kr),
-        simd::float8(res1.kt, res2.kt, res3.kt, res4.kt, res5.kt, res6.kt, res7.kt, res8.kt)
+        simd::pack(refl_dir),
+        simd::pack(refr_dir),
+        simd::float8(kr),
+        simd::float8(kt)
         );
 }
 

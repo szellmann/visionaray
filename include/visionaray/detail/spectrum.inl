@@ -431,35 +431,23 @@ namespace simd
 // SIMD conversions
 //
 
-inline spectrum<float4> pack(std::array<spectrum<float>, 4> const& specs)
+template <size_t N>
+inline spectrum<typename float_from_simd_width<N>::type> pack(
+        std::array<spectrum<float>, N> const& specs
+        )
 {
-    return spectrum<float4>(pack(
-            specs[0].samples(),
-            specs[1].samples(),
-            specs[2].samples(),
-            specs[3].samples()
-            )
-        );
+    using T = typename float_from_simd_width<N>::type;
+    using V = vector<spectrum<T>::num_samples, float>;
+
+    std::array<V, N> arr;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        arr[i] = specs[i].samples();
+    }
+
+    return spectrum<T>(pack(arr));
 }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-inline spectrum<float8> pack(std::array<spectrum<float>, 8> const& specs)
-{
-    return spectrum<float8>(pack(
-            specs[0].samples(),
-            specs[1].samples(),
-            specs[2].samples(),
-            specs[3].samples(),
-            specs[4].samples(),
-            specs[5].samples(),
-            specs[6].samples(),
-            specs[7].samples()
-            )
-        );
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 } // simd
 
