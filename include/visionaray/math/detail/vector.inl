@@ -902,58 +902,28 @@ namespace simd
 
 // pack ---------------------------------------------------
 
-template <size_t Dim>
-inline vector<Dim, float4> pack(
-        vector<Dim, float> const& v1,
-        vector<Dim, float> const& v2,
-        vector<Dim, float> const& v3,
-        vector<Dim, float> const& v4
+template <size_t Dim, size_t N>
+inline vector<Dim, typename float_from_simd_width<N>::type> pack(
+        std::array<vector<Dim, float>, N> const& vecs
         )
 {
-    vector<Dim, float4> result;
+    using T = typename float_from_simd_width<N>::type;
+    using float_array = typename simd::aligned_array<T>::type;
+
+    vector<Dim, T> result;
 
     for (size_t d = 0; d < Dim; ++d)
     {
-        result[d] = float4( v1[d], v2[d], v3[d], v4[d] );
+        float_array v;
+        for (size_t i = 0; i < N; ++i)
+        {
+            v[i] = vecs[i][d];
+        }
+        result[d] = T(v);
     }
 
     return result;
 }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-template <size_t Dim>
-inline vector<Dim, float8> pack(
-        vector<Dim, float> const& v1,
-        vector<Dim, float> const& v2,
-        vector<Dim, float> const& v3,
-        vector<Dim, float> const& v4,
-        vector<Dim, float> const& v5,
-        vector<Dim, float> const& v6,
-        vector<Dim, float> const& v7,
-        vector<Dim, float> const& v8
-        )
-{
-    vector<Dim, float8> result;
-
-    for (size_t d = 0; d < Dim; ++d)
-    {
-        result[d] = float8(
-                v1[d],
-                v2[d],
-                v3[d],
-                v4[d],
-                v5[d],
-                v6[d],
-                v7[d],
-                v8[d]
-                );
-    }
-
-    return result;
-}
-
-#endif
 
 // unpack -------------------------------------------------
 
