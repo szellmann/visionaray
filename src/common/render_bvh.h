@@ -10,6 +10,8 @@
 
 #include <visionaray/detail/platform.h>
 
+#include <GL/glew.h>
+
 #if defined(VSNRAY_OS_DARWIN)
 #include <OpenGL/gl.h>
 #else
