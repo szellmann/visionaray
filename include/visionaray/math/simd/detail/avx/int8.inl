@@ -104,6 +104,24 @@ VSNRAY_FORCE_INLINE void store(unsigned dst[8], int8 const& v)
 // Basic arithmetic
 //
 
+VSNRAY_FORCE_INLINE int8 operator+(int8 const& v)
+{
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
+    return _mm256_add_epi32(_mm256_setzero_si256(), v);
+#else
+    return int8(float8(0.0f) + float8(v));
+#endif
+}
+
+VSNRAY_FORCE_INLINE int8 operator-(int8 const& v)
+{
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
+    return _mm256_sub_epi32(_mm256_setzero_si256(), v);
+#else
+    return int8(float8(0.0f) - float8(v));
+#endif
+}
+
 VSNRAY_FORCE_INLINE int8 operator+(int8 const& u, int8 const& v)
 {
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
