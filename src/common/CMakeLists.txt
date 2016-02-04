@@ -66,6 +66,7 @@ set(COMMON_HEADERS
     manip/model_manipulator.h
     manip/pan_manipulator.h
     manip/rotate_manipulator.h
+    manip/translate_manipulator.h
     manip/zoom_manipulator.h
 
     array_ref.h
@@ -93,6 +94,7 @@ set(COMMON_SOURCES
     manip/model_manipulator.cpp
     manip/pan_manipulator.cpp
     manip/rotate_manipulator.cpp
+    manip/translate_manipulator.cpp
     manip/zoom_manipulator.cpp
 
     jpeg_image.cpp
