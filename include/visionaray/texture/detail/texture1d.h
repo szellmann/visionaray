@@ -71,6 +71,11 @@ public:
 
     size_t width() const { return width_; }
 
+    void resize(size_t w)
+    {
+        width_ = w;
+    }
+
 private:
 
     size_t width_;
