@@ -81,6 +81,7 @@ public:
     {
         width_ = w;
         height_ = h;
+        Base::reset(w * h);
     }
 
 private:

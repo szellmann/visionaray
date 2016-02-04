@@ -74,6 +74,7 @@ public:
     void resize(size_t w)
     {
         width_ = w;
+        Base::reset(w);
     }
 
 private:

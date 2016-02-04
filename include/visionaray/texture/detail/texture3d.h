@@ -85,6 +85,7 @@ public:
         width_ = w;
         height_ = h;
         depth_ = d;
+        Base::reset(w * h * d);
     }
 
 private:

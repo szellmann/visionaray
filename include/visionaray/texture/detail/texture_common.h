@@ -109,6 +109,11 @@ public:
     {
     }
 
+    void reset(size_t size)
+    {
+        data_.resize(size);
+    }
+
     void set_data(T const* data)
     {
         std::copy( data, data + data_.size(), data_.begin() );
@@ -178,6 +183,11 @@ public:
 
     texture_ref_base(size_t size = 0)
         : data_(nullptr)
+    {
+        VSNRAY_UNUSED(size);
+    }
+
+    void reset(size_t size)
     {
         VSNRAY_UNUSED(size);
     }
