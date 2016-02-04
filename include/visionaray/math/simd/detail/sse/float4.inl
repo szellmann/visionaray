@@ -126,6 +126,11 @@ VSNRAY_FORCE_INLINE float4 shuffle(float4 const& v)
 // Basic arithmetics
 //
 
+VSNRAY_FORCE_INLINE float4 operator+(float4 const& v)
+{
+    return _mm_add_ps(_mm_setzero_ps(), v);
+}
+
 VSNRAY_FORCE_INLINE float4 operator-(float4 const& v)
 {
     return _mm_sub_ps(_mm_setzero_ps(), v);

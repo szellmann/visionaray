@@ -104,6 +104,11 @@ VSNRAY_FORCE_INLINE void store(float dst[8], float8 const& v)
 // Basic arithmetic
 //
 
+VSNRAY_FORCE_INLINE float8 operator+(float8 const& v)
+{
+    return _mm256_add_ps(_mm256_setzero_ps(), v);
+}
+
 VSNRAY_FORCE_INLINE float8 operator-(float8 const& v)
 {
     return _mm256_sub_ps(_mm256_setzero_ps(), v);

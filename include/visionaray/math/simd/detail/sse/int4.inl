@@ -101,6 +101,11 @@ VSNRAY_FORCE_INLINE int4 shuffle(int4 const& a)
 // Basic arithmethic
 //
 
+VSNRAY_FORCE_INLINE int4 operator+(int4 const& v)
+{
+    return _mm_add_epi32(_mm_setzero_si128(), v);
+}
+
 VSNRAY_FORCE_INLINE int4 operator-(int4 const& v)
 {
     return _mm_sub_epi32(_mm_setzero_si128(), v);
