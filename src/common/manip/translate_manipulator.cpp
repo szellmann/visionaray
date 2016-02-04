@@ -6,6 +6,8 @@
 #include <iostream>
 #include <vector>
 
+#include <GL/glew.h>
+
 #include <visionaray/math/math.h>
 #include <visionaray/camera.h>
 
