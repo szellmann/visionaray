@@ -87,6 +87,20 @@ inline T const& vector<Dim, T>::operator[](size_t i) const
 
 template <size_t Dim, typename T>
 MATH_FUNC
+inline vector<Dim, T> operator+(vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = +v[d];
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
 inline vector<Dim, T> operator-(vector<Dim, T> const& v)
 {
     vector<Dim, T> result;

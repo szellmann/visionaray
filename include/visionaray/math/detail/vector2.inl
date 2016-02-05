@@ -107,6 +107,13 @@ inline T const& vector<2, T>::operator[](size_t i) const
 
 template <typename T>
 MATH_FUNC
+inline vector<2, T> operator+(vector<2, T> const& v)
+{
+    return vector<2, T>(+v.x, +v.y);
+}
+
+template <typename T>
+MATH_FUNC
 inline vector<2, T> operator-(vector<2, T> const& v)
 {
     return vector<2, T>(-v.x, -v.y);

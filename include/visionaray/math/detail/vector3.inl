@@ -132,6 +132,13 @@ inline vector<2, T> const& vector<3, T>::xy() const
 
 template <typename T>
 MATH_FUNC
+inline vector<3, T> operator+(vector<3, T> const& v)
+{
+    return vector<3, T>(+v.x, +v.y, +v.z);
+}
+
+template <typename T>
+MATH_FUNC
 inline vector<3, T> operator-(vector<3, T> const& v)
 {
     return vector<3, T>(-v.x, -v.y, -v.z);
