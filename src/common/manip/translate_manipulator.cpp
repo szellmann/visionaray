@@ -161,6 +161,8 @@ bool translate_manipulator::handle_mouse_down(visionaray::mouse_event const& eve
 
 bool translate_manipulator::handle_mouse_up(visionaray::mouse_event const& event)
 {
+    VSNRAY_UNUSED(event);
+
     dragging_ = false;
     return false;
 }
