@@ -94,7 +94,7 @@ public:
 
         cudaExtent extent { width, height, depth };
 
-        auto err = cudaMalloc3DArray(&array_ptr_, &desc, extent, flags);std::cerr << cudaGetErrorString(cudaGetLastError()) << std::endl;
+        auto err = cudaMalloc3DArray(&array_ptr_, &desc, extent, flags);
 
         if (err != cudaSuccess)
         {
