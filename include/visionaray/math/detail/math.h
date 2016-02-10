@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#ifndef VSNRAY_DETAIL_MATH_H
-#define VSNRAY_DETAIL_MATH_H
+#pragma once
+
+#ifndef VSNRAY_MATH_DETAIL_MATH_H
+#define VSNRAY_MATH_DETAIL_MATH_H 1
 
 #include <cmath>
 #include <type_traits>
@@ -198,8 +200,11 @@ template <typename T> MATH_FUNC T inv_pi()              { return T(3.18309886183
 } // constants
 
 
+namespace simd
+{
+
 //--------------------------------------------------------------------------------------------------
-// Masked operations
+// SIMD intrinsics
 //
 
 template <typename T, typename M>
@@ -215,6 +220,36 @@ inline bool select(M k, T1 const& a, T2 const& b)
 {
     return k ? a : b;
 }
+
+MATH_FUNC
+inline bool any(bool b)
+{
+    return b;
+}
+
+MATH_FUNC
+inline bool all(bool b)
+{
+    return b;
+}
+
+} // simd
+
+
+
+//-------------------------------------------------------------------------------------------------
+// Import SIMD intrinsics into namespace visionaray.
+// Enable ADL!
+//
+
+using simd::select;
+using simd::any;
+using simd::all;
+
+
+//--------------------------------------------------------------------------------------------------
+// Masked operations
+//
 
 template <typename T, typename M>
 MATH_FUNC
@@ -311,18 +346,6 @@ inline auto div(T1 a, T2 b, M m, T3 old = T3(0.0)) -> decltype(operator/(a, b))
     return select( m, a / b, old );
 }
 
-MATH_FUNC
-inline bool any(bool b)
-{
-    return b;
-}
-
-MATH_FUNC
-inline bool all(bool b)
-{
-    return b;
-}
-
 
 //--------------------------------------------------------------------------------------------------
 // Implement some (useful) functions not defined in <cmath>
@@ -390,5 +413,4 @@ inline T det2(T const& m00, T const& m01, T const& m10, T const& m11)
 
 } // MATH_NAMESPACE
 
-
-#endif // VSNRAY_DETAIL_MATH_H
+#endif // VSNRAY_MATH_DETAIL_MATH_H
