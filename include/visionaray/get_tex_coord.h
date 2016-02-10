@@ -8,6 +8,7 @@
 
 #include <array>
 #include <iterator>
+#include <type_traits>
 
 #include <visionaray/math/math.h>
 
@@ -39,39 +40,54 @@ inline auto get_tex_coord(
 
 
 //-------------------------------------------------------------------------------------------------
-// SSE triangle
+// SIMD triangle
 //
 
-template <typename TexCoords, typename T>
-inline vector<2, simd::float4> get_tex_coord(
-        TexCoords                                           coords,
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        basic_triangle<3, T>                                /* */
+template <
+    typename TexCoords,
+    typename T,
+    typename U,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    >
+inline vector<2, T> get_tex_coord(
+        TexCoords                                               coords,
+        hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
+        basic_triangle<3, U>                                    /* */
         )
 {
     using TC = typename std::iterator_traits<TexCoords>::value_type;
+    using float_array = typename simd::aligned_array<T>::type;
 
-    auto hr4 = unpack(hr);
+    auto hrs = unpack(hr);
 
     auto get_coord = [&](int x, int y)
     {
-        return hr4[x].hit ? coords[hr4[x].prim_id * 3 + y] : TC();
+        return hrs[x].hit ? coords[hrs[x].prim_id * 3 + y] : TC();
     };
 
-    vector<2, simd::float4> tc1(
-            simd::float4( get_coord(0, 0).x, get_coord(1, 0).x, get_coord(2, 0).x, get_coord(3, 0).x ),
-            simd::float4( get_coord(0, 0).y, get_coord(1, 0).y, get_coord(2, 0).y, get_coord(3, 0).y )
-            );
 
-    vector<2, simd::float4> tc2(
-            simd::float4( get_coord(0, 1).x, get_coord(1, 1).x, get_coord(2, 1).x, get_coord(3, 1).x ),
-            simd::float4( get_coord(0, 1).y, get_coord(1, 1).y, get_coord(2, 1).y, get_coord(3, 1).y )
-            );
+    float_array x1;
+    float_array y1;
+    float_array x2;
+    float_array y2;
+    float_array x3;
+    float_array y3;
 
-    vector<2, simd::float4> tc3(
-            simd::float4( get_coord(0, 2).x, get_coord(1, 2).x, get_coord(2, 2).x, get_coord(3, 2).x ),
-            simd::float4( get_coord(0, 2).y, get_coord(1, 2).y, get_coord(2, 2).y, get_coord(3, 2).y )
-            );
+    for (int i = 0; i < simd::num_elements<T>::value; ++i)
+    {
+        x1[i] = get_coord(i, 0).x;
+        y1[i] = get_coord(i, 0).y;
+
+        x2[i] = get_coord(i, 1).x;
+        y2[i] = get_coord(i, 1).y;
+
+        x3[i] = get_coord(i, 2).x;
+        y3[i] = get_coord(i, 2).y;
+    }
+
+    vector<2, T> tc1(x1, y1);
+    vector<2, T> tc2(x2, y2);
+    vector<2, T> tc3(x3, y3);
 
     return lerp( tc1, tc2, tc3, hr.u, hr.v );
 }
