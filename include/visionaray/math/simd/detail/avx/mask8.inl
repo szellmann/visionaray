@@ -48,6 +48,20 @@ VSNRAY_FORCE_INLINE mask8::basic_mask(
 {
 }
 
+VSNRAY_FORCE_INLINE mask8::basic_mask(bool const v[8])
+    : i( basic_int<__m256i>(
+        v[0] ? 0xFFFFFFFF : 0x00000000,
+        v[1] ? 0xFFFFFFFF : 0x00000000,
+        v[2] ? 0xFFFFFFFF : 0x00000000,
+        v[3] ? 0xFFFFFFFF : 0x00000000,
+        v[4] ? 0xFFFFFFFF : 0x00000000,
+        v[5] ? 0xFFFFFFFF : 0x00000000,
+        v[6] ? 0xFFFFFFFF : 0x00000000,
+        v[7] ? 0xFFFFFFFF : 0x00000000
+        ) )
+{
+}
+
 VSNRAY_FORCE_INLINE mask8::basic_mask(basic_float<__m256> const& m)
     : f(m)
 {

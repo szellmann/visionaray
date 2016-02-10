@@ -30,6 +30,16 @@ VSNRAY_FORCE_INLINE mask4::basic_mask(bool x, bool y, bool z, bool w)
 {
 }
 
+VSNRAY_FORCE_INLINE mask4::basic_mask(bool const v[4])
+    : i( basic_int<__m128i>(
+            v[0] ? 0xFFFFFFFF : 0x00000000,
+            v[1] ? 0xFFFFFFFF : 0x00000000,
+            v[2] ? 0xFFFFFFFF : 0x00000000,
+            v[3] ? 0xFFFFFFFF : 0x00000000
+            ) )
+{
+}
+
 VSNRAY_FORCE_INLINE mask4::basic_mask(bool b)
     : i( basic_int<__m128i>(b ? 0xFFFFFFFF : 0x00000000) )
 {

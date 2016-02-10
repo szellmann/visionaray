@@ -80,6 +80,7 @@ public:
     VSNRAY_FORCE_INLINE basic_mask(__m128 m);
     VSNRAY_FORCE_INLINE basic_mask(__m128i m);
     VSNRAY_FORCE_INLINE basic_mask(bool x, bool y, bool z, bool w);
+    VSNRAY_FORCE_INLINE basic_mask(bool const v[4]);
     VSNRAY_FORCE_INLINE basic_mask(bool b);
     VSNRAY_FORCE_INLINE basic_mask(basic_float<__m128> const& m);
 

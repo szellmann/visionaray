@@ -109,6 +109,7 @@ public:
             bool x7,
             bool x8
             );
+    VSNRAY_FORCE_INLINE basic_mask(bool const v[8]);
     VSNRAY_FORCE_INLINE basic_mask(basic_float<__m256> const& m);
 
     VSNRAY_FORCE_INLINE operator basic_float<__m256>() const;
