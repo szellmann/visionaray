@@ -1,13 +1,14 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cstring> // memset
 #include <memory>
-#include <vector>
 
 #include <GL/glew.h>
 
 #include <visionaray/detail/platform.h>
 
+#include <visionaray/aligned_vector.h>
 #include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h> // for make_kernel_params(...)
@@ -68,10 +69,10 @@ struct renderer : viewer_type
 
     // rendering data
 
-    std::vector<basic_triangle<3, float>>       triangles;
-    std::vector<vec3>                           normals;
-    std::vector<vec2>                           tex_coords;
-    std::vector<plastic<float>>                 materials;
+    aligned_vector<basic_triangle<3, float>>    triangles;
+    aligned_vector<vec3>                        normals;
+    aligned_vector<vec2>                        tex_coords;
+    aligned_vector<plastic<float>>              materials;
 
     void add_tex_coords()
     {
@@ -257,6 +258,33 @@ struct mask_intersector : basic_intersector<mask_intersector>
     auto operator()(R const& ray, basic_triangle<3, S> const& tri)
         -> decltype( intersect(ray, tri) )
     {
+        // Deduce some type properties for platform independent code.
+        // That way, the algorithm is valid for all SIMD types.
+
+        // First get the float type from the ray type
+        using T = typename R::scalar_type;
+
+        // Constant number of elements that a SIMD vector stores, e.g.:
+        //
+        // float  ==> 1
+        // float4 ==> 4
+        // float8 ==> 8
+        //
+        constexpr int N = simd::num_elements<T>::value;
+
+
+        // We know the float type (T), now use the simd::mask_type
+        // type_trait to deduce the appropriate mask type. E.g.:
+        //
+        // float  ==> bool
+        // float4 ==> mask4
+        // float8 ==> mask8
+        //
+        using Mask = typename simd::mask_type<T>::type;
+
+
+        // Now we can write the algorithm in a platform independent manner.
+
         assert( tex_coords );
 
         auto hr = intersect(ray, tri);
@@ -268,26 +296,27 @@ struct mask_intersector : basic_intersector<mask_intersector>
 
         auto tc = get_tex_coord(tex_coords, hr);
 
-        auto hr4 = unpack( hr );
-        auto tc4 = unpack( tc );
+        auto hrs = unpack( hr );
+        auto tcs = unpack( tc );
 
-        bool hit4[4] = { false, false, false, false };
+        bool hits[N];
+        memset(hits, 0, sizeof(hits));
 
-        for (unsigned i = 0; i < 4; ++i)
+        for (unsigned i = 0; i < N; ++i)
         {
-            if (!hr4[i].hit)
+            if (!hrs[i].hit)
             {
                 continue;
             }
 
-            auto x = tc4[i].x * 3.0f - 1.5f;
-            auto y = tc4[i].y * 3.0f - 1.5f;
+            auto x = tcs[i].x * 3.0f - 1.5f;
+            auto y = tcs[i].y * 3.0f - 1.5f;
 
             // heart function
-            hit4[i] = ( pow(x * x + y * y - 1.0f, 3.0f) - x * x * y * y * y ) < 0.0f;
+            hits[i] = ( pow(x * x + y * y - 1.0f, 3.0f) - x * x * y * y * y ) < 0.0f;
         }
 
-        hr.hit &= simd::mask4(hit4[0], hit4[1], hit4[2], hit4[3]);
+        hr.hit &= Mask(hits);
 
         return hr;
     }
@@ -321,7 +350,7 @@ void renderer::on_display()
     light.set_kl( 1.0f );
     light.set_position( cam.eye() );
 
-    std::vector<point_light<float>> lights;
+    aligned_vector<point_light<float>> lights;
     lights.push_back(light);
 
 
