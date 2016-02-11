@@ -23,9 +23,9 @@ public:
 
     enum label { X, Y };
 
-    /* implicit */ cartesian_axis(label l) : val_(l) {}
+    MATH_FUNC /* implicit */ cartesian_axis(label l) : val_(l) {}
 
-    operator label() const { return val_; }
+    MATH_FUNC operator label() const { return val_; }
 
 private:
 
@@ -41,9 +41,9 @@ public:
 
     enum label { X, Y, Z };
 
-    /* implicit */ cartesian_axis(label l) : val_(l) {}
+    MATH_FUNC /* implicit */ cartesian_axis(label l) : val_(l) {}
 
-    operator label() const { return val_; }
+    MATH_FUNC operator label() const { return val_; }
 
 private:
 
