@@ -283,6 +283,8 @@ public:
     VSNRAY_CPU_FUNC cuda_texture_ref(cuda_texture<T, ReadMode, 3> const& ref)
         : texture_obj_(ref.texture_object())
         , width_(ref.width())
+        , height_(ref.height())
+        , depth_(ref.depth())
     {
     }
 
@@ -292,6 +294,8 @@ public:
     {
         texture_obj_ = rhs.texture_object();
         width_ = rhs.width();
+        height_ = rhs.height();
+        depth_ = rhs.depth();
         return *this;
     }
 
@@ -305,11 +309,23 @@ public:
         return width_;
     }
 
+    VSNRAY_FUNC size_t height() const
+    {
+        return height_;
+    }
+
+    VSNRAY_FUNC size_t depth() const
+    {
+        return depth_;
+    }
+
 private:
 
     cudaTextureObject_t texture_obj_;
 
     size_t width_;
+    size_t height_;
+    size_t depth_;
 
 };
 
