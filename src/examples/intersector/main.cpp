@@ -270,7 +270,7 @@ struct mask_intersector : basic_intersector<mask_intersector>
         // float4 ==> 4
         // float8 ==> 8
         //
-        constexpr int N = simd::num_elements<T>::value;
+        static const int N = simd::num_elements<T>::value;
 
 
         // We know the float type (T), now use the simd::mask_type
