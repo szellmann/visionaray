@@ -1,16 +1,18 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_MATH_AABB_H
-#define VSNRAY_MATH_AABB_H
+#define VSNRAY_MATH_AABB_H 1
+
+#include <visionaray/detail/macros.h>
 
 #if VSNRAY_CXXLIB_HAS_HDR_ARRAY
 #include <array>
 #else
 #include <boost/array.hpp>
 #endif
-
-#include <visionaray/detail/macros.h>
 
 #include "vector.h"
 
@@ -65,5 +67,3 @@ public:
 #include "detail/aabb.inl"
 
 #endif // VSNRAY_MATH_AABB_H
-
-
