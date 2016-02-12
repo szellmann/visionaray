@@ -129,3 +129,6 @@ if(CMAKE_COMPILER_IS_GNUCXX)
         "COMPILE_FLAGS" "${ORIGINAL_COMPILE_FLAGS} -Wno-comment"
     )
 endif()
+
+
+add_test(unittests unittests)

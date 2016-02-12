@@ -8,6 +8,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
     "${PROJECT_SOURCE_DIR}/cmake/modules"
 )
 
+include(CTest)
+enable_testing()
+
 include(VisionarayAddTarget)
 include(VisionarayUseFramework)
 include(VisionarayUsePackage)
