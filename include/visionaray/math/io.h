@@ -13,6 +13,7 @@
 
 #include "simd/type_traits.h"
 #include "matrix.h"
+#include "norm.h"
 #include "quat.h"
 #include "rectangle.h"
 #include "vector.h"
@@ -82,6 +83,27 @@ operator<<(std::basic_ostream<CharT, Traits>& out, VecT const& v)
 }
 
 } // simd
+
+
+//-------------------------------------------------------------------------------------------------
+// normalized floats
+//
+
+template <typename CharT, typename Traits, unsigned Bits>
+std::basic_ostream<CharT, Traits>&
+operator<<(std::basic_ostream<CharT, Traits>& out, unorm<Bits> u)
+{
+
+    std::basic_ostringstream<CharT, Traits> s;
+    s.flags(out.flags());
+    s.imbue(out.getloc());
+    s.precision(out.precision());
+
+    s << static_cast<float>(u);
+
+    return out << s.str();
+
+}
 
 
 //-------------------------------------------------------------------------------------------------
