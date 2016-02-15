@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_CAMERA_H
-#define VSNRAY_CAMERA_H
+#define VSNRAY_CAMERA_H 1
 
 #include "math/math.h"
 
@@ -64,6 +64,6 @@ private:
 
 } // visionaray
 
+#include "detail/camera.inl"
+
 #endif // VSNRAY_CAMERA_H
-
-

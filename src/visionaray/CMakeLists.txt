@@ -51,6 +51,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/spd/d65.h
     ${HEADER_DIR}/detail/algorithm.h
     ${HEADER_DIR}/detail/allocator.h
+    ${HEADER_DIR}/detail/camera.inl
     ${HEADER_DIR}/detail/color_conversion.h
     ${HEADER_DIR}/detail/compiler.h
     ${HEADER_DIR}/detail/cpu_buffer_rt.inl
@@ -213,7 +214,6 @@ set(VSNRAY_SOURCES
     gl/handle.cpp
     gl/util.cpp
 
-    camera.cpp
     exception.cpp
     pixel_format.cpp
     util.cpp

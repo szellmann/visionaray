@@ -3,12 +3,10 @@
 
 #include <cassert>
 
-#include <visionaray/camera.h>
-
 namespace visionaray
 {
 
-void camera::look_at(vec3 const& eye, vec3 const& center, vec3 const& up)
+inline void camera::look_at(vec3 const& eye, vec3 const& center, vec3 const& up)
 {
 
     eye_      = eye;
@@ -30,7 +28,7 @@ void camera::look_at(vec3 const& eye, vec3 const& center, vec3 const& up)
 
 }
 
-void camera::perspective(float fovy, float aspect, float z_near, float z_far)
+inline void camera::perspective(float fovy, float aspect, float z_near, float z_far)
 {
 
     assert( z_near > 0.0f );
@@ -64,12 +62,12 @@ void camera::perspective(float fovy, float aspect, float z_near, float z_far)
 
 }
 
-void camera::set_viewport(recti const& viewport)
+inline void camera::set_viewport(recti const& viewport)
 {
     viewport_ = viewport;
 }
 
-void camera::set_viewport(int left, int bottom, int width, int height)
+inline void camera::set_viewport(int left, int bottom, int width, int height)
 {
     viewport_.x = left;
     viewport_.y = bottom;
@@ -77,7 +75,7 @@ void camera::set_viewport(int left, int bottom, int width, int height)
     viewport_.h = height;
 }
 
-void camera::view_all(aabb const& box, vec3 const& up)
+inline void camera::view_all(aabb const& box, vec3 const& up)
 {
     float diagonal = length(box.size());
     float r = diagonal * 0.5f;
@@ -88,5 +86,3 @@ void camera::view_all(aabb const& box, vec3 const& up)
 }
 
 } // visionaray
-
-
