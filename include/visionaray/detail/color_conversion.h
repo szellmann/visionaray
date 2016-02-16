@@ -176,7 +176,7 @@ VSNRAY_FUNC
 inline void convert(vector<Dim, unorm<Bits>>& target, vector<Dim, float> const& source)
 {
     using V = vector<Dim, float>;
-    target = vector<4, unorm<Bits>>(clamp(source, V(0.0), V(1.0)));
+    target = vector<Dim, unorm<Bits>>(clamp(source, V(0.0), V(1.0)));
 }
 
 // unorm to float conversion
