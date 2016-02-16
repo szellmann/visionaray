@@ -7,6 +7,7 @@
 #define VSNRAY_GET_NORMAL 1
 
 #include <iterator>
+#include <type_traits>
 
 #include "math/math.h"
 
@@ -56,56 +57,67 @@ inline auto get_normal(
 
 
 //-------------------------------------------------------------------------------------------------
-// Gather four face normals with SSE
+// Gather N face normals for SIMD ray
 //
 
 template <
     typename Normals,
     template <typename, typename> class HR,
+    typename T,
     typename HRP,
-    typename Primitive
+    typename Primitive,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
-inline vector<3, simd::float4> get_normal(
-        Normals                     normals,
-        HR<simd::ray4, HRP> const&  hr,
-        Primitive                   /* */,
-        normals_per_face_binding    /* */
+inline vector<3, T> get_normal(
+        Normals                         normals,
+        HR<basic_ray<T>, HRP> const&    hr,
+        Primitive                       /* */,
+        normals_per_face_binding        /* */
         )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
+    using float_array = typename simd::aligned_array<T>::type;
 
-    auto hr4 = unpack(hr);
+    auto hrs = unpack(hr);
 
-    auto get_norm = [&](int x)
+    float_array x;
+    float_array y;
+    float_array z;
+
+    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
     {
-        return hr4[x].hit ? normals[hr4[x].prim_id] : N();
-    };
+        auto n = hrs[i].hit ? normals[hrs[i].prim_id] : N();
+        x[i] = n.x;
+        y[i] = n.y;
+        z[i] = n.z;
+    }
 
-    auto n1 = get_norm(0);
-    auto n2 = get_norm(1);
-    auto n3 = get_norm(2);
-    auto n4 = get_norm(3);
-
-    return vector<3, simd::float4>(
-            simd::float4( n1.x, n2.x, n3.x, n4.x ),
-            simd::float4( n1.y, n2.y, n3.y, n4.y ),
-            simd::float4( n1.z, n2.z, n3.z, n4.z )
+    return vector<3, T>(
+            T(x),
+            T(y),
+            T(z)
             );
 }
 
 //-------------------------------------------------------------------------------------------------
-// Gather four triangle vertex normals with SSE
+// Gather N triangle vertex normals for SIMD ray
 //
 
-template <typename Normals, typename T>
-inline vector<3, simd::float4> get_normal(
-        Normals                                             normals,
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        basic_triangle<3, T>                                /* */,
-        normals_per_vertex_binding                          /* */
+template <
+    typename Normals,
+    typename T,
+    typename U,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    >
+inline vector<3, T> get_normal(
+        Normals                                                 normals,
+        hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
+        basic_triangle<3, U>                                    /* */,
+        normals_per_vertex_binding                              /* */
         )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
+    using float_array = typename simd::aligned_array<T>::type;
 
     auto hr4 = unpack(hr);
 
@@ -114,124 +126,43 @@ inline vector<3, simd::float4> get_normal(
         return hr4[x].hit ? normals[hr4[x].prim_id * 3 + y] : N();
     };
 
-    vector<3, simd::float4> n1(
-            simd::float4( get_norm(0, 0).x, get_norm(1, 0).x, get_norm(2, 0).x, get_norm(3, 0).x ),
-            simd::float4( get_norm(0, 0).y, get_norm(1, 0).y, get_norm(2, 0).y, get_norm(3, 0).y ),
-            simd::float4( get_norm(0, 0).z, get_norm(1, 0).z, get_norm(2, 0).z, get_norm(3, 0).z )
-            );
+    float_array x1;
+    float_array y1;
+    float_array z1;
 
-    vector<3, simd::float4> n2(
-            simd::float4( get_norm(0, 1).x, get_norm(1, 1).x, get_norm(2, 1).x, get_norm(3, 1).x ),
-            simd::float4( get_norm(0, 1).y, get_norm(1, 1).y, get_norm(2, 1).y, get_norm(3, 1).y ),
-            simd::float4( get_norm(0, 1).z, get_norm(1, 1).z, get_norm(2, 1).z, get_norm(3, 1).z )
-            );
+    float_array x2;
+    float_array y2;
+    float_array z2;
 
-    vector<3, simd::float4> n3(
-            simd::float4( get_norm(0, 2).x, get_norm(1, 2).x, get_norm(2, 2).x, get_norm(3, 2).x ),
-            simd::float4( get_norm(0, 2).y, get_norm(1, 2).y, get_norm(2, 2).y, get_norm(3, 2).y ),
-            simd::float4( get_norm(0, 2).z, get_norm(1, 2).z, get_norm(2, 2).z, get_norm(3, 2).z )
-            );
+    float_array x3;
+    float_array y3;
+    float_array z3;
+
+    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    {
+        auto nn1 = get_norm(i, 0);
+        auto nn2 = get_norm(i, 1);
+        auto nn3 = get_norm(i, 2);
+
+        x1[i] = nn1.x;
+        y1[i] = nn1.y;
+        z1[i] = nn1.z;
+
+        x2[i] = nn2.x;
+        y2[i] = nn2.y;
+        z2[i] = nn2.z;
+
+        x3[i] = nn3.x;
+        y3[i] = nn3.y;
+        z3[i] = nn3.z;
+    }
+
+    vector<3, T> n1( T(x1), T(y1), T(z1) );
+    vector<3, T> n2( T(x2), T(y2), T(z2) );
+    vector<3, T> n3( T(x3), T(y3), T(z3) );
 
     return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
 }
-
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-//-------------------------------------------------------------------------------------------------
-// Gather eight face normals with AVX
-//
-
-template <
-    typename Normals,
-    template <typename, typename> class HR,
-    typename HRP,
-    typename Primitive
-    >
-inline vector<3, simd::float8> get_normal(
-        Normals                     normals,
-        HR<simd::ray8, HRP> const&  hr,
-        Primitive                   /* */,
-        normals_per_face_binding    /* */
-        )
-{
-    using N = typename std::iterator_traits<Normals>::value_type;
-
-    auto hr8 = unpack(hr);
-
-    auto get_norm = [&](int x)
-    {
-        return hr8[x].hit ? normals[hr8[x].prim_id] : N();
-    };
-
-    auto n1 = get_norm(0);
-    auto n2 = get_norm(1);
-    auto n3 = get_norm(2);
-    auto n4 = get_norm(3);
-    auto n5 = get_norm(4);
-    auto n6 = get_norm(5);
-    auto n7 = get_norm(6);
-    auto n8 = get_norm(7);
-
-    return vector<3, simd::float8>(
-            simd::float8( n1.x, n2.x, n3.x, n4.x, n5.x, n6.x, n7.x, n8.x ),
-            simd::float8( n1.y, n2.y, n3.y, n4.y, n5.y, n6.y, n7.y, n8.y ),
-            simd::float8( n1.z, n2.z, n3.z, n4.z, n5.z, n6.z, n7.z, n8.z )
-            );
-}
-
-//-------------------------------------------------------------------------------------------------
-// Gather eight triangle vertex normals with AVX
-//
-
-template <typename Normals, typename T>
-inline vector<3, simd::float8> get_normal(
-        Normals                                             normals,
-        hit_record<simd::ray8, primitive<unsigned>> const&  hr,
-        basic_triangle<3, T>                                /* */,
-        normals_per_vertex_binding                          /* */
-        )
-{
-    using N = typename std::iterator_traits<Normals>::value_type;
-
-    auto hr8 = unpack(hr);
-
-    auto get_norm = [&](int x, int y)
-    {
-        return hr8[x].hit ? normals[hr8[x].prim_id * 3 + y] : N();
-    };
-
-    vector<3, simd::float8> n1(
-            simd::float8( get_norm(0, 0).x, get_norm(1, 0).x, get_norm(2, 0).x, get_norm(3, 0).x,
-                          get_norm(4, 0).x, get_norm(5, 0).x, get_norm(6, 0).x, get_norm(7, 0).x ),
-            simd::float8( get_norm(0, 0).y, get_norm(1, 0).y, get_norm(2, 0).y, get_norm(3, 0).y,
-                          get_norm(4, 0).y, get_norm(5, 0).y, get_norm(6, 0).y, get_norm(7, 0).y ),
-            simd::float8( get_norm(0, 0).z, get_norm(1, 0).z, get_norm(2, 0).z, get_norm(3, 0).z,
-                          get_norm(4, 0).z, get_norm(5, 0).z, get_norm(6, 0).z, get_norm(7, 0).z )
-            );
-
-    vector<3, simd::float8> n2(
-            simd::float8( get_norm(0, 1).x, get_norm(1, 1).x, get_norm(2, 1).x, get_norm(3, 1).x,
-                          get_norm(4, 1).x, get_norm(5, 1).x, get_norm(6, 1).x, get_norm(7, 1).x ),
-            simd::float8( get_norm(0, 1).y, get_norm(1, 1).y, get_norm(2, 1).y, get_norm(3, 1).y,
-                          get_norm(4, 1).y, get_norm(5, 1).y, get_norm(6, 1).y, get_norm(7, 1).y ),
-            simd::float8( get_norm(0, 1).z, get_norm(1, 1).z, get_norm(2, 1).z, get_norm(3, 1).z,
-                          get_norm(4, 1).z, get_norm(5, 1).z, get_norm(6, 1).z, get_norm(7, 1).z )
-            );
-
-    vector<3, simd::float8> n3(
-            simd::float8( get_norm(0, 2).x, get_norm(1, 2).x, get_norm(2, 2).x, get_norm(3, 2).x,
-                          get_norm(4, 2).x, get_norm(5, 2).x, get_norm(6, 2).x, get_norm(7, 2).x ),
-            simd::float8( get_norm(0, 2).y, get_norm(1, 2).y, get_norm(2, 2).y, get_norm(3, 2).y,
-                          get_norm(4, 2).y, get_norm(5, 2).y, get_norm(6, 2).y, get_norm(7, 2).y ),
-            simd::float8( get_norm(0, 2).z, get_norm(1, 2).z, get_norm(2, 2).z, get_norm(3, 2).z,
-                          get_norm(4, 2).z, get_norm(5, 2).z, get_norm(6, 2).z, get_norm(7, 2).z )
-            );
-
-    return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
 //-------------------------------------------------------------------------------------------------
