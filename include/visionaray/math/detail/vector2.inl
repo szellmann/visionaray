@@ -349,13 +349,13 @@ namespace simd
 
 // pack ---------------------------------------------------
 
-template <size_t N>
+template <typename T, size_t N> // TODO: check that T is convertible to float
 inline vector<2, typename float_from_simd_width<N>::type> pack(
-        std::array<vector<2, float>, N> const& vecs
+        std::array<vector<2, T>, N> const& vecs
         )
 {
-    using T = typename float_from_simd_width<N>::type;
-    using float_array = typename simd::aligned_array<T>::type;
+    using U = typename float_from_simd_width<N>::type;
+    using float_array = typename simd::aligned_array<U>::type;
 
     float_array x;
     float_array y;
@@ -366,7 +366,7 @@ inline vector<2, typename float_from_simd_width<N>::type> pack(
         y[i] = vecs[i].y;
     }
 
-    return vector<2, T>(x, y);
+    return vector<2, U>(x, y);
 }
 
 // unpack -------------------------------------------------
