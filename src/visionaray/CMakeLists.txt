@@ -164,6 +164,7 @@ set(VSNRAY_HEADERS
     # General library headers
 
     ${HEADER_DIR}/aligned_vector.h
+    ${HEADER_DIR}/array_ref.h
     ${HEADER_DIR}/brdf.h
     ${HEADER_DIR}/bvh.h
     ${HEADER_DIR}/camera.h

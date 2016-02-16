@@ -69,7 +69,6 @@ set(COMMON_HEADERS
     manip/translate_manipulator.h
     manip/zoom_manipulator.h
 
-    array_ref.h
     call_kernel.h
     cfile.h
     image.h
