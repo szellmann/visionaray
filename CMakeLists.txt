@@ -25,11 +25,16 @@ option(VSNRAY_ENABLE_CUDA "Use CUDA, if available" ON)
 option(VSNRAY_ENABLE_EXAMPLES "Build the programming examples" OFF)
 option(VSNRAY_ENABLE_QT5 "Use Qt5, if available" OFF)
 option(VSNRAY_ENABLE_VIEWER "Build the vsnray-viewer program" ON)
+option(VSNRAY_ENABLE_UNITTESTS "Build unit tests" OFF)
 
 #---------------------------------------------------------------------------------------------------
 # All VSNRAY_* options have to be specified before this include
 #
 
 include(VisionarayHandleOptions)
+
+if(VSNRAY_ENABLE_UNITTESTS)
+add_subdirectory(test)
+endif()
 
 add_subdirectory(src)
