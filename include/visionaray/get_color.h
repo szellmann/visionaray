@@ -70,7 +70,7 @@ inline vector<3, simd::float4> get_color(
         Colors                      colors,
         HR<simd::ray4, HRP> const&  hr,
         Primitive                   /* */,
-        normals_per_face_binding    /* */
+        colors_per_face_binding     /* */
         )
 {
     using C = typename std::iterator_traits<Colors>::value_type;
@@ -111,7 +111,7 @@ inline vector<3, simd::float8> get_color(
         Colors                      colors,
         HR<simd::ray8, HRP> const&  hr,
         Primitive                   /* */,
-        normals_per_face_binding    /* */
+        colors_per_face_binding     /* */
         )
 {
     using C = typename std::iterator_traits<Colors>::value_type;
