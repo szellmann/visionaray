@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <atomic>
+#include <cassert>
 #include <condition_variable>
 #include <functional>
 #include <thread>
@@ -352,6 +353,9 @@ template <typename R>
 template <typename K, typename SP>
 void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
+    assert( sched_params.rt.width()  >= impl_->viewport.w - impl_->viewport.x );
+    assert( sched_params.rt.height() >= impl_->viewport.h - impl_->viewport.y );
+
     sched_params.rt.begin_frame();
 
     impl_->init_render_func(

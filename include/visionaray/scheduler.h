@@ -6,6 +6,7 @@
 #ifndef VSNRAY_SCHEDULER_H
 #define VSNRAY_SCHEDULER_H 1
 
+#include <cassert>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -191,6 +192,9 @@ auto make_sched_params(
         )
     -> sched_params<sched_params_base, RT, PxSamplerT>
 {
+    assert( rt.width()  >= cam.get_viewport().w - cam.get_viewport().x );
+    assert( rt.height() >= cam.get_viewport().h - cam.get_viewport().y );
+
     return sched_params<sched_params_base, RT, PxSamplerT>{ cam, rt };
 }
 
@@ -203,6 +207,9 @@ auto make_sched_params(
         )
     -> sched_params<sched_params_intersector_base<Intersector>, RT, PxSamplerT>
 {
+    assert( rt.width()  >= cam.get_viewport().w - cam.get_viewport().x );
+    assert( rt.height() >= cam.get_viewport().h - cam.get_viewport().y );
+
     return sched_params<sched_params_intersector_base<Intersector>, RT, PxSamplerT>{
             cam,
             rt,
@@ -221,7 +228,15 @@ auto make_sched_params(
         )
     -> sched_params<sched_params_base, MT, V, RT, PxSamplerT>
 {
-    return sched_params<sched_params_base, MT, V, RT, PxSamplerT>{ view_matrix, proj_matrix, viewport, rt };
+    assert( rt.width()  >= viewport.w - viewport.x );
+    assert( rt.height() >= viewport.h - viewport.y );
+
+    return sched_params<sched_params_base, MT, V, RT, PxSamplerT>{
+            view_matrix,
+            proj_matrix,
+            viewport,
+            rt
+            };
 }
 
 template <typename PxSamplerT, typename Intersector, typename MT, typename V, typename RT>
@@ -235,6 +250,9 @@ auto make_sched_params(
         )
     -> sched_params<sched_params_intersector_base<Intersector>, MT, V, RT, PxSamplerT>
 {
+    assert( rt.width()  >= viewport.w - viewport.x );
+    assert( rt.height() >= viewport.h - viewport.y );
+
     return sched_params<sched_params_intersector_base<Intersector>, MT, V, RT, PxSamplerT>{
             view_matrix,
             proj_matrix,

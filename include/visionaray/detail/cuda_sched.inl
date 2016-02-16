@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cassert>
 #include <type_traits>
 
 #include <cuda_runtime_api.h>
@@ -226,6 +227,9 @@ inline void cuda_sched_impl_frame(
         unsigned        frame_num
         )
 {
+    assert( sparams.rt.width()  >= sparams.viewport.w - sparams.viewport.x );
+    assert( sparams.rt.height() >= sparams.viewport.h - sparams.viewport.y );
+
     auto rt_ref             = sparams.rt.ref();
     auto inv_view_matrix    = inverse(sparams.view_matrix);
     auto inv_proj_matrix    = inverse(sparams.proj_matrix);
@@ -255,6 +259,9 @@ inline void cuda_sched_impl_frame(
         unsigned        frame_num
         )
 {
+    assert( sparams.rt.width()  >= sparams.cam.get_viewport().w - sparams.cam.get_viewport().x );
+    assert( sparams.rt.height() >= sparams.cam.get_viewport().h - sparams.cam.get_viewport().y );
+
     auto rt_ref             = sparams.rt.ref();
     auto viewport           = sparams.cam.get_viewport();
 

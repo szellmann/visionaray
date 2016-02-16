@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cassert>
 #include <type_traits>
 #include <utility>
 
@@ -32,6 +33,9 @@ template <typename R>
 template <typename K, typename SP>
 void simple_sched<R>::impl::frame(K kernel, SP sched_params, unsigned frame_num, std::true_type)
 {
+    assert( sched_params.rt.width()  >= sched_params.viewport.w );
+    assert( sched_params.rt.height() >= sched_params.viewport.h );
+
     typedef typename R::scalar_type     scalar_type;
     typedef matrix<4, 4, scalar_type>   matrix_type;
 
@@ -60,6 +64,9 @@ template <typename R>
 template <typename K, typename SP>
 void simple_sched<R>::impl::frame(K kernel, SP sched_params, unsigned frame_num, std::false_type)
 {
+    assert( sched_params.rt.width()  >= sched_params.cam.get_viewport().w );
+    assert( sched_params.rt.height() >= sched_params.cam.get_viewport().h );
+
     typedef typename R::scalar_type scalar_type;
 
     //  front, side, and up vectors form an orthonormal basis
