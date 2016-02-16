@@ -312,7 +312,7 @@ inline void get(int x, int y, recti const& viewport, vector<4, simd::float4>& co
     out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
     out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
 
-    color = simd::pack(out);
+    color = vector<4, simd::float4>(simd::pack(out), simd::float4(1.0f));
 }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
