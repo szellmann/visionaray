@@ -26,6 +26,7 @@ inline auto get_color(
         Primitive               /* */,
         colors_per_face_binding /* */
         )
+    -> typename std::iterator_traits<Colors>::value_type
 {
     return colors[hr.prim_id];
 }
