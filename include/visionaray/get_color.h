@@ -90,7 +90,7 @@ inline vector<3, simd::float4> get_color(
     return vector<3, simd::float4>(
             simd::float4( c1.x, c2.x, c3.x, c4.x ),
             simd::float4( c1.y, c2.y, c3.y, c4.y ),
-            simd::float4( c1.z, c2.z, c3.z. c4.z )
+            simd::float4( c1.z, c2.z, c3.z, c4.z )
             );
 }
 
@@ -135,7 +135,7 @@ inline vector<3, simd::float8> get_color(
     return vector<3, simd::float8>(
             simd::float8( c1.x, c2.x, c3.x, c4.x, c5.x, c6.x, c7.x, c8.x ),
             simd::float8( c1.y, c2.y, c3.y, c4.y, c5.y, c6.y, c7.y, c8.y ),
-            simd::float8( c1.z, c2.z, c3.z. c4.z, c5.z, c6.z, c7.z, c8.z )
+            simd::float8( c1.z, c2.z, c3.z, c4.z, c5.z, c6.z, c7.z, c8.z )
             );
 }
 
