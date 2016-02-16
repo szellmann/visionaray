@@ -157,9 +157,9 @@ inline vector<3, T> get_normal(
         z3[i] = nn3.z;
     }
 
-    vector<3, T> n1( T(x1), T(y1), T(z1) );
-    vector<3, T> n2( T(x2), T(y2), T(z2) );
-    vector<3, T> n3( T(x3), T(y3), T(z3) );
+    vector<3, T> n1(x1, y1, z1);
+    vector<3, T> n2(x2, y2, z2);
+    vector<3, T> n3(x3, y3, z3);
 
     return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
 }
