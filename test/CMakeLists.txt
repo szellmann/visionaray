@@ -8,7 +8,10 @@ endif()
 
 visionaray_use_package(CUDA)
 
+
+#--------------------------------------------------------------------------------------------------
 # Add googletest as an external project and import its libraries
+#
 
 include(ExternalProject)
 
@@ -33,11 +36,11 @@ set(GTEST_INCLUDE_DIR ${SOURCE_DIR}/include)
 ExternalProject_Get_Property(googletest BINARY_DIR)
 
 if(MSVC)
-set(LIBPREFIX "${CMAKE_IMPORT_LIBRARY_PREFIX}")
-set(LIBSUFFIX "${CMAKE_IMPORT_LIBRARY_SUFFIX}")
+    set(LIBPREFIX "${CMAKE_IMPORT_LIBRARY_PREFIX}")
+    set(LIBSUFFIX "${CMAKE_IMPORT_LIBRARY_SUFFIX}")
 else()
-set(LIBPREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
-set(LIBSUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    set(LIBPREFIX "${CMAKE_SHARED_LIBRARY_PREFIX}")
+    set(LIBSUFFIX "${CMAKE_SHARED_LIBRARY_SUFFIX}")
 endif()
 
 add_definitions(-DGTEST_LINKED_AS_SHARED_LIBRARY=1)
@@ -61,12 +64,16 @@ add_dependencies(${GTEST_LIBRARY} googletest)
 add_dependencies(${GTEST_LIBRARYMAIN} googletest)
 
 
+#--------------------------------------------------------------------------------------------------
+# Add unittests target
+#
+
 # Visionaray include dirs
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
 
 # Unittests executable
-set(SOURCES
+set(UNITTESTS_SOURCES
     bvh/traverse.cpp
     math/matrix.cpp
     math/norm.cpp
@@ -80,15 +87,15 @@ set(SOURCES
 )
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
-    visionaray_cuda_compile(CUDA_SOURCES
+    visionaray_cuda_compile(UNITTESTS_CUDA_SOURCES
 #        texture.cu
     )
 endif()
 
 # Define executable
 visionaray_add_executable(unittests
-    ${SOURCES}
-    ${CUDA_SOURCES}
+    ${UNITTESTS_SOURCES}
+    ${UNITTESTS_CUDA_SOURCES}
 )
 
 target_link_libraries(unittests libgtest libgtest_main ${CMAKE_THREAD_LIBS_INIT})
