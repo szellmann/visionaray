@@ -8,6 +8,7 @@
 
 #include <array>
 #include <iterator>
+#include <type_traits>
 
 #include "math/math.h"
 
@@ -101,43 +102,66 @@ inline vector<3, simd::float4> get_color(
 
 
 //-------------------------------------------------------------------------------------------------
-// SSE triangle, colors per vertex
+// Triangle and SIMD ray, colors per vertex
 //
 
-template <typename Colors, typename T>
-inline vector<3, simd::float4> get_color(
-        Colors                                              colors,
-        hit_record<simd::ray4, primitive<unsigned>> const&  hr,
-        basic_triangle<3, T>                                /* */,
-        colors_per_vertex_binding                           /* */
+template <
+    typename Colors,
+    typename T,
+    typename U,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    >
+inline vector<3, T> get_color(
+        Colors                                                  colors,
+        hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
+        basic_triangle<3, U>                                    /* */,
+        colors_per_vertex_binding                               /* */
         )
 {
     using C = typename std::iterator_traits<Colors>::value_type;
+    using float_array = typename simd::aligned_array<T>::type;
 
-    auto hr4 = unpack(hr);
+    auto hrs = unpack(hr);
 
     auto get_clr = [&](int x, int y)
     {
-        return hr4[x].hit ? colors[hr4[x].prim_id * 3 + y] : C();
+        return hrs[x].hit ? colors[hrs[x].prim_id * 3 + y] : C();
     };
 
-    vector<3, simd::float4> c1(
-            simd::float4( get_clr(0, 0).x, get_clr(1, 0).x, get_clr(2, 0).x, get_clr(3, 0).x ),
-            simd::float4( get_clr(0, 0).y, get_clr(1, 0).y, get_clr(2, 0).y, get_clr(3, 0).y ),
-            simd::float4( get_clr(0, 0).z, get_clr(1, 0).z, get_clr(2, 0).y, get_clr(3, 0).z )
-            );
+    float_array x1;
+    float_array y1;
+    float_array z1;
 
-    vector<3, simd::float4> c2(
-            simd::float4( get_clr(0, 1).x, get_clr(1, 1).x, get_clr(2, 1).x, get_clr(3, 1).x ),
-            simd::float4( get_clr(0, 1).y, get_clr(1, 1).y, get_clr(2, 1).y, get_clr(3, 1).y ),
-            simd::float4( get_clr(0, 1).z, get_clr(1, 1).z, get_clr(2, 1).z, get_clr(3, 1).z )
-            );
+    float_array x2;
+    float_array y2;
+    float_array z2;
 
-    vector<3, simd::float4> c3(
-            simd::float4( get_clr(0, 2).x, get_clr(1, 2).x, get_clr(2, 2).x, get_clr(3, 2).x ),
-            simd::float4( get_clr(0, 2).y, get_clr(1, 2).y, get_clr(2, 2).y, get_clr(3, 2).y ),
-            simd::float4( get_clr(0, 2).z, get_clr(1, 2).z, get_clr(2, 2).z, get_clr(3, 2).z )
-            );
+    float_array x3;
+    float_array y3;
+    float_array z3;
+
+    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    {
+        auto cc1 = get_clr(i, 0);
+        auto cc2 = get_clr(i, 1);
+        auto cc3 = get_clr(i, 2);
+
+        x1[i] = cc1.x;
+        y1[i] = cc1.y;
+        z1[i] = cc1.z;
+
+        x2[i] = cc2.x;
+        y2[i] = cc2.y;
+        z2[i] = cc2.z;
+
+        x3[i] = cc3.x;
+        y3[i] = cc3.y;
+        z3[i] = cc3.z;
+    }
+
+    vector<3, T> c1(x1, y1, z1);
+    vector<3, T> c2(x2, y2, z2);
+    vector<3, T> c3(x3, y3, z3);
 
     return lerp( c1, c2, c3, hr.u, hr.v );
 }
