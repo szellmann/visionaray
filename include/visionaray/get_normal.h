@@ -119,11 +119,11 @@ inline vector<3, T> get_normal(
     using N = typename std::iterator_traits<Normals>::value_type;
     using float_array = typename simd::aligned_array<T>::type;
 
-    auto hr4 = unpack(hr);
+    auto hrs = unpack(hr);
 
     auto get_norm = [&](int x, int y)
     {
-        return hr4[x].hit ? normals[hr4[x].prim_id * 3 + y] : N();
+        return hrs[x].hit ? normals[hrs[x].prim_id * 3 + y] : N();
     };
 
     float_array x1;
