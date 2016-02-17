@@ -13,6 +13,17 @@ include(VisionarayUseFramework)
 include(VisionarayUsePackage)
 
 
+#--------------------------------------------------------------------------------------------------
+# CMake policies to control backward compatible behavior
+#
+
+# Old behavior: COMPILE_DEFINITIONS_<CONFIG>
+# New behavior: COMPILE_DEFINITIONS + generator expression
+if(POLICY CMP0043)
+    cmake_policy(SET CMP0043 NEW)
+endif()
+
+
 #---------------------------------------------------------------------------------------------------
 # Visionaray Options
 #
@@ -26,6 +37,7 @@ option(VSNRAY_ENABLE_EXAMPLES "Build the programming examples" OFF)
 option(VSNRAY_ENABLE_QT5 "Use Qt5, if available" OFF)
 option(VSNRAY_ENABLE_VIEWER "Build the vsnray-viewer program" ON)
 option(VSNRAY_ENABLE_UNITTESTS "Build unit tests" OFF)
+
 
 #---------------------------------------------------------------------------------------------------
 # All VSNRAY_* options have to be specified before this include
