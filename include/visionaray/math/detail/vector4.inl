@@ -120,6 +120,20 @@ inline T const& vector<4, T>::operator[](size_t i) const
 
 template <typename T>
 MATH_FUNC
+inline vector<2, T>& vector<4, T>::xy()
+{
+    return *reinterpret_cast<vector<2, T>*>( data() );
+}
+
+template <typename T>
+MATH_FUNC
+inline vector<2, T> const& vector<4, T>::xy() const
+{
+    return *reinterpret_cast<vector<2, T> const*>( data() );
+}
+
+template <typename T>
+MATH_FUNC
 inline vector<3, T>& vector<4, T>::xyz()
 {
     return *reinterpret_cast<vector<3, T>*>( data() );

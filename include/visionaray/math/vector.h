@@ -140,6 +140,9 @@ public:
     MATH_FUNC T& operator[](size_t i);
     MATH_FUNC T const& operator[](size_t i) const;
 
+    MATH_FUNC vector<2, T>& xy();
+    MATH_FUNC vector<2, T> const& xy() const;
+
     MATH_FUNC vector<3, T>& xyz();
     MATH_FUNC vector<3, T> const& xyz() const;
 
