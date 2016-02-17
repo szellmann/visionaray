@@ -1,9 +1,12 @@
+find_package(CUDA)
 find_package(Threads)
 
 if (NOT Threads_FOUND)
     message("Threads not found - not building unittests")
     return()
 endif()
+
+visionaray_use_package(CUDA)
 
 # Add googletest as an external project and import its libraries
 
@@ -58,6 +61,10 @@ add_dependencies(${GTEST_LIBRARY} googletest)
 add_dependencies(${GTEST_LIBRARYMAIN} googletest)
 
 
+# Visionaray include dirs
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
+
 # Unittests executable
 set(SOURCES
     bvh/traverse.cpp
@@ -72,11 +79,18 @@ set(SOURCES
     version.cpp
 )
 
-# Visionaray include dirs
-include_directories(${PROJECT_SOURCE_DIR}/include)
+if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
+    visionaray_cuda_compile(CUDA_SOURCES
+#        texture.cu
+    )
+endif()
 
 # Define executable
-visionaray_add_executable(unittests ${SOURCES})
+visionaray_add_executable(unittests
+    ${SOURCES}
+    ${CUDA_SOURCES}
+)
+
 target_link_libraries(unittests libgtest libgtest_main ${CMAKE_THREAD_LIBS_INIT})
 
 # Set gtest include dirs as target properties
