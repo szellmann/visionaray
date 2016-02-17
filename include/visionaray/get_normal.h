@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "math/math.h"
+#include "prim_traits.h"
 
 namespace visionaray
 {
@@ -18,7 +19,12 @@ namespace visionaray
 // Get face normal from array
 //
 
-template <typename Normals, typename HR, typename Primitive>
+template <
+    typename Normals,
+    typename HR,
+    typename Primitive,
+    typename = typename std::enable_if<num_normals<Primitive, normals_per_face_binding>::value == 1>::type
+    >
 VSNRAY_FUNC
 inline auto get_normal(
         Normals                     normals,
