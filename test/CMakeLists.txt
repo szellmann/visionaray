@@ -111,3 +111,11 @@ get_property(ORIGINAL_INCLUDE_DIRS TARGET unittests PROPERTY INCLUDE_DIRECTORIES
 set_target_properties(unittests PROPERTIES
     "INCLUDE_DIRECTORIES" "${ORIGINAL_INCLUDE_DIRS};${GTEST_INCLUDE_DIR}"
 )
+
+# Allow multi-line comments, some unit tests have verbose documentation with extra '/'s and '\'s
+if(CMAKE_COMPILER_IS_GNUCXX)
+    get_property(ORIGINAL_COMPILE_FLAGS TARGET unittests PROPERTY COMPILE_FLAGS)
+    set_target_properties(unittests PROPERTIES
+        "COMPILE_FLAGS" "${ORIGINAL_COMPILE_FLAGS} -Wno-comment"
+    )
+endif()
