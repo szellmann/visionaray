@@ -23,15 +23,15 @@ void test_pixel_access_color(
         )
 {
     // dummies
-    mat4 mv;
-    mat4 pr;
+    mat4 mv = mat4::identity();
+    mat4 pr = mat4::identity();
     recti vp(0, 0, 1, 1);
 
     auto sparams = make_sched_params(pixel_sampler::uniform_type{}, mv, pr, vp, rt);
 
     simple_sched<ray> sched;
 
-    sched.frame([&](R r) -> typename RT::color_type
+    sched.frame([&](R) -> typename RT::color_type
     {
         using C = typename RT::color_type;
         return C(0.5f);
@@ -49,15 +49,15 @@ void test_pixel_access_result_record(
 
 
     // dummies
-    mat4 mv;
-    mat4 pr;
+    mat4 mv = mat4::identity();
+    mat4 pr = mat4::identity();
     recti vp(0, 0, 1, 1);
 
     auto sparams = make_sched_params(pixel_sampler::uniform_type{}, mv, pr, vp, rt);
 
     simple_sched<ray> sched;
 
-    sched.frame([&](R r) -> result_record<S>
+    sched.frame([&](R) -> result_record<S>
     {
         result_record<S> result;
         result.color = typename result_record<S>::color_type(0.4f);
