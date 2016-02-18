@@ -164,28 +164,28 @@ public:
     {
     }
 
-    // TODO: with get_normal() having a streamlined interface,
-    // we won't require explicit specializations for planes and spheres,
-    // thus making 'generic_primitive' really generic..
-    VSNRAY_FUNC
-    return_type operator()(basic_plane<3, float> const& plane) const
-    {
-        return get_normal(hr_, plane, NormalBinding{}); // TODO
-    }
-
-    VSNRAY_FUNC
-    return_type operator()(basic_sphere<float> const& sphere) const
-    {
-        return get_normal(hr_, sphere, NormalBinding{}); // TODO
-    }
-
+    // overload w/ precalculated normals
     template <typename Primitive>
     VSNRAY_FUNC
-    return_type operator()(Primitive const& primitive) const
+    return_type operator()(
+            Primitive const& primitive,
+            typename std::enable_if<num_normals<Primitive, NormalBinding>::value>::type* = 0
+            ) const
     {
         VSNRAY_UNUSED(primitive);
 
-        return get_normal(normals_, hr_, primitive, NormalBinding{});
+        return get_normal(normals_, hr_, Primitive{}, NormalBinding{});
+    }
+
+    // overload w/o precalculated normals
+    template <typename Primitive>
+    VSNRAY_FUNC
+    return_type operator()(
+            Primitive const& primitive,
+            typename std::enable_if<num_normals<Primitive, NormalBinding>::value == 0>::type* = 0
+            ) const
+    {
+        return get_normal(hr_, primitive, NormalBinding{});
     }
 
 private:
