@@ -224,6 +224,11 @@ template <typename R>
 template <typename K, typename SP>
 void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame_num, std::true_type)
 {
+    // overload for two matrices and a viewport
+
+    assert( sparams.rt.width()  >= sparams.viewport.w - sparams.viewport.x );
+    assert( sparams.rt.height() >= sparams.viewport.h - sparams.viewport.y );
+
     using scalar_type   = typename R::scalar_type;
     using matrix_type   = matrix<4, 4, scalar_type>;
 
@@ -277,6 +282,9 @@ template <typename K, typename SP>
 void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame_num, std::false_type)
 {
     // overload for pinhole cam
+
+    assert( sparams.rt.width()  >= sparams.cam.get_viewport().w - sparams.cam.get_viewport().x );
+    assert( sparams.rt.height() >= sparams.cam.get_viewport().h - sparams.cam.get_viewport().y );
 
     using scalar_type   = typename R::scalar_type;
 
@@ -353,9 +361,6 @@ template <typename R>
 template <typename K, typename SP>
 void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
-    assert( sched_params.rt.width()  >= impl_->viewport.w - impl_->viewport.x );
-    assert( sched_params.rt.height() >= impl_->viewport.h - impl_->viewport.y );
-
     sched_params.rt.begin_frame();
 
     impl_->init_render_func(
