@@ -114,6 +114,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/simd/detail/basic_float.inl
     ${HEADER_DIR}/math/simd/detail/basic_int.inl
     ${HEADER_DIR}/math/simd/detail/basic_mask.inl
+    ${HEADER_DIR}/math/simd/detail/common.h
     ${HEADER_DIR}/math/simd/avx.h
     ${HEADER_DIR}/math/simd/forward.h
     ${HEADER_DIR}/math/simd/intrinsics.h

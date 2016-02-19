@@ -8,6 +8,7 @@
 
 #include <visionaray/detail/macros.h>
 
+#include "detail/common.h"
 #include "forward.h"
 #include "intrinsics.h"
 
@@ -121,9 +122,6 @@ public:
 #include "detail/avx/mask8.inl"
 #include "detail/avx/float8.inl"
 #include "detail/avx/int8.inl"
-#include "detail/basic_float.inl"
-#include "detail/basic_int.inl"
-#include "detail/basic_mask.inl"
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
