@@ -4,10 +4,10 @@
 #pragma once
 
 #ifndef VSNRAY_SIMPLE_INL
-#define VSNRAY_SIMPLE_INL
+#define VSNRAY_SIMPLE_INL 1
 
+#include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
-#include <visionaray/surface.h>
 #include <visionaray/traverse.h>
 
 

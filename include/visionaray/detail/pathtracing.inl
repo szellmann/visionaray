@@ -1,16 +1,18 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_PATHTRACING_INL
-#define VSNRAY_PATHTRACING_INL
+#define VSNRAY_PATHTRACING_INL 1
 
 #ifndef NDEBUG
 #include <iostream>
 #include <ostream>
 #endif
 
+#include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
-#include <visionaray/surface.h>
 #include <visionaray/traverse.h>
 
 namespace visionaray

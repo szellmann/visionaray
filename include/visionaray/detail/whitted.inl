@@ -8,8 +8,8 @@
 
 #include <array>
 
+#include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
-#include <visionaray/surface.h>
 #include <visionaray/traverse.h>
 
 namespace visionaray

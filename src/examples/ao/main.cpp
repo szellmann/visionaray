@@ -13,8 +13,8 @@
 #include <visionaray/bvh.h>
 #include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
+#include <visionaray/get_normal.h>
 #include <visionaray/scheduler.h>
-#include <visionaray/surface.h>
 #include <visionaray/traverse.h>
 
 #include <common/manip/arcball_manipulator.h>
