@@ -54,7 +54,7 @@ namespace simd
 //      the returned type depends on the ISA compiled for
 //      default: n/a
 //
-//  - mask4_from_simd_width:
+//  - mask_from_simd_width:
 //      get the best matching mask type for a given SIMD width
 //      the returned type depends on the ISA compiled for
 //      default: n/a
