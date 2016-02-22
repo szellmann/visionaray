@@ -15,13 +15,12 @@ namespace visionaray
 template <pixel_format PF>
 struct pixel_traits
 {
-    /* No pixel_traits::{format|type} causes a compiler error */
+    /* No pixel_traits::type causes a compiler error */
 };
 
 template <>
 struct pixel_traits<PF_UNSPECIFIED>
 {
-    static const pixel_format format = PF_UNSPECIFIED;
     typedef struct {} type;
 };
 
@@ -33,35 +32,30 @@ struct pixel_traits<PF_UNSPECIFIED>
 template <>
 struct pixel_traits<PF_RGB8>
 {
-    static const pixel_format format = PF_RGB8;
     typedef vector<3, unorm< 8>> type;
 };
 
 template <>
 struct pixel_traits<PF_RGBA8>
 {
-    static const pixel_format format = PF_RGBA8;
     typedef vector<4, unorm< 8>> type;
 };
 
 template <>
 struct pixel_traits<PF_R32F>
 {
-    static const pixel_format format = PF_R32F;
     typedef float type;
 };
 
 template <>
 struct pixel_traits<PF_RGB32F>
 {
-    static const pixel_format format = PF_RGB32F;
     typedef vector<3, float> type;
 };
 
 template <>
 struct pixel_traits<PF_RGBA32F>
 {
-    static const pixel_format format = PF_RGBA32F;
     typedef vector<4, float> type;
 };
 
@@ -73,7 +67,6 @@ struct pixel_traits<PF_RGBA32F>
 template <>
 struct pixel_traits<PF_DEPTH32F>
 {
-    static const pixel_format format = PF_DEPTH32F;
     typedef float type;
 };
 
