@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_GPU_BUFFER_RT_H
-#define VSNRAY_GPU_BUFFER_RT_H
+#define VSNRAY_GPU_BUFFER_RT_H 1
 
 #include <thrust/device_vector.h>
 
@@ -52,7 +52,8 @@ private:
 
 };
 
-
 } // visionaray
+
+#include "detail/gpu_buffer_rt.inl"
 
 #endif // VSNRAY_GPU_BUFFER_RT_H

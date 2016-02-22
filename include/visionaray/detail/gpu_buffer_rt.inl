@@ -33,7 +33,7 @@ typename gpu_buffer_rt<CF, DF>::depth_type const* gpu_buffer_rt<CF, DF>::depth()
 }
 
 template <pixel_format CF, pixel_format DF>
-typename gpu_buffer_rt<CF, DF>::ref_type ref()
+typename gpu_buffer_rt<CF, DF>::ref_type gpu_buffer_rt<CF, DF>::ref()
 {
     return gpu_buffer_rt<CF, DF>::ref_type( color(), depth() );
 }
@@ -66,14 +66,14 @@ void gpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 template <pixel_format CF, pixel_format DF>
 void gpu_buffer_rt<CF, DF>::display_color_buffer() const
 {
-    cpu_buffer_rt<ColorFormat, DepthFormat> rt = *this;
+    cpu_buffer_rt<CF, DF> rt = *this;
     rt.display_color_buffer();
 }
 
 template <pixel_format CF, pixel_format DF>
-operator gpu_buffer_rt<CF, DF>::cpu_buffer_rt<CF, DF>() const
+gpu_buffer_rt<CF, DF>::operator cpu_buffer_rt<CF, DF>() const
 {
-    cpu_buffer_rt<ColorFormat, DepthFormat> rt;
+    cpu_buffer_rt<CF, DF> rt;
 
     rt.resize( width(), height() );
 
