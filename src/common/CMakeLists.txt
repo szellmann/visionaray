@@ -72,6 +72,7 @@ set(COMMON_HEADERS
     call_kernel.h
     cfile.h
     image.h
+    image_base.h
     jpeg_image.h
     make_unique.h
     obj_loader.h
@@ -96,6 +97,8 @@ set(COMMON_SOURCES
     manip/translate_manipulator.cpp
     manip/zoom_manipulator.cpp
 
+    image.cpp
+    image_base.cpp
     jpeg_image.cpp
     obj_loader.cpp
     png_image.cpp

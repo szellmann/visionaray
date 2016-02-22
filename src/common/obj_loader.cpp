@@ -1,7 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <iostream>
@@ -403,90 +402,24 @@ void load_obj(std::string const& filename, model& mod)
 
                 auto tex_path = boost::filesystem::path(tex_filename);
 
-#if defined(VSNRAY_HAVE_JPEG)
-                static const std::string jpg_extensions[] = { ".jpg", ".jpeg", ".JPG", ".JPEG" };
-                auto has_jpg_ext = std::find(jpg_extensions, jpg_extensions + 4, tex_path.extension()) != jpg_extensions + 4;
-
-                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_path.generic_string()) && has_jpg_ext)
+                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename))
                 {
-                    jpeg_image jpg;
-                    if (jpg.load(tex_filename))
+                    image img;
+                    if (img.load(tex_filename))
                     {
-                        tex_type tex(jpg.width(), jpg.height());
+                        tex_type tex(img.width(), img.height());
                         tex.set_address_mode( Wrap );
                         tex.set_filter_mode( Linear );
 
-                        auto data_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data());
-                        tex.set_data(data_ptr);
-
-                        mod.textures.push_back(std::move(tex));
-                    }
-                }
-#endif // VSNRAY_HAVE_JPEG
-
-#if defined(VSNRAY_HAVE_PNG)
-                static const std::string png_extensions[] = { ".png", ".PNG" };
-                auto has_png_ext = std::find(png_extensions, png_extensions + 2, tex_path.extension()) != png_extensions + 2;
-
-                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_path.generic_string()) && has_png_ext)
-                {
-                    png_image png;
-                    if (png.load(tex_filename))
-                    {
-                        tex_type tex(png.width(), png.height());
-                        tex.set_address_mode( Wrap );
-                        tex.set_filter_mode( Linear );
-
-                        auto data_ptr = reinterpret_cast<tex_type::value_type const*>(png.data());
-                        tex.set_data(data_ptr);
-
-                        mod.textures.push_back(std::move(tex));
-                    }
-                }
-#endif // VSNRAY_HAVE_PNG
-
-#if defined(VSNRAY_HAVE_TIFF)
-                static const std::string tiff_extensions[] = { ".tif", ".tiff", ".TIF", ".TIFF" };
-                auto has_tiff_ext = std::find(tiff_extensions, tiff_extensions + 4, tex_path.extension()) != tiff_extensions + 4;
-
-                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_path.generic_string()) && has_tiff_ext)
-                {
-                    tiff_image tiff;
-                    if (tiff.load(tex_filename))
-                    {
-                        tex_type tex(tiff.width(), tiff.height());
-                        tex.set_address_mode( Wrap );
-                        tex.set_filter_mode( Linear );
-
-                        auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(tiff.data()); // TIFF has an alpha channel
-                        tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
-
-                        mod.textures.push_back(std::move(tex));
-                    }
-                }
-#endif // VSNRAY_HAVE_JPEG
-
-                static const std::string tga_extensions[] = { ".tga", ".TGA" };
-                auto has_tga_ext = std::find(tga_extensions, tga_extensions + 2, tex_path.extension()) != tga_extensions + 2;
-
-                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_tga_ext)
-                {
-                    tga_image tga;
-                    if (tga.load(tex_filename))
-                    {
-                        tex_type tex(tga.width(), tga.height());
-                        tex.set_address_mode( Wrap );
-                        tex.set_filter_mode( Linear );
-
-                        if (tga.format() == PF_RGBA8)
+                        if (img.format() == PF_RGBA8)
                         {
                             // Get rid of alpha channel
-                            auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(tga.data());
+                            auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(img.data());
                             tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
                         }
-                        else if (tga.format() == PF_RGB8)
+                        else if (img.format() == PF_RGB8)
                         {
-                            auto data_ptr = reinterpret_cast<tex_type::value_type const*>(tga.data());
+                            auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
                             tex.set_data(data_ptr);
                         }
                         else

@@ -6,36 +6,20 @@
 #ifndef VSNRAY_COMMON_TGA_IMAGE_H
 #define VSNRAY_COMMON_TGA_IMAGE_H 1
 
-#include <cstddef>
 #include <string>
-#include <vector>
 
 #include <visionaray/pixel_format.h>
+
+#include "image_base.h"
 
 namespace visionaray
 {
 
-class tga_image
+class tga_image : public image_base
 {
 public:
 
     bool load(std::string const& filename);
-
-    size_t width() const    { return width_; }
-    size_t height() const   { return height_; }
-
-    unsigned char const* data() const { return data_.data(); }
-
-    pixel_format format() const { return format_; }
-
-private:
-
-    size_t width_;
-    size_t height_;
-
-    std::vector<unsigned char> data_;
-
-    pixel_format format_;
 
 };
 

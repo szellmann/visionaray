@@ -8,30 +8,18 @@
 
 #if defined(VSNRAY_HAVE_JPEG)
 
-#include <cstddef>
 #include <string>
-#include <vector>
+
+#include "image_base.h"
 
 namespace visionaray
 {
 
-class jpeg_image
+class jpeg_image : public image_base
 {
 public:
 
     bool load(std::string const& filename);
-
-    size_t width() const    { return width_; }
-    size_t height() const   { return height_; }
-
-    unsigned char const* data() const { return data_.data(); }
-
-private:
-
-    size_t width_;
-    size_t height_;
-
-    std::vector<unsigned char> data_;
 
 };
 
