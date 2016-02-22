@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_COMMON_JPEG_IMAGE_H
-#define VSNRAY_COMMON_JPEG_IMAGE_H
+#define VSNRAY_COMMON_JPEG_IMAGE_H 1
 
 #if defined(VSNRAY_HAVE_JPEG)
 
@@ -19,7 +19,7 @@ class jpeg_image
 {
 public:
 
-    jpeg_image(std::string const& filename);
+    bool load(std::string const& filename);
 
     size_t width() const    { return width_; }
     size_t height() const   { return height_; }

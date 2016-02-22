@@ -48,13 +48,13 @@ struct decompress_ptr
 
 }
 
-jpeg_image::jpeg_image(std::string const& filename)
+bool jpeg_image::load(std::string const& filename)
 {
     cfile file(filename.c_str(), "r");
 
     if (!file.good())
     {
-        return;
+        return false;
     }
 
     struct jpeg_decompress_struct info;
@@ -66,7 +66,7 @@ jpeg_image::jpeg_image(std::string const& filename)
 
     if (setjmp(err.jmpbuf))
     {
-        return; // TODO?
+        return false; // TODO?
     }
 
     jpeg_create_decompress(&info);
@@ -90,6 +90,8 @@ jpeg_image::jpeg_image(std::string const& filename)
 
         jpeg_read_scanlines(&info, &row, 1);
     }
+
+    return true;
 }
 
 }

@@ -42,13 +42,13 @@ private:
 
 };
 
-tiff_image::tiff_image(std::string const& filename)
+bool tiff_image::load(std::string const& filename)
 {
     tiff_file file(filename.c_str(), "r");
 
     if (!file.good())
     {
-        return;
+        return false;
     }
 
     uint32 w = 0;
@@ -65,6 +65,8 @@ tiff_image::tiff_image(std::string const& filename)
         width_ = w;
         height_ = h;
     }
+
+    return true;
 }
 
 } // visionaray

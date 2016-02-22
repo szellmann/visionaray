@@ -19,7 +19,7 @@ class tga_image
 {
 public:
 
-    tga_image(std::string const& filename);
+    bool load(std::string const& filename);
 
     size_t width() const    { return width_; }
     size_t height() const   { return height_; }

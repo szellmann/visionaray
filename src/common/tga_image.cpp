@@ -149,7 +149,7 @@ void load_true_color_rle(
 // tga_image
 //
 
-tga_image::tga_image(std::string const& filename)
+bool tga_image::load(std::string const& filename)
 {
     std::ifstream file(filename, std::ios::in | std::ios::binary);
 
@@ -173,7 +173,7 @@ tga_image::tga_image(std::string const& filename)
     if (header.width <= 0 || header.height <= 0)
     {
         std::cerr << "Invalid image dimensions (" << header.width << " x " << header.height << ")\n";
-        return;
+        return false;
     }
 
 
@@ -253,6 +253,12 @@ tga_image::tga_image(std::string const& filename)
                 data_.size() / 4
                 );
     }
+    else
+    {
+        return false;
+    }
+
+    return true;
 }
 
 } // visionaray

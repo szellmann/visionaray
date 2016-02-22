@@ -409,16 +409,18 @@ void load_obj(std::string const& filename, model& mod)
 
                 if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_path.generic_string()) && has_jpg_ext)
                 {
-                    jpeg_image jpg(tex_filename);
+                    jpeg_image jpg;
+                    if (jpg.load(tex_filename))
+                    {
+                        tex_type tex(jpg.width(), jpg.height());
+                        tex.set_address_mode( Wrap );
+                        tex.set_filter_mode( Linear );
 
-                    tex_type tex(jpg.width(), jpg.height());
-                    tex.set_address_mode( Wrap );
-                    tex.set_filter_mode( Linear );
+                        auto data_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data());
+                        tex.set_data(data_ptr);
 
-                    auto data_ptr = reinterpret_cast<tex_type::value_type const*>(jpg.data());
-                    tex.set_data(data_ptr);
-
-                    mod.textures.push_back(std::move(tex));
+                        mod.textures.push_back(std::move(tex));
+                    }
                 }
 #endif // VSNRAY_HAVE_JPEG
 
@@ -428,16 +430,18 @@ void load_obj(std::string const& filename, model& mod)
 
                 if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_path.generic_string()) && has_png_ext)
                 {
-                    png_image png(tex_filename);
+                    png_image png;
+                    if (png.load(tex_filename))
+                    {
+                        tex_type tex(png.width(), png.height());
+                        tex.set_address_mode( Wrap );
+                        tex.set_filter_mode( Linear );
 
-                    tex_type tex(png.width(), png.height());
-                    tex.set_address_mode( Wrap );
-                    tex.set_filter_mode( Linear );
+                        auto data_ptr = reinterpret_cast<tex_type::value_type const*>(png.data());
+                        tex.set_data(data_ptr);
 
-                    auto data_ptr = reinterpret_cast<tex_type::value_type const*>(png.data());
-                    tex.set_data(data_ptr);
-
-                    mod.textures.push_back(std::move(tex));
+                        mod.textures.push_back(std::move(tex));
+                    }
                 }
 #endif // VSNRAY_HAVE_PNG
 
@@ -447,16 +451,18 @@ void load_obj(std::string const& filename, model& mod)
 
                 if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_path.generic_string()) && has_tiff_ext)
                 {
-                    tiff_image tiff(tex_filename);
+                    tiff_image tiff;
+                    if (tiff.load(tex_filename))
+                    {
+                        tex_type tex(tiff.width(), tiff.height());
+                        tex.set_address_mode( Wrap );
+                        tex.set_filter_mode( Linear );
 
-                    tex_type tex(tiff.width(), tiff.height());
-                    tex.set_address_mode( Wrap );
-                    tex.set_filter_mode( Linear );
+                        auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(tiff.data()); // TIFF has an alpha channel
+                        tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
 
-                    auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(tiff.data()); // TIFF has an alpha channel
-                    tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
-
-                    mod.textures.push_back(std::move(tex));
+                        mod.textures.push_back(std::move(tex));
+                    }
                 }
 #endif // VSNRAY_HAVE_JPEG
 
@@ -465,29 +471,31 @@ void load_obj(std::string const& filename, model& mod)
 
                 if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename) && has_tga_ext)
                 {
-                    tga_image tga(tex_filename);
-
-                    tex_type tex(tga.width(), tga.height());
-                    tex.set_address_mode( Wrap );
-                    tex.set_filter_mode( Linear );
-
-                    if (tga.format() == PF_RGBA8)
+                    tga_image tga;
+                    if (tga.load(tex_filename))
                     {
-                        // Get rid of alpha channel
-                        auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(tga.data());
-                        tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
-                    }
-                    else if (tga.format() == PF_RGB8)
-                    {
-                        auto data_ptr = reinterpret_cast<tex_type::value_type const*>(tga.data());
-                        tex.set_data(data_ptr);
-                    }
-                    else
-                    {
-                        assert( 0 /* TODO */ );
-                    }
+                        tex_type tex(tga.width(), tga.height());
+                        tex.set_address_mode( Wrap );
+                        tex.set_filter_mode( Linear );
 
-                    mod.textures.push_back(std::move(tex));
+                        if (tga.format() == PF_RGBA8)
+                        {
+                            // Get rid of alpha channel
+                            auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(tga.data());
+                            tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
+                        }
+                        else if (tga.format() == PF_RGB8)
+                        {
+                            auto data_ptr = reinterpret_cast<tex_type::value_type const*>(tga.data());
+                            tex.set_data(data_ptr);
+                        }
+                        else
+                        {
+                            assert( 0 /* TODO */ );
+                        }
+
+                        mod.textures.push_back(std::move(tex));
+                    }
                 }
 
                 // if no texture was loaded, insert an empty dummy

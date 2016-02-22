@@ -71,13 +71,13 @@ static int png_num_components(int color_type)
 } // detail
 
 
-png_image::png_image(std::string const& filename)
+bool png_image::load(std::string const& filename)
 {
     cfile file(filename.c_str(), "r");
 
     if (!file.good())
     {
-        return;
+        return false;
     }
 
 
@@ -92,14 +92,14 @@ png_image::png_image(std::string const& filename)
 
     if (context.png == 0)
     {
-        return;
+        return false;
     }
 
     context.info = png_create_info_struct(context.png);
 
     if (context.info == 0)
     {
-        return;
+        return false;
     }
 
 
@@ -144,6 +144,8 @@ png_image::png_image(std::string const& filename)
 
     width_  = static_cast<size_t>(w);
     height_ = static_cast<size_t>(h);
+
+    return true;
 }
 
 } // visionaray
