@@ -22,10 +22,10 @@ namespace visionaray
 template <typename Colors, typename HR, typename Primitive>
 VSNRAY_FUNC
 inline auto get_color(
-        Colors                  colors,
-        HR const&               hr,
-        Primitive               /* */,
-        colors_per_face_binding /* */
+        Colors              colors,
+        HR const&           hr,
+        Primitive           /* */,
+        per_face_binding    /* */
         )
     -> typename std::iterator_traits<Colors>::value_type
 {
@@ -40,10 +40,10 @@ inline auto get_color(
 template <typename Colors, typename HR, typename T>
 VSNRAY_FUNC
 inline auto get_color(
-        Colors                      colors,
-        HR const&                   hr,
-        basic_triangle<3, T>        /* */,
-        colors_per_vertex_binding   /* */
+        Colors                  colors,
+        HR const&               hr,
+        basic_triangle<3, T>    /* */,
+        per_vertex_binding      /* */
         )
     -> typename std::iterator_traits<Colors>::value_type
 {
@@ -73,7 +73,7 @@ inline vector<3, simd::float4> get_color(
         Colors                          colors,
         HR<basic_ray<T>, HRP> const&    hr,
         Primitive                       /* */,
-        colors_per_face_binding         /* */
+        per_face_binding                /* */
         )
 {
     using C = typename std::iterator_traits<Colors>::value_type;
@@ -115,7 +115,7 @@ inline vector<3, T> get_color(
         Colors                                                  colors,
         hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
         basic_triangle<3, U>                                    /* */,
-        colors_per_vertex_binding                               /* */
+        per_vertex_binding                                      /* */
         )
 {
     using C = typename std::iterator_traits<Colors>::value_type;
@@ -179,12 +179,12 @@ inline auto get_color(
         Colors                      colors,
         std::array<HR, 4> const&    hr,
         basic_triangle<3, float>    /* */,
-        colors_per_vertex_binding   /* */
+        per_vertex_binding          /* */
         )
     -> std::array<typename std::iterator_traits<Colors>::value_type, 4>
 {
     using C = typename std::iterator_traits<Colors>::value_type;
-    using ColorBinding = colors_per_vertex_binding;
+    using ColorBinding = per_vertex_binding;
     using Primitive = basic_triangle<3, float>; // TODO: make this work for other planar surfaces!
 
     return std::array<C, 4>{{

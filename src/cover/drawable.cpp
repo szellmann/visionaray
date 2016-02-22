@@ -1418,8 +1418,8 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
         thrust::device_vector<light_type> device_lights = lights;
 
         auto kparams = make_kernel_params(
-                normals_per_vertex_binding(),
-                colors_per_vertex_binding(),
+                per_vertex_binding{}, // normal binding
+                per_vertex_binding{}, // color binding
                 thrust::raw_pointer_cast(device_primitives.data()),
                 thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
                 thrust::raw_pointer_cast(impl_->device_normals.data()),
@@ -1447,8 +1447,8 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
     {
 #ifndef __CUDA_ARCH__
         auto kparams = make_kernel_params(
-                normals_per_vertex_binding(),
-                colors_per_vertex_binding(),
+                per_vertex_binding{}, // normal binding
+                per_vertex_binding{}, // color binding
                 host_primitives.data(),
                 host_primitives.data() + host_primitives.size(),
                 impl_->normals.data(),

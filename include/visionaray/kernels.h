@@ -85,11 +85,11 @@ namespace visionaray
 // Default normal binding is "per face". If you desire differently, specify, e.g.:
 //
 // make_kernel_params(
-//      normals_per_vertex_binding{},
+//      per_vertex_binding{},
 //      ...
 //      );
 //
-// TODO: colors_per_face_binding, make this default!
+// TODO: per_face_binding for colors, make this default!
 //
 //-------------------------------------------------------------------------------------------------
 
@@ -427,13 +427,13 @@ auto make_kernel_params(
 
 template <
     typename First,
-    typename = typename std::enable_if<!std::is_base_of<normals_binding, First>::value>::type,
+    typename = typename std::enable_if<!std::is_base_of<data_binding, First>::value>::type,
     typename ...Args
     >
 auto make_kernel_params(First first, Args&&... args)
-    -> decltype(make_kernel_params(normals_per_face_binding{}, first, std::forward<Args>(args)...))
+    -> decltype(make_kernel_params(per_face_binding{}, first, std::forward<Args>(args)...))
 {
-    return make_kernel_params(normals_per_face_binding{}, first, std::forward<Args>(args)...);
+    return make_kernel_params(per_face_binding{}, first, std::forward<Args>(args)...);
 }
 
 } // visionaray

@@ -23,14 +23,14 @@ template <
     typename Normals,
     typename HR,
     typename Primitive,
-    typename = typename std::enable_if<num_normals<Primitive, normals_per_face_binding>::value == 1>::type
+    typename = typename std::enable_if<num_normals<Primitive, per_face_binding>::value == 1>::type
     >
 VSNRAY_FUNC
 inline auto get_normal(
         Normals                     normals,
         HR const&                   hr,
         Primitive                   /* */,
-        normals_per_face_binding    /* */
+        per_face_binding    /* */
         )
     -> typename std::iterator_traits<Normals>::value_type
 {
@@ -48,7 +48,7 @@ inline auto get_normal(
         Normals                     normals,
         HR const&                   hr,
         basic_triangle<3, T>        /* */,
-        normals_per_vertex_binding  /* */
+        per_vertex_binding  /* */
         )
     -> typename std::iterator_traits<Normals>::value_type
 {
@@ -78,7 +78,7 @@ inline vector<3, T> get_normal(
         Normals                         normals,
         HR<basic_ray<T>, HRP> const&    hr,
         Primitive                       /* */,
-        normals_per_face_binding        /* */
+        per_face_binding        /* */
         )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -119,7 +119,7 @@ inline vector<3, T> get_normal(
         Normals                                                 normals,
         hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
         basic_triangle<3, U>                                    /* */,
-        normals_per_vertex_binding                              /* */
+        per_vertex_binding                              /* */
         )
 {
     using N = typename std::iterator_traits<Normals>::value_type;

@@ -79,13 +79,13 @@ struct num_normals
 // specializations ----------------------------------------
 
 template <size_t Dim, typename T>
-struct num_normals<basic_triangle<Dim, T>, normals_per_face_binding>
+struct num_normals<basic_triangle<Dim, T>, per_face_binding>
 {
     enum { value = 1 };
 };
 
 template <size_t Dim, typename T>
-struct num_normals<basic_triangle<Dim, T>, normals_per_vertex_binding>
+struct num_normals<basic_triangle<Dim, T>, per_vertex_binding>
 {
     enum { value = 3 };
 };

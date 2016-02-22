@@ -6,10 +6,9 @@
 #ifndef VSNRAY_TAGS_H
 #define VSNRAH_TAGS_H 1
 
-
 //-------------------------------------------------------------------------------------------------
 // Tags for API use
-//
+//-------------------------------------------------------------------------------------------------
 
 namespace visionaray
 {
@@ -20,13 +19,17 @@ struct index_bvh_tag {};
 struct conductor_tag {};
 struct dielectric_tag {};
 
-struct colors_binding {};
-struct colors_per_face_binding : colors_binding {};
-struct colors_per_vertex_binding : colors_binding {};
 
-struct normals_binding {};
-struct normals_per_face_binding : normals_binding {};
-struct normals_per_vertex_binding : normals_binding {};
+//-------------------------------------------------------------------------------------------------
+// Data binding tags
+// Determine how precalculated from an array is bound to the vertices of a primitive
+// In the case of primitives w/o vertices, unspecified_binding applies
+//
+
+struct data_binding {};
+struct unspecified_binding  : data_binding {};
+struct per_face_binding     : data_binding {};
+struct per_vertex_binding   : data_binding {};
 
 } // visionaray
 
