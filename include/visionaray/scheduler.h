@@ -78,7 +78,6 @@ struct sched_params<Base, RT, PxSamplerT> : Base
     using has_camera = void;
 
     using rt_type               = RT;
-    using color_traits          = typename RT::color_traits;
     using pixel_sampler_type    = PxSamplerT;
 
     template <typename ...Args>
@@ -99,7 +98,6 @@ struct sched_params<Base, MT, V, RT, PxSamplerT> : Base
     using has_camera_matrices = void;
 
     using rt_type               = RT;
-    using color_traits          = typename RT::color_traits;
     using pixel_sampler_type    = PxSamplerT;
 
     template <typename ...Args>

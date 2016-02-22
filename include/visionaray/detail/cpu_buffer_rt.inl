@@ -22,8 +22,8 @@ namespace visionaray
 // Private implementation
 //
 
-template <pixel_format CF, pixel_format DF>
-struct cpu_buffer_rt<CF, DF>::impl
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+struct cpu_buffer_rt<ColorFormat, DepthFormat>::impl
 {
     impl() : compositor(nullptr) {}
 
@@ -38,59 +38,59 @@ struct cpu_buffer_rt<CF, DF>::impl
 // cpu_buffer_rt
 //
 
-template <pixel_format CF, pixel_format DF>
-cpu_buffer_rt<CF, DF>::cpu_buffer_rt()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+cpu_buffer_rt<ColorFormat, DepthFormat>::cpu_buffer_rt()
     : impl_(new impl)
 {
 }
 
-template <pixel_format CF, pixel_format DF>
-cpu_buffer_rt<CF, DF>::~cpu_buffer_rt()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+cpu_buffer_rt<ColorFormat, DepthFormat>::~cpu_buffer_rt()
 {
 }
 
-template <pixel_format CF, pixel_format DF>
-typename cpu_buffer_rt<CF, DF>::color_type* cpu_buffer_rt<CF, DF>::color()
-{
-    return impl_->color_buffer.data();
-}
-
-template <pixel_format CF, pixel_format DF>
-typename cpu_buffer_rt<CF, DF>::depth_type* cpu_buffer_rt<CF, DF>::depth()
-{
-    return impl_->depth_buffer.data();
-}
-
-template <pixel_format CF, pixel_format DF>
-typename cpu_buffer_rt<CF, DF>::color_type const* cpu_buffer_rt<CF, DF>::color() const
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat>::color_type* cpu_buffer_rt<ColorFormat, DepthFormat>::color()
 {
     return impl_->color_buffer.data();
 }
 
-template <pixel_format CF, pixel_format DF>
-typename cpu_buffer_rt<CF, DF>::depth_type const* cpu_buffer_rt<CF, DF>::depth() const
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat>::depth_type* cpu_buffer_rt<ColorFormat, DepthFormat>::depth()
 {
     return impl_->depth_buffer.data();
 }
 
-template <pixel_format CF, pixel_format DF>
-typename cpu_buffer_rt<CF, DF>::ref_type cpu_buffer_rt<CF, DF>::ref()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat>::color_type const* cpu_buffer_rt<ColorFormat, DepthFormat>::color() const
 {
-    return typename cpu_buffer_rt<CF, DF>::ref_type( color(), depth() );
+    return impl_->color_buffer.data();
 }
 
-template <pixel_format CF, pixel_format DF>
-void cpu_buffer_rt<CF, DF>::begin_frame()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* cpu_buffer_rt<ColorFormat, DepthFormat>::depth() const
+{
+    return impl_->depth_buffer.data();
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat>::ref_type cpu_buffer_rt<ColorFormat, DepthFormat>::ref()
+{
+    return typename cpu_buffer_rt<ColorFormat, DepthFormat>::ref_type( color(), depth() );
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat>::begin_frame()
 {
 }
 
-template <pixel_format CF, pixel_format DF>
-void cpu_buffer_rt<CF, DF>::end_frame()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat>::end_frame()
 {
 }
 
-template <pixel_format CF, pixel_format DF>
-void cpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat>::resize(size_t w, size_t h)
 {
     render_target::resize(w, h);
 
@@ -99,7 +99,7 @@ void cpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 
     impl_->color_buffer.resize(w * h);
 
-    if (depth_traits::format != PF_UNSPECIFIED)
+    if (DepthFormat != PF_UNSPECIFIED)
     {
         impl_->depth_buffer.resize(w * h);
     }
@@ -115,14 +115,14 @@ void cpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 
     // Allocate texture storage
 
-    pixel_format_info cinfo = map_pixel_format(color_traits::format);
+    pixel_format_info cinfo = map_pixel_format(ColorFormat);
 
     impl_->compositor->setup_color_texture(cinfo, w, h);
 
 
-    if (depth_traits::format != PF_UNSPECIFIED)
+    if (DepthFormat != PF_UNSPECIFIED)
     {
-        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
+        pixel_format_info dinfo = map_pixel_format(DepthFormat);
 
         impl_->compositor->setup_depth_texture(dinfo, w, h);
     }
@@ -132,18 +132,18 @@ void cpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
 #endif
 }
 
-template <pixel_format CF, pixel_format DF>
-void cpu_buffer_rt<CF, DF>::display_color_buffer() const
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 {
 #if VSNRAY_CPU_BUFFER_TEX
 
-    if (depth_traits::format != PF_UNSPECIFIED)
+    if (DepthFormat != PF_UNSPECIFIED)
     {
         glPushAttrib( GL_TEXTURE_BIT | GL_ENABLE_BIT );
 
         // Update color texture
 
-        pixel_format_info cinfo = map_pixel_format(color_traits::format);
+        pixel_format_info cinfo = map_pixel_format(ColorFormat);
 
         impl_->compositor->update_color_texture(
                 cinfo,
@@ -155,7 +155,7 @@ void cpu_buffer_rt<CF, DF>::display_color_buffer() const
 
         // Update depth texture
 
-        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
+        pixel_format_info dinfo = map_pixel_format(DepthFormat);
 
         impl_->compositor->update_depth_texture(
                 dinfo,
@@ -173,7 +173,7 @@ void cpu_buffer_rt<CF, DF>::display_color_buffer() const
     }
     else
     {
-        pixel_format_info cinfo = map_pixel_format(color_traits::format);
+        pixel_format_info cinfo = map_pixel_format(ColorFormat);
 
         impl_->compositor->update_color_texture(
                 cinfo,
@@ -189,7 +189,7 @@ void cpu_buffer_rt<CF, DF>::display_color_buffer() const
 
     // Use glDrawPixels
 
-    if (depth_traits::format != PF_UNSPECIFIED)
+    if (DepthFormat != PF_UNSPECIFIED)
     {
         glPushAttrib( GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ENABLE_BIT );
 
@@ -198,7 +198,7 @@ void cpu_buffer_rt<CF, DF>::display_color_buffer() const
         glStencilFunc(GL_ALWAYS, 1, 1);
         glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
+        pixel_format_info dinfo = map_pixel_format(DepthFormat);
         gl::blend_pixels( width(), height(), dinfo.format, dinfo.type, impl_->depth_buffer.data() );
 
         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -206,14 +206,14 @@ void cpu_buffer_rt<CF, DF>::display_color_buffer() const
         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
         glDisable(GL_DEPTH_TEST);
 
-        pixel_format_info cinfo = map_pixel_format(color_traits::format);
+        pixel_format_info cinfo = map_pixel_format(ColorFormat);
         gl::blend_pixels( width(), height(), cinfo.format, cinfo.type, impl_->color_buffer.data() );
 
         glPopAttrib();
     }
     else
     {
-        pixel_format_info info = map_pixel_format(color_traits::format);
+        pixel_format_info info = map_pixel_format(ColorFormat);
         gl::blend_pixels( width(), height(), info.format, info.type, impl_->color_buffer.data() );
     }
 

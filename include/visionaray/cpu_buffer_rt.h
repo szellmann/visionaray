@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_CPU_BUFFER_RT_H
-#define VSNRAY_CPU_BUFFER_RT_H
+#define VSNRAY_CPU_BUFFER_RT_H 1
 
 #include <memory>
 
@@ -19,10 +19,8 @@ class cpu_buffer_rt : public render_target
 {
 public:
 
-    using color_traits  = pixel_traits<ColorFormat>;
-    using depth_traits  = pixel_traits<DepthFormat>;
-    using color_type    = typename color_traits::type;
-    using depth_type    = typename depth_traits::type;
+    using color_type    = typename pixel_traits<ColorFormat>::type;
+    using depth_type    = typename pixel_traits<DepthFormat>::type;
 
     using ref_type      = render_target_ref<ColorFormat, DepthFormat>;
 

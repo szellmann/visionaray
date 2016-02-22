@@ -6,72 +6,72 @@
 namespace visionaray
 {
 
-template <pixel_format CF, pixel_format DF>
-typename gpu_buffer_rt<CF, DF>::color_type* gpu_buffer_rt<CF, DF>::color()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename gpu_buffer_rt<ColorFormat, DepthFormat>::color_type* gpu_buffer_rt<ColorFormat, DepthFormat>::color()
 {
     return thrust::raw_pointer_cast(color_buffer_.data());
 }
 
-template <pixel_format CF, pixel_format DF>
-typename gpu_buffer_rt<CF, DF>::depth_type* gpu_buffer_rt<CF, DF>::depth()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename gpu_buffer_rt<ColorFormat, DepthFormat>::depth_type* gpu_buffer_rt<ColorFormat, DepthFormat>::depth()
 {
     return thrust::raw_pointer_cast(depth_buffer_.data());
 }
 
-template <pixel_format CF, pixel_format DF>
-typename gpu_buffer_rt<CF, DF>::color_type const* gpu_buffer_rt<CF, DF>::color() const
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename gpu_buffer_rt<ColorFormat, DepthFormat>::color_type const* gpu_buffer_rt<ColorFormat, DepthFormat>::color() const
 {
     return thrust::raw_pointer_cast(color_buffer_.data());
 }
 
-template <pixel_format CF, pixel_format DF>
-typename gpu_buffer_rt<CF, DF>::depth_type const* gpu_buffer_rt<CF, DF>::depth() const
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename gpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* gpu_buffer_rt<ColorFormat, DepthFormat>::depth() const
 {
     return thrust::raw_pointer_cast(depth_buffer_.data());
 }
 
-template <pixel_format CF, pixel_format DF>
-typename gpu_buffer_rt<CF, DF>::ref_type gpu_buffer_rt<CF, DF>::ref()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename gpu_buffer_rt<ColorFormat, DepthFormat>::ref_type gpu_buffer_rt<ColorFormat, DepthFormat>::ref()
 {
-    return gpu_buffer_rt<CF, DF>::ref_type( color(), depth() );
+    return gpu_buffer_rt<ColorFormat, DepthFormat>::ref_type( color(), depth() );
 }
 
-template <pixel_format CF, pixel_format DF>
-void gpu_buffer_rt<CF, DF>::begin_frame()
-{
-}
-
-template <pixel_format CF, pixel_format DF>
-void gpu_buffer_rt<CF, DF>::end_frame()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void gpu_buffer_rt<ColorFormat, DepthFormat>::begin_frame()
 {
 }
 
-template <pixel_format CF, pixel_format DF>
-void gpu_buffer_rt<CF, DF>::resize(size_t w, size_t h)
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void gpu_buffer_rt<ColorFormat, DepthFormat>::end_frame()
 {
-    pixel_format_info cinfo = map_pixel_format(color_traits::format);
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void gpu_buffer_rt<ColorFormat, DepthFormat>::resize(size_t w, size_t h)
+{
+    pixel_format_info cinfo = map_pixel_format(ColorFormat);
     color_buffer_.resize( w * h * cinfo.size );
 
-    if (depth_traits::format != PF_UNSPECIFIED)
+    if (DepthFormat != PF_UNSPECIFIED)
     {
-        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
+        pixel_format_info dinfo = map_pixel_format(DepthFormat);
         depth_buffer_.resize( w * h * dinfo.size );
     }
 
     render_target::resize(w, h);
 }
 
-template <pixel_format CF, pixel_format DF>
-void gpu_buffer_rt<CF, DF>::display_color_buffer() const
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void gpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 {
-    cpu_buffer_rt<CF, DF> rt = *this;
+    cpu_buffer_rt<ColorFormat, DepthFormat> rt = *this;
     rt.display_color_buffer();
 }
 
-template <pixel_format CF, pixel_format DF>
-gpu_buffer_rt<CF, DF>::operator cpu_buffer_rt<CF, DF>() const
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+gpu_buffer_rt<ColorFormat, DepthFormat>::operator cpu_buffer_rt<ColorFormat, DepthFormat>() const
 {
-    cpu_buffer_rt<CF, DF> rt;
+    cpu_buffer_rt<ColorFormat, DepthFormat> rt;
 
     rt.resize( width(), height() );
 
@@ -80,7 +80,7 @@ gpu_buffer_rt<CF, DF>::operator cpu_buffer_rt<CF, DF>() const
     //      != gpu_buffer_rt::XXX_traits::format
     thrust::copy( color_buffer_.begin(), color_buffer_.end(), rt.color() );
 
-    if (depth_traits::format != PF_UNSPECIFIED)
+    if (DepthFormat != PF_UNSPECIFIED)
     {
         thrust::copy( depth_buffer_.begin(), depth_buffer_.end(), rt.depth() );
     }

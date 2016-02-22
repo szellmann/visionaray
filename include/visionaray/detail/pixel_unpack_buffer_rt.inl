@@ -16,8 +16,8 @@
 namespace visionaray
 {
 
-template <pixel_format CF, pixel_format DF>
-struct pixel_unpack_buffer_rt<CF, DF>::impl
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+struct pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::impl
 {
     impl() : compositor(nullptr) {}
 
@@ -30,8 +30,8 @@ struct pixel_unpack_buffer_rt<CF, DF>::impl
     gl::buffer                              depth_buffer;
 };
 
-template <pixel_format CF, pixel_format DF>
-pixel_unpack_buffer_rt<CF, DF>::pixel_unpack_buffer_rt()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::pixel_unpack_buffer_rt()
     : impl_(new impl())
 {
     cudaError_t err = cudaSuccess;
@@ -58,68 +58,68 @@ pixel_unpack_buffer_rt<CF, DF>::pixel_unpack_buffer_rt()
     }
 }
 
-template <pixel_format CF, pixel_format DF>
-pixel_unpack_buffer_rt<CF, DF>::~pixel_unpack_buffer_rt()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::~pixel_unpack_buffer_rt()
 {
 }
 
-template <pixel_format CF, pixel_format DF>
-typename pixel_unpack_buffer_rt<CF, DF>::color_type* pixel_unpack_buffer_rt<CF, DF>::color()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::color_type* pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::color()
 {
     return static_cast<color_type*>(impl_->color_resource.dev_ptr());
 }
 
-template <pixel_format CF, pixel_format DF>
-typename pixel_unpack_buffer_rt<CF, DF>::depth_type* pixel_unpack_buffer_rt<CF, DF>::depth()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::depth_type* pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::depth()
 {
     return static_cast<depth_type*>(impl_->depth_resource.dev_ptr());
 }
 
-template <pixel_format CF, pixel_format DF>
-typename pixel_unpack_buffer_rt<CF, DF>::color_type const* pixel_unpack_buffer_rt<CF, DF>::color() const
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::color_type const* pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::color() const
 {
     return static_cast<color_type const*>(impl_->color_resource.dev_ptr());
 }
 
-template <pixel_format CF, pixel_format DF>
-typename pixel_unpack_buffer_rt<CF, DF>::depth_type const* pixel_unpack_buffer_rt<CF, DF>::depth() const
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::depth_type const* pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::depth() const
 {
     return static_cast<depth_type const*>(impl_->depth_resource.dev_ptr());
 }
 
-template <pixel_format CF, pixel_format DF>
-typename pixel_unpack_buffer_rt<CF, DF>::ref_type pixel_unpack_buffer_rt<CF, DF>::ref()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::ref_type pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::ref()
 {
     return ref_type( color(), depth() );
 }
 
-template <pixel_format CF, pixel_format DF>
-void pixel_unpack_buffer_rt<CF, DF>::begin_frame()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::begin_frame()
 {
     if (impl_->color_resource.map() == 0)
     {
         throw std::runtime_error("bad color resource mapped");
     }
 
-    if (depth_traits::format != PF_UNSPECIFIED && impl_->depth_resource.map() == 0)
+    if (DepthFormat != PF_UNSPECIFIED && impl_->depth_resource.map() == 0)
     {
         throw std::runtime_error("bad depth resource mapped");
     }
 }
 
-template <pixel_format CF, pixel_format DF>
-void pixel_unpack_buffer_rt<CF, DF>::end_frame()
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::end_frame()
 {
     impl_->color_resource.unmap();
 
-    if (depth_traits::format != PF_UNSPECIFIED)
+    if (DepthFormat != PF_UNSPECIFIED)
     {
         impl_->depth_resource.unmap();
     }
 }
 
-template <pixel_format CF, pixel_format DF>
-void pixel_unpack_buffer_rt<CF, DF>::resize(size_t w, size_t h)
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::resize(size_t w, size_t h)
 {
     render_target::resize(w, h);
 
@@ -128,7 +128,7 @@ void pixel_unpack_buffer_rt<CF, DF>::resize(size_t w, size_t h)
         impl_->compositor.reset(new gl::depth_compositor);
     }
 
-    pixel_format_info cinfo = map_pixel_format(color_traits::format);
+    pixel_format_info cinfo = map_pixel_format(ColorFormat);
 
     // GL texture
     impl_->compositor->setup_color_texture(cinfo, w, h);
@@ -143,9 +143,9 @@ void pixel_unpack_buffer_rt<CF, DF>::resize(size_t w, size_t h)
     // register buffer object with CUDA
     impl_->color_resource.register_buffer(impl_->color_buffer.get(), cudaGraphicsRegisterFlagsWriteDiscard);
 
-    if (depth_traits::format != PF_UNSPECIFIED)
+    if (DepthFormat != PF_UNSPECIFIED)
     {
-        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
+        pixel_format_info dinfo = map_pixel_format(DepthFormat);
 
         // GL texture
         impl_->compositor->setup_depth_texture(dinfo, w, h);
@@ -162,16 +162,16 @@ void pixel_unpack_buffer_rt<CF, DF>::resize(size_t w, size_t h)
     }
 }
 
-template <pixel_format CF, pixel_format DF>
-void pixel_unpack_buffer_rt<CF, DF>::display_color_buffer() const
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 {
-    if (depth_traits::format != PF_UNSPECIFIED)
+    if (DepthFormat != PF_UNSPECIFIED)
     {
         glPushAttrib( GL_TEXTURE_BIT | GL_ENABLE_BIT );
 
         // Update color texture
 
-        pixel_format_info cinfo = map_pixel_format(color_traits::format);
+        pixel_format_info cinfo = map_pixel_format(ColorFormat);
 
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, impl_->color_buffer.get());
 
@@ -189,7 +189,7 @@ void pixel_unpack_buffer_rt<CF, DF>::display_color_buffer() const
 
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, impl_->depth_buffer.get());
 
-        pixel_format_info dinfo = map_pixel_format(depth_traits::format);
+        pixel_format_info dinfo = map_pixel_format(DepthFormat);
 
         impl_->compositor->update_depth_texture(
                 dinfo,
@@ -209,7 +209,7 @@ void pixel_unpack_buffer_rt<CF, DF>::display_color_buffer() const
     }
     else
     {
-        pixel_format_info cinfo = map_pixel_format(color_traits::format);
+        pixel_format_info cinfo = map_pixel_format(ColorFormat);
 
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, impl_->color_buffer.get());
 
