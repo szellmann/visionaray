@@ -56,6 +56,8 @@ bool tiff_image::load(std::string const& filename)
     TIFFGetField(file.get(), TIFFTAG_IMAGEWIDTH, &w);
     TIFFGetField(file.get(), TIFFTAG_IMAGELENGTH, &h);
 
+    format_ = PF_RGBA8; // TODO
+
     auto pitch = w * 4;
 
     data_.resize(pitch * h);
