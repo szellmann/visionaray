@@ -3,8 +3,6 @@
 
 #if defined(VSNRAY_HAVE_PNG)
 
-#include <cassert>
-
 #ifndef NDEBUG
 #include <iostream>
 #include <ostream>
@@ -128,9 +126,24 @@ bool png_image::load(std::string const& filename)
     bit_depth   = png_get_bit_depth(context.png, context.info);
     color_type  = png_get_color_type(context.png, context.info);
 
-    assert( detail::png_num_components(color_type) == 3 ); // TODO
+    auto num_components = detail::png_num_components(color_type);
 
-    auto pitch  = w * detail::png_num_components(color_type);
+    switch (num_components)
+    {
+    case 3:
+        format_ = PF_RGB8;
+        break;
+
+    case 4:
+        format_ = PF_RGBA8;
+        break;
+
+    default:
+        format_ = PF_UNSPECIFIED;
+        return false;
+    }
+
+    auto pitch  = w * num_components;
 
     data_.resize(pitch * h);
 
