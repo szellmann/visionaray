@@ -127,22 +127,20 @@ template <
     typename Normals,
     typename HR,
     typename Primitive,
-    typename NormalBinding,
-    typename = typename std::enable_if<num_normals<Primitive, NormalBinding>::value == 0>::type
+    typename = typename std::enable_if<num_normals<Primitive, unspecified_binding>::value == 0>::type
     >
 VSNRAY_FUNC
 inline auto get_normal_dispatch(
         Primitives      primitives,
         Normals         normals,
         HR const&       hr,
-        Primitive       /* */,
-        NormalBinding   /* */
+        Primitive       /* */
         )
-    -> decltype( get_normal(hr, primitives[hr.prim_id], NormalBinding{}) )
+    -> decltype( get_normal(hr, primitives[hr.prim_id]) )
 {
     VSNRAY_UNUSED(normals);
 
-    return get_normal(hr, primitives[hr.prim_id], NormalBinding{});
+    return get_normal(hr, primitives[hr.prim_id]);
 }
 
 // helper
@@ -186,7 +184,7 @@ public:
             typename std::enable_if<num_normals<Primitive, NormalBinding>::value == 0>::type* = 0
             ) const
     {
-        return get_normal(hr_, primitive, NormalBinding{});
+        return get_normal(hr_, primitive);
     }
 
 private:
@@ -304,7 +302,7 @@ inline auto get_surface_any_prim_impl(
     -> typename detail::decl_surface<vector<3, float>*, Materials>::type
 {
     return detail::make_surface(
-            get_normal(hr, primitives[hr.prim_id], unspecified_binding{}),
+            get_normal(hr, primitives[hr.prim_id]),
             materials[hr.geom_id]
             );
 }
@@ -449,8 +447,8 @@ inline auto get_surface_any_prim_impl(
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
         surfs[i] = detail::make_surface(
-            hrs[i].hit ? get_normal(hrs[i], primitives[hrs[i].prim_id], unspecified_binding{}) : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id]                                             : M{}
+            hrs[i].hit ? get_normal(hrs[i], primitives[hrs[i].prim_id]) : N{},
+            hrs[i].hit ? materials[hrs[i].geom_id]                      : M{}
             );
     }
 

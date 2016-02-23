@@ -175,13 +175,9 @@ inline vector<3, T> get_normal(
 // Get normal from plane primitive
 //
 
-template <typename HR, typename T, typename NormalBinding>
+template <typename HR, typename T>
 VSNRAY_FUNC
-inline vector<3, T> get_normal(
-        HR const&                   hr,
-        basic_plane<3, T> const&    plane,
-        NormalBinding               /* */
-        )
+inline vector<3, T> get_normal(HR const& hr, basic_plane<3, T> const& plane)
 {
     VSNRAY_UNUSED(hr);
 
@@ -193,13 +189,9 @@ inline vector<3, T> get_normal(
 // Get normal on sphere surface
 //
 
-template <typename HR, typename T, typename NormalBinding>
+template <typename HR, typename T>
 VSNRAY_FUNC
-inline vector<3, T> get_normal(
-        HR const&               hr,
-        basic_sphere<T> const&  sphere,
-        NormalBinding           /* */
-        )
+inline vector<3, T> get_normal(HR const& hr, basic_sphere<T> const& sphere)
 {
     return (hr.isect_pos - sphere.center) / sphere.radius;
 }
