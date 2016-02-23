@@ -24,15 +24,18 @@ namespace visionaray
 // Use the make_kernel_params() factory function to create:
 //
 // Parameters:
+//      NormalBindingTag:   [normals_per_face_binding|normals_per_vertex_binding]
+//      ColorBindingTag:    [colors_per_face_binding|colors_per_vertex_binding] (TODO: per geometry)
 //      primitives [..), normals, materials, lights [..)
 //      num_bounces:        depth of the ray tree (applies only to recursive algorithms)
 //      scene_epsilon:      used as an offset to bias ray origins to avoid self intersections
 //      background_color:   RGBA
 //      ambient_color:      RGBA
 //
-// Default:
+// w/ normals:
 //
 //  make_kernel_params(
+//      NormalBindingTag,
 //      primitives_begin,
 //      primitives_end,
 //      normals,
@@ -46,9 +49,10 @@ namespace visionaray
 //      );
 //
 //
-// w/ textures:
+// w/ normals and textures:
 //
 //  make_kernel_params(
+//      NormalBindingTag,
 //      primitives_begin,
 //      primitives_end,
 //      normals,
@@ -63,9 +67,11 @@ namespace visionaray
 //      ambient_color
 //      );
 //
-// w/ textures and colors:
+// w/ textures, normals and colors:
 //
 //  make_kernel_params(
+//      NormalBindingTag,
+//      ColorBindingTag,
 //      primitives_begin,
 //      primitives_end,
 //      normals,
@@ -81,15 +87,6 @@ namespace visionaray
 //      ambient_color
 //      );
 //
-//
-// Default normal binding is "per face". If you desire differently, specify, e.g.:
-//
-// make_kernel_params(
-//      per_vertex_binding{},
-//      ...
-//      );
-//
-// TODO: per_face_binding for colors, make this default!
 //
 //-------------------------------------------------------------------------------------------------
 
@@ -421,19 +418,6 @@ auto make_kernel_params(
             bg_color,
             ambient_color
             };
-}
-
-// default w/o explicit normal binding --------------------
-
-template <
-    typename First,
-    typename = typename std::enable_if<!std::is_base_of<data_binding, First>::value>::type,
-    typename ...Args
-    >
-auto make_kernel_params(First first, Args&&... args)
-    -> decltype(make_kernel_params(per_face_binding{}, first, std::forward<Args>(args)...))
-{
-    return make_kernel_params(per_face_binding{}, first, std::forward<Args>(args)...);
 }
 
 } // visionaray
