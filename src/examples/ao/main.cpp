@@ -123,7 +123,7 @@ void renderer::on_display()
 
             C clr(1.0);
 
-            auto n = get_normal(mod.normals.data(), hit_rec, per_face_binding{});
+            auto n = get_normal(mod.normals.data(), hit_rec, normals_per_face_binding{});
 
             // Make an ortho basis (TODO: move to library)
             auto w = n;

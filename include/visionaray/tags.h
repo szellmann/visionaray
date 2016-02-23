@@ -30,6 +30,16 @@ struct data_binding {};
 struct unspecified_binding  : data_binding {};
 struct per_face_binding     : data_binding {};
 struct per_vertex_binding   : data_binding {};
+struct per_geometry_binding : data_binding {};
+
+// more explicit versions ---------------------------------
+
+using colors_per_face_binding     = per_face_binding;
+using colors_per_vertex_binding   = per_vertex_binding;
+using colors_per_geometry_binding = per_geometry_binding;
+
+using normals_per_face_binding    = per_face_binding;
+using normals_per_vertex_binding  = per_vertex_binding;
 
 } // visionaray
 
