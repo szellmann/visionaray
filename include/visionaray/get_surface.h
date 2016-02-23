@@ -291,6 +291,27 @@ inline auto pack(std::array<surface<N, M, C, Args...>, Size> const& surfs)
 template <
     typename HR,
     typename Primitives,
+    typename Materials,
+    typename Primitive
+    >
+VSNRAY_FUNC
+inline auto get_surface_any_prim_impl(
+        HR const&       hr,
+        Primitives      primitives,
+        Materials       materials,
+        Primitive       /* */
+        )
+    -> typename detail::decl_surface<vector<3, float>*, Materials>::type
+{
+    return detail::make_surface(
+            get_normal(hr, primitives[hr.prim_id], unspecified_binding{}),
+            materials[hr.geom_id]
+            );
+}
+
+template <
+    typename HR,
+    typename Primitives,
     typename Normals,
     typename Materials,
     typename Primitive,
@@ -394,18 +415,48 @@ inline auto get_surface_any_prim_impl(
 
 
 //-------------------------------------------------------------------------------------------------
-// Generic primitive / float
-//
-
-namespace detail
-{
-
-} // detail
-
-
-//-------------------------------------------------------------------------------------------------
 // Primitive with precalculated normals / simd type
 //
+
+template <
+    template <typename, typename> class HR,
+    typename T,
+    typename HRP,
+    typename Primitives,
+    typename Materials,
+    typename Primitive,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    >
+inline auto get_surface_any_prim_impl(
+        HR<basic_ray<T>, HRP> const&    hr,
+        Primitives                      primitives,
+        Materials                       materials,
+        Primitive                       /* */
+        ) -> decltype( simd::pack(
+            std::declval<std::array<
+                typename detail::decl_surface<vector<3, float>*, Materials>::type,
+                simd::num_elements<T>::value
+                >>()
+            ) )
+{
+    using N = vector<3, float>;
+    using M = typename std::iterator_traits<Materials>::value_type;
+
+    auto hrs = unpack(hr);
+
+    std::array<typename detail::decl_surface<vec3*, Materials>::type, simd::num_elements<T>::value> surfs;
+
+    for (int i = 0; i < simd::num_elements<T>::value; ++i)
+    {
+        surfs[i] = detail::make_surface(
+            hrs[i].hit ? get_normal(hrs[i], primitives[hrs[i].prim_id], unspecified_binding{}) : N{},
+            hrs[i].hit ? materials[hrs[i].geom_id]                                             : M{}
+            );
+    }
+
+    return simd::pack(surfs);
+}
+
 
 template <
     template <typename, typename> class HR,
@@ -577,11 +628,101 @@ inline auto get_surface_any_prim_impl(
 // Functions to deduce appropriate surface via parameter inspection
 //
 
+// w/o normals
+
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
         HR const& hr,
         Params const& p,
+        detail::has_no_normals_tag,
+        detail::has_no_colors_tag,
+        detail::has_no_textures_tag
+        )
+    -> decltype( get_surface_any_prim_impl(
+            hr,
+            p.prims.begin,
+            p.materials,
+            typename Params::primitive_type{}
+            ) )
+{
+    return get_surface_any_prim_impl(
+            hr,
+            p.prims.begin,
+            p.materials,
+            typename Params::primitive_type{}
+            );
+}
+
+template <typename HR, typename Params>
+VSNRAY_FUNC
+inline auto get_surface_unroll_params_impl(
+        HR const& hr,
+        Params const& p,
+        detail::has_no_normals_tag,
+        detail::has_no_colors_tag,
+        detail::has_textures_tag
+        )
+    -> decltype( get_surface_any_prim_impl(
+            hr,
+            p.prims.begin,
+            p.tex_coords,
+            p.materials,
+            p.textures,
+            typename Params::primitive_type{}
+            ) )
+{
+    return get_surface_any_prim_impl(
+            hr,
+            p.prims.begin,
+            p.tex_coords,
+            p.materials,
+            p.textures,
+            typename Params::primitive_type{}
+            );
+}
+
+template <typename HR, typename Params>
+VSNRAY_FUNC
+inline auto get_surface_unroll_params_impl(
+        HR const& hr,
+        Params const& p,
+        detail::has_no_normals_tag,
+        detail::has_colors_tag,
+        detail::has_textures_tag
+        )
+    -> decltype( get_surface_any_prim_impl(
+            hr,
+            p.prims.begin,
+            p.tex_coords,
+            p.materials,
+            p.colors,
+            p.textures,
+            typename Params::primitive_type{},
+            typename Params::color_binding{}
+            ) )
+{
+    return get_surface_any_prim_impl(
+            hr,
+            p.prims.begin,
+            p.tex_coords,
+            p.materials,
+            p.colors,
+            p.textures,
+            typename Params::primitive_type{},
+            typename Params::color_binding{}
+            );
+}
+
+
+// w/ normals
+
+template <typename HR, typename Params>
+VSNRAY_FUNC
+inline auto get_surface_unroll_params_impl(
+        HR const& hr,
+        Params const& p,
+        detail::has_normals_tag,
         detail::has_no_colors_tag,
         detail::has_no_textures_tag
         )
@@ -609,6 +750,7 @@ VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
         HR const& hr,
         Params const& p,
+        detail::has_normals_tag,
         detail::has_no_colors_tag,
         detail::has_textures_tag
         )
@@ -640,6 +782,7 @@ VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
         HR const& hr,
         Params const& p,
+        detail::has_normals_tag,
         detail::has_colors_tag,
         detail::has_textures_tag
         )
@@ -677,6 +820,7 @@ inline auto get_surface(HR const& hr, Params const& p)
     -> decltype( get_surface_unroll_params_impl(
             hr,
             p,
+            detail::has_normals<Params>{},
             detail::has_colors<Params>{},
             detail::has_textures<Params>{}
             ) )
@@ -684,6 +828,7 @@ inline auto get_surface(HR const& hr, Params const& p)
     return get_surface_unroll_params_impl(
             hr,
             p,
+            detail::has_normals<Params>{},
             detail::has_colors<Params>{},
             detail::has_textures<Params>{}
             );

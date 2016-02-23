@@ -98,6 +98,46 @@ template <typename ...Args>
 struct kernel_params;
 
 template <
+    typename Primitives,
+    typename Materials,
+    typename Lights,
+    typename Color,
+    typename ...Args
+    >
+struct kernel_params<
+        Primitives,
+        Materials,
+        Lights,
+        Color,
+        Args...
+        >
+{
+    using primitive_type    = typename std::iterator_traits<Primitives>::value_type;
+    using material_type     = typename std::iterator_traits<Materials>::value_type;
+    using light_type        = typename std::iterator_traits<Lights>::value_type;
+
+    struct
+    {
+        Primitives begin;
+        Primitives end;
+    } prims;
+
+    Materials materials;
+
+    struct
+    {
+        Lights begin;
+        Lights end;
+    } lights;
+
+    unsigned num_bounces;
+    float epsilon;
+
+    Color bg_color;
+    Color ambient_color;
+};
+
+template <
     typename NormalBinding,
     typename Primitives,
     typename Normals,
@@ -116,6 +156,8 @@ struct kernel_params<
         Args...
         >
 {
+    using has_normals       = void;
+
     using normal_binding    = NormalBinding;
     using primitive_type    = typename std::iterator_traits<Primitives>::value_type;
     using normal_type       = typename std::iterator_traits<Normals>::value_type;
@@ -167,6 +209,7 @@ struct kernel_params<
         Args...
         >
 {
+    using has_normals       = void;
     using has_textures      = void;
 
     using normal_binding    = NormalBinding;
@@ -228,6 +271,7 @@ struct kernel_params<
         Args...
         >
 {
+    using has_normals       = void;
     using has_textures      = void;
     using has_colors        = void;
 
@@ -272,6 +316,38 @@ struct kernel_params<
 //
 
 // default ------------------------------------------------
+
+template <
+    typename Primitives,
+    typename Materials,
+    typename Lights
+    >
+auto make_kernel_params(
+        Primitives const&   begin,
+        Primitives const&   end,
+        Materials const&    materials,
+        Lights const&       lbegin,
+        Lights const&       lend,
+        unsigned            num_bounces     = 5,
+        float               epsilon         = std::numeric_limits<float>::epsilon(),
+        vec4 const&         bg_color        = vec4(0.0),
+        vec4 const&         ambient_color   = vec4(0.0)
+        )
+    -> kernel_params<Primitives, Materials, Lights, vec4>
+{
+    return kernel_params<Primitives, Materials, Lights, vec4>{
+            { begin, end },
+            materials,
+            { lbegin, lend },
+            num_bounces,
+            epsilon,
+            bg_color,
+            ambient_color
+            };
+}
+
+
+// w/ normals ---------------------------------------------
 
 template <
     typename NormalBinding,
