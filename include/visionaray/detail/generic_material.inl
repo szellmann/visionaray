@@ -5,8 +5,6 @@
 
 #include <visionaray/material.h>
 
-#pragma once
-
 namespace visionaray
 {
 
