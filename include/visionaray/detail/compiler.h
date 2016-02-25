@@ -1,9 +1,13 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#ifndef VSNRAY_COMPILER_H
-#define VSNRAY_COMPILER_H
+#pragma once
 
+#ifndef VSNRAY_DETAIL_COMPILER_H
+#define VSNRAY_DETAIL_COMPILER_H 1
+
+// Include this STL header so we can evaluate version macros later on
+#include <cstddef>
 
 //
 // Determine compiler
@@ -297,5 +301,4 @@
 #   define VSNRAY_DLL_IMPORT
 #endif
 
-
-#endif
+#endif // VSNRAY_DETAIL_COMPILER_H
