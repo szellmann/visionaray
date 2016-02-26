@@ -328,7 +328,7 @@ public:
         auto sr8 = unpack(sr);
         auto& s = samp.get_sampler();
 
-        std::array<vector<3, float>, 4> rd8;
+        std::array<vector<3, float>, 8> rd8;
         float_array                     pdf8;
         std::array<spectrum<float>, 8>  sampled;
 
