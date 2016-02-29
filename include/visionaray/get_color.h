@@ -69,7 +69,7 @@ template <
     typename Primitive,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
-inline vector<3, simd::float4> get_color(
+inline vector<3, T> get_color(
         Colors                          colors,
         HR<basic_ray<T>, HRP> const&    hr,
         Primitive                       /* */,
