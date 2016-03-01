@@ -1080,7 +1080,6 @@ void drawable::impl::call_kernel(KParams const& params)
 template <typename KParams>
 void drawable::impl::call_kernel_debug(KParams const& params)
 {
-    // TODO: support debug kernels on GPU
     if (state->device == GPU)
     {
 #ifdef __CUDACC__
