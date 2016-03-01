@@ -21,6 +21,7 @@ struct bvh_cost_intersector : basic_intersector<bvh_cost_intersector>
     using basic_intersector<bvh_cost_intersector>::operator();
 
     template <typename R, typename S, typename ...Args>
+    VSNRAY_FUNC
     auto operator()(R const& ray, basic_aabb<S> const& box, Args&&... args)
         -> decltype( intersect(ray, box, std::forward<Args>(args)...) )
     {
@@ -29,6 +30,7 @@ struct bvh_cost_intersector : basic_intersector<bvh_cost_intersector>
     }
 
     template <typename R, typename S>
+    VSNRAY_FUNC
     auto operator()(R const& ray, basic_triangle<3, S> const& tri)
         -> decltype( intersect(ray, tri) )
     {
