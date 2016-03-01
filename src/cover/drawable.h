@@ -1,17 +1,20 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_COVER_DRAWABLE_H
-#define VSNRAY_COVER_DRAWABLE_H
+#define VSNRAY_COVER_DRAWABLE_H 1
 
 #include <memory>
 
 #include <osg/BoundingSphere>
 #include <osg/Drawable>
 
-#include "state.h"
-
 namespace visionaray { namespace cover {
+
+struct render_state;
+struct debug_state;
 
 class drawable : public osg::Drawable
 {

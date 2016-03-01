@@ -48,6 +48,7 @@
 #include <common/util.h>
 
 #include "drawable.h"
+#include "state.h"
 
 namespace visionaray { namespace cover {
 
