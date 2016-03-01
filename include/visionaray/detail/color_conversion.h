@@ -57,6 +57,7 @@ inline float cie_z(float lambda)
 //
 
 template <typename T>
+VSNRAY_FUNC
 inline vector<3, T> hue_to_rgb(T hue)
 {
 //  assert(hue >= 0.0f && hue <= 1.0f);
@@ -71,6 +72,7 @@ inline vector<3, T> hue_to_rgb(T hue)
 }
 
 template <typename T>
+VSNRAY_FUNC
 inline vector<3, T> temperature_to_rgb(T t)
 {
     T K = T(4.0f / 6.0f);
