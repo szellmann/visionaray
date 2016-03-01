@@ -35,6 +35,9 @@ set(HEADERS
     ${COMMON_DIR}/call_kernel.h
     ${COMMON_DIR}/render_bvh.h
 
+    kernels/bvh_costs_kernel.h
+    kernels/normals_kernel.h
+    kernels/tex_coords_kernel.h
     drawable.h
     state.h
     visionaray_plugin.h
