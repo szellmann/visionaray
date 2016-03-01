@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "math/math.h"
+#include "tags.h"
 
 namespace visionaray
 {
