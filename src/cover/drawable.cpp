@@ -1083,35 +1083,62 @@ void drawable::impl::call_kernel_debug(KParams const& params)
     // TODO: support debug kernels on GPU
     if (state->device == GPU)
     {
-        return;
-    }
+#ifdef __CUDACC__
+        auto& vparams = eye_params[current_eye];
 
+        auto sparams = make_sched_params(
+                vparams.view_matrix,
+                vparams.proj_matrix,
+                vparams.viewport,
+                vparams.device_rt
+                );
+
+        if (dev_state->show_bvh_costs)
+        {
+            bvh_costs_kernel<KParams> k(params);
+            device_sched.frame(k, sparams);
+        }
+        else if (dev_state->show_normals)
+        {
+            normals_kernel<KParams> k(params);
+            device_sched.frame(k, sparams);
+        }
+        else if (dev_state->show_tex_coords)
+        {
+            tex_coords_kernel<KParams> k(params);
+            device_sched.frame(k, sparams);
+        }
+#endif // __CUDACC__
+    }
+    else if (state->device == CPU)
+    {
 #ifndef __CUDA_ARCH__
-    auto& vparams = eye_params[current_eye];
+        auto& vparams = eye_params[current_eye];
 
-    auto sparams = make_sched_params(
-            vparams.view_matrix,
-            vparams.proj_matrix,
-            vparams.viewport,
-            vparams.host_rt
-            );
+        auto sparams = make_sched_params(
+                vparams.view_matrix,
+                vparams.proj_matrix,
+                vparams.viewport,
+                vparams.host_rt
+                );
 
-    if (dev_state->show_bvh_costs)
-    {
-        bvh_costs_kernel<KParams> k(params);
-        host_sched.frame(k, sparams);
-    }
-    else if (dev_state->show_normals)
-    {
-        normals_kernel<KParams> k(params);
-        host_sched.frame(k, sparams);
-    }
-    else if (dev_state->show_tex_coords)
-    {
-        tex_coords_kernel<KParams> k(params);
-        host_sched.frame(k, sparams);
-    }
+        if (dev_state->show_bvh_costs)
+        {
+            bvh_costs_kernel<KParams> k(params);
+            host_sched.frame(k, sparams);
+        }
+        else if (dev_state->show_normals)
+        {
+            normals_kernel<KParams> k(params);
+            host_sched.frame(k, sparams);
+        }
+        else if (dev_state->show_tex_coords)
+        {
+            tex_coords_kernel<KParams> k(params);
+            host_sched.frame(k, sparams);
+        }
 #endif // __CUDA_ARCH__
+    }
 }
 
 
