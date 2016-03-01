@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_MATH_PRIMITIVE_H
-#define VSNRAY_MATH_PRIMITIVE_H
+#define VSNRAY_MATH_PRIMITIVE_H 1
 
 namespace MATH_NAMESPACE
 {
@@ -18,6 +18,6 @@ struct primitive
     id_type prim_id;
 };
 
-} // visionaray
+} // MATH_NAMESPACE
 
 #endif // VSNRAY_MATH_PRIMITIVE_H

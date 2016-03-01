@@ -29,7 +29,7 @@ public:
 
 };
 
-} // visionaray
+} // MATH_NAMESPACE
 
 #include "detail/quat.inl"
 
