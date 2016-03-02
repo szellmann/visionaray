@@ -211,9 +211,9 @@ aabb bounds(model::triangle_list const& tris)
         auto v2 = tri.v1 + tri.e1;
         auto v3 = tri.v1 + tri.e2;
 
-        result = combine(result, aabb(v1, v1));
-        result = combine(result, aabb(v2, v2));
-        result = combine(result, aabb(v3, v3));
+        result = combine(result, v1);
+        result = combine(result, v2);
+        result = combine(result, v3);
     }
 
     return result;

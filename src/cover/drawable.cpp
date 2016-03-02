@@ -1173,9 +1173,9 @@ void drawable::expandBoundingSphere(osg::BoundingSphere &bs)
         auto v2 = tri.v1 + tri.e1;
         auto v3 = tri.v1 + tri.e2;
 
-        bounds = combine(bounds, aabb(v1, v1));
-        bounds = combine(bounds, aabb(v2, v2));
-        bounds = combine(bounds, aabb(v3, v3));
+        bounds = combine(bounds, v1);
+        bounds = combine(bounds, v2);
+        bounds = combine(bounds, v3);
     }
 
     auto c = bounds.center();
