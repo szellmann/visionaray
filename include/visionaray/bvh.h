@@ -265,6 +265,9 @@ public:
     node_vector const&      nodes() const       { return nodes_; }
     node_vector&            nodes()             { return nodes_; }
 
+    size_t num_primitives() const               { return primitives_.size(); }
+    size_t num_nodes() const                    { return nodes_.size(); }
+
     bvh_ref ref() const
     {
         auto p0 = detail::get_pointer(primitives());
@@ -342,6 +345,9 @@ public:
 
     index_vector const&     indices() const     { return indices_; }
     index_vector&           indices()           { return indices_; }
+
+    size_t num_primitives() const               { return primitives_.size(); }
+    size_t num_nodes() const                    { return nodes_.size(); }
 
     bvh_ref ref() const
     {
