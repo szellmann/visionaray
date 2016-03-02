@@ -18,7 +18,7 @@ namespace visionaray { namespace cover {
 template <typename Params>
 struct tex_coords_kernel
 {
-    VSNRAY_FUNC tex_coords_kernel(Params const& p)
+    VSNRAY_FUNC explicit tex_coords_kernel(Params const& p)
         : params(p)
     {
     }

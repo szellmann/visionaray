@@ -18,7 +18,7 @@ namespace visionaray { namespace cover {
 template <typename Params>
 struct normals_kernel
 {
-    VSNRAY_FUNC normals_kernel(Params const& p)
+    VSNRAY_FUNC explicit normals_kernel(Params const& p)
         : params(p)
     {
     }

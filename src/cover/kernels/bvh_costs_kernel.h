@@ -50,7 +50,7 @@ struct bvh_cost_intersector : basic_intersector<bvh_cost_intersector>
 template <typename Params>
 struct bvh_costs_kernel
 {
-    VSNRAY_FUNC bvh_costs_kernel(Params const& p)
+    VSNRAY_FUNC explicit bvh_costs_kernel(Params const& p)
         : params(p)
     {
     }
