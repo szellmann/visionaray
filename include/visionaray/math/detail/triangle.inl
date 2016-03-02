@@ -12,6 +12,7 @@ namespace MATH_NAMESPACE
 //
 
 template <size_t Dim, typename T, typename P>
+MATH_FUNC
 basic_triangle<Dim, T, P>::basic_triangle(
         vector<Dim, T> const& v1,
         vector<Dim, T> const& e1,
