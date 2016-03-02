@@ -125,8 +125,8 @@ public:
         copy_params.srcPtr      = make_cudaPitchedPtr(
                 const_cast<T*>(host_data),
                 width * sizeof(T),
-                height,
-                depth
+                width,
+                height
                 );
         copy_params.dstArray    = array_ptr_;
         copy_params.extent      = { width, height, depth };
