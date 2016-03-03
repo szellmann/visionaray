@@ -40,6 +40,55 @@ inline unsigned tic()
 
 
 //-------------------------------------------------------------------------------------------------
+// Invoke kernel
+//
+
+template <typename K, typename R, typename Sampler>
+VSNRAY_FUNC
+auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
+    -> decltype(kernel(r))
+{
+    VSNRAY_UNUSED(samp);
+    VSNRAY_UNUSED(x);
+    VSNRAY_UNUSED(y);
+
+    return kernel(r);
+}
+
+template <
+    typename K,
+    typename R,
+    typename Sampler,
+    typename = void
+    >
+VSNRAY_FUNC
+auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
+    -> decltype(kernel(r, samp))
+{
+    VSNRAY_UNUSED(x);
+    VSNRAY_UNUSED(y);
+
+    return kernel(r, samp);
+}
+
+template <
+    typename K,
+    typename R,
+    typename Sampler,
+    typename = void,
+    typename = void
+    >
+VSNRAY_FUNC
+auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
+    -> decltype(kernel(r, x, y))
+{
+    VSNRAY_UNUSED(samp);
+
+    return kernel(r, x, y);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // make primary rays
 //
 // Generates a single (or several when using anti-aliased rendering) primary rays
@@ -296,11 +345,10 @@ inline void sample_pixel_impl(
         Args&&...                       args
         )
 {
-    VSNRAY_UNUSED(samp);
     VSNRAY_UNUSED(frame_num);
     VSNRAY_UNUSED(args...);
 
-    auto result = kernel(r);
+    auto result = invoke_kernel(kernel, r, samp, x, y);
     pixel_access::store(x, y, viewport, result, rt_ref.color());
 }
 
@@ -327,10 +375,9 @@ inline void sample_pixel_impl(
         Args&&...                       args
         )
 {
-    VSNRAY_UNUSED(samp);
     VSNRAY_UNUSED(frame_num);
 
-    auto result = kernel(r);
+    auto result = invoke_kernel(kernel, r, samp, x, y);
     result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
     pixel_access::store(x, y, viewport, result, rt_ref.color(), rt_ref.depth());
 }
@@ -365,7 +412,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(frame_num);
     VSNRAY_UNUSED(args...);
 
-    auto result = kernel(r, samp);
+    auto result = invoke_kernel(kernel, r, samp, x, y);
     pixel_access::store(x, y, viewport, result, rt_ref.color());
 }
 
@@ -399,9 +446,9 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = typename decltype(kernel(r, samp))::color_type;
+    using Color = typename decltype(invoke_kernel(kernel, r, samp, x, y))::color_type;
 
-    auto result = kernel(r, samp);
+    auto result = invoke_kernel(kernel, r, samp, x, y);
     auto alpha  = S(1.0) / S(frame_num);
     if (frame_num <= 1)
     {//TODO: clear method in render target?
@@ -435,7 +482,7 @@ inline void sample_pixel_impl(
 {
     using S = typename R::scalar_type;
 
-    auto result = kernel(r, samp);
+    auto result = invoke_kernel(kernel, r, samp, x, y);
     auto alpha  = S(1.0) / S(frame_num);
 
     result.depth = select( result.hit, depth_transform(result.isect_pos, args...), S(1.0) );
@@ -478,7 +525,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = typename decltype(kernel(R(), samp))::color_type;
+    using Color = typename decltype(invoke_kernel(kernel, R{}, samp, x, y))::color_type;
 
     auto ray_ptr = rays.data();
 
@@ -492,7 +539,7 @@ inline void sample_pixel_impl(
             pixel_access::store(x, y, viewport, Color(0.0), rt_ref.color());
         }
 
-        auto result = kernel(*ray_ptr++, samp);
+        auto result = invoke_kernel(kernel, *ray_ptr++, samp, x, y);
         auto alpha = S(1.0) / S(frame);
         pixel_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
     }
@@ -526,12 +573,11 @@ inline void sample_pixel_impl(
         Args&&...                       args
         )
 {
-    VSNRAY_UNUSED(samp);
     VSNRAY_UNUSED(frame_num);
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = typename decltype(kernel(R()))::color_type;
+    using Color = typename decltype(invoke_kernel(kernel, R{}, samp, x, y))::color_type;
 
     auto ray_ptr = rays.data();
 
@@ -543,7 +589,7 @@ inline void sample_pixel_impl(
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
-        auto result = kernel(*ray_ptr++);
+        auto result = invoke_kernel(kernel, *ray_ptr++, samp, x, y);
         auto alpha = S(1.0) / S(Num);
         pixel_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0));
     }
@@ -573,11 +619,10 @@ inline void sample_pixel_impl(
         Args&&...                       args
         )
 {
-    VSNRAY_UNUSED(samp);
     VSNRAY_UNUSED(args...);
 
     using S      = typename R::scalar_type;
-    using Result = decltype(kernel(R{}));
+    using Result = decltype(invoke_kernel(kernel, R{}, samp, x, y));
 
     auto ray_ptr = rays.data();
 
@@ -589,7 +634,7 @@ inline void sample_pixel_impl(
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
-        auto result = kernel(*ray_ptr++);
+        auto result = invoke_kernel(kernel, *ray_ptr++, samp, x, y);
         result.depth = select( result.hit, depth_transform(result.isect_pos, args...), S(1.0) );
         auto alpha = S(1.0) / S(Num);
         pixel_access::blend(x, y, viewport, result, rt_ref.color(), rt_ref.depth(), alpha, S(1.0));
