@@ -1,5 +1,11 @@
 find_package(CUDA)
+find_package(Git)
 find_package(Threads)
+
+if (NOT GIT_FOUND)
+    message("Git not found - not building unittests")
+    return()
+endif()
 
 if (NOT Threads_FOUND)
     message("Threads not found - not building unittests")
