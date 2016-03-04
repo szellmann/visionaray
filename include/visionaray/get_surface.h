@@ -104,7 +104,7 @@ template <
     typename HR,
     typename Primitive,
     typename NormalBinding,
-    typename = typename std::enable_if<num_normals<Primitive, NormalBinding>::value>::type
+    typename = typename std::enable_if<num_normals<Primitive, NormalBinding>::value != 0>::type
     >
 VSNRAY_FUNC
 inline auto get_normal_dispatch(
