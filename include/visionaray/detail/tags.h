@@ -6,6 +6,8 @@
 #ifndef VSNRAY_DETAIL_TAGS_H
 #define VSNRAY_DETAIL_TAGS_H 1
 
+#include <type_traits>
+
 
 //-------------------------------------------------------------------------------------------------
 // Tags for internal use
