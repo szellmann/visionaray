@@ -216,7 +216,7 @@ template <
     typename Primitive
     >
 VSNRAY_FUNC
-inline auto get_surface_any_prim_impl(
+inline auto get_surface_impl(
         HR const&       hr,
         Primitives      primitives,
         Materials       materials,
@@ -239,7 +239,7 @@ template <
     typename NormalBinding
     >
 VSNRAY_FUNC
-inline auto get_surface_any_prim_impl(
+inline auto get_surface_impl(
         HR const&       hr,
         Primitives      primitives,
         Normals         normals,
@@ -266,7 +266,7 @@ template <
     typename NormalBinding
     >
 VSNRAY_FUNC
-inline auto get_surface_any_prim_impl(
+inline auto get_surface_impl(
         HR const&       hr,
         Primitives      primitives,
         Normals         normals,
@@ -305,7 +305,7 @@ template <
     typename ColorBinding
     >
 VSNRAY_FUNC
-inline auto get_surface_any_prim_impl(
+inline auto get_surface_impl(
         HR const&       hr,
         Primitives      primitives,
         Normals         normals,
@@ -348,7 +348,7 @@ template <
     typename Primitive,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
-inline auto get_surface_any_prim_impl(
+inline auto get_surface_impl(
         HR<basic_ray<T>, HRP> const&    hr,
         Primitives                      primitives,
         Materials                       materials,
@@ -390,7 +390,7 @@ template <
     typename NormalBinding,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
-inline auto get_surface_any_prim_impl(
+inline auto get_surface_impl(
         HR<basic_ray<T>, HRP> const&    hr,
         Primitives                      primitives,
         Normals                         normals,
@@ -437,7 +437,7 @@ template <
     typename NormalBinding,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
-inline auto get_surface_any_prim_impl(
+inline auto get_surface_impl(
         HR<basic_ray<T>, HRP> const&    hr,
         Primitives                      primitives,
         Normals                         normals,
@@ -496,7 +496,7 @@ template <
     typename ColorBinding,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
-inline auto get_surface_any_prim_impl(
+inline auto get_surface_impl(
         HR<basic_ray<T>, HRP> const&    hr,
         Primitives                      primitives,
         Normals                         normals,
@@ -560,14 +560,14 @@ inline auto get_surface_unroll_params_impl(
         has_no_colors_tag,
         has_no_textures_tag
         )
-    -> decltype( get_surface_any_prim_impl(
+    -> decltype( get_surface_impl(
             hr,
             p.prims.begin,
             p.materials,
             typename Params::primitive_type{}
             ) )
 {
-    return get_surface_any_prim_impl(
+    return get_surface_impl(
             hr,
             p.prims.begin,
             p.materials,
@@ -584,7 +584,7 @@ inline auto get_surface_unroll_params_impl(
         has_no_colors_tag,
         has_textures_tag
         )
-    -> decltype( get_surface_any_prim_impl(
+    -> decltype( get_surface_impl(
             hr,
             p.prims.begin,
             p.tex_coords,
@@ -593,7 +593,7 @@ inline auto get_surface_unroll_params_impl(
             typename Params::primitive_type{}
             ) )
 {
-    return get_surface_any_prim_impl(
+    return get_surface_impl(
             hr,
             p.prims.begin,
             p.tex_coords,
@@ -612,7 +612,7 @@ inline auto get_surface_unroll_params_impl(
         has_colors_tag,
         has_textures_tag
         )
-    -> decltype( get_surface_any_prim_impl(
+    -> decltype( get_surface_impl(
             hr,
             p.prims.begin,
             p.tex_coords,
@@ -623,7 +623,7 @@ inline auto get_surface_unroll_params_impl(
             typename Params::color_binding{}
             ) )
 {
-    return get_surface_any_prim_impl(
+    return get_surface_impl(
             hr,
             p.prims.begin,
             p.tex_coords,
@@ -647,7 +647,7 @@ inline auto get_surface_unroll_params_impl(
         has_no_colors_tag,
         has_no_textures_tag
         )
-    -> decltype( get_surface_any_prim_impl(
+    -> decltype( get_surface_impl(
             hr,
             p.prims.begin,
             p.normals,
@@ -656,7 +656,7 @@ inline auto get_surface_unroll_params_impl(
             typename Params::normal_binding{}
             ) )
 {
-    return get_surface_any_prim_impl(
+    return get_surface_impl(
             hr,
             p.prims.begin,
             p.normals,
@@ -675,7 +675,7 @@ inline auto get_surface_unroll_params_impl(
         has_no_colors_tag,
         has_textures_tag
         )
-    -> decltype( get_surface_any_prim_impl(
+    -> decltype( get_surface_impl(
             hr,
             p.prims.begin,
             p.normals,
@@ -686,7 +686,7 @@ inline auto get_surface_unroll_params_impl(
             typename Params::normal_binding{}
             ) )
 {
-    return get_surface_any_prim_impl(
+    return get_surface_impl(
             hr,
             p.prims.begin,
             p.normals,
@@ -707,7 +707,7 @@ inline auto get_surface_unroll_params_impl(
         has_colors_tag,
         has_textures_tag
         )
-    -> decltype( get_surface_any_prim_impl(
+    -> decltype( get_surface_impl(
             hr,
             p.prims.begin,
             p.normals,
@@ -720,7 +720,7 @@ inline auto get_surface_unroll_params_impl(
             typename Params::color_binding{}
             ) )
 {
-    return get_surface_any_prim_impl(
+    return get_surface_impl(
             hr,
             p.prims.begin,
             p.normals,
