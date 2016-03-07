@@ -536,8 +536,8 @@ inline auto get_surface_impl(
 
         surfs[i] = make_surface(
             hrs[i].hit ? get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{}) : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id]                                                      : M{},
-            hrs[i].hit ? colorss[i] * tex_color                                                         : C(1.0)
+            hrs[i].hit ? materials[hrs[i].geom_id]                                              : M{},
+            hrs[i].hit ? colorss[i] * tex_color                                                 : C(1.0)
             );
     }
 
