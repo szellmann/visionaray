@@ -8,7 +8,6 @@
 
 #include <array>
 #include <iterator>
-#include <stdexcept>
 #include <type_traits>
 #include <utility>
 
@@ -29,21 +28,6 @@ namespace detail
 //-------------------------------------------------------------------------------------------------
 // Helper functions
 //
-
-template <typename N, typename M>
-VSNRAY_FUNC
-surface<N, M> make_surface(N const& n, M const& m)
-{
-    return surface<N, M>(n, m);
-}
-
-template <typename N, typename M, typename C>
-VSNRAY_FUNC
-surface<N, M, C> make_surface(N const& n, M const m, C const& tex_color)
-{
-    return surface<N, M, C>(n, m, tex_color);
-}
-
 
 // deduce surface type from params ------------------------
 
@@ -220,70 +204,6 @@ inline auto get_normal_dispatch(
     return apply_visitor( visitor, primitives[hr.prim_id] );
 }
 
-
-} // detail
-
-
-namespace simd
-{
-
-//-------------------------------------------------------------------------------------------------
-// Functions to pack and unpack SIMD surfaces
-//
-
-template <typename N, typename M, typename ...Args, size_t Size>
-inline auto pack(std::array<surface<N, M, Args...>, Size> const& surfs)
-    -> decltype( visionaray::detail::make_surface(
-            pack(std::declval<std::array<N, Size>>()),
-            pack(std::declval<std::array<M, Size>>())
-            ) )
-{
-    std::array<N, Size> normals;
-    std::array<M, Size> materials;
-
-    for (size_t i = 0; i < Size; ++i)
-    {
-        normals[i]      = surfs[i].normal;
-        materials[i]    = surfs[i].material;
-    }
-
-    return visionaray::detail::make_surface(
-            pack(normals),
-            pack(materials)
-            );
-}
-
-template <typename N, typename M, typename C, typename ...Args, size_t Size>
-inline auto pack(std::array<surface<N, M, C, Args...>, Size> const& surfs)
-    -> decltype( visionaray::detail::make_surface(
-            pack(std::declval<std::array<N, Size>>()),
-            pack(std::declval<std::array<M, Size>>()),
-            pack(std::declval<std::array<C, Size>>())
-            ) )
-{
-    std::array<N, Size> normals;
-    std::array<M, Size> materials;
-    std::array<C, Size> tex_colors;
-
-    for (size_t i = 0; i < Size; ++i)
-    {
-        normals[i]      = surfs[i].normal;
-        materials[i]    = surfs[i].material;
-        tex_colors[i]   = surfs[i].tex_color_;
-    }
-
-    return visionaray::detail::make_surface(
-            pack(normals),
-            pack(materials),
-            pack(tex_colors)
-            );
-}
-
-} // simd
-
-
-namespace detail
-{
 
 //-------------------------------------------------------------------------------------------------
 //

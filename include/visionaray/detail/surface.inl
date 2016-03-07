@@ -1,6 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <array>
+#include <utility>
+
 #include "../generic_material.h"
 
 namespace visionaray
@@ -41,5 +44,82 @@ inline auto has_emissive_material(surface<N, simd::generic_material4<Ms...>, Ts.
 {
     return surf.material.is_emissive();
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Factory function make_surface()
+//
+
+template <typename N, typename M>
+VSNRAY_FUNC
+surface<N, M> make_surface(N const& n, M const& m)
+{
+    return surface<N, M>(n, m);
+}
+
+template <typename N, typename M, typename C>
+VSNRAY_FUNC
+surface<N, M, C> make_surface(N const& n, M const m, C const& tex_color)
+{
+    return surface<N, M, C>(n, m, tex_color);
+}
+
+
+namespace simd
+{
+
+//-------------------------------------------------------------------------------------------------
+// Functions to pack and unpack SIMD surfaces
+//
+
+template <typename N, typename M, typename ...Args, size_t Size>
+inline auto pack(std::array<surface<N, M, Args...>, Size> const& surfs)
+    -> decltype( make_surface(
+            pack(std::declval<std::array<N, Size>>()),
+            pack(std::declval<std::array<M, Size>>())
+            ) )
+{
+    std::array<N, Size> normals;
+    std::array<M, Size> materials;
+
+    for (size_t i = 0; i < Size; ++i)
+    {
+        normals[i]      = surfs[i].normal;
+        materials[i]    = surfs[i].material;
+    }
+
+    return make_surface(
+            pack(normals),
+            pack(materials)
+            );
+}
+
+template <typename N, typename M, typename C, typename ...Args, size_t Size>
+inline auto pack(std::array<surface<N, M, C, Args...>, Size> const& surfs)
+    -> decltype( make_surface(
+            pack(std::declval<std::array<N, Size>>()),
+            pack(std::declval<std::array<M, Size>>()),
+            pack(std::declval<std::array<C, Size>>())
+            ) )
+{
+    std::array<N, Size> normals;
+    std::array<M, Size> materials;
+    std::array<C, Size> tex_colors;
+
+    for (size_t i = 0; i < Size; ++i)
+    {
+        normals[i]      = surfs[i].normal;
+        materials[i]    = surfs[i].material;
+        tex_colors[i]   = surfs[i].tex_color_;
+    }
+
+    return make_surface(
+            pack(normals),
+            pack(materials),
+            pack(tex_colors)
+            );
+}
+
+} // simd
 
 } // visionaray
