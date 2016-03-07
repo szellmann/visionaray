@@ -282,6 +282,9 @@ inline auto pack(std::array<surface<N, M, C, Args...>, Size> const& surfs)
 } // simd
 
 
+namespace detail
+{
+
 //-------------------------------------------------------------------------------------------------
 //
 //
@@ -299,9 +302,9 @@ inline auto get_surface_any_prim_impl(
         Materials       materials,
         Primitive       /* */
         )
-    -> typename detail::decl_surface<vector<3, float>*, Materials>::type
+    -> typename decl_surface<vector<3, float>*, Materials>::type
 {
-    return detail::make_surface(
+    return make_surface(
             get_normal(hr, primitives[hr.prim_id]),
             materials[hr.geom_id]
             );
@@ -324,10 +327,10 @@ inline auto get_surface_any_prim_impl(
         Primitive       /* */,
         NormalBinding   /* */
         )
-    -> typename detail::decl_surface<Normals, Materials>::type
+    -> typename decl_surface<Normals, Materials>::type
 {
-    return detail::make_surface(
-            detail::get_normal_dispatch(primitives, normals, hr, Primitive{}, NormalBinding{}),
+    return make_surface(
+            get_normal_dispatch(primitives, normals, hr, Primitive{}, NormalBinding{}),
             materials[hr.geom_id]
             );
 }
@@ -353,9 +356,9 @@ inline auto get_surface_any_prim_impl(
         Primitive       /* */,
         NormalBinding   /* */
         )
-    -> typename detail::decl_surface<Normals, Materials, vector<3, float>>::type
+    -> typename decl_surface<Normals, Materials, vector<3, float>>::type
 {
-    using P = typename detail::primitive_traits<Primitive>::type;
+    using P = typename primitive_traits<Primitive>::type;
     using C = vector<3, float>;
 
     auto tc = get_tex_coord(tex_coords, hr, P{});
@@ -365,8 +368,8 @@ inline auto get_surface_any_prim_impl(
                    ? C(tex2D(tex, tc))
                    : C(1.0);
 
-    auto normal = detail::get_normal_dispatch(primitives, normals, hr, P{}, NormalBinding{});
-    return detail::make_surface( normal, materials[hr.geom_id], tex_color );
+    auto normal = get_normal_dispatch(primitives, normals, hr, P{}, NormalBinding{});
+    return make_surface( normal, materials[hr.geom_id], tex_color );
 }
 
 template <
@@ -394,9 +397,9 @@ inline auto get_surface_any_prim_impl(
         NormalBinding   /* */,
         ColorBinding    /* */
         )
-    -> typename detail::decl_surface<Normals, Materials, vector<3, float>>::type
+    -> typename decl_surface<Normals, Materials, vector<3, float>>::type
 {
-    using P = typename detail::primitive_traits<Primitive>::type;
+    using P = typename primitive_traits<Primitive>::type;
     using C = vector<3, float>;
 
     auto color = get_color(colors, hr, P{}, ColorBinding{});
@@ -407,8 +410,8 @@ inline auto get_surface_any_prim_impl(
                    ? C(tex2D(tex, tc))
                    : C(1.0);
 
-    auto normal = detail::get_normal_dispatch(primitives, normals, hr, P{}, NormalBinding{});
-    return detail::make_surface( normal, materials[hr.geom_id], color * tex_color );
+    auto normal = get_normal_dispatch(primitives, normals, hr, P{}, NormalBinding{});
+    return make_surface( normal, materials[hr.geom_id], color * tex_color );
 }
 
 
@@ -432,7 +435,7 @@ inline auto get_surface_any_prim_impl(
         Primitive                       /* */
         ) -> decltype( simd::pack(
             std::declval<std::array<
-                typename detail::decl_surface<vector<3, float>*, Materials>::type,
+                typename decl_surface<vector<3, float>*, Materials>::type,
                 simd::num_elements<T>::value
                 >>()
             ) )
@@ -442,11 +445,11 @@ inline auto get_surface_any_prim_impl(
 
     auto hrs = unpack(hr);
 
-    std::array<typename detail::decl_surface<vec3*, Materials>::type, simd::num_elements<T>::value> surfs;
+    std::array<typename decl_surface<vec3*, Materials>::type, simd::num_elements<T>::value> surfs;
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
-        surfs[i] = detail::make_surface(
+        surfs[i] = make_surface(
             hrs[i].hit ? get_normal(hrs[i], primitives[hrs[i].prim_id]) : N{},
             hrs[i].hit ? materials[hrs[i].geom_id]                      : M{}
             );
@@ -476,24 +479,24 @@ inline auto get_surface_any_prim_impl(
         NormalBinding                   /* */
         ) -> decltype( simd::pack(
             std::declval<std::array<
-                typename detail::decl_surface<Normals, Materials>::type,
+                typename decl_surface<Normals, Materials>::type,
                 simd::num_elements<T>::value
                 >>()
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = typename detail::primitive_traits<Primitive>::type;
+    using P = typename primitive_traits<Primitive>::type;
 
     auto hrs = unpack(hr);
 
-    std::array<typename detail::decl_surface<Normals, Materials>::type, simd::num_elements<T>::value> surfs;
+    std::array<typename decl_surface<Normals, Materials>::type, simd::num_elements<T>::value> surfs;
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
-        surfs[i] = detail::make_surface(
-            hrs[i].hit ? detail::get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{}) : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id]                                                      : M{}
+        surfs[i] = make_surface(
+            hrs[i].hit ? get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{}) : N{},
+            hrs[i].hit ? materials[hrs[i].geom_id]                                              : M{}
             );
     }
 
@@ -525,19 +528,19 @@ inline auto get_surface_any_prim_impl(
         NormalBinding                   /* */
         ) -> decltype( simd::pack(
             std::declval<std::array<
-                typename detail::decl_surface<Normals, Materials, vector<3, float>>::type,
+                typename decl_surface<Normals, Materials, vector<3, float>>::type,
                 simd::num_elements<T>::value
                 >>()
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = typename detail::primitive_traits<Primitive>::type;
+    using P = typename primitive_traits<Primitive>::type;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
 
-    auto tcs = get_tex_coord(tex_coords, hrs, typename detail::primitive_traits<Primitive>::type{});
+    auto tcs = get_tex_coord(tex_coords, hrs, typename primitive_traits<Primitive>::type{});
 
     std::array<typename detail::decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
@@ -545,13 +548,13 @@ inline auto get_surface_any_prim_impl(
     {
         auto const& tex = textures[hrs[i].geom_id];
         C tex_color = hrs[i].hit && tex.width() > 0 && tex.height() > 0
-                    ? C(tex2D(tex, tcs[i]))
+                    ? C(visionaray::tex2D(tex, tcs[i]))
                     : C(1.0);
 
-        surfs[i] = detail::make_surface(
-            hrs[i].hit ? detail::get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{}) : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id]                                                      : M{},
-            hrs[i].hit ? tex_color                                                                      : C(1.0)
+        surfs[i] = make_surface(
+            hrs[i].hit ? get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{}) : N{},
+            hrs[i].hit ? materials[hrs[i].geom_id]                                              : M{},
+            hrs[i].hit ? tex_color                                                              : C(1.0)
             );
     }
 
@@ -586,23 +589,23 @@ inline auto get_surface_any_prim_impl(
         ColorBinding                    /* */
         ) -> decltype( simd::pack(
             std::declval<std::array<
-                typename detail::decl_surface<Normals, Materials, vector<3, float>>::type,
+                typename decl_surface<Normals, Materials, vector<3, float>>::type,
                 simd::num_elements<T>::value
                 >>()
             ) )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = typename detail::primitive_traits<Primitive>::type;
+    using P = typename primitive_traits<Primitive>::type;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
 
-    auto colorss = get_color(colors, hrs, typename detail::primitive_traits<Primitive>::type{}, ColorBinding{});
+    auto colorss = get_color(colors, hrs, typename primitive_traits<Primitive>::type{}, ColorBinding{});
 
-    auto tcs = get_tex_coord(tex_coords, hrs, typename detail::primitive_traits<Primitive>::type{});
+    auto tcs = get_tex_coord(tex_coords, hrs, typename primitive_traits<Primitive>::type{});
 
-    std::array<typename detail::decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
+    std::array<typename decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
@@ -611,8 +614,8 @@ inline auto get_surface_any_prim_impl(
                     ? C(tex2D(tex, tcs[i]))
                     : C(1.0);
 
-        surfs[i] = detail::make_surface(
-            hrs[i].hit ? detail::get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{}) : N{},
+        surfs[i] = make_surface(
+            hrs[i].hit ? get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{}) : N{},
             hrs[i].hit ? materials[hrs[i].geom_id]                                                      : M{},
             hrs[i].hit ? colorss[i] * tex_color                                                         : C(1.0)
             );
@@ -633,9 +636,9 @@ VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
         HR const& hr,
         Params const& p,
-        detail::has_no_normals_tag,
-        detail::has_no_colors_tag,
-        detail::has_no_textures_tag
+        has_no_normals_tag,
+        has_no_colors_tag,
+        has_no_textures_tag
         )
     -> decltype( get_surface_any_prim_impl(
             hr,
@@ -657,9 +660,9 @@ VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
         HR const& hr,
         Params const& p,
-        detail::has_no_normals_tag,
-        detail::has_no_colors_tag,
-        detail::has_textures_tag
+        has_no_normals_tag,
+        has_no_colors_tag,
+        has_textures_tag
         )
     -> decltype( get_surface_any_prim_impl(
             hr,
@@ -685,9 +688,9 @@ VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
         HR const& hr,
         Params const& p,
-        detail::has_no_normals_tag,
-        detail::has_colors_tag,
-        detail::has_textures_tag
+        has_no_normals_tag,
+        has_colors_tag,
+        has_textures_tag
         )
     -> decltype( get_surface_any_prim_impl(
             hr,
@@ -720,9 +723,9 @@ VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
         HR const& hr,
         Params const& p,
-        detail::has_normals_tag,
-        detail::has_no_colors_tag,
-        detail::has_no_textures_tag
+        has_normals_tag,
+        has_no_colors_tag,
+        has_no_textures_tag
         )
     -> decltype( get_surface_any_prim_impl(
             hr,
@@ -748,9 +751,9 @@ VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
         HR const& hr,
         Params const& p,
-        detail::has_normals_tag,
-        detail::has_no_colors_tag,
-        detail::has_textures_tag
+        has_normals_tag,
+        has_no_colors_tag,
+        has_textures_tag
         )
     -> decltype( get_surface_any_prim_impl(
             hr,
@@ -780,9 +783,9 @@ VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
         HR const& hr,
         Params const& p,
-        detail::has_normals_tag,
-        detail::has_colors_tag,
-        detail::has_textures_tag
+        has_normals_tag,
+        has_colors_tag,
+        has_textures_tag
         )
     -> decltype( get_surface_any_prim_impl(
             hr,
@@ -810,12 +813,14 @@ inline auto get_surface_unroll_params_impl(
             typename Params::color_binding{}
             );
 }
+
+} // detail
 
 
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface(HR const& hr, Params const& p)
-    -> decltype( get_surface_unroll_params_impl(
+    -> decltype( detail::get_surface_unroll_params_impl(
             hr,
             p,
             detail::has_normals<Params>{},
@@ -823,7 +828,7 @@ inline auto get_surface(HR const& hr, Params const& p)
             detail::has_textures<Params>{}
             ) )
 {
-    return get_surface_unroll_params_impl(
+    return detail::get_surface_unroll_params_impl(
             hr,
             p,
             detail::has_normals<Params>{},
