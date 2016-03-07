@@ -285,7 +285,7 @@ inline auto get_surface_any_prim_impl(
 
     auto const& tex = textures[hr.geom_id];
     auto tex_color = tex.width() > 0 && tex.height() > 0
-                   ? C(tex2D(tex, tc))
+                   ? C(visionaray::tex2D(tex, tc))
                    : C(1.0);
 
     auto normal = get_normal_dispatch(primitives, normals, hr, P{}, NormalBinding{});
@@ -327,7 +327,7 @@ inline auto get_surface_any_prim_impl(
 
     auto const& tex = textures[hr.geom_id];
     auto tex_color = tex.width() > 0 && tex.height() > 0
-                   ? C(tex2D(tex, tc))
+                   ? C(visionaray::tex2D(tex, tc))
                    : C(1.0);
 
     auto normal = get_normal_dispatch(primitives, normals, hr, P{}, NormalBinding{});
@@ -531,7 +531,7 @@ inline auto get_surface_any_prim_impl(
     {
         auto const& tex = textures[hrs[i].geom_id];
         C tex_color = hrs[i].hit && tex.width() > 0 && tex.height() > 0
-                    ? C(tex2D(tex, tcs[i]))
+                    ? C(visionaray::tex2D(tex, tcs[i]))
                     : C(1.0);
 
         surfs[i] = make_surface(
