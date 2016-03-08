@@ -82,6 +82,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 # Unittests executable
 set(UNITTESTS_SOURCES
+    bvh/build.cpp
     bvh/traverse.cpp
     math/matrix.cpp
     math/norm.cpp
