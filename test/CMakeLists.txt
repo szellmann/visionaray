@@ -1,3 +1,4 @@
+find_package(Boost COMPONENTS chrono filesystem iostreams system thread REQUIRED)
 find_package(CUDA)
 find_package(Git)
 find_package(Threads)
@@ -12,6 +13,7 @@ if (NOT Threads_FOUND)
     return()
 endif()
 
+visionaray_use_package(Boost)
 visionaray_use_package(CUDA)
 
 
