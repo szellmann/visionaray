@@ -53,4 +53,5 @@ script:
     - cd build
     - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} "-DCMAKE_CXX_FLAGS=${COMPILER_FLAGS}" -DVSNRAY_ENABLE_EXAMPLES=ON
     - make VERBOSE=1
+    - ctest -E 'unittests|surface_.*_illegal_integral_2|vector._pack_illegal_integral|vector._unpack_illegal_integral'
     - sudo make install
