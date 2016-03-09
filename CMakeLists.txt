@@ -48,8 +48,5 @@ option(VSNRAY_ENABLE_UNITTESTS "Build unit tests" OFF)
 
 include(VisionarayHandleOptions)
 
-if(VSNRAY_ENABLE_UNITTESTS)
-add_subdirectory(test)
-endif()
-
 add_subdirectory(src)
+add_subdirectory(test)
