@@ -10,6 +10,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 
 include(CTest)
 enable_testing()
+include(VisionarayCompileFailureTest)
 
 include(VisionarayAddTarget)
 include(VisionarayUseFramework)
