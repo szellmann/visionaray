@@ -9,27 +9,41 @@
 #
 # visionaray_test_compile_success can be used to test a reference code.
 
-macro(visionaray_test_compile_failure FILENAME TESTNAME)
+function(visionaray_test_compile_failure FILENAME TESTNAME)
     add_executable(cft_${TESTNAME} ${FILENAME})
     set_target_properties(cft_${TESTNAME} PROPERTIES
                           EXCLUDE_FROM_ALL TRUE
                           EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-    target_compile_definitions(cft_${TESTNAME} PRIVATE ${ARGN})
+
+    # Get old compile definitions, concatenate with given arguments
+    get_property(ORIGINAL_COMPILE_DEFINITIONS TARGET cft_${TESTNAME} PROPERTY COMPILE_DEFINITIONS)
+    set(NEW_COMPILE_DEFINITIONS ${ORIGINAL_COMPILE_DEFINITIONS} ${ARGN})
+    set_target_properties(cft_${TESTNAME} PROPERTIES
+        "COMPILE_DEFINITIONS" "${NEW_COMPILE_DEFINITIONS}"
+    )
+
     add_test(NAME ${TESTNAME}
              COMMAND ${CMAKE_COMMAND} --build . --target cft_${TESTNAME} --config $<CONFIGURATION>
              WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
     set_tests_properties(${TESTNAME} PROPERTIES WILL_FAIL TRUE)
-endmacro()
+endfunction()
 
-macro(visionaray_test_compile_success FILENAME TESTNAME)
+function(visionaray_test_compile_success FILENAME TESTNAME)
     add_executable(cft_${TESTNAME} ${FILENAME})
     set_target_properties(cft_${TESTNAME} PROPERTIES
                           EXCLUDE_FROM_ALL TRUE
                           EXCLUDE_FROM_DEFAULT_BUILD TRUE)
-    target_compile_definitions(cft_${TESTNAME} PRIVATE ${ARGN})
+
+    # Get old compile definitions, concatenate with given arguments
+    get_property(ORIGINAL_COMPILE_DEFINITIONS TARGET cft_${TESTNAME} PROPERTY COMPILE_DEFINITIONS)
+    set(NEW_COMPILE_DEFINITIONS ${ORIGINAL_COMPILE_DEFINITIONS} ${ARGN})
+    set_target_properties(cft_${TESTNAME} PROPERTIES
+        "COMPILE_DEFINITIONS" "${NEW_COMPILE_DEFINITIONS}"
+    )
+
     add_test(NAME ${TESTNAME}
              COMMAND ${CMAKE_COMMAND} --build . --target cft_${TESTNAME} --config $<CONFIGURATION>
              WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-endmacro()
+endfunction()
 
 
