@@ -1,8 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include "../../vector.h"
-
+#include <visionaray/math/vector.h>
 
 namespace MATH_NAMESPACE
 {
@@ -11,13 +10,12 @@ namespace MATH_NAMESPACE
 // matrix4 members
 //
 
-VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix
-(
-    simd::float4 const& c0,
-    simd::float4 const& c1,
-    simd::float4 const& c2,
-    simd::float4 const& c3
-)
+VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix(
+        simd::float4 const& c0,
+        simd::float4 const& c1,
+        simd::float4 const& c2,
+        simd::float4 const& c3
+        )
     : col0(c0)
     , col1(c1)
     , col2(c2)

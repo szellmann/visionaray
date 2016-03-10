@@ -90,7 +90,6 @@ set(VSNRAY_HEADERS
 
     # Math
 
-    ${HEADER_DIR}/math/detail/simd/matrix4.inl
     ${HEADER_DIR}/math/detail/aabb.inl
     ${HEADER_DIR}/math/detail/limits.inl
     ${HEADER_DIR}/math/detail/math.h
@@ -111,6 +110,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/simd/detail/sse/int4.inl
     ${HEADER_DIR}/math/simd/detail/sse/float4.inl
     ${HEADER_DIR}/math/simd/detail/sse/mask4.inl
+    ${HEADER_DIR}/math/simd/detail/sse/matrix4.inl
     ${HEADER_DIR}/math/simd/detail/basic_float.inl
     ${HEADER_DIR}/math/simd/detail/basic_int.inl
     ${HEADER_DIR}/math/simd/detail/basic_mask.inl

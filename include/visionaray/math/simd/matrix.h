@@ -1,14 +1,15 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VISIONARAY_SIMD_MATRIX_H
-#define VISIONARAY_SIMD_MATRIX_H
+#define VISIONARAY_SIMD_MATRIX_H 1
 
 #include "sse.h"
 
 namespace MATH_NAMESPACE
 {
-
 
 template <>
 class matrix<4, 4, simd::float4>
@@ -24,10 +25,12 @@ public:
 
 
     matrix() = default;
-    matrix(column_type const& c0,
-           column_type const& c1,
-           column_type const& c2,
-           column_type const& c3);
+    matrix(
+        column_type const& c0,
+        column_type const& c1,
+        column_type const& c2,
+        column_type const& c3
+        );
 
     explicit matrix(float const data[16]);
 
@@ -64,10 +67,6 @@ matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m);
 
 } // MATH_NAMESPACE
 
-
-#include "../detail/simd/matrix4.inl"
-
+#include "detail/sse/matrix4.inl"
 
 #endif // VISIONARAY_SIMD_MATRIX_H
-
-
