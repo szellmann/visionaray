@@ -1,7 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/math/primitive.h>
 #include <visionaray/get_color.h>
 
 using namespace visionaray;
