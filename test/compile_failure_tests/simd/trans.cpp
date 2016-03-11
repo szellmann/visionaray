@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include "visionaray/math/math.h"
+#include <visionaray/math/math.h>
 
 using namespace visionaray;
 

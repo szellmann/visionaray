@@ -3,7 +3,7 @@
 
 #include <array>
 
-#include "visionaray/spectrum.h"
+#include <visionaray/spectrum.h>
 
 using namespace visionaray;
 

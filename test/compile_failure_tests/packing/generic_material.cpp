@@ -3,9 +3,9 @@
 
 #include <array>
 
-#include "visionaray/math/vector.h"
-#include "visionaray/generic_material.h"
-#include "visionaray/material.h"
+#include <visionaray/math/vector.h>
+#include <visionaray/generic_material.h>
+#include <visionaray/material.h>
 
 using namespace visionaray;
 

@@ -3,9 +3,9 @@
 
 #include <array>
 
-#include "visionaray/math/math.h"
-#include "visionaray/shade_record.h"
-#include "visionaray/point_light.h"
+#include <visionaray/math/math.h>
+#include <visionaray/shade_record.h>
+#include <visionaray/point_light.h>
 
 using namespace visionaray;
 

@@ -3,9 +3,9 @@
 
 #include <array>
 
-#include "visionaray/math/forward.h"
-#include "visionaray/material.h"
-#include "visionaray/get_surface.h"
+#include <visionaray/math/forward.h>
+#include <visionaray/material.h>
+#include <visionaray/get_surface.h>
 
 using namespace visionaray;
 

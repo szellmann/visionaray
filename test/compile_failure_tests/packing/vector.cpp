@@ -3,7 +3,7 @@
 
 #include <array>
 
-#include "visionaray/math/vector.h"
+#include <visionaray/math/vector.h>
 
 using namespace visionaray;
 
