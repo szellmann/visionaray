@@ -473,9 +473,9 @@ inline auto get_surface_impl(
 
     auto hrs = unpack(hr);
 
-    auto colorss = get_color(colors, hrs, typename primitive_traits<Primitive>::type{}, ColorBinding{});
+    auto colorss = get_color(colors, hrs, P{}, ColorBinding{});
 
-    auto tcs = get_tex_coord(tex_coords, hrs, typename primitive_traits<Primitive>::type{});
+    auto tcs = get_tex_coord(tex_coords, hrs, P{});
 
     std::array<typename decl_surface<vector<3, float>*, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
@@ -648,9 +648,9 @@ inline auto get_surface_impl(
 
     auto hrs = unpack(hr);
 
-    auto colorss = get_color(colors, hrs, typename primitive_traits<Primitive>::type{}, ColorBinding{});
+    auto colorss = get_color(colors, hrs, P{}, ColorBinding{});
 
-    auto tcs = get_tex_coord(tex_coords, hrs, typename primitive_traits<Primitive>::type{});
+    auto tcs = get_tex_coord(tex_coords, hrs, P{});
 
     std::array<typename decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
@@ -681,11 +681,11 @@ inline auto get_surface_impl(
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
-        HR const& hr,
-        Params const& p,
         has_no_normals_tag,
         has_no_colors_tag,
-        has_no_textures_tag
+        has_no_textures_tag,
+        HR const& hr,
+        Params const& p
         )
     -> decltype( get_surface_impl(
             has_no_normals_tag{},
@@ -711,11 +711,11 @@ inline auto get_surface_unroll_params_impl(
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
-        HR const& hr,
-        Params const& p,
         has_no_normals_tag,
         has_no_colors_tag,
-        has_textures_tag
+        has_textures_tag,
+        HR const& hr,
+        Params const& p
         )
     -> decltype( get_surface_impl(
             has_no_normals_tag{},
@@ -745,11 +745,11 @@ inline auto get_surface_unroll_params_impl(
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
-        HR const& hr,
-        Params const& p,
         has_no_normals_tag,
         has_colors_tag,
-        has_textures_tag
+        has_textures_tag,
+        HR const& hr,
+        Params const& p
         )
     -> decltype( get_surface_impl(
             has_no_normals_tag{},
@@ -786,11 +786,11 @@ inline auto get_surface_unroll_params_impl(
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
-        HR const& hr,
-        Params const& p,
         has_normals_tag,
         has_no_colors_tag,
-        has_no_textures_tag
+        has_no_textures_tag,
+        HR const& hr,
+        Params const& p
         )
     -> decltype( get_surface_impl(
             has_normals_tag{},
@@ -817,14 +817,14 @@ inline auto get_surface_unroll_params_impl(
             );
 }
 
-template <typename HR, typename Params>
+/*template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
-        HR const& hr,
-        Params const& p,
         has_normals_tag,
         has_no_colors_tag,
-        has_textures_tag
+        has_textures_tag,
+        HR const& hr,
+        Params const& p
         )
     -> decltype( get_surface_impl(
             has_normals_tag{},
@@ -853,16 +853,16 @@ inline auto get_surface_unroll_params_impl(
             p.materials,
             p.textures
             );
-}
+}*/
 
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
-        HR const& hr,
-        Params const& p,
         has_normals_tag,
         has_colors_tag,
-        has_textures_tag
+        has_textures_tag,
+        HR const& hr,
+        Params const& p
         )
     -> decltype( get_surface_impl(
             has_normals_tag{},
@@ -904,19 +904,19 @@ template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface(HR const& hr, Params const& p)
     -> decltype( detail::get_surface_unroll_params_impl(
-            hr,
-            p,
             detail::has_normals<Params>{},
             detail::has_colors<Params>{},
-            detail::has_textures<Params>{}
+            detail::has_textures<Params>{},
+            hr,
+            p
             ) )
 {
     return detail::get_surface_unroll_params_impl(
-            hr,
-            p,
             detail::has_normals<Params>{},
             detail::has_colors<Params>{},
-            detail::has_textures<Params>{}
+            detail::has_textures<Params>{},
+            hr,
+            p
             );
 }
 
