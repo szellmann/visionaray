@@ -817,7 +817,7 @@ inline auto get_surface_unroll_params_impl(
             );
 }
 
-/*template <typename HR, typename Params>
+template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_unroll_params_impl(
         has_normals_tag,
@@ -853,7 +853,7 @@ inline auto get_surface_unroll_params_impl(
             p.materials,
             p.textures
             );
-}*/
+}
 
 template <typename HR, typename Params>
 VSNRAY_FUNC
