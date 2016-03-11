@@ -295,6 +295,46 @@ inline auto get_surface_impl(
 template <
     typename HR,
     typename Primitives,
+    typename TexCoords,
+    typename Materials,
+    typename Colors,
+    typename Textures,
+    typename Primitive,
+    typename NormalBinding,
+    typename ColorBinding
+    >
+VSNRAY_FUNC
+inline auto get_surface_impl(
+        HR const&       hr,
+        Primitives      primitives,
+        TexCoords       tex_coords,
+        Materials       materials,
+        Colors          colors,
+        Textures        textures,
+        Primitive       /* */,
+        NormalBinding   /* */,
+        ColorBinding    /* */
+        )
+    -> typename decl_surface<vector<3, float>*, Materials, vector<3, float>>::type
+{
+    using P = typename primitive_traits<Primitive>::type;
+    using C = vector<3, float>;
+
+    auto color = get_color(colors, hr, P{}, ColorBinding{});
+    auto tc = get_tex_coord(tex_coords, hr, P{});
+
+    auto const& tex = textures[hr.geom_id];
+    auto tex_color = tex.width() > 0 && tex.height() > 0
+                   ? C(visionaray::tex2D(tex, tc))
+                   : C(1.0);
+
+    auto normal = get_normal(hr, primitives[hr.prim_id]);
+    return make_surface( normal, materials[hr.geom_id], color * tex_color );
+}
+
+template <
+    typename HR,
+    typename Primitives,
     typename Normals,
     typename TexCoords,
     typename Materials,
@@ -336,8 +376,67 @@ inline auto get_surface_impl(
 
 
 //-------------------------------------------------------------------------------------------------
-// Primitive with precalculated normals / simd type
+// SIMD
 //
+
+template <
+    template <typename, typename> class HR,
+    typename T,
+    typename HRP,
+    typename Primitives,
+    typename TexCoords,
+    typename Materials,
+    typename Colors,
+    typename Textures,
+    typename Primitive,
+    typename ColorBinding,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    >
+inline auto get_surface_impl(
+        HR<basic_ray<T>, HRP> const&    hr,
+        Primitives                      primitives,
+        TexCoords                       tex_coords,
+        Materials                       materials,
+        Colors                          colors,
+        Textures                        textures,
+        Primitive                       /* */,
+        ColorBinding                    /* */
+        ) -> decltype( simd::pack(
+            std::declval<std::array<
+                typename decl_surface<vector<3, float>*, Materials, vector<3, float>>::type,
+                simd::num_elements<T>::value
+                >>()
+            ) )
+{
+    using N = vector<3, float>;
+    using M = typename std::iterator_traits<Materials>::value_type;
+    using P = typename primitive_traits<Primitive>::type;
+    using C = vector<3, float>;
+
+    auto hrs = unpack(hr);
+
+    auto colorss = get_color(colors, hrs, typename primitive_traits<Primitive>::type{}, ColorBinding{});
+
+    auto tcs = get_tex_coord(tex_coords, hrs, typename primitive_traits<Primitive>::type{});
+
+    std::array<typename decl_surface<vector<3, float>*, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
+
+    for (int i = 0; i < simd::num_elements<T>::value; ++i)
+    {
+        auto const& tex = textures[hrs[i].geom_id];
+        C tex_color = hrs[i].hit && tex.width() > 0 && tex.height() > 0
+                    ? C(visionaray::tex2D(tex, tcs[i]))
+                    : C(1.0);
+
+        surfs[i] = make_surface(
+            hrs[i].hit ? get_normal(hrs[i], primitives[hrs[i].prim_id]) : N{},
+            hrs[i].hit ? materials[hrs[i].geom_id]                      : M{},
+            hrs[i].hit ? colorss[i] * tex_color                         : C(1.0)
+            );
+    }
+
+    return simd::pack(surfs);
+}
 
 template <
     template <typename, typename> class HR,
