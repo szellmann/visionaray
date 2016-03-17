@@ -11,6 +11,38 @@
 using namespace visionaray;
 
 
+//-------------------------------------------------------------------------------------------------
+// Fill simd vectors with ascending integer values
+// Test write access with simd::get()
+//
+
+template <typename T>
+static void iota4(T& t)
+{
+    simd::get<0>(t) = 0;
+    simd::get<1>(t) = 1;
+    simd::get<2>(t) = 2;
+    simd::get<3>(t) = 3;
+}
+
+template <typename T>
+static void iota8(T& t)
+{
+    simd::get<0>(t) = 0;
+    simd::get<1>(t) = 1;
+    simd::get<2>(t) = 2;
+    simd::get<3>(t) = 3;
+    simd::get<4>(t) = 4;
+    simd::get<5>(t) = 5;
+    simd::get<6>(t) = 6;
+    simd::get<7>(t) = 7;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Test helper functions
+//
+
 template <typename T>
 void test_representability()
 {
@@ -63,6 +95,7 @@ static void test_pred_4()
     EXPECT_TRUE( any(i) );
     EXPECT_TRUE( all(i) );
 }
+
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 static void test_pred_8()
@@ -315,6 +348,68 @@ static void test_logical_8()
     EXPECT_TRUE(!any(!(a || c)) );
 }
 #endif
+
+
+//-------------------------------------------------------------------------------------------------
+// Test simd::get()
+//
+
+TEST(SIMD, Get)
+{
+    // int4 -----------------------------------------------
+
+    simd::int4 i4;
+    iota4(i4);
+
+    EXPECT_TRUE( simd::get<0>(i4) == 0 );
+    EXPECT_TRUE( simd::get<1>(i4) == 1 );
+    EXPECT_TRUE( simd::get<2>(i4) == 2 );
+    EXPECT_TRUE( simd::get<3>(i4) == 3 );
+
+
+    // float4 ---------------------------------------------
+
+    simd::float4 f4;
+    iota4(f4);
+
+    EXPECT_FLOAT_EQ( simd::get<0>(f4), 0.0f );
+    EXPECT_FLOAT_EQ( simd::get<1>(f4), 1.0f );
+    EXPECT_FLOAT_EQ( simd::get<2>(f4), 2.0f );
+    EXPECT_FLOAT_EQ( simd::get<3>(f4), 3.0f );
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+    // int8 -----------------------------------------------
+
+    simd::int8 i8;
+    iota8(i8);
+
+    EXPECT_TRUE( simd::get<0>(i8) == 0 );
+    EXPECT_TRUE( simd::get<1>(i8) == 1 );
+    EXPECT_TRUE( simd::get<2>(i8) == 2 );
+    EXPECT_TRUE( simd::get<3>(i8) == 3 );
+    EXPECT_TRUE( simd::get<4>(i8) == 4 );
+    EXPECT_TRUE( simd::get<5>(i8) == 5 );
+    EXPECT_TRUE( simd::get<6>(i8) == 6 );
+    EXPECT_TRUE( simd::get<7>(i8) == 7 );
+
+
+    // float8 ---------------------------------------------
+
+    simd::float8 f8;
+    iota8(f8);
+
+    EXPECT_FLOAT_EQ( simd::get<0>(f8), 0.0f );
+    EXPECT_FLOAT_EQ( simd::get<1>(f8), 1.0f );
+    EXPECT_FLOAT_EQ( simd::get<2>(f8), 2.0f );
+    EXPECT_FLOAT_EQ( simd::get<3>(f8), 3.0f );
+    EXPECT_FLOAT_EQ( simd::get<4>(f8), 4.0f );
+    EXPECT_FLOAT_EQ( simd::get<5>(f8), 5.0f );
+    EXPECT_FLOAT_EQ( simd::get<6>(f8), 6.0f );
+    EXPECT_FLOAT_EQ( simd::get<7>(f8), 7.0f );
+
+#endif
+}
 
 
 //-------------------------------------------------------------------------------------------------
