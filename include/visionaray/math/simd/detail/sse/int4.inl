@@ -77,7 +77,7 @@ VSNRAY_FORCE_INLINE int4 select(mask4 const& m, int4 const& a, int4 const& b)
 
 
 //-------------------------------------------------------------------------------------------------
-// Load / store
+// Load / store / get
 //
 
 VSNRAY_FORCE_INLINE void store(int dst[4], int4 const& v)
@@ -94,6 +94,22 @@ template <int A0, int A1, int A2, int A3>
 VSNRAY_FORCE_INLINE int4 shuffle(int4 const& a)
 {
     return _mm_shuffle_epi32(a, _MM_SHUFFLE(A3, A2, A1, A0));
+}
+
+template <size_t I>
+inline int& get(int4& v)
+{
+    static_assert(I >= 0 && I < 4, "Index out of range for SIMD vector access");
+
+    return reinterpret_cast<int*>(&v)[I];
+}
+
+template <size_t I>
+inline int const& get(int4 const& v)
+{
+    static_assert(I >= 0 && I < 4, "Index out of range for SIMD vector access");
+
+    return reinterpret_cast<int*>(&v)[I];
 }
 
 

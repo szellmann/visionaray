@@ -101,6 +101,22 @@ VSNRAY_FORCE_INLINE void store(float dst[8], float8 const& v)
     _mm256_store_ps(dst, v);
 }
 
+template <size_t I>
+inline float& get(float8& v)
+{
+    static_assert(I >= 0 && I < 8, "Index out of range for SIMD vector access");
+
+    return reinterpret_cast<float*>(&v)[I];
+}
+
+template <size_t I>
+inline float const& get(float8 const& v)
+{
+    static_assert(I >= 0 && I < 8, "Index out of range for SIMD vector access");
+
+    return reinterpret_cast<float*>(&v)[I];
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Basic arithmetic
