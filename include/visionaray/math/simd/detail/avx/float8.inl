@@ -114,7 +114,7 @@ inline float const& get(float8 const& v)
 {
     static_assert(I >= 0 && I < 8, "Index out of range for SIMD vector access");
 
-    return reinterpret_cast<float*>(&v)[I];
+    return reinterpret_cast<float const*>(&v)[I];
 }
 
 

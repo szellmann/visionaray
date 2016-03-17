@@ -109,7 +109,7 @@ inline int const& get(int4 const& v)
 {
     static_assert(I >= 0 && I < 4, "Index out of range for SIMD vector access");
 
-    return reinterpret_cast<int*>(&v)[I];
+    return reinterpret_cast<int const*>(&v)[I];
 }
 
 
