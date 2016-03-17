@@ -1,0 +1,24 @@
+if(VSNRAY_ENABLE_CUDA)
+find_package(CUDA)
+endif()
+find_package(GLUT REQUIRED)
+
+if(VSNRAY_ENABLE_CUDA)
+visionaray_use_package(CUDA)
+endif()
+visionaray_use_package(GLUT)
+
+if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
+    visionaray_cuda_compile(EX_MULTI_VOLUME_CUDA_SOURCES
+        main.cu
+    )
+else()
+    set(EX_MULTI_VOLUME_SOURCES
+        main.cpp
+    )
+endif()
+
+visionaray_add_executable(multi_volume
+    ${EX_MULTI_VOLUME_SOURCES}
+    ${EX_MULTI_VOLUME_CUDA_SOURCES}
+)
