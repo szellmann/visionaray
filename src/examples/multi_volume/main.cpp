@@ -374,12 +374,13 @@ protected:
 
 struct kernel
 {
-    using R   = renderer::ray_type;
-    using S   = R::scalar_type;
-    using V   = vector<3, S>;
-    using C   = vector<4, S>;
-    using RGB = vector<3, S>;
-    using HR  = hit_record<R, aabb>;
+    using R    = renderer::ray_type;
+    using S    = R::scalar_type;
+    using V    = vector<3, S>;
+    using C    = vector<4, S>;
+    using RGB  = vector<3, S>;
+    using Mat4 = matrix<4, 4, S>;
+    using HR   = hit_record<R, aabb>;
 
 
     VSNRAY_GPU_FUNC
@@ -397,8 +398,8 @@ struct kernel
         for (size_t i = 0; i < num_volumes; ++i)
         {
             R inv_ray;
-            inv_ray.ori = (matrix<4, 4, S>(transforms_inv[i]) * vector<4, S>(ray.ori, S(1.0))).xyz();
-            inv_ray.dir = (matrix<4, 4, S>(transforms_inv[i]) * vector<4, S>(ray.dir, S(0.0))).xyz();
+            inv_ray.ori = (Mat4(transforms_inv[i]) * vector<4, S>(ray.ori, S(1.0))).xyz();
+            inv_ray.dir = (Mat4(transforms_inv[i]) * vector<4, S>(ray.dir, S(0.0))).xyz();
 
             auto hit_rec = intersect(inv_ray, bboxes[i]);
 
@@ -434,7 +435,7 @@ struct kernel
                 if (visionaray::any(inside))
                 {
                     auto pos = ray.ori + ray.dir * t;
-                         pos = (matrix<4, 4, S>(transforms_inv[i]) * vector<4, S>(pos, S(1.0f))).xyz();
+                         pos = (Mat4(transforms_inv[i]) * vector<4, S>(pos, S(1.0f))).xyz();
 
                     auto tex_coord = vector<3, S>(
                             ( pos.x + 1.0f ) / 2.0f,
@@ -455,7 +456,7 @@ struct kernel
                         sr.light = light;
                         sr.normal = normalize(gradient(volumes[i], tex_coord));
                         sr.view_dir = -ray.dir;
-                        auto light_pos = ( matrix<4, 4, S>(transforms_inv[i]) * vector<4, S>(sr.light.position(), S(1.0)) ).xyz();
+                        auto light_pos = ( Mat4(transforms_inv[i]) * vector<4, S>(V(sr.light.position()), S(1.0)) ).xyz();
                         sr.light_dir = normalize(light_pos);
 
                         auto shaded_clr = materials[i].shade(sr);
