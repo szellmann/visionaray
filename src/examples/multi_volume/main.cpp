@@ -34,10 +34,25 @@ using viewer_type   = viewer_glut;
 
 
 //-------------------------------------------------------------------------------------------------
+// Visionaray multi-volume rendering example
+//
+//  - If compiled with nvcc, only CUDA code is generated
+//  - If compiled with host compiler, x86 code is generated
+//
+// The example shows the workflow when programming a CUDA-compatible algorithm:
+//  - User is responsible of copying data to the GPU.
+//  - Built-in data structures w/ interfaces similar to the host are used.
+//  - Permanent data is copied to the GPU only once and then referred to using
+//    reference objects.
+//
+//-------------------------------------------------------------------------------------------------
+
+
+//-------------------------------------------------------------------------------------------------
 // Texture data
 //
 
-// post-classification transfer function
+// post-classification transfer functions
 static const vec4 tfdata[3 * 5] = {
 
         { 0.0f, 0.2f, 0.8f, 0.005f }, // 1st volume
@@ -370,6 +385,8 @@ protected:
 
 //-------------------------------------------------------------------------------------------------
 // The rendering kernel
+// A C++03 functor for compatibility with CUDA versions that don't
+// support device lambda functions yet
 //
 
 struct kernel
@@ -388,8 +405,13 @@ struct kernel
     {
         result_record<S> result;
 
+        // visionaray::numeric_limits is compatible with
+        // CUDA and with x86 SIMD types, prefer this in
+        // a cross-platform kernel.
+
         S tmin =  numeric_limits<float>::max();
         S tmax = -numeric_limits<float>::max();
+
 
         // tnear and tfar for each volume
 
@@ -503,6 +525,9 @@ struct kernel
         return result;
     }
 
+
+    // Kernel parameters: textures, bounding boxes, inverse transforms...
+
     static const int MAX_VOLS = 32;
 
     size_t num_volumes;
@@ -523,7 +548,7 @@ struct kernel
 
 
 //-------------------------------------------------------------------------------------------------
-// Display function, implements the volume rendering algorithm
+// Display function, calls the volume rendering kernel
 //
 
 void renderer::on_display()
@@ -548,7 +573,6 @@ void renderer::on_display()
 
 
     // setup kernel parameters
-
 
 #ifdef __CUDACC__
     thrust::device_vector<matrix<4, 4, S>>  param_transforms_inv;
@@ -590,8 +614,9 @@ void renderer::on_display()
     kernel kern;
 
 #ifdef __CUDACC__
-/*    thrust::device_vector<cuda_texture_ref<float, ElementType, 3>> device_volumes(device_volumes_storage);
-    thrust::device_vector<cuda_texture_ref<vec4, ElementType, 1>> device_transfuncs(device_transfuncs_storage);*/
+
+    // w/ CUDA, it's the users' responsibility to copy the kernel data to
+    // the GPU. thrust provides a convenient, STL-like interface for that.
 
     thrust::device_vector<cuda_texture_ref<float, ElementType, 3>> device_volumes;
     thrust::device_vector<cuda_texture_ref<vec4, ElementType, 1>> device_transfuncs;
@@ -615,6 +640,9 @@ void renderer::on_display()
     kern.bboxes         = thrust::raw_pointer_cast(param_bboxes.data());
     kern.materials      = thrust::raw_pointer_cast(param_materials.data());
 #else
+
+    // Nothing to copy with x86, just pass along some pointers
+
     kern.num_volumes    = volumes.size();
     kern.volumes        = volumes.data();
     kern.transfuncs     = transfuncs.data();
