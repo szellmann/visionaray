@@ -19,7 +19,8 @@
 
 #if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
 
-  #pragma GCC diagnostic ignored "-Wdeprecated"
+    #pragma GCC diagnostic ignored "-Wdeprecated"
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #endif
 
