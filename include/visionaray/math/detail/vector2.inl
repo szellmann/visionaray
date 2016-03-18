@@ -4,14 +4,13 @@
 namespace MATH_NAMESPACE
 {
 
-
 //--------------------------------------------------------------------------------------------------
 // vector2 members
 //
 
 template <typename T>
 MATH_FUNC
-inline vector<2, T>::vector(T x, T y)
+inline vector<2, T>::vector(T const& x, T const& y)
     : x(x)
     , y(y)
 {
@@ -19,7 +18,7 @@ inline vector<2, T>::vector(T x, T y)
 
 template <typename T>
 MATH_FUNC
-inline vector<2, T>::vector(T s)
+inline vector<2, T>::vector(T const& s)
     : x(s)
     , y(s)
 {

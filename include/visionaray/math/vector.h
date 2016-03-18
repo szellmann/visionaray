@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_MATH_VECTOR_H
-#define VSNRAY_MATH_VECTOR_H
+#define VSNRAY_MATH_VECTOR_H 1
 
 #include <cstddef>
 
@@ -12,7 +14,6 @@
 
 namespace MATH_NAMESPACE
 {
-
 
 //--------------------------------------------------------------------------------------------------
 // vector2
@@ -29,9 +30,9 @@ public:
     T y;
 
     MATH_FUNC vector() = default;
-    MATH_FUNC vector(T x, T y);
+    MATH_FUNC vector(T const& x, T const& y);
 
-    MATH_FUNC explicit vector(T s);
+    MATH_FUNC explicit vector(T const& s);
     MATH_FUNC explicit vector(T const data[2]);
 
     template <typename U>
@@ -71,13 +72,13 @@ public:
     T z;
 
     MATH_FUNC vector() = default;
-    MATH_FUNC vector(T x, T y, T z);
+    MATH_FUNC vector(T const& x, T const& y, T const& z);
 
-    MATH_FUNC explicit vector(T s);
+    MATH_FUNC explicit vector(T const& s);
     MATH_FUNC explicit vector(T const data[3]);
 
     template <typename U>
-    MATH_FUNC explicit vector(vector<2, U> const& rhs, U z);
+    MATH_FUNC explicit vector(vector<2, U> const& rhs, U const& z);
 
     template <typename U>
     MATH_FUNC explicit vector(vector<3, U> const& rhs);
@@ -117,16 +118,16 @@ public:
     T w;
 
     MATH_FUNC vector() = default;
-    MATH_FUNC vector(T x, T y, T z, T w);
+    MATH_FUNC vector(T const& x, T const& y, T const& z, T const& w);
 
-    MATH_FUNC explicit vector(T s);
+    MATH_FUNC explicit vector(T const& s);
     MATH_FUNC explicit vector(T const data[4]);
 
     template <typename U>
-    MATH_FUNC explicit vector(vector<2, U> const& rhs, U z, U w);
+    MATH_FUNC explicit vector(vector<2, U> const& rhs, U const& z, U const& w);
 
     template <typename U>
-    MATH_FUNC explicit vector(vector<3, U> const& rhs, U w);
+    MATH_FUNC explicit vector(vector<3, U> const& rhs, U const& w);
 
     template <typename U>
     MATH_FUNC explicit vector(vector<4, U> const& rhs);
@@ -164,7 +165,7 @@ public:
 
     MATH_FUNC vector() = default;
 
-    MATH_FUNC explicit vector(T s);
+    MATH_FUNC explicit vector(T const& s);
     MATH_FUNC explicit vector(T const* data/*[Dim]*/);
 
     template <typename U>
@@ -188,11 +189,9 @@ private:
 
 } // MATH_NAMESPACE
 
-
 #include "detail/vector.inl"
 #include "detail/vector2.inl"
 #include "detail/vector3.inl"
 #include "detail/vector4.inl"
-
 
 #endif // VSNRAY_MATH_VECTOR_H

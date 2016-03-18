@@ -4,7 +4,6 @@
 namespace MATH_NAMESPACE
 {
 
-
 //--------------------------------------------------------------------------------------------------
 // matrix4 members
 //
@@ -272,7 +271,7 @@ inline matrix<4, 4, T> transpose(matrix<4, 4, T> const& m)
 
 template <typename T>
 MATH_FUNC
-inline matrix<4, 4, T> make_rotation(vector<3, T> const& axis, T angle)
+inline matrix<4, 4, T> make_rotation(vector<3, T> const& axis, T const& angle)
 {
     auto v = normalize(axis);
     auto s = sin(angle);
@@ -311,7 +310,7 @@ inline matrix<4, 4, T> make_scaling(vector<3, T> const& v)
 
 template <typename T>
 MATH_FUNC
-inline matrix<4, 4, T> make_scaling(T x, T y, T z)
+inline matrix<4, 4, T> make_scaling(T const& x, T const& y, T const& z)
 {
     return make_scaling(vector<3, T>(x, y, z));
 }
@@ -329,7 +328,7 @@ inline matrix<4, 4, T> make_translation(vector<3, T> const& v)
 
 template <typename T>
 MATH_FUNC
-inline matrix<4, 4, T> make_translation(T x, T y, T z)
+inline matrix<4, 4, T> make_translation(T const& x, T const& y, T const& z)
 {
     return make_translation(vector<3, T>(x, y, z));
 }
@@ -364,7 +363,7 @@ inline matrix<4, 4, T> get_translation(matrix<4, 4, T> const& m)
 
 template <typename T>
 MATH_FUNC
-inline matrix<4, 4, T> rotate(matrix<4, 4, T> const& m, vector<3, T> const& axis, T angle)
+inline matrix<4, 4, T> rotate(matrix<4, 4, T> const& m, vector<3, T> const& axis, T const& angle)
 {
     return m * make_rotation(axis, angle);
 }

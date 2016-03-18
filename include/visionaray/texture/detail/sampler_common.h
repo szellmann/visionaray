@@ -86,9 +86,8 @@ inline RT point(T const* tex, ptrdiff_t idx, RT = RT())
 // SIMD: if multi-channel texture, assume AoS
 
 template <typename T>
-inline simd::float4 point(T const* tex, simd::int4 idx, simd::float4 /* result type */)
+inline simd::float4 point(T const* tex, simd::int4 const& idx, simd::float4 /* result type */)
 {
-
     VSNRAY_ALIGN(16) int indices[4];
     store(&indices[0], idx);
     return simd::float4(
@@ -97,13 +96,12 @@ inline simd::float4 point(T const* tex, simd::int4 idx, simd::float4 /* result t
             tex[indices[2]],
             tex[indices[3]]
             );
-
 }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 template <typename T>
-inline simd::float8 point(T const* tex, simd::int8 idx, simd::float8 /* result type */)
+inline simd::float8 point(T const* tex, simd::int8 const& idx, simd::float8 /* result type */)
 {
     VSNRAY_ALIGN(32) int indices[8];
     store(&indices[0], idx);
@@ -123,7 +121,7 @@ inline simd::float8 point(T const* tex, simd::int8 idx, simd::float8 /* result t
 
 inline vector<3, simd::float4> point(
         vector<3, unorm<8>> const*  tex,
-        simd::int4                  idx,
+        simd::int4 const&           idx,
         vector<3, simd::float4>     /* result type */
         )
 {
@@ -138,7 +136,7 @@ inline vector<3, simd::float4> point(
 
 inline vector<4, simd::float4> point(
         vector<4, float> const*     tex,
-        simd::int4                  idx,
+        simd::int4 const&           idx,
         vector<4, simd::float4>     /* result type */
         )
 {
@@ -169,7 +167,7 @@ inline vector<4, simd::float4> point(
 
 inline vector<4, simd::float8> point(
         vector<4, float> const*     tex,
-        simd::int8                  idx,
+        simd::int8 const&           idx,
         vector<4, simd::float8>     /* result type */
         )
 {
@@ -214,7 +212,7 @@ namespace bspline
 template <typename T>
 struct w0_func
 {
-    inline T operator()(T a)
+    inline T operator()(T const& a)
     {
         return T( (1.0 / 6.0) * (-(a * a * a) + 3.0 * a * a - 3.0 * a + 1.0) );
     }
@@ -223,7 +221,7 @@ struct w0_func
 template <typename T>
 struct w1_func
 {
-    inline T operator()(T a)
+    inline T operator()(T const& a)
     {
         return T( (1.0 / 6.0) * (3.0 * a * a * a - 6.0 * a * a + 4.0) );
     }
@@ -232,7 +230,7 @@ struct w1_func
 template <typename T>
 struct w2_func
 {
-    inline T operator()(T a)
+    inline T operator()(T const& a)
     {
         return T( (1.0 / 6.0) * (-3.0 * a * a * a + 3.0 * a * a + 3.0 * a + 1.0) );
     }
@@ -241,7 +239,7 @@ struct w2_func
 template <typename T>
 struct w3_func
 {
-    inline T operator()(T a)
+    inline T operator()(T const& a)
     {
         return T( (1.0 / 6.0) * (a * a * a) );
     }
@@ -257,7 +255,7 @@ namespace cspline
 template <typename T>
 struct w0_func
 {
-    inline T operator()(T a)
+    inline T operator()(T const& a)
     {
         return T( -0.5 * a * a * a + a * a - 0.5 * a );
     }
@@ -266,7 +264,7 @@ struct w0_func
 template <typename T>
 struct w1_func
 {
-    inline T operator()(T a)
+    inline T operator()(T const& a)
     {
         return T( 1.5 * a * a * a - 2.5 * a * a + 1.0 );
     }
@@ -275,7 +273,7 @@ struct w1_func
 template <typename T>
 struct w2_func
 {
-    inline T operator()(T a)
+    inline T operator()(T const& a)
     {
         return T( -1.5 * a * a * a + 2.0 * a * a + 0.5 * a );
     }
@@ -284,7 +282,7 @@ struct w2_func
 template <typename T>
 struct w3_func
 {
-    inline T operator()(T a)
+    inline T operator()(T const& a)
     {
         return T( 0.5 * a * a * a - 0.5 * a * a );
     }
@@ -294,7 +292,7 @@ struct w3_func
 
 // helper functions for cubic interpolation
 template <typename T>
-inline T g0(T x)
+inline T g0(T const& x)
 {
     bspline::w0_func<T> w0;
     bspline::w1_func<T> w1;
@@ -302,7 +300,7 @@ inline T g0(T x)
 }
 
 template <typename T>
-inline T g1(T x)
+inline T g1(T const& x)
 {
     bspline::w2_func<T> w2;
     bspline::w3_func<T> w3;
@@ -310,7 +308,7 @@ inline T g1(T x)
 }
 
 template <typename T>
-inline T h0(T x)
+inline T h0(T const& x)
 {
     bspline::w0_func<T> w0;
     bspline::w1_func<T> w1;
@@ -318,7 +316,7 @@ inline T h0(T x)
 }
 
 template <typename T>
-inline T h1(T x)
+inline T h1(T const& x)
 {
     bspline::w2_func<T> w2;
     bspline::w3_func<T> w3;

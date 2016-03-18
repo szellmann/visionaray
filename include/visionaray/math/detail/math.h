@@ -209,14 +209,14 @@ namespace simd
 
 template <typename T, typename M>
 MATH_FUNC
-inline T select(M k, T const& a, T const& b)
+inline T select(M const& k, T const& a, T const& b)
 {
     return k ? a : b;
 }
 
 template <typename T1, typename T2, typename M>
 MATH_FUNC
-inline bool select(M k, T1 const& a, T2 const& b)
+inline bool select(M const& k, T1 const& a, T2 const& b)
 {
     return k ? a : b;
 }
@@ -253,42 +253,43 @@ using simd::all;
 
 template <typename T, typename M>
 MATH_FUNC
-inline T neg(T a, M m)
+inline T neg(T const& a, M const& m)
 {
     return select( m, -a, T(0.0) );
 }
 
 template <typename T, typename M>
 MATH_FUNC
-inline T add(T a, T b, M m)
+inline T add(T const& a, T const& b, M const& m)
 {
     return select( m, a + b, T(0.0) );
 }
 
 template <typename T, typename M>
 MATH_FUNC
-inline T sub(T a, T b, M m)
+inline T sub(T const& a, T const& b, M const& m)
 {
     return select( m, a - b, T(0.0) );
 }
 
 template <typename T, typename M>
 MATH_FUNC
-inline T mul(T a, T b, M m)
+inline T mul(T const& a, T const& b, M const& m)
 {
     return select( m, a * b, T(0.0) );
 }
 
 template <typename T, typename M>
 MATH_FUNC
-inline T div(T a, T b, M m)
+inline T div(T const& a, T const& b, M const& m)
 {
     return select( m, a / b, T(0.0) );
 }
 
 template <typename T1, typename T2, typename M>
 MATH_FUNC
-inline auto add(T1 a, T2 b, M m) -> decltype(operator+(a, b))
+inline auto add(T1 const& a, T2 const& b, M const& m)
+    -> decltype(operator+(a, b))
 {
     using T3 = decltype(operator+(a, b));
     return select( m, a + b, T3(0.0) );
@@ -296,7 +297,8 @@ inline auto add(T1 a, T2 b, M m) -> decltype(operator+(a, b))
 
 template <typename T1, typename T2, typename M>
 MATH_FUNC
-inline auto sub(T1 a, T2 b, M m) -> decltype(operator-(a, b))
+inline auto sub(T1 const& a, T2 const& b, M const& m)
+    -> decltype(operator-(a, b))
 {
     using T3 = decltype(operator-(a, b));
     return select( m, a - b, T3(0.0) );
@@ -304,7 +306,8 @@ inline auto sub(T1 a, T2 b, M m) -> decltype(operator-(a, b))
 
 template <typename T1, typename T2, typename M>
 MATH_FUNC
-inline auto mul(T1 a, T2 b, M m) -> decltype(operator*(a, b))
+inline auto mul(T1 const& a, T2 const& b, M const& m)
+    -> decltype(operator*(a, b))
 {
     using T3 = decltype(operator*(a, b));
     return select( m, a * b, T3(0.0) );
@@ -312,7 +315,8 @@ inline auto mul(T1 a, T2 b, M m) -> decltype(operator*(a, b))
 
 template <typename T1, typename T2, typename M>
 MATH_FUNC
-inline auto div(T1 a, T2 b, M m) -> decltype(operator/(a, b))
+inline auto div(T1 const& a, T2 const& b, M const& m)
+    -> decltype(operator/(a, b))
 {
     using T3 = decltype(operator/(a, b));
     return select( m, a / b, T3(0.0) );
@@ -320,28 +324,32 @@ inline auto div(T1 a, T2 b, M m) -> decltype(operator/(a, b))
 
 template <typename T1, typename T2, typename T3, typename M>
 MATH_FUNC
-inline auto add(T1 a, T2 b, M m, T3 old = T3(0.0)) -> decltype(operator+(a, b))
+inline auto add(T1 const& a, T2 const& b, M const& m, T3 const& old = T3(0.0))
+    -> decltype(operator+(a, b))
 {
     return select( m, a + b, old );
 }
 
 template <typename T1, typename T2, typename T3, typename M>
 MATH_FUNC
-inline auto sub(T1 a, T2 b, M m, T3 old = T3(0.0)) -> decltype(operator-(a, b))
+inline auto sub(T1 const& a, T2 const& b, M const& m, T3 const& old = T3(0.0))
+    -> decltype(operator-(a, b))
 {
     return select( m, a - b, old );
 }
 
 template <typename T1, typename T2, typename T3, typename M>
 MATH_FUNC
-inline auto mul(T1 a, T2 b, M m, T3 old = T3(0.0)) -> decltype(operator*(a, b))
+inline auto mul(T1 const& a, T2 const& b, M const& m, T3 const& old = T3(0.0))
+    -> decltype(operator*(a, b))
 {
     return select( m, a * b, old );
 }
 
 template <typename T1, typename T2, typename T3, typename M>
 MATH_FUNC
-inline auto div(T1 a, T2 b, M m, T3 old = T3(0.0)) -> decltype(operator/(a, b))
+inline auto div(T1 const& a, T2 const& b, M const& m, T3 const& old = T3(0.0))
+    -> decltype(operator/(a, b))
 {
     return select( m, a / b, old );
 }
@@ -353,7 +361,7 @@ inline auto div(T1 a, T2 b, M m, T3 old = T3(0.0)) -> decltype(operator/(a, b))
 
 template <typename T>
 MATH_FUNC
-inline T heavyside(T x)
+inline T heavyside(T const& x)
 {
     return select( x < T(0.0), T(0.0), T(1.0) );
 }
@@ -399,7 +407,7 @@ inline T rsqrt(T const& x)
 
 template <typename T>
 MATH_FUNC
-inline T cot(T x)
+inline T cot(T const& x)
 {
     return T(1.0) / tan(x);
 }

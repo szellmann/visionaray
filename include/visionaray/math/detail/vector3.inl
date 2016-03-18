@@ -15,7 +15,7 @@ namespace MATH_NAMESPACE
 
 template <typename T>
 MATH_FUNC
-inline vector<3, T>::vector(T x, T y, T z)
+inline vector<3, T>::vector(T const& x, T const& y, T const& z)
     : x(x)
     , y(y)
     , z(z)
@@ -24,7 +24,7 @@ inline vector<3, T>::vector(T x, T y, T z)
 
 template <typename T>
 MATH_FUNC
-inline vector<3, T>::vector(T s)
+inline vector<3, T>::vector(T const& s)
     : x(s)
     , y(s)
     , z(s)
@@ -43,7 +43,7 @@ inline vector<3, T>::vector(T const data[3])
 template <typename T>
 template <typename U>
 MATH_FUNC
-inline vector<3, T>::vector(vector<2, U> const& rhs, U z)
+inline vector<3, T>::vector(vector<2, U> const& rhs, U const& z)
     : x(rhs.x)
     , y(rhs.y)
     , z(z)

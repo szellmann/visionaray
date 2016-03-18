@@ -19,7 +19,7 @@ spectrum<T> fresnel_reflectance(
         conductor_tag       /* */,
         spectrum<T> const&  eta,
         spectrum<T> const&  k,
-        T                   cosi
+        T const&            cosi
         )
 {
     // approximation for s-polarized light (perpendicular), squared

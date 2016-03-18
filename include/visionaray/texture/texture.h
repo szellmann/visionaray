@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_TEXTURE_H
-#define VSNRAY_TEXTURE_H
+#define VSNRAY_TEXTURE_H 1
 
 #include <visionaray/detail/macros.h>
 
@@ -21,12 +21,11 @@
 #include "detail/texture3d.h"
 
 
-
 namespace visionaray
 {
 
 template <typename Tex, typename FloatT>
-inline auto tex1D(Tex const& tex, FloatT coord)
+inline auto tex1D(Tex const& tex, FloatT const& coord)
     -> decltype( detail::tex1D(tex, coord) )
 {
     static_assert(Tex::dimensions == 1, "Incompatible texture type");
@@ -36,7 +35,7 @@ inline auto tex1D(Tex const& tex, FloatT coord)
 
 
 template <typename Tex, typename FloatT>
-inline auto tex2D(Tex const& tex, vector<2, FloatT> coord)
+inline auto tex2D(Tex const& tex, vector<2, FloatT> const& coord)
     -> decltype( detail::tex2D(tex, coord) )
 {
     static_assert(Tex::dimensions == 2, "Incompatible texture type");
@@ -46,7 +45,7 @@ inline auto tex2D(Tex const& tex, vector<2, FloatT> coord)
 
 
 template <typename Tex, typename FloatT>
-inline auto tex3D(Tex const& tex, vector<3, FloatT> coord)
+inline auto tex3D(Tex const& tex, vector<3, FloatT> const& coord)
     -> decltype( detail::tex3D(tex, coord) )
 {
     static_assert(Tex::dimensions == 3, "Incompatible texture type");
@@ -122,8 +121,6 @@ tex3D(cuda_texture_ref<T, ReadMode, 3> const& tex, vector<3, float> coord)
 
 #endif // __CUDACC__
 
-
 } // visionaray
-
 
 #endif // VSNRAY_TEXTURE_H

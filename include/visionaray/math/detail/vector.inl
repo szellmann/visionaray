@@ -20,7 +20,7 @@ namespace MATH_NAMESPACE
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>::vector(T s)
+inline vector<Dim, T>::vector(T const& s)
 {
     for (size_t d = 0; d < Dim; ++d)
     {
@@ -245,7 +245,7 @@ inline vector<Dim, T> operator>>(vector<Dim, T> const& u, vector<Dim, T> const& 
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator+(vector<Dim, T> const& v, T s)
+inline vector<Dim, T> operator+(vector<Dim, T> const& v, T const& s)
 {
     vector<Dim, T> result;
 
@@ -259,7 +259,7 @@ inline vector<Dim, T> operator+(vector<Dim, T> const& v, T s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator-(vector<Dim, T> const& v, T s)
+inline vector<Dim, T> operator-(vector<Dim, T> const& v, T const& s)
 {
     vector<Dim, T> result;
 
@@ -273,7 +273,7 @@ inline vector<Dim, T> operator-(vector<Dim, T> const& v, T s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator*(vector<Dim, T> const& v, T s)
+inline vector<Dim, T> operator*(vector<Dim, T> const& v, T const& s)
 {
     vector<Dim, T> result;
 
@@ -287,7 +287,7 @@ inline vector<Dim, T> operator*(vector<Dim, T> const& v, T s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator/(vector<Dim, T> const& v, T s)
+inline vector<Dim, T> operator/(vector<Dim, T> const& v, T const& s)
 {
     vector<Dim, T> result;
 
@@ -301,7 +301,7 @@ inline vector<Dim, T> operator/(vector<Dim, T> const& v, T s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator&(vector<Dim, T> const& v, T s)
+inline vector<Dim, T> operator&(vector<Dim, T> const& v, T const& s)
 {
     vector<Dim, T> result;
 
@@ -315,7 +315,7 @@ inline vector<Dim, T> operator&(vector<Dim, T> const& v, T s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator|(vector<Dim, T> const& v, T s)
+inline vector<Dim, T> operator|(vector<Dim, T> const& v, T const& s)
 {
     vector<Dim, T> result;
 
@@ -329,7 +329,7 @@ inline vector<Dim, T> operator|(vector<Dim, T> const& v, T s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator^(vector<Dim, T> const& v, T s)
+inline vector<Dim, T> operator^(vector<Dim, T> const& v, T const& s)
 {
     vector<Dim, T> result;
 
@@ -343,7 +343,7 @@ inline vector<Dim, T> operator^(vector<Dim, T> const& v, T s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator<<(vector<Dim, T> const& v, T s)
+inline vector<Dim, T> operator<<(vector<Dim, T> const& v, T const& s)
 {
     vector<Dim, T> result;
 
@@ -357,7 +357,7 @@ inline vector<Dim, T> operator<<(vector<Dim, T> const& v, T s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator>>(vector<Dim, T> const& v, T s)
+inline vector<Dim, T> operator>>(vector<Dim, T> const& v, T const& s)
 {
     vector<Dim, T> result;
 
@@ -373,7 +373,7 @@ inline vector<Dim, T> operator>>(vector<Dim, T> const& v, T s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator+(T s, vector<Dim, T> const& v)
+inline vector<Dim, T> operator+(T const& s, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -387,7 +387,7 @@ inline vector<Dim, T> operator+(T s, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator-(T s, vector<Dim, T> const& v)
+inline vector<Dim, T> operator-(T const& s, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -401,7 +401,7 @@ inline vector<Dim, T> operator-(T s, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator*(T s, vector<Dim, T> const& v)
+inline vector<Dim, T> operator*(T const& s, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -415,7 +415,7 @@ inline vector<Dim, T> operator*(T s, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator/(T s, vector<Dim, T> const& v)
+inline vector<Dim, T> operator/(T const& s, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -429,7 +429,7 @@ inline vector<Dim, T> operator/(T s, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator&(T s, vector<Dim, T> const& v)
+inline vector<Dim, T> operator&(T const& s, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -443,7 +443,7 @@ inline vector<Dim, T> operator&(T s, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator|(T s, vector<Dim, T> const& v)
+inline vector<Dim, T> operator|(T const& s, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -457,7 +457,7 @@ inline vector<Dim, T> operator|(T s, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator^(T s, vector<Dim, T> const& v)
+inline vector<Dim, T> operator^(T const& s, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -471,7 +471,7 @@ inline vector<Dim, T> operator^(T s, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator<<(T s, vector<Dim, T> const& v)
+inline vector<Dim, T> operator<<(T const& s, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -485,7 +485,7 @@ inline vector<Dim, T> operator<<(T s, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> operator>>(T s, vector<Dim, T> const& v)
+inline vector<Dim, T> operator>>(T const& s, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -509,7 +509,7 @@ inline vector<Dim, T>& operator+=(vector<Dim, T>& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>& operator+=(vector<Dim, T>& v, T s)
+inline vector<Dim, T>& operator+=(vector<Dim, T>& v, T const& s)
 {
     v = v + s;
     return v;
@@ -525,7 +525,7 @@ inline vector<Dim, T>& operator-=(vector<Dim, T>& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>& operator-=(vector<Dim, T>& v, T s)
+inline vector<Dim, T>& operator-=(vector<Dim, T>& v, T const& s)
 {
     v = v - s;
     return v;
@@ -541,7 +541,7 @@ inline vector<Dim, T>& operator*=(vector<Dim, T>& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>& operator*=(vector<Dim, T>& v, T s)
+inline vector<Dim, T>& operator*=(vector<Dim, T>& v, T const& s)
 {
     v = v * s;
     return v;
@@ -557,7 +557,7 @@ inline vector<Dim, T>& operator/=(vector<Dim, T>& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>& operator/=(vector<Dim, T>& v, T s)
+inline vector<Dim, T>& operator/=(vector<Dim, T>& v, T const& s)
 {
     v = v / s;
     return v;
@@ -573,7 +573,7 @@ inline vector<Dim, T>& operator&=(vector<Dim, T>& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>& operator&=(vector<Dim, T>& v, T s)
+inline vector<Dim, T>& operator&=(vector<Dim, T>& v, T const& s)
 {
     v = v & s;
     return v;
@@ -589,7 +589,7 @@ inline vector<Dim, T>& operator|=(vector<Dim, T>& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>& operator|=(vector<Dim, T>& v, T s)
+inline vector<Dim, T>& operator|=(vector<Dim, T>& v, T const& s)
 {
     v = v | s;
     return v;
@@ -605,7 +605,7 @@ inline vector<Dim, T>& operator^=(vector<Dim, T>& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>& operator^=(vector<Dim, T>& v, T s)
+inline vector<Dim, T>& operator^=(vector<Dim, T>& v, T const& s)
 {
     v = v ^ s;
     return v;
@@ -621,7 +621,7 @@ inline vector<Dim, T>& operator<<=(vector<Dim, T>& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>& operator<<=(vector<Dim, T>& v, T s)
+inline vector<Dim, T>& operator<<=(vector<Dim, T>& v, T const& s)
 {
     v = v << s;
     return v;
@@ -637,7 +637,7 @@ inline vector<Dim, T>& operator>>=(vector<Dim, T>& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T>& operator>>=(vector<Dim, T>& v, T s)
+inline vector<Dim, T>& operator>>=(vector<Dim, T>& v, T const& s)
 {
     v = v >> s;
     return v;
@@ -682,7 +682,7 @@ inline vector<Dim, T> reflect(vector<Dim, T> const& i, vector<Dim, T> const& n)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> refract(vector<Dim, T> const& i, vector<Dim, T> const& n, T eta)
+inline vector<Dim, T> refract(vector<Dim, T> const& i, vector<Dim, T> const& n, T const& eta)
 {
     T k = T(1.0) - eta * eta * (T(1.0) - dot(n, i) * dot(n, i));
 
