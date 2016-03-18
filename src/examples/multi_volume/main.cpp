@@ -375,9 +375,9 @@ protected:
 
     void on_display();
     void on_key_press(key_event const& event);
-    void on_mouse_down(mouse_event const& event);
-    void on_mouse_up(mouse_event const& event);
-    void on_mouse_move(mouse_event const& event);
+    void on_mouse_down(visionaray::mouse_event const& event);
+    void on_mouse_up(visionaray::mouse_event const& event);
+    void on_mouse_move(visionaray::mouse_event const& event);
     void on_resize(int w, int h);
 
 };
@@ -395,7 +395,6 @@ struct kernel
     using S    = R::scalar_type;
     using V    = vector<3, S>;
     using C    = vector<4, S>;
-    using RGB  = vector<3, S>;
     using Mat4 = matrix<4, 4, S>;
     using HR   = hit_record<R, aabb>;
 
@@ -555,9 +554,9 @@ void renderer::on_display()
 {
     // some setup
 
-    using R   = renderer::ray_type;
-    using S   = R::scalar_type;
-    using RGB = vector<3, S>;
+    using R = renderer::ray_type;
+    using S = R::scalar_type;
+    using C = vector<3, S>;
 
 #ifdef __CUDACC__
     auto sparams = make_sched_params(
@@ -601,9 +600,9 @@ void renderer::on_display()
     for (size_t i = 0; i < transforms.size(); ++i)
     {
         plastic<S> mat;
-        mat.set_ca( from_rgb(RGB(0.2f, 0.2f, 0.2f)) );
-        mat.set_cd( from_rgb(RGB(0.8f, 0.8f, 0.8f)) );
-        mat.set_cs( from_rgb(RGB(0.8f, 0.8f, 0.8f)) );
+        mat.set_ca( from_rgb(C(0.2f, 0.2f, 0.2f)) );
+        mat.set_cd( from_rgb(C(0.8f, 0.8f, 0.8f)) );
+        mat.set_cs( from_rgb(C(0.8f, 0.8f, 0.8f)) );
         mat.set_ka( 1.0f );
         mat.set_kd( 1.0f );
         mat.set_ks( 1.0f );
@@ -714,7 +713,7 @@ void renderer::on_key_press(key_event const& event)
 // Mouse handling
 //
 
-void renderer::on_mouse_down(mouse_event const& event)
+void renderer::on_mouse_down(visionaray::mouse_event const& event)
 {
     for (auto& manip : model_manips)
     {
@@ -731,7 +730,7 @@ void renderer::on_mouse_down(mouse_event const& event)
     viewer_base::on_mouse_down(event);
 }
 
-void renderer::on_mouse_up(mouse_event const& event)
+void renderer::on_mouse_up(visionaray::mouse_event const& event)
 {
     for (auto& manip : model_manips)
     {
@@ -748,7 +747,7 @@ void renderer::on_mouse_up(mouse_event const& event)
     viewer_base::on_mouse_up(event);
 }
 
-void renderer::on_mouse_move(mouse_event const& event)
+void renderer::on_mouse_move(visionaray::mouse_event const& event)
 {
     for (auto& manip : model_manips)
     {
