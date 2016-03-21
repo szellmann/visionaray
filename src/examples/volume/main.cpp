@@ -30,7 +30,7 @@ using viewer_type   = viewer_glut;
 //
 
 // volume data
-static const float voldata[2 * 2 * 2] = {
+VSNRAY_ALIGN(32) static const float voldata[2 * 2 * 2] = {
 
         // slice 1
         1.0f, 0.0f,
@@ -43,7 +43,7 @@ static const float voldata[2 * 2 * 2] = {
         };
 
 // post-classification transfer function
-static const vec4 tfdata[4 * 4] = {
+VSNRAY_ALIGN(32) static const vec4 tfdata[4 * 4] = {
         { 0.0f, 0.0f, 0.0f, 0.02f },
         { 0.7f, 0.1f, 0.2f, 0.03f },
         { 0.1f, 0.9f, 0.3f, 0.04f },

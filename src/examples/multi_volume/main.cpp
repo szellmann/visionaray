@@ -53,7 +53,7 @@ using viewer_type   = viewer_glut;
 //
 
 // post-classification transfer functions
-static const vec4 tfdata[3 * 5] = {
+VSNRAY_ALIGN(32) static const vec4 tfdata[3 * 5] = {
 
         { 0.0f, 0.2f, 0.8f, 0.005f }, // 1st volume
         { 1.0f, 0.8f, 0.0f, 0.01f  },
