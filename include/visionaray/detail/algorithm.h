@@ -9,22 +9,10 @@
 #include <algorithm>
 #include <iterator>
 
-#include "algo/parallel_partition.h"
-
 namespace visionaray
 {
 namespace algo
 {
-
-//--------------------------------------------------------------------------------------------------
-// parallel_partition
-//
-
-template <typename ForwardIt, typename UnaryPredicate>
-ForwardIt parallel_partition(ForwardIt first, ForwardIt last, UnaryPredicate p)
-{
-}
-
 
 //--------------------------------------------------------------------------------------------------
 // reorder
