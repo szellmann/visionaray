@@ -54,7 +54,9 @@ void test_representability()
     EXPECT_FALSE( any(isnan(T(INFINITY))) );
     EXPECT_FALSE( any(isnan(T(0.0))) );
     EXPECT_FALSE( any(isnan(T(DBL_MIN / 2.0))) );
+#if !VSNRAY_CXX_MSVC
     EXPECT_TRUE ( all(isnan(T(0.0 / 0.0))) );
+#endif
     EXPECT_TRUE ( all(isnan(T(INFINITY - INFINITY))) );
 
 
