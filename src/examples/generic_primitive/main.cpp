@@ -51,9 +51,9 @@ struct renderer : viewer_type
 
     // rendering data
 
-    std::vector<primitive_type>                 primitives;
-    std::vector<vec3>                           normals;
-    std::vector<plastic<float>>                 materials;
+    aligned_vector<primitive_type>              primitives;
+    aligned_vector<vec3>                        normals;
+    aligned_vector<plastic<float>>              materials;
 
     void generate_frame();
 
