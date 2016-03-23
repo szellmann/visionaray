@@ -128,7 +128,10 @@ struct renderer : viewer_type
                 int h = 201;
                 int d = 201;
 
-                make_marschner_lobb(w, h, d);
+                if (marschner_lobb.size() == 0)
+                {
+                    make_marschner_lobb(w, h, d);
+                }
 
                 volumes.emplace_back(w, h, d);
                 auto& volume = volumes.back();
@@ -144,7 +147,10 @@ struct renderer : viewer_type
                 int h = 256;
                 int d = 256;
 
-                make_heart(w, h, d);
+                if (heart.size() == 0)
+                {
+                    make_heart(w, h, d);
+                }
 
                 volumes.emplace_back(w, h, d);
                 auto& volume = volumes.back();
@@ -161,7 +167,10 @@ struct renderer : viewer_type
                 int h = 256;
                 int d = 256;
 
-                make_mandelbulb(w, h, d);
+                if (mandelbulb.size() == 0)
+                {
+                    make_mandelbulb(w, h, d);
+                }
 
                 volumes.emplace_back(w, h, d);
                 auto& volume = volumes.back();
