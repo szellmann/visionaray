@@ -632,15 +632,21 @@ void renderer::on_display()
 
     thrust::device_vector<cuda_texture_ref<float, ElementType, 3>> device_volumes;
     thrust::device_vector<cuda_texture_ref<vec4, ElementType, 1>> device_transfuncs;
-    device_volumes.resize(3);
-    device_transfuncs.resize(3);
+    device_volumes.resize(volumes.size());
+    device_transfuncs.resize(transfuncs.size());
 
     using volume_ref = thrust::device_vector<cuda_texture_ref<float, ElementType, 3>>::value_type;
     using transfunc_ref = thrust::device_vector<cuda_texture_ref<vec4, ElementType, 1>>::value_type;
 
-    for (size_t i = 0; i < 3; ++i)
+    for (size_t i = 0; i < device_volumes_storage.size(); ++i)
     {
-        device_volumes[i] = volume_ref(device_volumes_storage[i]);
+        size_t index = i % device_volumes_storage.size();
+
+        device_volumes[i] = volume_ref(device_volumes_storage[index]);
+    }
+
+    for (size_t i = 0; i < device_transfuncs.size(); ++i)
+    {
         device_transfuncs[i] = transfunc_ref(device_transfuncs_storage[i]);
     }
 
