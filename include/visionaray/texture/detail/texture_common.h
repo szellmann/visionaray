@@ -181,7 +181,7 @@ public:
     {
     }
 
-    texture_ref_base(size_t size = 0)
+    explicit texture_ref_base(size_t size = 0)
         : data_(nullptr)
     {
         VSNRAY_UNUSED(size);
