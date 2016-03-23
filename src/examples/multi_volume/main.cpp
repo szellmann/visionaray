@@ -120,6 +120,10 @@ struct renderer : viewer_type
         : viewer_type(512, 512, "Visionaray Multi-Volume Rendering Example")
         , host_sched(8)
     {
+    }
+
+    void setup()
+    {
         for (size_t i = 0; i < 3; ++i)
         {
             if (i % 3 == 0)
@@ -809,6 +813,9 @@ int main(int argc, char** argv)
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
     }
+
+    // Initialize volume textures, manipulators, etc.
+    rend.setup();
 
 #ifdef __CUDACC__
     rend.upload_gpu_textures();
