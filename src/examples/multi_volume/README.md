@@ -16,4 +16,4 @@ Options:
 
 ### Interaction
 
-Repeatedly press the 'r' key to toggle rotate/translate manipulators
+Repeatedly press the 'r' key to toggle rotate/translate manipulators.
