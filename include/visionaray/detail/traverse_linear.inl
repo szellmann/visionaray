@@ -114,7 +114,7 @@ auto any_hit(
     -> decltype( std::declval<default_intersector>()(r, *begin) )
 {
     default_intersector ignore;
-    return detail::traverse<true>(r, begin, end, max_t, ignore);
+    return any_hit(r, begin, end, max_t, ignore);
 }
 
 
@@ -141,7 +141,7 @@ auto closest_hit(R const& r, P begin, P end)
     -> decltype( std::declval<default_intersector>()(r, *begin) )
 {
     default_intersector ignore;
-    return detail::traverse<false>(r, begin, end, ignore);
+    return closest_hit(r, begin, end, ignore);
 }
 
 } // visionaray
