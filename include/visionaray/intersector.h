@@ -30,12 +30,37 @@ struct basic_intersector
         return intersect(ray, prim);
     }
 
+
+    // BVH ------------------------------------------------
+
     template <typename R, typename P, typename = typename std::enable_if<is_any_bvh<P>::value>::type>
     VSNRAY_FUNC
     auto operator()(R const& ray, P const& prim)
         -> decltype( intersect(ray, prim, std::declval<Derived&>()) )
     {
         return intersect(ray, prim, *static_cast<Derived*>(this));
+    }
+
+
+    // BVH any hit ----------------------------------------
+
+    template <typename R, typename P, typename = typename std::enable_if<is_any_bvh<P>::value>::type>
+    VSNRAY_FUNC
+    auto operator()(std::true_type /* */, R const& ray, P const& prim)
+        -> decltype( intersect(ray, prim, std::declval<Derived&>()) )
+    {
+        return intersect<true>(ray, prim, *static_cast<Derived*>(this));
+    }
+
+
+    // BVH closest hit ------------------------------------
+
+    template <typename R, typename P, typename = typename std::enable_if<is_any_bvh<P>::value>::type>
+    VSNRAY_FUNC
+    auto operator()(std::false_type /* */, R const& ray, P const& prim)
+        -> decltype( intersect(ray, prim, std::declval<Derived&>()) )
+    {
+        return intersect<false>(ray, prim, *static_cast<Derived*>(this));
     }
 };
 

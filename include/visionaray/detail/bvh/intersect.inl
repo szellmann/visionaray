@@ -9,7 +9,12 @@
 namespace visionaray
 {
 
+//-------------------------------------------------------------------------------------------------
+// Ray / BVH intersection
+//
+
 template <
+    bool AnyHit,
     typename T,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
@@ -95,11 +100,38 @@ next:
 #endif
 
             update_if(result, hr, closer);
+
+            if ( AnyHit && all(result.hit) )
+            {
+                return result;
+            }
         }
     }
 
     return result;
 
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Default intersect returns closest hit!
+//
+
+template <
+    typename T,
+    typename BVH,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename Intersector
+    >
+VSNRAY_FUNC
+inline auto intersect(
+        basic_ray<T> const& ray,
+        BVH const&          b,
+        Intersector&        isect
+        )
+    -> decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+{
+    return intersect<false>(ray, b, isect);
 }
 
 } // visionaray
