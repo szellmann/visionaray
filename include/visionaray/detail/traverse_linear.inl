@@ -44,7 +44,7 @@ auto traverse(
         auto hr = isect(r, *it);
         update_if(result, hr, is_closer(hr, result, max_t));
 
-        if ( Traversal == detail::AnyHit && all(result.hit) )
+        if ( Traversal == AnyHit && all(result.hit) )
         {
             return result;
         }
@@ -85,7 +85,7 @@ auto traverse(
         auto hr = isect(std::integral_constant<int, Traversal>{}, r, *it);
         update_if(result, hr, is_closer(hr, result, max_t));
 
-        if ( AnyHit && all(result.hit) )
+        if ( Traversal == AnyHit && all(result.hit) )
         {
             return result;
         }
