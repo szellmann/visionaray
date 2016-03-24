@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "detail/macros.h"
+#include "detail/tags.h"
 #include "bvh.h"
 
 namespace visionaray
@@ -46,10 +47,10 @@ struct basic_intersector
 
     template <typename R, typename P, typename = typename std::enable_if<is_any_bvh<P>::value>::type>
     VSNRAY_FUNC
-    auto operator()(std::true_type /* */, R const& ray, P const& prim)
+    auto operator()(detail::any_hit_tag /* */, R const& ray, P const& prim)
         -> decltype( intersect(ray, prim, std::declval<Derived&>()) )
     {
-        return intersect<true>(ray, prim, *static_cast<Derived*>(this));
+        return intersect<detail::AnyHit>(ray, prim, *static_cast<Derived*>(this));
     }
 
 
@@ -57,10 +58,10 @@ struct basic_intersector
 
     template <typename R, typename P, typename = typename std::enable_if<is_any_bvh<P>::value>::type>
     VSNRAY_FUNC
-    auto operator()(std::false_type /* */, R const& ray, P const& prim)
+    auto operator()(detail::closest_hit_tag /* */, R const& ray, P const& prim)
         -> decltype( intersect(ray, prim, std::declval<Derived&>()) )
     {
-        return intersect<false>(ray, prim, *static_cast<Derived*>(this));
+        return intersect<detail::ClosestHit>(ray, prim, *static_cast<Derived*>(this));
     }
 };
 

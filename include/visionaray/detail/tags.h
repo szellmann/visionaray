@@ -86,6 +86,16 @@ struct has_textures : has_textures_impl<T>::type
 
 
 //-------------------------------------------------------------------------------------------------
+// Traversal types
+//
+
+enum traversal_type { AnyHit, ClosestHit };
+
+using any_hit_tag     = std::integral_constant<int, AnyHit>;
+using closest_hit_tag = std::integral_constant<int, ClosestHit>;
+
+
+//-------------------------------------------------------------------------------------------------
 // Misc.
 //
 

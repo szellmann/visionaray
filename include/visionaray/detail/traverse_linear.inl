@@ -19,7 +19,7 @@ namespace detail
 //
 
 template <
-    bool AnyHit,
+    traversal_type Traversal,
     typename R,
     typename P,
     typename Intersector
@@ -44,7 +44,7 @@ auto traverse(
         auto hr = isect(r, *it);
         update_if(result, hr, is_closer(hr, result, max_t));
 
-        if ( AnyHit && all(result.hit) )
+        if ( Traversal == detail::AnyHit && all(result.hit) )
         {
             return result;
         }
@@ -60,7 +60,7 @@ auto traverse(
 //
 
 template <
-    bool AnyHit,
+    traversal_type Traversal,
     typename R,
     typename P,
     typename Intersector
@@ -74,7 +74,7 @@ auto traverse(
         typename R::scalar_type const&  max_t,
         Intersector& isect
         )
-    -> decltype( isect(std::integral_constant<bool, AnyHit>{}, r, *begin) )
+    -> decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin) )
 {
     using HR = decltype( isect(r, *begin) );
 
@@ -82,7 +82,7 @@ auto traverse(
 
     for (P it = begin; it != end; ++it)
     {
-        auto hr = isect(std::integral_constant<bool, AnyHit>{}, r, *it);
+        auto hr = isect(std::integral_constant<int, Traversal>{}, r, *it);
         update_if(result, hr, is_closer(hr, result, max_t));
 
         if ( AnyHit && all(result.hit) )
@@ -95,7 +95,7 @@ auto traverse(
 }
 
 template <
-    bool AnyHit,
+    traversal_type Traversal,
     typename IsAnyBVH,
     typename R,
     typename P,
@@ -111,7 +111,7 @@ auto traverse(
         )
     -> decltype( isect(r, *begin) )
 {
-    return traverse<AnyHit>(
+    return traverse<Traversal>(
             IsAnyBVH{},
             r,
             begin,
@@ -141,7 +141,7 @@ auto any_hit(
 {
     using Primitive = typename std::iterator_traits<P>::value_type;
 
-    return detail::traverse<true>(
+    return detail::traverse<detail::AnyHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
             r,
             begin,
@@ -177,7 +177,7 @@ auto any_hit(
 {
     using Primitive = typename std::iterator_traits<P>::value_type;
 
-    return detail::traverse<true>(
+    return detail::traverse<detail::AnyHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
             r,
             begin,
@@ -218,7 +218,7 @@ auto closest_hit(
 {
     using Primitive = typename std::iterator_traits<P>::value_type;
 
-    return detail::traverse<false>(
+    return detail::traverse<detail::ClosestHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
             r,
             begin,

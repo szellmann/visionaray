@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "../stack.h"
+#include "../tags.h"
 
 namespace visionaray
 {
@@ -14,7 +15,7 @@ namespace visionaray
 //
 
 template <
-    bool AnyHit,
+    detail::traversal_type Traversal,
     typename T,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
@@ -101,7 +102,7 @@ next:
 
             update_if(result, hr, closer);
 
-            if ( AnyHit && all(result.hit) )
+            if ( Traversal == detail::AnyHit && all(result.hit) )
             {
                 return result;
             }
@@ -131,7 +132,7 @@ inline auto intersect(
         )
     -> decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
 {
-    return intersect<false>(ray, b, isect);
+    return intersect<detail::ClosestHit>(ray, b, isect);
 }
 
 } // visionaray
