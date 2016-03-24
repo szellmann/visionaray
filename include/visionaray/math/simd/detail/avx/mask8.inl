@@ -10,12 +10,12 @@ namespace simd
 // mask8 members
 //
 
-VSNRAY_FORCE_INLINE mask8::basic_mask(__m256 m)
+VSNRAY_FORCE_INLINE mask8::basic_mask(__m256 const& m)
     : f(m)
 {
 }
 
-VSNRAY_FORCE_INLINE mask8::basic_mask(__m256i m)
+VSNRAY_FORCE_INLINE mask8::basic_mask(__m256i const& m)
     : i(m)
 {
 }

@@ -40,7 +40,7 @@ public:
 
     VSNRAY_FUNC spectrum() = default;
 
-    VSNRAY_FUNC explicit spectrum(T c);
+    VSNRAY_FUNC explicit spectrum(T const& c);
     VSNRAY_FUNC explicit spectrum(vector<num_samples, T> const& samples);
 
     template <typename U>

@@ -18,7 +18,7 @@ namespace visionaray
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T>::spectrum(T c)
+inline spectrum<T>::spectrum(T const& c)
     : samples_(c)
 {
 }
@@ -129,28 +129,28 @@ inline spectrum<T> operator/(spectrum<T> const& s, spectrum<T> const& t)
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> operator+(spectrum<T> const& s, T t)
+inline spectrum<T> operator+(spectrum<T> const& s, T const& t)
 {
     return spectrum<T>( s.samples() + t );
 }
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> operator-(spectrum<T> const& s, T t)
+inline spectrum<T> operator-(spectrum<T> const& s, T const& t)
 {
     return spectrum<T>( s.samples() - t );
 }
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> operator*(spectrum<T> const& s, T t)
+inline spectrum<T> operator*(spectrum<T> const& s, T const& t)
 {
     return spectrum<T>( s.samples() * t );
 }
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> operator/(spectrum<T> const& s, T t)
+inline spectrum<T> operator/(spectrum<T> const& s, T const& t)
 {
     return spectrum<T>( s.samples() / t );
 }
@@ -159,28 +159,28 @@ inline spectrum<T> operator/(spectrum<T> const& s, T t)
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> operator+(T s, spectrum<T> const& t)
+inline spectrum<T> operator+(T const& s, spectrum<T> const& t)
 {
     return spectrum<T>( s + t.samples() );
 }
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> operator-(T s, spectrum<T> const& t)
+inline spectrum<T> operator-(T const& s, spectrum<T> const& t)
 {
     return spectrum<T>( s - t.samples() );
 }
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> operator*(T s, spectrum<T> const& t)
+inline spectrum<T> operator*(T const& s, spectrum<T> const& t)
 {
     return spectrum<T>( s * t.samples() );
 }
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> operator/(T s, spectrum<T> const& t)
+inline spectrum<T> operator/(T const& s, spectrum<T> const& t)
 {
     return spectrum<T>( s / t.samples() );
 }
@@ -221,7 +221,7 @@ inline spectrum<T>& operator/=(spectrum<T>& s, spectrum<T> const& t)
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T>& operator+=(spectrum<T>& s, T t)
+inline spectrum<T>& operator+=(spectrum<T>& s, T const& t)
 {
     s = spectrum<T>(s + t);
     return s;
@@ -229,7 +229,7 @@ inline spectrum<T>& operator+=(spectrum<T>& s, T t)
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T>& operator-=(spectrum<T>& s, T t)
+inline spectrum<T>& operator-=(spectrum<T>& s, T const& t)
 {
     s = spectrum<T>(s - t);
     return s;
@@ -237,7 +237,7 @@ inline spectrum<T>& operator-=(spectrum<T>& s, T t)
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T>& operator*=(spectrum<T>& s, T t)
+inline spectrum<T>& operator*=(spectrum<T>& s, T const& t)
 {
     s = spectrum<T>(s * t);
     return s;
@@ -245,7 +245,7 @@ inline spectrum<T>& operator*=(spectrum<T>& s, T t)
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T>& operator/=(spectrum<T>& s, T t)
+inline spectrum<T>& operator/=(spectrum<T>& s, T const& t)
 {
     s = spectrum<T>(s / t);
     return s;
@@ -363,7 +363,7 @@ inline spectrum<T> from_rgb(vector<3, T> const& rgb)
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> from_rgb(T r, T g, T b)
+inline spectrum<T> from_rgb(T const& r, T const& g, T const& b)
 {
     return from_rgb( vector<3, T>(r, g, b) );
 }
@@ -379,7 +379,7 @@ inline spectrum<T> from_rgba(vector<4, T> const& rgba)
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> from_rgba(T r, T g, T b, T a)
+inline spectrum<T> from_rgba(T const& r, T const& g, T const& b, T const& a)
 {
     return from_rgba(r, g, b, a);
 }

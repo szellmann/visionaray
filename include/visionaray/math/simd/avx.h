@@ -97,8 +97,8 @@ public:
     __m256i i;
 
     VSNRAY_FORCE_INLINE basic_mask() = default;
-    VSNRAY_FORCE_INLINE basic_mask(__m256 m);
-    VSNRAY_FORCE_INLINE basic_mask(__m256i m);
+    VSNRAY_FORCE_INLINE basic_mask(__m256 const& m);
+    VSNRAY_FORCE_INLINE basic_mask(__m256i const& m);
     VSNRAY_FORCE_INLINE basic_mask(bool b);
     VSNRAY_FORCE_INLINE basic_mask(
             bool x1,

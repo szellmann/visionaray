@@ -18,7 +18,7 @@ auto traverse(
         R const& r,
         P begin,
         P end,
-        typename R::scalar_type max_t,
+        typename R::scalar_type const& max_t,
         Intersector& isect
         )
     -> decltype( isect(r, *begin) )
@@ -95,7 +95,7 @@ auto any_hit(
         R const& r,
         P begin,
         P end,
-        typename R::scalar_type max_t,
+        typename R::scalar_type const& max_t,
         Intersector& isect
         )
     -> decltype( isect(r, *begin) )
@@ -109,7 +109,7 @@ auto any_hit(
         R const& r,
         P begin,
         P end,
-        typename R::scalar_type max_t
+        typename R::scalar_type const& max_t
         )
     -> decltype( std::declval<default_intersector>()(r, *begin) )
 {
