@@ -81,7 +81,7 @@ auto any_hit(R const& r, P begin, P end)
     -> decltype( intersect(r, *begin) )
 {
     default_intersector ignore;
-    return detail::traverse<true>(r, begin, end, ignore);
+    return any_hit(r, begin, end, ignore);
 }
 
 
