@@ -297,12 +297,12 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
     auto s = normalize( cross(sparams.cam.up(), f) );
     auto u =            cross(f, s);
 
-    auto eye   = vector<3, T>(sparams.cam.eye());
-    auto cam_u = vector<3, T>(s) * T( tan(sparams.cam.fovy() / 2.0f) * sparams.cam.aspect() );
-    auto cam_v = vector<3, T>(u) * T( tan(sparams.cam.fovy() / 2.0f) );
-    auto cam_w = vector<3, T>(-f);
+    vec3 eye   = sparams.cam.eye();
+    vec3 cam_u = s * tan(sparams.cam.fovy() / 2.0f) * sparams.cam.aspect();
+    vec3 cam_v = u * tan(sparams.cam.fovy() / 2.0f);
+    vec3 cam_w = -f;
 
-    render_tile = [&](recti const& tile, sampler<T>& samp)
+    render_tile = [=](recti const& tile, sampler<T>& samp)
     {
         using namespace detail;
 
@@ -329,10 +329,10 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                     x,
                     y,
                     viewport,
-                    eye,
-                    cam_u,
-                    cam_v,
-                    cam_w
+                    vector<3, T>(eye),
+                    vector<3, T>(cam_u),
+                    vector<3, T>(cam_v),
+                    vector<3, T>(cam_w)
                     );
         }
     };
