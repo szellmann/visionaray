@@ -229,8 +229,8 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
     assert( sparams.rt.width()  >= sparams.viewport.w - sparams.viewport.x );
     assert( sparams.rt.height() >= sparams.viewport.h - sparams.viewport.y );
 
-    using scalar_type   = typename R::scalar_type;
-    using matrix_type   = matrix<4, 4, scalar_type>;
+    using T = typename R::scalar_type;
+    using matrix_type   = matrix<4, 4, T>;
 
     viewport = sparams.viewport;
 
@@ -241,19 +241,19 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 
     recti xviewport(viewport.x, viewport.y, viewport.w - 1, viewport.h - 1);
 
-    render_tile = [=](recti const& tile, sampler<scalar_type>& samp)
+    render_tile = [=](recti const& tile, sampler<T>& samp)
     {
         using namespace detail;
 
-        unsigned numx = tile_width  / packet_size<scalar_type>::w;
-        unsigned numy = tile_height / packet_size<scalar_type>::h;
+        unsigned numx = tile_width  / packet_size<T>::w;
+        unsigned numy = tile_height / packet_size<T>::h;
         for (unsigned i = 0; i < numx * numy; ++i)
         {
             auto pos = vec2i(i % numx, i / numx);
-            auto x = tile.x + pos.x * packet_size<scalar_type>::w;
-            auto y = tile.y + pos.y * packet_size<scalar_type>::h;
+            auto x = tile.x + pos.x * packet_size<T>::w;
+            auto y = tile.y + pos.y * packet_size<T>::h;
 
-            recti xpixel(x, y, packet_size<scalar_type>::w - 1, packet_size<scalar_type>::h - 1);
+            recti xpixel(x, y, packet_size<T>::w - 1, packet_size<T>::h - 1);
             if ( !overlapping(xviewport, xpixel) )
             {
                 continue;
@@ -286,7 +286,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
     assert( sparams.rt.width()  >= sparams.cam.get_viewport().w - sparams.cam.get_viewport().x );
     assert( sparams.rt.height() >= sparams.cam.get_viewport().h - sparams.cam.get_viewport().y );
 
-    using scalar_type   = typename R::scalar_type;
+    using T = typename R::scalar_type;
 
     viewport = sparams.cam.get_viewport();
 
@@ -297,24 +297,24 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
     auto s = normalize( cross(sparams.cam.up(), f) );
     auto u =            cross(f, s);
 
-    auto eye   = vector<3, scalar_type>(sparams.cam.eye());
-    auto cam_u = vector<3, scalar_type>(s) * scalar_type( tan(sparams.cam.fovy() / 2.0f) * sparams.cam.aspect() );
-    auto cam_v = vector<3, scalar_type>(u) * scalar_type( tan(sparams.cam.fovy() / 2.0f) );
-    auto cam_w = vector<3, scalar_type>(-f);
+    auto eye   = vector<3, T>(sparams.cam.eye());
+    auto cam_u = vector<3, T>(s) * T( tan(sparams.cam.fovy() / 2.0f) * sparams.cam.aspect() );
+    auto cam_v = vector<3, T>(u) * T( tan(sparams.cam.fovy() / 2.0f) );
+    auto cam_w = vector<3, T>(-f);
 
-    render_tile = [=](recti const& tile, sampler<scalar_type>& samp)
+    render_tile = [&](recti const& tile, sampler<T>& samp)
     {
         using namespace detail;
 
-        unsigned numx = tile_width  / packet_size<scalar_type>::w;
-        unsigned numy = tile_height / packet_size<scalar_type>::h;
+        unsigned numx = tile_width  / packet_size<T>::w;
+        unsigned numy = tile_height / packet_size<T>::h;
         for (unsigned i = 0; i < numx * numy; ++i)
         {
             auto pos = vec2i(i % numx, i / numx);
-            auto x = tile.x + pos.x * packet_size<scalar_type>::w;
-            auto y = tile.y + pos.y * packet_size<scalar_type>::h;
+            auto x = tile.x + pos.x * packet_size<T>::w;
+            auto y = tile.y + pos.y * packet_size<T>::h;
 
-            recti xpixel(x, y, packet_size<scalar_type>::w - 1, packet_size<scalar_type>::h - 1);
+            recti xpixel(x, y, packet_size<T>::w - 1, packet_size<T>::h - 1);
             if ( !overlapping(xviewport, xpixel) )
             {
                 continue;
