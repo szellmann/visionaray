@@ -94,29 +94,32 @@ inline vector<2, T> get_tex_coord(
 
 
 //-------------------------------------------------------------------------------------------------
-// Gather four texture coordinates from array
+// Gather N texture coordinates from array
 //
 
 template <
     typename TexCoords,
     typename HR,
+    size_t N,
     typename Primitive
     >
 inline auto get_tex_coord(
         TexCoords                   coords,
-        std::array<HR, 4> const&    hr,
+        std::array<HR, N> const&    hr,
         Primitive                   /* */
         )
-    -> std::array<typename std::iterator_traits<TexCoords>::value_type, 4>
+    -> std::array<typename std::iterator_traits<TexCoords>::value_type, N>
 {
     using TC = typename std::iterator_traits<TexCoords>::value_type;
 
-    return std::array<TC, 4>{{
-            get_tex_coord(coords, hr[0], Primitive{}),
-            get_tex_coord(coords, hr[1], Primitive{}),
-            get_tex_coord(coords, hr[2], Primitive{}),
-            get_tex_coord(coords, hr[3], Primitive{})
-            }};
+    std::array<TC, N> result;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        result[i] = get_tex_coord(coords, hr[0], Primitive{});
+    }
+
+    return result;
 }
 
 

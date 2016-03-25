@@ -169,31 +169,34 @@ inline vector<3, T> get_color(
 
 
 //-------------------------------------------------------------------------------------------------
-// Gather four vertex colors from array
+// Gather N vertex colors from array
 //
 
 template <
     typename Colors,
-    typename HR
+    typename HR,
+    size_t N
     >
 inline auto get_color(
         Colors                      colors,
-        std::array<HR, 4> const&    hr,
+        std::array<HR, N> const&    hr,
         basic_triangle<3, float>    /* */,
         per_vertex_binding          /* */
         )
-    -> std::array<typename std::iterator_traits<Colors>::value_type, 4>
+    -> std::array<typename std::iterator_traits<Colors>::value_type, N>
 {
     using C = typename std::iterator_traits<Colors>::value_type;
     using ColorBinding = per_vertex_binding;
     using Primitive = basic_triangle<3, float>; // TODO: make this work for other planar surfaces!
 
-    return std::array<C, 4>{{
-            get_color(colors, hr[0], Primitive{}, ColorBinding{}),
-            get_color(colors, hr[1], Primitive{}, ColorBinding{}),
-            get_color(colors, hr[2], Primitive{}, ColorBinding{}),
-            get_color(colors, hr[3], Primitive{}, ColorBinding{})
-            }};
+    std::array<C, N> result;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        result[i] = get_color(colors, hr[i], Primitive{}, ColorBinding{});
+    }
+
+    return result;
 }
 
 //-------------------------------------------------------------------------------------------------
