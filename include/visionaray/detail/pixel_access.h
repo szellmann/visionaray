@@ -7,6 +7,7 @@
 #define VSNRAY_DETAIL_PIXEL_ACCESS_H 1
 
 #include <array>
+#include <type_traits>
 
 #include <visionaray/pixel_format.h>
 #include <visionaray/render_target.h>

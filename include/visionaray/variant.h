@@ -6,6 +6,8 @@
 #ifndef VSNRAY_VARIANT_H
 #define VSNRAY_VARIANT_H 1
 
+#include <type_traits>
+
 #include "detail/macros.h"
 
 namespace visionaray

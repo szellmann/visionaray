@@ -4,9 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_GENERIC_PRIMITIVE_H
-#define VSNRAY_GENERIC_PRIMITIVE_H
-
-#include <stdexcept>
+#define VSNRAY_GENERIC_PRIMITIVE_H 1
 
 #include "detail/macros.h"
 #include "math/primitive.h"

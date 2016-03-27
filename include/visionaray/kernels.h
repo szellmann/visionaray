@@ -8,8 +8,6 @@
 
 #include <iterator>
 #include <limits>
-#include <type_traits>
-#include <utility>
 
 #include <visionaray/math/math.h>
 #include <visionaray/scheduler.h>
