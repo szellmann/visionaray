@@ -1,11 +1,14 @@
-Visionaray Multi-Volume Rendering Example
------------------------------------------
+Visionaray Ambient Occlusion Example
+------------------------------------
 
 ### Command line
 
 ```
 Usage:
-   multi_volume [OPTIONS]
+   ao [OPTIONS] filename
+
+Positional options:
+   filename               Input file in wavefront obj format
 
 Options:
    -bgcolor               Background color
@@ -14,9 +17,9 @@ Options:
    -width=<ARG>           Window width
 ```
 
-### Interaction
+# Interaction
 
-The Visionaray Multi-Volume Rendering Example supports the following mouse interaction modes and keyboard shortcuts:
+The Visionaray Ambient Occlusion Example supports the following mouse interaction modes and keyboard shortcuts:
 
 * **LMB**: Rotate the scene.
 * **MMB**: Pan the scene (Mac OS X: **LMB** + **Key-ALT**).
@@ -24,4 +27,3 @@ The Visionaray Multi-Volume Rendering Example supports the following mouse inter
 * **Key-F5**: Toggle **full screen** mode.
 * **Key-ESC**: Exit **full screen** mode.
 * **Key-q**: Quit example application.
-* **Key-r**: Press repeatedly to toggle rotate/translate manipulators.
