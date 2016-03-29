@@ -159,7 +159,7 @@ VSNRAY_FORCE_INLINE int8 operator-(int8 const& u, int8 const& v)
 VSNRAY_FORCE_INLINE int8 operator*(int8 const& u, int8 const& v)
 {
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
-    return _mm256_mul_epi32(u, v);
+    return _mm256_mullo_epi32(u, v);
 #else
     return int8(float8(u) * float8(v));
 #endif
