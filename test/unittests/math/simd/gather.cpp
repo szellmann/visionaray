@@ -67,6 +67,78 @@ static void test_gather_unorm()
 }
 
 
+template <size_t Dim, unsigned Bits>
+static void test_gather_vector_unorm()
+{
+
+    // init memory
+
+    VSNRAY_ALIGN(32) vector<Dim, unorm<Bits>> arr[16];
+
+    for (int i = 0; i < 16; ++i)
+    {
+        for (size_t d = 0; d < Dim; ++d)
+        {
+            arr[i][d] = (i * Dim + d) / static_cast<float>(Dim * 16);
+        }
+    }
+
+
+    // test vector<Dim, float4>
+
+    simd::int4 index4(0, 2, 4, 6);
+    vector<Dim, simd::float4> res4 = gather(arr, index4);
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        simd::float4 f = res4[d];
+
+        unorm<Bits> u0( ( 0 * Dim + d) / static_cast<float>(Dim * 16) );
+        unorm<Bits> u1( ( 2 * Dim + d) / static_cast<float>(Dim * 16) );
+        unorm<Bits> u2( ( 4 * Dim + d) / static_cast<float>(Dim * 16) );
+        unorm<Bits> u3( ( 6 * Dim + d) / static_cast<float>(Dim * 16) );
+
+        EXPECT_FLOAT_EQ( simd::get<0>(f), static_cast<float>(u0) );
+        EXPECT_FLOAT_EQ( simd::get<1>(f), static_cast<float>(u1) );
+        EXPECT_FLOAT_EQ( simd::get<2>(f), static_cast<float>(u2) );
+        EXPECT_FLOAT_EQ( simd::get<3>(f), static_cast<float>(u3) );
+    }
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+    // test vector<Dim, float8>
+
+    simd::int8 index8(0, 2, 4, 6, 8, 10, 12, 14);
+    vector<Dim, simd::float8> res8 = gather(arr, index8);
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        simd::float8 f = res8[d];
+
+        unorm<Bits> u0( ( 0 * Dim + d) / static_cast<float>(Dim * 16) );
+        unorm<Bits> u1( ( 2 * Dim + d) / static_cast<float>(Dim * 16) );
+        unorm<Bits> u2( ( 4 * Dim + d) / static_cast<float>(Dim * 16) );
+        unorm<Bits> u3( ( 6 * Dim + d) / static_cast<float>(Dim * 16) );
+        unorm<Bits> u4( ( 8 * Dim + d) / static_cast<float>(Dim * 16) );
+        unorm<Bits> u5( (10 * Dim + d) / static_cast<float>(Dim * 16) );
+        unorm<Bits> u6( (12 * Dim + d) / static_cast<float>(Dim * 16) );
+        unorm<Bits> u7( (14 * Dim + d) / static_cast<float>(Dim * 16) );
+
+        EXPECT_FLOAT_EQ( simd::get<0>(f), static_cast<float>(u0) );
+        EXPECT_FLOAT_EQ( simd::get<1>(f), static_cast<float>(u1) );
+        EXPECT_FLOAT_EQ( simd::get<2>(f), static_cast<float>(u2) );
+        EXPECT_FLOAT_EQ( simd::get<3>(f), static_cast<float>(u3) );
+        EXPECT_FLOAT_EQ( simd::get<4>(f), static_cast<float>(u4) );
+        EXPECT_FLOAT_EQ( simd::get<5>(f), static_cast<float>(u5) );
+        EXPECT_FLOAT_EQ( simd::get<6>(f), static_cast<float>(u6) );
+        EXPECT_FLOAT_EQ( simd::get<7>(f), static_cast<float>(u7) );
+    }
+
+#endif
+
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // Test gather() with 8-bit, 16-bit, and 32-bit unorms
 //
@@ -172,6 +244,26 @@ TEST(SIMD, GatherInt)
 
 #endif
 
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Test gather() with unorm vectors
+//
+
+TEST(SIMD, GatherVecNUnorm)
+{
+    test_gather_vector_unorm<2,  8>();
+    test_gather_vector_unorm<3,  8>();
+    test_gather_vector_unorm<4,  8>();
+
+    test_gather_vector_unorm<2, 16>();
+    test_gather_vector_unorm<3, 16>();
+    test_gather_vector_unorm<4, 16>();
+
+    test_gather_vector_unorm<2, 32>();
+    test_gather_vector_unorm<3, 32>();
+    test_gather_vector_unorm<4, 32>();
 }
 
 
