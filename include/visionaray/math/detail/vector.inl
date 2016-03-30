@@ -5,10 +5,6 @@
 #include <array>
 #include <type_traits>
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-#include "../simd/avx.h"
-#endif
-#include "../simd/sse.h"
 #include "../simd/type_traits.h"
 
 namespace MATH_NAMESPACE
