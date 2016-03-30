@@ -119,6 +119,7 @@ inline simd::float8 point(T const* tex, simd::int8 const& idx, simd::float8 /* r
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
+
 inline vector<3, simd::float4> point(
         vector<3, unorm<8>> const*  tex,
         simd::int4 const&           idx,
@@ -202,6 +203,26 @@ inline simd::float4 point(
 {
     return tex[coord];
 }
+
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
+
+//-------------------------------------------------------------------------------------------------
+// Point sampling using AVX2 gather instructions
+//
+
+inline simd::float4 point(float const* tex, simd::int4 const& idx, simd::float4 /* result type */)
+{
+    return _mm_i32gather_ps(tex, idx, 4);
+}
+
+inline simd::float8 point(float const* tex, simd::int8 const& idx, simd::float8 /* result type */)
+{
+    return _mm256_i32gather_ps(tex, idx, 4);
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
+
 
 
 namespace bspline
