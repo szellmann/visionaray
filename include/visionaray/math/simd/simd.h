@@ -8,11 +8,10 @@
 
 #include "avx.h"
 #include "forward.h"
+#include "gather.h"
 #include "matrix.h"
 #include "sse.h"
 #include "trans.h"
 #include "type_traits.h"
 
 #endif // VSNRAY_MATH_SIMD_H
-
-
