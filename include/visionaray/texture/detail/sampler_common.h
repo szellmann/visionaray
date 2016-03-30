@@ -6,6 +6,7 @@
 #ifndef VSNRAY_SAMPLER_COMMON_H
 #define VSNRAY_SAMPLER_COMMON_H 1
 
+#include <type_traits>
 
 #include <visionaray/detail/macros.h>
 #include <visionaray/math/math.h>
@@ -85,39 +86,20 @@ inline RT point(T const* tex, ptrdiff_t idx, RT = RT())
 
 // SIMD: if multi-channel texture, assume AoS
 
-template <typename T>
-inline simd::float4 point(T const* tex, simd::int4 const& idx, simd::float4 /* result type */)
+template <
+    typename T,
+    typename IndexT,
+    typename ResultT,
+    typename = typename std::enable_if<simd::is_simd_vector<ResultT>::value>::type
+    >
+inline ResultT point(
+        T const*        tex,
+        IndexT const&   index,
+        ResultT         /* */
+        )
 {
-    VSNRAY_ALIGN(16) int indices[4];
-    store(&indices[0], idx);
-    return simd::float4(
-            tex[indices[0]],
-            tex[indices[1]],
-            tex[indices[2]],
-            tex[indices[3]]
-            );
+    return simd::gather(tex, index);
 }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-template <typename T>
-inline simd::float8 point(T const* tex, simd::int8 const& idx, simd::float8 /* result type */)
-{
-    VSNRAY_ALIGN(32) int indices[8];
-    store(&indices[0], idx);
-    return simd::float8(
-            tex[indices[0]],
-            tex[indices[1]],
-            tex[indices[2]],
-            tex[indices[3]],
-            tex[indices[4]],
-            tex[indices[5]],
-            tex[indices[6]],
-            tex[indices[7]]
-            );
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
 inline vector<3, simd::float4> point(
@@ -205,25 +187,9 @@ inline simd::float4 point(
 }
 
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
-
 //-------------------------------------------------------------------------------------------------
-// Point sampling using AVX2 gather instructions
+// Weight functions for higher order texture interpolation
 //
-
-inline simd::float4 point(float const* tex, simd::int4 const& idx, simd::float4 /* result type */)
-{
-    return _mm_i32gather_ps(tex, idx, 4);
-}
-
-inline simd::float8 point(float const* tex, simd::int8 const& idx, simd::float8 /* result type */)
-{
-    return _mm256_i32gather_ps(tex, idx, 4);
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
-
-
 
 namespace bspline
 {
