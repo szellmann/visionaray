@@ -32,7 +32,7 @@ static void test_gather_unorm()
 
     for (int i = 0; i < 16; ++i)
     {
-        arr[i] = i;
+        arr[i] = i / 16.0f;
     }
 
 
@@ -41,10 +41,10 @@ static void test_gather_unorm()
     simd::int4 index4(0, 2, 4, 6);
     simd::float4 res4 = gather(arr, index4);
 
-    EXPECT_FLOAT_EQ( simd::get<0>(res4), static_cast<float>(unorm<Bits>( 0)) );
-    EXPECT_FLOAT_EQ( simd::get<1>(res4), static_cast<float>(unorm<Bits>( 2)) );
-    EXPECT_FLOAT_EQ( simd::get<2>(res4), static_cast<float>(unorm<Bits>( 4)) );
-    EXPECT_FLOAT_EQ( simd::get<3>(res4), static_cast<float>(unorm<Bits>( 6)) );
+    EXPECT_FLOAT_EQ( simd::get<0>(res4), static_cast<float>(unorm<Bits>( 0 / 16.0f)) );
+    EXPECT_FLOAT_EQ( simd::get<1>(res4), static_cast<float>(unorm<Bits>( 2 / 16.0f)) );
+    EXPECT_FLOAT_EQ( simd::get<2>(res4), static_cast<float>(unorm<Bits>( 4 / 16.0f)) );
+    EXPECT_FLOAT_EQ( simd::get<3>(res4), static_cast<float>(unorm<Bits>( 6 / 16.0f)) );
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
@@ -53,14 +53,14 @@ static void test_gather_unorm()
     simd::int8 index8(0, 2, 4, 6, 8, 10, 12, 14);
     simd::float8 res8 = gather(arr, index8);
 
-    EXPECT_FLOAT_EQ( simd::get<0>(res8), static_cast<float>(unorm<Bits>( 0)) );
-    EXPECT_FLOAT_EQ( simd::get<1>(res8), static_cast<float>(unorm<Bits>( 2)) );
-    EXPECT_FLOAT_EQ( simd::get<2>(res8), static_cast<float>(unorm<Bits>( 4)) );
-    EXPECT_FLOAT_EQ( simd::get<3>(res8), static_cast<float>(unorm<Bits>( 6)) );
-    EXPECT_FLOAT_EQ( simd::get<4>(res8), static_cast<float>(unorm<Bits>( 8)) );
-    EXPECT_FLOAT_EQ( simd::get<5>(res8), static_cast<float>(unorm<Bits>(10)) );
-    EXPECT_FLOAT_EQ( simd::get<6>(res8), static_cast<float>(unorm<Bits>(12)) );
-    EXPECT_FLOAT_EQ( simd::get<7>(res8), static_cast<float>(unorm<Bits>(14)) );
+    EXPECT_FLOAT_EQ( simd::get<0>(res8), static_cast<float>(unorm<Bits>( 0 / 16.0f)) );
+    EXPECT_FLOAT_EQ( simd::get<1>(res8), static_cast<float>(unorm<Bits>( 2 / 16.0f)) );
+    EXPECT_FLOAT_EQ( simd::get<2>(res8), static_cast<float>(unorm<Bits>( 4 / 16.0f)) );
+    EXPECT_FLOAT_EQ( simd::get<3>(res8), static_cast<float>(unorm<Bits>( 6 / 16.0f)) );
+    EXPECT_FLOAT_EQ( simd::get<4>(res8), static_cast<float>(unorm<Bits>( 8 / 16.0f)) );
+    EXPECT_FLOAT_EQ( simd::get<5>(res8), static_cast<float>(unorm<Bits>(10 / 16.0f)) );
+    EXPECT_FLOAT_EQ( simd::get<6>(res8), static_cast<float>(unorm<Bits>(12 / 16.0f)) );
+    EXPECT_FLOAT_EQ( simd::get<7>(res8), static_cast<float>(unorm<Bits>(14 / 16.0f)) );
 
 #endif
 
