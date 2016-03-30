@@ -6,6 +6,9 @@
 #ifndef VSNRAY_SIMD_TYPE_TRAITS_H
 #define VSNRAY_SIMD_TYPE_TRAITS_H 1
 
+#include "avx.h"
+#include "sse.h"
+
 namespace MATH_NAMESPACE
 {
 namespace simd
