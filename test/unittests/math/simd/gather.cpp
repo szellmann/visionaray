@@ -173,3 +173,103 @@ TEST(SIMD, GatherInt)
 #endif
 
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Test gather() with vec4's
+//
+
+TEST(SIMD, GatherVec4)
+{
+
+    // init memory
+
+    VSNRAY_ALIGN(32) vec4 arr[16];
+
+    for (int i = 0; i < 16; ++i)
+    {
+        arr[i] = vec4(
+            static_cast<float>(i * 4),
+            static_cast<float>(i * 4 + 1),
+            static_cast<float>(i * 4 + 2),
+            static_cast<float>(i * 4 + 3)
+            );
+
+    }
+
+
+    // test vector<4, float4>
+
+    simd::int4 index4(0, 2, 4, 6);
+    vector<4, simd::float4> res4 = gather(arr, index4);
+
+    EXPECT_FLOAT_EQ(simd::get<0>(res4.x),  0.0f);
+    EXPECT_FLOAT_EQ(simd::get<0>(res4.y),  1.0f);
+    EXPECT_FLOAT_EQ(simd::get<0>(res4.z),  2.0f);
+    EXPECT_FLOAT_EQ(simd::get<0>(res4.w),  3.0f);
+
+    EXPECT_FLOAT_EQ(simd::get<1>(res4.x),  8.0f);
+    EXPECT_FLOAT_EQ(simd::get<1>(res4.y),  9.0f);
+    EXPECT_FLOAT_EQ(simd::get<1>(res4.z), 10.0f);
+    EXPECT_FLOAT_EQ(simd::get<1>(res4.w), 11.0f);
+
+    EXPECT_FLOAT_EQ(simd::get<2>(res4.x), 16.0f);
+    EXPECT_FLOAT_EQ(simd::get<2>(res4.y), 17.0f);
+    EXPECT_FLOAT_EQ(simd::get<2>(res4.z), 18.0f);
+    EXPECT_FLOAT_EQ(simd::get<2>(res4.w), 19.0f);
+
+    EXPECT_FLOAT_EQ(simd::get<3>(res4.x), 24.0f);
+    EXPECT_FLOAT_EQ(simd::get<3>(res4.y), 25.0f);
+    EXPECT_FLOAT_EQ(simd::get<3>(res4.z), 26.0f);
+    EXPECT_FLOAT_EQ(simd::get<3>(res4.w), 27.0f);
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+    // test vector<4, float8>
+
+    simd::int8 index8(0, 2, 4, 6, 8, 10, 12, 14);
+    vector<4, simd::float8> res8 = gather(arr, index8);
+
+    EXPECT_FLOAT_EQ(simd::get<0>(res8.x),  0.0f);
+    EXPECT_FLOAT_EQ(simd::get<0>(res8.y),  1.0f);
+    EXPECT_FLOAT_EQ(simd::get<0>(res8.z),  2.0f);
+    EXPECT_FLOAT_EQ(simd::get<0>(res8.w),  3.0f);
+
+    EXPECT_FLOAT_EQ(simd::get<1>(res8.x),  8.0f);
+    EXPECT_FLOAT_EQ(simd::get<1>(res8.y),  9.0f);
+    EXPECT_FLOAT_EQ(simd::get<1>(res8.z), 10.0f);
+    EXPECT_FLOAT_EQ(simd::get<1>(res8.w), 11.0f);
+
+    EXPECT_FLOAT_EQ(simd::get<2>(res8.x), 16.0f);
+    EXPECT_FLOAT_EQ(simd::get<2>(res8.y), 17.0f);
+    EXPECT_FLOAT_EQ(simd::get<2>(res8.z), 18.0f);
+    EXPECT_FLOAT_EQ(simd::get<2>(res8.w), 19.0f);
+
+    EXPECT_FLOAT_EQ(simd::get<3>(res8.x), 24.0f);
+    EXPECT_FLOAT_EQ(simd::get<3>(res8.y), 25.0f);
+    EXPECT_FLOAT_EQ(simd::get<3>(res8.z), 26.0f);
+    EXPECT_FLOAT_EQ(simd::get<3>(res8.w), 27.0f);
+
+    EXPECT_FLOAT_EQ(simd::get<4>(res8.x), 32.0f);
+    EXPECT_FLOAT_EQ(simd::get<4>(res8.y), 33.0f);
+    EXPECT_FLOAT_EQ(simd::get<4>(res8.z), 34.0f);
+    EXPECT_FLOAT_EQ(simd::get<4>(res8.w), 35.0f);
+
+    EXPECT_FLOAT_EQ(simd::get<5>(res8.x), 40.0f);
+    EXPECT_FLOAT_EQ(simd::get<5>(res8.y), 41.0f);
+    EXPECT_FLOAT_EQ(simd::get<5>(res8.z), 42.0f);
+    EXPECT_FLOAT_EQ(simd::get<5>(res8.w), 43.0f);
+
+    EXPECT_FLOAT_EQ(simd::get<6>(res8.x), 48.0f);
+    EXPECT_FLOAT_EQ(simd::get<6>(res8.y), 49.0f);
+    EXPECT_FLOAT_EQ(simd::get<6>(res8.z), 50.0f);
+    EXPECT_FLOAT_EQ(simd::get<6>(res8.w), 51.0f);
+
+    EXPECT_FLOAT_EQ(simd::get<7>(res8.x), 56.0f);
+    EXPECT_FLOAT_EQ(simd::get<7>(res8.y), 57.0f);
+    EXPECT_FLOAT_EQ(simd::get<7>(res8.z), 58.0f);
+    EXPECT_FLOAT_EQ(simd::get<7>(res8.w), 59.0f);
+
+#endif
+
+}
