@@ -10,6 +10,8 @@
 
 #include <visionaray/detail/platform.h>
 
+#include <visionaray/texture/texture.h>
+
 #include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/material.h>
