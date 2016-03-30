@@ -8,7 +8,6 @@
 
 #include <cstddef>
 
-#include "detail/math.h"
 #include "forward.h"
 
 
