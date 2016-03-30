@@ -102,22 +102,6 @@ inline RT point(
 }
 
 
-inline vector<3, simd::float4> point(
-        vector<3, unorm<8>> const*  tex,
-        simd::int4 const&           idx,
-        vector<3, simd::float4>     /* result type */
-        )
-{
-    VSNRAY_ALIGN(16) int indices[4];
-    store(&indices[0], idx);
-    return vector<3, simd::float4>(
-            simd::float4(tex[indices[0]].x, tex[indices[1]].x, tex[indices[2]].x, tex[indices[3]].x),
-            simd::float4(tex[indices[0]].y, tex[indices[1]].y, tex[indices[2]].y, tex[indices[3]].y),
-            simd::float4(tex[indices[0]].z, tex[indices[1]].z, tex[indices[2]].z, tex[indices[3]].z)
-            );
-}
-
-
 // SIMD: special case, if multi-channel texture, assume SoA
 
 inline simd::float4 point(

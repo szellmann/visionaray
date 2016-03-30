@@ -8,9 +8,12 @@
 
 #include <array>
 
-#include "../vector.h"
 #include "avx.h"
 #include "sse.h"
+
+// Insert math headers after platform headers to inhibit ADL!
+#include "../norm.h"
+#include "../vector.h"
 
 namespace MATH_NAMESPACE
 {
@@ -35,6 +38,9 @@ namespace simd
 //
 //  - base address: vector<4, float>,    index type: int4
 //  - base address: vector<4, float>,    index type: int8
+//
+//  - base address: vector<N, unorm<M>>, index type: int4
+//  - base address: vector<N, unorm<M>>, index type: int8
 //
 //
 //-------------------------------------------------------------------------------------------------
@@ -274,6 +280,66 @@ inline vector<4, float8> gather(vector<4, float> const* base_addr, int8 const& i
     return simd::pack(arr);
 
 #endif
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+
+//-------------------------------------------------------------------------------------------------
+// Gather vector<Dim, float8> from vector<Dim, unorm<Bits>> array, Bits <= 32
+// No dedicated AVX2 instruction!
+//
+
+template <size_t Dim, unsigned Bits>
+inline vector<Dim, float4> gather(vector<Dim, unorm<Bits>> const* base_addr, int4 const& index)
+{
+    static_assert(Bits <= 32, "Incompatible unorm type");
+
+    using V = vector<Dim, float>;
+
+    VSNRAY_ALIGN(16) int indices[4];
+    store(&indices[0], index);
+
+    std::array<V, 4> arr{{
+            V(base_addr[indices[0]]),
+            V(base_addr[indices[1]]),
+            V(base_addr[indices[2]]),
+            V(base_addr[indices[3]]),
+            }};
+
+    return simd::pack(arr);
+}
+
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+//-------------------------------------------------------------------------------------------------
+// Gather vector<Dim, float4> from vector<Dim, unorm<Bits>> array, Bits <= 32
+// No dedicated AVX2 instruction!
+//
+
+template <size_t Dim, unsigned Bits>
+inline vector<Dim, float8> gather(vector<Dim, unorm<Bits>> const* base_addr, int8 const& index)
+{
+    static_assert(Bits <= 32, "Incompatible unorm type");
+
+    using V = vector<Dim, float>;
+
+    VSNRAY_ALIGN(32) int indices[8];
+    store(&indices[0], index);
+
+    std::array<V, 8> arr{{
+            V(base_addr[indices[0]]),
+            V(base_addr[indices[1]]),
+            V(base_addr[indices[2]]),
+            V(base_addr[indices[3]]),
+            V(base_addr[indices[4]]),
+            V(base_addr[indices[5]]),
+            V(base_addr[indices[6]]),
+            V(base_addr[indices[7]])
+            }};
+
+    return simd::pack(arr);
 }
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
