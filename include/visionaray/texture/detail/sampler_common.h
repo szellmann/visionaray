@@ -89,13 +89,13 @@ inline RT point(T const* tex, ptrdiff_t idx, RT = RT())
 template <
     typename T,
     typename IndexT,
-    typename ResultT,
-    typename = typename std::enable_if<simd::is_simd_vector<ResultT>::value>::type
+    typename RT,
+    typename = typename std::enable_if<simd::is_simd_vector<IndexT>::value>::type
     >
-inline ResultT point(
+inline RT point(
         T const*        tex,
         IndexT const&   index,
-        ResultT         /* */
+        RT              /* */
         )
 {
     return simd::gather(tex, index);
@@ -116,62 +116,6 @@ inline vector<3, simd::float4> point(
             simd::float4(tex[indices[0]].z, tex[indices[1]].z, tex[indices[2]].z, tex[indices[3]].z)
             );
 }
-
-inline vector<4, simd::float4> point(
-        vector<4, float> const*     tex,
-        simd::int4 const&           idx,
-        vector<4, simd::float4>     /* result type */
-        )
-{
-
-    // Special case: colors are AoS. Those can be obtained
-    // without a context switch to GP registers by transposing
-    // to SoA after memory lookup.
-
-    VSNRAY_ALIGN(16) int indices[4];
-    store(&indices[0], idx * simd::int4(4));
-
-    float const* tmp = reinterpret_cast<float const*>(tex);
-
-    vector<4, simd::float4> colors(
-            &tmp[0] + indices[0],
-            &tmp[0] + indices[1],
-            &tmp[0] + indices[2],
-            &tmp[0] + indices[3]
-            );
-
-    colors = transpose(colors);
-    return colors;
-
-}
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-inline vector<4, simd::float8> point(
-        vector<4, float> const*     tex,
-        simd::int8 const&           idx,
-        vector<4, simd::float8>     /* result type */
-        )
-{
-    VSNRAY_ALIGN(32) int indices[8];
-    store(&indices[0], idx);
-
-    std::array<vector<4, float>, 8> arr{{
-            tex[indices[0]],
-            tex[indices[1]],
-            tex[indices[2]],
-            tex[indices[3]],
-            tex[indices[4]],
-            tex[indices[5]],
-            tex[indices[6]],
-            tex[indices[7]]
-            }};
-
-
-    return simd::pack(arr);
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
 // SIMD: special case, if multi-channel texture, assume SoA
