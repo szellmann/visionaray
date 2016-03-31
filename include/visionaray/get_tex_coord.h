@@ -116,7 +116,7 @@ inline auto get_tex_coord(
 
     for (size_t i = 0; i < N; ++i)
     {
-        result[i] = get_tex_coord(coords, hr[0], Primitive{});
+        result[i] = get_tex_coord(coords, hr[i], Primitive{});
     }
 
     return result;
