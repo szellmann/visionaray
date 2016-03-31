@@ -60,6 +60,54 @@ struct decl_surface<Normals, Materials, DiffuseColor>
         >;
 };
 
+// simd version -------------------------------------------
+
+template <typename ...Args>
+struct simd_decl_surface;
+
+template <
+    typename Normals,
+    typename Materials,
+    typename T
+    >
+struct simd_decl_surface<Normals, Materials, T>
+{
+private:
+
+    enum { Size_ = simd::num_elements<T>::value };
+    using N_    = typename std::iterator_traits<Normals>::value_type;
+    using M_    = typename std::iterator_traits<Materials>::value_type;
+
+public:
+    using type = surface<
+        decltype(simd::pack(std::declval<std::array<N_, Size_>>())),
+        decltype(simd::pack(std::declval<std::array<M_, Size_>>()))
+        >;
+};
+
+template <
+    typename Normals,
+    typename Materials,
+    typename DiffuseColor,
+    typename T
+    >
+struct simd_decl_surface<Normals, Materials, DiffuseColor, T>
+{
+private:
+
+    enum { Size_ = simd::num_elements<T>::value };
+    using N_    = typename std::iterator_traits<Normals>::value_type;
+    using M_    = typename std::iterator_traits<Materials>::value_type;
+    using C_    = DiffuseColor;
+
+public:
+    using type = surface<
+        decltype(simd::pack(std::declval<std::array<N_, Size_>>())),
+        decltype(simd::pack(std::declval<std::array<M_, Size_>>())),
+        decltype(simd::pack(std::declval<std::array<C_, Size_>>()))
+        >;
+};
+
 
 // identify accelerators ----------------------------------
 
@@ -409,12 +457,7 @@ inline auto get_surface_impl(
         HR<basic_ray<T>, HRP> const&    hr,
         Primitives                      primitives,
         Materials                       materials
-        ) -> decltype( simd::pack(
-            std::declval<std::array<
-                typename decl_surface<vector<3, float>*, Materials>::type,
-                simd::num_elements<T>::value
-                >>()
-            ) )
+        ) -> typename simd_decl_surface<vector<3, float>*, Materials, T>::type
 {
     using N = vector<3, float>;
     using M = typename std::iterator_traits<Materials>::value_type;
@@ -459,12 +502,7 @@ inline auto get_surface_impl(
         Materials                       materials,
         Colors                          colors,
         Textures                        textures
-        ) -> decltype( simd::pack(
-            std::declval<std::array<
-                typename decl_surface<vector<3, float>*, Materials, vector<3, float>>::type,
-                simd::num_elements<T>::value
-                >>()
-            ) )
+        ) -> typename simd_decl_surface<vector<3, float>*, Materials, vector<3, float>, T>::type
 {
     using N = vector<3, float>;
     using M = typename std::iterator_traits<Materials>::value_type;
@@ -518,12 +556,7 @@ inline auto get_surface_impl(
         Primitives                      primitives,
         Normals                         normals,
         Materials                       materials
-        ) -> decltype( simd::pack(
-            std::declval<std::array<
-                typename decl_surface<Normals, Materials>::type,
-                simd::num_elements<T>::value
-                >>()
-            ) )
+        ) -> typename simd_decl_surface<Normals, Materials, T>::type
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
@@ -570,12 +603,7 @@ inline auto get_surface_impl(
         TexCoords                       tex_coords,
         Materials                       materials,
         Textures                        textures
-        ) -> decltype( simd::pack(
-            std::declval<std::array<
-                typename decl_surface<Normals, Materials, vector<3, float>>::type,
-                simd::num_elements<T>::value
-                >>()
-            ) )
+        ) -> typename simd_decl_surface<Normals, Materials, vector<3, float>, T>::type
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
@@ -634,12 +662,7 @@ inline auto get_surface_impl(
         Materials                       materials,
         Colors                          colors,
         Textures                        textures
-        ) -> decltype( simd::pack(
-            std::declval<std::array<
-                typename decl_surface<Normals, Materials, vector<3, float>>::type,
-                simd::num_elements<T>::value
-                >>()
-            ) )
+        ) -> typename simd_decl_surface<Normals, Materials, vector<3, float>, T>::type
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
