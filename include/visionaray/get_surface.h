@@ -276,7 +276,7 @@ inline auto get_surface_impl(
     -> typename decl_surface<vector<3, float>*, Materials>::type
 {
     return make_surface(
-            get_normal(hr, primitives[hr.prim_id]),
+            get_normal_dispatch(primitives, nullptr, hr, Primitive{}),
             materials[hr.geom_id]
             );
 }
@@ -386,7 +386,7 @@ inline auto get_surface_impl(
                    ? C(visionaray::tex2D(tex, tc))
                    : C(1.0);
 
-    auto normal = get_normal(hr, primitives[hr.prim_id]);
+    auto normal = get_normal_dispatch(primitives, nullptr, hr, P{});
     return make_surface( normal, materials[hr.geom_id], color * tex_color );
 }
 
@@ -459,6 +459,7 @@ inline auto get_surface_impl(
         Materials                       materials
         ) -> typename simd_decl_surface<vector<3, float>*, Materials, T>::type
 {
+    using P = typename primitive_traits<Primitive>::type;
     using N = vector<3, float>;
     using M = typename std::iterator_traits<Materials>::value_type;
 
@@ -469,8 +470,8 @@ inline auto get_surface_impl(
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
         surfs[i] = make_surface(
-            hrs[i].hit ? get_normal(hrs[i], primitives[hrs[i].prim_id]) : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id]                      : M{}
+            hrs[i].hit ? get_normal_dispatch(primitives, nullptr, hrs[i], P{}) : N{},
+            hrs[i].hit ? materials[hrs[i].geom_id]                             : M{}
             );
     }
 
@@ -525,9 +526,9 @@ inline auto get_surface_impl(
                     : C(1.0);
 
         surfs[i] = make_surface(
-            hrs[i].hit ? get_normal(hrs[i], primitives[hrs[i].prim_id]) : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id]                      : M{},
-            hrs[i].hit ? colorss[i] * tex_color                         : C(1.0)
+            hrs[i].hit ? get_normal_dispatch(primitives, nullptr, hrs[i], P{}) : N{},
+            hrs[i].hit ? materials[hrs[i].geom_id]                             : M{},
+            hrs[i].hit ? colorss[i] * tex_color                                : C(1.0)
             );
     }
 
