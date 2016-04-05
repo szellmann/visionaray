@@ -6,9 +6,12 @@
 #ifndef VSNRAY_PRIM_TRAITS_H
 #define VSNRAY_PRIM_TRAITS_H 1
 
+#include <type_traits>
+
 #include <visionaray/math/sphere.h>
 #include <visionaray/math/triangle.h>
 
+#include <visionaray/bvh.h>
 #include <visionaray/tags.h>
 
 namespace visionaray
@@ -44,7 +47,7 @@ namespace visionaray
 
 // general ------------------------------------------------
 
-template <typename Primitive>
+template <typename Primitive, typename Check = void>
 struct num_vertices
 {
     enum { value = 0 };
@@ -58,8 +61,9 @@ struct num_vertices<basic_triangle<Dim, T>>
     enum { value = 3 };
 };
 
-template <template <typename> class Accelerator, typename Primitive>
-struct num_vertices<Accelerator<Primitive>> : num_vertices<Primitive>
+template <typename BVH>
+struct num_vertices<BVH, typename std::enable_if<is_any_bvh<BVH>::value>::type>
+    : num_vertices<BVH>
 {
 };
 
@@ -70,7 +74,7 @@ struct num_vertices<Accelerator<Primitive>> : num_vertices<Primitive>
 
 // general ------------------------------------------------
 
-template <typename Primitive, typename NormalBinding>
+template <typename Primitive, typename NormalBinding, typename Check = void>
 struct num_normals
 {
     enum { value = 0 };
@@ -90,8 +94,9 @@ struct num_normals<basic_triangle<Dim, T>, per_vertex_binding>
     enum { value = 3 };
 };
 
-template <template <typename> class Accelerator, typename Primitive, typename NormalBinding>
-struct num_normals<Accelerator<Primitive>, NormalBinding> : num_normals<Primitive, NormalBinding>
+template <typename BVH, typename NormalBinding>
+struct num_normals<BVH, NormalBinding, typename std::enable_if<is_any_bvh<BVH>::value>::type>
+    : num_normals<typename BVH::primitive_type, NormalBinding>
 {
 };
 
@@ -102,7 +107,7 @@ struct num_normals<Accelerator<Primitive>, NormalBinding> : num_normals<Primitiv
 
 // general ------------------------------------------------
 
-template <typename Primitive>
+template <typename Primitive, typename Check = void>
 struct num_tex_coords
 {
     enum { value = 0 };
@@ -116,8 +121,9 @@ struct num_tex_coords<basic_triangle<Dim, T>>
     enum { value = 3 };
 };
 
-template <template <typename> class Accelerator, typename Primitive>
-struct num_tex_coords<Accelerator<Primitive>> : num_tex_coords<Primitive>
+template <typename BVH>
+struct num_tex_coords<BVH, typename std::enable_if<is_any_bvh<BVH>::value>::type>
+    : num_tex_coords<BVH>
 {
 };
 
