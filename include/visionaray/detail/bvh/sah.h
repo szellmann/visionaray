@@ -1,6 +1,11 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
+#ifndef VSNRAY_DETAIL_BVH_SAH_H
+#define VSNRAY_DETAIL_BVH_SAH_H 1
+
 #include <cassert>
 #include <array>
 #include <vector>
@@ -757,6 +762,7 @@ struct sah_builder
     }
 };
 
-
 } // detail
 } // visionaray
+
+#endif // VSNRAY_DETAIL_BVH_SAH_H
