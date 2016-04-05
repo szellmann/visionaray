@@ -6,6 +6,7 @@
 
 #include "../stack.h"
 #include "../tags.h"
+#include "hit_record.h"
 
 namespace visionaray
 {
@@ -27,11 +28,19 @@ inline auto intersect(
         BVH const&          b,
         Intersector&        isect
         )
-    -> decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+    -> hit_record_bvh<
+        basic_ray<T>,
+        BVH,
+        decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+        >
 {
 
     using namespace detail;
-    using HR = decltype( isect(ray, std::declval<typename BVH::primitive_type>()) );
+    using HR = hit_record_bvh<
+        basic_ray<T>,
+        BVH,
+        decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+        >;
 
     HR result;
 
@@ -90,7 +99,7 @@ next:
         {
             auto prim = b.primitive(i);
 
-            auto hr  = isect(ray, prim);
+            auto hr = HR(isect(ray, prim), i);
             auto closer = is_closer(hr, result);
 
 #ifndef __CUDA_ARCH__
@@ -130,7 +139,11 @@ inline auto intersect(
         BVH const&          b,
         Intersector&        isect
         )
-    -> decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+    -> hit_record_bvh<
+        basic_ray<T>,
+        BVH,
+        decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+        >
 {
     return intersect<detail::ClosestHit>(ray, b, isect);
 }

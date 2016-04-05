@@ -463,6 +463,7 @@ void traverse_parents(B const& b, N const& n, F func);
 
 #include "detail/bvh/build.inl"
 #include "detail/bvh/get_bounds.inl"
+#include "detail/bvh/get_normal.h"
 #include "detail/bvh/intersect.inl"
 #include "detail/bvh/traverse.inl"
 

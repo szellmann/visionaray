@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "math/math.h"
+#include "bvh.h"
 #include "prim_traits.h"
 
 namespace visionaray
@@ -23,7 +24,8 @@ template <
     typename Normals,
     typename HR,
     typename Primitive,
-    typename = typename std::enable_if<num_normals<Primitive, per_face_binding>::value == 1>::type
+    typename = typename std::enable_if<num_normals<Primitive, per_face_binding>::value == 1>::type,
+    typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 inline auto get_normal(
@@ -72,7 +74,8 @@ template <
     typename T,
     typename HRP,
     typename Primitive,
-    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type,
+    typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type
     >
 inline vector<3, T> get_normal(
         Normals                         normals,

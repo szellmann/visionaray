@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "bvh.h"
 #include "generic_material.h"
 #include "generic_primitive.h"
 #include "get_color.h"
@@ -175,6 +176,29 @@ inline auto get_normal_dispatch(
     return get_normal(hr, primitives[hr.prim_id]);
 }
 
+// overload for BVHs, no normals - need to get the primitive from the right BVH
+// TODO: consider adding a bvh_index to hit_record_bvh
+template <
+    typename Primitives,
+    typename HR,
+    typename Primitive,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
+    >
+VSNRAY_FUNC
+inline auto get_normal_dispatch(
+        Primitives      primitives,
+        std::nullptr_t  normals,
+        HR const&       hr,
+        Primitive       /* */
+        )
+    -> decltype( get_normal(hr, Primitive{}) )
+{
+    VSNRAY_UNUSED(normals);
+
+    return get_normal(hr, primitives[0]); // TODO
+}
+
+
 // helper
 template <typename NormalBinding, typename Normals, typename HR>
 class get_normal_from_generic_primitive_visitor
@@ -335,7 +359,7 @@ inline auto get_surface_impl(
         )
     -> typename decl_surface<Normals, Materials, vector<3, float>>::type
 {
-    using P = typename primitive_traits<Primitive>::type;
+    using P = Primitive;
     using C = vector<3, float>;
 
     auto tc = get_tex_coord(tex_coords, hr, P{});
@@ -375,10 +399,10 @@ inline auto get_surface_impl(
         )
     -> typename decl_surface<vector<3, float>*, Materials, vector<3, float>>::type
 {
-    using P = typename primitive_traits<Primitive>::type;
+    using P = Primitive;
     using C = vector<3, float>;
 
-    auto color = get_color(colors, hr, P{}, ColorBinding{});
+    auto color = get_color(colors, hr, typename primitive_traits<P>::type{}, ColorBinding{});
     auto tc = get_tex_coord(tex_coords, hr, P{});
 
     auto const& tex = textures[hr.geom_id];
@@ -420,11 +444,11 @@ inline auto get_surface_impl(
         )
     -> typename decl_surface<Normals, Materials, vector<3, float>>::type
 {
-    using P = typename primitive_traits<Primitive>::type;
+    using P = Primitive;
     using C = vector<3, float>;
 
-    auto color = get_color(colors, hr, P{}, ColorBinding{});
-    auto tc = get_tex_coord(tex_coords, hr, P{});
+    auto color = get_color(colors, hr, typename primitive_traits<P>::type{}, ColorBinding{});
+    auto tc = get_tex_coord(tex_coords, hr, typename primitive_traits<P>::type{});
 
     auto const& tex = textures[hr.geom_id];
     auto tex_color = tex.width() > 0 && tex.height() > 0
@@ -442,9 +466,9 @@ inline auto get_surface_impl(
 
 template <
     typename Primitive,
-    template <typename, typename> class HR,
+    template <typename, typename...> class HR,
     typename T,
-    typename HRP,
+    typename ...HRP,
     typename Primitives,
     typename Materials,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
@@ -454,12 +478,12 @@ inline auto get_surface_impl(
         has_no_colors_tag               /* */,
         has_no_textures_tag             /* */,
         Primitive                       /* */,
-        HR<basic_ray<T>, HRP> const&    hr,
+        HR<basic_ray<T>, HRP...> const& hr,
         Primitives                      primitives,
         Materials                       materials
         ) -> typename simd_decl_surface<vector<3, float>*, Materials, T>::type
 {
-    using P = typename primitive_traits<Primitive>::type;
+    using P = Primitive;
     using N = vector<3, float>;
     using M = typename std::iterator_traits<Materials>::value_type;
 
@@ -481,9 +505,9 @@ inline auto get_surface_impl(
 template <
     typename Primitive,
     typename ColorBinding,
-    template <typename, typename> class HR,
+    template <typename, typename...> class HR,
     typename T,
-    typename HRP,
+    typename ...HRP,
     typename Primitives,
     typename TexCoords,
     typename Materials,
@@ -497,7 +521,7 @@ inline auto get_surface_impl(
         has_textures_tag                /* */,
         Primitive                       /* */,
         ColorBinding                    /* */,
-        HR<basic_ray<T>, HRP> const&    hr,
+        HR<basic_ray<T>, HRP...> const& hr,
         Primitives                      primitives,
         TexCoords                       tex_coords,
         Materials                       materials,
@@ -507,14 +531,14 @@ inline auto get_surface_impl(
 {
     using N = vector<3, float>;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = typename primitive_traits<Primitive>::type;
+    using P = Primitive;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
 
-    auto colorss = get_color(colors, hrs, P{}, ColorBinding{});
+    auto colorss = get_color(colors, hrs, typename primitive_traits<P>::type{}, ColorBinding{});
 
-    auto tcs = get_tex_coord(tex_coords, hrs, P{});
+    auto tcs = get_tex_coord(tex_coords, hrs, typename primitive_traits<P>::type{});
 
     std::array<typename decl_surface<vector<3, float>*, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
@@ -539,9 +563,9 @@ inline auto get_surface_impl(
 template <
     typename Primitive,
     typename NormalBinding,
-    template <typename, typename> class HR,
+    template <typename, typename...> class HR,
     typename T,
-    typename HRP,
+    typename ...HRP,
     typename Primitives,
     typename Normals,
     typename Materials,
@@ -553,7 +577,7 @@ inline auto get_surface_impl(
         has_no_textures_tag             /* */,
         Primitive                       /* */,
         NormalBinding                   /* */,
-        HR<basic_ray<T>, HRP> const&    hr,
+        HR<basic_ray<T>, HRP...> const& hr,
         Primitives                      primitives,
         Normals                         normals,
         Materials                       materials
@@ -561,7 +585,7 @@ inline auto get_surface_impl(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = typename primitive_traits<Primitive>::type;
+    using P = Primitive;
 
     auto hrs = unpack(hr);
 
@@ -582,9 +606,9 @@ inline auto get_surface_impl(
 template <
     typename Primitive,
     typename NormalBinding,
-    template <typename, typename> class HR,
+    template <typename, typename...> class HR,
     typename T,
-    typename HRP,
+    typename ...HRP,
     typename Primitives,
     typename Normals,
     typename TexCoords,
@@ -598,7 +622,7 @@ inline auto get_surface_impl(
         has_textures_tag                /* */,
         Primitive                       /* */,
         NormalBinding                   /* */,
-        HR<basic_ray<T>, HRP> const&    hr,
+        HR<basic_ray<T>, HRP...> const& hr,
         Primitives                      primitives,
         Normals                         normals,
         TexCoords                       tex_coords,
@@ -608,7 +632,7 @@ inline auto get_surface_impl(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = typename primitive_traits<Primitive>::type;
+    using P = Primitive;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
@@ -638,9 +662,9 @@ template <
     typename Primitive,
     typename NormalBinding,
     typename ColorBinding,
-    template <typename, typename> class HR,
+    template <typename, typename...> class HR,
     typename T,
-    typename HRP,
+    typename ...HRP,
     typename Primitives,
     typename Normals,
     typename TexCoords,
@@ -656,7 +680,7 @@ inline auto get_surface_impl(
         Primitive                       /* */,
         NormalBinding                   /* */,
         ColorBinding                    /* */,
-        HR<basic_ray<T>, HRP> const&    hr,
+        HR<basic_ray<T>, HRP...> const& hr,
         Primitives                      primitives,
         Normals                         normals,
         TexCoords                       tex_coords,
@@ -667,14 +691,14 @@ inline auto get_surface_impl(
 {
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = typename primitive_traits<Primitive>::type;
+    using P = Primitive;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
 
-    auto colorss = get_color(colors, hrs, P{}, ColorBinding{});
+    auto colorss = get_color(colors, hrs, typename primitive_traits<P>::type{}, ColorBinding{});
 
-    auto tcs = get_tex_coord(tex_coords, hrs, P{});
+    auto tcs = get_tex_coord(tex_coords, hrs, typename primitive_traits<P>::type{});
 
     std::array<typename decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 

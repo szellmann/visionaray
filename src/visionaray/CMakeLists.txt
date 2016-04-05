@@ -40,6 +40,9 @@ set(VSNRAY_HEADERS
     # Details - subject to frequent change!
 
     ${HEADER_DIR}/detail/bvh/build.inl
+    ${HEADER_DIR}/detail/bvh/get_bounds.inl
+    ${HEADER_DIR}/detail/bvh/get_normal.h
+    ${HEADER_DIR}/detail/bvh/hit_record.h
     ${HEADER_DIR}/detail/bvh/intersect.inl
     ${HEADER_DIR}/detail/bvh/sah.h
     ${HEADER_DIR}/detail/bvh/traverse.inl
