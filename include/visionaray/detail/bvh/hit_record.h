@@ -42,7 +42,7 @@ struct hit_record_bvh : Base
 
     // Index into the primitive list stored by the bvh
     // Is in general different from primitive::prim_id
-    int_type primitive_list_index = 0;
+    int_type primitive_list_index = int_type(0);
 };
 
 
