@@ -176,7 +176,7 @@ inline auto get_normal_dispatch(
     return get_normal(hr, primitives[hr.prim_id]);
 }
 
-// overload for BVHs, no normals - need to get the primitive from the right BVH
+// overload for BVHs and no normals - need to get the primitive from the right BVH
 // TODO: consider adding a bvh_index to hit_record_bvh
 template <
     typename Primitives,
@@ -186,7 +186,7 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_normal_dispatch(
-        Primitives      primitives,
+        Primitives      bvhs,
         std::nullptr_t  normals,
         HR const&       hr,
         Primitive       /* */
@@ -195,7 +195,16 @@ inline auto get_normal_dispatch(
 {
     VSNRAY_UNUSED(normals);
 
-    return get_normal(hr, primitives[0]); // TODO
+    // Find the BVH that contains prim_id
+    size_t num_primitives_total = 0;
+
+    size_t i = 0;
+    while (static_cast<size_t>(hr.prim_id) >= num_primitives_total + bvhs[i].num_primitives())
+    {
+        num_primitives_total += bvhs[i++].num_primitives();
+    }
+
+    return get_normal(hr, bvhs[i]);
 }
 
 
