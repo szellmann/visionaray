@@ -175,19 +175,19 @@ inline vector<3, T> get_color(
 template <
     typename Colors,
     typename HR,
-    size_t N
+    size_t N,
+    typename Primitive,
+    typename ColorBinding
     >
 inline auto get_color(
         Colors                      colors,
         std::array<HR, N> const&    hr,
-        basic_triangle<3, float>    /* */,
-        per_vertex_binding          /* */
+        Primitive                   /* */,
+        ColorBinding                /* */
         )
     -> std::array<typename std::iterator_traits<Colors>::value_type, N>
 {
     using C = typename std::iterator_traits<Colors>::value_type;
-    using ColorBinding = per_vertex_binding;
-    using Primitive = basic_triangle<3, float>; // TODO: make this work for other planar surfaces!
 
     std::array<C, N> result;
 
@@ -198,6 +198,7 @@ inline auto get_color(
 
     return result;
 }
+
 
 //-------------------------------------------------------------------------------------------------
 // w/o tag dispatch default to triangles
