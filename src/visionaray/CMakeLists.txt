@@ -41,7 +41,9 @@ set(VSNRAY_HEADERS
 
     ${HEADER_DIR}/detail/bvh/build.inl
     ${HEADER_DIR}/detail/bvh/get_bounds.inl
+    ${HEADER_DIR}/detail/bvh/get_color.h
     ${HEADER_DIR}/detail/bvh/get_normal.h
+    ${HEADER_DIR}/detail/bvh/get_tex_coord.h
     ${HEADER_DIR}/detail/bvh/hit_record.h
     ${HEADER_DIR}/detail/bvh/intersect.inl
     ${HEADER_DIR}/detail/bvh/sah.h

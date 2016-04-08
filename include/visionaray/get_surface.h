@@ -110,21 +110,6 @@ public:
 };
 
 
-// identify accelerators ----------------------------------
-
-template <typename T>
-struct primitive_traits
-{
-    using type = T;
-};
-
-template <template <typename> class Accelerator, typename T>
-struct primitive_traits<Accelerator<T>>
-{
-    using type = T;
-};
-
-
 // TODO: consolidate the following with get_normal()?
 // TODO: consolidate interface with get_color() and get_tex_coord()?
 
@@ -411,7 +396,7 @@ inline auto get_surface_impl(
     using P = Primitive;
     using C = vector<3, float>;
 
-    auto color = get_color(colors, hr, typename primitive_traits<P>::type{}, ColorBinding{});
+    auto color = get_color(colors, hr, P{}, ColorBinding{});
     auto tc = get_tex_coord(tex_coords, hr, P{});
 
     auto const& tex = textures[hr.geom_id];
@@ -456,8 +441,8 @@ inline auto get_surface_impl(
     using P = Primitive;
     using C = vector<3, float>;
 
-    auto color = get_color(colors, hr, typename primitive_traits<P>::type{}, ColorBinding{});
-    auto tc = get_tex_coord(tex_coords, hr, typename primitive_traits<P>::type{});
+    auto color = get_color(colors, hr, P{}, ColorBinding{});
+    auto tc = get_tex_coord(tex_coords, hr, P{});
 
     auto const& tex = textures[hr.geom_id];
     auto tex_color = tex.width() > 0 && tex.height() > 0
@@ -545,9 +530,9 @@ inline auto get_surface_impl(
 
     auto hrs = unpack(hr);
 
-    auto colorss = get_color(colors, hrs, typename primitive_traits<P>::type{}, ColorBinding{});
+    auto colorss = get_color(colors, hrs, P{}, ColorBinding{});
 
-    auto tcs = get_tex_coord(tex_coords, hrs, typename primitive_traits<P>::type{});
+    auto tcs = get_tex_coord(tex_coords, hrs, P{});
 
     std::array<typename decl_surface<vector<3, float>*, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
@@ -646,7 +631,7 @@ inline auto get_surface_impl(
 
     auto hrs = unpack(hr);
 
-    auto tcs = get_tex_coord(tex_coords, hrs, typename primitive_traits<Primitive>::type{});
+    auto tcs = get_tex_coord(tex_coords, hrs, P{});
 
     std::array<typename detail::decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
@@ -705,9 +690,9 @@ inline auto get_surface_impl(
 
     auto hrs = unpack(hr);
 
-    auto colorss = get_color(colors, hrs, typename primitive_traits<P>::type{}, ColorBinding{});
+    auto colorss = get_color(colors, hrs, P{}, ColorBinding{});
 
-    auto tcs = get_tex_coord(tex_coords, hrs, typename primitive_traits<P>::type{});
+    auto tcs = get_tex_coord(tex_coords, hrs, P{});
 
     std::array<typename decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
