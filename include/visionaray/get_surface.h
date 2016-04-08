@@ -276,7 +276,6 @@ inline auto get_normal_dispatch(
 //
 
 template <
-    typename Primitive,
     typename HR,
     typename Primitives,
     typename Materials
@@ -286,21 +285,21 @@ inline auto get_surface_impl(
         has_no_normals_tag  /* */,
         has_no_colors_tag   /* */,
         has_no_textures_tag /* */,
-        Primitive           /* */,
         HR const&           hr,
         Primitives          primitives,
         Materials           materials
         )
     -> typename decl_surface<vector<3, float>*, Materials>::type
 {
+    using P = typename std::iterator_traits<Primitives>::value_type;
+
     return make_surface(
-            get_normal_dispatch(primitives, nullptr, hr, Primitive{}),
+            get_normal_dispatch(primitives, nullptr, hr, P{}),
             materials[hr.geom_id]
             );
 }
 
 template <
-    typename Primitive,
     typename NormalBinding,
     typename HR,
     typename Primitives,
@@ -312,7 +311,6 @@ inline auto get_surface_impl(
         has_normals_tag     /* */,
         has_no_colors_tag   /* */,
         has_no_textures_tag /* */,
-        Primitive           /* */,
         NormalBinding       /* */,
         HR const&           hr,
         Primitives          primitives,
@@ -321,14 +319,15 @@ inline auto get_surface_impl(
         )
     -> typename decl_surface<Normals, Materials>::type
 {
+    using P = typename std::iterator_traits<Primitives>::value_type;
+
     return make_surface(
-            get_normal_dispatch(primitives, normals, hr, Primitive{}, NormalBinding{}),
+            get_normal_dispatch(primitives, normals, hr, P{}, NormalBinding{}),
             materials[hr.geom_id]
             );
 }
 
 template <
-    typename Primitive,
     typename NormalBinding,
     typename HR,
     typename Primitives,
@@ -342,7 +341,6 @@ inline auto get_surface_impl(
         has_normals_tag     /* */,
         has_no_colors_tag   /* */,
         has_textures_tag    /* */,
-        Primitive           /* */,
         NormalBinding       /* */,
         HR const&           hr,
         Primitives          primitives,
@@ -353,7 +351,7 @@ inline auto get_surface_impl(
         )
     -> typename decl_surface<Normals, Materials, vector<3, float>>::type
 {
-    using P = Primitive;
+    using P = typename std::iterator_traits<Primitives>::value_type;
     using C = vector<3, float>;
 
     auto tc = get_tex_coord(tex_coords, hr, P{});
@@ -368,7 +366,6 @@ inline auto get_surface_impl(
 }
 
 template <
-    typename Primitive,
     typename ColorBinding,
     typename HR,
     typename Primitives,
@@ -382,7 +379,6 @@ inline auto get_surface_impl(
         has_no_normals_tag  /* */,
         has_colors_tag      /* */,
         has_textures_tag    /* */,
-        Primitive           /* */,
         ColorBinding        /* */,
         HR const&           hr,
         Primitives          primitives,
@@ -393,7 +389,7 @@ inline auto get_surface_impl(
         )
     -> typename decl_surface<vector<3, float>*, Materials, vector<3, float>>::type
 {
-    using P = Primitive;
+    using P = typename std::iterator_traits<Primitives>::value_type;
     using C = vector<3, float>;
 
     auto color = get_color(colors, hr, P{}, ColorBinding{});
@@ -409,7 +405,6 @@ inline auto get_surface_impl(
 }
 
 template <
-    typename Primitive,
     typename NormalBinding,
     typename ColorBinding,
     typename HR,
@@ -425,7 +420,6 @@ inline auto get_surface_impl(
         has_normals_tag     /* */,
         has_colors_tag      /* */,
         has_textures_tag    /* */,
-        Primitive           /* */,
         NormalBinding       /* */,
         ColorBinding        /* */,
         HR const&           hr,
@@ -438,7 +432,7 @@ inline auto get_surface_impl(
         )
     -> typename decl_surface<Normals, Materials, vector<3, float>>::type
 {
-    using P = Primitive;
+    using P = typename std::iterator_traits<Primitives>::value_type;
     using C = vector<3, float>;
 
     auto color = get_color(colors, hr, P{}, ColorBinding{});
@@ -459,7 +453,6 @@ inline auto get_surface_impl(
 //
 
 template <
-    typename Primitive,
     template <typename, typename...> class HR,
     typename T,
     typename ...HRP,
@@ -471,13 +464,13 @@ inline auto get_surface_impl(
         has_no_normals_tag              /* */,
         has_no_colors_tag               /* */,
         has_no_textures_tag             /* */,
-        Primitive                       /* */,
         HR<basic_ray<T>, HRP...> const& hr,
         Primitives                      primitives,
         Materials                       materials
-        ) -> typename simd_decl_surface<vector<3, float>*, Materials, T>::type
+        )
+    -> typename simd_decl_surface<vector<3, float>*, Materials, T>::type
 {
-    using P = Primitive;
+    using P = typename std::iterator_traits<Primitives>::value_type;
     using N = vector<3, float>;
     using M = typename std::iterator_traits<Materials>::value_type;
 
@@ -497,7 +490,6 @@ inline auto get_surface_impl(
 }
 
 template <
-    typename Primitive,
     typename ColorBinding,
     template <typename, typename...> class HR,
     typename T,
@@ -513,7 +505,6 @@ inline auto get_surface_impl(
         has_no_normals_tag              /* */,
         has_colors_tag                  /* */,
         has_textures_tag                /* */,
-        Primitive                       /* */,
         ColorBinding                    /* */,
         HR<basic_ray<T>, HRP...> const& hr,
         Primitives                      primitives,
@@ -521,11 +512,12 @@ inline auto get_surface_impl(
         Materials                       materials,
         Colors                          colors,
         Textures                        textures
-        ) -> typename simd_decl_surface<vector<3, float>*, Materials, vector<3, float>, T>::type
+        )
+    -> typename simd_decl_surface<vector<3, float>*, Materials, vector<3, float>, T>::type
 {
+    using P = typename std::iterator_traits<Primitives>::value_type;
     using N = vector<3, float>;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = Primitive;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
@@ -555,7 +547,6 @@ inline auto get_surface_impl(
 
 
 template <
-    typename Primitive,
     typename NormalBinding,
     template <typename, typename...> class HR,
     typename T,
@@ -569,17 +560,17 @@ inline auto get_surface_impl(
         has_normals_tag                 /* */,
         has_no_colors_tag               /* */,
         has_no_textures_tag             /* */,
-        Primitive                       /* */,
         NormalBinding                   /* */,
         HR<basic_ray<T>, HRP...> const& hr,
         Primitives                      primitives,
         Normals                         normals,
         Materials                       materials
-        ) -> typename simd_decl_surface<Normals, Materials, T>::type
+        )
+    -> typename simd_decl_surface<Normals, Materials, T>::type
 {
+    using P = typename std::iterator_traits<Primitives>::value_type;
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = Primitive;
 
     auto hrs = unpack(hr);
 
@@ -598,7 +589,6 @@ inline auto get_surface_impl(
 
 
 template <
-    typename Primitive,
     typename NormalBinding,
     template <typename, typename...> class HR,
     typename T,
@@ -614,7 +604,6 @@ inline auto get_surface_impl(
         has_normals_tag                 /* */,
         has_no_colors_tag               /* */,
         has_textures_tag                /* */,
-        Primitive                       /* */,
         NormalBinding                   /* */,
         HR<basic_ray<T>, HRP...> const& hr,
         Primitives                      primitives,
@@ -622,11 +611,12 @@ inline auto get_surface_impl(
         TexCoords                       tex_coords,
         Materials                       materials,
         Textures                        textures
-        ) -> typename simd_decl_surface<Normals, Materials, vector<3, float>, T>::type
+        )
+    -> typename simd_decl_surface<Normals, Materials, vector<3, float>, T>::type
 {
+    using P = typename std::iterator_traits<Primitives>::value_type;
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = Primitive;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
@@ -653,7 +643,6 @@ inline auto get_surface_impl(
 }
 
 template <
-    typename Primitive,
     typename NormalBinding,
     typename ColorBinding,
     template <typename, typename...> class HR,
@@ -671,7 +660,6 @@ inline auto get_surface_impl(
         has_normals_tag                 /* */,
         has_colors_tag                  /* */,
         has_textures_tag                /* */,
-        Primitive                       /* */,
         NormalBinding                   /* */,
         ColorBinding                    /* */,
         HR<basic_ray<T>, HRP...> const& hr,
@@ -681,11 +669,12 @@ inline auto get_surface_impl(
         Materials                       materials,
         Colors                          colors,
         Textures                        textures
-        ) -> typename simd_decl_surface<Normals, Materials, vector<3, float>, T>::type
+        )
+    -> typename simd_decl_surface<Normals, Materials, vector<3, float>, T>::type
 {
+    using P = typename std::iterator_traits<Primitives>::value_type;
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
-    using P = Primitive;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
@@ -733,7 +722,6 @@ inline auto get_surface_unroll_params_impl(
             has_no_normals_tag{},
             has_no_colors_tag{},
             has_no_textures_tag{},
-            typename Params::primitive_type{},
             hr,
             p.prims.begin,
             p.materials
@@ -743,7 +731,6 @@ inline auto get_surface_unroll_params_impl(
             has_no_normals_tag{},
             has_no_colors_tag{},
             has_no_textures_tag{},
-            typename Params::primitive_type{},
             hr,
             p.prims.begin,
             p.materials
@@ -763,7 +750,6 @@ inline auto get_surface_unroll_params_impl(
             has_no_normals_tag{},
             has_no_colors_tag{},
             has_textures_tag{},
-            typename Params::primitive_type{},
             hr,
             p.prims.begin,
             p.tex_coords,
@@ -775,7 +761,6 @@ inline auto get_surface_unroll_params_impl(
             has_no_normals_tag{},
             has_no_colors_tag{},
             has_textures_tag{},
-            typename Params::primitive_type{},
             hr,
             p.prims.begin,
             p.tex_coords,
@@ -797,7 +782,6 @@ inline auto get_surface_unroll_params_impl(
             has_no_normals_tag{},
             has_colors_tag{},
             has_textures_tag{},
-            typename Params::primitive_type{},
             typename Params::color_binding{},
             hr,
             p.prims.begin,
@@ -811,7 +795,6 @@ inline auto get_surface_unroll_params_impl(
             has_no_normals_tag{},
             has_colors_tag{},
             has_textures_tag{},
-            typename Params::primitive_type{},
             typename Params::color_binding{},
             hr,
             p.prims.begin,
@@ -838,7 +821,6 @@ inline auto get_surface_unroll_params_impl(
             has_normals_tag{},
             has_no_colors_tag{},
             has_no_textures_tag{},
-            typename Params::primitive_type{},
             typename Params::normal_binding{},
             hr,
             p.prims.begin,
@@ -850,7 +832,6 @@ inline auto get_surface_unroll_params_impl(
             has_normals_tag{},
             has_no_colors_tag{},
             has_no_textures_tag{},
-            typename Params::primitive_type{},
             typename Params::normal_binding{},
             hr,
             p.prims.begin,
@@ -872,7 +853,6 @@ inline auto get_surface_unroll_params_impl(
             has_normals_tag{},
             has_no_colors_tag{},
             has_textures_tag{},
-            typename Params::primitive_type{},
             typename Params::normal_binding{},
             hr,
             p.prims.begin,
@@ -886,7 +866,6 @@ inline auto get_surface_unroll_params_impl(
             has_normals_tag{},
             has_no_colors_tag{},
             has_textures_tag{},
-            typename Params::primitive_type{},
             typename Params::normal_binding{},
             hr,
             p.prims.begin,
@@ -910,7 +889,6 @@ inline auto get_surface_unroll_params_impl(
             has_normals_tag{},
             has_colors_tag{},
             has_textures_tag{},
-            typename Params::primitive_type{},
             typename Params::normal_binding{},
             typename Params::color_binding{},
             hr,
@@ -926,7 +904,6 @@ inline auto get_surface_unroll_params_impl(
             has_normals_tag{},
             has_colors_tag{},
             has_textures_tag{},
-            typename Params::primitive_type{},
             typename Params::normal_binding{},
             typename Params::color_binding{},
             hr,
