@@ -23,6 +23,7 @@ template <
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
+VSNRAY_FUNC
 auto get_normal(
         hit_record_bvh<R, BVH, Base> const& hr,
         Primitive                           prim
@@ -48,6 +49,7 @@ template <
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
+VSNRAY_FUNC
 auto get_normal(
         Normals                             normals,
         hit_record_bvh<R, BVH, Base> const& hr,
