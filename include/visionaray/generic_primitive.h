@@ -7,7 +7,7 @@
 #define VSNRAY_GENERIC_PRIMITIVE_H 1
 
 #include "detail/macros.h"
-#include "math/primitive.h"
+#include "math/math.h"
 #include "variant.h"
 
 namespace visionaray
