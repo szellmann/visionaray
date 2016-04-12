@@ -90,6 +90,7 @@ set(UNITTESTS_SOURCES
     math/norm.cpp
     math/rect.cpp
     generic_material.cpp
+    generic_primitive.cpp
     render_target.cpp
     swizzle.cpp
     variant.cpp
