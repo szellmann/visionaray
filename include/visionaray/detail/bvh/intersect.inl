@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <utility>
 
+#include <visionaray/math/math.h>
+
 #include "../stack.h"
 #include "../tags.h"
 #include "hit_record.h"
@@ -26,7 +28,8 @@ VSNRAY_FUNC
 inline auto intersect(
         basic_ray<T> const& ray,
         BVH const&          b,
-        Intersector&        isect
+        Intersector&        isect,
+        T                   max_t = numeric_limits<T>::max()
         )
     -> hit_record_bvh<
         basic_ray<T>,
@@ -100,7 +103,7 @@ next:
             auto prim = b.primitive(i);
 
             auto hr = HR(isect(ray, prim), i);
-            auto closer = is_closer(hr, result);
+            auto closer = is_closer(hr, result, max_t);
 
 #ifndef __CUDA_ARCH__
             if (!any(closer))

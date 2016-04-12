@@ -74,7 +74,7 @@ auto traverse(
         typename R::scalar_type const&  max_t,
         Intersector& isect
         )
-    -> decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin) )
+    -> decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t) )
 {
     using HR = decltype( isect(r, *begin) );
 
@@ -82,7 +82,7 @@ auto traverse(
 
     for (P it = begin; it != end; ++it)
     {
-        auto hr = isect(std::integral_constant<int, Traversal>{}, r, *it);
+        auto hr = isect(std::integral_constant<int, Traversal>{}, r, *it, max_t);
         update_if(result, hr, is_closer(hr, result, max_t));
 
         if ( Traversal == AnyHit && all(result.hit) )
