@@ -304,6 +304,15 @@ auto is_closer(HR const& query, HR const& reference, T max_t)
     return is_closer(query, reference) && query.t < max_t;
 }
 
+// specialization for aabb
+template <typename T, typename U, typename HR>
+MATH_FUNC
+auto is_closer(hit_record<basic_ray<T>, basic_aabb<U>> const& query, HR const& reference, T max_t)
+    -> decltype(is_closer(query, reference))
+{
+    return is_closer(query, reference) && query.tnear < max_t;
+}
+
 
 // default implementation for hit_record<ray, primitive<unsigned>>
 
