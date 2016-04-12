@@ -33,6 +33,23 @@ private:
 
 };
 
+
+class generic_primitive_get_bounds_visitor
+{
+public:
+
+    using return_type = basic_aabb<float>;
+
+public:
+
+    template <typename X>
+    VSNRAY_FUNC
+    return_type operator()(X const& ref) const
+    {
+        return get_bounds(ref);
+    }
+};
+
 } // detail
 
 
@@ -48,6 +65,19 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
         )
 {
     return apply_visitor( detail::generic_primitive_intersection_visitor<T>(ray), primitive );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Geometric functions
+//
+
+template <typename ...Ts>
+VSNRAY_FUNC
+auto get_bounds(generic_primitive<Ts...> const& primitive)
+    -> typename detail::generic_primitive_get_bounds_visitor::return_type
+{
+    return apply_visitor( detail::generic_primitive_get_bounds_visitor(), primitive );
 }
 
 } // visionaray
