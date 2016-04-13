@@ -6,6 +6,10 @@ namespace visionaray
 namespace detail
 {
 
+//-------------------------------------------------------------------------------------------------
+// Visitors
+//
+
 template <typename T>
 class generic_primitive_intersection_visitor
 {
@@ -50,6 +54,38 @@ public:
     }
 };
 
+
+class generic_primitive_split_visitor
+{
+public:
+
+    using return_type = void;
+
+public:
+
+    generic_primitive_split_visitor(aabb& L, aabb& R, float plane, int axis)
+        : L_(L)
+        , R_(R)
+        , plane_(plane)
+        , axis_(axis)
+    {
+    }
+
+    template <typename X>
+    void operator()(X const& ref) const
+    {
+        return split_primitive(L_, R_, plane_, axis_, ref);
+    }
+
+private:
+
+    aabb& L_;
+    aabb& R_;
+    float plane_;
+    int   axis_;
+
+};
+
 } // detail
 
 
@@ -78,6 +114,17 @@ auto get_bounds(generic_primitive<Ts...> const& primitive)
     -> typename detail::generic_primitive_get_bounds_visitor::return_type
 {
     return apply_visitor( detail::generic_primitive_get_bounds_visitor(), primitive );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Implementation of split_primitive() customization point for compatibility w/ SBVHs
+//
+
+template <typename ...Ts>
+void split_primitive(aabb& L, aabb& R, float plane, int axis, generic_primitive<Ts...> const& primitive)
+{
+    apply_visitor( detail::generic_primitive_split_visitor(L, R, plane, axis), primitive );
 }
 
 } // visionaray
