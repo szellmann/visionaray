@@ -15,19 +15,27 @@ find_package(PTHREAD REQUIRED)
 endif()
 find_package(Visionaray REQUIRED)
 
-visionaray_use_package(COVER)
-visionaray_use_package(COVISE)
-visionaray_use_package(CUDA)
-visionaray_use_package(GLEW)
-visionaray_use_package(OpenGL)
-if (NOT APPLE AND NOT WIN32)
-visionaray_use_package(PTHREAD)
-endif()
-visionaray_use_package(Visionaray)
-
+include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${GLEW_INCLUDE_DIRS})
+include_directories(${OPENGL_INCLUDE_DIR})
+include_directories(${VISIONARAY_INCLUDE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-set(EXTRA_LIBS ${EXTRA_LIBS} ${GLEW_LIBRARY} ${VISIONARAY_LIBRARY})
+set(EXTRA_LIBS
+    ${EXTRA_LIBS}
+    ${Boost_LIBRARIES}
+    ${GLEW_LIBRARY}
+    ${OPENGL_LIBRARIES}
+    ${VISIONARAY_LIBRARY}
+)
+
+if (NOT APPLE AND NOT WIN32)
+include_directories(${PTHREAD_INCLUDE_DIR})
+set(EXTRA_LIBS
+    ${EXTRA_LIBS}
+    ${PTHREAD_LIBRARY}
+)
+endif()
 
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
 
