@@ -53,7 +53,7 @@ enum key
     Zero = 0x30, One = 0x31, Two = 0x32, Three = 0x33, Four = 0x34,
     Five = 0x35, Six = 0x36, Seven = 0x37, Eight = 0x38, Nine = 0x39,
 
-    Plus = 0x2B, Minus = 0x2D,
+    Plus = 0x2B, Comma = 0x2C, Minus = 0x2D, Period = 0x2E,
 
     ArrowLeft, ArrowRight, ArrowUp, ArrowDown,
 
@@ -200,7 +200,9 @@ static inline key map_glut_key(unsigned char code)
     case '9':                   return Nine;
 
     case '+':                   return Plus;
+    case ',':                   return Comma;
     case '-':                   return Minus;
+    case '.':                   return Period;
 
     case 0x20:                  return Space;
     case 0x1B:                  return Escape;
@@ -322,7 +324,9 @@ static inline key map_qt_key(int code, Qt::KeyboardModifiers modifiers = Qt::NoM
     case Qt::Key_9:         return Nine;
 
     case Qt::Key_Plus:      return Plus;
+    case Qt::Key_Comma:     return Comma;
     case Qt::Key_Minus:     return Minus;
+    case Qt::Key_Period:    return Period;
 
     case Qt::Key_Space:     return Space;
     case Qt::Key_Escape:    return Escape;
