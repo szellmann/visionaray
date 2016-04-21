@@ -407,7 +407,7 @@ inline vector<4, typename float_from_simd_width<N>::type> pack(
         )
 {
     using U = typename float_from_simd_width<N>::type;
-    using float_array = typename simd::aligned_array<U>::type;
+    using float_array = typename aligned_array<U>::type;
 
     float_array x;
     float_array y;
