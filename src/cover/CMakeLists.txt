@@ -16,6 +16,7 @@ endif()
 find_package(Visionaray REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
+include_directories(${CUDA_INCLUDE_DIRS})
 include_directories(${GLEW_INCLUDE_DIRS})
 include_directories(${OPENGL_INCLUDE_DIR})
 include_directories(${VISIONARAY_INCLUDE_DIR})
@@ -24,6 +25,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 set(EXTRA_LIBS
     ${EXTRA_LIBS}
     ${Boost_LIBRARIES}
+    ${CUDA_LIBRARIES}
     ${GLEW_LIBRARY}
     ${OPENGL_LIBRARIES}
     ${VISIONARAY_LIBRARY}
