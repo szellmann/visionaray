@@ -73,9 +73,9 @@ public:
 
 private:
 
-    size_t width_  = 0U;
-    size_t height_ = 0U;
-    size_t depth_  = 0U;
+    size_t width_;
+    size_t height_;
+    size_t depth_;
 
 };
 

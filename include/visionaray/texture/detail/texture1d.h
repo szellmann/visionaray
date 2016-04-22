@@ -62,7 +62,7 @@ public:
 
 private:
 
-    size_t width_ = 0U;
+    size_t width_;
 
 };
 

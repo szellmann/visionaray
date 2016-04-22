@@ -175,13 +175,15 @@ public:
 
 public:
 
+    texture_ref_base() = default;
+
     texture_ref_base(texture_base<T, Dim> const& tex)
         : base_type(tex)
         , data_(tex.data())
     {
     }
 
-    explicit texture_ref_base(size_t size = 0)
+    explicit texture_ref_base(size_t size)
         : data_(nullptr)
     {
         VSNRAY_UNUSED(size);
