@@ -29,20 +29,20 @@ namespace detail
 template <typename ...Ts>
 struct index_of
 {
-    static const unsigned value = 0;
+    enum { value = 0 };
 };
 
 template <typename U, typename ...Ts>
 struct index_of<U, U, Ts...>
 {
-    static const unsigned value = 1;
+    enum { value = 1 };
 };
 
 template <typename U, typename T, typename ...Ts>
 struct index_of<U, T, Ts...>
 {
-    static const unsigned v = index_of<U, Ts...>::value;
-    static const unsigned value = v == 0 ? 0 : 1 + v;
+    enum { v = index_of<U, Ts...>::value };
+    enum { value = v == 0 ? 0 : 1 + v };
 };
 
 
