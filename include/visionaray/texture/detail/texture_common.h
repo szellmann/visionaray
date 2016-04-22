@@ -11,7 +11,6 @@
 
 #include <algorithm>
 #include <array>
-#include <vector>
 
 #include <visionaray/aligned_vector.h>
 #include <visionaray/pixel_format.h>
@@ -237,7 +236,7 @@ public:
 protected:
 
     tex_filter_mode filter_mode_;
-    std::vector<element_type> prefiltered_;
+    aligned_vector<element_type> prefiltered_;
 
 };
 
