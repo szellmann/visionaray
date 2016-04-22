@@ -91,8 +91,6 @@ union variant_storage
 template <typename T, typename ...Ts>
 union variant_storage<T, Ts...>
 {
-    VSNRAY_FUNC variant_storage() = default;
-
     T element;
     variant_storage<Ts...> elementN;
 
