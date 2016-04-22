@@ -127,7 +127,7 @@ class variant
 {
 public:
 
-    VSNRAY_FUNC variant() {}
+    VSNRAY_FUNC variant() = default;
 
     template <typename T>
     VSNRAY_FUNC variant(T const& value)
@@ -163,7 +163,7 @@ public:
 private:
 
     detail::variant_storage<Ts...>  storage_;
-    unsigned                        type_index_ = unsigned(-1);
+    unsigned                        type_index_;
 
 };
 
