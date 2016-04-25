@@ -35,6 +35,8 @@ public:
             )
         : width_(w)
         , height_(h)
+        , address_mode_(address_mode)
+        , filter_mode_(filter_mode)
     {
         if (width_ == 0 || height_ == 0)
         {
@@ -51,7 +53,7 @@ public:
             return;
         }
 
-        init_texture_object(address_mode, filter_mode);
+        init_texture_object();
     }
 
     // Construct from pointer to host data, same address mode for all dimensions
@@ -65,6 +67,8 @@ public:
             )
         : width_(w)
         , height_(h)
+        , address_mode_{{ address_mode, address_mode }}
+        , filter_mode_(filter_mode)
     {
         if (width_ == 0 || height_ == 0)
         {
@@ -81,8 +85,7 @@ public:
             return;
         }
 
-        std::array<tex_address_mode, 2> am{{ address_mode, address_mode }};
-        init_texture_object(am, filter_mode);
+        init_texture_object();
     }
 
     // Construct from host texture
@@ -90,6 +93,8 @@ public:
     explicit cuda_texture(texture<U, ReadMode, 2> const& host_tex)
         : width_(host_tex.width())
         , height_(host_tex.height())
+        , address_mode_(host_tex.get_address_mode())
+        , filter_mode_(host_tex.get_filter_mode())
     {
         if (width_ == 0 || height_ == 0)
         {
@@ -106,10 +111,7 @@ public:
             return;
         }
 
-        init_texture_object(
-                host_tex.get_address_mode(),
-                host_tex.get_filter_mode()
-                );
+        init_texture_object();
     }
 
     // Construct from host texture ref (TODO: combine with previous)
@@ -117,6 +119,8 @@ public:
     explicit cuda_texture(texture_ref<U, ReadMode, 2> const& host_tex)
         : width_(host_tex.width())
         , height_(host_tex.height())
+        , address_mode_(host_tex.get_address_mode())
+        , filter_mode_(host_tex.get_filter_mode())
     {
         if (width_ == 0 || height_ == 0)
         {
@@ -133,10 +137,7 @@ public:
             return;
         }
 
-        init_texture_object(
-                host_tex.get_address_mode(),
-                host_tex.get_filter_mode()
-                );
+        init_texture_object();
     }
 
 #if !VSNRAY_CXX_MSVC
@@ -184,12 +185,16 @@ public:
 
 private:
 
-    cuda::pitch2d<cuda_type>    pitch_;
+    cuda::pitch2d<cuda_type>        pitch_;
 
-    cuda::texture_object        texture_obj_;
+    cuda::texture_object            texture_obj_;
 
-    size_t width_;
-    size_t height_;
+    size_t                          width_;
+    size_t                          height_;
+
+    std::array<tex_address_mode, 2> address_mode_;
+    tex_filter_mode                 filter_mode_;
+
 
     cudaError_t upload_data(vsnray_type const* data)
     {
@@ -211,10 +216,7 @@ private:
         return upload_data( dst.data() );
     }
 
-    void init_texture_object(
-            std::array<tex_address_mode, 2> const&  address_mode,
-            tex_filter_mode const&                  filter_mode
-            )
+    void init_texture_object()
     {
         auto desc = cudaCreateChannelDesc<cuda_type>();
 
@@ -229,9 +231,9 @@ private:
 
         cudaTextureDesc texture_desc;
         memset(&texture_desc, 0, sizeof(texture_desc));
-        texture_desc.addressMode[0]             = detail::map_address_mode( address_mode[0] );
-        texture_desc.addressMode[1]             = detail::map_address_mode( address_mode[1] );
-        texture_desc.filterMode                 = detail::map_filter_mode( filter_mode );
+        texture_desc.addressMode[0]             = detail::map_address_mode( address_mode_[0] );
+        texture_desc.addressMode[1]             = detail::map_address_mode( address_mode_[1] );
+        texture_desc.filterMode                 = detail::map_filter_mode( filter_mode_ );
         texture_desc.readMode                   = detail::map_read_mode( ReadMode );
         texture_desc.normalizedCoords           = true;
 

@@ -37,6 +37,8 @@ public:
         : width_(w)
         , height_(h)
         , depth_(d)
+        , address_mode_(address_mode)
+        , filter_mode_(filter_mode)
     {
         if (width_ == 0 || height_ == 0 || depth_ == 0)
         {
@@ -56,7 +58,7 @@ public:
             return;
         }
 
-        init_texture_object(address_mode, filter_mode);
+        init_texture_object();
     }
 
     // Construct from pointer to host data, same address mode for all dimensions
@@ -72,6 +74,8 @@ public:
         : width_(w)
         , height_(h)
         , depth_(d)
+        , address_mode_({{ address_mode, address_mode, address_mode }})
+        , filter_mode_(filter_mode)
     {
         if (width_ == 0 || height_ == 0 || depth_ == 0)
         {
@@ -91,8 +95,7 @@ public:
             return;
         }
 
-        std::array<tex_address_mode, 3> am{{ address_mode, address_mode, address_mode }};
-        init_texture_object(am, filter_mode);
+        init_texture_object();
     }
 
     // Construct from host texture
@@ -101,6 +104,8 @@ public:
         : width_(host_tex.width())
         , height_(host_tex.height())
         , depth_(host_tex.depth())
+        , address_mode_(host_tex.get_address_mode())
+        , filter_mode_(host_tex.get_filter_mode())
     {
         if (width_ == 0 || height_ == 0 || depth_ == 0)
         {
@@ -120,10 +125,7 @@ public:
             return;
         }
 
-        init_texture_object(
-                host_tex.get_address_mode(),
-                host_tex.get_filter_mode()
-                );
+        init_texture_object();
     }
 
     // Construct from host texture ref (TODO: combine with previous)
@@ -132,6 +134,8 @@ public:
         : width_(host_tex.width())
         , height_(host_tex.height())
         , depth_(host_tex.depth())
+        , address_mode_(host_tex.get_address_mode())
+        , filter_mode_(host_tex.get_filter_mode())
     {
         if (width_ == 0 || height_ == 0 || depth_ == 0)
         {
@@ -151,10 +155,7 @@ public:
             return;
         }
 
-        init_texture_object(
-                host_tex.get_address_mode(),
-                host_tex.get_filter_mode()
-                );
+        init_texture_object();
     }
 
 #if !VSNRAY_CXX_MSVC
@@ -209,13 +210,17 @@ public:
 
 private:
 
-    cuda::array             array_;
+    cuda::array                     array_;
 
-    cuda::texture_object    texture_obj_;
+    cuda::texture_object            texture_obj_;
 
-    size_t width_;
-    size_t height_;
-    size_t depth_;
+    size_t                          width_;
+    size_t                          height_;
+    size_t                          depth_;
+
+    std::array<tex_address_mode, 3> address_mode_;
+    tex_filter_mode                 filter_mode_;
+
 
     cudaError_t upload_data(vsnray_type const* data)
     {
@@ -237,10 +242,7 @@ private:
         return upload_data( dst.data() );
     }
 
-    void init_texture_object(
-            std::array<tex_address_mode, 3> const&  address_mode,
-            tex_filter_mode                         filter_mode
-            )
+    void init_texture_object()
     {
         cudaResourceDesc resource_desc;
         memset(&resource_desc, 0, sizeof(resource_desc));
@@ -249,10 +251,10 @@ private:
 
         cudaTextureDesc texture_desc;
         memset(&texture_desc, 0, sizeof(texture_desc));
-        texture_desc.addressMode[0]             = detail::map_address_mode( address_mode[0] );
-        texture_desc.addressMode[1]             = detail::map_address_mode( address_mode[1] );
-        texture_desc.addressMode[2]             = detail::map_address_mode( address_mode[2] );
-        texture_desc.filterMode                 = detail::map_filter_mode( filter_mode );
+        texture_desc.addressMode[0]             = detail::map_address_mode( address_mode_[0] );
+        texture_desc.addressMode[1]             = detail::map_address_mode( address_mode_[1] );
+        texture_desc.addressMode[2]             = detail::map_address_mode( address_mode_[2] );
+        texture_desc.filterMode                 = detail::map_filter_mode( filter_mode_ );
         texture_desc.readMode                   = detail::map_read_mode( ReadMode );
         texture_desc.normalizedCoords           = true;
 
