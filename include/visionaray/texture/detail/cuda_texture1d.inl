@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <array>
+#include <cassert>
 
 #include <visionaray/cuda/array.h>
 
@@ -180,6 +181,59 @@ public:
     size_t width() const
     {
         return width_;
+    }
+
+    void resize(size_t width)
+    {
+        width_ = width;
+
+        if (width_ == 0)
+        {
+            return;
+        }
+
+        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+
+        if ( array_.allocate(desc, width_) != cudaSuccess )
+        {
+            return;
+        }
+    }
+
+    template <typename U>
+    void set_data(U const* data)
+    {
+        if ( upload_data(data) != cudaSuccess )
+        {
+            return;
+        }
+
+        init_texture_object();
+    }
+
+    void set_address_mode(size_t index, tex_address_mode mode)
+    {
+        assert( index < 1 );
+        address_mode_[index] = mode;
+
+        init_texture_object();
+    }
+
+    void set_address_mode(tex_address_mode mode)
+    {
+        for (size_t d = 0; d < 1; ++d)
+        {
+            address_mode_[d] = mode;
+        }
+
+        init_texture_object();
+    }
+
+    void set_filter_mode(tex_filter_mode filter_mode)
+    {
+        filter_mode_ = filter_mode;
+
+        init_texture_object();
     }
 
 private:
