@@ -45,14 +45,14 @@ template <>
 struct map_texel_type<uchar4, ElementType>
 {
     using cuda_type             = uchar4;
-    using vsnray_type           = vector<4, unorm<8>>;
+    using vsnray_type           = vector<4, unsigned char>;
 
     using cuda_return_type      = uchar4;
-    using vsnray_return_type    = vector<4, unorm<8>>;
+    using vsnray_return_type    = vector<4, unsigned char>;
 
-    VSNRAY_FUNC static vector<4, unorm<8>> convert_return_type(uchar4 const& value)
+    VSNRAY_FUNC static vector<4, unsigned char> convert_return_type(uchar4 const& value)
     {
-        return vector<4, unorm<8>>( value.x, value.y, value.z, value.w );
+        return vector<4, unsigned char>( value.x, value.y, value.z, value.w );
     }
 };
 
