@@ -25,7 +25,7 @@ template <
     typename Intersector
     >
 VSNRAY_FUNC
-auto traverse(
+inline auto traverse(
         std::false_type                 /* is no bvh */,
         R const&                        r,
         P                               begin,
@@ -66,7 +66,7 @@ template <
     typename Intersector
     >
 VSNRAY_FUNC
-auto traverse(
+inline auto traverse(
         std::true_type                  /* is_bvh */,
         R const&                        r,
         P                               begin,
@@ -102,7 +102,7 @@ template <
     typename Intersector
     >
 VSNRAY_FUNC
-auto traverse(
+inline auto traverse(
         IsAnyBVH        /* */,
         R const&        r,
         P               begin,
@@ -131,7 +131,7 @@ auto traverse(
 
 template <typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-auto any_hit(
+inline auto any_hit(
         R const& r,
         P begin,
         P end,
@@ -152,7 +152,7 @@ auto any_hit(
 
 template <typename R, typename P>
 VSNRAY_FUNC
-auto any_hit(R const& r, P begin, P end)
+inline auto any_hit(R const& r, P begin, P end)
     -> decltype( intersect(r, *begin) )
 {
     default_intersector ignore;
@@ -166,7 +166,7 @@ auto any_hit(R const& r, P begin, P end)
 
 template <typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-auto any_hit(
+inline auto any_hit(
         R const& r,
         P begin,
         P end,
@@ -189,7 +189,7 @@ auto any_hit(
 
 template <typename R, typename P>
 VSNRAY_FUNC
-auto any_hit(
+inline auto any_hit(
         R const& r,
         P begin,
         P end,
@@ -208,7 +208,7 @@ auto any_hit(
 
 template <typename R, typename P, typename Intersector>
 VSNRAY_FUNC
-auto closest_hit(
+inline auto closest_hit(
         R const& r,
         P begin,
         P end,
@@ -229,7 +229,7 @@ auto closest_hit(
 
 template <typename R, typename P>
 VSNRAY_FUNC
-auto closest_hit(R const& r, P begin, P end)
+inline auto closest_hit(R const& r, P begin, P end)
     -> decltype( std::declval<default_intersector>()(r, *begin) )
 {
     default_intersector ignore;

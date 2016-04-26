@@ -738,7 +738,7 @@ inline vector<Dim, T> select(M const& m, vector<Dim, T> const& u, vector<Dim, T>
 
 template <size_t Dim, typename T>
 MATH_FUNC
-vector<Dim, T> min(vector<Dim, T> const& u, vector<Dim, T> const& v)
+inline vector<Dim, T> min(vector<Dim, T> const& u, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -752,7 +752,7 @@ vector<Dim, T> min(vector<Dim, T> const& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-vector<Dim, T> max(vector<Dim, T> const& u, vector<Dim, T> const& v)
+inline vector<Dim, T> max(vector<Dim, T> const& u, vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
 
@@ -766,7 +766,7 @@ vector<Dim, T> max(vector<Dim, T> const& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-vector<Dim, T> rotate(vector<Dim, T> v, int count = 1)
+inline vector<Dim, T> rotate(vector<Dim, T> v, int count = 1)
 {
     auto tmp = v;
 
@@ -782,7 +782,7 @@ vector<Dim, T> rotate(vector<Dim, T> v, int count = 1)
 // Returns the index of the smallest element of the vector
 template <size_t Dim, typename T>
 MATH_FUNC
-size_t min_index(vector<Dim, T> const& u)
+inline size_t min_index(vector<Dim, T> const& u)
 {
     size_t i = u.y < u.x ? 1 : 0;
 
@@ -797,7 +797,7 @@ size_t min_index(vector<Dim, T> const& u)
 // Returns the index of the largest element of the vector
 template <size_t Dim, typename T>
 MATH_FUNC
-size_t max_index(vector<Dim, T> const& u)
+inline size_t max_index(vector<Dim, T> const& u)
 {
     size_t i = u.y < u.x ? 0 : 1;
 
@@ -812,7 +812,7 @@ size_t max_index(vector<Dim, T> const& u)
 // Returns the smallest element
 template <size_t Dim, typename T>
 MATH_FUNC
-T min_element(vector<Dim, T> const& u)
+inline T min_element(vector<Dim, T> const& u)
 {
     T result = u.x;
 
@@ -827,7 +827,7 @@ T min_element(vector<Dim, T> const& u)
 // Returns the largest element
 template <size_t Dim, typename T>
 MATH_FUNC
-T max_element(vector<Dim, T> const& u)
+inline T max_element(vector<Dim, T> const& u)
 {
     T result = u.x;
 
@@ -841,7 +841,7 @@ T max_element(vector<Dim, T> const& u)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-T hadd(vector<Dim, T> const& u)
+inline T hadd(vector<Dim, T> const& u)
 {
     T result(0.0);
 
@@ -855,7 +855,7 @@ T hadd(vector<Dim, T> const& u)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-T hmul(vector<Dim, T> const& u)
+inline T hmul(vector<Dim, T> const& u)
 {
     T result(1.0);
 
@@ -874,7 +874,7 @@ T hmul(vector<Dim, T> const& u)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-auto convert_to_float(vector<Dim, T> const& v)
+inline auto convert_to_float(vector<Dim, T> const& v)
     -> vector<Dim, decltype(convert_to_float(v.x))>
 {
     vector<Dim, decltype(convert_to_float(v.x))> result;
@@ -889,7 +889,7 @@ auto convert_to_float(vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-auto convert_to_int(vector<Dim, T> const& v)
+inline auto convert_to_int(vector<Dim, T> const& v)
     -> vector<Dim, decltype(convert_to_int(v.x))>
 {
     vector<Dim, decltype(convert_to_int(v.x))> result;

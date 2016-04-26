@@ -52,14 +52,14 @@ inline auto has_emissive_material(surface<N, simd::generic_material4<Ms...>, Ts.
 
 template <typename N, typename M>
 VSNRAY_FUNC
-surface<N, M> make_surface(N const& n, M const& m)
+inline surface<N, M> make_surface(N const& n, M const& m)
 {
     return surface<N, M>(n, m);
 }
 
 template <typename N, typename M, typename C>
 VSNRAY_FUNC
-surface<N, M, C> make_surface(N const& n, M const m, C const& tex_color)
+inline surface<N, M, C> make_surface(N const& n, M const m, C const& tex_color)
 {
     return surface<N, M, C>(n, m, tex_color);
 }

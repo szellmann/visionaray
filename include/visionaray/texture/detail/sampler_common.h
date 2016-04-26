@@ -24,7 +24,7 @@ namespace detail
 //
 
 template <typename F, typename I>
-F map_tex_coord(F const& coord, I const& texsize, tex_address_mode mode)
+inline F map_tex_coord(F const& coord, I const& texsize, tex_address_mode mode)
 {
     F N = convert_to_float(texsize);
 
@@ -49,13 +49,13 @@ F map_tex_coord(F const& coord, I const& texsize, tex_address_mode mode)
 }
 
 template <typename F, typename I>
-F map_tex_coord(F const& coord, I const& texsize, std::array<tex_address_mode, 1> const& mode)
+inline F map_tex_coord(F const& coord, I const& texsize, std::array<tex_address_mode, 1> const& mode)
 {
     return map_tex_coord(coord, texsize, mode[0]);
 }
 
 template <size_t Dim, typename F, typename I>
-vector<Dim, F> map_tex_coord(
+inline vector<Dim, F> map_tex_coord(
         vector<Dim, F> const&                       coord,
         vector<Dim, I> const&                       texsize,
         std::array<tex_address_mode, Dim> const&    mode

@@ -45,7 +45,7 @@ inline unsigned tic()
 
 template <typename K, typename R, typename Sampler>
 VSNRAY_FUNC
-auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
+inline auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
     -> decltype(kernel(r))
 {
     VSNRAY_UNUSED(samp);
@@ -62,7 +62,7 @@ template <
     typename = void
     >
 VSNRAY_FUNC
-auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
+inline auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
     -> decltype(kernel(r, samp))
 {
     VSNRAY_UNUSED(x);
@@ -79,7 +79,7 @@ template <
     typename = void
     >
 VSNRAY_FUNC
-auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
+inline auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
     -> decltype(kernel(r, x, y))
 {
     VSNRAY_UNUSED(samp);
@@ -301,7 +301,8 @@ inline std::array<R, Num> make_primary_rays(
 //
 
 template <typename T>
-VSNRAY_FUNC inline T depth_transform(
+VSNRAY_FUNC
+inline T depth_transform(
         vector<3, T> const&     isect_pos,
         matrix<4, 4, T> const&  view_matrix,
         matrix<4, 4, T> const&  inv_view_matrix,
