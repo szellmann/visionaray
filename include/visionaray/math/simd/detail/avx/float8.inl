@@ -56,7 +56,7 @@ VSNRAY_FORCE_INLINE float8::operator __m256() const
 // Bitwise cast
 //
 
-inline int8 reinterpret_as_int(float8 const& a)
+VSNRAY_FORCE_INLINE int8 reinterpret_as_int(float8 const& a)
 {
     return _mm256_castps_si256(a);
 }
@@ -66,7 +66,7 @@ inline int8 reinterpret_as_int(float8 const& a)
 // Static cast
 //
 
-inline int8 convert_to_int(float8 const& a)
+VSNRAY_FORCE_INLINE int8 convert_to_int(float8 const& a)
 {
     return _mm256_cvttps_epi32(a);
 }
@@ -102,7 +102,7 @@ VSNRAY_FORCE_INLINE void store(float dst[8], float8 const& v)
 }
 
 template <size_t I>
-inline float& get(float8& v)
+VSNRAY_FORCE_INLINE float& get(float8& v)
 {
     static_assert(I >= 0 && I < 8, "Index out of range for SIMD vector access");
 
@@ -110,7 +110,7 @@ inline float& get(float8& v)
 }
 
 template <size_t I>
-inline float const& get(float8 const& v)
+VSNRAY_FORCE_INLINE float const& get(float8 const& v)
 {
     static_assert(I >= 0 && I < 8, "Index out of range for SIMD vector access");
 
