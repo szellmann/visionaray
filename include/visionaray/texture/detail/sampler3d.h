@@ -503,11 +503,12 @@ inline vector<4, T> tex3D_impl_expand_types(
 }
 
 
-// simd
+// simd, overload for floating point arrays
 
 template <
     typename T,
     typename FloatT,
+    typename = typename std::enable_if<!std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline FloatT tex3D_impl_expand_types(
@@ -519,6 +520,36 @@ inline FloatT tex3D_impl_expand_types(
         )
 {
     using return_type   = FloatT;
+    using internal_type = FloatT;
+
+    return tex3D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+// simd, overload for integer arrays
+
+template <
+    typename T,
+    typename FloatT,
+    typename = typename std::enable_if<std::is_integral<T>::value>::type,
+    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+    >
+inline typename simd::int_type<FloatT>::type tex3D_impl_expand_types(
+        T const*                                                tex,
+        vector<3, FloatT> const&                                coord,
+        vector<3, typename simd::int_type<FloatT>::type> const& texsize,
+        tex_filter_mode                                         filter_mode,
+        std::array<tex_address_mode, 3> const&                  address_mode
+        )
+{
+    using return_type   = typename simd::int_type<FloatT>::type;
     using internal_type = FloatT;
 
     return tex3D_impl_choose_filter(
@@ -566,9 +597,7 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> coord)
             );
 }
 
-
 } // detail
 } // visionaray
-
 
 #endif // VSNRAY_TEXTURE_SAMPLER3D_H
