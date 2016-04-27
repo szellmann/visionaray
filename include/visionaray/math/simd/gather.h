@@ -52,7 +52,7 @@ namespace simd
 //
 
 template <unsigned Bits>
-inline float4 gather(unorm<Bits> const* base_addr, int4 const& index)
+VSNRAY_FORCE_INLINE float4 gather(unorm<Bits> const* base_addr, int4 const& index)
 {
     static_assert(Bits <= 32, "Incompatible unorm type");
 
@@ -76,7 +76,7 @@ inline float4 gather(unorm<Bits> const* base_addr, int4 const& index)
 //
 
 template <unsigned Bits>
-inline float8 gather(unorm<Bits> const* base_addr, int8 const& index)
+VSNRAY_FORCE_INLINE float8 gather(unorm<Bits> const* base_addr, int8 const& index)
 {
     static_assert(Bits <= 32, "Incompatible unorm type");
 
@@ -102,7 +102,7 @@ inline float8 gather(unorm<Bits> const* base_addr, int8 const& index)
 // Gather float4 from 32-bit float array
 //
 
-inline float4 gather(float const* base_addr, int4 const& index)
+VSNRAY_FORCE_INLINE float4 gather(float const* base_addr, int4 const& index)
 {
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
     return _mm_i32gather_ps(base_addr, index, 4);
@@ -128,7 +128,7 @@ inline float4 gather(float const* base_addr, int4 const& index)
 // Gather float8 from 32-bit float array
 //
 
-inline float8 gather(float const* base_addr, int8 const& index)
+VSNRAY_FORCE_INLINE float8 gather(float const* base_addr, int8 const& index)
 {
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
     return _mm256_i32gather_ps(base_addr, index, 4);
@@ -158,7 +158,7 @@ inline float8 gather(float const* base_addr, int8 const& index)
 // Gather int4 from 32-bit integer array
 //
 
-inline int4 gather(int const* base_addr, int4 const& index)
+VSNRAY_FORCE_INLINE int4 gather(int const* base_addr, int4 const& index)
 {
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
     return _mm_i32gather_epi32(base_addr, index, 4);
@@ -184,7 +184,7 @@ inline int4 gather(int const* base_addr, int4 const& index)
 // Gather int8 from 32-bit integer array
 //
 
-inline int8 gather(int const* base_addr, int8 const& index)
+VSNRAY_FORCE_INLINE int8 gather(int const* base_addr, int8 const& index)
 {
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
     return _mm256_i32gather_epi32(base_addr, index, 4);
@@ -214,7 +214,7 @@ inline int8 gather(int const* base_addr, int8 const& index)
 // Gather vector<4, float4> from vector<4, float> array
 //
 
-inline vector<4, float4> gather(vector<4, float> const* base_addr, int4 const& index)
+VSNRAY_FORCE_INLINE vector<4, float4> gather(vector<4, float> const* base_addr, int4 const& index)
 {
     //-----------------------------------------------------
     // Optimization for AoS data.
@@ -247,7 +247,7 @@ inline vector<4, float4> gather(vector<4, float> const* base_addr, int4 const& i
 // Gather vector<4, float8> from vector<4, float> array
 //
 
-inline vector<4, float8> gather(vector<4, float> const* base_addr, int8 const& index)
+VSNRAY_FORCE_INLINE vector<4, float8> gather(vector<4, float> const* base_addr, int8 const& index)
 {
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
 
@@ -291,7 +291,7 @@ inline vector<4, float8> gather(vector<4, float> const* base_addr, int8 const& i
 //
 
 template <size_t Dim, unsigned Bits>
-inline vector<Dim, float4> gather(vector<Dim, unorm<Bits>> const* base_addr, int4 const& index)
+VSNRAY_FORCE_INLINE vector<Dim, float4> gather(vector<Dim, unorm<Bits>> const* base_addr, int4 const& index)
 {
     static_assert(Bits <= 32, "Incompatible unorm type");
 
@@ -319,7 +319,7 @@ inline vector<Dim, float4> gather(vector<Dim, unorm<Bits>> const* base_addr, int
 //
 
 template <size_t Dim, unsigned Bits>
-inline vector<Dim, float8> gather(vector<Dim, unorm<Bits>> const* base_addr, int8 const& index)
+VSNRAY_FORCE_INLINE vector<Dim, float8> gather(vector<Dim, unorm<Bits>> const* base_addr, int8 const& index)
 {
     static_assert(Bits <= 32, "Incompatible unorm type");
 
