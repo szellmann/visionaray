@@ -464,7 +464,7 @@ inline auto tex2D(Tex const& tex, vector<2, FloatT> coord)
 {
     static_assert(Tex::dimensions == 2, "Incompatible texture type");
 
-    using I = decltype(convert_to_int(std::declval<FloatT>()));
+    using I = typename simd::int_type<FloatT>::type;
 
     vector<2, I> texsize(
             static_cast<int>(tex.width()),
@@ -480,9 +480,7 @@ inline auto tex2D(Tex const& tex, vector<2, FloatT> coord)
             );
 }
 
-
 } // detail
 } // visionaray
-
 
 #endif // VSNRAY_TEXTURE_SAMPLER2D_H

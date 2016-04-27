@@ -580,7 +580,7 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> coord)
 {
     static_assert(Tex::dimensions == 3, "Incompatible texture type");
 
-    using I = decltype(convert_to_int(std::declval<FloatT>()));
+    using I = typename simd::int_type<FloatT>::type;
 
     vector<3, I> texsize(
             static_cast<int>(tex.width()),

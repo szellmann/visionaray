@@ -486,7 +486,9 @@ inline auto tex1D(Tex const& tex, FloatT coord)
 {
     static_assert(Tex::dimensions == 1, "Incompatible texture type");
 
-    int texsize = static_cast<int>(tex.width());
+    using I = typename simd::int_type<FloatT>::type;
+
+    I texsize = static_cast<int>(tex.width());
 
     return tex1D_impl_expand_types(
             tex.data(),
@@ -497,9 +499,7 @@ inline auto tex1D(Tex const& tex, FloatT coord)
             );
 }
 
-
 } // detail
 } // visionaray
-
 
 #endif // VSNRAY_TEXTURE_SAMPLER1D_H
