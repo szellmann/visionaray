@@ -7,6 +7,8 @@
 #define VSNRAY_MATH_SIMD_GATHER_H 1
 
 #include <array>
+#include <cstdint>
+#include <type_traits>
 
 #include "avx.h"
 #include "sse.h"
@@ -33,14 +35,16 @@ namespace simd
 //  - base address: unorm<N>,            index type: int8
 //  - base address: float,               index type: int4
 //  - base address: float,               index type: int8
-//  - base address: int,                 index type: int4
-//  - base address: int,                 index type: int8
+//  - base address: Int,                 index type: int4
+//  - base address: Int,                 index type: int8
 //
 //  - base address: vector<4, float>,    index type: int4
 //  - base address: vector<4, float>,    index type: int8
 //
 //  - base address: vector<N, unorm<M>>, index type: int4
 //  - base address: vector<N, unorm<M>>, index type: int8
+//
+//  , where I in (u)int{8|16|32|64}_t
 //
 //
 //-------------------------------------------------------------------------------------------------
@@ -149,6 +153,60 @@ VSNRAY_FORCE_INLINE float8 gather(float const* base_addr, int8 const& index)
         );
 
 #endif
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+
+//-------------------------------------------------------------------------------------------------
+// Gather int4 from any integer array
+// No dedicated AVX2 instruction (see special case for 32-bit integer arrays)!
+//
+
+template <
+    typename I,
+    typename = typename std::enable_if<std::is_integral<I>::value>::type
+    >
+VSNRAY_FORCE_INLINE int4 gather(I const* base_addr, int4 const& index)
+{
+    VSNRAY_ALIGN(16) int indices[4];
+    store(&indices[0], index);
+
+    return int4(
+        static_cast<int32_t>(base_addr[indices[0]]),
+        static_cast<int32_t>(base_addr[indices[1]]),
+        static_cast<int32_t>(base_addr[indices[2]]),
+        static_cast<int32_t>(base_addr[indices[3]])
+        );
+}
+
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+//-------------------------------------------------------------------------------------------------
+// Gather int8 from any integer array
+// No dedicated AVX2 instruction (see special case for 32-bit integer arrays)!
+//
+
+template <
+    typename I,
+    typename = typename std::enable_if<std::is_integral<I>::value>::type
+    >
+VSNRAY_FORCE_INLINE int8 gather(I const* base_addr, int8 const& index)
+{
+    VSNRAY_ALIGN(32) int indices[8];
+    store(&indices[0], index);
+
+    return int8(
+        static_cast<int32_t>(base_addr[indices[0]]),
+        static_cast<int32_t>(base_addr[indices[1]]),
+        static_cast<int32_t>(base_addr[indices[2]]),
+        static_cast<int32_t>(base_addr[indices[3]]),
+        static_cast<int32_t>(base_addr[indices[4]]),
+        static_cast<int32_t>(base_addr[indices[5]]),
+        static_cast<int32_t>(base_addr[indices[6]]),
+        static_cast<int32_t>(base_addr[indices[7]])
+        );
 }
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
