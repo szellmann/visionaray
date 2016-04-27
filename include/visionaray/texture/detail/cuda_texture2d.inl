@@ -18,6 +18,8 @@ class cuda_texture<T, ReadMode, 2>
 {
 public:
 
+    using ref_type    = cuda_texture_ref<T, ReadMode, 2>;
+
     using cuda_type   = typename cuda::map_texel_type<T, ReadMode>::cuda_type;
     using vsnray_type = typename cuda::map_texel_type<T, ReadMode>::vsnray_type;
 

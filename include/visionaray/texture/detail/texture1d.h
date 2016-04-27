@@ -19,6 +19,8 @@ class texture_iface<Base, T, ReadMode, 1> : public Base
 {
 public:
 
+    using ref_type = texture_ref<T, ReadMode, 1>;
+
     using base_type = Base;
     using value_type = T;
 
