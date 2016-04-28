@@ -263,6 +263,25 @@ inline void get(int x, int y, recti const& viewport, vector<4, simd::float4>& co
     color = vector<4, simd::float4>(simd::pack(out), simd::float4(1.0f));
 }
 
+//-------------------------------------------------------------------------------------------------
+// Get SSE simd vector from scalar buffer (e.g. depth)
+//
+
+template <typename T>
+VSNRAY_CPU_FUNC
+inline void get(int x, int y, recti const& viewport, simd::float4& result, T const* buffer)
+{
+    VSNRAY_ALIGN(16) float out[4];
+
+    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : T();
+    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : T();
+    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : T();
+    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : T();
+
+    result = simd::float4(out);
+}
+
+
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 //-------------------------------------------------------------------------------------------------
@@ -298,6 +317,36 @@ inline void get(int x, int y, recti const& viewport, vector<4, simd::float8>& co
         simd::float8(v[0].w, v[1].w, v[2].w, v[3].w, v[4].w, v[5].w, v[6].w, v[7].w)
         );
 }
+
+//-------------------------------------------------------------------------------------------------
+// Get AVX simd vector from scalar buffer (e.g. depth)
+// TODO: consolidate w/ float4 version
+//
+
+template <typename T>
+VSNRAY_CPU_FUNC
+inline void get(int x, int y, recti const& viewport, simd::float8& result, T const* buffer)
+{
+    const int w = packet_size<simd::float8>::w;
+    const int h = packet_size<simd::float8>::h;
+
+    VSNRAY_ALIGN(32) float out[8];
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < viewport.w && y + row < viewport.h)
+            {
+                auto idx = row * w + col;
+                out[idx] = buffer[(y + row) * viewport.w + (x + col)];
+            }
+        }
+    }
+
+    result = simd::float8(out);
+}
+
 #endif
 
 
