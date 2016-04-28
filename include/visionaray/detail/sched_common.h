@@ -9,6 +9,7 @@
 #include <chrono>
 
 #include <visionaray/mc.h>
+#include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/render_target.h>
 #include <visionaray/result_record.h>
@@ -157,7 +158,7 @@ inline R make_primary_rays(
     VSNRAY_UNUSED(samp);
 
     using S = typename R::scalar_type;
-    return make_primary_ray_impl<R>(pixel<S>().x(x), pixel<S>().y(y), args...);
+    return make_primary_ray_impl<R>(expand_pixel<S>().x(x), expand_pixel<S>().y(y), args...);
 }
 
 template <typename R, typename Sampler, typename ...Args>
@@ -176,8 +177,8 @@ inline R make_primary_rays(
     vector<2, S> jitter( samp.next() - S(0.5), samp.next() - S(0.5) );
 
     return make_primary_ray_impl<R>(
-            pixel<S>().x(x) + jitter.x,
-            pixel<S>().y(y) + jitter.y,
+            expand_pixel<S>().x(x) + jitter.x,
+            expand_pixel<S>().y(y) + jitter.y,
             args...
             );
 }
@@ -201,8 +202,8 @@ inline std::array<R, 2> make_primary_rays(
     using S = typename R::scalar_type;
 
     return {{
-        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.25), pixel<S>().y(y) - S(0.25), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.25), pixel<S>().y(y) + S(0.25), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.25), expand_pixel<S>().y(y) - S(0.25), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.25), expand_pixel<S>().y(y) + S(0.25), args...),
         }};
 }
 
@@ -224,10 +225,10 @@ inline std::array<R, 4> make_primary_rays(
     using S = typename R::scalar_type;
 
     return {{
-        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.125), pixel<S>().y(y) - S(0.375), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.375), pixel<S>().y(y) - S(0.125), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.125), pixel<S>().y(y) + S(0.375), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.375), pixel<S>().y(y) + S(0.125), args...)
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.125), expand_pixel<S>().y(y) - S(0.375), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.375), expand_pixel<S>().y(y) - S(0.125), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.125), expand_pixel<S>().y(y) + S(0.375), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.375), expand_pixel<S>().y(y) + S(0.125), args...)
         }};
 }
 
@@ -249,14 +250,14 @@ inline std::array<R, 8> make_primary_rays(
     using S = typename R::scalar_type;
 
     return {{
-        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.125), pixel<S>().y(y) - S(0.4375), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.375), pixel<S>().y(y) - S(0.3125), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.375), pixel<S>().y(y) - S(0.1875), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.125), pixel<S>().y(y) - S(0.0625), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.125), pixel<S>().y(y) + S(0.0625), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.375), pixel<S>().y(y) + S(0.1825), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) - S(0.375), pixel<S>().y(y) + S(0.3125), args...),
-        make_primary_ray_impl<R>(pixel<S>().x(x) + S(0.125), pixel<S>().y(y) + S(0.4375), args...)
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.125), expand_pixel<S>().y(y) - S(0.4375), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.375), expand_pixel<S>().y(y) - S(0.3125), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.375), expand_pixel<S>().y(y) - S(0.1875), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.125), expand_pixel<S>().y(y) - S(0.0625), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.125), expand_pixel<S>().y(y) + S(0.0625), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.375), expand_pixel<S>().y(y) + S(0.1825), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.375), expand_pixel<S>().y(y) + S(0.3125), args...),
+        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.125), expand_pixel<S>().y(y) + S(0.4375), args...)
         }};
 }
 

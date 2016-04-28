@@ -189,6 +189,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/kernels.h
     ${HEADER_DIR}/material.h
     ${HEADER_DIR}/mc.h
+    ${HEADER_DIR}/packet_traits.h
     ${HEADER_DIR}/pixel_format.h
     ${HEADER_DIR}/pixel_traits.h
     ${HEADER_DIR}/pixel_unpack_buffer_rt.h

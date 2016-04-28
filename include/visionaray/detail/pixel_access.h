@@ -9,6 +9,7 @@
 #include <array>
 #include <type_traits>
 
+#include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/render_target.h>
 
@@ -19,61 +20,6 @@ namespace visionaray
 {
 namespace detail
 {
-
-//-------------------------------------------------------------------------------------------------
-// pixel iteration
-//
-
-template <typename T>
-struct packet_size
-{
-    enum { w = 1, h = 1 };
-};
-
-template <>
-struct packet_size<simd::float4>
-{
-    enum { w = 2, h = 2 };
-};
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-template <>
-struct packet_size<simd::float8>
-{
-    enum { w = 4, h = 2 };
-};
-#endif
-
-template <typename T>
-struct pixel
-{
-    VSNRAY_FUNC inline T x(int x) { return T(x); }
-    VSNRAY_FUNC inline T y(int y) { return T(y); }
-};
-
-template <>
-struct pixel<simd::float4>
-{
-    VSNRAY_CPU_FUNC inline simd::float4 x(int x) { return simd::float4(x, x + 1, x, x + 1); }
-    VSNRAY_CPU_FUNC inline simd::float4 y(int y) { return simd::float4(y, y, y + 1, y + 1); }
-};
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-template <>
-struct pixel<simd::float8>
-{
-    VSNRAY_CPU_FUNC inline simd::float8 x(int x)
-    {
-        return simd::float8(x, x + 1, x + 2, x + 3, x, x + 1, x + 2, x + 3);
-    }
-
-    VSNRAY_CPU_FUNC inline simd::float8 y(int y)
-    {
-        return simd::float8(y, y, y, y, y + 1, y + 1, y + 1, y + 1);
-    }
-};
-#endif
-
 
 //-------------------------------------------------------------------------------------------------
 // Store, get and blend pixel values (color and depth)
