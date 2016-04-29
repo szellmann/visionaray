@@ -43,6 +43,8 @@ namespace simd
 //
 //  - base address: vector<N, unorm<M>>, index type: int4
 //  - base address: vector<N, unorm<M>>, index type: int8
+//  - base address: vector<N, Int>>,     index type: int4
+//  - base address: vector<N, Int>>,     index type: int8
 //
 //  , where I in (u)int{8|16|32|64}_t
 //
@@ -338,6 +340,70 @@ VSNRAY_FORCE_INLINE vector<4, float8> gather(vector<4, float> const* base_addr, 
     return simd::pack(arr);
 
 #endif
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+
+//-------------------------------------------------------------------------------------------------
+// Gather vector<Dim, int4> from vector<Dim, Int> array
+// No dedicated AVX2 instruction!
+//
+
+template <
+    size_t Dim,
+    typename I,
+    typename = typename std::enable_if<std::is_integral<I>::value>::type
+    >
+VSNRAY_FORCE_INLINE vector<Dim, int4> gather(vector<Dim, I> const* base_addr, int4 const& index)
+{
+    using V = vector<Dim, int32_t>;
+
+    VSNRAY_ALIGN(16) int indices[4];
+    store(&indices[0], index);
+
+    std::array<V, 4> arr{{
+            V(base_addr[indices[0]]),
+            V(base_addr[indices[1]]),
+            V(base_addr[indices[2]]),
+            V(base_addr[indices[3]])
+            }};
+
+    return simd::pack(arr);
+}
+
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+//-------------------------------------------------------------------------------------------------
+// Gather vector<Dim, int4> from vector<Dim, Int> array
+// No dedicated AVX2 instruction!
+//
+
+template <
+    size_t Dim,
+    typename I,
+    typename = typename std::enable_if<std::is_integral<I>::value>::type
+    >
+VSNRAY_FORCE_INLINE vector<Dim, int8> gather(vector<Dim, I> const* base_addr, int8 const& index)
+{
+    using V = vector<Dim, int32_t>;
+
+    VSNRAY_ALIGN(32) int indices[8];
+    store(&indices[0], index);
+
+    std::array<V, 8> arr{{
+            V(base_addr[indices[0]]),
+            V(base_addr[indices[1]]),
+            V(base_addr[indices[2]]),
+            V(base_addr[indices[3]]),
+            V(base_addr[indices[4]]),
+            V(base_addr[indices[5]]),
+            V(base_addr[indices[6]]),
+            V(base_addr[indices[7]])
+            }};
+
+    return simd::pack(arr);
 }
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
