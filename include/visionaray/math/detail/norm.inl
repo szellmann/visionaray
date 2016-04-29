@@ -1,6 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <type_traits>
+
+#include "../simd/type_traits.h"
 #include "math.h"
 
 namespace MATH_NAMESPACE
@@ -25,6 +28,24 @@ MATH_FUNC
 inline float unorm_to_float(uint32_t u)
 {
     return static_cast<float>(u) / static_cast<double>((1ULL << Bits) - 1);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Some special overloads for SIMD types
+// So far only valid for 8-bit and 16-bit because the double trick won't work here!
+//
+
+template <
+    unsigned Bits,
+    typename I,
+    typename = typename std::enable_if<simd::is_simd_vector<I>::value>::type
+    >
+MATH_FUNC
+inline typename simd::float_type<I>::type unorm_to_float(I const& u)
+{
+    using F = typename simd::float_type<I>::type;
+    return F(u) / F(static_cast<float>((1ULL << Bits) - 1));
 }
 
 } // detail

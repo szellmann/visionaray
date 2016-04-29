@@ -533,6 +533,40 @@ inline FloatT tex3D_impl_expand_types(
             );
 }
 
+// simd, overload for normalized floating point arrays
+
+template <
+    unsigned Bits,
+    typename FloatT,
+    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+    >
+inline FloatT tex3D_impl_expand_types(
+        unorm<Bits> const*                                      tex,
+        vector<3, FloatT> const&                                coord,
+        vector<3, typename simd::int_type<FloatT>::type> const& texsize,
+        tex_filter_mode                                         filter_mode,
+        std::array<tex_address_mode, 3> const&                  address_mode
+        )
+{
+    using return_type   = typename simd::int_type<FloatT>::type;
+    using internal_type = FloatT;
+
+    // use unnormalized types for internal calculations
+    // to avoid the normalization overhead
+    auto tmp = tex3D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            reinterpret_cast<typename best_uint<Bits>::type const*>(tex),
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+
+    // normalize only once upon return
+    return unorm_to_float<Bits>(tmp);
+}
+
 // simd, overload for integer arrays
 
 template <
