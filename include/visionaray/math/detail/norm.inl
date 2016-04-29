@@ -36,21 +36,21 @@ inline float unorm_to_float(uint32_t u)
 
 template <unsigned Bits>
 MATH_FUNC
-unorm<Bits>::unorm(float f)
+inline unorm<Bits>::unorm(float f)
     : value(detail::float_to_unorm<Bits>(f))
 {
 }
 
 template <unsigned Bits>
 MATH_FUNC
-unorm<Bits>::operator value_type() const
+inline unorm<Bits>::operator value_type() const
 {
     return value;
 }
 
 template <unsigned Bits>
 MATH_FUNC
-unorm<Bits>::operator float() const
+inline unorm<Bits>::operator float() const
 {
     return detail::unorm_to_float<Bits>(value);
 }
