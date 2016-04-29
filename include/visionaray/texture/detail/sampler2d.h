@@ -370,17 +370,23 @@ inline vector<Dim, T> tex2D_impl_expand_types(
 
 // normalized floating point texture, non-simd coordinates
 
-template <size_t Dim, unsigned Bits>
-inline vector<Dim, float> tex2D_impl_expand_types(
+template <
+    size_t Dim,
+    unsigned Bits,
+    typename FloatT,
+    typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
+    typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
+    >
+inline vector<Dim, FloatT> tex2D_impl_expand_types(
         vector<Dim, unorm<Bits>> const*         tex,
-        vector<2, float> const&                 coord,
+        vector<2, FloatT> const&                coord,
         vector<2, int> const&                   texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 2> const&  address_mode
         )
 {
     using return_type   = vector<Dim, int>;
-    using internal_type = vector<Dim, float>;
+    using internal_type = vector<Dim, FloatT>;
 
     // use unnormalized types for internal calculations
     // to avoid the normalization overhead
@@ -395,7 +401,7 @@ inline vector<Dim, float> tex2D_impl_expand_types(
             );
 
     // normalize only once upon return
-    vector<Dim, float> result;
+    vector<Dim, FloatT> result;
 
     for (size_t d = 0; d < Dim; ++d)
     {

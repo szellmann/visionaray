@@ -423,17 +423,22 @@ inline vector<Dim, T> tex3D_impl_expand_types(
 
 // normalized floating point texture, non-simd coordinates
 
-template <unsigned Bits>
-inline float tex3D_impl_expand_types(
+template <
+    unsigned Bits,
+    typename FloatT,
+    typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
+    typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
+    >
+inline FloatT tex3D_impl_expand_types(
         unorm<Bits> const*                      tex,
-        vector<3, float> const&                 coord,
+        vector<3, FloatT> const&                coord,
         vector<3, int> const&                   texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {
     using return_type   = int;
-    using internal_type = float;
+    using internal_type = FloatT;
 
     // use unnormalized types for internal calculations
     // to avoid the normalization overhead
