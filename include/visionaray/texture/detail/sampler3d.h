@@ -459,6 +459,37 @@ inline vector<Dim, T> tex3D_impl_expand_types(
 }
 
 
+// overload for normalized floating point arrays
+
+template <unsigned Bits>
+inline float tex3D_impl_expand_types(
+        unorm<Bits> const*                      tex,
+        vector<3, float> const&                 coord,
+        vector<3, int> const&                   texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 3> const&  address_mode
+        )
+{
+    using return_type   = int;
+    using internal_type = float;
+
+    // use unnormalized types for internal calculations
+    // to avoid the normalization overhead
+    auto tmp = tex3D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            reinterpret_cast<typename best_uint<Bits>::type const*>(tex),
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+
+    // normalize only once upon return
+    return unorm_to_float<Bits>(tmp);
+}
+
+
 // simd, overload for floating point arrays
 
 template <
