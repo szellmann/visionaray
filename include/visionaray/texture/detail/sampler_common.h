@@ -80,7 +80,7 @@ inline vector<Dim, F> map_tex_coord(
 template <typename RT, typename T>
 inline RT point(T const* tex, ptrdiff_t idx, RT = RT())
 {
-    return tex[idx];
+    return RT(tex[idx]);
 }
 
 
