@@ -404,6 +404,44 @@ inline vector<Dim, T> tex2D_impl_expand_types(
 }
 
 
+// overload for normalized floating point arrays
+
+template <size_t Dim, unsigned Bits>
+inline vector<Dim, float> tex2D_impl_expand_types(
+        vector<Dim, unorm<Bits>> const*         tex,
+        vector<2, float> const&                 coord,
+        vector<2, int> const&                   texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 2> const&  address_mode
+        )
+{
+    using return_type   = vector<Dim, int>;
+    using internal_type = vector<Dim, float>;
+
+    // use unnormalized types for internal calculations
+    // to avoid the normalization overhead
+    auto tmp = tex2D_impl_choose_filter(
+            return_type(),
+            internal_type(),
+            reinterpret_cast<vector<Dim, typename best_uint<Bits>::type> const*>(tex),
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+
+    // normalize only once upon return
+    vector<Dim, float> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = unorm_to_float<Bits>(tmp[d]);
+    }
+
+    return result;
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // tex2D() dispatch function
 //
