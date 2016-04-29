@@ -273,19 +273,24 @@ inline ReturnT tex1D_impl_choose_filter(
 // Dispatch function overloads to deduce texture type and internal texture type
 //
 
-// float
+// any texture, non-simd coordinates
 
-template <typename T>
+template <
+    typename T,
+    typename FloatT,
+    typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
+    typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
+    >
 inline T tex1D_impl_expand_types(
         T const*                                tex,
-        float                                   coord,
+        FloatT                                  coord,
         int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
     using return_type   = T;
-    using internal_type = float;
+    using internal_type = FloatT;
 
     return tex1D_impl_choose_filter(
             return_type(),
@@ -298,66 +303,23 @@ inline T tex1D_impl_expand_types(
             );
 }
 
-template <size_t Dim, typename T>
+template <
+    size_t Dim,
+    typename T,
+    typename FloatT,
+    typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
+    typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
+    >
 inline vector<Dim, T> tex1D_impl_expand_types(
         vector<Dim, T> const*                   tex,
-        float                                   coord,
+        FloatT                                  coord,
         int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
     using return_type   = vector<Dim, T>;
-    using internal_type = vector<Dim, float>;
-
-    return tex1D_impl_choose_filter(
-            return_type(),
-            internal_type(),
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-
-// double
-
-template <typename T>
-inline T tex1D_impl_expand_types(
-        T const*                                tex,
-        double                                  coord,
-        int                                     texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 1> const&  address_mode
-        )
-{
-    using return_type   = T;
-    using internal_type = double;
-
-    return tex1D_impl_choose_filter(
-            return_type(),
-            internal_type(),
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-template <size_t Dim, typename T>
-inline vector<Dim, T> tex1D_impl_expand_types(
-        vector<Dim, T> const*                   tex,
-        double                                  coord,
-        int                                     texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 1> const&  address_mode
-        )
-{
-    using return_type   = vector<Dim, T>;
-    using internal_type = vector<Dim, double>;
+    using internal_type = vector<Dim, FloatT>;
 
     return tex1D_impl_choose_filter(
             return_type(),
