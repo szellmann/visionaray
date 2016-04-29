@@ -6,8 +6,8 @@
 #ifndef VSNRAY_TEXTURE_SAMPLER1D_H
 #define VSNRAY_TEXTURE_SAMPLER1D_H 1
 
+#include <array>
 #include <cstddef>
-
 #include <type_traits>
 
 #include <visionaray/math/math.h>

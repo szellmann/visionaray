@@ -6,6 +6,7 @@
 #ifndef VSNRAY_TEXTURE_SAMPLER2D_H
 #define VSNRAY_TEXTURE_SAMPLER2D_H 1
 
+#include <array>
 #include <cstddef>
 
 #include "sampler_common.h"
