@@ -6,6 +6,8 @@
 #ifndef VSNRAY_TEXTURE_SAMPLER1D_H
 #define VSNRAY_TEXTURE_SAMPLER1D_H 1
 
+#include <cstddef>
+
 #include <type_traits>
 
 #include <visionaray/math/math.h>
@@ -296,40 +298,17 @@ inline T tex1D_impl_expand_types(
             );
 }
 
-template <typename T>
-inline vector<3, T> tex1D_impl_expand_types(
-        vector<3, T> const*                     tex,
+template <size_t Dim, typename T>
+inline vector<Dim, T> tex1D_impl_expand_types(
+        vector<Dim, T> const*                   tex,
         float                                   coord,
         int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
-    using return_type   = vector<3, T>;
-    using internal_type = vector<3, float>;
-
-    return tex1D_impl_choose_filter(
-            return_type(),
-            internal_type(),
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-template <typename T>
-inline vector<4, T> tex1D_impl_expand_types(
-        vector<4, T> const*                     tex,
-        float                                   coord,
-        int                                     texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 1> const&  address_mode
-        )
-{
-    using return_type   = vector<4, T>;
-    using internal_type = vector<4, float>;
+    using return_type   = vector<Dim, T>;
+    using internal_type = vector<Dim, float>;
 
     return tex1D_impl_choose_filter(
             return_type(),
@@ -368,40 +347,17 @@ inline T tex1D_impl_expand_types(
             );
 }
 
-template <typename T>
-inline vector<3, T> tex1D_impl_expand_types(
-        vector<3, T> const*                     tex,
+template <size_t Dim, typename T>
+inline vector<Dim, T> tex1D_impl_expand_types(
+        vector<Dim, T> const*                   tex,
         double                                  coord,
         int                                     texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
-    using return_type   = vector<3, T>;
-    using internal_type = vector<3, double>;
-
-    return tex1D_impl_choose_filter(
-            return_type(),
-            internal_type(),
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-template <typename T>
-inline vector<4, T> tex1D_impl_expand_types(
-        vector<4, T> const*                     tex,
-        double                                  coord,
-        int                                     texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 1> const&  address_mode
-        )
-{
-    using return_type   = vector<4, T>;
-    using internal_type = vector<4, double>;
+    using return_type   = vector<Dim, T>;
+    using internal_type = vector<Dim, double>;
 
     return tex1D_impl_choose_filter(
             return_type(),
