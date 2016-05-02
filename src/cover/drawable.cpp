@@ -70,7 +70,7 @@ using color_type                = vector<3, float>;
 using color_list                = aligned_vector<color_type>;
 
 using host_tex_type             = texture<vector<4, unorm<8>>, NormalizedFloat, 2>;
-using host_tex_ref_type         = texture_ref<vector<4, unorm<8>>, NormalizedFloat, 2>;
+using host_tex_ref_type         = typename host_tex_type::ref_type;
 using texture_list              = aligned_vector<host_tex_ref_type>;
 using texture_map               = std::map<std::string, host_tex_type>;
 
@@ -81,7 +81,7 @@ using host_sched_type           = tiled_sched<host_ray_type>;
 
 #ifdef __CUDACC__
 using device_tex_type           = cuda_texture<vector<4, unorm<8>>, NormalizedFloat, 2>;
-using device_tex_ref_type       = cuda_texture_ref<vector<4, unorm<8>>, NormalizedFloat, 2>;
+using device_tex_ref_type       = typename device_tex_type::ref_type;
 using device_texture_list       = thrust::device_vector<device_tex_ref_type>;
 using device_texture_map        = std::map<std::string, device_tex_type>;
 using device_ray_type           = basic_ray<float>;
