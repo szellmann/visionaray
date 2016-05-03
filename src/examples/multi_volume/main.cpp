@@ -489,6 +489,7 @@ struct kernel
                     if (visionaray::any(do_shade))
                     {
                         shade_record<decltype(light), S> sr;
+                        sr.isect_pos = pos;
                         sr.light = light;
                         sr.normal = normalize(gradient(volumes[i], tex_coord));
                         sr.view_dir = -ray.dir;
