@@ -40,7 +40,7 @@ VSNRAY_FORCE_INLINE int8::basic_int(unsigned s)
 }
 
 VSNRAY_FORCE_INLINE int8::basic_int(basic_float<__m256> const& f)
-    : value(_mm256_cvtps_epi32(f))
+    : value(_mm256_cvttps_epi32(f))
 {
 }
 

@@ -31,7 +31,7 @@ VSNRAY_FORCE_INLINE int4::basic_int(unsigned s)
 }
 
 VSNRAY_FORCE_INLINE int4::basic_int(basic_float<__m128> const& f)
-    : value(_mm_cvtps_epi32(f))
+    : value(_mm_cvttps_epi32(f))
 {
 }
 
