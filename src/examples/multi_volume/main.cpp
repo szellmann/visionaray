@@ -488,10 +488,13 @@ struct kernel
 
                     if (visionaray::any(do_shade))
                     {
+                        auto grad = gradient(volumes[i], tex_coord);
+                        do_shade &= length(grad) != 0.0f;
+
                         shade_record<decltype(light), S> sr;
                         sr.isect_pos = pos;
                         sr.light = light;
-                        sr.normal = normalize(gradient(volumes[i], tex_coord));
+                        sr.normal = normalize(grad);
                         sr.view_dir = -ray.dir;
                         auto light_pos = ( Mat4(transforms_inv[i]) * vector<4, S>(V(sr.light.position()), S(1.0)) ).xyz();
                         sr.light_dir = normalize(light_pos);
