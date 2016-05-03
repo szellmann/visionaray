@@ -32,7 +32,7 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix(float const data[16])
 }
 
 template <typename U>
-inline matrix<4, 4, simd::float4>::matrix(matrix<4, 4, U> const& rhs)
+VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix(matrix<4, 4, U> const& rhs)
     : col0( simd::float4(rhs.col0.x, rhs.col0.y, rhs.col0.z, rhs.col0.w) )
     , col1( simd::float4(rhs.col1.x, rhs.col1.y, rhs.col1.z, rhs.col1.w) )
     , col2( simd::float4(rhs.col2.x, rhs.col2.y, rhs.col2.z, rhs.col2.w) )
@@ -41,7 +41,7 @@ inline matrix<4, 4, simd::float4>::matrix(matrix<4, 4, U> const& rhs)
 }
 
 template <typename U>
-inline matrix<4, 4, simd::float4>& matrix<4, 4, simd::float4>::operator=(matrix<4, 4, U> const& rhs)
+VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>& matrix<4, 4, simd::float4>::operator=(matrix<4, 4, U> const& rhs)
 {
     col0 = simd::float4(rhs.col0.x, rhs.col0.y, rhs.col0.z, rhs.col0.w);
     col1 = simd::float4(rhs.col1.x, rhs.col1.y, rhs.col1.z, rhs.col1.w);
@@ -60,7 +60,7 @@ VSNRAY_FORCE_INLINE simd::float4 const& matrix<4, 4, simd::float4>::operator()(s
     return *(reinterpret_cast<simd::float4 const*>(this) + col);
 }
 
-inline matrix<4, 4, simd::float4> matrix<4, 4, simd::float4>::identity()
+VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> matrix<4, 4, simd::float4>::identity()
 {
     return matrix<4, 4, simd::float4>(
             simd::float4(1.0f, 0.0f, 0.0f, 0.0f),
