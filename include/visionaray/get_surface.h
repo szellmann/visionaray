@@ -244,7 +244,7 @@ private:
 
 };
 
-// overload for generic_primitive
+// overloads for generic_primitive
 template <
     typename Primitives,
     typename Normals,
@@ -263,6 +263,28 @@ inline auto get_normal_dispatch(
     -> typename std::iterator_traits<Normals>::value_type
 {
     get_normal_from_generic_primitive_visitor<NormalBinding, Normals, HR> visitor(
+            normals,
+            hr
+            );
+
+    return apply_visitor( visitor, primitives[hr.prim_id] );
+}
+
+template <
+    typename Primitives,
+    typename HR,
+    typename ...Ts
+    >
+VSNRAY_FUNC
+inline auto get_normal_dispatch(
+        Primitives                  primitives,
+        std::nullptr_t              normals,
+        HR const&                   hr,
+        generic_primitive<Ts...>    /* */
+        )
+    -> vector<3, float> // TODO!
+{
+    get_normal_from_generic_primitive_visitor<unspecified_binding, std::nullptr_t, HR> visitor(
             normals,
             hr
             );
