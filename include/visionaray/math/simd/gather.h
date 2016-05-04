@@ -40,6 +40,8 @@ namespace simd
 //
 //  - base address: vector<4, float>,    index type: int4
 //  - base address: vector<4, float>,    index type: int8
+//  - base address: vector<N, float>,    index type: int4
+//  - base address: vector<N, float>,    index type: int8
 //
 //  - base address: vector<N, unorm<M>>, index type: int4
 //  - base address: vector<N, unorm<M>>, index type: int8
@@ -263,6 +265,60 @@ VSNRAY_FORCE_INLINE int8 gather(int const* base_addr, int8 const& index)
         base_addr[indices[6]],
         base_addr[indices[7]]
         );
+
+#endif
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+
+//-------------------------------------------------------------------------------------------------
+// Gather vector<N, float4> from vector<N, float> array
+//
+
+template <size_t Dim>
+VSNRAY_FORCE_INLINE vector<Dim, float4> gather(vector<Dim, float> const* base_addr, int4 const& index)
+{
+    VSNRAY_ALIGN(16) int indices[4];
+    store(&indices[0], index);
+
+    std::array<vector<Dim, float>, 4> arr {{
+            base_addr[indices[0]],
+            base_addr[indices[1]],
+            base_addr[indices[2]],
+            base_addr[indices[3]]
+            }};
+
+    return simd::pack(arr);
+}
+
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+template <size_t Dim>
+VSNRAY_FORCE_INLINE vector<Dim, float8> gather(vector<Dim, float> const* base_addr, int8 const& index)
+{
+#if 0 // AVX2
+
+    // TODO: check if gather intrinsic can be used here!
+
+#else
+
+    VSNRAY_ALIGN(32) int indices[8];
+    store(&indices[0], index);
+
+    std::array<vector<Dim, float>, 8> arr {{
+            base_addr[indices[0]],
+            base_addr[indices[1]],
+            base_addr[indices[2]],
+            base_addr[indices[3]],
+            base_addr[indices[4]],
+            base_addr[indices[5]],
+            base_addr[indices[6]],
+            base_addr[indices[7]]
+            }};
+
+    return simd::pack(arr);
 
 #endif
 }
