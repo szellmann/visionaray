@@ -10,7 +10,6 @@
 namespace MATH_NAMESPACE
 {
 
-
 //--------------------------------------------------------------------------------------------------
 // aabb members
 //
@@ -23,11 +22,7 @@ inline basic_aabb<T>::basic_aabb()
 
 template <typename T>
 MATH_FUNC
-inline basic_aabb<T>::basic_aabb
-(
-    typename basic_aabb<T>::vec_type const& min,
-    typename basic_aabb<T>::vec_type const& max
-)
+inline basic_aabb<T>::basic_aabb(vector<3, T> const& min, vector<3, T> const& max)
     : min(min)
     , max(max)
 {
@@ -44,21 +39,21 @@ inline basic_aabb<T>::basic_aabb(vector<3, U> const& min, vector<3, U> const& ma
 
 template <typename T>
 MATH_FUNC
-inline typename basic_aabb<T>::vec_type basic_aabb<T>::center() const
+inline vector<3, T> basic_aabb<T>::center() const
 {
     return (max + min) * value_type(0.5);
 }
 
 template <typename T>
 MATH_FUNC
-inline typename basic_aabb<T>::vec_type basic_aabb<T>::size() const
+inline vector<3, T> basic_aabb<T>::size() const
 {
     return max - min;
 }
 
 template <typename T>
 MATH_FUNC
-inline typename basic_aabb<T>::vec_type basic_aabb<T>::safe_size() const
+inline vector<3, T> basic_aabb<T>::safe_size() const
 {
     auto s = max - min;
 
@@ -100,7 +95,7 @@ inline bool basic_aabb<T>::empty() const
 
 template <typename T>
 MATH_FUNC
-inline bool basic_aabb<T>::contains(typename basic_aabb<T>::vec_type const& v) const
+inline bool basic_aabb<T>::contains(vector<3, T> const& v) const
 {
     return v.x >= min.x && v.x <= max.x
         && v.y >= min.y && v.y <= max.y
@@ -163,7 +158,7 @@ basic_aabb<T> combine(basic_aabb<T> const& a, basic_aabb<T> const& b)
 
 template <typename T>
 MATH_FUNC
-basic_aabb<T> combine(basic_aabb<T> const& a, typename basic_aabb<T>::vec_type const& b)
+basic_aabb<T> combine(basic_aabb<T> const& a, vector<3, T> const& b)
 {
     return basic_aabb<T>( min(a.min, b), max(a.max, b) );
 }
