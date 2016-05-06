@@ -6,6 +6,7 @@
 #ifndef VSNRAY_SAMPLER_COMMON_H
 #define VSNRAY_SAMPLER_COMMON_H 1
 
+#include <array>
 #include <type_traits>
 
 #include <visionaray/detail/macros.h>
