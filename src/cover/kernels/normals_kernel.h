@@ -6,6 +6,7 @@
 #ifndef VSNRAY_COVER_NORMALS_KERNEL_H
 #define VSNRAY_COVER_NORMALS_KERNEL_H 1
 
+#include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
 #include <visionaray/traverse.h>
 
