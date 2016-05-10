@@ -65,6 +65,12 @@ struct pixel_traits<PF_RGBA32F>
 //
 
 template <>
+struct pixel_traits<PF_DEPTH24_STENCIL8>
+{
+    typedef unsigned type;
+};
+
+template <>
 struct pixel_traits<PF_DEPTH32F>
 {
     typedef float type;
