@@ -28,6 +28,19 @@ namespace detail
 // Swizzle into 2nd data array
 //
 
+inline void swizzle_DEPTH24_STENCIL8_to_DEPTH32F(
+        float*          dst,
+        unsigned const* src,
+        size_t          len
+        )
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        unsigned depth = src[i] >> 8;
+        dst[i] = depth / 16777216.0f;
+    }
+}
+
 inline void swizzle_RGB32F_to_RGB8(
         vector<3, unorm<8>>*        dst,
         vector<3, float> const*     src,
@@ -137,6 +150,22 @@ inline void swizzle_RGBA8_to_BGRA8(vector<4, unorm<8>>* data, size_t len)
 //-------------------------------------------------------------------------------------------------
 // Expand types for swizzling
 //
+
+// DEPTH24_STENCIL8 -> DEPTH32F
+
+inline void swizzle_expand_types(
+        float*          dst,
+        pixel_format    format_dst,
+        unsigned const* src,
+        pixel_format    format_src,
+        size_t          len
+        )
+{
+    if (format_dst == PF_DEPTH32F && format_src == PF_DEPTH24_STENCIL8)
+    {
+        swizzle_DEPTH24_STENCIL8_to_DEPTH32F( dst, src, len );
+    }
+}
 
 // RGBA8 -> RGB8, 8-bit type is unorm<8>
 
