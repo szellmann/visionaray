@@ -48,8 +48,20 @@ inline T max(T const& x, T const& y)
 
 
 //-------------------------------------------------------------------------------------------------
-// Convert functions, more useful when used with SIMD types
+// Conversion functions, more useful when used with SIMD types
 //
+
+MATH_FUNC
+inline int reinterpret_as_int(float a)
+{
+    return *reinterpret_cast<int*>(&a);
+}
+
+MATH_FUNC
+inline float reinterpret_as_float(int a)
+{
+    return *reinterpret_cast<float*>(&a);
+}
 
 MATH_FUNC
 inline float convert_to_float(int a)
