@@ -31,7 +31,7 @@ namespace detail
 //
 
 template <typename F, typename I>
-inline basic_float<F> frexp(basic_float<F> const& x, basic_int<I>* exp)
+VSNRAY_FORCE_INLINE basic_float<F> frexp(basic_float<F> const& x, basic_int<I>* exp)
 {
     typedef basic_int<I>        int_type;
     typedef basic_mask<F, I>    mask_type;
@@ -50,7 +50,7 @@ inline basic_float<F> frexp(basic_float<F> const& x, basic_int<I>* exp)
 }
 
 template <typename F, typename I>
-inline basic_float<F> scalbn(basic_float<F> const& x, basic_int<I> const& exp)
+VSNRAY_FORCE_INLINE basic_float<F> scalbn(basic_float<F> const& x, basic_int<I> const& exp)
 {
     typedef basic_int<I>        int_type;
     typedef basic_float<F>      float_type;
@@ -241,7 +241,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
-inline FloatT pow2(FloatT const& x)
+VSNRAY_FORCE_INLINE FloatT pow2(FloatT const& x)
 {
     using IntT = typename int_type<FloatT>::type;
 
@@ -320,7 +320,7 @@ struct log2_t<8> : public poly_t<8>
 
 
 template <typename T>
-inline T log2(T const& x)
+VSNRAY_FORCE_INLINE T log2(T const& x)
 {
     return log2_t<8>::value(x);
 }
@@ -333,7 +333,7 @@ inline T log2(T const& x)
 // TODO: implement w/o context switch
 //
 
-inline float4 cos(float4 const& x)
+VSNRAY_FORCE_INLINE float4 cos(float4 const& x)
 {
     VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
@@ -341,7 +341,7 @@ inline float4 cos(float4 const& x)
     return float4( std::cos(tmp[0]), std::cos(tmp[1]), std::cos(tmp[2]), std::cos(tmp[3]) );
 }
 
-inline float4 sin(float4 const& x)
+VSNRAY_FORCE_INLINE float4 sin(float4 const& x)
 {
     VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
@@ -353,7 +353,7 @@ inline float4 sin(float4 const& x)
 
 // TODO: consolidate stuff with float4 (template)
 
-inline float8 cos(float8 const& x)
+VSNRAY_FORCE_INLINE float8 cos(float8 const& x)
 {
     VSNRAY_ALIGN(32) float tmp[8];
     store(tmp, x);
@@ -364,7 +364,7 @@ inline float8 cos(float8 const& x)
         );
 }
 
-inline float8 sin(float8 const& x)
+VSNRAY_FORCE_INLINE float8 sin(float8 const& x)
 {
     VSNRAY_ALIGN(32) float tmp[8];
     store(tmp, x);
@@ -386,7 +386,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     > 
-inline FloatT exp(FloatT const& x)
+VSNRAY_FORCE_INLINE FloatT exp(FloatT const& x)
 {
     FloatT y = x * constants::log2_e<FloatT>();
     return detail::pow2(y);
@@ -396,7 +396,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
-inline FloatT log(FloatT const& x)
+VSNRAY_FORCE_INLINE FloatT log(FloatT const& x)
 {
     return log2(x) / constants::log2_e<FloatT>();
 }
@@ -405,7 +405,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
-inline FloatT log2(FloatT const& x)
+VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
 {
     using IntT = typename int_type<FloatT>::type;
 
@@ -420,7 +420,7 @@ inline FloatT log2(FloatT const& x)
 // pow()
 //
 
-inline float4 pow(float4 const& x, float4 const& y)
+VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
 {
 #if VSNRAY_SIMD_HAS_SVML
     return _mm_pow_ps(x, y);
@@ -432,7 +432,7 @@ inline float4 pow(float4 const& x, float4 const& y)
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
-inline float8 pow(float8 const& x, float8 const& y)
+VSNRAY_FORCE_INLINE float8 pow(float8 const& x, float8 const& y)
 {
 #if VSNRAY_SIMD_HAS_SVML
     return _mm256_pow_ps(x, y);
