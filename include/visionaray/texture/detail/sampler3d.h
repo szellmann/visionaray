@@ -13,7 +13,6 @@
 #include <visionaray/math/math.h>
 
 #include "filter.h"
-#include "sampler_common.h"
 #include "texture_common.h"
 
 

@@ -11,7 +11,7 @@
 #include <type_traits>
 
 #include "filter.h"
-#include "sampler_common.h"
+#include "texture_common.h"
 
 namespace visionaray
 {
