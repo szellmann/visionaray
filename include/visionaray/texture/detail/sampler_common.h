@@ -143,36 +143,36 @@ namespace bspline
 
 // weight functions for Mitchell - Netravalli B-Spline with B = 1 and C = 0
 
-template <typename T>
 struct w0_func
 {
+    template <typename T>
     inline T operator()(T const& a)
     {
         return T( (1.0 / 6.0) * (-(a * a * a) + 3.0 * a * a - 3.0 * a + 1.0) );
     }
 };
 
-template <typename T>
 struct w1_func
 {
+    template <typename T>
     inline T operator()(T const& a)
     {
         return T( (1.0 / 6.0) * (3.0 * a * a * a - 6.0 * a * a + 4.0) );
     }
 };
 
-template <typename T>
 struct w2_func
 {
+    template <typename T>
     inline T operator()(T const& a)
     {
         return T( (1.0 / 6.0) * (-3.0 * a * a * a + 3.0 * a * a + 3.0 * a + 1.0) );
     }
 };
 
-template <typename T>
 struct w3_func
 {
+    template <typename T>
     inline T operator()(T const& a)
     {
         return T( (1.0 / 6.0) * (a * a * a) );
@@ -186,36 +186,36 @@ namespace cspline
 
 // weight functions for Catmull - Rom Cardinal Spline
 
-template <typename T>
 struct w0_func
 {
+    template <typename T>
     inline T operator()(T const& a)
     {
         return T( -0.5 * a * a * a + a * a - 0.5 * a );
     }
 };
 
-template <typename T>
 struct w1_func
 {
+    template <typename T>
     inline T operator()(T const& a)
     {
         return T( 1.5 * a * a * a - 2.5 * a * a + 1.0 );
     }
 };
 
-template <typename T>
 struct w2_func
 {
+    template <typename T>
     inline T operator()(T const& a)
     {
         return T( -1.5 * a * a * a + 2.0 * a * a + 0.5 * a );
     }
 };
 
-template <typename T>
 struct w3_func
 {
+    template <typename T>
     inline T operator()(T const& a)
     {
         return T( 0.5 * a * a * a - 0.5 * a * a );
@@ -228,32 +228,32 @@ struct w3_func
 template <typename T>
 inline T g0(T const& x)
 {
-    bspline::w0_func<T> w0;
-    bspline::w1_func<T> w1;
+    bspline::w0_func w0;
+    bspline::w1_func w1;
     return w0(x) + w1(x);
 }
 
 template <typename T>
 inline T g1(T const& x)
 {
-    bspline::w2_func<T> w2;
-    bspline::w3_func<T> w3;
+    bspline::w2_func w2;
+    bspline::w3_func w3;
     return w2(x) + w3(x);
 }
 
 template <typename T>
 inline T h0(T const& x)
 {
-    bspline::w0_func<T> w0;
-    bspline::w1_func<T> w1;
+    bspline::w0_func w0;
+    bspline::w1_func w1;
     return ((floor( x ) - T(1.0) + w1(x)) / (w0(x) + w1(x))) + x;
 }
 
 template <typename T>
 inline T h1(T const& x)
 {
-    bspline::w2_func<T> w2;
-    bspline::w3_func<T> w3;
+    bspline::w2_func w2;
+    bspline::w3_func w3;
     return ((floor( x ) + T(1.0) + w3(x)) / (w2(x) + w3(x))) - x;
 }
 

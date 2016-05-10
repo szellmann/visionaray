@@ -75,7 +75,7 @@ inline ReturnT choose_filter(
                 address_mode
                 );
 
-/*    case visionaray::CardinalSpline:
+    case visionaray::CardinalSpline:
         return cubic(
                 ReturnT{},
                 InternalT{},
@@ -83,11 +83,11 @@ inline ReturnT choose_filter(
                 coord,
                 texsize,
                 address_mode,
-                cspline::w0_func<FloatT>(),
-                cspline::w1_func<FloatT>(),
-                cspline::w2_func<FloatT>(),
-                cspline::w3_func<FloatT>()
-                );*/
+                cspline::w0_func(),
+                cspline::w1_func(),
+                cspline::w2_func(),
+                cspline::w3_func()
+                );
 
     }
 }

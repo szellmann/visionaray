@@ -38,10 +38,10 @@ inline ReturnT cubic_opt(
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
-    bspline::w0_func<FloatT> w0;
-    bspline::w1_func<FloatT> w1;
-    bspline::w2_func<FloatT> w2;
-    bspline::w3_func<FloatT> w3;
+    bspline::w0_func w0;
+    bspline::w1_func w1;
+    bspline::w2_func w2;
+    bspline::w3_func w3;
 
     auto x = coord * convert_to_float(texsize) - FloatT(0.5);
     auto floorx = floor(x);
@@ -80,10 +80,10 @@ inline ReturnT cubic_opt(
         std::array<tex_address_mode, 2> const&  address_mode
         )
 {
-    bspline::w0_func<FloatT> w0;
-    bspline::w1_func<FloatT> w1;
-    bspline::w2_func<FloatT> w2;
-    bspline::w3_func<FloatT> w3;
+    bspline::w0_func w0;
+    bspline::w1_func w1;
+    bspline::w2_func w2;
+    bspline::w3_func w3;
 
     auto x = coord.x * convert_to_float(texsize.x) - FloatT(0.5);
     auto floorx = floor(x);
@@ -139,10 +139,10 @@ inline ReturnT cubic_opt(
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {
-    bspline::w0_func<FloatT> w0;
-    bspline::w1_func<FloatT> w1;
-    bspline::w2_func<FloatT> w2;
-    bspline::w3_func<FloatT> w3;
+    bspline::w0_func w0;
+    bspline::w1_func w1;
+    bspline::w2_func w2;
+    bspline::w3_func w3;
 
     auto x = coord.x * convert_to_float(texsize.x) - FloatT(0.5);
     auto floorx = floor(x);
