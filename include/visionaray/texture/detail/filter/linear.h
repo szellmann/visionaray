@@ -10,7 +10,7 @@
 
 #include <visionaray/math/math.h>
 
-#include "../sampler_common.h"
+#include "common.h"
 
 namespace visionaray
 {

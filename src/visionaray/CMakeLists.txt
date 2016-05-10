@@ -152,6 +152,7 @@ set(VSNRAY_HEADERS
 
     # Texture access
 
+    ${HEADER_DIR}/texture/detail/filter/common.h
     ${HEADER_DIR}/texture/detail/filter/cubic.h
     ${HEADER_DIR}/texture/detail/filter/cubic_opt.h
     ${HEADER_DIR}/texture/detail/filter/linear.h
@@ -165,7 +166,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/texture/detail/sampler1d.h
     ${HEADER_DIR}/texture/detail/sampler2d.h
     ${HEADER_DIR}/texture/detail/sampler3d.h
-    ${HEADER_DIR}/texture/detail/sampler_common.h
     ${HEADER_DIR}/texture/detail/texture1d.h
     ${HEADER_DIR}/texture/detail/texture2d.h
     ${HEADER_DIR}/texture/detail/texture3d.h
