@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_SAMPLER_COMMON_H
-#define VSNRAY_SAMPLER_COMMON_H 1
+#ifndef VSNRAY_TEXTURE_DETAIL_SAMPLER_COMMON_H
+#define VSNRAY_TEXTURE_DETAIL_SAMPLER_COMMON_H 1
 
 #include <array>
 #include <type_traits>
@@ -260,4 +260,4 @@ inline T h1(T const& x)
 } // detail
 } // visionaray
 
-#endif // VSNRAY_SAMPLER_COMMON_H
+#endif // VSNRAY_TEXTURE_DETAIL_SAMPLER_COMMON_H

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_TEXTURE_PREFILTER_H
-#define VSNRAY_TEXTURE_PREFILTER_H
+#ifndef VSNRAY_TEXTURE_DETAIL_PREFILTER_H
+#define VSNRAY_TEXTURE_DETAIL_PREFILTER_H 1
 
 #include <limits>
 #include <stdexcept>
@@ -20,7 +20,6 @@ namespace visionaray
 {
 namespace detail
 {
-
 
 //-------------------------------------------------------------------------------------------------
 // Prefilter for B-Spline interpolation
@@ -160,7 +159,4 @@ static void convert_for_bspline_interpol(texture_ref<T, ReadMode, 3>* tex)
 
 } // visionaray
 
-
-#endif // VSNRAY_TEXTURE_PREFILTER_H
-
-
+#endif // VSNRAY_TEXTURE_DETAIL_PREFILTER_H

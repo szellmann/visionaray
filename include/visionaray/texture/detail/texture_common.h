@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_TEXTURE_COMMON_H
-#define VSNRAY_TEXTURE_COMMON_H 1
+#ifndef VSNRAY_TEXTURE_DETAIL_TEXTURE_COMMON_H
+#define VSNRAY_TEXTURE_DETAIL_TEXTURE_COMMON_H 1
 
 #include <cassert>
 #include <cstddef>
@@ -242,4 +242,4 @@ protected:
 
 } // visionaray
 
-#endif // VSNRAY_TEXTURE_COMMON_H
+#endif // VSNRAY_TEXTURE_DETAIL_TEXTURE_COMMON_H

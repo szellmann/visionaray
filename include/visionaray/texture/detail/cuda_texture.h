@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_CUDA_TEXTURE_H
-#define VSNRAY_CUDA_TEXTURE_H 1
+#ifndef VSNRAY_TEXTURE_DETAIL_CUDA_TEXTURE_H
+#define VSNRAY_TEXTURE_DETAIL_CUDA_TEXTURE_H 1
 
 #include <cstddef>
 #include <cstring> // memset
@@ -110,4 +110,4 @@ class cuda_texture_ref;
 #include "cuda_texture2d.inl"
 #include "cuda_texture3d.inl"
 
-#endif // VSNRAY_CUDA_TEXTURE_H
+#endif // VSNRAY_TEXTURE_DETAIL_CUDA_TEXTURE_H

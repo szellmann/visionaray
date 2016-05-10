@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_TEXTURE_SAMPLER3D_H
-#define VSNRAY_TEXTURE_SAMPLER3D_H 1
+#ifndef VSNRAY_TEXTURE_DETAIL_SAMPLER3D_H
+#define VSNRAY_TEXTURE_DETAIL_SAMPLER3D_H 1
 
 #include <array>
 #include <cstddef>
@@ -255,4 +255,4 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> coord)
 } // detail
 } // visionaray
 
-#endif // VSNRAY_TEXTURE_SAMPLER3D_H
+#endif // VSNRAY_TEXTURE_DETAIL_SAMPLER3D_H

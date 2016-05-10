@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_TEXTURE_TEXTURE1D_H
-#define VSNRAY_TEXTURE_TEXTURE1D_H 1
+#ifndef VSNRAY_TEXTURE_DETAIL_TEXTURE1D_H
+#define VSNRAY_TEXTURE_DETAIL_TEXTURE1D_H 1
 
 #include <cstddef>
 
@@ -70,4 +70,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_TEXTURE_TEXTURE1D_H
+#endif // VSNRAY_TEXTURE_DETAIL_TEXTURE1D_H

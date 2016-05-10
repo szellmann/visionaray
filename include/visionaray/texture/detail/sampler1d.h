@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_TEXTURE_SAMPLER1D_H
-#define VSNRAY_TEXTURE_SAMPLER1D_H 1
+#ifndef VSNRAY_TEXTURE_DETAIL_SAMPLER1D_H
+#define VSNRAY_TEXTURE_DETAIL_SAMPLER1D_H 1
 
 #include <array>
 #include <cstddef>
@@ -173,4 +173,4 @@ inline auto tex1D(Tex const& tex, FloatT coord)
 } // detail
 } // visionaray
 
-#endif // VSNRAY_TEXTURE_SAMPLER1D_H
+#endif // VSNRAY_TEXTURE_DETAIL_SAMPLER1D_H
