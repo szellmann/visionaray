@@ -74,6 +74,25 @@ inline vector<Dim, F> map_tex_coord(
 
 
 //-------------------------------------------------------------------------------------------------
+// Functions to map 1D index to texture coordinates
+//
+
+template <typename T>
+inline T index(T x, T y, vector<2, T> texsize)
+{
+    return y * texsize[0] + x;
+}
+
+
+template <typename T>
+inline T index(T x, T y, T z, vector<3, T> texsize)
+{
+    return z * texsize[0] * texsize[1] + y * texsize[0] + x;
+}
+
+
+
+//-------------------------------------------------------------------------------------------------
 // Array access functions for scalar and SIMD types
 // Return type as 3rd value for overload resolution!
 //

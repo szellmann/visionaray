@@ -152,10 +152,15 @@ set(VSNRAY_HEADERS
 
     # Texture access
 
+    ${HEADER_DIR}/texture/detail/filter/cubic.h
+    ${HEADER_DIR}/texture/detail/filter/cubic_opt.h
+    ${HEADER_DIR}/texture/detail/filter/linear.h
+    ${HEADER_DIR}/texture/detail/filter/nearest.h
     ${HEADER_DIR}/texture/detail/cuda_texture.h
     ${HEADER_DIR}/texture/detail/cuda_texture1d.inl
     ${HEADER_DIR}/texture/detail/cuda_texture2d.inl
     ${HEADER_DIR}/texture/detail/cuda_texture3d.inl
+    ${HEADER_DIR}/texture/detail/filter.h
     ${HEADER_DIR}/texture/detail/prefilter.h
     ${HEADER_DIR}/texture/detail/sampler1d.h
     ${HEADER_DIR}/texture/detail/sampler2d.h
