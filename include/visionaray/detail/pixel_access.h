@@ -281,6 +281,22 @@ inline void get(int x, int y, recti const& viewport, simd::float4& result, T con
     result = simd::float4(out);
 }
 
+// TODO: merge w/ overload(s) from above
+
+template <typename T>
+VSNRAY_CPU_FUNC
+inline void get(int x, int y, recti const& viewport, simd::int4& result, T const* buffer)
+{
+    VSNRAY_ALIGN(16) int out[4];
+
+    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : T();
+    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : T();
+    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : T();
+    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : T();
+
+    result = simd::int4(out);
+}
+
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
@@ -345,6 +361,31 @@ inline void get(int x, int y, recti const& viewport, simd::float8& result, T con
     }
 
     result = simd::float8(out);
+}
+
+// TODO: merge w/ overload(s) from above
+template <typename T>
+VSNRAY_CPU_FUNC
+inline void get(int x, int y, recti const& viewport, simd::int8& result, T const* buffer)
+{
+    const int w = packet_size<simd::float8>::w;
+    const int h = packet_size<simd::float8>::h;
+
+    VSNRAY_ALIGN(32) int out[8];
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < viewport.w && y + row < viewport.h)
+            {
+                auto idx = row * w + col;
+                out[idx] = buffer[(y + row) * viewport.w + (x + col)];
+            }
+        }
+    }
+
+    result = simd::int8(out);
 }
 
 #endif
