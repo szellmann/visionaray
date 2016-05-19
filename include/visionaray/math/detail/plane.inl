@@ -24,4 +24,23 @@ inline basic_plane<Dim, T, P>::basic_plane(vector<Dim, T> const& n, vector<Dim, 
 {
 }
 
+
+//--------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+template <size_t Dim, typename T, typename P>
+MATH_FUNC
+inline bool operator==(basic_plane<Dim, T, P> const& a, basic_plane<Dim, T, P> const& b)
+{
+    return a.normal == b.normal && a.offset == b.offset;
+}
+
+template <size_t Dim, typename T, typename P>
+MATH_FUNC
+inline bool operator!=(basic_plane<Dim, T, P> const& a, basic_plane<Dim, T, P> const& b)
+{
+    return a.normal != b.normal || a.offset != b.offset;
+}
+
 } // MATH_NAMESPACE
