@@ -9,6 +9,7 @@ namespace MATH_NAMESPACE
 //
 
 template <size_t Dim, typename T, typename P>
+MATH_FUNC
 inline basic_plane<Dim, T, P>::basic_plane(vector<Dim, T> const& n, T o)
     : normal(n)
     , offset(o)
@@ -16,6 +17,7 @@ inline basic_plane<Dim, T, P>::basic_plane(vector<Dim, T> const& n, T o)
 }
 
 template <size_t Dim, typename T, typename P>
+MATH_FUNC
 inline basic_plane<Dim, T, P>::basic_plane(vector<Dim, T> const& n, vector<Dim, T> const& p)
     : normal(n)
     , offset(dot(n, p))
