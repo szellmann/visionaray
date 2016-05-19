@@ -5,7 +5,7 @@ namespace MATH_NAMESPACE
 {
 
 //--------------------------------------------------------------------------------------------------
-// plane3 members
+// plane members
 //
 
 template <size_t Dim, typename T, typename P>
