@@ -260,6 +260,53 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
 
 
 //-------------------------------------------------------------------------------------------------
+// plane / sphere
+//
+
+template <typename T, typename P>
+struct hit_record<basic_plane<3, T>, basic_sphere<T, P>>
+{
+    using value_type = T;
+    using mask_type = typename simd::mask_type<T>::type;
+
+    // TODO: make this part of the API?
+    struct basic_circle
+    {
+        vector<3, T> center;
+        T radius;
+    };
+
+    MATH_FUNC hit_record()
+        : hit(false)
+    {
+    }
+
+    mask_type       hit;
+    basic_circle    circle;
+};
+
+template <typename T, typename P>
+MATH_FUNC
+inline hit_record<basic_plane<3, T>, basic_sphere<T, P>> intersect(
+        basic_plane<3, T> const&    plane,
+        basic_sphere<T, P> const&   sphere
+        )
+{
+    hit_record<basic_plane<3, T>, basic_sphere<T, P>> result;
+
+    T dist = plane.offset - dot(sphere.center, plane.normal);
+
+    auto hit = abs(dist) <= sphere.radius;
+
+    result.hit           = hit;
+    result.circle.center = select(hit, sphere.center + plane.normal * dist, vector<3, T>());
+    result.circle.radius = select(hit, sqrt(sphere.radius * sphere.radius - dist * dist), T(0.0));
+
+    return result;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Utility functions that can be reimplemented for user-supplied hit records
 // Used by the traversal functions (linear traversal, BVH traversal, etc.)
 //
