@@ -305,6 +305,16 @@ inline hit_record<basic_plane<3, T>, basic_sphere<T, P>> intersect(
     return result;
 }
 
+template <typename T, typename P>
+MATH_FUNC
+inline hit_record<basic_sphere<T, P>, basic_plane<3, T>> intersect(
+        basic_sphere<T, P> const&   sphere,
+        basic_plane<3, T> const&    plane
+        )
+{
+    return intersect(plane, sphere);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Utility functions that can be reimplemented for user-supplied hit records
