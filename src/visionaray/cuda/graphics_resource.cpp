@@ -78,5 +78,3 @@ void graphics_resource::unmap()
 } // visionaray
 
 #endif // VSNRAY_HAVE_CUDA
-
-
