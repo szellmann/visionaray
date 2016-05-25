@@ -21,6 +21,8 @@ struct pixel_pack_buffer::impl
 {
     graphics_resource   resource;
     gl::buffer          buffer;
+    recti               viewport;
+    pixel_format        format      = PF_UNSPECIFIED;
 };
 
 pixel_pack_buffer::pixel_pack_buffer()
@@ -54,14 +56,21 @@ void pixel_pack_buffer::map(recti viewport, pixel_format format)
 {
     auto info = map_pixel_format(format);
 
-    // GL buffer
-    impl_->buffer.reset( gl::create_buffer() );
-    glBindBuffer(GL_PIXEL_PACK_BUFFER, impl_->buffer.get());
-    glBufferData(GL_PIXEL_PACK_BUFFER, viewport.w * viewport.h * info.size, 0, GL_STREAM_COPY);
-    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+    if (impl_->viewport != viewport || impl_->format != format)
+    {
+        // GL buffer
+        impl_->buffer.reset( gl::create_buffer() );
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, impl_->buffer.get());
+        glBufferData(GL_PIXEL_PACK_BUFFER, viewport.w * viewport.h * info.size, 0, GL_STREAM_COPY);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
-    // Register buffer object with CUDA
-    impl_->resource.register_buffer(impl_->buffer.get(), cudaGraphicsRegisterFlagsReadOnly);
+        // Register buffer object with CUDA
+        impl_->resource.register_buffer(impl_->buffer.get(), cudaGraphicsRegisterFlagsReadOnly);
+
+        // Update state
+        impl_->viewport = viewport;
+        impl_->format   = format;
+    }
 
     // Transfer pixels
     glBindBuffer(GL_PIXEL_PACK_BUFFER, impl_->buffer.get());
