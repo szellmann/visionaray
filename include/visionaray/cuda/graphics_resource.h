@@ -4,7 +4,7 @@
 #pragma once 
 
 #ifndef VSNRAY_CUDA_GRAPHICS_RESOURCE_H
-#define VSNRAY_CUDA_GRAPHICS_RESOURCE_H
+#define VSNRAY_CUDA_GRAPHICS_RESOURCE_H 1
 
 #include <cuda_runtime_api.h>
 
@@ -19,18 +19,10 @@ class graphics_resource
 {
 public:
 
-    graphics_resource()
-        : resource_(0)
-        , dev_ptr_(0)
-    {
-    }
+    graphics_resource();
+   ~graphics_resource();
 
-   ~graphics_resource()
-    {
-        unregister();
-    }
-
-    cudaGraphicsResource_t get() const { return resource_; }
+    cudaGraphicsResource_t get() const;
 
     cudaError_t register_buffer(unsigned buffer, cudaGraphicsRegisterFlags flags = cudaGraphicsRegisterFlagsNone);
     cudaError_t register_image(unsigned image, unsigned target, cudaGraphicsRegisterFlags flags = cudaGraphicsRegisterFlagsNone);
@@ -40,7 +32,7 @@ public:
     void* map();
     void unmap();
 
-    void* dev_ptr() const { return dev_ptr_; }
+    void* dev_ptr() const;
 
 private:
 

@@ -15,6 +15,22 @@ namespace visionaray
 namespace cuda
 {
 
+graphics_resource::graphics_resource()
+    : resource_(0)
+    , dev_ptr_(0)
+{
+}
+
+graphics_resource::~graphics_resource()
+{
+    unregister();
+}
+
+cudaGraphicsResource_t graphics_resource::get() const
+{
+    return resource_;
+}
+
 cudaError_t graphics_resource::register_buffer(unsigned buffer, cudaGraphicsRegisterFlags flags)
 {
     unregister();
@@ -72,6 +88,11 @@ void graphics_resource::unmap()
 
     cudaGraphicsUnmapResources(1, &resource_);
     dev_ptr_ = 0;
+}
+
+void* graphics_resource::dev_ptr() const
+{
+    return dev_ptr_;
 }
 
 } // cuda
