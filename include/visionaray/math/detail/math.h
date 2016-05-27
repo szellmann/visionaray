@@ -54,13 +54,31 @@ inline T max(T const& x, T const& y)
 MATH_FUNC
 inline int reinterpret_as_int(float a)
 {
-    return *reinterpret_cast<int*>(&a);
+    // Prefer union over reinterpret_cast for type-punning
+    // for compilers with strict-aliasing rules
+    union helper
+    {
+        float a;
+        int i;
+    };
+    helper h;
+    h.a = a;
+    return h.i;
 }
 
 MATH_FUNC
 inline float reinterpret_as_float(int a)
 {
-    return *reinterpret_cast<float*>(&a);
+    // Prefer union over reinterpret_cast for type-punning
+    // for compilers with strict-aliasing rules
+    union helper
+    {
+        int a;
+        float f;
+    };
+    helper h;
+    h.a = a;
+    return h.f;
 }
 
 MATH_FUNC
