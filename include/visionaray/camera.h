@@ -11,6 +11,35 @@
 namespace visionaray
 {
 
+//-------------------------------------------------------------------------------------------------
+// Simple pinhole camera class, similar interface to OpenGL/GLU
+//
+//
+//  - camera::look_at()
+//      specify a camera by eye and center of view positions and an up direction
+//      vector up must be normalized
+//
+//  - camera::perspective()
+//      specify the perspective projection transformation of the camera in terms
+//      of field of view angle in y direction (radians!), the viewports aspect
+//      ratio and the distances from the viewer from the near clipping plane and
+//      the far clipping plane
+//      NOTE: in contrast to gluPerspective(), the field of view parameter (fovy)
+//      must be specified in radians!
+//
+//  - camera::set_viewport()
+//      specify the viewport rectangle for the viewing configuration, by
+//      parameters x-origin, y-origin (lower left corner), width and height
+//
+//  - camera::view_all()
+//      locates the camera at the outside of the given bounding box by calculating
+//      the bounding sphere, pushing the camera position to the far side of the
+//      sphere along the current viewing direction and looking to the center of
+//      the sphere
+//
+//
+//-------------------------------------------------------------------------------------------------
+
 class camera
 {
 public:
