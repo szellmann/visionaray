@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include <visionaray/intersector.h>
+#include <visionaray/update_if.h>
 
 #include "macros.h"
 

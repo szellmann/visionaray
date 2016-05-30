@@ -10,6 +10,7 @@
 
 #include <visionaray/math/math.h>
 #include <visionaray/bvh.h>
+#include <visionaray/update_if.h>
 
 namespace visionaray
 {

@@ -211,6 +211,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/swizzle.h
     ${HEADER_DIR}/tags.h
     ${HEADER_DIR}/traverse.h
+    ${HEADER_DIR}/update_if.h
     ${HEADER_DIR}/variant.h
     ${HEADER_DIR}/version.h
 
