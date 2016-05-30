@@ -76,7 +76,7 @@ inline auto traverse(
         )
     -> decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t) )
 {
-    using HR = decltype( isect(r, *begin) );
+    using HR = decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t) );
 
     HR result;
 
@@ -98,18 +98,25 @@ template <
     traversal_type Traversal,
     typename IsAnyBVH,
     typename R,
-    typename P,
+    typename Primitives,
     typename Intersector
     >
 VSNRAY_FUNC
 inline auto traverse(
         IsAnyBVH        /* */,
         R const&        r,
-        P               begin,
-        P               end,
+        Primitives      begin,
+        Primitives      end,
         Intersector&    isect
         )
-    -> decltype( isect(r, *begin) )
+    -> decltype( traverse<Traversal>(
+            IsAnyBVH{},
+            r,
+            begin,
+            end,
+            numeric_limits<float>::max(),
+            isect
+            ) )
 {
     return traverse<Traversal>(
             IsAnyBVH{},
@@ -164,19 +171,29 @@ inline auto any_hit(R const& r, P begin, P end)
 // any hit with max_t
 //
 
-template <typename R, typename P, typename Intersector>
+template <
+    typename R,
+    typename Primitives,
+    typename Intersector,
+    typename Primitive = typename std::iterator_traits<Primitives>::value_type
+    >
 VSNRAY_FUNC
 inline auto any_hit(
-        R const& r,
-        P begin,
-        P end,
-        typename R::scalar_type const& max_t,
-        Intersector& isect
+        R const&                        r,
+        Primitives                      begin,
+        Primitives                      end,
+        typename R::scalar_type const&  max_t,
+        Intersector&                    isect
         )
-    -> decltype( isect(r, *begin) )
+    -> decltype( detail::traverse<detail::AnyHit>(
+            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            r,
+            begin,
+            end,
+            max_t,
+            isect
+            ) )
 {
-    using Primitive = typename std::iterator_traits<P>::value_type;
-
     return detail::traverse<detail::AnyHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
             r,
@@ -187,15 +204,15 @@ inline auto any_hit(
             );
 }
 
-template <typename R, typename P>
+template <typename R, typename Primitives>
 VSNRAY_FUNC
 inline auto any_hit(
-        R const& r,
-        P begin,
-        P end,
-        typename R::scalar_type const& max_t
+        R const&                        r,
+        Primitives                      begin,
+        Primitives                      end,
+        typename R::scalar_type const&  max_t
         )
-    -> decltype( std::declval<default_intersector>()(r, *begin) )
+    -> decltype( any_hit(r, begin, end, max_t, std::declval<default_intersector&>() ) )
 {
     default_intersector ignore;
     return any_hit(r, begin, end, max_t, ignore);
@@ -206,18 +223,27 @@ inline auto any_hit(
 // closest hit 
 //
 
-template <typename R, typename P, typename Intersector>
+template <
+    typename R,
+    typename Primitives,
+    typename Intersector,
+    typename Primitive = typename std::iterator_traits<Primitives>::value_type
+    >
 VSNRAY_FUNC
 inline auto closest_hit(
-        R const& r,
-        P begin,
-        P end,
-        Intersector& isect
+        R const&        r,
+        Primitives      begin,
+        Primitives      end,
+        Intersector&    isect
         )
-    -> decltype( isect(r, *begin) )
+    -> decltype( detail::traverse<detail::ClosestHit>(
+            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            r,
+            begin,
+            end,
+            isect
+            ) )
 {
-    using Primitive = typename std::iterator_traits<P>::value_type;
-
     return detail::traverse<detail::ClosestHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
             r,
@@ -227,10 +253,10 @@ inline auto closest_hit(
             );
 }
 
-template <typename R, typename P>
+template <typename R, typename Primitives>
 VSNRAY_FUNC
-inline auto closest_hit(R const& r, P begin, P end)
-    -> decltype( std::declval<default_intersector>()(r, *begin) )
+inline auto closest_hit(R const& r, Primitives begin, Primitives end)
+    -> decltype( closest_hit(r, begin, end, std::declval<default_intersector&>()) )
 {
     default_intersector ignore;
     return closest_hit(r, begin, end, ignore);
