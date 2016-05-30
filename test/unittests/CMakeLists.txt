@@ -84,6 +84,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 set(UNITTESTS_SOURCES
     bvh/build.cpp
     bvh/traverse.cpp
+    detail/algorithm.cpp
     math/simd/gather.cpp
     math/simd/simd.cpp
     math/matrix.cpp
