@@ -21,6 +21,7 @@ namespace detail
 
 template <
     traversal_type Traversal,
+    typename Cond,
     typename R,
     typename P,
     typename Intersector
@@ -28,6 +29,7 @@ template <
 VSNRAY_FUNC
 inline auto traverse(
         std::false_type                 /* is no bvh */,
+        Cond                            update_cond,
         R const&                        r,
         P                               begin,
         P                               end,
@@ -43,7 +45,7 @@ inline auto traverse(
     for (P it = begin; it != end; ++it)
     {
         auto hr = isect(r, *it);
-        update_if(result, hr, is_closer(hr, result, max_t));
+        update_if(result, hr, update_cond(hr, result, max_t));
 
         if ( Traversal == AnyHit && all(result.hit) )
         {
@@ -62,6 +64,7 @@ inline auto traverse(
 
 template <
     traversal_type Traversal,
+    typename Cond,
     typename R,
     typename P,
     typename Intersector
@@ -69,22 +72,23 @@ template <
 VSNRAY_FUNC
 inline auto traverse(
         std::true_type                  /* is_bvh */,
+        Cond                            update_cond,
         R const&                        r,
         P                               begin,
         P                               end,
         typename R::scalar_type const&  max_t,
         Intersector&                    isect
         )
-    -> decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t) )
+    -> decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t, update_cond) )
 {
-    using HR = decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t) );
+    using HR = decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t, update_cond) );
 
     HR result;
 
     for (P it = begin; it != end; ++it)
     {
-        auto hr = isect(std::integral_constant<int, Traversal>{}, r, *it, max_t);
-        update_if(result, hr, is_closer(hr, result, max_t));
+        auto hr = isect(std::integral_constant<int, Traversal>{}, r, *it, max_t, update_cond);
+        update_if(result, hr, update_cond(hr, result, max_t));
 
         if ( Traversal == AnyHit && all(result.hit) )
         {
@@ -98,6 +102,7 @@ inline auto traverse(
 template <
     traversal_type Traversal,
     typename IsAnyBVH,
+    typename Cond,
     typename R,
     typename Primitives,
     typename Intersector
@@ -105,6 +110,7 @@ template <
 VSNRAY_FUNC
 inline auto traverse(
         IsAnyBVH        /* */,
+        Cond            update_cond,
         R const&        r,
         Primitives      begin,
         Primitives      end,
@@ -112,6 +118,7 @@ inline auto traverse(
         )
     -> decltype( traverse<Traversal>(
             IsAnyBVH{},
+            update_cond,
             r,
             begin,
             end,
@@ -121,6 +128,7 @@ inline auto traverse(
 {
     return traverse<Traversal>(
             IsAnyBVH{},
+            update_cond,
             r,
             begin,
             end,
@@ -152,6 +160,7 @@ inline auto any_hit(
         )
     -> decltype( detail::traverse<detail::AnyHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_closer_t(),
             r,
             begin,
             end,
@@ -160,6 +169,7 @@ inline auto any_hit(
 {
     return detail::traverse<detail::AnyHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_closer_t(),
             r,
             begin,
             end,
@@ -197,6 +207,7 @@ inline auto any_hit(
         )
     -> decltype( detail::traverse<detail::AnyHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_closer_t(),
             r,
             begin,
             end,
@@ -206,6 +217,7 @@ inline auto any_hit(
 {
     return detail::traverse<detail::AnyHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_closer_t(),
             r,
             begin,
             end,
@@ -248,6 +260,7 @@ inline auto closest_hit(
         )
     -> decltype( detail::traverse<detail::ClosestHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_closer_t(),
             r,
             begin,
             end,
@@ -256,6 +269,7 @@ inline auto closest_hit(
 {
     return detail::traverse<detail::ClosestHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_closer_t(),
             r,
             begin,
             end,

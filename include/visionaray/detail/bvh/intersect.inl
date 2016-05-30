@@ -5,6 +5,7 @@
 #include <utility>
 
 #include <visionaray/math/math.h>
+#include <visionaray/update_if.h>
 
 #include "../stack.h"
 #include "../tags.h"
@@ -22,14 +23,16 @@ template <
     typename T,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
-    typename Intersector
+    typename Intersector,
+    typename Cond = is_closer_t
     >
 VSNRAY_FUNC
 inline auto intersect(
         basic_ray<T> const& ray,
         BVH const&          b,
         Intersector&        isect,
-        T                   max_t = numeric_limits<T>::max()
+        T                   max_t = numeric_limits<T>::max(),
+        Cond                update_cond = Cond()
         )
     -> hit_record_bvh<
         basic_ray<T>,
@@ -68,8 +71,8 @@ next:
             auto hr1 = isect(ray, children[0].bbox, inv_dir);
             auto hr2 = isect(ray, children[1].bbox, inv_dir);
 
-            auto b1 = any( is_closer(hr1, result, max_t) );
-            auto b2 = any( is_closer(hr2, result, max_t) );
+            auto b1 = any( update_cond(hr1, result, max_t) );
+            auto b2 = any( update_cond(hr2, result, max_t) );
 
             if (b1 && b2)
             {
@@ -103,7 +106,7 @@ next:
             auto prim = b.primitive(i);
 
             auto hr = HR(isect(ray, prim), i);
-            auto closer = is_closer(hr, result, max_t);
+            auto closer = update_cond(hr, result, max_t);
 
 #ifndef __CUDA_ARCH__
             if (!any(closer))
@@ -134,13 +137,15 @@ template <
     typename T,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
-    typename Intersector
+    typename Intersector,
+    typename Cond = is_closer_t
     >
 VSNRAY_FUNC
 inline auto intersect(
         basic_ray<T> const& ray,
         BVH const&          b,
-        Intersector&        isect
+        Intersector&        isect,
+        Cond                update_cond = Cond()
         )
     -> hit_record_bvh<
         basic_ray<T>,
@@ -148,7 +153,7 @@ inline auto intersect(
         decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
         >
 {
-    return intersect<detail::ClosestHit>(ray, b, isect);
+    return intersect<detail::ClosestHit>(ray, b, isect, update_cond);
 }
 
 } // visionaray

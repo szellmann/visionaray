@@ -87,6 +87,30 @@ auto is_closer(hit_record<basic_ray<T>, basic_aabb<U>> const& query, HR const& r
     return is_closer(query, reference) && query.tnear < max_t;
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Condition types for passing update conditions around
+//
+
+struct is_closer_t
+{
+    template <typename HR1, typename HR2>
+    VSNRAY_FUNC
+    auto operator()(HR1 const& query, HR2 const& reference)
+        -> decltype(is_closer(query, reference))
+    {
+        return is_closer(query, reference);
+    }
+
+    template <typename HR1, typename HR2, typename T>
+    VSNRAY_FUNC
+    auto operator()(HR1 const& query, HR2 const& reference, T const& max_t)
+        -> decltype(is_closer(query, reference, max_t))
+    {
+        return is_closer(query, reference, max_t);
+    }
+};
+
 } // visionaray
 
 #endif // VSNRAY_UPDATE_IF_H

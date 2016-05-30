@@ -45,23 +45,45 @@ struct basic_intersector
 
     // BVH any hit ----------------------------------------
 
-    template <typename R, typename P, typename = typename std::enable_if<is_any_bvh<P>::value>::type>
+    template <
+        typename R,
+        typename P,
+        typename Cond,
+        typename = typename std::enable_if<is_any_bvh<P>::value>::type
+        >
     VSNRAY_FUNC
-    auto operator()(detail::any_hit_tag /* */, R const& ray, P const& prim, typename R::scalar_type max_t)
-        -> decltype( intersect<detail::AnyHit>(ray, prim, std::declval<Derived&>(), max_t) )
+    auto operator()(
+            detail::any_hit_tag     /* */,
+            R const&                ray,
+            P const&                prim,
+            typename R::scalar_type max_t,
+            Cond                    update_cond = Cond()
+            )
+        -> decltype( intersect<detail::AnyHit>(ray, prim, std::declval<Derived&>(), max_t, update_cond) )
     {
-        return intersect<detail::AnyHit>(ray, prim, *static_cast<Derived*>(this), max_t);
+        return intersect<detail::AnyHit>(ray, prim, *static_cast<Derived*>(this), max_t, update_cond);
     }
 
 
     // BVH closest hit ------------------------------------
 
-    template <typename R, typename P, typename = typename std::enable_if<is_any_bvh<P>::value>::type>
+    template <
+        typename R,
+        typename P,
+        typename Cond,
+        typename = typename std::enable_if<is_any_bvh<P>::value>::type
+        >
     VSNRAY_FUNC
-    auto operator()(detail::closest_hit_tag /* */, R const& ray, P const& prim, typename R::scalar_type max_t)
-        -> decltype( intersect<detail::ClosestHit>(ray, prim, std::declval<Derived&>(), max_t) )
+    auto operator()(
+            detail::closest_hit_tag /* */,
+            R const&                ray,
+            P const&                prim,
+            typename R::scalar_type max_t,
+            Cond                    update_cond = Cond()
+            )
+        -> decltype( intersect<detail::ClosestHit>(ray, prim, std::declval<Derived&>(), max_t, update_cond) )
     {
-        return intersect<detail::ClosestHit>(ray, prim, *static_cast<Derived*>(this), max_t);
+        return intersect<detail::ClosestHit>(ray, prim, *static_cast<Derived*>(this), max_t, update_cond);
     }
 };
 
