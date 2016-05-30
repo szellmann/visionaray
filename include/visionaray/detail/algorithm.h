@@ -9,12 +9,72 @@
 #include <algorithm>
 #include <iterator>
 
+#include "macros.h"
+
 namespace visionaray
 {
 namespace algo
 {
 
-//--------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
+// insert_sorted
+//
+// Inserts an element into the sorted sequence [first,...,last) so that the
+// sequence is sorted afterwards.
+//
+// It is the user's responsibility to ensure that the sequence is sorted
+// according to the condition argument COND provided to this function!
+//
+// Parameters:
+//
+// [in] ITEM
+//      The element to insert.
+//
+// [in,out] FIRST
+//      Start of the sorted sequence.
+//
+// [in,out] LAST
+//      End of the sorted sequence.
+//
+// [in] COND
+//      Conditional function that, given to elements, returns the one 'smaller'
+//      one in terms of the order of the sorted sequence.
+//
+// Complexity: O(n)
+//
+
+template <typename T, typename RandIt, typename Cond>
+VSNRAY_FUNC
+void insert_sorted(T const& item, RandIt first, RandIt last, Cond cond)
+{
+    RandIt it = first;
+    RandIt pos = 0;
+
+    while (it < last)
+    {
+        if (cond(item, *it))
+        {
+            pos = it;
+            break;
+        }
+        ++it;
+    }
+
+    it = pos ? last - 1 : 0;
+    while (it > pos)
+    {
+        *it = *(it - 1);
+        --it;
+    }
+
+    if (pos != 0)
+    {
+        *pos = item;
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // reorder
 //
 // Reorders the elements in [data, data + count) according to the indices stored
