@@ -32,7 +32,7 @@ inline auto traverse(
         P                               begin,
         P                               end,
         typename R::scalar_type const&  max_t,
-        Intersector& isect
+        Intersector&                    isect
         )
     -> decltype( isect(r, *begin) )
 {
@@ -73,7 +73,7 @@ inline auto traverse(
         P                               begin,
         P                               end,
         typename R::scalar_type const&  max_t,
-        Intersector& isect
+        Intersector&                    isect
         )
     -> decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t) )
 {
@@ -137,18 +137,27 @@ inline auto traverse(
 // any hit w/o max_t
 //
 
-template <typename R, typename P, typename Intersector>
+template <
+    typename R,
+    typename Primitives,
+    typename Intersector,
+    typename Primitive = typename std::iterator_traits<Primitives>::value_type
+    >
 VSNRAY_FUNC
 inline auto any_hit(
-        R const& r,
-        P begin,
-        P end,
-        Intersector& isect
+        R const&        r,
+        Primitive       begin,
+        Primitive       end,
+        Intersector&    isect
         )
-    -> decltype( isect(r, *begin) )
+    -> decltype( detail::traverse<detail::AnyHit>(
+            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            r,
+            begin,
+            end,
+            isect
+            ) )
 {
-    using Primitive = typename std::iterator_traits<P>::value_type;
-
     return detail::traverse<detail::AnyHit>(
             std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
             r,
