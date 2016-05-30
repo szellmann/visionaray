@@ -48,7 +48,7 @@ struct basic_intersector
     template <typename R, typename P, typename = typename std::enable_if<is_any_bvh<P>::value>::type>
     VSNRAY_FUNC
     auto operator()(detail::any_hit_tag /* */, R const& ray, P const& prim, typename R::scalar_type max_t)
-        -> decltype( intersect(ray, prim, std::declval<Derived&>()) )
+        -> decltype( intersect<detail::AnyHit>(ray, prim, std::declval<Derived&>(), max_t) )
     {
         return intersect<detail::AnyHit>(ray, prim, *static_cast<Derived*>(this), max_t);
     }
@@ -59,7 +59,7 @@ struct basic_intersector
     template <typename R, typename P, typename = typename std::enable_if<is_any_bvh<P>::value>::type>
     VSNRAY_FUNC
     auto operator()(detail::closest_hit_tag /* */, R const& ray, P const& prim, typename R::scalar_type max_t)
-        -> decltype( intersect(ray, prim, std::declval<Derived&>()) )
+        -> decltype( intersect<detail::ClosestHit>(ray, prim, std::declval<Derived&>(), max_t) )
     {
         return intersect<detail::ClosestHit>(ray, prim, *static_cast<Derived*>(this), max_t);
     }
