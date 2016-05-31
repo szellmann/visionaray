@@ -7,6 +7,7 @@
 #include <visionaray/math/math.h>
 #include <visionaray/update_if.h>
 
+#include "../exit_traversal.h"
 #include "../stack.h"
 #include "../tags.h"
 #include "hit_record.h"
@@ -117,7 +118,8 @@ next:
 
             update_if(result, hr, closer);
 
-            if ( Traversal == detail::AnyHit && all(result.hit) )
+            exit_traversal<Traversal> early_exit;
+            if (early_exit.check(result))
             {
                 return result;
             }

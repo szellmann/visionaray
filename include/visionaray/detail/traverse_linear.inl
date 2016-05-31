@@ -8,6 +8,7 @@
 #include <visionaray/intersector.h>
 #include <visionaray/update_if.h>
 
+#include "exit_traversal.h"
 #include "macros.h"
 
 namespace visionaray
@@ -47,7 +48,8 @@ inline auto traverse(
         auto hr = isect(r, *it);
         update_if(result, hr, update_cond(hr, result, max_t));
 
-        if ( Traversal == AnyHit && all(result.hit) )
+        exit_traversal<Traversal> early_exit;
+        if (early_exit.check(result))
         {
             return result;
         }
@@ -90,7 +92,8 @@ inline auto traverse(
         auto hr = isect(std::integral_constant<int, Traversal>{}, r, *it, max_t, update_cond);
         update_if(result, hr, update_cond(hr, result, max_t));
 
-        if ( Traversal == AnyHit && all(result.hit) )
+        exit_traversal<Traversal> early_exit;
+        if (early_exit.check(result))
         {
             return result;
         }

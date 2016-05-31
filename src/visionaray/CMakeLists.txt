@@ -64,6 +64,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/cpu_buffer_rt.inl
     ${HEADER_DIR}/detail/cuda_sched.h
     ${HEADER_DIR}/detail/cuda_sched.inl
+    ${HEADER_DIR}/detail/exit_traversal.h
     ${HEADER_DIR}/detail/generic_material.inl
     ${HEADER_DIR}/detail/generic_primitive.inl
     ${HEADER_DIR}/detail/gpu_buffer_rt.inl
