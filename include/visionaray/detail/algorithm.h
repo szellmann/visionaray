@@ -37,7 +37,7 @@ namespace algo
 //      End of the sorted sequence.
 //
 // [in] COND
-//      Conditional function that, given to elements, returns the one 'smaller'
+//      Conditional function that, given to elements, returns the 'smaller'
 //      one in terms of the order of the sorted sequence.
 //
 // Complexity: O(n)

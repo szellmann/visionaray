@@ -87,7 +87,7 @@ void update_if(std::array<HR, N>& dst, std::array<HR, N> const& src, Cond const&
 {
     VSNRAY_UNUSED(cond);
 
-    if (!dst[0].hit)
+    if (!any(dst[0].hit))
     {
         // Optimize for the case that no valid hit was found before
         dst = src;
