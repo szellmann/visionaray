@@ -85,6 +85,28 @@ struct basic_intersector
     {
         return intersect<detail::ClosestHit>(ray, prim, *static_cast<Derived*>(this), max_t, update_cond);
     }
+
+
+    // BVH multi hit --------------------------------------
+
+    template <
+        typename R,
+        typename P,
+        typename Cond,
+        typename = typename std::enable_if<is_any_bvh<P>::value>::type
+        >
+    VSNRAY_FUNC
+    auto operator()(
+            detail::multi_hit_tag   /* */,
+            R const&                ray,
+            P const&                prim,
+            typename R::scalar_type max_t,
+            Cond                    update_cond = Cond()
+            )
+        -> decltype( intersect<detail::MultiHit>(ray, prim, std::declval<Derived&>(), max_t, update_cond) )
+    {
+        return intersect<detail::MultiHit>(ray, prim, *static_cast<Derived*>(this), max_t, update_cond);
+    }
 };
 
 

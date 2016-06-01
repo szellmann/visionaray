@@ -70,6 +70,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/gpu_buffer_rt.inl
     ${HEADER_DIR}/detail/macros.h
     ${HEADER_DIR}/detail/material.inl
+    ${HEADER_DIR}/detail/multi_hit.h
     ${HEADER_DIR}/detail/pathtracing.inl
     ${HEADER_DIR}/detail/pixel_access.h
     ${HEADER_DIR}/detail/pixel_unpack_buffer_rt.inl

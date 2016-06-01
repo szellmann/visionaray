@@ -10,6 +10,7 @@
 
 #include "exit_traversal.h"
 #include "macros.h"
+#include "multi_hit.h"
 
 namespace visionaray
 {
@@ -37,11 +38,11 @@ inline auto traverse(
         typename R::scalar_type const&  max_t,
         Intersector&                    isect
         )
-    -> decltype( isect(r, *begin) )
+    -> typename traversal_result<decltype( isect(r, *begin) ), Traversal>::type
 {
-    using HR = decltype( isect(r, *begin) );
+    using RT = typename traversal_result<decltype( isect(r, *begin) ), Traversal>::type;
 
-    HR result;
+    RT result;
 
     for (P it = begin; it != end; ++it)
     {
@@ -83,9 +84,9 @@ inline auto traverse(
         )
     -> decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t, update_cond) )
 {
-    using HR = decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t, update_cond) );
+    using RT = decltype( isect(std::integral_constant<int, Traversal>{}, r, *begin, max_t, update_cond) );
 
-    HR result;
+    RT result;
 
     for (P it = begin; it != end; ++it)
     {
@@ -287,6 +288,52 @@ inline auto closest_hit(R const& r, Primitives begin, Primitives end)
 {
     default_intersector ignore;
     return closest_hit(r, begin, end, ignore);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// multi hit
+//
+
+template <
+    typename R,
+    typename Primitives,
+    typename Intersector,
+    typename Primitive = typename std::iterator_traits<Primitives>::value_type
+    >
+VSNRAY_FUNC
+inline auto multi_hit(
+        R const&        r,
+        Primitives      begin,
+        Primitives      end,
+        Intersector&    isect
+        )
+    -> decltype( detail::traverse<detail::MultiHit>(
+            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_closer_t(),
+            r,
+            begin,
+            end,
+            isect
+            ) )
+{
+    return detail::traverse<detail::MultiHit>(
+            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_closer_t(),
+            r,
+            begin,
+            end,
+            isect
+            );
+}
+
+template <typename R, typename Primitives>
+VSNRAY_FUNC
+inline auto multi_hit(R const& r, Primitives begin, Primitives end)
+    -> decltype( multi_hit(r, begin, end, std::declval<default_intersector&>()) )
+{
+    default_intersector ignore;
+    return multi_hit(r, begin, end, ignore);
 }
 
 } // visionaray

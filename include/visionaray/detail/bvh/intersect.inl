@@ -8,6 +8,7 @@
 #include <visionaray/update_if.h>
 
 #include "../exit_traversal.h"
+#include "../multi_hit.h"
 #include "../stack.h"
 #include "../tags.h"
 #include "hit_record.h"
@@ -35,11 +36,11 @@ inline auto intersect(
         T                   max_t = numeric_limits<T>::max(),
         Cond                update_cond = Cond()
         )
-    -> hit_record_bvh<
-        basic_ray<T>,
-        BVH,
-        decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
-        >
+    -> typename detail::traversal_result< hit_record_bvh<
+            basic_ray<T>,
+            BVH,
+            decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+            >, Traversal>::type
 {
 
     using namespace detail;
@@ -49,7 +50,9 @@ inline auto intersect(
         decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
         >;
 
-    HR result;
+    using RT = typename detail::traversal_result<HR, Traversal>::type;
+
+    RT result;
 
     stack<32> st;
     st.push(0); // address of root node
