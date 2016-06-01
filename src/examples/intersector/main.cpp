@@ -397,7 +397,7 @@ void renderer::on_display()
             sr.active = hit_rec.hit;
             sr.isect_pos = hit_rec.isect_pos;
             // two-sided shading: if necessary, flip the normal
-            sr.normal = faceforward( surf.normal, -ray.dir, surf.normal );
+            sr.normal = faceforward( surf.shading_normal, -ray.dir, surf.normal );
             sr.view_dir = -ray.dir;
             sr.light_dir = normalize( V(kparams.lights.begin->position()) - hit_rec.isect_pos );
             sr.light = *kparams.lights.begin;

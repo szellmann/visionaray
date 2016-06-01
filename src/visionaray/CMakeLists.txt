@@ -67,6 +67,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/exit_traversal.h
     ${HEADER_DIR}/detail/generic_material.inl
     ${HEADER_DIR}/detail/generic_primitive.inl
+    ${HEADER_DIR}/detail/generic_primitive_get_normal.h
     ${HEADER_DIR}/detail/gpu_buffer_rt.inl
     ${HEADER_DIR}/detail/macros.h
     ${HEADER_DIR}/detail/material.inl
@@ -191,6 +192,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/generic_material.h
     ${HEADER_DIR}/get_color.h
     ${HEADER_DIR}/get_normal.h
+    ${HEADER_DIR}/get_shading_normal.h
     ${HEADER_DIR}/get_surface.h
     ${HEADER_DIR}/get_tex_coord.h
     ${HEADER_DIR}/gpu_buffer_rt.h

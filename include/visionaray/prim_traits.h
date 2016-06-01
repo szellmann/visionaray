@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/bvh.h>
+
 #pragma once
 
 #ifndef VSNRAY_PRIM_TRAITS_H
@@ -11,7 +13,6 @@
 #include <visionaray/math/sphere.h>
 #include <visionaray/math/triangle.h>
 
-#include <visionaray/bvh.h>
 #include <visionaray/tags.h>
 
 namespace visionaray

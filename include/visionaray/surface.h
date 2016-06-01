@@ -32,13 +32,15 @@ public:
     VSNRAY_FUNC surface() = default;
 
     VSNRAY_FUNC
-    surface(N const& n, M const& m)
-        : normal(n)
+    surface(N const& gn, N const& sn, M const& m)
+        : normal(gn)
+        , shading_normal(sn)
         , material(m)
     {
     }
 
     N normal;
+    N shading_normal;
     M material;
 
     template <typename SR>
@@ -70,8 +72,8 @@ public:
     VSNRAY_FUNC surface() = default;
 
     VSNRAY_FUNC
-    surface(N const& n, M const& m, C const& tex_color)
-        : base_type(n, m)
+    surface(N const& gn, N const& sn, M const& m, C const& tex_color)
+        : base_type(gn, sn, m)
         , tex_color_(tex_color)
     {
     }

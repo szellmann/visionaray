@@ -9,13 +9,20 @@
 #include <type_traits>
 
 #include <visionaray/bvh.h>
+#include <visionaray/get_normal.h>
+#include <visionaray/get_shading_normal.h>
+#include <visionaray/prim_traits.h>
 
 #include "hit_record.h"
 
 namespace visionaray
 {
 
+namespace detail
+{
+
 template <
+    typename NormalFunc,
     typename R,
     typename BVH,
     typename Base,
@@ -24,20 +31,98 @@ template <
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
-auto get_normal(
+auto get_normal_from_bvh(
         hit_record_bvh<R, BVH, Base> const& hr,
         Primitive                           prim
         )
-    -> decltype( get_normal(
+    -> decltype( std::declval<NormalFunc>()(
             static_cast<Base const&>(hr),
             prim.primitive(hr.primitive_list_index)
             ) )
 {
-    return get_normal(
+    NormalFunc t;
+    return t(
             static_cast<Base const&>(hr),
             prim.primitive(hr.primitive_list_index)
             );
 }
+
+template <
+    typename NormalFunc,
+    typename Normals,
+    typename R,
+    typename BVH,
+    typename Base,
+    typename Primitive,
+    typename NormalBinding,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
+    >
+VSNRAY_FUNC
+auto get_normal_from_bvh(
+        Normals                             normals,
+        hit_record_bvh<R, BVH, Base> const& hr,
+        Primitive                           /* */,
+        NormalBinding                       /* */,
+        typename std::enable_if<num_normals<typename Primitive::primitive_type, NormalBinding>::value == 1>::type* = 0
+        )
+    -> decltype( std::declval<NormalFunc>()(
+            normals,
+            static_cast<Base const&>(hr),
+            typename Primitive::primitive_type{},
+            NormalBinding{}
+            ) )
+{
+    NormalFunc t;
+    return t(
+            normals,
+            static_cast<Base const&>(hr),
+            typename Primitive::primitive_type{},
+            NormalBinding{}
+            );
+}
+
+template <
+    typename NormalFunc,
+    typename Normals,
+    typename R,
+    typename BVH,
+    typename Base,
+    typename Primitive,
+    typename NormalBinding,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
+    >
+VSNRAY_FUNC
+auto get_normal_from_bvh(
+        Normals                             normals,
+        hit_record_bvh<R, BVH, Base> const& hr,
+        Primitive                           prim,
+        NormalBinding                       /* */,
+        typename std::enable_if<num_normals<typename Primitive::primitive_type, NormalBinding>::value >= 2>::type* = 0
+        )
+    -> decltype( std::declval<NormalFunc>()(
+            normals,
+            static_cast<Base const&>(hr),
+            typename Primitive::primitive_type{},
+            NormalBinding{}
+            ) )
+{
+    NormalFunc t;
+    return t(
+            normals,
+            static_cast<Base const&>(hr),
+            prim.primitive(hr.primitive_list_index),
+            NormalBinding{}
+            );
+}
+
+} // detail
+
+
+//-------------------------------------------------------------------------------------------------
+// get_normal overloads
+//
 
 template <
     typename Normals,
@@ -53,22 +138,34 @@ VSNRAY_FUNC
 auto get_normal(
         Normals                             normals,
         hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           /* */,
+        Primitive                           prim,
         NormalBinding                       /* */
         )
-    -> decltype( get_normal(
-            normals,
-            static_cast<Base const&>(hr),
-            typename Primitive::primitive_type{},
-            NormalBinding{} 
-            ) )
+    -> decltype( detail::get_normal_from_bvh<detail::get_normal_t>(normals, hr, prim, NormalBinding{}) )
 {
-    return get_normal(
-            normals,
-            static_cast<Base const&>(hr),
-            typename Primitive::primitive_type{},
-            NormalBinding{}
-            );
+    return detail::get_normal_from_bvh<detail::get_normal_t>(normals, hr, prim, NormalBinding{});
+}
+
+template <
+    typename Normals,
+    typename R,
+    typename BVH,
+    typename Base,
+    typename Primitive,
+    typename NormalBinding,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
+    >
+VSNRAY_FUNC
+auto get_shading_normal(
+        Normals                             normals,
+        hit_record_bvh<R, BVH, Base> const& hr,
+        Primitive                           prim,
+        NormalBinding                       /* */
+        )
+    -> decltype( detail::get_normal_from_bvh<detail::get_shading_normal_t>(normals, hr, prim, NormalBinding{}) )
+{
+    return detail::get_normal_from_bvh<detail::get_shading_normal_t>(normals, hr, prim, NormalBinding{});
 }
 
 } // visionaray

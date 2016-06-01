@@ -20,29 +20,7 @@ namespace visionaray
 // Get face normal from array
 //
 
-template <
-    typename Normals,
-    typename HR,
-    typename Primitive,
-    typename = typename std::enable_if<num_normals<Primitive, per_face_binding>::value == 1>::type,
-    typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type
-    >
-VSNRAY_FUNC
-inline auto get_normal(
-        Normals                     normals,
-        HR const&                   hr,
-        Primitive                   /* */,
-        per_face_binding            /* */
-        )
-    -> typename std::iterator_traits<Normals>::value_type
-{
-    return normals[hr.prim_id];
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Get triangle vertex normal from array
-//
+// TODO: generalize this to primitives with num_normals<Primitive, NormalBinding>::value == 1 ?
 
 template <typename Normals, typename HR, typename T>
 VSNRAY_FUNC
@@ -50,19 +28,12 @@ inline auto get_normal(
         Normals                     normals,
         HR const&                   hr,
         basic_triangle<3, T>        /* */,
-        per_vertex_binding          /* */
+        per_face_binding            /* */
         )
     -> typename std::iterator_traits<Normals>::value_type
 {
-    return normalize( lerp(
-            normals[hr.prim_id * 3],
-            normals[hr.prim_id * 3 + 1],
-            normals[hr.prim_id * 3 + 2],
-            hr.u,
-            hr.v
-            ) );
+    return normals[hr.prim_id];
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // Gather N face normals for SIMD ray
@@ -70,18 +41,15 @@ inline auto get_normal(
 
 template <
     typename Normals,
-    template <typename, typename> class HR,
     typename T,
-    typename HRP,
-    typename Primitive,
-    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type,
-    typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type
+    typename U,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
 inline vector<3, T> get_normal(
-        Normals                         normals,
-        HR<basic_ray<T>, HRP> const&    hr,
-        Primitive                       /* */,
-        per_face_binding                /* */
+        Normals                                                 normals,
+        hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
+        basic_triangle<3, U>                                    /* */,
+        per_face_binding                                        /* */
         )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -108,69 +76,38 @@ inline vector<3, T> get_normal(
             );
 }
 
+
 //-------------------------------------------------------------------------------------------------
-// Gather N triangle vertex normals for SIMD ray
+// Dispatch to calculating function - if normals are not bound per face
 //
 
-template <
-    typename Normals,
-    typename T,
-    typename U,
-    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
-    >
-inline vector<3, T> get_normal(
-        Normals                                                 normals,
-        hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
-        basic_triangle<3, U>                                    /* */,
-        per_vertex_binding                                      /* */
+template <typename Normals, typename HR, typename T>
+VSNRAY_FUNC
+inline auto get_normal(
+        Normals                     normals,
+        HR const&                   hr,
+        basic_triangle<3, T>        prim,
+        per_vertex_binding          /* */
         )
+    -> decltype( get_normal(hr, prim) )
 {
-    using N = typename std::iterator_traits<Normals>::value_type;
-    using float_array = typename simd::aligned_array<T>::type;
+    VSNRAY_UNUSED(normals);
 
-    auto hrs = unpack(hr);
+    return get_normal(hr, prim);
+}
 
-    auto get_norm = [&](int x, int y)
-    {
-        return hrs[x].hit ? normals[hrs[x].prim_id * 3 + y] : N();
-    };
 
-    float_array x1;
-    float_array y1;
-    float_array z1;
+//-------------------------------------------------------------------------------------------------
+// Get normal from triangle primitive
+//
 
-    float_array x2;
-    float_array y2;
-    float_array z2;
+template <typename HR, typename T>
+VSNRAY_FUNC
+inline vector<3, T> get_normal(HR const& hr, basic_triangle<3, T> const& triangle)
+{
+    VSNRAY_UNUSED(hr);
 
-    float_array x3;
-    float_array y3;
-    float_array z3;
-
-    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
-    {
-        auto nn1 = get_norm(i, 0);
-        auto nn2 = get_norm(i, 1);
-        auto nn3 = get_norm(i, 2);
-
-        x1[i] = nn1.x;
-        y1[i] = nn1.y;
-        z1[i] = nn1.z;
-
-        x2[i] = nn2.x;
-        y2[i] = nn2.y;
-        z2[i] = nn2.z;
-
-        x3[i] = nn3.x;
-        y3[i] = nn3.y;
-        z3[i] = nn3.z;
-    }
-
-    vector<3, T> n1(x1, y1, z1);
-    vector<3, T> n2(x2, y2, z2);
-    vector<3, T> n3(x3, y3, z3);
-
-    return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
+    return normalize(cross(triangle.e1, triangle.e2));
 }
 
 
@@ -201,27 +138,40 @@ inline vector<3, T> get_normal(HR const& hr, basic_sphere<T> const& sphere)
 
 
 //-------------------------------------------------------------------------------------------------
-// w/o tag dispatch default to triangles
+// get_normal as functor for template arguments
 //
 
-template <typename Normals, typename HR, typename NormalBinding>
-VSNRAY_FUNC
-inline auto get_normal(Normals normals, HR const& hr, NormalBinding /* */)
-    -> decltype( get_normal(
-            normals,
-            hr,
-            basic_triangle<3, typename HR::scalar_type>{},
-            NormalBinding{}
-            ) )
+namespace detail
 {
-    return get_normal(
-            normals,
-            hr,
-            basic_triangle<3, typename HR::scalar_type>{},
-            NormalBinding{}
-            );
-}
 
+struct get_normal_t
+{
+    template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
+    VSNRAY_FUNC
+    inline auto operator()(
+            Normals                     normals,
+            HR const&                   hr,
+            Primitive                   prim,
+            NormalBinding               /* */
+            ) const
+        -> decltype( get_normal(normals, hr, prim, NormalBinding{}) )
+    {
+        return get_normal(normals, hr, prim, NormalBinding{});
+    }
+
+    template <typename HR, typename Primitive>
+    VSNRAY_FUNC
+    inline auto operator()(
+            HR const&                   hr,
+            Primitive                   prim
+            ) const
+    -> decltype( get_normal(hr, prim) )
+    {
+        return get_normal(hr, prim);
+    }
+};
+
+} // detail
 } // visionaray
 
 #endif // VSNRAY_GET_NORMAL

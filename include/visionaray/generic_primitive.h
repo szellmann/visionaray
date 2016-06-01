@@ -8,6 +8,7 @@
 
 #include "detail/macros.h"
 #include "math/math.h"
+#include "prim_traits.h"
 #include "variant.h"
 
 namespace visionaray
@@ -41,5 +42,6 @@ public:
 } // visionaray
 
 #include "detail/generic_primitive.inl"
+#include "detail/generic_primitive_get_normal.h"
 
 #endif // VSNRAY_GENERIC_PRIMITIVE_H

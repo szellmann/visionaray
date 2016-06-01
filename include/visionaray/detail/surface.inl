@@ -52,16 +52,16 @@ inline auto has_emissive_material(surface<N, simd::generic_material4<Ms...>, Ts.
 
 template <typename N, typename M>
 VSNRAY_FUNC
-inline surface<N, M> make_surface(N const& n, M const& m)
+inline surface<N, M> make_surface(N const& gn, N const& sn, M const& m)
 {
-    return surface<N, M>(n, m);
+    return surface<N, M>(gn, sn, m);
 }
 
 template <typename N, typename M, typename C>
 VSNRAY_FUNC
-inline surface<N, M, C> make_surface(N const& n, M const m, C const& tex_color)
+inline surface<N, M, C> make_surface(N const& gn, N const& sn, M const m, C const& tex_color)
 {
-    return surface<N, M, C>(n, m, tex_color);
+    return surface<N, M, C>(gn, sn, m, tex_color);
 }
 
 
@@ -76,20 +76,24 @@ template <typename N, typename M, typename ...Args, size_t Size>
 inline auto pack(std::array<surface<N, M, Args...>, Size> const& surfs)
     -> decltype( make_surface(
             pack(std::declval<std::array<N, Size>>()),
+            pack(std::declval<std::array<N, Size>>()),
             pack(std::declval<std::array<M, Size>>())
             ) )
 {
     std::array<N, Size> normals;
+    std::array<N, Size> shading_normals;
     std::array<M, Size> materials;
 
     for (size_t i = 0; i < Size; ++i)
     {
-        normals[i]      = surfs[i].normal;
-        materials[i]    = surfs[i].material;
+        normals[i]          = surfs[i].normal;
+        shading_normals[i]  = surfs[i].shading_normal;
+        materials[i]        = surfs[i].material;
     }
 
     return make_surface(
             pack(normals),
+            pack(shading_normals),
             pack(materials)
             );
 }
@@ -98,23 +102,27 @@ template <typename N, typename M, typename C, typename ...Args, size_t Size>
 inline auto pack(std::array<surface<N, M, C, Args...>, Size> const& surfs)
     -> decltype( make_surface(
             pack(std::declval<std::array<N, Size>>()),
+            pack(std::declval<std::array<N, Size>>()),
             pack(std::declval<std::array<M, Size>>()),
             pack(std::declval<std::array<C, Size>>())
             ) )
 {
     std::array<N, Size> normals;
+    std::array<N, Size> shading_normals;
     std::array<M, Size> materials;
     std::array<C, Size> tex_colors;
 
     for (size_t i = 0; i < Size; ++i)
     {
-        normals[i]      = surfs[i].normal;
-        materials[i]    = surfs[i].material;
-        tex_colors[i]   = surfs[i].tex_color_;
+        normals[i] = surfs[i].normal;
+        shading_normals[i]  = surfs[i].shading_normal;
+        materials[i]        = surfs[i].material;
+        tex_colors[i]       = surfs[i].tex_color_;
     }
 
     return make_surface(
             pack(normals),
+            pack(shading_normals),
             pack(materials),
             pack(tex_colors)
             );

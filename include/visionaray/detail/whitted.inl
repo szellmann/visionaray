@@ -65,7 +65,7 @@ inline auto make_bounce_result(
         reflected_dir,
         refracted_dir,
         kr,
-        kt 
+        kt
         };
 }
 
@@ -294,10 +294,10 @@ struct kernel
             auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgba(params.bg_color)) );
             auto view_dir = -ray.dir;
 
-            auto n = surf.normal;
+            auto n = surf.shading_normal;
 
 #if 1 // two-sided
-            n = faceforward( n, view_dir, n );
+            n = faceforward( n, view_dir, surf.normal );
 #endif
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
@@ -334,7 +334,7 @@ struct kernel
 
             color += select( hit_rec.hit, shaded_clr, no_hit_color ) * throughput;
 
-            auto bounce = detail::specular_bounce(surf.material, view_dir, surf.normal);
+            auto bounce = detail::specular_bounce(surf.material, view_dir, surf.shading_normal);
 
             if (any(bounce.kr > S(0.0)))
             {

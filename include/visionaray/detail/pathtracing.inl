@@ -68,10 +68,10 @@ struct kernel
 
                 auto surf = get_surface(hit_rec, params);
 
-                auto n = surf.normal;
+                auto n = surf.shading_normal;
 
 #if 1 // two-sided
-                n = faceforward( n, view_dir, n );
+                n = faceforward( n, view_dir, surf.normal );
 #endif
 
                 S pdf(0.0);
