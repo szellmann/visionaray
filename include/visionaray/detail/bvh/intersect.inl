@@ -72,8 +72,8 @@ next:
             auto hr1 = isect(ray, children[0].bbox, inv_dir);
             auto hr2 = isect(ray, children[1].bbox, inv_dir);
 
-            auto b1 = any( update_cond(hr1, result, max_t) );
-            auto b2 = any( update_cond(hr2, result, max_t) );
+            auto b1 = any( is_closer(hr1, result, max_t) );
+            auto b2 = any( is_closer(hr2, result, max_t) );
 
             if (b1 && b2)
             {
