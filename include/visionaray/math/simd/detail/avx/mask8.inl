@@ -89,6 +89,16 @@ VSNRAY_FORCE_INLINE bool all(mask8 const& m)
 
 
 //-------------------------------------------------------------------------------------------------
+// select intrinsic
+//
+
+VSNRAY_FORCE_INLINE mask8 select(mask8 const& m, mask8 const& a, mask8 const& b)
+{
+    return _mm256_blendv_ps(b.f, a.f, m.f);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Load / store
 //
 

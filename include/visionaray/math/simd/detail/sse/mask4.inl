@@ -72,6 +72,20 @@ VSNRAY_FORCE_INLINE bool all(mask4 const& m)
 
 
 //-------------------------------------------------------------------------------------------------
+// select intrinsic
+//
+
+VSNRAY_FORCE_INLINE mask4 select(mask4 const& m, mask4 const& a, mask4 const& b)
+{
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
+    return _mm_blendv_ps(b.f, a.f, m.f);
+#else
+    return _mm_or_ps(_mm_and_ps(m.f, a.f), _mm_andnot_ps(m.f, b.f));
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Load / store
 //
 
