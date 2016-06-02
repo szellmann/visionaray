@@ -326,6 +326,50 @@ namespace simd
 // general primitive --------------------------------------
 
 template <
+    size_t N,
+    typename T = typename simd::float_from_simd_width<N>::type
+    >
+inline hit_record<basic_ray<T>, primitive<unsigned>> pack(
+        std::array<hit_record<ray, primitive<unsigned>>, N> const& hrs
+        )
+{
+    using I = typename int_type<T>::type;
+    using float_array = typename aligned_array<T>::type;
+    using int_array = typename aligned_array<I>::type;
+
+    hit_record<basic_ray<T>, primitive<unsigned>> result;
+
+    int_array hit;
+    int_array prim_id;
+    int_array geom_id;
+    float_array t;
+    std::array<vec3, N> isect_pos;
+    float_array u;
+    float_array v;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        hit[i]       = hrs[i].hit ? 0xFFFFFFFF : 0x00000000;
+        prim_id[i]   = hrs[i].prim_id;
+        geom_id[i]   = hrs[i].geom_id;
+        t[i]         = hrs[i].t;
+        isect_pos[i] = hrs[i].isect_pos;
+        u[i]         = hrs[i].u;
+        v[i]         = hrs[i].v;
+    }
+
+    result.hit.i     = I(hit);
+    result.prim_id   = I(prim_id);
+    result.geom_id   = I(geom_id);
+    result.t         = T(t);
+    result.isect_pos = pack(isect_pos);
+    result.u         = T(u);
+    result.v         = T(v);
+
+    return result;
+}
+
+template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
@@ -371,7 +415,6 @@ inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::va
 }
 
 } // simd
-
 
 } // MATH_NAMESPACE
 
