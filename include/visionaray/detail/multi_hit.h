@@ -25,16 +25,16 @@ namespace detail
 // In the case of multi_hit, the traversal result is an array of hit records.
 //
 
-template <typename HR, traversal_type Traversal>
+template <typename HR, traversal_type Traversal, size_t MaxHits>
 struct traversal_result
 {
     using type = HR;
 };
 
-template <typename HR>
-struct traversal_result<HR, MultiHit>
+template <typename HR, size_t MaxHits>
+struct traversal_result<HR, MultiHit, MaxHits>
 {
-    using type = std::array<HR, 16/*TODO*/>;
+    using type = std::array<HR, MaxHits>;
 };
 
 

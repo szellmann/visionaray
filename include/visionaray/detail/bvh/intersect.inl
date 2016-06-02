@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cstddef>
 #include <type_traits>
 #include <utility>
 
@@ -22,6 +23,7 @@ namespace visionaray
 
 template <
     detail::traversal_type Traversal,
+    size_t MultiHitMax = 1,             // Max hits for multi-hit traversal
     typename T,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
@@ -40,7 +42,7 @@ inline auto intersect(
             basic_ray<T>,
             BVH,
             decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
-            >, Traversal>::type
+            >, Traversal, MultiHitMax>::type
 {
 
     using namespace detail;
@@ -50,7 +52,7 @@ inline auto intersect(
         decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
         >;
 
-    using RT = typename detail::traversal_result<HR, Traversal>::type;
+    using RT = typename detail::traversal_result<HR, Traversal, MultiHitMax>::type;
 
     RT result;
 

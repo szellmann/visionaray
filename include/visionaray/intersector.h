@@ -23,6 +23,10 @@ namespace visionaray
 template <typename Derived>
 struct basic_intersector
 {
+    template <size_t N>
+    using multi_hit_max = std::integral_constant<size_t, N>;
+
+
     template <typename R, typename P, typename ...Args>
     VSNRAY_FUNC
     auto operator()(R const& ray, P const& prim, Args&&... args)
@@ -54,6 +58,7 @@ struct basic_intersector
     VSNRAY_FUNC
     auto operator()(
             detail::any_hit_tag     /* */,
+            multi_hit_max<1>        /* */,
             R const&                ray,
             P const&                prim,
             typename R::scalar_type max_t,
@@ -76,6 +81,7 @@ struct basic_intersector
     VSNRAY_FUNC
     auto operator()(
             detail::closest_hit_tag /* */,
+            multi_hit_max<1>        /* */,
             R const&                ray,
             P const&                prim,
             typename R::scalar_type max_t,
@@ -90,6 +96,7 @@ struct basic_intersector
     // BVH multi hit --------------------------------------
 
     template <
+        size_t   N,
         typename R,
         typename P,
         typename Cond,
@@ -98,14 +105,15 @@ struct basic_intersector
     VSNRAY_FUNC
     auto operator()(
             detail::multi_hit_tag   /* */,
+            multi_hit_max<N>        /* */,
             R const&                ray,
             P const&                prim,
             typename R::scalar_type max_t,
             Cond                    update_cond = Cond()
             )
-        -> decltype( intersect<detail::MultiHit>(ray, prim, std::declval<Derived&>(), max_t, update_cond) )
+        -> decltype( intersect<detail::MultiHit, N>(ray, prim, std::declval<Derived&>(), max_t, update_cond) )
     {
-        return intersect<detail::MultiHit>(ray, prim, *static_cast<Derived*>(this), max_t, update_cond);
+        return intersect<detail::MultiHit, N>(ray, prim, *static_cast<Derived*>(this), max_t, update_cond);
     }
 };
 
