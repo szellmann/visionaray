@@ -146,7 +146,7 @@ inline auto traverse(
         Primitives      end,
         Intersector&    isect
         )
-/*    -> decltype( traverse<Traversal, MultiHitMax>(
+    -> decltype( traverse<Traversal, MultiHitMax>(
             IsAnyBVH{},
             update_cond,
             r,
@@ -154,7 +154,7 @@ inline auto traverse(
             end,
             numeric_limits<float>::max(),
             isect
-            ) )*/
+            ) )
 {
     return traverse<Traversal, MultiHitMax>(
             IsAnyBVH{},
