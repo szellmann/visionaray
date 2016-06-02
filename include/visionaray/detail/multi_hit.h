@@ -10,6 +10,8 @@
 #include <cstddef>
 #include <type_traits>
 
+#include <visionaray/math/math.h>
+
 #include "tags.h"
 
 namespace visionaray
@@ -59,6 +61,112 @@ struct is_multi_hit_record<std::array<HR, N>>
 
 } // detail
 
+namespace algo
+{
+
+//-------------------------------------------------------------------------------------------------
+// SIMD version of insert_sorted()
+//
+// Checks either for is_simd_vector<T>::value, or T contains a type scalar_type so that
+// is_simd_vector<scalar_type>::value holds true
+//
+// TODO: consolidate w/ scalar version of insert_sorted() / move to a better place
+// TODO: fix/consolidate overloading with SFINAE
+//
+
+template <
+    template <typename, typename...> class HR,
+    typename S,
+    typename ...Args,
+    typename RandIt,
+    typename std::enable_if<simd::is_simd_vector<S>::value>::type* = nullptr,
+    typename Cond
+    >
+VSNRAY_FUNC
+void insert_sorted(HR<basic_ray<S>, Args...> const& item, RandIt first, RandIt last, Cond cond)
+{
+    using I = typename simd::int_type<S>::type;
+    using M = typename simd::mask_type<S>::type;
+    using int_array = typename simd::aligned_array<I>::type;
+
+    int i = 0;
+    int length = last - first;
+
+    I pos = length;
+    M active = true;
+
+    while (i < length)
+    {
+        auto insert = cond(item, first[i]) && active;
+        pos = select(insert, I(i), pos);
+        active = select(insert, M(false), active);
+
+        if (!any(active))
+        {
+            break;
+        }
+
+        ++i;
+    }
+
+    i = any(!active) ? length - 1 : 0;
+
+    while (i >= 0)
+    {
+        M must_shift = I(i) > pos;
+        M must_insert = I(i) == pos;
+
+        if (all(must_shift))
+        {
+            first[i] = first[i - 1];
+        }
+        else if (any(must_shift))
+        {
+            int_array mask;
+            simd::store(mask, must_shift.i);
+
+            auto dst = unpack(first[i]);
+            auto src = unpack(first[i - 1]);
+
+            decltype(dst) arr;
+            for (size_t j = 0; j < arr.size(); ++j)
+            {
+                arr[j] = mask[j] ? src[j] : dst[j];
+            }
+            first[i] = simd::pack(arr);
+        }
+
+        if (all(must_insert))
+        {
+            first[i] = item;
+        }
+        else if (any(must_insert))
+        {
+            int_array mask;
+            simd::store(mask, must_insert.i);
+
+            auto dst = unpack(first[i]);
+            auto src = unpack(item);
+
+            decltype(dst) arr;
+            for (size_t j = 0; j < arr.size(); ++j)
+            {
+                arr[j] = mask[j] ? src[j] : dst[j];
+            }
+            first[i] = simd::pack(arr);
+        }
+
+        if (!any(must_shift) && !any(must_insert))
+        {
+            break;
+        }
+
+        --i;
+    }
+}
+
+} // algo
+
 
 //-------------------------------------------------------------------------------------------------
 // update_if() for multi-hit traversal
@@ -80,7 +188,7 @@ void update_if(HR1& dst, HR2 const& src, Cond const& cond)
 }
 
 // TODO: find a way to enable_if this function w/o having to
-// disable_if<MultiHit> the most general update_if overload
+// disable_if<MultiHit> the more general update_if overload
 template <typename HR, size_t N, typename Cond>
 VSNRAY_FUNC
 void update_if(std::array<HR, N>& dst, std::array<HR, N> const& src, Cond const& cond)
@@ -96,7 +204,7 @@ void update_if(std::array<HR, N>& dst, std::array<HR, N> const& src, Cond const&
     {
         for (auto const& hr : src)
         {
-            if (!hr.hit)
+            if (!any(hr.hit))
             {
                 break;
             }
