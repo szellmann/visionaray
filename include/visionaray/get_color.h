@@ -210,14 +210,14 @@ inline auto get_color(Colors colors, HR const& hr, ColorBinding /* */)
     -> decltype( get_color(
             colors,
             hr,
-            basic_triangle<3, typename HR::value_type>{},
+            basic_triangle<3, typename HR::scalar_type>{},
             ColorBinding{}
             ) )
 {
     return get_color(
             colors,
             hr,
-            basic_triangle<3, typename HR::value_type>{},
+            basic_triangle<3, typename HR::scalar_type>{},
             ColorBinding{}
             );
 }

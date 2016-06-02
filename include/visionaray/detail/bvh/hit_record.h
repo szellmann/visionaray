@@ -29,8 +29,9 @@ template <
     >
 struct hit_record_bvh : Base
 {
-    using bvh_type = BVH;
-    using int_type = typename simd::int_type<typename R::scalar_type>::type;
+    using bvh_type    = BVH;
+    using scalar_type = typename R::scalar_type;
+    using int_type    = typename simd::int_type<scalar_type>::type;
 
     VSNRAY_FUNC hit_record_bvh() = default;
     VSNRAY_FUNC explicit hit_record_bvh(
@@ -82,12 +83,12 @@ inline auto unpack(
         hit_record_bvh<basic_ray<FloatT>, BVH, Base> const& hr
         )
     -> std::array<
-            hit_record_bvh<ray, BVH, typename decltype(simd::unpack(Base{}))::value_type>,
+            hit_record_bvh<ray, BVH, typename decltype(simd::unpack(Base{}))::scalar_type>,
             num_elements<FloatT>::value
             >
 {
     using int_array        = typename aligned_array<typename int_type<FloatT>::type>::type;
-    using scalar_base_type = typename decltype(simd::unpack(Base{}))::value_type;
+    using scalar_base_type = typename decltype(simd::unpack(Base{}))::scalar_type;
 
     auto base = simd::unpack(static_cast<Base const&>(hr));
 

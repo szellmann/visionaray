@@ -210,14 +210,14 @@ inline auto get_normal(Normals normals, HR const& hr, NormalBinding /* */)
     -> decltype( get_normal(
             normals,
             hr,
-            basic_triangle<3, typename HR::value_type>{},
+            basic_triangle<3, typename HR::scalar_type>{},
             NormalBinding{}
             ) )
 {
     return get_normal(
             normals,
             hr,
-            basic_triangle<3, typename HR::value_type>{},
+            basic_triangle<3, typename HR::scalar_type>{},
             NormalBinding{}
             );
 }

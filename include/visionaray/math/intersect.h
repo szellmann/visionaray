@@ -32,7 +32,7 @@ struct hit_record;
 template <typename T, typename U>
 struct hit_record<basic_ray<T>, basic_aabb<U>>
 {
-    using value_type = T;
+    using scalar_type = T;
     using mask_type = typename simd::mask_type<T>::type;
 
     MATH_FUNC hit_record()
@@ -43,8 +43,8 @@ struct hit_record<basic_ray<T>, basic_aabb<U>>
     }
 
     mask_type   hit;
-    value_type  tnear;
-    value_type  tfar;
+    scalar_type tnear;
+    scalar_type tfar;
 
 };
 
@@ -87,7 +87,7 @@ inline hit_record<basic_ray<T>, basic_aabb<U>> intersect(
 template <typename T>
 struct hit_record<basic_ray<T>, primitive<unsigned>>
 {
-    using value_type = T;
+    using scalar_type = T;
     using int_type = typename simd::int_type<T>::type;
     using mask_type = typename simd::mask_type<T>::type;
 
@@ -106,11 +106,11 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
     int_type prim_id;
     int_type geom_id;
 
-    value_type t;
-    vector<3, value_type> isect_pos;
+    T t;
+    vector<3, T> isect_pos;
 
-    value_type u;
-    value_type v;
+    T u;
+    T v;
 };
 
 
@@ -266,7 +266,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
 template <typename T, typename P>
 struct hit_record<basic_plane<3, T>, basic_sphere<T, P>>
 {
-    using value_type = T;
+    using scalar_type = T;
     using mask_type = typename simd::mask_type<T>::type;
 
     // TODO: make this part of the API?
