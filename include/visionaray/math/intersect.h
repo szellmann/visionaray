@@ -362,6 +362,7 @@ inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::va
         result[i].hit       = hit[i] != 0;
         result[i].prim_id   = prim_id[i];
         result[i].geom_id   = geom_id[i];
+        result[i].t         = t[i];
         result[i].isect_pos = isect_pos[i];
         result[i].u         = u[i];
         result[i].v         = v[i];
