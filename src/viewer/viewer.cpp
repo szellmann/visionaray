@@ -490,7 +490,7 @@ void renderer::on_display()
                 normals_per_face_binding{},
                 host_primitives.data(),
                 host_primitives.data() + host_primitives.size(),
-                mod.normals.data(),
+                mod.geometric_normals.data(),
 //              mod.tex_coords.data(),
                 mod.materials.data(),
 //              mod.textures.data(),
@@ -725,7 +725,7 @@ int main(int argc, char** argv)
     try
     {
         rend.device_bvh = renderer::device_bvh_type(rend.host_bvh);
-        rend.device_normals = rend.mod.normals;
+        rend.device_normals = rend.mod.geometric_normals;
         rend.device_materials = rend.mod.materials;
     }
     catch (std::bad_alloc&)

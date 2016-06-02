@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_COMMON_MODEL_H
-#define VSNRAY_COMMON_MODEL_H
+#define VSNRAY_COMMON_MODEL_H 1
 
 #include <visionaray/math/forward.h>
 #include <visionaray/texture/forward.h>
@@ -27,7 +27,8 @@ public:
 public:
 
     triangle_list   primitives;
-    normal_list     normals;
+    normal_list     shading_normals;
+    normal_list     geometric_normals;
     tex_coord_list  tex_coords;
     mat_list        materials;
     tex_list        textures;

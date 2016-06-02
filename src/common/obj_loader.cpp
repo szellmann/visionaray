@@ -148,8 +148,13 @@ bool store_triangle(model& result, vertex_vector const& vertices, int i1, int i2
 // Store obj faces (i.e. triangle fans) in vertex|tex_coords|normals lists
 //
 
-void store_faces(model& result, vertex_vector const& vertices,
-    tex_coord_vector const& tex_coords, normal_vector const& normals, face_vector const& faces)
+void store_faces(
+        model&                  result,
+        vertex_vector const&    vertices,
+        tex_coord_vector const& tex_coords,
+        normal_vector const&    normals,
+        face_vector const&      faces
+        )
 {
 
     auto vertices_size = static_cast<int>(vertices.size());
@@ -179,17 +184,17 @@ void store_faces(model& result, vertex_vector const& vertices,
             }
 
             // normals
-/*            if (faces[0].normal_index && faces[last - 1].normal_index && faces[last].normal_index)
+            if (faces[0].normal_index && faces[last - 1].normal_index && faces[last].normal_index)
             {
                 auto normals_size = static_cast<int>(normals.size());
                 auto ni1 = remap_index(*faces[0].normal_index, normals_size);
                 auto ni2 = remap_index(*faces[last - 1].normal_index, normals_size);
                 auto ni3 = remap_index(*faces[last].normal_index, normals_size);
 
-                result.normals.push_back( normals[ni1] );
-                result.normals.push_back( normals[ni2] );
-                result.normals.push_back( normals[ni3] );
-            }*/
+                result.shading_normals.push_back( normals[ni1] );
+                result.shading_normals.push_back( normals[ni2] );
+                result.shading_normals.push_back( normals[ni3] );
+            }
         }
 
         ++last;
@@ -464,35 +469,26 @@ void load_obj(std::string const& filename, model& mod)
     }
 
 
-// TODO
-//  if (mod.normals.size() == 0) // have no default normals
+    // Calculate geometric normals
+    for (auto const& tri : mod.primitives)
     {
-        for (auto const& tri : mod.primitives)
-        {
-            vec3 n = normalize( cross(tri.e1, tri.e2) );
-            mod.normals.push_back(n);
-        }
+        vec3 n = normalize( cross(tri.e1, tri.e2) );
+        mod.geometric_normals.push_back(n);
     }
 
-    if (mod.tex_coords.size() == 0)
+    // See that each triangle has (potentially dummy) texture coordinates
+    for (size_t i = mod.tex_coords.size(); i < mod.primitives.size(); ++i)
     {
-        for (size_t i = 0; i < mod.primitives.size(); ++i)
-        {
-            // create dummy tex coords
-            mod.tex_coords.emplace_back(0.0f);
-            mod.tex_coords.emplace_back(0.0f);
-            mod.tex_coords.emplace_back(0.0f);
-        }
+        mod.tex_coords.emplace_back(0.0f);
+        mod.tex_coords.emplace_back(0.0f);
+        mod.tex_coords.emplace_back(0.0f);
     }
 
-    if (mod.materials.size() == 0)
+    // See that there is a material for each geometry
+    for (size_t i = mod.materials.size(); i <= geom_id; ++i)
     {
-        for (size_t i = 0; i <= geom_id; ++i)
-        {
-            mod.materials.emplace_back(make_default_material());
-        }
+        mod.materials.emplace_back(make_default_material());
     }
-// TODO
 
     mod.bbox = bounds(mod.primitives);
 }

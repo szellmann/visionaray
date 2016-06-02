@@ -124,7 +124,7 @@ void renderer::on_display()
             C clr(1.0);
 
             auto n = get_normal(
-                mod.normals.data(),
+                mod.geometric_normals.data(),
                 hit_rec,
                 index_bvh<model::triangle_list::value_type>{},
                 normals_per_face_binding{}
