@@ -66,12 +66,44 @@ void update_if(
 }
 
 
+namespace simd
+{
+
+//-------------------------------------------------------------------------------------------------
+// simd::pack()
+//
+
+template <
+    size_t N,
+    typename T = typename simd::float_from_simd_width<N>::type,
+    typename BVH,
+    typename Base
+    >
+inline hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(std::array<Base, N>{}))> pack(
+        std::array<hit_record_bvh<ray, BVH, Base>, N> const& hrs
+        )
+{
+    using I = typename int_type<T>::type;
+    using int_array = typename aligned_array<I>::type;
+    using RT = hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(std::array<Base, N>{}))>;
+
+    std::array<Base, N> bases;
+    int_array primitive_list_index;
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        // Slicing (on purpose)!
+        bases[i] = Base(hrs[i]);
+        primitive_list_index[i] = hrs[i].primitive_list_index;
+    }
+
+    return RT( pack(bases), I(primitive_list_index) );
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // simd::unpack()
 //
-
-namespace simd
-{
 
 template <
     typename FloatT,
@@ -83,12 +115,12 @@ inline auto unpack(
         hit_record_bvh<basic_ray<FloatT>, BVH, Base> const& hr
         )
     -> std::array<
-            hit_record_bvh<ray, BVH, typename decltype(simd::unpack(Base{}))::scalar_type>,
+            hit_record_bvh<ray, BVH, typename decltype(simd::unpack(Base{}))::value_type>,
             num_elements<FloatT>::value
             >
 {
     using int_array        = typename aligned_array<typename int_type<FloatT>::type>::type;
-    using scalar_base_type = typename decltype(simd::unpack(Base{}))::scalar_type;
+    using scalar_base_type = typename decltype(simd::unpack(Base{}))::value_type;
 
     auto base = simd::unpack(static_cast<Base const&>(hr));
 
