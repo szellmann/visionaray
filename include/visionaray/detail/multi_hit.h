@@ -124,8 +124,6 @@ VSNRAY_FUNC
 auto is_closer(HR1 const& query, HR2 const& reference, T max_t)
     -> typename simd::mask_type<T>::type
 {
-    VSNRAY_UNUSED(query, reference, max_t);
-
     using RT = typename simd::mask_type<T>::type;
 
     RT result(false);
