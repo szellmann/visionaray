@@ -354,10 +354,25 @@ inline auto multi_hit(
             );
 }
 
-template <size_t N = 16, typename R, typename Primitives>
+template <
+    size_t N = 16,
+    typename R,
+    typename Primitives,
+    typename Primitive = typename std::iterator_traits<Primitives>::value_type
+    >
 VSNRAY_FUNC
 inline auto multi_hit(R const& r, Primitives begin, Primitives end)
-    -> decltype( multi_hit<N>(r, begin, end, std::declval<default_intersector&>()) )
+    // Workaround gcc-4.8.1 ICE
+    // The following FAILS with lots of recursive template instantiations!
+//  -> decltype( multi_hit<N>(r, begin, end, std::declval<default_intersector&>()) )
+    -> decltype( detail::traverse<detail::MultiHit, N>(
+            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_closer_t(),
+            r,
+            begin,
+            end,
+            std::declval<default_intersector&>()
+            ) )
 {
     default_intersector ignore;
     return multi_hit<N>(r, begin, end, ignore);
