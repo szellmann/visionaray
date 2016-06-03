@@ -58,6 +58,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/spd/d65.h
     ${HEADER_DIR}/detail/algorithm.h
     ${HEADER_DIR}/detail/allocator.h
+    ${HEADER_DIR}/detail/array.inl
     ${HEADER_DIR}/detail/camera.inl
     ${HEADER_DIR}/detail/color_conversion.h
     ${HEADER_DIR}/detail/compiler.h
@@ -181,6 +182,7 @@ set(VSNRAY_HEADERS
     # General library headers
 
     ${HEADER_DIR}/aligned_vector.h
+    ${HEADER_DIR}/array.h
     ${HEADER_DIR}/array_ref.h
     ${HEADER_DIR}/brdf.h
     ${HEADER_DIR}/bvh.h

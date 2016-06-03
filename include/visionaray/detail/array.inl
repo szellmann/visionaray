@@ -1,0 +1,145 @@
+// This file is distributed under the MIT license.
+// See the LICENSE file for details.
+
+#include <stdexcept>
+
+namespace visionaray
+{
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T& array<T, N>::at(size_t pos)
+{
+    if (pos >= N)
+    {
+        throw std::out_of_range("Index out of range");
+    }
+
+    return data_[pos];
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T const& array<T, N>::at(size_t pos) const
+{
+    if (pos >= N)
+    {
+        throw std::out_of_range("Index out of range");
+    }
+
+    return data_[pos];
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T& array<T, N>::operator[](size_t pos)
+{
+    return data_[pos];
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T const& array<T, N>::operator[](size_t pos) const
+{
+    return data_[pos];
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T& array<T, N>::front()
+{
+    return data_[0];
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T const& array<T, N>::front() const
+{
+    return data_[0];
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T& array<T, N>::back()
+{
+    return data_[N - 1];
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T const& array<T, N>::back() const
+{
+    return data_[N - 1];
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T* array<T, N>::data()
+{
+    return data_;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T const* array<T, N>::data() const
+{
+    return data_;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T* array<T, N>::begin()
+{
+    return data_;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T const* array<T, N>::begin() const
+{
+    return data_;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T const* array<T, N>::cbegin() const
+{
+    return data_;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T* array<T, N>::end()
+{
+    return data_ + N;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T const* array<T, N>::end() const
+{
+    return data_ + N;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline T const* array<T, N>::cend() const
+{
+    return data_ + N;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline constexpr bool array<T, N>::empty() const
+{
+    return N == 0;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline constexpr size_t array<T, N>::size() const
+{
+    return N;
+}
+
+} // visionaray
