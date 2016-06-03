@@ -20,6 +20,10 @@
 #include <visionaray/scheduler.h>
 #include <visionaray/traverse.h>
 
+#ifdef __CUDACC__
+#include <visionaray/pixel_unpack_buffer_rt.h>
+#endif
+
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
@@ -39,7 +43,12 @@ using viewer_type = viewer_glut;
 
 struct renderer : viewer_type
 {
-    using host_ray_type = basic_ray<simd::float4>;
+#ifdef __CUDACC__
+    using ray_type = basic_ray<float>;
+    using device_bvh_type = cuda_index_bvh<model::triangle_list::value_type>;
+#else
+    using ray_type = basic_ray<simd::float4>;
+#endif
 
     renderer()
         : viewer_type(512, 512, "Visionaray Multi-Hit Example")
@@ -57,14 +66,24 @@ struct renderer : viewer_type
             ) );
     }
 
-    camera                                      cam;
-    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
-    tiled_sched<host_ray_type>                  host_sched;
-
-    std::string                                 filename;
+    camera                                                  cam;
+    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>               host_rt;
+    tiled_sched<ray_type>                                   host_sched;
 
     model mod;
-    index_bvh<model::triangle_list::value_type> host_bvh;
+    index_bvh<model::triangle_list::value_type>             host_bvh;
+
+#ifdef __CUDACC__
+    cuda_sched<ray_type>                                    device_sched;
+    pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>      device_rt;
+    device_bvh_type                                         device_bvh;
+    thrust::device_vector<model::normal_list::value_type>   device_normals;
+    thrust::device_vector<model::mat_list::value_type>      device_materials;
+
+#endif
+
+    std::string                                             filename;
+
 
     void create_shading_normals();
 
@@ -132,53 +151,27 @@ void renderer::create_shading_normals()
 
 
 //-------------------------------------------------------------------------------------------------
-// Display function, implements the multi-hit kernel
+// The rendering kernel
+// A C++03 functor for compatibility with CUDA versions that don't
+// support device lambda functions yet
 //
 
-void renderer::on_display()
+template <typename Params>
+struct kernel
 {
-    // some setup
-
-    using R = renderer::host_ray_type;
+    using R = renderer::ray_type;
     using S = R::scalar_type;
     using C = vector<4, S>;
     using V = vector<3, S>;
-    using L = point_light<float>;
 
-    auto sparams = make_sched_params(
-            pixel_sampler::uniform_type{},
-            cam,
-            host_rt
-            );
+    kernel(Params const& p)
+        : params(p)
+    {
 
+    }
 
-    using bvh_ref = index_bvh<model::triangle_list::value_type>::bvh_ref;
-
-    std::vector<bvh_ref> bvhs;
-    bvhs.push_back(host_bvh.ref());
-
-    auto bgcolor = background_color();
-
-    aligned_vector<L> lights;
-
-    L light;
-    light.set_cl( vec3(1.0, 1.0, 1.0) );
-    light.set_kl(1.0);
-    light.set_position( cam.eye() );
-
-    lights.push_back(light);
-
-    auto params = make_kernel_params(
-            normals_per_vertex_binding{},
-            bvhs.data(),
-            bvhs.data() + bvhs.size(),
-            mod.shading_normals.data(),
-            mod.materials.data(),
-            lights.data(),
-            lights.data() + lights.size()
-            );
-
-    host_sched.frame([&](R ray) -> result_record<S>
+    VSNRAY_GPU_FUNC
+    result_record<S> operator()(R ray)
     {
         result_record<S> result;
         result.color = C(0.0);
@@ -201,7 +194,7 @@ void renderer::on_display()
         // Do smth. useful with the hit records
         for (size_t i = 0; i < hit_rec.size(); ++i)
         {
-            if (!any(hit_rec[i].hit))
+            if (!visionaray::any(hit_rec[i].hit))
             {
                 break;
             }
@@ -243,7 +236,87 @@ void renderer::on_display()
         }
 
         return result;
-    }, sparams);
+    }
+
+    Params params;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Display function, calls the multi-hit kernel
+//
+
+void renderer::on_display()
+{
+    // some setup
+    using L = point_light<float>;
+
+#ifdef __CUDACC__
+    auto sparams = make_sched_params(
+            pixel_sampler::uniform_type{},
+            cam,
+            device_rt
+            );
+#else
+    auto sparams = make_sched_params(
+            pixel_sampler::uniform_type{},
+            cam,
+            host_rt
+            );
+#endif
+
+
+    using bvh_ref = index_bvh<model::triangle_list::value_type>::bvh_ref;
+
+    std::vector<bvh_ref> bvhs;
+    bvhs.push_back(host_bvh.ref());
+
+    auto bgcolor = background_color();
+
+    aligned_vector<L> host_lights;
+
+    L light;
+    light.set_cl( vec3(1.0, 1.0, 1.0) );
+    light.set_kl(1.0);
+    light.set_position( cam.eye() );
+
+    host_lights.push_back(light);
+
+#ifdef __CUDACC__
+    thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
+
+    device_primitives.push_back(device_bvh.ref());
+
+    thrust::device_vector<L> device_lights = host_lights;
+
+    auto kparams = make_kernel_params(
+            normals_per_vertex_binding{},
+            thrust::raw_pointer_cast(device_primitives.data()),
+            thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
+            thrust::raw_pointer_cast(device_normals.data()),
+            thrust::raw_pointer_cast(device_materials.data()),
+            thrust::raw_pointer_cast(device_lights.data()),
+            thrust::raw_pointer_cast(device_lights.data()) + device_lights.size()
+            );
+#else
+    auto kparams = make_kernel_params(
+            normals_per_vertex_binding{},
+            bvhs.data(),
+            bvhs.data() + bvhs.size(),
+            mod.shading_normals.data(),
+            mod.materials.data(),
+            host_lights.data(),
+            host_lights.data() + host_lights.size()
+            );
+#endif
+
+    kernel<decltype(kparams)> kern(kparams);
+
+#ifdef __CUDACC__
+    device_sched.frame(kern, sparams);
+#else
+    host_sched.frame(kern, sparams);
+#endif
 
 
     // display the rendered image
@@ -251,7 +324,11 @@ void renderer::on_display()
     glClearColor(bgcolor.x, bgcolor.y, bgcolor.z, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+#ifdef __CUDACC__
+    device_rt.display_color_buffer();
+#else
     host_rt.display_color_buffer();
+#endif
 }
 
 
@@ -265,6 +342,9 @@ void renderer::on_resize(int w, int h)
     float aspect = w / static_cast<float>(h);
     cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
     host_rt.resize(w, h);
+#ifdef __CUDACC__
+    device_rt.resize(w, h);
+#endif
 
     viewer_type::on_resize(w, h);
 }
@@ -312,6 +392,23 @@ int main(int argc, char** argv)
             );
 
     std::cout << "Ready\n";
+
+#ifdef __CUDACC__
+    // Copy data to GPU
+    try
+    {
+        rend.device_bvh = renderer::device_bvh_type(rend.host_bvh);
+        rend.device_normals = rend.mod.shading_normals;
+        rend.device_materials = rend.mod.materials;
+    }
+    catch (std::bad_alloc&)
+    {
+        std::cerr << "GPU memory allocation failed" << std::endl;
+        rend.device_bvh = renderer::device_bvh_type();
+        rend.device_normals.resize(0);
+        rend.device_materials.resize(0);
+    }
+#endif
 
     float aspect = rend.width() / static_cast<float>(rend.height());
 

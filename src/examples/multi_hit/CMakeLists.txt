@@ -1,11 +1,24 @@
+if(VSNRAY_ENABLE_CUDA)
+find_package(CUDA)
+endif()
 find_package(GLUT REQUIRED)
 
+if(VSNRAY_ENABLE_CUDA)
+visionaray_use_package(CUDA)
+endif()
 visionaray_use_package(GLUT)
 
-set(EX_MULTI_HIT_SOURCES
-    main.cpp
-)
+if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
+    visionaray_cuda_compile(EX_MULTI_HIT_CUDA_SOURCES
+        main.cu
+    )
+else()
+    set(EX_MULTI_HIT_SOURCES
+        main.cpp
+    )
+endif()
 
 visionaray_add_executable(multi_hit
     ${EX_MULTI_HIT_SOURCES}
+    ${EX_MULTI_HIT_CUDA_SOURCES}
 )
