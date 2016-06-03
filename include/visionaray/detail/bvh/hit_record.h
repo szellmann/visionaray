@@ -79,13 +79,13 @@ template <
     typename BVH,
     typename Base
     >
-inline hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(std::array<Base, N>{}))> pack(
+inline hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(std::array<Base, N>{{}}))> pack(
         std::array<hit_record_bvh<ray, BVH, Base>, N> const& hrs
         )
 {
     using I = typename int_type<T>::type;
     using int_array = typename aligned_array<I>::type;
-    using RT = hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(std::array<Base, N>{}))>;
+    using RT = hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(std::array<Base, N>{{}}))>;
 
     std::array<Base, N> bases;
     int_array primitive_list_index;
