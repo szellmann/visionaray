@@ -353,7 +353,7 @@ struct renderer : viewer_type
     tiled_sched<ray_type>                                       host_sched;
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>                   host_rt;
 #ifdef __CUDACC__
-    cuda_sched<basic_ray<float>>                                device_sched;
+    cuda_sched<ray_type>                                        device_sched;
     pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>          device_rt;
 #endif
 
