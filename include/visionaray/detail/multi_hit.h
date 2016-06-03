@@ -6,11 +6,11 @@
 #ifndef VSNRAY_DETAIL_MULTI_HIT_H
 #define VSNRAY_DETAIL_MULTI_HIT_H 1
 
-#include <array>
 #include <cstddef>
 #include <type_traits>
 
 #include <visionaray/math/math.h>
+#include <visionaray/array.h>
 
 #include "tags.h"
 
@@ -36,7 +36,7 @@ struct traversal_result
 template <typename HR, size_t MaxHits>
 struct traversal_result<HR, MultiHit, MaxHits>
 {
-    using type = std::array<HR, MaxHits>;
+    using type = array<HR, MaxHits>;
 };
 
 
@@ -54,7 +54,7 @@ struct is_multi_hit_record
 };
 
 template <typename HR, size_t N>
-struct is_multi_hit_record<std::array<HR, N>>
+struct is_multi_hit_record<array<HR, N>>
 {
     enum { value = true };
 };
@@ -191,7 +191,7 @@ void update_if(HR1& dst, HR2 const& src, Cond const& cond)
 // disable_if<MultiHit> the more general update_if overload
 template <typename HR, size_t N, typename Cond>
 VSNRAY_FUNC
-void update_if(std::array<HR, N>& dst, std::array<HR, N> const& src, Cond const& cond)
+void update_if(array<HR, N>& dst, array<HR, N> const& src, Cond const& cond)
 {
     VSNRAY_UNUSED(cond);
 
