@@ -116,45 +116,31 @@ void insert_sorted(HR<basic_ray<S>, Args...> const& item, RandIt first, RandIt l
         M must_shift = I(i) > pos;
         M must_insert = I(i) == pos;
 
-        if (all(must_shift))
+        auto update = [&](M const& condition, HR<basic_ray<S>, Args...> const& item)
         {
-            first[i] = first[i - 1];
-        }
-        else if (any(must_shift))
-        {
-            int_array mask;
-            simd::store(mask, must_shift.i);
-
-            auto dst = unpack(first[i]);
-            auto src = unpack(first[i - 1]);
-
-            decltype(dst) arr;
-            for (size_t j = 0; j < arr.size(); ++j)
+            if (all(condition))
             {
-                arr[j] = mask[j] ? src[j] : dst[j];
+                first[i] = item;
             }
-            first[i] = simd::pack(arr);
-        }
-
-        if (all(must_insert))
-        {
-            first[i] = item;
-        }
-        else if (any(must_insert))
-        {
-            int_array mask;
-            simd::store(mask, must_insert.i);
-
-            auto dst = unpack(first[i]);
-            auto src = unpack(item);
-
-            decltype(dst) arr;
-            for (size_t j = 0; j < arr.size(); ++j)
+            else if (any(condition))
             {
-                arr[j] = mask[j] ? src[j] : dst[j];
+                int_array mask;
+                simd::store(mask, condition.i);
+
+                auto dst = unpack(first[i]);
+                auto src = unpack(item);
+
+                decltype(dst) arr;
+                for (size_t j = 0; j < arr.size(); ++j)
+                {
+                    arr[j] = mask[j] ? src[j] : dst[j];
+                }
+                first[i] = simd::pack(arr);
             }
-            first[i] = simd::pack(arr);
-        }
+        };
+
+        update(must_shift, first[i - 1]);
+        update(must_insert, item);
 
         if (!any(must_shift) && !any(must_insert))
         {
