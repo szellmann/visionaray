@@ -160,7 +160,7 @@ inline auto intersect(
         decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
         >
 {
-    return intersect<detail::ClosestHit>(ray, b, isect, update_cond);
+    return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<T>::max(), update_cond);
 }
 
 } // visionaray
