@@ -6,9 +6,10 @@
 #ifndef VSNRAY_MATH_LIMITS_H
 #define VSNRAY_MATH_LIMITS_H 1
 
+#include "simd/simd.h"
+
 namespace MATH_NAMESPACE
 {
-
 
 //-------------------------------------------------------------------------------------------------
 // generic limits: no CUDA
@@ -87,6 +88,58 @@ public:
     MATH_FUNC static unorm<Bits> max();
 
 };
+
+
+//-------------------------------------------------------------------------------------------------
+// SIMD specializations
+//
+
+template <>
+class numeric_limits<simd::float4>
+{
+public:
+
+    MATH_CPU_FUNC static simd::float4 min();
+    MATH_CPU_FUNC static simd::float4 lowest();
+    MATH_CPU_FUNC static simd::float4 max();
+    MATH_CPU_FUNC static simd::float4 epsilon();
+};
+
+template <>
+class numeric_limits<simd::int4>
+{
+public:
+
+    MATH_CPU_FUNC static simd::int4 min();
+    MATH_CPU_FUNC static simd::int4 lowest();
+    MATH_CPU_FUNC static simd::int4 max();
+};
+
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+template <>
+class numeric_limits<simd::float8>
+{
+public:
+
+    MATH_CPU_FUNC static simd::float8 min();
+    MATH_CPU_FUNC static simd::float8 lowest();
+    MATH_CPU_FUNC static simd::float8 max();
+    MATH_CPU_FUNC static simd::float8 epsilon();
+};
+
+template <>
+class numeric_limits<simd::int8>
+{
+public:
+
+    MATH_CPU_FUNC static simd::int8 min();
+    MATH_CPU_FUNC static simd::int8 lowest();
+    MATH_CPU_FUNC static simd::int8 max();
+};
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 } // MATH_NAMESPACE
 

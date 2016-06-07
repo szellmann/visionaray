@@ -149,4 +149,98 @@ MATH_FUNC inline unorm<Bits> numeric_limits<unorm<Bits>>::max()
     return unorm<Bits>(1.0f);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// simd::float4
+//
+
+MATH_FUNC inline simd::float4 numeric_limits<simd::float4>::min()
+{
+    return simd::float4(FLT_MIN);
+}
+
+MATH_FUNC inline simd::float4 numeric_limits<simd::float4>::lowest()
+{
+    return simd::float4(-FLT_MAX);
+}
+
+MATH_FUNC inline simd::float4 numeric_limits<simd::float4>::max()
+{
+    return simd::float4(FLT_MAX);
+}
+
+MATH_FUNC inline simd::float4 numeric_limits<simd::float4>::epsilon()
+{
+    return simd::float4(FLT_EPSILON);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// simd::int4
+//
+
+MATH_FUNC inline simd::int4 numeric_limits<simd::int4>::min()
+{
+    return simd::int4(INT_MIN);
+}
+
+MATH_FUNC inline simd::int4 numeric_limits<simd::int4>::lowest()
+{
+    return simd::int4(INT_MIN);
+}
+
+MATH_FUNC inline simd::int4 numeric_limits<simd::int4>::max()
+{
+    return simd::int4(INT_MAX);
+}
+
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+//-------------------------------------------------------------------------------------------------
+// simd::float8
+//
+
+MATH_FUNC inline simd::float8 numeric_limits<simd::float8>::min()
+{
+    return simd::float8(FLT_MIN);
+}
+
+MATH_FUNC inline simd::float8 numeric_limits<simd::float8>::lowest()
+{
+    return simd::float8(-FLT_MAX);
+}
+
+MATH_FUNC inline simd::float8 numeric_limits<simd::float8>::max()
+{
+    return simd::float8(FLT_MAX);
+}
+
+MATH_FUNC inline simd::float8 numeric_limits<simd::float8>::epsilon()
+{
+    return simd::float8(FLT_EPSILON);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// simd::int8
+//
+
+MATH_FUNC inline simd::int8 numeric_limits<simd::int8>::min()
+{
+    return simd::int8(INT_MIN);
+}
+
+MATH_FUNC inline simd::int8 numeric_limits<simd::int8>::lowest()
+{
+    return simd::int8(INT_MIN);
+}
+
+MATH_FUNC inline simd::int8 numeric_limits<simd::int8>::max()
+{
+    return simd::int8(INT_MAX);
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
 } // MATH_NAMESPACE
