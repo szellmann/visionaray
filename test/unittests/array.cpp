@@ -109,3 +109,24 @@ TEST(Array, StdSwap)
         EXPECT_EQ(arr2[i], 23);
     }
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Test element access with std::get()
+//
+
+TEST(Array, Get)
+{
+    array<int, 3> arr;
+    std::get<0>(arr) = 0;
+    std::get<1>(arr) = 1;
+    std::get<2>(arr) = 2;
+
+    EXPECT_EQ(arr[0], 0);
+    EXPECT_EQ(arr[1], 1);
+    EXPECT_EQ(arr[2], 2);
+
+    EXPECT_EQ(std::get<0>(arr), 0);
+    EXPECT_EQ(std::get<1>(arr), 1);
+    EXPECT_EQ(std::get<2>(arr), 2);
+}

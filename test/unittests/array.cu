@@ -211,3 +211,39 @@ TEST(ArrayCU, ThrustSwap)
     }
 
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Test element access with thrust::get()
+//
+
+__global__ void kernel_get(bool* mem)
+{
+    array<int, 3> arr;
+    thrust::get<0>(arr) = 0;
+    thrust::get<1>(arr) = 1;
+    thrust::get<2>(arr) = 2;
+
+    mem[0] = arr[0] == 0;
+    mem[1] = arr[1] == 1;
+    mem[2] = arr[2] == 2;
+
+    mem[3] = thrust::get<0>(arr) == 0;
+    mem[4] = thrust::get<1>(arr) == 1;
+    mem[5] = thrust::get<2>(arr) == 2;
+}
+
+TEST(ArrayCU, Get)
+{
+    thrust::device_vector<bool> d_result(6);
+    thrust::fill(d_result.begin(), d_result.end(), false);
+
+    kernel_get<<<1, 1>>>(thrust::raw_pointer_cast(d_result.data()));
+
+    thrust::host_vector<bool> h_result(d_result);
+
+    for (auto b : h_result)
+    {
+        EXPECT_TRUE(b);
+    }
+}
