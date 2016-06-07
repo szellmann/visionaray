@@ -147,6 +147,25 @@ auto get_normal(
 }
 
 template <
+    typename R,
+    typename BVH,
+    typename Base,
+    typename Primitive,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
+    >
+VSNRAY_FUNC
+auto get_normal(
+        hit_record_bvh<R, BVH, Base> const& hr,
+        Primitive                           prim
+        )
+    -> decltype( detail::get_normal_from_bvh<detail::get_normal_t>(hr, prim) )
+{
+    return detail::get_normal_from_bvh<detail::get_normal_t>(hr, prim);
+}
+
+
+template <
     typename Normals,
     typename R,
     typename BVH,
