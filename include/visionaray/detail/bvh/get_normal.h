@@ -6,6 +6,7 @@
 #ifndef VSNRAY_DETAIL_BVH_GET_NORMAL_H
 #define VSNRAY_DETAIL_BVH_GET_NORMAL_H 1
 
+#include <array>
 #include <type_traits>
 
 #include <visionaray/bvh.h>
@@ -27,6 +28,8 @@ template <
     typename BVH,
     typename Base,
     typename Primitive,
+    typename = typename std::enable_if<!simd::is_simd_vector<
+        typename hit_record_bvh<R, BVH, Base>::scalar_type>::value>::type,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
@@ -45,6 +48,44 @@ auto get_normal_from_bvh(
             static_cast<Base const&>(hr),
             prim.primitive(hr.primitive_list_index)
             );
+}
+
+template <
+    typename NormalFunc,
+    typename R,
+    typename BVH,
+    typename Base,
+    typename Primitive,
+    typename BaseS = typename decltype( simd::unpack(std::declval<Base const&>()) )::value_type,
+    typename V = decltype( std::declval<NormalFunc>()(
+            std::declval<BaseS const&>(),
+            std::declval<typename Primitive::primitive_type>()
+            ) ),
+    typename T = typename hit_record_bvh<R, BVH, Base>::scalar_type,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
+    >
+VSNRAY_CPU_FUNC
+auto get_normal_from_bvh(
+        hit_record_bvh<R, BVH, Base> const& hr,
+        Primitive                           prim
+        )
+    -> decltype( simd::pack(std::declval<std::array<V, simd::num_elements<T>::value>>()) )
+{
+    NormalFunc func;
+
+    auto hrs = simd::unpack(hr);
+
+    std::array<V, simd::num_elements<T>::value> arr;
+    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    {
+        arr[i] = func(
+                static_cast<BaseS const&>(hrs[i]),
+                prim.primitive(hrs[i].primitive_list_index)
+                );
+    }
+    return simd::pack(arr);
 }
 
 template <

@@ -165,7 +165,7 @@ struct get_normal_t
             HR const&                   hr,
             Primitive                   prim
             ) const
-    -> decltype( get_normal(hr, prim) )
+        -> decltype( get_normal(hr, prim) )
     {
         return get_normal(hr, prim);
     }
