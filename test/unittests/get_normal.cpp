@@ -52,4 +52,24 @@ TEST(GetNormal, BVH)
     EXPECT_FLOAT_EQ(n1.x, n2.x);
     EXPECT_FLOAT_EQ(n1.y, n2.y);
     EXPECT_FLOAT_EQ(n1.z, n2.z);
+
+
+    // Test with SIMD ray
+    simd::ray4 r4;
+    r4.ori = vector<3, simd::float4>(r.ori);
+    r4.dir = vector<3, simd::float4>(r.dir);
+    auto hr4 = intersect(r4, bvh);
+
+    // Again make some basic assumptions about the hit record
+    EXPECT_TRUE( all(hr4.hit) );
+    EXPECT_TRUE( all(hr4.t == 1.0f) );
+    EXPECT_TRUE( all(hr4.prim_id == 0) );
+
+    // Test get_normal()
+    auto n1_4 = get_normal(hr4, bvh);
+    auto n2_4 = vector<3, simd::float4>(n2);
+
+    EXPECT_FLOAT_EQ(simd::get<0>(n1_4.x), simd::get<0>(n2_4.x));
+    EXPECT_FLOAT_EQ(simd::get<0>(n1_4.y), simd::get<0>(n2_4.y));
+    EXPECT_FLOAT_EQ(simd::get<0>(n1_4.z), simd::get<0>(n2_4.z));
 }
