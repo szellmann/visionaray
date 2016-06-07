@@ -135,6 +135,49 @@ inline T const* array<T, N>::cend() const
 
 template <typename T, size_t N>
 VSNRAY_FUNC
+inline typename array<T, N>::reverse_iterator array<T, N>::rbegin()
+{
+    return typename array<T, N>::reverse_iterator(data_ + N);
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline typename array<T, N>::const_reverse_iterator array<T, N>::rbegin() const
+{
+    return typename array<T, N>::const_reverse_iterator(data_ + N);
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline typename array<T, N>::const_reverse_iterator array<T, N>::crbegin() const
+{
+    return typename array<T, N>::const_reverse_iterator(data_ + N);
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline typename array<T, N>::reverse_iterator array<T, N>::rend()
+{
+    return typename array<T, N>::reverse_iterator(data_);
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline typename array<T, N>::const_reverse_iterator array<T, N>::rend() const
+{
+    return typename array<T, N>::const_reverse_iterator(data_);
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline typename array<T, N>::const_reverse_iterator array<T, N>::crend() const
+{
+    return typename array<T, N>::const_reverse_iterator(data_);
+}
+
+
+template <typename T, size_t N>
+VSNRAY_FUNC
 inline constexpr bool array<T, N>::empty() const
 {
     return N == 0;
