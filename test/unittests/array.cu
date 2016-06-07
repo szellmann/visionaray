@@ -9,6 +9,7 @@
 #include <thrust/device_vector.h>
 #include <thrust/fill.h>
 #include <thrust/host_vector.h>
+#include <thrust/swap.h>
 
 #include <visionaray/array.h>
 
@@ -145,6 +146,54 @@ TEST(ArrayCU, Swap)
     thrust::device_vector<int> d_data(h_data);
 
     kernel_swap<<<1, 1>>>(
+            thrust::raw_pointer_cast(d_data.data()),
+            array<int, N>{}
+            );
+
+    thrust::copy(d_data.begin(), d_data.end(), h_data.begin());
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        EXPECT_EQ(h_data[i], 24);
+    }
+
+    for (size_t i = N; i < N * 2; ++i)
+    {
+        EXPECT_EQ(h_data[i], 23);
+    }
+
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Test interoperability with thrust::swap()
+//
+
+template <typename T, typename Array>
+__global__ void kernel_thrust_swap(T* mem, Array /* */)
+{
+    Array arr1;
+    Array arr2;
+
+    memcpy(arr1.data(), mem, sizeof(arr1));
+    memcpy(arr2.data(), mem + arr1.size(), sizeof(arr2));
+
+    thrust::swap(arr1, arr2);
+
+    memcpy(mem, arr1.data(), sizeof(arr1));
+    memcpy(mem + arr1.size(), arr2.data(), sizeof(arr2));
+}
+
+TEST(ArrayCU, ThrustSwap)
+{
+    static const size_t N = 50;
+
+    thrust::host_vector<int> h_data(N * 2);
+    std::fill(h_data.data(), h_data.data() + N, 23);
+    std::fill(h_data.data() + N, h_data.data() + h_data.size(), 24);
+    thrust::device_vector<int> d_data(h_data);
+
+    kernel_thrust_swap<<<1, 1>>>(
             thrust::raw_pointer_cast(d_data.data()),
             array<int, N>{}
             );
