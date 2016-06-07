@@ -259,3 +259,45 @@ constexpr T const&& get(visionaray::array<T, N> const&& a)
 }
 
 } // std
+
+
+#ifdef __CUDACC__
+
+namespace thrust
+{
+
+//-------------------------------------------------------------------------------------------------
+// Element access
+//
+
+template <size_t I, typename  T, size_t N>
+VSNRAY_FUNC
+constexpr T& get(visionaray::array<T, N>& a)
+{
+    return a[I];
+}
+
+template <size_t I, typename  T, size_t N>
+VSNRAY_FUNC
+constexpr T&& get(visionaray::array<T, N>&& a)
+{
+    return a[I];
+}
+
+template <size_t I, typename  T, size_t N>
+VSNRAY_FUNC
+constexpr T const& get(visionaray::array<T, N> const& a)
+{
+    return a[I];
+}
+
+template <size_t I, typename  T, size_t N>
+VSNRAY_FUNC
+constexpr T const&& get(visionaray::array<T, N> const&& a)
+{
+    return a[I];
+}
+
+} // thrust
+
+#endif
