@@ -33,13 +33,13 @@ public:
 
     VSNRAY_FUNC
     surface(N const& gn, N const& sn, M const& m)
-        : normal(gn)
+        : geometric_normal(gn)
         , shading_normal(sn)
         , material(m)
     {
     }
 
-    N normal;
+    N geometric_normal;
     N shading_normal;
     M material;
 

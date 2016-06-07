@@ -80,19 +80,19 @@ inline auto pack(std::array<surface<N, M, Args...>, Size> const& surfs)
             pack(std::declval<std::array<M, Size>>())
             ) )
 {
-    std::array<N, Size> normals;
+    std::array<N, Size> geometric_normals;
     std::array<N, Size> shading_normals;
     std::array<M, Size> materials;
 
     for (size_t i = 0; i < Size; ++i)
     {
-        normals[i]          = surfs[i].normal;
-        shading_normals[i]  = surfs[i].shading_normal;
-        materials[i]        = surfs[i].material;
+        geometric_normals[i] = surfs[i].geometric_normal;
+        shading_normals[i]   = surfs[i].shading_normal;
+        materials[i]         = surfs[i].material;
     }
 
     return make_surface(
-            pack(normals),
+            pack(geometric_normals),
             pack(shading_normals),
             pack(materials)
             );
@@ -107,21 +107,21 @@ inline auto pack(std::array<surface<N, M, C, Args...>, Size> const& surfs)
             pack(std::declval<std::array<C, Size>>())
             ) )
 {
-    std::array<N, Size> normals;
+    std::array<N, Size> geometric_normals;
     std::array<N, Size> shading_normals;
     std::array<M, Size> materials;
     std::array<C, Size> tex_colors;
 
     for (size_t i = 0; i < Size; ++i)
     {
-        normals[i] = surfs[i].normal;
-        shading_normals[i]  = surfs[i].shading_normal;
-        materials[i]        = surfs[i].material;
-        tex_colors[i]       = surfs[i].tex_color_;
+        geometric_normals[i] = surfs[i].geometric_normal;
+        shading_normals[i]   = surfs[i].shading_normal;
+        materials[i]         = surfs[i].material;
+        tex_colors[i]        = surfs[i].tex_color_;
     }
 
     return make_surface(
-            pack(normals),
+            pack(geometric_normals),
             pack(shading_normals),
             pack(materials),
             pack(tex_colors)

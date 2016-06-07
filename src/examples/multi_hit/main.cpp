@@ -209,7 +209,7 @@ struct kernel
             auto n = surf.shading_normal;
 
 #if 1 // two-sided
-            n = faceforward( n, view_dir, surf.normal );
+            n = faceforward( n, view_dir, surf.geometric_normal );
 #endif
 
             auto it = params.lights.begin;
