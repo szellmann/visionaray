@@ -93,6 +93,7 @@ set(UNITTESTS_SOURCES
     array.cpp
     generic_material.cpp
     generic_primitive.cpp
+    get_normal.cpp
     render_target.cpp
     swizzle.cpp
     variant.cpp
