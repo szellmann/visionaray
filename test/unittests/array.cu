@@ -7,6 +7,7 @@
 
 #include <thrust/copy.h>
 #include <thrust/device_vector.h>
+#include <thrust/fill.h>
 #include <thrust/host_vector.h>
 
 #include <visionaray/array.h>
@@ -14,6 +15,70 @@
 #include <gtest/gtest.h>
 
 using namespace visionaray;
+
+
+//-------------------------------------------------------------------------------------------------
+// Test reverse iterators
+//
+
+template <typename FwdIt, typename T>
+__device__ void iota(FwdIt first, FwdIt last, T value)
+{
+    for (auto it = first; it != last; ++it)
+    {
+        *it = value++;
+    }
+}
+
+template <typename Array>
+__global__ void kernel_reverse_it(bool* mem, Array /* */)
+{
+    Array arr1;
+    iota(arr1.begin(), arr1.end(), 0);
+
+    // Test non-const iterators for writing
+    Array arr2;
+    iota(arr2.rbegin(), arr2.rend(), 0);
+
+
+    size_t i = 0;
+
+    // Test const reverse iterators obtained implicitly through rbegin() and rend()
+    auto it1 = arr1.rbegin();
+    auto it2 = arr2.begin();
+    for (; it1 != arr1.rend() && it2 != arr2.end(); ++it1, ++it2)
+    {
+        mem[i++] = *it1 == *it2;
+    }
+
+    // Test const reverse iterators obtained through crbegin() and crend()
+    auto cit1 = arr1.crbegin();
+    auto cit2 = arr2.cbegin();
+    for (; cit1 != arr1.crend() && cit2 != arr2.cend(); ++cit1, ++cit2)
+    {
+        mem[i++] = *cit1 == *cit2;
+    }
+}
+
+TEST(ArrayCU, ReverseIt)
+{
+    static const size_t N = 50;
+
+    thrust::device_vector<bool> d_result(N * 2);
+    thrust::fill(d_result.begin(), d_result.end(), false);
+
+    kernel_reverse_it<<<1, 1>>>(
+            thrust::raw_pointer_cast(d_result.data()),
+            array<int, N>{}
+            );
+
+    thrust::host_vector<bool> h_result(d_result);
+
+    for (auto b : h_result)
+    {
+        EXPECT_TRUE(b);
+    }
+}
 
 
 //-------------------------------------------------------------------------------------------------
