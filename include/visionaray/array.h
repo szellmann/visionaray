@@ -38,29 +38,29 @@ public:
 
 public:
 
-    VSNRAY_FUNC reference                   at(size_type pos);
-    VSNRAY_FUNC const_reference             at(size_type pos) const;
+    VSNRAY_FUNC reference           at(size_type pos);
+    VSNRAY_FUNC const_reference     at(size_type pos) const;
 
-    VSNRAY_FUNC reference                   operator[](size_type pos);
-    VSNRAY_FUNC const_reference             operator[](size_type pos) const;
+    VSNRAY_FUNC reference           operator[](size_type pos);
+    VSNRAY_FUNC const_reference     operator[](size_type pos) const;
 
-    VSNRAY_FUNC reference                   front();
-    VSNRAY_FUNC const_reference             front() const;
+    VSNRAY_FUNC reference           front();
+    VSNRAY_FUNC const_reference     front() const;
 
-    VSNRAY_FUNC reference                   back();
-    VSNRAY_FUNC const_reference             back() const;
+    VSNRAY_FUNC reference           back();
+    VSNRAY_FUNC const_reference     back() const;
 
-    VSNRAY_FUNC T*                          data();
-    VSNRAY_FUNC T const*                    data() const;
+    VSNRAY_FUNC T*                  data();
+    VSNRAY_FUNC T const*            data() const;
 
 
-    VSNRAY_FUNC iterator                    begin();
-    VSNRAY_FUNC const_iterator              begin() const;
-    VSNRAY_FUNC const_iterator              cbegin() const;
+    VSNRAY_FUNC iterator            begin();
+    VSNRAY_FUNC const_iterator      begin() const;
+    VSNRAY_FUNC const_iterator      cbegin() const;
 
-    VSNRAY_FUNC iterator                    end();
-    VSNRAY_FUNC const_iterator              end() const;
-    VSNRAY_FUNC const_iterator              cend() const;
+    VSNRAY_FUNC iterator            end();
+    VSNRAY_FUNC const_iterator      end() const;
+    VSNRAY_FUNC const_iterator      cend() const;
 
     // TODO: reverse iterators
 
