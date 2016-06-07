@@ -192,6 +192,13 @@ inline constexpr size_t array<T, N>::size() const
 
 template <typename T, size_t N>
 VSNRAY_FUNC
+inline constexpr size_t array<T, N>::max_size() const
+{
+    return N;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
 inline void array<T, N>::fill(T const& value)
 {
     // May not call std::fill() and the like with CUDA

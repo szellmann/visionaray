@@ -85,6 +85,7 @@ public:
 
     VSNRAY_FUNC constexpr bool      empty() const;
     VSNRAY_FUNC constexpr size_t    size() const;
+    VSNRAY_FUNC constexpr size_t    max_size() const;
 
     VSNRAY_FUNC void                fill(T const& value);
     VSNRAY_FUNC void                swap(array& rhs);
