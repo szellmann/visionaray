@@ -8,6 +8,8 @@
 
 #include "simd/simd.h"
 
+#include "norm.h"
+
 namespace MATH_NAMESPACE
 {
 
