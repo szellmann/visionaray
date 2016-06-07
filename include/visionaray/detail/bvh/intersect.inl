@@ -6,6 +6,7 @@
 #include <utility>
 
 #include <visionaray/math/math.h>
+#include <visionaray/intersector.h>
 #include <visionaray/update_if.h>
 
 #include "../exit_traversal.h"
@@ -140,6 +141,8 @@ next:
 // Default intersect returns closest hit!
 //
 
+// overload w/ custom intersector -------------------------
+
 template <
     typename T,
     typename BVH,
@@ -162,5 +165,30 @@ inline auto intersect(
 {
     return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<T>::max(), update_cond);
 }
+
+// overload w/ default intersector ------------------------
+
+template <
+    typename T,
+    typename BVH,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename Cond = is_closer_t
+    >
+VSNRAY_FUNC
+inline auto intersect(
+        basic_ray<T> const& ray,
+        BVH const&          b,
+        Cond                update_cond = Cond()
+        )
+    -> hit_record_bvh<
+        basic_ray<T>,
+        BVH,
+        decltype( intersect(ray, std::declval<typename BVH::primitive_type>()) )
+        >
+{
+    default_intersector isect;
+    return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<T>::max(), update_cond);
+}
+
 
 } // visionaray
