@@ -2,6 +2,11 @@
 // See the LICENSE file for details.
 
 #include <stdexcept>
+#include <utility>
+
+#ifdef __CUDACC__
+#include <thrust/swap.h>
+#endif
 
 namespace visionaray
 {
@@ -140,6 +145,33 @@ VSNRAY_FUNC
 inline constexpr size_t array<T, N>::size() const
 {
     return N;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline void array<T, N>::fill(T const& value)
+{
+    // May not call std::fill() and the like with CUDA
+    for (size_t i = 0; i < N; ++i)
+    {
+        data_[i] = value;
+    }
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+inline void array<T, N>::swap(array<T, N>& rhs)
+{
+#ifdef __CUDACC__
+    using thrust::swap;
+#else
+    using std::swap;
+#endif
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        swap(data_[i], rhs.data_[i]);
+    }
 }
 
 } // visionaray
