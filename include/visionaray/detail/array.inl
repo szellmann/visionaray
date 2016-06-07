@@ -225,3 +225,37 @@ inline void array<T, N>::swap(array<T, N>& rhs)
 }
 
 } // visionaray
+
+
+namespace std
+{
+
+//-------------------------------------------------------------------------------------------------
+// Element access
+//
+
+template <size_t I, typename  T, size_t N>
+constexpr T& get(visionaray::array<T, N>& a)
+{
+    return a[I];
+}
+
+template <size_t I, typename  T, size_t N>
+constexpr T&& get(visionaray::array<T, N>&& a)
+{
+    return a[I];
+}
+
+template <size_t I, typename  T, size_t N>
+constexpr T const& get(visionaray::array<T, N> const& a)
+{
+    return a[I];
+}
+
+template <size_t I, typename  T, size_t N>
+constexpr T const&& get(visionaray::array<T, N> const&& a)
+{
+    return a[I];
+}
+
+} // std
