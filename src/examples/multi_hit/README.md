@@ -17,7 +17,7 @@ Options:
    -width=<ARG>           Window width
 ```
 
-# Interaction
+### Interaction
 
 The Visionaray Multi-Hit Example supports the following mouse interaction modes and keyboard shortcuts:
 

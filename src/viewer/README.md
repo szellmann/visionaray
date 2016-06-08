@@ -27,7 +27,7 @@ Options:
    -width=<ARG>           Window width
 ```
 
-# Interaction
+### Interaction
 
 The viewer supports the following mouse interaction modes and keyboard shortcuts:
 

@@ -14,7 +14,7 @@ Options:
    -width=<ARG>           Window width
 ```
 
-# Interaction
+### Interaction
 
 The Visionaray Volume Rendering Example supports the following mouse interaction modes and keyboard shortcuts:
 
