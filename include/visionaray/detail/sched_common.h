@@ -351,7 +351,14 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     auto result = invoke_kernel(kernel, r, samp, x, y);
-    pixel_access::store(x, y, viewport, result, rt_ref.color());
+    pixel_access::store(
+            pixel_format_constant<CF>{},
+            x,
+            y,
+            viewport,
+            result,
+            rt_ref.color()
+            );
 }
 
 template <
@@ -381,7 +388,16 @@ inline void sample_pixel_impl(
 
     auto result = invoke_kernel(kernel, r, samp, x, y);
     result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
-    pixel_access::store(x, y, viewport, result, rt_ref.color(), rt_ref.depth());
+    pixel_access::store(
+            pixel_format_constant<CF>{},
+            pixel_format_constant<DF>{},
+            x,
+            y,
+            viewport,
+            result,
+            rt_ref.color(),
+            rt_ref.depth()
+            );
 }
 
 
@@ -415,7 +431,14 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     auto result = invoke_kernel(kernel, r, samp, x, y);
-    pixel_access::store(x, y, viewport, result, rt_ref.color());
+    pixel_access::store(
+            pixel_format_constant<CF>{},
+            x,
+            y,
+            viewport,
+            result,
+            rt_ref.color()
+            );
 }
 
 
@@ -454,9 +477,24 @@ inline void sample_pixel_impl(
     auto alpha  = S(1.0) / S(frame_num);
     if (frame_num <= 1)
     {//TODO: clear method in render target?
-        pixel_access::store(x, y, viewport, Color(0.0), rt_ref.color());
+        pixel_access::store(
+                pixel_format_constant<CF>{},
+                x,
+                y,
+                viewport,
+                Color(0.0),
+                rt_ref.color()
+                );
     }
-    pixel_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
+    pixel_access::blend(
+            pixel_format_constant<CF>{},
+            x,
+            y,
+            viewport,
+            result,
+            rt_ref.color(),
+            alpha, S(1.0) - alpha
+            );
 }
 
 template <
@@ -491,9 +529,28 @@ inline void sample_pixel_impl(
 
     if (frame_num <= 1)
     {//TODO: clear method in render target?
-        pixel_access::store(x, y, viewport, result, rt_ref.color(), rt_ref.depth());
+        pixel_access::store(
+                pixel_format_constant<CF>{},
+                pixel_format_constant<DF>{},
+                x,
+                y,
+                viewport,
+                result,
+                rt_ref.color(),
+                rt_ref.depth()
+                );
     }
-    pixel_access::blend(x, y, viewport, result, rt_ref.color(), rt_ref.depth(), alpha, S(1.0) - alpha);
+    pixel_access::blend(
+            pixel_format_constant<CF>{},
+            pixel_format_constant<DF>{},
+            x,
+            y,
+            viewport,
+            result,
+            rt_ref.color(),
+            rt_ref.depth(),
+            alpha, S(1.0) - alpha
+            );
 }
 
 
@@ -538,12 +595,27 @@ inline void sample_pixel_impl(
     {
         if (frame <= 1)
         {//TODO: clear method in render target?
-            pixel_access::store(x, y, viewport, Color(0.0), rt_ref.color());
+            pixel_access::store(
+                    pixel_format_constant<CF>{},
+                    x,
+                    y,
+                    viewport,
+                    Color(0.0),
+                    rt_ref.color()
+                    );
         }
 
         auto result = invoke_kernel(kernel, *ray_ptr++, samp, x, y);
         auto alpha = S(1.0) / S(frame);
-        pixel_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0) - alpha);
+        pixel_access::blend(
+                pixel_format_constant<CF>{},
+                x,
+                y,
+                viewport,
+                result,
+                rt_ref.color(),
+                alpha, S(1.0) - alpha
+                );
     }
 }
 
@@ -587,13 +659,29 @@ inline void sample_pixel_impl(
     auto frame_end   = Num;
 
     //TODO: clear method in render target?
-    pixel_access::store(x, y, viewport, Color(0.0), rt_ref.color());
+    pixel_access::store(
+            pixel_format_constant<CF>{},
+            x,
+            y,
+            viewport,
+            Color(0.0),
+            rt_ref.color()
+            );
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
         auto result = invoke_kernel(kernel, *ray_ptr++, samp, x, y);
         auto alpha = S(1.0) / S(Num);
-        pixel_access::blend(x, y, viewport, result, rt_ref.color(), alpha, S(1.0));
+        pixel_access::blend(
+                pixel_format_constant<CF>{},
+                x,
+                y,
+                viewport,
+                result,
+                rt_ref.color(),
+                alpha,
+                S(1.0)
+                );
     }
 }
 
@@ -632,14 +720,34 @@ inline void sample_pixel_impl(
     auto frame_end   = frame_num + Num;
 
     //TODO: clear method in render target?
-    pixel_access::store(x, y, viewport, Result{}, rt_ref.color(), rt_ref.depth());
+    pixel_access::store(
+            pixel_format_constant<CF>{},
+            pixel_format_constant<DF>{},
+            x,
+            y,
+            viewport,
+            Result{},
+            rt_ref.color(),
+            rt_ref.depth()
+            );
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
         auto result = invoke_kernel(kernel, *ray_ptr++, samp, x, y);
         result.depth = select( result.hit, depth_transform(result.isect_pos, args...), S(1.0) );
         auto alpha = S(1.0) / S(Num);
-        pixel_access::blend(x, y, viewport, result, rt_ref.color(), rt_ref.depth(), alpha, S(1.0));
+        pixel_access::blend(
+                pixel_format_constant<CF>{},
+                pixel_format_constant<DF>{},
+                x,
+                y,
+                viewport,
+                result,
+                rt_ref.color(),
+                rt_ref.depth(),
+                alpha,
+                S(1.0)
+                );
     }
 }
 

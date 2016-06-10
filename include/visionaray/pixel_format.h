@@ -4,7 +4,9 @@
 #pragma once
 
 #ifndef VSNRAY_PIXEL_FORMAT_H
-#define VSNRAY_PIXEL_FOMRAT_H
+#define VSNRAY_PIXEL_FOMRAT_H 1
+
+#include <type_traits>
 
 namespace visionaray
 {
@@ -79,9 +81,16 @@ struct pixel_format_info
 };
 
 
+//-------------------------------------------------------------------------------------------------
+// pixel_format_constant e.g. for use with tag dispatch
+//
+
+template <pixel_format PF>
+using pixel_format_constant = std::integral_constant<pixel_format, PF>;
+
+
 pixel_format      map_gl_format(unsigned format, unsigned type, unsigned size);
 pixel_format_info map_pixel_format(pixel_format format);
-
 
 } // visionaray
 

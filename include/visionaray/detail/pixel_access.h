@@ -36,16 +36,24 @@ namespace pixel_access
 // Store an input color to an output color buffer, apply color conversion
 //
 
-template <typename InputColor, typename OutputColor>
+template <pixel_format CF, typename InputColor, typename OutputColor>
 VSNRAY_FUNC
-inline void store(int x, int y, recti const& viewport, InputColor const& color, OutputColor* buffer)
+inline void store(
+        pixel_format_constant<CF>   /* */,
+        int                         x,
+        int                         y,
+        recti const&                viewport,
+        InputColor const&           color,
+        OutputColor*                buffer
+        )
 {
     convert(buffer[y * viewport.w + x], color);
 }
 
 //-------------------------------------------------------------------------------------------------
-// Store SIMD rgb color, apply conversion
+// Store SIMD rgb color to RGB8 render target, apply conversion
 // OutputColor must be rgb
+// TODO: consolidate all RGB copies
 // TODO: consolidate with rgba version
 //
 
@@ -55,7 +63,14 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 VSNRAY_CPU_FUNC
-inline void store(int x, int y, recti const& viewport, vector<3, FloatT> const& color, OutputColor* buffer)
+inline void store(
+        pixel_format_constant<PF_RGB8>  /* */,
+        int                             x,
+        int                             y,
+        recti const&                    viewport,
+        vector<3, FloatT> const&        color,
+        OutputColor*                    buffer
+        )
 {
     using float_array = typename simd::aligned_array<FloatT>::type;
 
@@ -86,8 +101,58 @@ inline void store(int x, int y, recti const& viewport, vector<3, FloatT> const& 
 }
 
 //-------------------------------------------------------------------------------------------------
-// Store SIMD rgba color, apply conversion
+// Store SIMD rgb color to RGB32F render target, apply conversion
+// OutputColor must be rgb
+//
+
+template <
+    typename OutputColor,
+    typename FloatT,
+    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+    >
+VSNRAY_CPU_FUNC
+inline void store(
+        pixel_format_constant<PF_RGB32F>    /* */,
+        int                                 x,
+        int                                 y,
+        recti const&                        viewport,
+        vector<3, FloatT> const&            color,
+        OutputColor*                        buffer
+        )
+{
+    using float_array = typename simd::aligned_array<FloatT>::type;
+
+    float_array r;
+    float_array g;
+    float_array b;
+
+    using simd::store;
+
+    store(r, color.x);
+    store(g, color.y);
+    store(b, color.z);
+
+    auto w = packet_size<FloatT>::w;
+    auto h = packet_size<FloatT>::h;
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < viewport.w && y + row < viewport.h)
+            {
+                auto idx = row * w + col;
+                convert( buffer[(y + row) * viewport.w + (x + col)], vec3(r[idx], g[idx], b[idx]) );
+            }
+        }
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Store SIMD rgba color to RGBA8 render target, apply conversion
 // OutputColor must be rgba
+// TODO: consolidate all rgba copies
 // TODO: consolidate with rgb version
 //
 
@@ -97,7 +162,14 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 VSNRAY_CPU_FUNC
-inline void store(int x, int y, recti const& viewport, vector<4, FloatT> const& color, OutputColor* buffer)
+inline void store(
+        pixel_format_constant<PF_RGBA8> /* */,
+        int                             x,
+        int                             y,
+        recti const&                    viewport,
+        vector<4, FloatT> const&        color,
+        OutputColor*                    buffer
+        )
 {
     using float_array = typename simd::aligned_array<FloatT>::type;
 
@@ -130,12 +202,70 @@ inline void store(int x, int y, recti const& viewport, vector<4, FloatT> const& 
 }
 
 //-------------------------------------------------------------------------------------------------
+// Store SIMD rgba color to RGBA32F render target, apply conversion
+// OutputColor must be rgba
+//
+
+template <
+    typename OutputColor,
+    typename FloatT,
+    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+    >
+VSNRAY_CPU_FUNC
+inline void store(
+        pixel_format_constant<PF_RGBA32F>   /* */,
+        int                                 x,
+        int                                 y,
+        recti const&                        viewport,
+        vector<4, FloatT> const&            color,
+        OutputColor*                        buffer
+        )
+{
+    using float_array = typename simd::aligned_array<FloatT>::type;
+
+    float_array r;
+    float_array g;
+    float_array b;
+    float_array a;
+
+    using simd::store;
+
+    store(r, color.x);
+    store(g, color.y);
+    store(b, color.z);
+    store(a, color.w);
+
+    auto w = packet_size<FloatT>::w;
+    auto h = packet_size<FloatT>::h;
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < viewport.w && y + row < viewport.h)
+            {
+                auto idx = row * w + col;
+                convert( buffer[(y + row) * viewport.w + (x + col)], vec4(r[idx], g[idx], b[idx], a[idx]) );
+            }
+        }
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Store SSE rgba color to RGBA32F color buffer, no conversion necessary
 // Special treatment, can convert from SoA to AoS using transpose
 //
 
 VSNRAY_CPU_FUNC
-inline void store(int x, int y, recti const& viewport, vector<4, simd::float4> const& color, vector<4, float>* buffer)
+inline void store(
+        pixel_format_constant<PF_RGBA32F>   /* */,
+        int                                 x,
+        int                                 y,
+        recti const&                        viewport,
+        vector<4, simd::float4> const&      color,
+        vector<4, float>*                   buffer
+        )
 {
     using simd::store;
 
@@ -149,7 +279,7 @@ inline void store(int x, int y, recti const& viewport, vector<4, simd::float4> c
 
 //-------------------------------------------------------------------------------------------------
 // Store single SIMD channel to 32-bit FP buffer, no conversion
-// Can be used for color and depth
+// TODO: consolidate various overloads
 //
 
 template <
@@ -157,7 +287,14 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 VSNRAY_CPU_FUNC
-inline void store(int x, int y, recti const& viewport, FloatT const& value, float* buffer)
+inline void store(
+        pixel_format_constant<PF_DEPTH32F>  /* */,
+        int                                 x,
+        int                                 y,
+        recti const&                        viewport,
+        FloatT const&                       value,
+        float*                              buffer
+        )
 {
     using float_array = typename simd::aligned_array<FloatT>::type;
 
@@ -180,34 +317,79 @@ inline void store(int x, int y, recti const& viewport, FloatT const& value, floa
     }
 }
 
+template <
+    typename FloatT,
+    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+    >
+VSNRAY_CPU_FUNC
+inline void store(
+        pixel_format_constant<PF_R32F>  /* */,
+        int                             x,
+        int                             y,
+        recti const&                    viewport,
+        FloatT const&                   value,
+        float*                          buffer
+        )
+{
+    using float_array = typename simd::aligned_array<FloatT>::type;
+
+    float_array v;
+
+    simd::store(v, value);
+
+    auto w = packet_size<FloatT>::w;
+    auto h = packet_size<FloatT>::h;
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < viewport.w && y + row < viewport.h)
+            {
+                convert( buffer[(y + row) * viewport.w + (x + col)], v[row * w + col] );
+            }
+        }
+    }
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // Store color from result record to output color buffer
 //
 
-template <typename T, typename OutputColor>
+template <pixel_format CF, typename T, typename OutputColor>
 VSNRAY_FUNC
-inline void store(int x, int y, recti const& viewport, result_record<T> const& rr, OutputColor* buffer)
+inline void store(
+        pixel_format_constant<CF>   /* */,
+        int                         x,
+        int                         y,
+        recti const&                viewport,
+        result_record<T> const&     rr,
+        OutputColor*                buffer
+        )
 {
-    store(x, y, viewport, rr.color, buffer);
+    store(pixel_format_constant<CF>{}, x, y, viewport, rr.color, buffer);
 }
 
 //-------------------------------------------------------------------------------------------------
 // Store color and depth from result record to output buffers
 //
 
-template <typename T, typename Color, typename Depth>
+template <pixel_format CF, pixel_format DF, typename T, typename Color, typename Depth>
 VSNRAY_FUNC
 inline void store(
-        int                     x,
-        int                     y,
-        recti const&            viewport,
-        result_record<T> const& rr,
-        Color*                  color_buffer,
-        Depth*                  depth_buffer
+        pixel_format_constant<CF>   /* */,
+        pixel_format_constant<DF>   /* */,
+        int                         x,
+        int                         y,
+        recti const&                viewport,
+        result_record<T> const&     rr,
+        Color*                      color_buffer,
+        Depth*                      depth_buffer
         )
 {
-    store(x, y, viewport, rr.color, color_buffer);
-    store(x, y, viewport, rr.depth, depth_buffer);
+    store(pixel_format_constant<CF>{}, x, y, viewport, rr.color, color_buffer);
+    store(pixel_format_constant<DF>{}, x, y, viewport, rr.depth, depth_buffer);
 }
 
 
@@ -398,9 +580,18 @@ inline void get(int x, int y, recti const& viewport, simd::int8& result, T const
 // Blend input and output colors, store in output buffer
 //
 
-template <typename InputColor, typename OutputColor, typename T>
+template <pixel_format CF, typename InputColor, typename OutputColor, typename T>
 VSNRAY_FUNC
-inline void blend(int x, int y, recti const& viewport, InputColor const& color, OutputColor* buffer, T sfactor, T dfactor)
+inline void blend(
+        pixel_format_constant<CF>   /* */,
+        int                         x,
+        int                         y,
+        recti const&                viewport,
+        InputColor const&           color,
+        OutputColor*                buffer,
+        T                           sfactor,
+        T                           dfactor
+        )
 {
     InputColor dst;
 
@@ -408,7 +599,7 @@ inline void blend(int x, int y, recti const& viewport, InputColor const& color, 
 
     dst = color * sfactor + dst * dfactor;
 
-    store(x, y, viewport, dst, buffer);
+    store(pixel_format_constant<CF>{}, x, y, viewport, dst, buffer);
 }
 
 
@@ -416,40 +607,50 @@ inline void blend(int x, int y, recti const& viewport, InputColor const& color, 
 // Blend color from result record on top of output color buffer
 //
 
-template <typename S, typename OutputColor, typename T>
+template <pixel_format CF, typename S, typename OutputColor, typename T>
 VSNRAY_FUNC
 inline void blend(
-        int                     x,
-        int                     y,
-        recti const&            viewport,
-        result_record<S> const& rr,
-        OutputColor*            color_buffer,
-        T sfactor,
-        T dfactor
+        pixel_format_constant<CF>   /* */,
+        int                         x,
+        int                         y,
+        recti const&                viewport,
+        result_record<S> const&     rr,
+        OutputColor*                color_buffer,
+        T                           sfactor,
+        T                           dfactor
         )
 {
-    blend(x, y, viewport, rr.color, color_buffer, sfactor, dfactor);
+    blend(pixel_format_constant<CF>{}, x, y, viewport, rr.color, color_buffer, sfactor, dfactor);
 }
 
 //-------------------------------------------------------------------------------------------------
 // Blend color and depth from result record on top of output buffers
 //
 
-template <typename S, typename OutputColor, typename Depth, typename T>
+template <
+    pixel_format CF,
+    pixel_format DF,
+    typename S,
+    typename OutputColor,
+    typename Depth,
+    typename T
+    >
 VSNRAY_FUNC
 inline void blend(
-        int                     x,
-        int                     y,
-        recti const&            viewport,
-        result_record<S> const& rr,
-        OutputColor*            color_buffer,
-        Depth*                  depth_buffer,
-        T                       sfactor,
-        T                       dfactor
+        pixel_format_constant<CF>   /* */,
+        pixel_format_constant<DF>   /* */,
+        int                         x,
+        int                         y,
+        recti const&                viewport,
+        result_record<S> const&     rr,
+        OutputColor*                color_buffer,
+        Depth*                      depth_buffer,
+        T                           sfactor,
+        T                           dfactor
         )
 {
-    blend(x, y, viewport, rr.color, color_buffer, sfactor, dfactor);
-    blend(x, y, viewport, rr.depth, depth_buffer, sfactor, dfactor);
+    blend(pixel_format_constant<CF>{}, x, y, viewport, rr.color, color_buffer, sfactor, dfactor);
+    blend(pixel_format_constant<DF>{}, x, y, viewport, rr.depth, depth_buffer, sfactor, dfactor);
 }
 
 } // pixel_access
