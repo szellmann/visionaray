@@ -24,6 +24,7 @@ namespace detail
 
 //-------------------------------------------------------------------------------------------------
 // Store, get and blend pixel values (color and depth)
+// TODO: make this more flexible, source type is always either RGB{A}32F or DEPTH32F
 //
 
 namespace pixel_access
@@ -47,7 +48,12 @@ inline void store(
         OutputColor*                buffer
         )
 {
-    convert(pixel_format_constant<CF>{}, buffer[y * viewport.w + x], color);
+    convert(
+        pixel_format_constant<CF>{},
+        pixel_format_constant<CF>{},
+        buffer[y * viewport.w + x],
+        color
+        );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -96,6 +102,7 @@ inline void store(
                 auto idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGB8>{},
+                    pixel_format_constant<PF_RGB32F>{},
                     buffer[(y + row) * viewport.w + (x + col)],
                     vec3(r[idx], g[idx], b[idx])
                     );
@@ -147,6 +154,7 @@ inline void store(
             {
                 auto idx = row * w + col;
                 convert(
+                    pixel_format_constant<PF_RGB32F>{},
                     pixel_format_constant<PF_RGB32F>{},
                     buffer[(y + row) * viewport.w + (x + col)],
                     vec3(r[idx], g[idx], b[idx])
@@ -205,6 +213,7 @@ inline void store(
                 auto idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGBA8>{},
+                    pixel_format_constant<PF_RGBA32F>{},
                     buffer[(y + row) * viewport.w + (x + col)],
                     vec4(r[idx], g[idx], b[idx], a[idx])
                     );
@@ -258,6 +267,7 @@ inline void store(
             {
                 auto idx = row * w + col;
                 convert(
+                    pixel_format_constant<PF_RGBA32F>{},
                     pixel_format_constant<PF_RGBA32F>{},
                     buffer[(y + row) * viewport.w + (x + col)],
                     vec4(r[idx], g[idx], b[idx], a[idx])
@@ -329,6 +339,7 @@ inline void store(
             {
                 convert(
                     pixel_format_constant<PF_DEPTH32F>{},
+                    pixel_format_constant<PF_DEPTH32F>{},
                     buffer[(y + row) * viewport.w + (x + col)],
                     v[row * w + col]
                     );
@@ -373,6 +384,7 @@ inline void store(
             {
                 convert(
                     pixel_format_constant<PF_DEPTH24_STENCIL8>{},
+                    pixel_format_constant<PF_DEPTH32F>{},
                     buffer[(y + row) * viewport.w + (x + col)],
                     v[row * w + col]
                     );
@@ -411,6 +423,7 @@ inline void store(
             if (x + col < viewport.w && y + row < viewport.h)
             {
                 convert(
+                    pixel_format_constant<PF_R32F>{},
                     pixel_format_constant<PF_R32F>{},
                     buffer[(y + row) * viewport.w + (x + col)],
                     v[row * w + col]
@@ -479,7 +492,12 @@ inline void get(
         OutputColor const*          buffer
         )
 {
-    convert(pixel_format_constant<CF>{}, color, buffer[y * viewport.w + x]);
+    convert(
+        pixel_format_constant<CF>{},
+        pixel_format_constant<CF>{},
+        color,
+        buffer[y * viewport.w + x]
+        );
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -165,10 +165,11 @@ inline T spd_to_luminance(spectrum<T> const& spe)
 // Convert OpenGL pixel formats
 //
 
-template <pixel_format PF, typename TargetType, typename SourceType>
+template <pixel_format TF, pixel_format SF, typename TargetType, typename SourceType>
 VSNRAY_FUNC
 inline void convert(
-        pixel_format_constant<PF>   /* */,
+        pixel_format_constant<TF>   /* */,
+        pixel_format_constant<SF>   /* */,
         TargetType&                 target,
         SourceType const&           source
         )
@@ -183,6 +184,7 @@ template <typename TargetType, typename SourceType>
 VSNRAY_FUNC
 inline void convert(
         pixel_format_constant<PF_DEPTH24_STENCIL8>  /* */,
+        pixel_format_constant<PF_DEPTH32F>          /* */,
         TargetType&                                 target,
         SourceType const&                           source
         )
@@ -193,10 +195,11 @@ inline void convert(
 
 
 // float to unorm conversion
-template <pixel_format PF, unsigned Bits, size_t Dim>
+template <pixel_format TF, pixel_format SF, unsigned Bits, size_t Dim>
 VSNRAY_FUNC
 inline void convert(
-        pixel_format_constant<PF>   /* */,
+        pixel_format_constant<TF>   /* */,
+        pixel_format_constant<SF>   /* */,
         vector<Dim, unorm<Bits>>&   target,
         vector<Dim, float> const&   source
         )
@@ -210,27 +213,39 @@ inline void convert(
 
 
 // RGBA to RGB conversion, multiply by alpha
-template <pixel_format CF, typename T, typename U>
+template <pixel_format TF, pixel_format SF, typename T, typename U>
 VSNRAY_FUNC
 inline void convert(
-        pixel_format_constant<CF>   /* */,
+        pixel_format_constant<TF>   /* */,
+        pixel_format_constant<SF>   /* */,
         vector<3, T>&               target,
         vector<4, U> const&         source
         )
 {
-    convert(pixel_format_constant<CF>{}, target, source.xyz() * source.w);
+    convert(
+        pixel_format_constant<TF>{},
+        pixel_format_constant<SF>{},
+        target,
+        source.xyz() * source.w
+        );
 }
 
 // RGB to RGBA conversion, let alpha = 1.0
-template <pixel_format CF, typename T, typename U>
+template <pixel_format TF, pixel_format SF, typename T, typename U>
 VSNRAY_FUNC
 inline void convert(
-        pixel_format_constant<CF>   /* */,
+        pixel_format_constant<TF>   /* */,
+        pixel_format_constant<SF>   /* */,
         vector<4, T>&               target,
         vector<3, U> const&         source
         )
 {
-    convert(pixel_format_constant<CF>{}, target, vector<4, U>(source, U(1.0)));
+    convert(
+        pixel_format_constant<TF>{},
+        pixel_format_constant<SF>{},
+        target,
+        vector<4, U>(source, U(1.0))
+        );
 }
 
 } // visionaray
