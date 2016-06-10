@@ -337,6 +337,50 @@ inline void store(
     }
 }
 
+//-------------------------------------------------------------------------------------------------
+// Store single SIMD channel to 32-bit FP buffer, no conversion
+// TODO: consolidate various overloads
+//
+
+template <
+    typename T,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    >
+VSNRAY_CPU_FUNC
+inline void store(
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* */,
+        int                                         x,
+        int                                         y,
+        recti const&                                viewport,
+        T const&                                    value,
+        unsigned*                                   buffer
+        )
+{
+    using float_array = typename simd::aligned_array<T>::type;
+
+    float_array v;
+
+    simd::store(v, value);
+
+    auto w = packet_size<T>::w;
+    auto h = packet_size<T>::h;
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < viewport.w && y + row < viewport.h)
+            {
+                convert(
+                    pixel_format_constant<PF_DEPTH24_STENCIL8>{},
+                    buffer[(y + row) * viewport.w + (x + col)],
+                    v[row * w + col]
+                    );
+            }
+        }
+    }
+}
+
 template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
