@@ -76,7 +76,7 @@ using texture_map               = std::map<std::string, host_tex_type>;
 
 using host_ray_type             = basic_ray<simd::float4>;
 using host_bvh_type             = index_bvh<triangle_type>;
-using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_DEPTH32F>;
+using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_DEPTH24_STENCIL8>;
 using host_sched_type           = tiled_sched<host_ray_type>;
 
 #ifdef __CUDACC__
@@ -86,7 +86,7 @@ using device_texture_list       = thrust::device_vector<device_tex_ref_type>;
 using device_texture_map        = std::map<std::string, device_tex_type>;
 using device_ray_type           = basic_ray<float>;
 using device_bvh_type           = cuda_index_bvh<triangle_type>;
-using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_DEPTH32F>;
+using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_DEPTH24_STENCIL8>;
 using device_sched_type         = cuda_sched<device_ray_type>;
 #endif
 
