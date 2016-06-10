@@ -205,6 +205,12 @@ struct float_type
 // SSE ----------------------------------------------------
 
 template <>
+struct float_type<simd::float4>
+{
+    using type = simd::float4;
+};
+
+template <>
 struct float_type<simd::int4>
 {
     using type = simd::float4;
@@ -219,6 +225,12 @@ struct float_type<simd::mask4>
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 // AVX ----------------------------------------------------
+
+template <>
+struct float_type<simd::float8>
+{
+    using type = simd::float8;
+};
 
 template <>
 struct float_type<simd::int8>
@@ -256,6 +268,12 @@ struct int_type<simd::float4>
 };
 
 template <>
+struct int_type<simd::int4>
+{
+    using type = simd::int4;
+};
+
+template <>
 struct int_type<simd::mask4>
 {
     using type = simd::int4;
@@ -267,6 +285,12 @@ struct int_type<simd::mask4>
 
 template <>
 struct int_type<simd::float8>
+{
+    using type = simd::int8;
+};
+
+template <>
+struct int_type<simd::int8>
 {
     using type = simd::int8;
 };
@@ -306,6 +330,12 @@ struct mask_type<simd::int4>
     using type = simd::mask4;
 };
 
+template <>
+struct mask_type<simd::mask4>
+{
+    using type = simd::mask4;
+};
+
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 // AVX ----------------------------------------------------
@@ -318,6 +348,12 @@ struct mask_type<simd::float8>
 
 template <>
 struct mask_type<simd::int8>
+{
+    using type = simd::mask8;
+};
+
+template <>
+struct mask_type<simd::mask8>
 {
     using type = simd::mask8;
 };
