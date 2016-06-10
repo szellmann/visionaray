@@ -189,8 +189,8 @@ inline void convert(
         SourceType const&                           source
         )
 {
-    auto depth_raw = convert_to_int(source * 16777216.0f);
-    target = (depth_raw << 8) - 1;
+    auto depth_raw = convert_to_int(source * 16777215.0f);
+    target = (depth_raw << 8);
 }
 
 
