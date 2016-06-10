@@ -1,8 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/bvh.h>
-
 #pragma once
 
 #ifndef VSNRAY_PRIM_TRAITS_H
@@ -62,12 +60,6 @@ struct num_vertices<basic_triangle<Dim, T>>
     enum { value = 3 };
 };
 
-template <typename BVH>
-struct num_vertices<BVH, typename std::enable_if<is_any_bvh<BVH>::value>::type>
-    : num_vertices<BVH>
-{
-};
-
 
 //-------------------------------------------------------------------------------------------------
 // Number of precalculated normals
@@ -95,12 +87,6 @@ struct num_normals<basic_triangle<Dim, T>, per_vertex_binding>
     enum { value = 3 };
 };
 
-template <typename BVH, typename NormalBinding>
-struct num_normals<BVH, NormalBinding, typename std::enable_if<is_any_bvh<BVH>::value>::type>
-    : num_normals<typename BVH::primitive_type, NormalBinding>
-{
-};
-
 
 //-------------------------------------------------------------------------------------------------
 // Number of texture coordinates
@@ -120,12 +106,6 @@ template <size_t Dim, typename T>
 struct num_tex_coords<basic_triangle<Dim, T>>
 {
     enum { value = 3 };
-};
-
-template <typename BVH>
-struct num_tex_coords<BVH, typename std::enable_if<is_any_bvh<BVH>::value>::type>
-    : num_tex_coords<BVH>
-{
 };
 
 } // visionaray

@@ -467,6 +467,7 @@ void traverse_parents(B const& b, N const& n, F func);
 #include "detail/bvh/get_normal.h"
 #include "detail/bvh/get_tex_coord.h"
 #include "detail/bvh/intersect.inl"
+#include "detail/bvh/prim_traits.h"
 #include "detail/bvh/traverse.inl"
 
 #endif // VSNRAY_BVH_H

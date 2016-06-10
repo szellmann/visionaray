@@ -10,7 +10,6 @@
 #include <type_traits>
 
 #include "math/math.h"
-#include "bvh.h"
 #include "prim_traits.h"
 
 namespace visionaray

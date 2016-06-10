@@ -10,7 +10,6 @@
 #include <type_traits>
 
 #include "math/math.h"
-#include "bvh.h"
 #include "get_normal.h"
 #include "prim_traits.h"
 
@@ -25,8 +24,7 @@ template <
     typename Normals,
     typename HR,
     typename Primitive,
-    typename NormalBinding,
-    typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type
+    typename NormalBinding
     >
 VSNRAY_FUNC
 inline auto get_shading_normal(
@@ -47,14 +45,10 @@ inline auto get_shading_normal(
 
 template <
     typename HR,
-    typename Primitive,
-    typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type
+    typename Primitive
     >
 VSNRAY_FUNC
-inline auto get_shading_normal(
-        HR const&                   hr,
-        Primitive                   prim
-        )
+inline auto get_shading_normal(HR const& hr, Primitive prim)
     -> decltype( get_normal(
             hr,
             prim
