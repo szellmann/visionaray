@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <visionaray/get_normal.h>
+#include <visionaray/get_shading_normal.h>
 
 using namespace visionaray;
 
