@@ -47,7 +47,7 @@ inline void store(
         OutputColor*                buffer
         )
 {
-    convert(buffer[y * viewport.w + x], color);
+    convert(pixel_format_constant<CF>{}, buffer[y * viewport.w + x], color);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -94,7 +94,11 @@ inline void store(
             if (x + col < viewport.w && y + row < viewport.h)
             {
                 auto idx = row * w + col;
-                convert( buffer[(y + row) * viewport.w + (x + col)], vec3(r[idx], g[idx], b[idx]) );
+                convert(
+                    pixel_format_constant<PF_RGB8>{},
+                    buffer[(y + row) * viewport.w + (x + col)],
+                    vec3(r[idx], g[idx], b[idx])
+                    );
             }
         }
     }
@@ -142,7 +146,11 @@ inline void store(
             if (x + col < viewport.w && y + row < viewport.h)
             {
                 auto idx = row * w + col;
-                convert( buffer[(y + row) * viewport.w + (x + col)], vec3(r[idx], g[idx], b[idx]) );
+                convert(
+                    pixel_format_constant<PF_RGB32F>{},
+                    buffer[(y + row) * viewport.w + (x + col)],
+                    vec3(r[idx], g[idx], b[idx])
+                    );
             }
         }
     }
@@ -195,7 +203,11 @@ inline void store(
             if (x + col < viewport.w && y + row < viewport.h)
             {
                 auto idx = row * w + col;
-                convert( buffer[(y + row) * viewport.w + (x + col)], vec4(r[idx], g[idx], b[idx], a[idx]) );
+                convert(
+                    pixel_format_constant<PF_RGBA8>{},
+                    buffer[(y + row) * viewport.w + (x + col)],
+                    vec4(r[idx], g[idx], b[idx], a[idx])
+                    );
             }
         }
     }
@@ -245,7 +257,11 @@ inline void store(
             if (x + col < viewport.w && y + row < viewport.h)
             {
                 auto idx = row * w + col;
-                convert( buffer[(y + row) * viewport.w + (x + col)], vec4(r[idx], g[idx], b[idx], a[idx]) );
+                convert(
+                    pixel_format_constant<PF_RGBA32F>{},
+                    buffer[(y + row) * viewport.w + (x + col)],
+                    vec4(r[idx], g[idx], b[idx], a[idx])
+                    );
             }
         }
     }
@@ -311,7 +327,11 @@ inline void store(
         {
             if (x + col < viewport.w && y + row < viewport.h)
             {
-                convert( buffer[(y + row) * viewport.w + (x + col)], v[row * w + col] );
+                convert(
+                    pixel_format_constant<PF_DEPTH32F>{},
+                    buffer[(y + row) * viewport.w + (x + col)],
+                    v[row * w + col]
+                    );
             }
         }
     }
@@ -346,7 +366,11 @@ inline void store(
         {
             if (x + col < viewport.w && y + row < viewport.h)
             {
-                convert( buffer[(y + row) * viewport.w + (x + col)], v[row * w + col] );
+                convert(
+                    pixel_format_constant<PF_R32F>{},
+                    buffer[(y + row) * viewport.w + (x + col)],
+                    v[row * w + col]
+                    );
             }
         }
     }
@@ -400,29 +424,18 @@ inline void store(
 // Get a color from an output color buffer, apply conversion
 //
 
-template <typename InputColor, typename OutputColor>
+template <pixel_format CF, typename InputColor, typename OutputColor>
 VSNRAY_FUNC
-inline void get(int x, int y, recti const& viewport, InputColor& color, OutputColor const* buffer)
+inline void get(
+        pixel_format_constant<CF>   /* */,
+        int                         x,
+        int                         y,
+        recti const&                viewport,
+        InputColor&                 color,
+        OutputColor const*          buffer
+        )
 {
-    convert(color, buffer[y * viewport.w + x]);
-}
-
-//-------------------------------------------------------------------------------------------------
-// Get SSE rgba color from RGBA32F color buffer, no conversion necessary
-//
-
-template <typename OutputColor>
-VSNRAY_CPU_FUNC
-inline void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, OutputColor const* buffer)
-{
-    std::array<OutputColor, 4> out;
-
-    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
-    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
-    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
-    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
-
-    color = simd::pack(out);
+    convert(pixel_format_constant<CF>{}, color, buffer[y * viewport.w + x]);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -431,7 +444,14 @@ inline void get(int x, int y, recti const& viewport, vector<4, simd::float4>& co
 
 template <typename T>
 VSNRAY_CPU_FUNC
-inline void get(int x, int y, recti const& viewport, vector<4, simd::float4>& color, vector<3, T> const* buffer)
+inline void get(
+        pixel_format_constant<PF_RGB32F>    /* */,
+        int                                 x,
+        int                                 y,
+        recti const&                        viewport,
+        vector<4, simd::float4>&            color,
+        vector<3, T> const*                 buffer
+        )
 {
     using OutputColor = vector<3, T>;
 
@@ -446,12 +466,44 @@ inline void get(int x, int y, recti const& viewport, vector<4, simd::float4>& co
 }
 
 //-------------------------------------------------------------------------------------------------
-// Get SSE simd vector from scalar buffer (e.g. depth)
+// Get SSE rgba color from RGBA32F color buffer, no conversion necessary
+//
+
+template <typename OutputColor>
+VSNRAY_CPU_FUNC
+inline void get(
+        pixel_format_constant<PF_RGBA32F>   /* */,
+        int                                 x,
+        int                                 y,
+        recti const&                        viewport,
+        vector<4, simd::float4>&            color,
+        OutputColor const*                  buffer
+        )
+{
+    std::array<OutputColor, 4> out;
+
+    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
+    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
+    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
+    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
+
+    color = simd::pack(out);
+}
+
+//-------------------------------------------------------------------------------------------------
+// Get SSE simd vector from scalar buffer
 //
 
 template <typename T>
 VSNRAY_CPU_FUNC
-inline void get(int x, int y, recti const& viewport, simd::float4& result, T const* buffer)
+inline void get(
+        pixel_format_constant<PF_R32F>  /* */,
+        int                             x,
+        int                             y,
+        recti const&                    viewport,
+        simd::float4&                   result,
+        T const*                        buffer
+        )
 {
     VSNRAY_ALIGN(16) float out[4];
 
@@ -467,7 +519,37 @@ inline void get(int x, int y, recti const& viewport, simd::float4& result, T con
 
 template <typename T>
 VSNRAY_CPU_FUNC
-inline void get(int x, int y, recti const& viewport, simd::int4& result, T const* buffer)
+inline void get(
+        pixel_format_constant<PF_DEPTH32F>  /* */,
+        int                                 x,
+        int                                 y,
+        recti const&                        viewport,
+        simd::float4&                       result,
+        T const*                            buffer
+        )
+{
+    VSNRAY_ALIGN(16) float out[4];
+
+    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : T();
+    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : T();
+    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : T();
+    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : T();
+
+    result = simd::float4(out);
+}
+
+// TODO: merge w/ overload(s) from above
+
+template <typename T>
+VSNRAY_CPU_FUNC
+inline void get(
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* */,
+        int                                         x,
+        int                                         y,
+        recti const&                                viewport,
+        simd::int4&                                 result,
+        T const*                                    buffer
+        )
 {
     VSNRAY_ALIGN(16) int out[4];
 
@@ -487,9 +569,16 @@ inline void get(int x, int y, recti const& viewport, simd::int4& result, T const
 // OutputColor must be rgba
 //
 
-template <typename OutputColor>
+template <pixel_format CF, typename OutputColor>
 VSNRAY_CPU_FUNC
-inline void get(int x, int y, recti const& viewport, vector<4, simd::float8>& color, OutputColor const* buffer)
+inline void get(
+        pixel_format_constant<CF>   /* */,
+        int                         x,
+        int                         y,
+        recti const&                viewport,
+        vector<4, simd::float8>&    color,
+        OutputColor const*          buffer
+        )
 {
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
@@ -517,13 +606,51 @@ inline void get(int x, int y, recti const& viewport, vector<4, simd::float8>& co
 }
 
 //-------------------------------------------------------------------------------------------------
-// Get AVX simd vector from scalar buffer (e.g. depth)
+// Get AVX simd vector from scalar buffer
 // TODO: consolidate w/ float4 version
 //
 
-template <typename T>
+template <pixel_format CF, typename T>
 VSNRAY_CPU_FUNC
-inline void get(int x, int y, recti const& viewport, simd::float8& result, T const* buffer)
+inline void get(
+        pixel_format_constant<PF_R32F>  /* */,
+        int                             x,
+        int                             y,
+        recti const&                    viewport,
+        simd::float8&                   result,
+        T const*                        buffer
+        )
+{
+    const int w = packet_size<simd::float8>::w;
+    const int h = packet_size<simd::float8>::h;
+
+    VSNRAY_ALIGN(32) float out[8];
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < viewport.w && y + row < viewport.h)
+            {
+                auto idx = row * w + col;
+                out[idx] = buffer[(y + row) * viewport.w + (x + col)];
+            }
+        }
+    }
+
+    result = simd::float8(out);
+}
+
+template <pixel_format CF, typename T>
+VSNRAY_CPU_FUNC
+inline void get(
+        pixel_format_constant<PF_DEPTH32F>  /* */,
+        int                                 x,
+        int                                 y,
+        recti const&                        viewport,
+        simd::float8&                       result,
+        T const*                            buffer
+        )
 {
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
@@ -548,7 +675,14 @@ inline void get(int x, int y, recti const& viewport, simd::float8& result, T con
 // TODO: merge w/ overload(s) from above
 template <typename T>
 VSNRAY_CPU_FUNC
-inline void get(int x, int y, recti const& viewport, simd::int8& result, T const* buffer)
+inline void get(
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* */,
+        int                                         x,
+        int                                         y,
+        recti const&                                viewport,
+        simd::int8&                                 result,
+        T const*                                    buffer
+        )
 {
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
@@ -595,7 +729,7 @@ inline void blend(
 {
     InputColor dst;
 
-    get(x, y, viewport, dst, buffer);
+    get(pixel_format_constant<CF>{}, x, y, viewport, dst, buffer);
 
     dst = color * sfactor + dst * dfactor;
 

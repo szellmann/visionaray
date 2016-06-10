@@ -7,6 +7,7 @@
 #define VSNRAY_DETAIL_COLOR_CONVERSION_H 1
 
 #include <visionaray/math/math.h>
+#include <visionaray/pixel_format.h>
 #include <visionaray/spectrum.h>
 
 #include "spd/d65.h"
@@ -164,18 +165,26 @@ inline T spd_to_luminance(spectrum<T> const& spe)
 // Convert OpenGL pixel formats
 //
 
-template <typename TargetType, typename SourceType>
+template <pixel_format PF, typename TargetType, typename SourceType>
 VSNRAY_FUNC
-inline void convert(TargetType& target, SourceType const& source)
+inline void convert(
+        pixel_format_constant<PF>   /* */,
+        TargetType&                 target,
+        SourceType const&           source
+        )
 {
     target = static_cast<TargetType>(source);
 }
 
 
 // float to unorm conversion
-template <unsigned Bits, size_t Dim>
+template <pixel_format PF, unsigned Bits, size_t Dim>
 VSNRAY_FUNC
-inline void convert(vector<Dim, unorm<Bits>>& target, vector<Dim, float> const& source)
+inline void convert(
+        pixel_format_constant<PF>   /* */,
+        vector<Dim, unorm<Bits>>&   target,
+        vector<Dim, float> const&   source
+        )
 {
     using V = vector<Dim, float>;
     target = vector<Dim, unorm<Bits>>(clamp(source, V(0.0), V(1.0)));
@@ -186,19 +195,27 @@ inline void convert(vector<Dim, unorm<Bits>>& target, vector<Dim, float> const& 
 
 
 // RGBA to RGB conversion, multiply by alpha
-template <typename T, typename U>
+template <pixel_format CF, typename T, typename U>
 VSNRAY_FUNC
-inline void convert(vector<3, T>& target, vector<4, U> const& source)
+inline void convert(
+        pixel_format_constant<CF>   /* */,
+        vector<3, T>&               target,
+        vector<4, U> const&         source
+        )
 {
-    convert(target, source.xyz() * source.w);
+    convert(pixel_format_constant<CF>{}, target, source.xyz() * source.w);
 }
 
 // RGB to RGBA conversion, let alpha = 1.0
-template <typename T, typename U>
+template <pixel_format CF, typename T, typename U>
 VSNRAY_FUNC
-inline void convert(vector<4, T>& target, vector<3, U> const& source)
+inline void convert(
+        pixel_format_constant<CF>   /* */,
+        vector<4, T>&               target,
+        vector<3, U> const&         source
+        )
 {
-    convert(target, vector<4, U>(source, U(1.0)));
+    convert(pixel_format_constant<CF>{}, target, vector<4, U>(source, U(1.0)));
 }
 
 } // visionaray
