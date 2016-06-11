@@ -126,16 +126,22 @@ bool png_image::load(std::string const& filename)
     bit_depth   = png_get_bit_depth(context.png, context.info);
     color_type  = png_get_color_type(context.png, context.info);
 
+    // Only support 8-bit and 16-bit per pixel images
+    if (bit_depth != 8 && bit_depth != 16)
+    {
+        return false;
+    }
+
     auto num_components = detail::png_num_components(color_type);
 
     switch (num_components)
     {
     case 3:
-        format_ = PF_RGB8;
+        format_ = bit_depth == 8 ? PF_RGB8 : PF_RGB16UI;
         break;
 
     case 4:
-        format_ = PF_RGBA8;
+        format_ = bit_depth == 8 ? PF_RGBA8 : PF_RGBA16UI;
         break;
 
     default:
@@ -143,14 +149,14 @@ bool png_image::load(std::string const& filename)
         return false;
     }
 
-    auto pitch  = w * num_components;
+    auto pitch = png_get_rowbytes(context.png, context.info);
 
     data_.resize(pitch * h);
 
     for (png_uint_32 y = 0; y < h; ++y)
     {
         png_bytep row = data_.data() + (h - 1) * pitch - y * pitch;
-        png_read_rows(context.png, &row, &row, 1);
+        png_read_rows(context.png, &row, nullptr, 1);
     }
 
     png_read_end(context.png, context.info);
