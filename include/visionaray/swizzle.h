@@ -37,7 +37,7 @@ inline void swizzle_DEPTH24_STENCIL8_to_DEPTH32F(
     for (size_t i = 0; i < len; ++i)
     {
         unsigned depth = src[i] >> 8;
-        dst[i] = depth / 16777216.0f;
+        dst[i] = depth / 16777215.0f;
     }
 }
 
