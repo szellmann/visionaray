@@ -10,8 +10,10 @@
 
 using namespace visionaray;
 
-using unorm8_3 = vector<3, unorm<8>>;
-using unorm8_4 = vector<4, unorm<8>>;
+using unorm8_3  = vector<3, unorm< 8>>;
+using unorm8_4  = vector<4, unorm< 8>>;
+using unorm16_3 = vector<3, unorm<16>>;
+using unorm16_4 = vector<4, unorm<16>>;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -203,6 +205,31 @@ TEST(Swizzle, RGB2RGBA)
 
 TEST(Swizzle, Down)
 {
+    // RGB16UI -> RGB8
+
+    std::vector<unorm16_3> rgb16ui{
+            unorm16_3(0.0f, 0.5f, 1.0f),
+            unorm16_3(0.1f, 0.2f, 0.3f)
+            };
+
+    std::vector<unorm8_3> rgb8(rgb16ui.size());
+
+    swizzle(
+            rgb8.data(),
+            PF_RGB8,
+            rgb16ui.data(),
+            PF_RGB16UI,
+            rgb16ui.size()
+            );
+
+    for (size_t i = 0; i < rgb16ui.size(); ++i)
+    {
+        ASSERT_NEAR(rgb8[i].x, rgb16ui[i].x, 0.002f);
+        ASSERT_NEAR(rgb8[i].y, rgb16ui[i].y, 0.002f);
+        ASSERT_NEAR(rgb8[i].z, rgb16ui[i].z, 0.002f);
+    }
+
+
     // RGB32F -> RGB8
 
     std::vector<vec3> rgb32f{
@@ -210,7 +237,7 @@ TEST(Swizzle, Down)
             vec3(0.1f, 0.2f, 0.3f)
             };
 
-    std::vector<unorm8_3> rgb8(rgb32f.size());
+    rgb8.resize(rgb32f.size());
 
     swizzle(
             rgb8.data(),
@@ -228,6 +255,32 @@ TEST(Swizzle, Down)
     }
 
 
+    // RGBA16UI -> RGBA8
+
+    std::vector<unorm16_4> rgba16ui{
+            unorm16_4(0.0f, 0.2f, 0.4f, 0.6f),
+            unorm16_4(0.4f, 0.6f, 0.8f, 1.0f)
+            };
+
+    std::vector<unorm8_4> rgba8(rgba16ui.size());
+
+    swizzle(
+            rgba8.data(),
+            PF_RGBA8,
+            rgba16ui.data(),
+            PF_RGBA16UI,
+            rgba8.size()
+            );
+
+    for (size_t i = 0; i < rgba16ui.size(); ++i)
+    {
+        ASSERT_NEAR(rgba8[i].x, rgba16ui[i].x, 0.002f);
+        ASSERT_NEAR(rgba8[i].y, rgba16ui[i].y, 0.002f);
+        ASSERT_NEAR(rgba8[i].z, rgba16ui[i].z, 0.002f);
+        ASSERT_NEAR(rgba8[i].w, rgba16ui[i].w, 0.002f);
+    }
+
+
     // RGBA32F -> RGBA8
 
     std::vector<vec4> rgba32f{
@@ -235,7 +288,7 @@ TEST(Swizzle, Down)
             vec4(0.4f, 0.6f, 0.8f, 1.0f)
             };
 
-    std::vector<unorm8_4> rgba8(rgba32f.size());
+    rgba8.resize(rgba32f.size());
 
     swizzle(
             rgba8.data(),
