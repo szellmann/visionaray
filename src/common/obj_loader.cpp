@@ -416,11 +416,23 @@ void load_obj(std::string const& filename, model& mod)
                         tex.set_address_mode( Wrap );
                         tex.set_filter_mode( Linear );
 
-                        if (img.format() == PF_RGBA8)
+                        if (img.format() == PF_RGBA16UI)
                         {
-                            // Get rid of alpha channel
-                            auto data_ptr = reinterpret_cast<vector<4, unorm<8>> const*>(img.data());
+                            // Get rid of alpha channel and down-convert to 8-bit
+                            auto data_ptr = reinterpret_cast<vector<4, unorm<16>> const*>(img.data());
+                            tex.set_data(data_ptr, PF_RGBA16UI, PF_RGB8, PremultiplyAlpha);
+                        }
+                        else if (img.format() == PF_RGBA8)
+                        {
+                            // Just get rid of alpha channel
+                            auto data_ptr = reinterpret_cast<vector<4, unorm< 8>> const*>(img.data());
                             tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
+                        }
+                        else if (img.format() == PF_RGB16UI)
+                        {
+                            // Down-convert to 8-bit
+                            auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
+                            tex.set_data(data_ptr, PF_RGB16UI, PF_RGB8);
                         }
                         else if (img.format() == PF_RGB8)
                         {
