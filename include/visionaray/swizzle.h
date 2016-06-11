@@ -41,6 +41,23 @@ inline void swizzle_DEPTH24_STENCIL8_to_DEPTH32F(
     }
 }
 
+inline void swizzle_RGB16UI_to_RGB8(
+        vector<3, unorm< 8>>*       dst,
+        vector<3, unorm<16>> const* src,
+        size_t                      len
+        )
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        auto rgb = src[i];
+        dst[i] = vector<3, unorm<8>>(
+            static_cast<float>(rgb.x),
+            static_cast<float>(rgb.y),
+            static_cast<float>(rgb.z)
+            );
+    }
+}
+
 inline void swizzle_RGB32F_to_RGB8(
         vector<3, unorm<8>>*        dst,
         vector<3, float> const*     src,
@@ -51,6 +68,24 @@ inline void swizzle_RGB32F_to_RGB8(
     {
         auto rgb = src[i];
         dst[i] = vector<3, unorm<8>>( rgb.x, rgb.y, rgb.z );
+    }
+}
+
+inline void swizzle_RGBA16UI_to_RGBA8(
+        vector<4, unorm< 8>>*       dst,
+        vector<4, unorm<16>> const* src,
+        size_t                      len
+        )
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        auto rgba = src[i];
+        dst[i] = vector<4, unorm<8>>(
+            static_cast<float>(rgba.x),
+            static_cast<float>(rgba.y),
+            static_cast<float>(rgba.z),
+            static_cast<float>(rgba.w)
+            );
     }
 }
 
@@ -94,6 +129,42 @@ inline void swizzle_RGBA_to_RGB(
         {
             auto rgba = src[i];
             dst[i] = vector<3, T>( rgba.x, rgba.y, rgba.z );
+        }
+    }
+}
+
+// Cast between unorm types with different bit depth
+template <unsigned BitsDst, unsigned BitsSrc>
+inline void swizzle_RGBA_to_RGB_cast_unorm(
+        vector<3, unorm<BitsDst>>*          dst,
+        vector<4, unorm<BitsSrc>> const*    src,
+        size_t                              len,
+        swizzle_hint                        hint
+        )
+{
+    if (hint == PremultiplyAlpha)
+    {
+        for (size_t i = 0; i < len; ++i)
+        {
+            auto rgba = src[i];
+            float alpha = static_cast<float>(rgba.w);
+            dst[i] = vector<3, unorm<BitsDst>>(
+                    static_cast<float>(rgba.x) * alpha,
+                    static_cast<float>(rgba.y) * alpha,
+                    static_cast<float>(rgba.z) * alpha
+                    );
+        }
+    }
+    else if (hint == TruncateAlpha)
+    {
+        for (size_t i = 0; i < len; ++i)
+        {
+            auto rgba = src[i];
+            dst[i] = vector<3, unorm<BitsDst>>(
+                    static_cast<float>(rgba.x),
+                    static_cast<float>(rgba.y),
+                    static_cast<float>(rgba.z)
+                    );
         }
     }
 }
@@ -184,6 +255,23 @@ inline void swizzle_expand_types(
     }
 }
 
+// RGBAUI16 -> RGB8, 16-bit type is unorm<16>, 8-bit type is unorm<8>
+
+inline void swizzle_expand_types(
+        vector<3, unorm< 8>>*       dst,
+        pixel_format                format_dst,
+        vector<4, unorm<16>> const* src,
+        pixel_format                format_src,
+        size_t                      len,
+        swizzle_hint                hint
+        )
+{
+    if (format_dst == PF_RGB8 && format_src == PF_RGBA16UI)
+    {
+        swizzle_RGBA_to_RGB_cast_unorm( dst, src, len, hint );
+    }
+}
+
 // RGB8 -> RGBA8, 8-bit type is unorm<8>
 
 inline void swizzle_expand_types(
@@ -200,6 +288,22 @@ inline void swizzle_expand_types(
     }
 }
 
+// RGB16UI -> RGB8, 16-bit type is unorm<16>, 8-bit type is unorm<8>
+
+inline void swizzle_expand_types(
+        vector<3, unorm< 8>>*       dst,
+        pixel_format                format_dst,
+        vector<3, unorm<16>> const* src,
+        pixel_format                format_src,
+        size_t                      len
+        )
+{
+    if (format_dst == PF_RGB8 && format_src == PF_RGB16UI)
+    {
+        detail::swizzle_RGB16UI_to_RGB8( dst, src, len );
+    }
+}
+
 // RGB32F -> RGB8, 8-bit type is unorm<8>
 
 inline void swizzle_expand_types(
@@ -213,6 +317,22 @@ inline void swizzle_expand_types(
     if (format_dst == PF_RGB8 && format_src == PF_RGB32F)
     {
         detail::swizzle_RGB32F_to_RGB8( dst, src, len );
+    }
+}
+
+// RGBA16UI -> RGBA8, 16-bit type is unorm<16>, 8-bit type is unorm<8>
+
+inline void swizzle_expand_types(
+        vector<4, unorm< 8>>*       dst,
+        pixel_format                format_dst,
+        vector<4, unorm<16>> const* src,
+        pixel_format                format_src,
+        size_t                      len
+        )
+{
+    if (format_dst == PF_RGBA8 && format_src == PF_RGBA16UI)
+    {
+        detail::swizzle_RGBA16UI_to_RGBA8( dst, src, len );
     }
 }
 
