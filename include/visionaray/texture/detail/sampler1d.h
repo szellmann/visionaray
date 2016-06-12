@@ -123,11 +123,11 @@ template <
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
 inline simd::float4 tex1D_impl_expand_types(
-        simd::float4 const*                             tex,
-        FloatT                                          coord,
-        typename simd::int_type<FloatT>::type const&    texsize,
-        tex_filter_mode                                 filter_mode,
-        std::array<tex_address_mode, 1> const&          address_mode
+        simd::float4 const*                     tex,
+        FloatT                                  coord,
+        int                                     texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
         )
 {
     using return_type   = simd::float4;
