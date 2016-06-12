@@ -144,6 +144,37 @@ inline simd::float4 tex1D_impl_expand_types(
             );
 }
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+template <
+    typename FloatT,
+    typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
+    typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
+    >
+inline simd::float8 tex1D_impl_expand_types(
+        simd::float8 const*                     tex,
+        FloatT                                  coord,
+        int                                     texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
+        )
+{
+    using return_type   = simd::float8;
+    using internal_type = simd::float8;
+
+    return choose_filter(
+            return_type{},
+            internal_type{},
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
 
 //-------------------------------------------------------------------------------------------------
 // tex1D() dispatch function
