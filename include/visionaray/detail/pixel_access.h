@@ -24,7 +24,6 @@ namespace detail
 
 //-------------------------------------------------------------------------------------------------
 // Store, get and blend pixel values (color and depth)
-// TODO: make this more flexible, source type is always either RGB{A}32F or DEPTH32F
 //
 
 namespace pixel_access
@@ -37,10 +36,11 @@ namespace pixel_access
 // Store an input color to an output color buffer, apply color conversion
 //
 
-template <pixel_format CF, typename InputColor, typename OutputColor>
+template <pixel_format DF, pixel_format SF, typename InputColor, typename OutputColor>
 VSNRAY_FUNC
 inline void store(
-        pixel_format_constant<CF>   /* */,
+        pixel_format_constant<DF>   /* dst format */,
+        pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
         recti const&                viewport,
@@ -49,8 +49,8 @@ inline void store(
         )
 {
     convert(
-        pixel_format_constant<CF>{},
-        pixel_format_constant<CF>{},
+        pixel_format_constant<DF>{},
+        pixel_format_constant<SF>{},
         buffer[y * viewport.w + x],
         color
         );
@@ -70,12 +70,13 @@ template <
     >
 VSNRAY_CPU_FUNC
 inline void store(
-        pixel_format_constant<PF_RGB8>  /* */,
-        int                             x,
-        int                             y,
-        recti const&                    viewport,
-        vector<3, FloatT> const&        color,
-        OutputColor*                    buffer
+        pixel_format_constant<PF_RGB8>      /* dst format */,
+        pixel_format_constant<PF_RGB32F>    /* src format */,
+        int                                 x,
+        int                                 y,
+        recti const&                        viewport,
+        vector<3, FloatT> const&            color,
+        OutputColor*                        buffer
         )
 {
     using float_array = typename simd::aligned_array<FloatT>::type;
@@ -123,7 +124,8 @@ template <
     >
 VSNRAY_CPU_FUNC
 inline void store(
-        pixel_format_constant<PF_RGB32F>    /* */,
+        pixel_format_constant<PF_RGB32F>    /* dst format */,
+        pixel_format_constant<PF_RGB32F>    /* src format */,
         int                                 x,
         int                                 y,
         recti const&                        viewport,
@@ -179,12 +181,13 @@ template <
     >
 VSNRAY_CPU_FUNC
 inline void store(
-        pixel_format_constant<PF_RGBA8> /* */,
-        int                             x,
-        int                             y,
-        recti const&                    viewport,
-        vector<4, FloatT> const&        color,
-        OutputColor*                    buffer
+        pixel_format_constant<PF_RGBA8>     /* dst format */,
+        pixel_format_constant<PF_RGBA32F>   /* src format */,
+        int                                 x,
+        int                                 y,
+        recti const&                        viewport,
+        vector<4, FloatT> const&            color,
+        OutputColor*                        buffer
         )
 {
     using float_array = typename simd::aligned_array<FloatT>::type;
@@ -234,7 +237,8 @@ template <
     >
 VSNRAY_CPU_FUNC
 inline void store(
-        pixel_format_constant<PF_RGBA32F>   /* */,
+        pixel_format_constant<PF_RGBA32F>   /* dst format */,
+        pixel_format_constant<PF_RGBA32F>   /* src format */,
         int                                 x,
         int                                 y,
         recti const&                        viewport,
@@ -285,7 +289,8 @@ inline void store(
 
 VSNRAY_CPU_FUNC
 inline void store(
-        pixel_format_constant<PF_RGBA32F>   /* */,
+        pixel_format_constant<PF_RGBA32F>   /* dst format */,
+        pixel_format_constant<PF_RGBA32F>   /* src format */,
         int                                 x,
         int                                 y,
         recti const&                        viewport,
@@ -314,7 +319,8 @@ template <
     >
 VSNRAY_CPU_FUNC
 inline void store(
-        pixel_format_constant<PF_DEPTH32F>  /* */,
+        pixel_format_constant<PF_DEPTH32F>  /* dst format */,
+        pixel_format_constant<PF_DEPTH32F>  /* src format */,
         int                                 x,
         int                                 y,
         recti const&                        viewport,
@@ -359,7 +365,8 @@ template <
     >
 VSNRAY_CPU_FUNC
 inline void store(
-        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* */,
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* dst format */,
+        pixel_format_constant<PF_DEPTH32F>          /* src format */,
         int                                         x,
         int                                         y,
         recti const&                                viewport,
@@ -399,7 +406,8 @@ template <
     >
 VSNRAY_CPU_FUNC
 inline void store(
-        pixel_format_constant<PF_R32F>  /* */,
+        pixel_format_constant<PF_R32F>  /* dst format */,
+        pixel_format_constant<PF_R32F>  /* src format */,
         int                             x,
         int                             y,
         recti const&                    viewport,
@@ -438,10 +446,11 @@ inline void store(
 // Store color from result record to output color buffer
 //
 
-template <pixel_format CF, typename T, typename OutputColor>
+template <pixel_format DF, pixel_format SF, typename T, typename OutputColor>
 VSNRAY_FUNC
 inline void store(
-        pixel_format_constant<CF>   /* */,
+        pixel_format_constant<DF>   /* dst format */,
+        pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
         recti const&                viewport,
@@ -449,18 +458,36 @@ inline void store(
         OutputColor*                buffer
         )
 {
-    store(pixel_format_constant<CF>{}, x, y, viewport, rr.color, buffer);
+    store(
+        pixel_format_constant<DF>{},
+        pixel_format_constant<SF>{},
+        x,
+        y,
+        viewport,
+        rr.color,
+        buffer
+        );
 }
 
 //-------------------------------------------------------------------------------------------------
 // Store color and depth from result record to output buffers
 //
 
-template <pixel_format CF, pixel_format DF, typename T, typename Color, typename Depth>
+template <
+    pixel_format DFC,
+    pixel_format SFC,
+    pixel_format DFD,
+    pixel_format SFD,
+    typename T,
+    typename Color,
+    typename Depth
+    >
 VSNRAY_FUNC
 inline void store(
-        pixel_format_constant<CF>   /* */,
-        pixel_format_constant<DF>   /* */,
+        pixel_format_constant<DFC>  /* dst format color */,
+        pixel_format_constant<SFC>  /* src format color */,
+        pixel_format_constant<DFD>  /* dst format depth */,
+        pixel_format_constant<SFD>  /* src format depth */,
         int                         x,
         int                         y,
         recti const&                viewport,
@@ -469,8 +496,27 @@ inline void store(
         Depth*                      depth_buffer
         )
 {
-    store(pixel_format_constant<CF>{}, x, y, viewport, rr.color, color_buffer);
-    store(pixel_format_constant<DF>{}, x, y, viewport, rr.depth, depth_buffer);
+    // Store color
+    store(
+        pixel_format_constant<DFC>{},
+        pixel_format_constant<SFC>{},
+        x,
+        y,
+        viewport,
+        rr.color,
+        color_buffer
+        );
+
+    // Store depth
+    store(
+        pixel_format_constant<DFD>{},
+        pixel_format_constant<SFD>{},
+        x,
+        y,
+        viewport,
+        rr.depth,
+        depth_buffer
+        );
 }
 
 
@@ -481,10 +527,11 @@ inline void store(
 // Get a color from an output color buffer, apply conversion
 //
 
-template <pixel_format CF, typename InputColor, typename OutputColor>
+template <pixel_format DF, pixel_format SF, typename InputColor, typename OutputColor>
 VSNRAY_FUNC
 inline void get(
-        pixel_format_constant<CF>   /* */,
+        pixel_format_constant<DF>   /* dst format */,
+        pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
         recti const&                viewport,
@@ -493,8 +540,8 @@ inline void get(
         )
 {
     convert(
-        pixel_format_constant<CF>{},
-        pixel_format_constant<CF>{},
+        pixel_format_constant<DF>{},
+        pixel_format_constant<SF>{},
         color,
         buffer[y * viewport.w + x]
         );
@@ -507,7 +554,8 @@ inline void get(
 template <typename T>
 VSNRAY_CPU_FUNC
 inline void get(
-        pixel_format_constant<PF_RGB32F>    /* */,
+        pixel_format_constant<PF_RGBA32F>   /* dst format */,
+        pixel_format_constant<PF_RGB32F>    /* src format */,
         int                                 x,
         int                                 y,
         recti const&                        viewport,
@@ -534,7 +582,8 @@ inline void get(
 template <typename OutputColor>
 VSNRAY_CPU_FUNC
 inline void get(
-        pixel_format_constant<PF_RGBA32F>   /* */,
+        pixel_format_constant<PF_RGBA32F>   /* dst format */,
+        pixel_format_constant<PF_RGBA32F>   /* src format */,
         int                                 x,
         int                                 y,
         recti const&                        viewport,
@@ -559,7 +608,8 @@ inline void get(
 template <typename T>
 VSNRAY_CPU_FUNC
 inline void get(
-        pixel_format_constant<PF_R32F>  /* */,
+        pixel_format_constant<PF_R32F>  /* dst format */,
+        pixel_format_constant<PF_R32F>  /* src format */,
         int                             x,
         int                             y,
         recti const&                    viewport,
@@ -582,7 +632,8 @@ inline void get(
 template <typename T>
 VSNRAY_CPU_FUNC
 inline void get(
-        pixel_format_constant<PF_DEPTH32F>  /* */,
+        pixel_format_constant<PF_DEPTH32F>  /* dst format */,
+        pixel_format_constant<PF_DEPTH32F>  /* src format */,
         int                                 x,
         int                                 y,
         recti const&                        viewport,
@@ -605,7 +656,8 @@ inline void get(
 template <typename T>
 VSNRAY_CPU_FUNC
 inline void get(
-        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* */,
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* dst format */,
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* src format */,
         int                                         x,
         int                                         y,
         recti const&                                viewport,
@@ -628,13 +680,14 @@ inline void get(
 
 //-------------------------------------------------------------------------------------------------
 // Get AVX rgba color from output color buffer, apply conversion
-// OutputColor must be rgba
+// OutputColor must be rgba (TODO: ensure through source pixel format!)
 //
 
-template <pixel_format CF, typename OutputColor>
+template <pixel_format DF, pixel_format SF, typename OutputColor>
 VSNRAY_CPU_FUNC
 inline void get(
-        pixel_format_constant<CF>   /* */,
+        pixel_format_constant<DF>   /* dst format */,
+        pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
         recti const&                viewport,
@@ -672,10 +725,11 @@ inline void get(
 // TODO: consolidate w/ float4 version
 //
 
-template <pixel_format CF, typename T>
+template <typename T>
 VSNRAY_CPU_FUNC
 inline void get(
-        pixel_format_constant<PF_R32F>  /* */,
+        pixel_format_constant<PF_R32F>  /* dst format */,
+        pixel_format_constant<PF_R32F>  /* src format */,
         int                             x,
         int                             y,
         recti const&                    viewport,
@@ -703,10 +757,11 @@ inline void get(
     result = simd::float8(out);
 }
 
-template <pixel_format CF, typename T>
+template <typename T>
 VSNRAY_CPU_FUNC
 inline void get(
-        pixel_format_constant<PF_DEPTH32F>  /* */,
+        pixel_format_constant<PF_DEPTH32F>  /* dst format */,
+        pixel_format_constant<PF_DEPTH32F>  /* src format */,
         int                                 x,
         int                                 y,
         recti const&                        viewport,
@@ -738,7 +793,8 @@ inline void get(
 template <typename T>
 VSNRAY_CPU_FUNC
 inline void get(
-        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* */,
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* dst format */,
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* src format */,
         int                                         x,
         int                                         y,
         recti const&                                viewport,
@@ -776,10 +832,11 @@ inline void get(
 // Blend input and output colors, store in output buffer
 //
 
-template <pixel_format CF, typename InputColor, typename OutputColor, typename T>
+template <pixel_format DF, pixel_format SF, typename InputColor, typename OutputColor, typename T>
 VSNRAY_FUNC
 inline void blend(
-        pixel_format_constant<CF>   /* */,
+        pixel_format_constant<DF>   /* dst format */,
+        pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
         recti const&                viewport,
@@ -791,11 +848,11 @@ inline void blend(
 {
     InputColor dst;
 
-    get(pixel_format_constant<CF>{}, x, y, viewport, dst, buffer);
+    get(pixel_format_constant<DF>{}, pixel_format_constant<SF>{}, x, y, viewport, dst, buffer);
 
     dst = color * sfactor + dst * dfactor;
 
-    store(pixel_format_constant<CF>{}, x, y, viewport, dst, buffer);
+    store(pixel_format_constant<DF>{}, pixel_format_constant<SF>{}, x, y, viewport, dst, buffer);
 }
 
 
@@ -803,10 +860,11 @@ inline void blend(
 // Blend color from result record on top of output color buffer
 //
 
-template <pixel_format CF, typename S, typename OutputColor, typename T>
+template <pixel_format DF, pixel_format SF, typename S, typename OutputColor, typename T>
 VSNRAY_FUNC
 inline void blend(
-        pixel_format_constant<CF>   /* */,
+        pixel_format_constant<DF>   /* dst format */,
+        pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
         recti const&                viewport,
@@ -816,7 +874,17 @@ inline void blend(
         T                           dfactor
         )
 {
-    blend(pixel_format_constant<CF>{}, x, y, viewport, rr.color, color_buffer, sfactor, dfactor);
+    blend(
+        pixel_format_constant<DF>{},
+        pixel_format_constant<SF>{},
+        x,
+        y,
+        viewport,
+        rr.color,
+        color_buffer,
+        sfactor,
+        dfactor
+        );
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -824,8 +892,10 @@ inline void blend(
 //
 
 template <
-    pixel_format CF,
-    pixel_format DF,
+    pixel_format DFC,
+    pixel_format SFC,
+    pixel_format DFD,
+    pixel_format SFD,
     typename S,
     typename OutputColor,
     typename Depth,
@@ -833,8 +903,10 @@ template <
     >
 VSNRAY_FUNC
 inline void blend(
-        pixel_format_constant<CF>   /* */,
-        pixel_format_constant<DF>   /* */,
+        pixel_format_constant<DFC>  /* dst format color */,
+        pixel_format_constant<SFC>  /* src format color */,
+        pixel_format_constant<DFD>  /* dst format depth */,
+        pixel_format_constant<SFD>  /* src format depth */,
         int                         x,
         int                         y,
         recti const&                viewport,
@@ -845,8 +917,31 @@ inline void blend(
         T                           dfactor
         )
 {
-    blend(pixel_format_constant<CF>{}, x, y, viewport, rr.color, color_buffer, sfactor, dfactor);
-    blend(pixel_format_constant<DF>{}, x, y, viewport, rr.depth, depth_buffer, sfactor, dfactor);
+    // Blend color
+    blend(
+        pixel_format_constant<DFC>{},
+        pixel_format_constant<SFC>{},
+        x,
+        y,
+        viewport,
+        rr.color,
+        color_buffer,
+        sfactor,
+        dfactor
+        );
+
+    // Blend depth
+    blend(
+        pixel_format_constant<DFD>{},
+        pixel_format_constant<SFD>{},
+        x,
+        y,
+        viewport,
+        rr.depth,
+        depth_buffer,
+        sfactor,
+        dfactor
+        );
 }
 
 } // pixel_access

@@ -353,6 +353,7 @@ inline void sample_pixel_impl(
     auto result = invoke_kernel(kernel, r, samp, x, y);
     pixel_access::store(
             pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
             viewport,
@@ -390,7 +391,9 @@ inline void sample_pixel_impl(
     result.depth = select( result.hit, depth_transform(result.isect_pos, args...), typename R::scalar_type(1.0) );
     pixel_access::store(
             pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
             pixel_format_constant<DF>{},
+            pixel_format_constant<PF_DEPTH32F>{},
             x,
             y,
             viewport,
@@ -433,6 +436,7 @@ inline void sample_pixel_impl(
     auto result = invoke_kernel(kernel, r, samp, x, y);
     pixel_access::store(
             pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
             viewport,
@@ -479,6 +483,7 @@ inline void sample_pixel_impl(
     {//TODO: clear method in render target?
         pixel_access::store(
                 pixel_format_constant<CF>{},
+                pixel_format_constant<PF_RGBA32F>{},
                 x,
                 y,
                 viewport,
@@ -488,6 +493,7 @@ inline void sample_pixel_impl(
     }
     pixel_access::blend(
             pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
             viewport,
@@ -531,7 +537,9 @@ inline void sample_pixel_impl(
     {//TODO: clear method in render target?
         pixel_access::store(
                 pixel_format_constant<CF>{},
+                pixel_format_constant<PF_RGBA32F>{},
                 pixel_format_constant<DF>{},
+                pixel_format_constant<PF_DEPTH32F>{},
                 x,
                 y,
                 viewport,
@@ -542,7 +550,9 @@ inline void sample_pixel_impl(
     }
     pixel_access::blend(
             pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
             pixel_format_constant<DF>{},
+            pixel_format_constant<PF_DEPTH32F>{},
             x,
             y,
             viewport,
@@ -597,6 +607,7 @@ inline void sample_pixel_impl(
         {//TODO: clear method in render target?
             pixel_access::store(
                     pixel_format_constant<CF>{},
+                    pixel_format_constant<PF_RGBA32F>{},
                     x,
                     y,
                     viewport,
@@ -609,6 +620,7 @@ inline void sample_pixel_impl(
         auto alpha = S(1.0) / S(frame);
         pixel_access::blend(
                 pixel_format_constant<CF>{},
+                pixel_format_constant<PF_RGBA32F>{},
                 x,
                 y,
                 viewport,
@@ -661,6 +673,7 @@ inline void sample_pixel_impl(
     //TODO: clear method in render target?
     pixel_access::store(
             pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
             viewport,
@@ -674,6 +687,7 @@ inline void sample_pixel_impl(
         auto alpha = S(1.0) / S(Num);
         pixel_access::blend(
                 pixel_format_constant<CF>{},
+                pixel_format_constant<PF_RGBA32F>{},
                 x,
                 y,
                 viewport,
@@ -722,7 +736,9 @@ inline void sample_pixel_impl(
     //TODO: clear method in render target?
     pixel_access::store(
             pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
             pixel_format_constant<DF>{},
+            pixel_format_constant<PF_DEPTH32F>{},
             x,
             y,
             viewport,
@@ -738,7 +754,9 @@ inline void sample_pixel_impl(
         auto alpha = S(1.0) / S(Num);
         pixel_access::blend(
                 pixel_format_constant<CF>{},
+                pixel_format_constant<PF_RGBA32F>{},
                 pixel_format_constant<DF>{},
+                pixel_format_constant<PF_DEPTH32F>{},
                 x,
                 y,
                 viewport,
