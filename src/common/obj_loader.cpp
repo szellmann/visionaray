@@ -281,7 +281,10 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
     {
         if ( qi::phrase_parse(it, text.cend(), r_newmtl, qi::blank, mtl_name) )
         {
-            auto r = matlib.insert({mtl_name.to_string(), mtl(make_default_material())});
+            auto r = matlib.insert({
+                    std::string(mtl_name.begin(), mtl_name.length()),
+                    mtl(make_default_material())}
+                    );
             if (!r.second)
             {
                 // Material already exists...
