@@ -49,14 +49,17 @@ namespace simd
 
 template <
     typename L,
-    typename FloatT,
-    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    typename T,
+    typename = typename std::enable_if<is_simd_vector<T>::value>::type,
+    typename = typename std::enable_if<
+        std::is_floating_point<typename element_type<T>::type>::value
+        >::type
     >
-inline std::array<shade_record<L, float>, num_elements<FloatT>::value> unpack(
-        shade_record<L, FloatT> const& sr
+inline std::array<shade_record<L, float>, num_elements<T>::value> unpack(
+        shade_record<L, T> const& sr
         )
 {
-    using int_array = typename aligned_array<typename int_type<FloatT>::type>::type;
+    using int_array = typename aligned_array<typename int_type<T>::type>::type;
 
     auto isect_pos  = unpack(sr.isect_pos);
     auto normal     = unpack(sr.normal);
@@ -66,9 +69,9 @@ inline std::array<shade_record<L, float>, num_elements<FloatT>::value> unpack(
     int_array active;
     store(active, sr.active.i);
 
-    std::array<shade_record<L, float>, num_elements<FloatT>::value> result;
+    std::array<shade_record<L, float>, num_elements<T>::value> result;
 
-    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<T>::value; ++i)
     {
         result[i].isect_pos = isect_pos[i];
         result[i].normal    = normal[i];
@@ -88,14 +91,17 @@ inline std::array<shade_record<L, float>, num_elements<FloatT>::value> unpack(
 
 template <
     typename L,
-    typename FloatT,
-    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    typename T,
+    typename = typename std::enable_if<is_simd_vector<T>::value>::type,
+    typename = typename std::enable_if<
+        std::is_floating_point<typename element_type<T>::type>::value
+        >::type
     >
-inline std::array<shade_record<L, vector<3, float>, float>, num_elements<FloatT>::value> unpack(
-        shade_record<L, vector<3, FloatT>, FloatT> const& sr
+inline std::array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> unpack(
+        shade_record<L, vector<3, T>, T> const& sr
         )
 {
-    using int_array = typename aligned_array<typename int_type<FloatT>::type>::type;
+    using int_array = typename aligned_array<typename int_type<T>::type>::type;
 
     auto isect_pos  = unpack(sr.isect_pos);
     auto normal     = unpack(sr.normal);
@@ -106,9 +112,9 @@ inline std::array<shade_record<L, vector<3, float>, float>, num_elements<FloatT>
     int_array active;
     store(active, sr.active.i);
 
-    std::array<shade_record<L, vector<3, float>, float>, num_elements<FloatT>::value> result;
+    std::array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> result;
 
-    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<T>::value; ++i)
     {
         result[i].isect_pos = isect_pos[i];
         result[i].normal    = normal[i];
