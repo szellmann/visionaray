@@ -74,7 +74,6 @@ set(COMMON_HEADERS
     manip/translate_manipulator.h
     manip/zoom_manipulator.h
 
-    call_kernel.h
     cfile.h
     image.h
     image_base.h
@@ -82,7 +81,6 @@ set(COMMON_HEADERS
     make_unique.h
     obj_loader.h
     png_image.h
-    render_bvh.h
     tga_image.h
     tiff_image.h
     timer.h

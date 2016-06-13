@@ -4,9 +4,9 @@
 #pragma once
 
 #ifndef VSNRAY_COVER_STATE_H
-#define VSNRAY_COVER_STATE_H
+#define VSNRAY_COVER_STATE_H 1
 
-#include <common/call_kernel.h> // visionaray::algorithm
+#include <visionaray/detail/call_kernel.h> // visionaray::detail::algorithm
 
 namespace visionaray { namespace cover {
 
@@ -26,14 +26,14 @@ enum color_space    { RGB, sRGB };
 
 struct render_state
 {
-    algorithm       algo            = Simple;
-    unsigned        min_bounces     = 1;
-    unsigned        max_bounces     = 10;
-    unsigned        num_bounces     = 4;
-    device_type     device          = CPU;
-    data_variance   data_var        = Static;
-    color_space     clr_space       = sRGB;
-    unsigned        num_threads     = 0;
+    detail::algorithm   algo            = detail::Simple;
+    unsigned            min_bounces     = 1;
+    unsigned            max_bounces     = 10;
+    unsigned            num_bounces     = 4;
+    device_type         device          = CPU;
+    data_variance       data_var        = Static;
+    color_space         clr_space       = sRGB;
+    unsigned            num_threads     = 0;
 };
 
 
@@ -43,11 +43,11 @@ struct render_state
 
 struct debug_state
 {
-    bool            debug_mode      = true;
-    bool            show_bvh        = false;
-    bool            show_bvh_costs  = false;
-    bool            show_normals    = false;
-    bool            show_tex_coords = false;
+    bool                debug_mode      = true;
+    bool                show_bvh        = false;
+    bool                show_bvh_costs  = false;
+    bool                show_normals    = false;
+    bool                show_tex_coords = false;
 };
 
 }} // namespace visionaray::cover

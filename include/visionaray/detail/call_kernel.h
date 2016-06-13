@@ -3,14 +3,16 @@
 
 #pragma once
 
-#ifndef VSNRAY_CALL_KERNEL_H
-#define VSNRAY_CALL_KERNEL_H 1
+#ifndef VSNRAY_DETAIL_CALL_KERNEL_H
+#define VSNRAY_DETAIL_CALL_KERNEL_H 1
 
 #include <utility>
 
 #include <visionaray/kernels.h>
 
 namespace visionaray
+{
+namespace detail
 {
 
 //-------------------------------------------------------------------------------------------------
@@ -190,6 +192,7 @@ void call_kernel(
     }
 }
 
+} // detail
 } // visionaray
 
-#endif // VSNRAY_CALL_KERNEL_H
+#endif // VSNRAY_DETAIL_CALL_KERNEL_H

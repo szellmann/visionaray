@@ -29,6 +29,8 @@
 #include <cover/VRSceneGraph.h>
 #include <cover/VRViewer.h>
 
+#include <visionaray/detail/call_kernel.h>
+#include <visionaray/detail/render_bvh.h>
 #include <visionaray/gl/debug_callback.h>
 #include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
@@ -43,9 +45,6 @@
 #ifdef __CUDACC__
 #include <visionaray/pixel_unpack_buffer_rt.h>
 #endif
-
-#include <common/call_kernel.h>
-#include <common/render_bvh.h>
 
 #include "kernels/bvh_costs_kernel.h"
 #include "kernels/normals_kernel.h"
@@ -782,11 +781,11 @@ struct drawable::impl
     size_t                                  total_frame_num = 0;
 
     color_space                             clr_space       = RGB;
-    algorithm                               algo_current    = Simple;
+    detail::algorithm                       algo_current    = detail::Simple;
     unsigned                                num_bounces     = 4;
     device_type                             device          = CPU;
 
-    bvh_outline_renderer                    outlines;
+    detail::bvh_outline_renderer            outlines;
 
     gl::debug_callback                      gl_debug_callback;
 
@@ -1040,7 +1039,7 @@ void drawable::impl::call_kernel(KParams const& params)
         if (state->device == GPU)
         {
 #ifdef __CUDACC__
-            visionaray::call_kernel(
+            visionaray::detail::call_kernel(
                     state->algo,
                     device_sched,
                     params,
@@ -1056,7 +1055,7 @@ void drawable::impl::call_kernel(KParams const& params)
         else
         {
 #ifndef __CUDA_ARCH__
-            visionaray::call_kernel(
+            visionaray::detail::call_kernel(
                     state->algo,
                     host_sched,
                     params,
@@ -1396,7 +1395,7 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
                 bounces,
                 epsilon,
                 vec4(0.0f),
-                impl_->state->algo == Pathtracing ? vec4(1.0f) : ambient
+                impl_->state->algo == detail::Pathtracing ? vec4(1.0f) : ambient
                 );
 
         impl_->device_intersector.tex_coords = kparams.tex_coords;
@@ -1425,7 +1424,7 @@ void drawable::drawImplementation(osg::RenderInfo& info) const
                 bounces,
                 epsilon,
                 vec4(0.0f),
-                impl_->state->algo == Pathtracing ? vec4(1.0f) : ambient
+                impl_->state->algo == detail::Pathtracing ? vec4(1.0f) : ambient
                 );
 
         impl_->host_intersector.tex_coords = kparams.tex_coords;

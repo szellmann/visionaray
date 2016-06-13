@@ -104,7 +104,7 @@ struct Visionaray::impl : vrui::coMenuListener
 
     void set_data_variance(data_variance var);
     void set_color_space(color_space cs);
-    void set_algorithm(algorithm algo);
+    void set_algorithm(detail::algorithm algo);
     void set_num_bounces(unsigned num_bounces);
     void set_device(device_type dev);
     void set_show_bvh(bool show_bvh);
@@ -161,15 +161,15 @@ void Visionaray::impl::init_state_from_config()
 
     if (algo_str == "whitted")
     {
-        state->algo = Whitted;
+        state->algo = detail::Whitted;
     }
     else if (algo_str == "pathtracing")
     {
-        state->algo = Pathtracing;
+        state->algo = detail::Pathtracing;
     }
     else
     {
-        state->algo = Simple;
+        state->algo = detail::Simple;
     }
 
     // TODO
@@ -241,15 +241,15 @@ void Visionaray::impl::init_ui()
 
     ui.algo_group.reset(new coCheckboxGroup( /* allow empty selection: */ false ));
 
-    ui.simple_button.reset(new coCheckboxMenuItem("Simple", state->algo == Simple, ui.algo_group.get()));
+    ui.simple_button.reset(new coCheckboxMenuItem("Simple", state->algo == detail::Simple, ui.algo_group.get()));
     ui.simple_button->setMenuListener(this);
     ui.algo_menu->add(ui.simple_button.get());
 
-    ui.whitted_button.reset(new coCheckboxMenuItem("Whitted", state->algo == Whitted, ui.algo_group.get()));
+    ui.whitted_button.reset(new coCheckboxMenuItem("Whitted", state->algo == detail::Whitted, ui.algo_group.get()));
     ui.whitted_button->setMenuListener(this);
     ui.algo_menu->add(ui.whitted_button.get());
 
-    ui.pathtracing_button.reset(new coCheckboxMenuItem("Pathtracing", state->algo == Pathtracing, ui.algo_group.get()));
+    ui.pathtracing_button.reset(new coCheckboxMenuItem("Pathtracing", state->algo == detail::Pathtracing, ui.algo_group.get()));
     ui.pathtracing_button->setMenuListener(this);
     ui.algo_menu->add(ui.pathtracing_button.get());
 
@@ -322,15 +322,15 @@ void Visionaray::impl::menuEvent(vrui::coMenuItem* item)
     // algorithm submenu
     if (item == ui.simple_button.get())
     {
-        set_algorithm(Simple);
+        set_algorithm(detail::Simple);
     }
     else if (item == ui.whitted_button.get())
     {
-        set_algorithm(Whitted);
+        set_algorithm(detail::Whitted);
     }
     else if (item == ui.pathtracing_button.get())
     {
-        set_algorithm(Pathtracing);
+        set_algorithm(detail::Pathtracing);
     }
 
     if (item == ui.bounces_slider.get())
@@ -385,12 +385,12 @@ void Visionaray::impl::set_color_space(color_space cs)
     ui.toggle_color_space->setState( cs == sRGB, false );
 }
 
-void Visionaray::impl::set_algorithm(algorithm algo)
+void Visionaray::impl::set_algorithm(detail::algorithm algo)
 {
     state->algo = algo;
-    ui.simple_button->setState( algo == Simple, false );
-    ui.whitted_button->setState( algo == Whitted, false );
-    ui.pathtracing_button->setState( algo == Pathtracing, false );
+    ui.simple_button->setState( algo == detail::Simple, false );
+    ui.whitted_button->setState( algo == detail::Whitted, false );
+    ui.pathtracing_button->setState( algo == detail::Pathtracing, false );
 }
 
 void Visionaray::impl::set_num_bounces(unsigned num_bounces)
@@ -490,15 +490,15 @@ void Visionaray::key(int type, int key_sym, int /* mod */)
         switch (key_sym)
         {
         case '1':
-            impl_->set_algorithm(Simple);
+            impl_->set_algorithm(detail::Simple);
             break;
 
         case '2':
-            impl_->set_algorithm(Whitted);
+            impl_->set_algorithm(detail::Whitted);
             break;
 
         case '3':
-            impl_->set_algorithm(Pathtracing);
+            impl_->set_algorithm(detail::Pathtracing);
             break;
         }
     }

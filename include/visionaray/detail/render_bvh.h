@@ -3,12 +3,12 @@
 
 #pragma once
 
-#ifndef VSNRAY_RENDER_BVH_H
-#define VSNRAY_RENDER_BVH_H 1
+#ifndef VSNRAY_DETAIL_RENDER_BVH_H
+#define VSNRAY_DETAIL_RENDER_BVH_H 1
+
+#include "platform.h"
 
 #include <vector>
-
-#include <visionaray/detail/platform.h>
 
 #include <GL/glew.h>
 
@@ -21,6 +21,8 @@
 #include <visionaray/bvh.h>
 
 namespace visionaray
+{
+namespace detail
 {
 
 //-------------------------------------------------------------------------------------------------
@@ -133,6 +135,7 @@ private:
 
 };
 
+} // detail
 } // visionaray
 
-#endif // VSNRAY_RENDER_BVH_H
+#endif // VSNRAY_DETAIL_RENDER_BVH_H
