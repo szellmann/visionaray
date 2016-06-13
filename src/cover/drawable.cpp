@@ -46,7 +46,6 @@
 
 #include <common/call_kernel.h>
 #include <common/render_bvh.h>
-#include <common/util.h>
 
 #include "kernels/bvh_costs_kernel.h"
 #include "kernels/normals_kernel.h"
