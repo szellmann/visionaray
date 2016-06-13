@@ -148,53 +148,6 @@ inline vector<2, T> operator/(vector<2, T> const& u, vector<2, T> const& v)
     return vector<2, T>(u.x / v.x, u.y / v.y);
 }
 
-
-//--------------------------------------------------------------------------------------------------
-// Comparisons
-//
-
-template <typename T>
-MATH_FUNC
-inline bool operator==(vector<2, T> const& u, vector<2, T> const& v)
-{
-    return u.x == v.x && u.y == v.y;
-}
-
-template <typename T>
-MATH_FUNC
-inline bool operator<(vector<2, T> const& u, vector<2, T> const& v)
-{
-    return u.x < v.x || (u.x == v.x && u.y < v.y);
-}
-
-template <typename T>
-MATH_FUNC
-inline bool operator!=(vector<2, T> const& u, vector<2, T> const& v)
-{
-    return !(u == v);
-}
-
-template <typename T>
-MATH_FUNC
-inline bool operator<=(vector<2, T> const& u, vector<2, T> const& v)
-{
-    return !(v < u);
-}
-
-template <typename T>
-MATH_FUNC
-inline bool operator>(vector<2, T> const& u, vector<2, T> const& v)
-{
-    return v < u;
-}
-
-template <typename T>
-MATH_FUNC
-inline bool operator>=(vector<2, T> const& u, vector<2, T> const& v)
-{
-    return !(u < v);
-}
-
 template <typename T>
 MATH_FUNC
 inline vector<2, T> operator+(vector<2, T> const& v, T const& s)
@@ -249,6 +202,53 @@ MATH_FUNC
 inline vector<2, T> operator/(T const& s, vector<2, T> const& v)
 {
     return vector<2, T>(s / v.x, s / v.y);
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+template <typename T>
+MATH_FUNC
+inline bool operator==(vector<2, T> const& u, vector<2, T> const& v)
+{
+    return u.x == v.x && u.y == v.y;
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator<(vector<2, T> const& u, vector<2, T> const& v)
+{
+    return u.x < v.x || (u.x == v.x && u.y < v.y);
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator!=(vector<2, T> const& u, vector<2, T> const& v)
+{
+    return !(u == v);
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator<=(vector<2, T> const& u, vector<2, T> const& v)
+{
+    return !(v < u);
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator>(vector<2, T> const& u, vector<2, T> const& v)
+{
+    return v < u;
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator>=(vector<2, T> const& u, vector<2, T> const& v)
+{
+    return !(u < v);
 }
 
 

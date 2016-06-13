@@ -174,53 +174,6 @@ inline vector<3, T> operator/(vector<3, T> const& u, vector<3, T> const& v)
     return vector<3, T>(u.x / v.x, u.y / v.y, u.z / v.z);
 }
 
-
-//--------------------------------------------------------------------------------------------------
-// Comparisons
-//
-
-template <typename T>
-MATH_FUNC
-inline bool operator==(vector<3, T> const& u, vector<3, T> const& v)
-{
-    return u.x == v.x && u.y == v.y && u.z == v.z;
-}
-
-template <typename T>
-MATH_FUNC
-inline bool operator<(vector<3, T> const& u, vector<3, T> const& v)
-{
-    return u.x < v.x || ( (u.x == v.x && u.y < v.y) || (u.y == v.y && u.z < v.z) );
-}
-
-template <typename T>
-MATH_FUNC
-inline bool operator!=(vector<3, T> const& u, vector<3, T> const& v)
-{
-    return !(u == v);
-}
-
-template <typename T>
-MATH_FUNC
-inline bool operator<=(vector<3, T> const& u, vector<3, T> const& v)
-{
-    return !(v < u);
-}
-
-template <typename T>
-MATH_FUNC
-inline bool operator>(vector<3, T> const& u, vector<3, T> const& v)
-{
-    return v < u;
-}
-
-template <typename T>
-MATH_FUNC
-inline bool operator>=(vector<3, T> const& u, vector<3, T> const& v)
-{
-    return !(u < v);
-}
-
 template <typename T>
 MATH_FUNC
 inline vector<3, T> operator+(vector<3, T> const& v, T const& s)
@@ -275,6 +228,53 @@ MATH_FUNC
 inline vector<3, T> operator/(T const& s, vector<3, T> const& v)
 {
     return vector<3, T>(s / v.x, s / v.y, s / v.z);
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+template <typename T>
+MATH_FUNC
+inline bool operator==(vector<3, T> const& u, vector<3, T> const& v)
+{
+    return u.x == v.x && u.y == v.y && u.z == v.z;
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator<(vector<3, T> const& u, vector<3, T> const& v)
+{
+    return u.x < v.x || ( (u.x == v.x && u.y < v.y) || (u.y == v.y && u.z < v.z) );
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator!=(vector<3, T> const& u, vector<3, T> const& v)
+{
+    return !(u == v);
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator<=(vector<3, T> const& u, vector<3, T> const& v)
+{
+    return !(v < u);
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator>(vector<3, T> const& u, vector<3, T> const& v)
+{
+    return v < u;
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator>=(vector<3, T> const& u, vector<3, T> const& v)
+{
+    return !(u < v);
 }
 
 
