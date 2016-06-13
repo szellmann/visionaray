@@ -258,42 +258,42 @@ inline vector<4, T> operator/(T const& s, vector<4, T> const& v)
 
 template <typename T>
 MATH_FUNC
-bool operator==(vector<4, T> const& u, vector<4, T> const& v)
+inline bool operator==(vector<4, T> const& u, vector<4, T> const& v)
 {
     return u.x == v.x && u.y == v.y && u.z == v.z && u.w == v.w;
 }
 
 template <typename T>
 MATH_FUNC
-bool operator<(vector<4, T> const& u, vector<4, T> const& v)
+inline bool operator<(vector<4, T> const& u, vector<4, T> const& v)
 {
     return u.x < v.x || ( (u.x == v.x && u.y < v.y) || ( (u.y == v.y && u.z < v.z) || (u.z == v.z && u.w < v.w) ) );
 }
 
 template <typename T>
 MATH_FUNC
-bool operator!=(vector<4, T> const& u, vector<4, T> const& v)
+inline bool operator!=(vector<4, T> const& u, vector<4, T> const& v)
 {
     return !(u == v);
 }
 
 template <typename T>
 MATH_FUNC
-bool operator<=(vector<4, T> const& u, vector<4, T> const& v)
+inline bool operator<=(vector<4, T> const& u, vector<4, T> const& v)
 {
     return !(v < u);
 }
 
 template <typename T>
 MATH_FUNC
-bool operator>(vector<4, T> const& u, vector<4, T> const& v)
+inline bool operator>(vector<4, T> const& u, vector<4, T> const& v)
 {
     return v < u;
 }
 
 template <typename T>
 MATH_FUNC
-bool operator>=(vector<4, T> const& u, vector<4, T> const& v)
+inline bool operator>=(vector<4, T> const& u, vector<4, T> const& v)
 {
     return !(u < v);
 }
