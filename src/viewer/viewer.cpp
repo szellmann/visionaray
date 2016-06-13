@@ -63,7 +63,6 @@
 #include <common/obj_loader.h>
 #include <common/render_bvh.h>
 #include <common/timer.h>
-#include <common/util.h>
 #include <common/viewer_glut.h>
 
 
@@ -106,7 +105,7 @@ struct renderer : viewer_type
 
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
-        , host_sched(get_num_processors())
+        , host_sched(std::thread::hardware_concurrency())
         , mouse_pos(0)
     {
         using namespace support;

@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <thread>
 #include <type_traits>
 
 #include <GL/glew.h>
@@ -815,7 +816,7 @@ struct drawable::impl
             host_sched.set_num_threads(
                     state->num_threads > 0
                   ? state->num_threads
-                  : get_num_processors()
+                  : std::thread::hardware_concurrency()
                     );
         }
     }

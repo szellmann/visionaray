@@ -86,7 +86,6 @@ set(COMMON_HEADERS
     tga_image.h
     tiff_image.h
     timer.h
-    util.h
     viewer_base.h
     viewer_glut.h
 )
@@ -109,7 +108,6 @@ set(COMMON_SOURCES
     png_image.cpp
     tga_image.cpp
     tiff_image.cpp
-    util.cpp
     viewer_base.cpp
     viewer_glut.cpp
 
