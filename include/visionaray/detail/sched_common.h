@@ -342,10 +342,10 @@ inline void sample_pixel_impl(
         Sampler&                        samp,
         unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
-        unsigned                        x,
-        unsigned                        y,
-        size_t                          width,
-        size_t                          height,
+        int                             x,
+        int                             y,
+        int                             width,
+        int                             height,
         Args&&...                       args
         )
 {
@@ -381,10 +381,10 @@ inline void sample_pixel_impl(
         Sampler&                        samp,
         unsigned                        frame_num,
         render_target_ref<CF, DF>       rt_ref,
-        unsigned                        x,
-        unsigned                        y,
-        size_t                          width,
-        size_t                          height,
+        int                             x,
+        int                             y,
+        int                             width,
+        int                             height,
         Args&&...                       args
         )
 {
@@ -427,10 +427,10 @@ inline void sample_pixel_impl(
         Sampler&                        samp,
         unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
-        unsigned                        x,
-        unsigned                        y,
-        size_t                          width,
-        size_t                          height,
+        int                             x,
+        int                             y,
+        int                             width,
+        int                             height,
         Args&&...                       args
         )
 {
@@ -470,10 +470,10 @@ inline void sample_pixel_impl(
         Sampler&                            samp,
         unsigned                            frame_num,
         render_target_ref<CF>               rt_ref,
-        unsigned                            x,
-        unsigned                            y,
-        size_t                              width,
-        size_t                              height,
+        int                                 x,
+        int                                 y,
+        int                                 width,
+        int                                 height,
         Args&&...                           args
         )
 {
@@ -526,10 +526,10 @@ inline void sample_pixel_impl(
         Sampler&                            samp,
         unsigned                            frame_num,
         render_target_ref<CF, DF>           rt_ref,
-        unsigned                            x,
-        unsigned                            y,
-        size_t                              width,
-        size_t                              height,
+        int                                 x,
+        int                                 y,
+        int                                 width,
+        int                                 height,
         Args&&...                           args
         )
 {
@@ -593,10 +593,10 @@ inline void sample_pixel_impl(
         Sampler&                            samp,
         unsigned                            frame_num,
         render_target_ref<CF>               rt_ref,
-        unsigned                            x,
-        unsigned                            y,
-        size_t                              width,
-        size_t                              height,
+        int                                 x,
+        int                                 y,
+        int                                 width,
+        int                                 height,
         Args&&...                           args
         )
 {
@@ -663,10 +663,10 @@ inline void sample_pixel_impl(
         Sampler&                        samp,
         unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
-        unsigned                        x,
-        unsigned                        y,
-        size_t                          width,
-        size_t                          height,
+        int                             x,
+        int                             y,
+        int                             width,
+        int                             height,
         Args&&...                       args
         )
 {
@@ -729,10 +729,10 @@ inline void sample_pixel_impl(
         Sampler&                        samp,
         unsigned                        frame_num,
         render_target_ref<CF, DF>       rt_ref,
-        unsigned                        x,
-        unsigned                        y,
-        size_t                          width,
-        size_t                          height,
+        int                             x,
+        int                             y,
+        int                             width,
+        int                             height,
         Args&&...                       args
         )
 {
