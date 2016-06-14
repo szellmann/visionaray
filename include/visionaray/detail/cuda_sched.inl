@@ -50,13 +50,13 @@ inline unsigned cuda_seed()
 template <
     typename R,
     typename PxSamplerT,
-    typename Viewport,
+    typename Rect,
     typename RTRef,
     typename K,
     typename ...Args
     >
 __global__ void render(
-        Viewport        viewport,
+        Rect            scissor_box,
         RTRef           rt_ref,
         K               kernel,
         unsigned        frame_num,
@@ -66,7 +66,7 @@ __global__ void render(
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
     auto y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x < viewport.x || y < viewport.y || x >= viewport.w || y >= viewport.h)
+    if (x < scissor_box.x || y < scissor_box.y || x >= scissor_box.w || y >= scissor_box.h)
     {
         return;
     }
@@ -80,7 +80,6 @@ __global__ void render(
             samp,
             x,
             y,
-            viewport,
             args...
             );
 
@@ -93,7 +92,6 @@ __global__ void render(
             rt_ref,
             x,
             y,
-            viewport,
             args...
             );
 }
@@ -102,7 +100,7 @@ template <
     typename R,
     typename PxSamplerT,
     typename Intersector,
-    typename Viewport,
+    typename Rect,
     typename RTRef,
     typename K,
     typename ...Args
@@ -110,7 +108,7 @@ template <
 __global__ void render(
         detail::have_intersector_tag    /* */,
         Intersector                     intersector,
-        Viewport                        viewport,
+        Rect                            scissor_box,
         RTRef                           rt_ref,
         K                               kernel,
         unsigned                        frame_num,
@@ -120,7 +118,7 @@ __global__ void render(
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
     auto y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x < viewport.x || y < viewport.y || x >= viewport.w || y >= viewport.h)
+    if (x < scissor_box.x || y < scissor_box.y || x >= scissor_box.w || y >= scissor_box.h)
     {
         return;
     }
@@ -134,7 +132,6 @@ __global__ void render(
             samp,
             x,
             y,
-            viewport,
             args...
             );
 
@@ -149,7 +146,6 @@ __global__ void render(
             rt_ref,
             x,
             y,
-            viewport,
             args...
             );
 }
@@ -159,27 +155,18 @@ __global__ void render(
 // Dispatch functions
 //
 
-template <typename R, typename SP, typename Viewport, typename ...Args>
+template <typename R, typename SP, typename Rect, typename ...Args>
 inline void cuda_sched_impl_call_render(
         std::false_type /* has intersector */,
         SP              /* */,
+        dim3 const&     grid_size,
         dim3 const&     block_size,
-        Viewport const& viewport,
+        Rect const&     scissor_box,
         Args&&...       args
         )
 {
-    using cuda_dim_t = decltype(block_size.x);
-
-    auto w = static_cast<cuda_dim_t>(viewport.w);
-    auto h = static_cast<cuda_dim_t>(viewport.h);
-
-    dim3 grid_size(
-            div_up(w, block_size.x),
-            div_up(h, block_size.y)
-            );
-
     render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
-            viewport,
+            scissor_box,
             std::forward<Args>(args)...
             );
 
@@ -187,29 +174,20 @@ inline void cuda_sched_impl_call_render(
     cudaDeviceSynchronize();
 }
 
-template <typename R, typename SP, typename Viewport, typename ...Args>
+template <typename R, typename SP, typename Rect, typename ...Args>
 inline void cuda_sched_impl_call_render(
         std::true_type  /* has intersector */,
         SP const&       sparams,
+        dim3 const&     grid_size,
         dim3 const&     block_size,
-        Viewport const& viewport,
+        Rect const&     scissor_box,
         Args&&...       args
         )
 {
-    using cuda_dim_t = decltype(block_size.x);
-
-    auto w = static_cast<cuda_dim_t>(viewport.w);
-    auto h = static_cast<cuda_dim_t>(viewport.h);
-
-    dim3 grid_size(
-            div_up(w, block_size.x),
-            div_up(h, block_size.y)
-            );
-
     render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
             detail::have_intersector_tag(),
             sparams.intersector,
-            viewport,
+            scissor_box,
             std::forward<Args>(args)...
             );
 
@@ -227,26 +205,32 @@ inline void cuda_sched_impl_frame(
         unsigned        frame_num
         )
 {
-    assert( sparams.rt.width()  >= sparams.viewport.w - sparams.viewport.x );
-    assert( sparams.rt.height() >= sparams.viewport.h - sparams.viewport.y );
+    using cuda_dim_t = decltype(block_size.x);
 
-    auto rt_ref             = sparams.rt.ref();
-    auto inv_view_matrix    = inverse(sparams.view_matrix);
-    auto inv_proj_matrix    = inverse(sparams.proj_matrix);
-    auto viewport           = sparams.viewport;
+    auto viewport = sparams.viewport;
+
+    auto w = static_cast<cuda_dim_t>(viewport.w);
+    auto h = static_cast<cuda_dim_t>(viewport.h);
+
+    dim3 grid_size(
+            div_up(w, block_size.x),
+            div_up(h, block_size.y)
+            );
 
     cuda_sched_impl_call_render<R>(
             typename detail::sched_params_has_intersector<SP>::type(),
             sparams,
+            grid_size,
             block_size,
-            viewport,
-            rt_ref,
+            sparams.scissor_box,
+            sparams.rt.ref(),
             kernel,
             frame_num,
+            sparams.viewport,
             sparams.view_matrix,
-            inv_view_matrix,
+            inverse(sparams.view_matrix),
             sparams.proj_matrix,
-            inv_proj_matrix
+            inverse(sparams.proj_matrix)
             );
 }
 
@@ -259,11 +243,18 @@ inline void cuda_sched_impl_frame(
         unsigned        frame_num
         )
 {
-    assert( sparams.rt.width()  >= sparams.cam.get_viewport().w - sparams.cam.get_viewport().x );
-    assert( sparams.rt.height() >= sparams.cam.get_viewport().h - sparams.cam.get_viewport().y );
+    using cuda_dim_t = decltype(block_size.x);
 
-    auto rt_ref             = sparams.rt.ref();
-    auto viewport           = sparams.cam.get_viewport();
+    auto viewport = sparams.cam.get_viewport();
+
+    auto w = static_cast<cuda_dim_t>(viewport.w);
+    auto h = static_cast<cuda_dim_t>(viewport.h);
+
+    dim3 grid_size(
+            div_up(w, block_size.x),
+            div_up(h, block_size.y)
+            );
+
 
     //  front, side, and up vectors form an orthonormal basis
     auto f = normalize( sparams.cam.eye() - sparams.cam.center() );
@@ -278,11 +269,13 @@ inline void cuda_sched_impl_frame(
     cuda_sched_impl_call_render<R>(
             typename detail::sched_params_has_intersector<SP>::type(),
             sparams,
+            grid_size,
             block_size,
-            viewport,
-            rt_ref,
+            sparams.scissor_box,
+            sparams.rt.ref(),
             kernel,
             frame_num,
+            viewport,
             eye,
             cam_u,
             cam_v,

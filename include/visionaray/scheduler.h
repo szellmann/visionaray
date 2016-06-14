@@ -52,14 +52,27 @@ struct jittered_blend_type : jittered_type {};
 // Base classes for scheduler params
 //
 
-struct sched_params_base {};
+template <typename Rect>
+struct sched_params_base
+{
+    sched_params_base(Rect sb)
+        : scissor_box(sb)
+    {
+    }
 
-template <typename Intersector>
-struct sched_params_intersector_base
+    Rect scissor_box;
+};
+
+template <typename Rect, typename Intersector>
+struct sched_params_intersector_base : sched_params_base<Rect>
 {
     using has_intersector = void;
 
-    sched_params_intersector_base(Intersector& i) : intersector(i) {}
+    sched_params_intersector_base(Rect sb, Intersector& i)
+        : sched_params_base<Rect>(sb)
+        , intersector(i)
+    {
+    }
 
     Intersector& intersector;
 };
@@ -188,12 +201,13 @@ auto make_sched_params(
         camera const&   cam,
         RT&             rt
         )
-    -> sched_params<sched_params_base, RT, PxSamplerT>
+    -> sched_params<sched_params_base<recti>, RT, PxSamplerT>
 {
-    assert( rt.width()  >= cam.get_viewport().w - cam.get_viewport().x );
-    assert( rt.height() >= cam.get_viewport().h - cam.get_viewport().y );
-
-    return sched_params<sched_params_base, RT, PxSamplerT>{ cam, rt };
+    return sched_params<sched_params_base<recti>, RT, PxSamplerT>(
+            cam,
+            rt,
+            recti(0, 0, cam.get_viewport().w, cam.get_viewport().h)
+            );
 }
 
 template <typename PxSamplerT, typename Intersector, typename RT>
@@ -203,14 +217,12 @@ auto make_sched_params(
         RT&             rt,
         Intersector&    isect
         )
-    -> sched_params<sched_params_intersector_base<Intersector>, RT, PxSamplerT>
+    -> sched_params<sched_params_intersector_base<recti, Intersector>, RT, PxSamplerT>
 {
-    assert( rt.width()  >= cam.get_viewport().w - cam.get_viewport().x );
-    assert( rt.height() >= cam.get_viewport().h - cam.get_viewport().y );
-
-    return sched_params<sched_params_intersector_base<Intersector>, RT, PxSamplerT>{
+    return sched_params<sched_params_intersector_base<recti, Intersector>, RT, PxSamplerT>{
             cam,
             rt,
+            recti(0, 0, cam.get_viewport().w, cam.get_viewport().h),
             isect
             };
 }
@@ -224,17 +236,15 @@ auto make_sched_params(
         V const&        viewport,
         RT&             rt
         )
-    -> sched_params<sched_params_base, MT, V, RT, PxSamplerT>
+    -> sched_params<sched_params_base<recti>, MT, V, RT, PxSamplerT>
 {
-    assert( rt.width()  >= viewport.w - viewport.x );
-    assert( rt.height() >= viewport.h - viewport.y );
-
-    return sched_params<sched_params_base, MT, V, RT, PxSamplerT>{
+    return sched_params<sched_params_base<recti>, MT, V, RT, PxSamplerT>(
             view_matrix,
             proj_matrix,
             viewport,
-            rt
-            };
+            rt,
+            recti(0, 0, viewport.w, viewport.h)
+            );
 }
 
 template <typename PxSamplerT, typename Intersector, typename MT, typename V, typename RT>
@@ -246,16 +256,14 @@ auto make_sched_params(
         RT&             rt,
         Intersector&    isect
         )
-    -> sched_params<sched_params_intersector_base<Intersector>, MT, V, RT, PxSamplerT>
+    -> sched_params<sched_params_intersector_base<recti, Intersector>, MT, V, RT, PxSamplerT>
 {
-    assert( rt.width()  >= viewport.w - viewport.x );
-    assert( rt.height() >= viewport.h - viewport.y );
-
-    return sched_params<sched_params_intersector_base<Intersector>, MT, V, RT, PxSamplerT>{
+    return sched_params<sched_params_intersector_base<recti, Intersector>, MT, V, RT, PxSamplerT>{
             view_matrix,
             proj_matrix,
             viewport,
             rt,
+            recti(0, 0, viewport.w, viewport.h),
             isect
             };
 }

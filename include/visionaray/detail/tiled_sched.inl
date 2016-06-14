@@ -127,6 +127,7 @@ struct tiled_sched<R>::impl
     detail::sync_params         sync_params;
 
     recti                       viewport;
+    recti                       scissor_box;
 
     render_tile_func            render_tile;
 };
@@ -200,8 +201,8 @@ void tiled_sched<R>::impl::render_loop()
             auto numtilesx = div_up( w, tilew );
 
             recti tile(
-                    viewport.x + (tile_idx % numtilesx) * tilew,
-                    viewport.y + (tile_idx / numtilesx) * tileh,
+                    (tile_idx % numtilesx) * tilew,
+                    (tile_idx / numtilesx) * tileh,
                     tilew,
                     tileh
                     );
@@ -226,20 +227,18 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 {
     // overload for two matrices and a viewport
 
-    assert( sparams.rt.width()  >= sparams.viewport.w - sparams.viewport.x );
-    assert( sparams.rt.height() >= sparams.viewport.h - sparams.viewport.y );
-
     using T = typename R::scalar_type;
     using matrix_type   = matrix<4, 4, T>;
 
-    viewport = sparams.viewport;
+    viewport    = sparams.viewport;
+    scissor_box = sparams.scissor_box;
 
     auto view_matrix     = matrix_type( sparams.view_matrix );
     auto proj_matrix     = matrix_type( sparams.proj_matrix );
     auto inv_view_matrix = matrix_type( inverse(sparams.view_matrix) );
     auto inv_proj_matrix = matrix_type( inverse(sparams.proj_matrix) );
 
-    recti xviewport(viewport.x, viewport.y, viewport.w - 1, viewport.h - 1);
+    recti clip_rect(scissor_box.x, scissor_box.y, scissor_box.w - 1, scissor_box.h - 1);
 
     render_tile = [=](recti const& tile, sampler<T>& samp)
     {
@@ -254,7 +253,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
             auto y = tile.y + pos.y * packet_size<T>::h;
 
             recti xpixel(x, y, packet_size<T>::w - 1, packet_size<T>::h - 1);
-            if ( !overlapping(xviewport, xpixel) )
+            if ( !overlapping(clip_rect, xpixel) )
             {
                 continue;
             }
@@ -283,14 +282,12 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 {
     // overload for pinhole cam
 
-    assert( sparams.rt.width()  >= sparams.cam.get_viewport().w - sparams.cam.get_viewport().x );
-    assert( sparams.rt.height() >= sparams.cam.get_viewport().h - sparams.cam.get_viewport().y );
-
     using T = typename R::scalar_type;
 
-    viewport = sparams.cam.get_viewport();
+    viewport    = sparams.cam.get_viewport();
+    scissor_box = sparams.scissor_box;
 
-    recti xviewport(viewport.x, viewport.y, viewport.w - 1, viewport.h - 1);
+    recti clip_rect(scissor_box.x, scissor_box.y, scissor_box.w - 1, scissor_box.h - 1);
 
     //  front, side, and up vectors form an orthonormal basis
     auto f = normalize( sparams.cam.eye() - sparams.cam.center() );
@@ -315,7 +312,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
             auto y = tile.y + pos.y * packet_size<T>::h;
 
             recti xpixel(x, y, packet_size<T>::w - 1, packet_size<T>::h - 1);
-            if ( !overlapping(xviewport, xpixel) )
+            if ( !overlapping(clip_rect, xpixel) )
             {
                 continue;
             }
@@ -370,8 +367,8 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             typename detail::sched_params_has_view_matrix<SP>::type()
             );
 
-    auto w = impl_->viewport.w - impl_->viewport.x;
-    auto h = impl_->viewport.h - impl_->viewport.y;
+    auto w = impl_->viewport.w;
+    auto h = impl_->viewport.h;
 
     auto numtilesx = div_up(w, detail::tile_width);
     auto numtilesy = div_up(h, detail::tile_height);
