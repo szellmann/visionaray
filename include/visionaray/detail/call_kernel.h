@@ -9,6 +9,7 @@
 #include <utility>
 
 #include <visionaray/kernels.h>
+#include <visionaray/scheduler.h>
 
 namespace visionaray
 {
