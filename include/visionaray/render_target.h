@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_RENDER_TARGET_H
-#define VSNRAY_RENDER_TARGET_H
+#define VSNRAY_RENDER_TARGET_H 1
 
 #include <cstddef>
 
@@ -52,9 +52,11 @@ public:
 
 public:
 
-    render_target_ref(color_type* color, depth_type* depth)
+    render_target_ref(color_type* color, depth_type* depth, size_t width, size_t height)
         : color_(color)
         , depth_(depth)
+        , width_(width)
+        , height_(height)
     {
     }
 
@@ -78,10 +80,23 @@ public:
         return depth_;
     }
 
+    VSNRAY_FUNC size_t width() const
+    {
+        return width_;
+    }
+
+    VSNRAY_FUNC size_t height() const
+    {
+        return height_;
+    }
+
 private:
 
     color_type* color_ = nullptr;
     depth_type* depth_ = nullptr;
+
+    size_t width_;
+    size_t height_;
 
 };
 

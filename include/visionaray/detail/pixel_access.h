@@ -43,15 +43,18 @@ inline void store(
         pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
-        recti const&                viewport,
+        int                         width,
+        int                         height,
         InputColor const&           color,
         OutputColor*                buffer
         )
 {
+    VSNRAY_UNUSED(height);
+
     convert(
         pixel_format_constant<DF>{},
         pixel_format_constant<SF>{},
-        buffer[y * viewport.w + x],
+        buffer[y * width + x],
         color
         );
 }
@@ -74,7 +77,8 @@ inline void store(
         pixel_format_constant<PF_RGB32F>    /* src format */,
         int                                 x,
         int                                 y,
-        recti const&                        viewport,
+        int                                 width,
+        int                                 height,
         vector<3, FloatT> const&            color,
         OutputColor*                        buffer
         )
@@ -98,13 +102,13 @@ inline void store(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 auto idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGB8>{},
                     pixel_format_constant<PF_RGB32F>{},
-                    buffer[(y + row) * viewport.w + (x + col)],
+                    buffer[(y + row) * width + (x + col)],
                     vec3(r[idx], g[idx], b[idx])
                     );
             }
@@ -128,7 +132,8 @@ inline void store(
         pixel_format_constant<PF_RGB32F>    /* src format */,
         int                                 x,
         int                                 y,
-        recti const&                        viewport,
+        int                                 width,
+        int                                 height,
         vector<3, FloatT> const&            color,
         OutputColor*                        buffer
         )
@@ -152,13 +157,13 @@ inline void store(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 auto idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGB32F>{},
                     pixel_format_constant<PF_RGB32F>{},
-                    buffer[(y + row) * viewport.w + (x + col)],
+                    buffer[(y + row) * width + (x + col)],
                     vec3(r[idx], g[idx], b[idx])
                     );
             }
@@ -185,7 +190,8 @@ inline void store(
         pixel_format_constant<PF_RGBA32F>   /* src format */,
         int                                 x,
         int                                 y,
-        recti const&                        viewport,
+        int                                 width,
+        int                                 height,
         vector<4, FloatT> const&            color,
         OutputColor*                        buffer
         )
@@ -211,13 +217,13 @@ inline void store(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 auto idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGBA8>{},
                     pixel_format_constant<PF_RGBA32F>{},
-                    buffer[(y + row) * viewport.w + (x + col)],
+                    buffer[(y + row) * width + (x + col)],
                     vec4(r[idx], g[idx], b[idx], a[idx])
                     );
             }
@@ -241,7 +247,8 @@ inline void store(
         pixel_format_constant<PF_RGBA32F>   /* src format */,
         int                                 x,
         int                                 y,
-        recti const&                        viewport,
+        int                                 width,
+        int                                 height,
         vector<4, FloatT> const&            color,
         OutputColor*                        buffer
         )
@@ -267,13 +274,13 @@ inline void store(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 auto idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGBA32F>{},
                     pixel_format_constant<PF_RGBA32F>{},
-                    buffer[(y + row) * viewport.w + (x + col)],
+                    buffer[(y + row) * width + (x + col)],
                     vec4(r[idx], g[idx], b[idx], a[idx])
                     );
             }
@@ -293,7 +300,8 @@ inline void store(
         pixel_format_constant<PF_RGBA32F>   /* src format */,
         int                                 x,
         int                                 y,
-        recti const&                        viewport,
+        int                                 width,
+        int                                 height,
         vector<4, simd::float4> const&      color,
         vector<4, float>*                   buffer
         )
@@ -302,10 +310,10 @@ inline void store(
 
     auto c = transpose(color);
 
-    if ( x      < viewport.w &&  y      < viewport.h) store( buffer[ y      * viewport.w +  x     ].data(), c.x);
-    if ((x + 1) < viewport.w &&  y      < viewport.h) store( buffer[ y      * viewport.w + (x + 1)].data(), c.y);
-    if ( x      < viewport.w && (y + 1) < viewport.h) store( buffer[(y + 1) * viewport.w +  x     ].data(), c.z);
-    if ((x + 1) < viewport.w && (y + 1) < viewport.h) store( buffer[(y + 1) * viewport.w + (x + 1)].data(), c.w);
+    if ( x      < width &&  y      < height) store( buffer[ y      * width +  x     ].data(), c.x);
+    if ((x + 1) < width &&  y      < height) store( buffer[ y      * width + (x + 1)].data(), c.y);
+    if ( x      < width && (y + 1) < height) store( buffer[(y + 1) * width +  x     ].data(), c.z);
+    if ((x + 1) < width && (y + 1) < height) store( buffer[(y + 1) * width + (x + 1)].data(), c.w);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -323,7 +331,8 @@ inline void store(
         pixel_format_constant<PF_DEPTH32F>  /* src format */,
         int                                 x,
         int                                 y,
-        recti const&                        viewport,
+        int                                 width,
+        int                                 height,
         FloatT const&                       value,
         float*                              buffer
         )
@@ -341,12 +350,12 @@ inline void store(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 convert(
                     pixel_format_constant<PF_DEPTH32F>{},
                     pixel_format_constant<PF_DEPTH32F>{},
-                    buffer[(y + row) * viewport.w + (x + col)],
+                    buffer[(y + row) * width + (x + col)],
                     v[row * w + col]
                     );
             }
@@ -369,7 +378,8 @@ inline void store(
         pixel_format_constant<PF_DEPTH32F>          /* src format */,
         int                                         x,
         int                                         y,
-        recti const&                                viewport,
+        int                                         width,
+        int                                         height,
         T const&                                    value,
         unsigned*                                   buffer
         )
@@ -387,12 +397,12 @@ inline void store(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 convert(
                     pixel_format_constant<PF_DEPTH24_STENCIL8>{},
                     pixel_format_constant<PF_DEPTH32F>{},
-                    buffer[(y + row) * viewport.w + (x + col)],
+                    buffer[(y + row) * width + (x + col)],
                     v[row * w + col]
                     );
             }
@@ -410,7 +420,8 @@ inline void store(
         pixel_format_constant<PF_R32F>  /* src format */,
         int                             x,
         int                             y,
-        recti const&                    viewport,
+        int                             width,
+        int                             height,
         FloatT const&                   value,
         float*                          buffer
         )
@@ -428,12 +439,12 @@ inline void store(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 convert(
                     pixel_format_constant<PF_R32F>{},
                     pixel_format_constant<PF_R32F>{},
-                    buffer[(y + row) * viewport.w + (x + col)],
+                    buffer[(y + row) * width + (x + col)],
                     v[row * w + col]
                     );
             }
@@ -453,7 +464,8 @@ inline void store(
         pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
-        recti const&                viewport,
+        int                         width,
+        int                         height,
         result_record<T> const&     rr,
         OutputColor*                buffer
         )
@@ -463,7 +475,8 @@ inline void store(
         pixel_format_constant<SF>{},
         x,
         y,
-        viewport,
+        width,
+        height,
         rr.color,
         buffer
         );
@@ -490,7 +503,8 @@ inline void store(
         pixel_format_constant<SFD>  /* src format depth */,
         int                         x,
         int                         y,
-        recti const&                viewport,
+        int                         width,
+        int                         height,
         result_record<T> const&     rr,
         Color*                      color_buffer,
         Depth*                      depth_buffer
@@ -502,7 +516,8 @@ inline void store(
         pixel_format_constant<SFC>{},
         x,
         y,
-        viewport,
+        width,
+        height,
         rr.color,
         color_buffer
         );
@@ -513,7 +528,8 @@ inline void store(
         pixel_format_constant<SFD>{},
         x,
         y,
-        viewport,
+        width,
+        height,
         rr.depth,
         depth_buffer
         );
@@ -534,16 +550,19 @@ inline void get(
         pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
-        recti const&                viewport,
+        int                         width,
+        int                         height,
         InputColor&                 color,
         OutputColor const*          buffer
         )
 {
+    VSNRAY_UNUSED(height);
+
     convert(
         pixel_format_constant<DF>{},
         pixel_format_constant<SF>{},
         color,
-        buffer[y * viewport.w + x]
+        buffer[y * width + x]
         );
 }
 
@@ -558,7 +577,8 @@ inline void get(
         pixel_format_constant<PF_RGB32F>    /* src format */,
         int                                 x,
         int                                 y,
-        recti const&                        viewport,
+        int                                 width,
+        int                                 height,
         vector<4, simd::float4>&            color,
         vector<3, T> const*                 buffer
         )
@@ -567,10 +587,10 @@ inline void get(
 
     std::array<OutputColor, 4> out;
 
-    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
-    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
-    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
-    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
+    out[0] = ( x      < width &&  y      < height) ? buffer[ y      * width +  x     ] : OutputColor();
+    out[1] = ((x + 1) < width &&  y      < height) ? buffer[ y      * width + (x + 1)] : OutputColor();
+    out[2] = ( x      < width && (y + 1) < height) ? buffer[(y + 1) * width +  x     ] : OutputColor();
+    out[3] = ((x + 1) < width && (y + 1) < height) ? buffer[(y + 1) * width + (x + 1)] : OutputColor();
 
     color = vector<4, simd::float4>(simd::pack(out), simd::float4(1.0f));
 }
@@ -586,17 +606,18 @@ inline void get(
         pixel_format_constant<PF_RGBA32F>   /* src format */,
         int                                 x,
         int                                 y,
-        recti const&                        viewport,
+        int                                 width,
+        int                                 height,
         vector<4, simd::float4>&            color,
         OutputColor const*                  buffer
         )
 {
     std::array<OutputColor, 4> out;
 
-    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : OutputColor();
-    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : OutputColor();
-    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : OutputColor();
-    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : OutputColor();
+    out[0] = ( x      < width &&  y      < height) ? buffer[ y      * width +  x     ] : OutputColor();
+    out[1] = ((x + 1) < width &&  y      < height) ? buffer[ y      * width + (x + 1)] : OutputColor();
+    out[2] = ( x      < width && (y + 1) < height) ? buffer[(y + 1) * width +  x     ] : OutputColor();
+    out[3] = ((x + 1) < width && (y + 1) < height) ? buffer[(y + 1) * width + (x + 1)] : OutputColor();
 
     color = simd::pack(out);
 }
@@ -612,17 +633,18 @@ inline void get(
         pixel_format_constant<PF_R32F>  /* src format */,
         int                             x,
         int                             y,
-        recti const&                    viewport,
+        int                             width,
+        int                             height,
         simd::float4&                   result,
         T const*                        buffer
         )
 {
     VSNRAY_ALIGN(16) float out[4];
 
-    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : T();
-    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : T();
-    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : T();
-    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : T();
+    out[0] = ( x      < width &&  y      < height) ? buffer[ y      * width +  x     ] : T();
+    out[1] = ((x + 1) < width &&  y      < height) ? buffer[ y      * width + (x + 1)] : T();
+    out[2] = ( x      < width && (y + 1) < height) ? buffer[(y + 1) * width +  x     ] : T();
+    out[3] = ((x + 1) < width && (y + 1) < height) ? buffer[(y + 1) * width + (x + 1)] : T();
 
     result = simd::float4(out);
 }
@@ -636,17 +658,18 @@ inline void get(
         pixel_format_constant<PF_DEPTH32F>  /* src format */,
         int                                 x,
         int                                 y,
-        recti const&                        viewport,
+        int                                 width,
+        int                                 height,
         simd::float4&                       result,
         T const*                            buffer
         )
 {
     VSNRAY_ALIGN(16) float out[4];
 
-    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : T();
-    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : T();
-    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : T();
-    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : T();
+    out[0] = ( x      < width &&  y      < height) ? buffer[ y      * width +  x     ] : T();
+    out[1] = ((x + 1) < width &&  y      < height) ? buffer[ y      * width + (x + 1)] : T();
+    out[2] = ( x      < width && (y + 1) < height) ? buffer[(y + 1) * width +  x     ] : T();
+    out[3] = ((x + 1) < width && (y + 1) < height) ? buffer[(y + 1) * width + (x + 1)] : T();
 
     result = simd::float4(out);
 }
@@ -660,17 +683,18 @@ inline void get(
         pixel_format_constant<PF_DEPTH24_STENCIL8>  /* src format */,
         int                                         x,
         int                                         y,
-        recti const&                                viewport,
+        int                                         width,
+        int                                         height,
         simd::int4&                                 result,
         T const*                                    buffer
         )
 {
     VSNRAY_ALIGN(16) int out[4];
 
-    out[0] = ( x      < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w +  x     ] : T();
-    out[1] = ((x + 1) < viewport.w &&  y      < viewport.h) ? buffer[ y      * viewport.w + (x + 1)] : T();
-    out[2] = ( x      < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w +  x     ] : T();
-    out[3] = ((x + 1) < viewport.w && (y + 1) < viewport.h) ? buffer[(y + 1) * viewport.w + (x + 1)] : T();
+    out[0] = ( x      < width &&  y      < height) ? buffer[ y      * width +  x     ] : T();
+    out[1] = ((x + 1) < width &&  y      < height) ? buffer[ y      * width + (x + 1)] : T();
+    out[2] = ( x      < width && (y + 1) < height) ? buffer[(y + 1) * width +  x     ] : T();
+    out[3] = ((x + 1) < width && (y + 1) < height) ? buffer[(y + 1) * width + (x + 1)] : T();
 
     result = simd::int4(out);
 }
@@ -690,7 +714,8 @@ inline void get(
         pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
-        recti const&                viewport,
+        int                         width,
+        int                         height,
         vector<4, simd::float8>&    color,
         OutputColor const*          buffer
         )
@@ -704,10 +729,10 @@ inline void get(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 auto idx = row * w + col;
-                v[idx] = buffer[(y + row) * viewport.w + (x + col)];
+                v[idx] = buffer[(y + row) * width + (x + col)];
             }
         }
     }
@@ -732,7 +757,8 @@ inline void get(
         pixel_format_constant<PF_R32F>  /* src format */,
         int                             x,
         int                             y,
-        recti const&                    viewport,
+        int                             width,
+        int                             height,
         simd::float8&                   result,
         T const*                        buffer
         )
@@ -746,10 +772,10 @@ inline void get(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 auto idx = row * w + col;
-                out[idx] = buffer[(y + row) * viewport.w + (x + col)];
+                out[idx] = buffer[(y + row) * width + (x + col)];
             }
         }
     }
@@ -764,7 +790,8 @@ inline void get(
         pixel_format_constant<PF_DEPTH32F>  /* src format */,
         int                                 x,
         int                                 y,
-        recti const&                        viewport,
+        int                                 width,
+        int                                 height,
         simd::float8&                       result,
         T const*                            buffer
         )
@@ -778,10 +805,10 @@ inline void get(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 auto idx = row * w + col;
-                out[idx] = buffer[(y + row) * viewport.w + (x + col)];
+                out[idx] = buffer[(y + row) * width + (x + col)];
             }
         }
     }
@@ -797,7 +824,8 @@ inline void get(
         pixel_format_constant<PF_DEPTH24_STENCIL8>  /* src format */,
         int                                         x,
         int                                         y,
-        recti const&                                viewport,
+        int                                         width,
+        int                                         height,
         simd::int8&                                 result,
         T const*                                    buffer
         )
@@ -811,10 +839,10 @@ inline void get(
     {
         for (auto col = 0; col < w; ++col)
         {
-            if (x + col < viewport.w && y + row < viewport.h)
+            if (x + col < width && y + row < height)
             {
                 auto idx = row * w + col;
-                out[idx] = buffer[(y + row) * viewport.w + (x + col)];
+                out[idx] = buffer[(y + row) * width + (x + col)];
             }
         }
     }
@@ -839,7 +867,8 @@ inline void blend(
         pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
-        recti const&                viewport,
+        int                         width,
+        int                         height,
         InputColor const&           color,
         OutputColor*                buffer,
         T                           sfactor,
@@ -848,11 +877,11 @@ inline void blend(
 {
     InputColor dst;
 
-    get(pixel_format_constant<DF>{}, pixel_format_constant<SF>{}, x, y, viewport, dst, buffer);
+    get(pixel_format_constant<DF>{}, pixel_format_constant<SF>{}, x, y, width, height, dst, buffer);
 
     dst = color * sfactor + dst * dfactor;
 
-    store(pixel_format_constant<DF>{}, pixel_format_constant<SF>{}, x, y, viewport, dst, buffer);
+    store(pixel_format_constant<DF>{}, pixel_format_constant<SF>{}, x, y, width, height, dst, buffer);
 }
 
 
@@ -867,7 +896,8 @@ inline void blend(
         pixel_format_constant<SF>   /* src format */,
         int                         x,
         int                         y,
-        recti const&                viewport,
+        int                         width,
+        int                         height,
         result_record<S> const&     rr,
         OutputColor*                color_buffer,
         T                           sfactor,
@@ -879,7 +909,8 @@ inline void blend(
         pixel_format_constant<SF>{},
         x,
         y,
-        viewport,
+        width,
+        height,
         rr.color,
         color_buffer,
         sfactor,
@@ -909,7 +940,8 @@ inline void blend(
         pixel_format_constant<SFD>  /* src format depth */,
         int                         x,
         int                         y,
-        recti const&                viewport,
+        int                         width,
+        int                         height,
         result_record<S> const&     rr,
         OutputColor*                color_buffer,
         Depth*                      depth_buffer,
@@ -923,7 +955,8 @@ inline void blend(
         pixel_format_constant<SFC>{},
         x,
         y,
-        viewport,
+        width,
+        height,
         rr.color,
         color_buffer,
         sfactor,
@@ -936,7 +969,8 @@ inline void blend(
         pixel_format_constant<SFD>{},
         x,
         y,
-        viewport,
+        width,
+        height,
         rr.depth,
         depth_buffer,
         sfactor,

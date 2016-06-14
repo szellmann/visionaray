@@ -96,20 +96,21 @@ inline auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
 // for a pixel position
 //
 
-template <typename R, typename T, typename V>
+template <typename R, typename T>
 VSNRAY_FUNC
 inline R make_primary_ray_impl(
         T                   x,
         T                   y,
-        V const&            viewport,
+        size_t              width,
+        size_t              height,
         vector<3, T> const& eye,
         vector<3, T> const& cam_u,
         vector<3, T> const& cam_v,
         vector<3, T> const& cam_w
         )
 {
-    auto u = T(2.0) * (x + T(0.5)) / T(viewport.w) - T(1.0);
-    auto v = T(2.0) * (y + T(0.5)) / T(viewport.h) - T(1.0);
+    auto u = T(2.0) * (x + T(0.5)) / T(width)  - T(1.0);
+    auto v = T(2.0) * (y + T(0.5)) / T(height) - T(1.0);
 
     R r;
     r.ori = eye;
@@ -117,12 +118,13 @@ inline R make_primary_ray_impl(
     return r;
 }
 
-template <typename R, typename T, typename V>
+template <typename R, typename T>
 VSNRAY_FUNC
 inline R make_primary_ray_impl(
         T                       x,
         T                       y,
-        V const&                viewport,
+        size_t                  width,
+        size_t                  height,
         matrix<4, 4, T> const&  view_matrix,
         matrix<4, 4, T> const&  inv_view_matrix,
         matrix<4, 4, T> const&  proj_matrix,
@@ -132,8 +134,8 @@ inline R make_primary_ray_impl(
     VSNRAY_UNUSED(view_matrix);
     VSNRAY_UNUSED(proj_matrix);
 
-    auto u = T(2.0) * (x + T(0.5)) / T(viewport.w) - T(1.0);
-    auto v = T(2.0) * (y + T(0.5)) / T(viewport.h) - T(1.0);
+    auto u = T(2.0) * (x + T(0.5)) / T(width)  - T(1.0);
+    auto v = T(2.0) * (y + T(0.5)) / T(height) - T(1.0);
 
     auto o = inv_view_matrix * ( inv_proj_matrix * vector<4, T>(u, v, -1,  1) );
     auto d = inv_view_matrix * ( inv_proj_matrix * vector<4, T>(u, v,  1,  1) );
@@ -330,7 +332,6 @@ template <
     typename R,
     typename Sampler,
     pixel_format CF,
-    typename V,
     typename ...Args
     >
 VSNRAY_FUNC
@@ -343,7 +344,6 @@ inline void sample_pixel_impl(
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
-        V const&                        viewport,
         Args&&...                       args
         )
 {
@@ -356,7 +356,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
-            viewport,
+            rt_ref.width(),
+            rt_ref.height(),
             result,
             rt_ref.color()
             );
@@ -368,7 +369,6 @@ template <
     typename Sampler,
     pixel_format CF,
     pixel_format DF,
-    typename V,
     typename ...Args
     >
 VSNRAY_FUNC
@@ -381,7 +381,6 @@ inline void sample_pixel_impl(
         render_target_ref<CF, DF>       rt_ref,
         unsigned                        x,
         unsigned                        y,
-        V const&                        viewport,
         Args&&...                       args
         )
 {
@@ -396,7 +395,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_DEPTH32F>{},
             x,
             y,
-            viewport,
+            rt_ref.width(),
+            rt_ref.height(),
             result,
             rt_ref.color(),
             rt_ref.depth()
@@ -413,7 +413,6 @@ template <
     typename R,
     typename Sampler,
     pixel_format CF,
-    typename V,
     typename ...Args
     >
 VSNRAY_FUNC
@@ -426,7 +425,6 @@ inline void sample_pixel_impl(
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
-        V const&                        viewport,
         Args&&...                       args
         )
 {
@@ -439,7 +437,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
-            viewport,
+            rt_ref.width(),
+            rt_ref.height(),
             result,
             rt_ref.color()
             );
@@ -455,7 +454,6 @@ template <
     typename R,
     typename Sampler,
     pixel_format CF,
-    typename V,
     typename ...Args
     >
 VSNRAY_FUNC
@@ -468,7 +466,6 @@ inline void sample_pixel_impl(
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
-        V const&                            viewport,
         Args&&...                           args
         )
 {
@@ -486,7 +483,8 @@ inline void sample_pixel_impl(
                 pixel_format_constant<PF_RGBA32F>{},
                 x,
                 y,
-                viewport,
+                rt_ref.width(),
+                rt_ref.height(),
                 Color(0.0),
                 rt_ref.color()
                 );
@@ -496,7 +494,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
-            viewport,
+            rt_ref.width(),
+            rt_ref.height(),
             result,
             rt_ref.color(),
             alpha, S(1.0) - alpha
@@ -509,7 +508,6 @@ template <
     typename Sampler,
     pixel_format CF,
     pixel_format DF,
-    typename V,
     typename ...Args
     >
 VSNRAY_FUNC
@@ -522,7 +520,6 @@ inline void sample_pixel_impl(
         render_target_ref<CF, DF>           rt_ref,
         unsigned                            x,
         unsigned                            y,
-        V const&                            viewport,
         Args&&...                           args
         )
 {
@@ -542,7 +539,8 @@ inline void sample_pixel_impl(
                 pixel_format_constant<PF_DEPTH32F>{},
                 x,
                 y,
-                viewport,
+                rt_ref.width(),
+                rt_ref.height(),
                 result,
                 rt_ref.color(),
                 rt_ref.depth()
@@ -555,7 +553,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_DEPTH32F>{},
             x,
             y,
-            viewport,
+            rt_ref.width(),
+            rt_ref.height(),
             result,
             rt_ref.color(),
             rt_ref.depth(),
@@ -574,7 +573,6 @@ template <
     size_t Num,
     typename Sampler,
     pixel_format CF,
-    typename V,
     typename ...Args
     >
 VSNRAY_FUNC
@@ -587,7 +585,6 @@ inline void sample_pixel_impl(
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
-        V const&                            viewport,
         Args&&...                           args
         )
 {
@@ -610,7 +607,8 @@ inline void sample_pixel_impl(
                     pixel_format_constant<PF_RGBA32F>{},
                     x,
                     y,
-                    viewport,
+                    rt_ref.width(),
+                    rt_ref.height(),
                     Color(0.0),
                     rt_ref.color()
                     );
@@ -623,7 +621,8 @@ inline void sample_pixel_impl(
                 pixel_format_constant<PF_RGBA32F>{},
                 x,
                 y,
-                viewport,
+                rt_ref.width(),
+                rt_ref.height(),
                 result,
                 rt_ref.color(),
                 alpha, S(1.0) - alpha
@@ -642,7 +641,6 @@ template <
     size_t Num,
     typename Sampler,
     pixel_format CF,
-    typename V,
     typename ...Args
     >
 VSNRAY_FUNC
@@ -655,7 +653,6 @@ inline void sample_pixel_impl(
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
-        V const&                        viewport,
         Args&&...                       args
         )
 {
@@ -676,7 +673,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
-            viewport,
+            rt_ref.width(),
+            rt_ref.height(),
             Color(0.0),
             rt_ref.color()
             );
@@ -690,7 +688,8 @@ inline void sample_pixel_impl(
                 pixel_format_constant<PF_RGBA32F>{},
                 x,
                 y,
-                viewport,
+                rt_ref.width(),
+                rt_ref.height(),
                 result,
                 rt_ref.color(),
                 alpha,
@@ -706,7 +705,6 @@ template <
     typename Sampler,
     pixel_format CF,
     pixel_format DF,
-    typename V,
     typename ...Args
     >
 VSNRAY_FUNC
@@ -719,7 +717,6 @@ inline void sample_pixel_impl(
         render_target_ref<CF, DF>       rt_ref,
         unsigned                        x,
         unsigned                        y,
-        V const&                        viewport,
         Args&&...                       args
         )
 {
@@ -741,7 +738,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_DEPTH32F>{},
             x,
             y,
-            viewport,
+            rt_ref.width(),
+            rt_ref.height(),
             Result{},
             rt_ref.color(),
             rt_ref.depth()
@@ -759,7 +757,8 @@ inline void sample_pixel_impl(
                 pixel_format_constant<PF_DEPTH32F>{},
                 x,
                 y,
-                viewport,
+                rt_ref.width(),
+                rt_ref.height(),
                 result,
                 rt_ref.color(),
                 rt_ref.depth(),

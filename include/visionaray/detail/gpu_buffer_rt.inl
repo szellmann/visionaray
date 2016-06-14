@@ -33,7 +33,12 @@ typename gpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* gpu_buffer_r
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename gpu_buffer_rt<ColorFormat, DepthFormat>::ref_type gpu_buffer_rt<ColorFormat, DepthFormat>::ref()
 {
-    return gpu_buffer_rt<ColorFormat, DepthFormat>::ref_type( color(), depth() );
+    return gpu_buffer_rt<ColorFormat, DepthFormat>::ref_type(
+            color(),
+            depth(),
+            width(),
+            height()
+            );
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>

@@ -101,7 +101,8 @@ struct tiled_sched<R>::impl
             SP              sparams,
             Sampler&        samp,
             unsigned        frame_num,
-            Args&&...       args)
+            Args&&...       args
+            )
     {
         auto r = detail::make_primary_rays(
                 R{},
@@ -266,7 +267,8 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                     frame_num,
                     x,
                     y,
-                    viewport,
+                    viewport.w,
+                    viewport.h,
                     view_matrix,
                     inv_view_matrix,
                     proj_matrix,
@@ -325,7 +327,8 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                     frame_num,
                     x,
                     y,
-                    viewport,
+                    viewport.w,
+                    viewport.h,
                     vector<3, T>(eye),
                     vector<3, T>(cam_u),
                     vector<3, T>(cam_v),

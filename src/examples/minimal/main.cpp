@@ -51,7 +51,6 @@ int main()
     (
         cam.get_view_matrix(),
         cam.get_proj_matrix(),
-        cam.get_viewport(),
         render_target
     );
 

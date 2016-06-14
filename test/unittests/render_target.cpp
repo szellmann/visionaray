@@ -25,9 +25,8 @@ void test_pixel_access_color(
     // dummies
     mat4 mv = mat4::identity();
     mat4 pr = mat4::identity();
-    recti vp(0, 0, 1, 1);
 
-    auto sparams = make_sched_params(pixel_sampler::uniform_type{}, mv, pr, vp, rt);
+    auto sparams = make_sched_params(pixel_sampler::uniform_type{}, mv, pr, rt);
 
     simple_sched<ray> sched;
 
@@ -51,9 +50,8 @@ void test_pixel_access_result_record(
     // dummies
     mat4 mv = mat4::identity();
     mat4 pr = mat4::identity();
-    recti vp(0, 0, 1, 1);
 
-    auto sparams = make_sched_params(pixel_sampler::uniform_type{}, mv, pr, vp, rt);
+    auto sparams = make_sched_params(pixel_sampler::uniform_type{}, mv, pr, rt);
 
     simple_sched<ray> sched;
 

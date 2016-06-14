@@ -1087,7 +1087,6 @@ void drawable::impl::call_kernel_debug(KParams const& params)
         auto sparams = make_sched_params(
                 vparams.view_matrix,
                 vparams.proj_matrix,
-                vparams.viewport,
                 vparams.device_rt
                 );
 
@@ -1116,7 +1115,6 @@ void drawable::impl::call_kernel_debug(KParams const& params)
         auto sparams = make_sched_params(
                 vparams.view_matrix,
                 vparams.proj_matrix,
-                vparams.viewport,
                 vparams.host_rt
                 );
 
