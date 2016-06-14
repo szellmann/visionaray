@@ -127,7 +127,8 @@ struct tiled_sched<R>::impl
     std::vector<std::thread>    threads;
     detail::sync_params         sync_params;
 
-    recti                       viewport;
+    int                         width;
+    int                         height;
     recti                       scissor_box;
 
     render_tile_func            render_tile;
@@ -196,10 +197,9 @@ void tiled_sched<R>::impl::render_loop()
                 break;
             }
 
-            auto w = viewport.w;
             auto tilew = detail::tile_width;
             auto tileh = detail::tile_height;
-            auto numtilesx = div_up( w, tilew );
+            auto numtilesx = div_up( width, tilew );
 
             recti tile(
                     (tile_idx % numtilesx) * tilew,
@@ -226,12 +226,13 @@ template <typename R>
 template <typename K, typename SP>
 void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame_num, std::true_type)
 {
-    // overload for two matrices and a viewport
+    // overload for two matrices
 
     using T = typename R::scalar_type;
     using matrix_type   = matrix<4, 4, T>;
 
-    viewport    = sparams.viewport;
+    width       = sparams.rt.width();
+    height      = sparams.rt.height();
     scissor_box = sparams.scissor_box;
 
     auto view_matrix     = matrix_type( sparams.view_matrix );
@@ -267,8 +268,8 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                     frame_num,
                     x,
                     y,
-                    viewport.w,
-                    viewport.h,
+                    sparams.rt.width(),
+                    sparams.rt.height(),
                     view_matrix,
                     inv_view_matrix,
                     proj_matrix,
@@ -286,7 +287,8 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 
     using T = typename R::scalar_type;
 
-    viewport    = sparams.cam.get_viewport();
+    width       = sparams.rt.width();
+    height      = sparams.rt.height();
     scissor_box = sparams.scissor_box;
 
     recti clip_rect(scissor_box.x, scissor_box.y, scissor_box.w - 1, scissor_box.h - 1);
@@ -327,8 +329,8 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
                     frame_num,
                     x,
                     y,
-                    viewport.w,
-                    viewport.h,
+                    sparams.rt.width(),
+                    sparams.rt.height(),
                     vector<3, T>(eye),
                     vector<3, T>(cam_u),
                     vector<3, T>(cam_v),
@@ -370,11 +372,8 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             typename detail::sched_params_has_view_matrix<SP>::type()
             );
 
-    auto w = impl_->viewport.w;
-    auto h = impl_->viewport.h;
-
-    auto numtilesx = div_up(w, detail::tile_width);
-    auto numtilesy = div_up(h, detail::tile_height);
+    auto numtilesx = div_up(impl_->width,  detail::tile_width);
+    auto numtilesy = div_up(impl_->height, detail::tile_height);
 
     auto& sparams = impl_->sync_params;
 

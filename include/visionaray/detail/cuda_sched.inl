@@ -207,10 +207,8 @@ inline void cuda_sched_impl_frame(
 {
     using cuda_dim_t = decltype(block_size.x);
 
-    auto viewport = sparams.viewport;
-
-    auto w = static_cast<cuda_dim_t>(viewport.w);
-    auto h = static_cast<cuda_dim_t>(viewport.h);
+    auto w = static_cast<cuda_dim_t>(sparams.rt.width());
+    auto h = static_cast<cuda_dim_t>(sparams.rt.height());
 
     dim3 grid_size(
             div_up(w, block_size.x),
@@ -226,8 +224,8 @@ inline void cuda_sched_impl_frame(
             sparams.rt.ref(),
             kernel,
             frame_num,
-            viewport.w,
-            viewport.h,
+            sparams.rt.width(),
+            sparams.rt.height(),
             sparams.view_matrix,
             inverse(sparams.view_matrix),
             sparams.proj_matrix,
@@ -246,10 +244,8 @@ inline void cuda_sched_impl_frame(
 {
     using cuda_dim_t = decltype(block_size.x);
 
-    auto viewport = sparams.cam.get_viewport();
-
-    auto w = static_cast<cuda_dim_t>(viewport.w);
-    auto h = static_cast<cuda_dim_t>(viewport.h);
+    auto w = static_cast<cuda_dim_t>(sparams.rt.width());
+    auto h = static_cast<cuda_dim_t>(sparams.rt.height());
 
     dim3 grid_size(
             div_up(w, block_size.x),
@@ -276,8 +272,8 @@ inline void cuda_sched_impl_frame(
             sparams.rt.ref(),
             kernel,
             frame_num,
-            viewport.w,
-            viewport.h,
+            sparams.rt.width(),
+            sparams.rt.height(),
             eye,
             cam_u,
             cam_v,
