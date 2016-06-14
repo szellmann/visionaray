@@ -344,6 +344,8 @@ inline void sample_pixel_impl(
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
+        size_t                          width,
+        size_t                          height,
         Args&&...                       args
         )
 {
@@ -356,8 +358,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
-            rt_ref.width(),
-            rt_ref.height(),
+            width,
+            height,
             result,
             rt_ref.color()
             );
@@ -381,6 +383,8 @@ inline void sample_pixel_impl(
         render_target_ref<CF, DF>       rt_ref,
         unsigned                        x,
         unsigned                        y,
+        size_t                          width,
+        size_t                          height,
         Args&&...                       args
         )
 {
@@ -395,8 +399,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_DEPTH32F>{},
             x,
             y,
-            rt_ref.width(),
-            rt_ref.height(),
+            width,
+            height,
             result,
             rt_ref.color(),
             rt_ref.depth()
@@ -425,6 +429,8 @@ inline void sample_pixel_impl(
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
+        size_t                          width,
+        size_t                          height,
         Args&&...                       args
         )
 {
@@ -437,8 +443,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
-            rt_ref.width(),
-            rt_ref.height(),
+            width,
+            height,
             result,
             rt_ref.color()
             );
@@ -466,6 +472,8 @@ inline void sample_pixel_impl(
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
+        size_t                              width,
+        size_t                              height,
         Args&&...                           args
         )
 {
@@ -483,8 +491,8 @@ inline void sample_pixel_impl(
                 pixel_format_constant<PF_RGBA32F>{},
                 x,
                 y,
-                rt_ref.width(),
-                rt_ref.height(),
+                width,
+                height,
                 Color(0.0),
                 rt_ref.color()
                 );
@@ -494,8 +502,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
-            rt_ref.width(),
-            rt_ref.height(),
+            width,
+            height,
             result,
             rt_ref.color(),
             alpha, S(1.0) - alpha
@@ -520,6 +528,8 @@ inline void sample_pixel_impl(
         render_target_ref<CF, DF>           rt_ref,
         unsigned                            x,
         unsigned                            y,
+        size_t                              width,
+        size_t                              height,
         Args&&...                           args
         )
 {
@@ -539,8 +549,8 @@ inline void sample_pixel_impl(
                 pixel_format_constant<PF_DEPTH32F>{},
                 x,
                 y,
-                rt_ref.width(),
-                rt_ref.height(),
+                width,
+                height,
                 result,
                 rt_ref.color(),
                 rt_ref.depth()
@@ -553,8 +563,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_DEPTH32F>{},
             x,
             y,
-            rt_ref.width(),
-            rt_ref.height(),
+            width,
+            height,
             result,
             rt_ref.color(),
             rt_ref.depth(),
@@ -585,6 +595,8 @@ inline void sample_pixel_impl(
         render_target_ref<CF>               rt_ref,
         unsigned                            x,
         unsigned                            y,
+        size_t                              width,
+        size_t                              height,
         Args&&...                           args
         )
 {
@@ -607,8 +619,8 @@ inline void sample_pixel_impl(
                     pixel_format_constant<PF_RGBA32F>{},
                     x,
                     y,
-                    rt_ref.width(),
-                    rt_ref.height(),
+                    width,
+                    height,
                     Color(0.0),
                     rt_ref.color()
                     );
@@ -621,8 +633,8 @@ inline void sample_pixel_impl(
                 pixel_format_constant<PF_RGBA32F>{},
                 x,
                 y,
-                rt_ref.width(),
-                rt_ref.height(),
+                width,
+                height,
                 result,
                 rt_ref.color(),
                 alpha, S(1.0) - alpha
@@ -653,6 +665,8 @@ inline void sample_pixel_impl(
         render_target_ref<CF>           rt_ref,
         unsigned                        x,
         unsigned                        y,
+        size_t                          width,
+        size_t                          height,
         Args&&...                       args
         )
 {
@@ -673,8 +687,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
-            rt_ref.width(),
-            rt_ref.height(),
+            width,
+            height,
             Color(0.0),
             rt_ref.color()
             );
@@ -688,8 +702,8 @@ inline void sample_pixel_impl(
                 pixel_format_constant<PF_RGBA32F>{},
                 x,
                 y,
-                rt_ref.width(),
-                rt_ref.height(),
+                width,
+                height,
                 result,
                 rt_ref.color(),
                 alpha,
@@ -717,6 +731,8 @@ inline void sample_pixel_impl(
         render_target_ref<CF, DF>       rt_ref,
         unsigned                        x,
         unsigned                        y,
+        size_t                          width,
+        size_t                          height,
         Args&&...                       args
         )
 {
@@ -738,8 +754,8 @@ inline void sample_pixel_impl(
             pixel_format_constant<PF_DEPTH32F>{},
             x,
             y,
-            rt_ref.width(),
-            rt_ref.height(),
+            width,
+            height,
             Result{},
             rt_ref.color(),
             rt_ref.depth()
@@ -757,8 +773,8 @@ inline void sample_pixel_impl(
                 pixel_format_constant<PF_DEPTH32F>{},
                 x,
                 y,
-                rt_ref.width(),
-                rt_ref.height(),
+                width,
+                height,
                 result,
                 rt_ref.color(),
                 rt_ref.depth(),
