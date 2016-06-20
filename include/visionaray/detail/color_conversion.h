@@ -194,6 +194,22 @@ inline void convert(
 }
 
 
+// PF_DEPTH24_STENCIL8 to PF_DEPTH32F conversion
+
+template <typename TargetType, typename SourceType>
+VSNRAY_FUNC
+inline void convert(
+        pixel_format_constant<PF_DEPTH32F>          /* */,
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* */,
+        TargetType&                                 target,
+        SourceType const&                           source
+        )
+{
+    auto depth_raw = (source & 0xFFFFFF00) >> 8;
+    target = TargetType(depth_raw) / 16777215.0f;
+}
+
+
 // float to unorm conversion
 template <pixel_format TF, pixel_format SF, unsigned Bits, size_t Dim>
 VSNRAY_FUNC
