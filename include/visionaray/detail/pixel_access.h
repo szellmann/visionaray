@@ -877,7 +877,7 @@ inline void blend(
 {
     InputColor dst;
 
-    get(pixel_format_constant<DF>{}, pixel_format_constant<SF>{}, x, y, width, height, dst, buffer);
+    get(pixel_format_constant<SF>{}, pixel_format_constant<DF>{}, x, y, width, height, dst, buffer);
 
     dst = color * sfactor + dst * dfactor;
 
