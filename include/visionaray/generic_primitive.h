@@ -43,5 +43,6 @@ public:
 
 #include "detail/generic_primitive.inl"
 #include "detail/generic_primitive_get_normal.h"
+#include "detail/generic_primitive_get_tex_coord.h"
 
 #endif // VSNRAY_GENERIC_PRIMITIVE_H

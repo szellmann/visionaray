@@ -70,6 +70,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/generic_material.inl
     ${HEADER_DIR}/detail/generic_primitive.inl
     ${HEADER_DIR}/detail/generic_primitive_get_normal.h
+    ${HEADER_DIR}/detail/generic_primitive_get_tex_coord.h
     ${HEADER_DIR}/detail/gpu_buffer_rt.inl
     ${HEADER_DIR}/detail/macros.h
     ${HEADER_DIR}/detail/material.inl
