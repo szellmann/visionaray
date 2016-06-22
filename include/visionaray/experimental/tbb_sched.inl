@@ -59,8 +59,6 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     using scalar_type   = typename R::scalar_type;
 
-    auto viewport = sched_params.cam.get_viewport();
-
     //  front, side, and up vectors form an orthonormal basis
     auto f = normalize( sched_params.cam.eye() - sched_params.cam.center() );
     auto s = normalize( cross(sched_params.cam.up(), f) );
@@ -83,8 +81,8 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     int dy = 8 * ph;
 #endif
 
-    int nx = round_up(viewport.w, dx);
-    int ny = round_up(viewport.h, dy);
+    int nx = round_up(static_cast<int>(sched_params.rt.width()), dx);
+    int ny = round_up(static_cast<int>(sched_params.rt.height()), dy);
 
     sched_params.rt.begin_frame();
 
