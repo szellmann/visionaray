@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <visionaray/math/math.h>
+#include <visionaray/packet_traits.h>
 
 #include <tbb/blocked_range2d.h>
 #include <tbb/parallel_for.h>
@@ -70,8 +71,8 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     auto cam_v = vector<3, scalar_type>(u) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) );
     auto cam_w = vector<3, scalar_type>(-f);
 
-    int pw = detail::packet_size<scalar_type>::w;
-    int ph = detail::packet_size<scalar_type>::h;
+    int pw = packet_size<scalar_type>::w;
+    int ph = packet_size<scalar_type>::h;
 
     // Tile size must be be a multiple of packet size.
 #if 1
@@ -108,7 +109,8 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                         samp,
                         i0,
                         j0,
-                        viewport,
+                        sched_params.rt.width(),
+                        sched_params.rt.height(),
                         eye,
                         cam_u,
                         cam_v,
@@ -124,7 +126,8 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                         sched_params.rt.ref(),
                         i0,
                         j0,
-                        viewport,
+                        sched_params.rt.width(),
+                        sched_params.rt.height(),
                         eye,
                         cam_u,
                         cam_v,
