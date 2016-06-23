@@ -20,12 +20,7 @@ template <typename SR>
 VSNRAY_FUNC
 inline spectrum<typename SR::scalar_type> emissive<T>::shade(SR const& sr) const
 {
-    using U = typename SR::scalar_type;
-    return select(
-            dot(sr.normal, sr.view_dir) >= U(0.0),
-            ce(sr),
-            spectrum<U>(0.0)
-            );
+    return ce(sr);
 }
 
 template <typename T>
