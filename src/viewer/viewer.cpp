@@ -37,7 +37,6 @@
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
-#include <visionaray/detail/call_kernel.h>
 #include <visionaray/detail/render_bvh.h>
 #include <visionaray/gl/debug_callback.h>
 #include <visionaray/texture/texture.h>
@@ -60,6 +59,7 @@
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/call_kernel.h>
 #include <common/model.h>
 #include <common/obj_loader.h>
 #include <common/timer.h>
@@ -127,10 +127,10 @@ struct renderer : viewer_type
             cl::init(this->initial_camera)
             ) );
 
-        add_cmdline_option( cl::makeOption<detail::algorithm&>({
-                { "simple",             detail::Simple,         "Simple ray casting kernel" },
-                { "whitted",            detail::Whitted,        "Whitted style ray tracing kernel" },
-                { "pathtracing",        detail::Pathtracing,    "Pathtracing global illumination kernel" }
+        add_cmdline_option( cl::makeOption<algorithm&>({
+                { "simple",             Simple,         "Simple ray casting kernel" },
+                { "whitted",            Whitted,        "Whitted style ray tracing kernel" },
+                { "pathtracing",        Pathtracing,    "Pathtracing global illumination kernel" }
             },
             "algorithm",
             cl::Desc("Rendering algorithm"),
@@ -168,7 +168,7 @@ struct renderer : viewer_type
     int                                     h               = 800;
     unsigned                                frame           = 0;
     unsigned                                ssaa_samples    = 1;
-    detail::algorithm                       algo            = detail::Simple;
+    algorithm                               algo            = Simple;
     device_type                             dev_type        = CPU;
     bool                                    show_hud        = true;
     bool                                    show_hud_ext    = true;
@@ -447,7 +447,7 @@ void renderer::on_display()
 
     auto bounds     = mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
-    auto bounces    = algo == detail::Pathtracing ? 10U : 4U;
+    auto bounces    = algo == Pathtracing ? 10U : 4U;
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
 
     vec4 bg_color(0.1, 0.4, 1.0, 1.0);
@@ -472,10 +472,10 @@ void renderer::on_display()
                 bounces,
                 epsilon,
                 vec4(background_color(), 1.0f),
-                algo == detail::Pathtracing ? vec4(1.0) : vec4(0.0)
+                algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                 );
 
-        detail::call_kernel( algo, device_sched, kparams, frame, ssaa_samples, cam, device_rt );
+        call_kernel( algo, device_sched, kparams, frame, ssaa_samples, cam, device_rt );
 #endif
     }
     else if (dev_type == renderer::CPU)
@@ -498,10 +498,10 @@ void renderer::on_display()
                 bounces,
                 epsilon,
                 vec4(background_color(), 1.0f),
-                algo == detail::Pathtracing ? vec4(1.0) : vec4(0.0)
+                algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                 );
 
-        detail::call_kernel( algo, host_sched, kparams, frame, ssaa_samples, cam, host_rt );
+        call_kernel( algo, host_sched, kparams, frame, ssaa_samples, cam, host_rt );
 #endif
     }
 
@@ -571,21 +571,21 @@ void renderer::on_key_press(key_event const& event)
     {
     case '1':
         std::cout << "Switching algorithm: simple\n";
-        algo = detail::Simple;
+        algo = Simple;
         counter.reset();
         frame = 0;
         break;
 
     case '2':
         std::cout << "Switching algorithm: whitted\n";
-        algo = detail::Whitted;
+        algo = Whitted;
         counter.reset();
         frame = 0;
         break;
 
     case '3':
         std::cout << "Switching algorithm: path tracing\n";
-        algo = detail::Pathtracing;
+        algo = Pathtracing;
         counter.reset();
         frame = 0;
         break;

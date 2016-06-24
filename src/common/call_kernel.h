@@ -13,8 +13,6 @@
 
 namespace visionaray
 {
-namespace detail
-{
 
 //-------------------------------------------------------------------------------------------------
 // Convenience functions to call built-in or custom kernels with a scheduler
@@ -193,7 +191,6 @@ void call_kernel(
     }
 }
 
-} // detail
 } // visionaray
 
 #endif // VSNRAY_DETAIL_CALL_KERNEL_H

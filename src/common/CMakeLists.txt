@@ -74,6 +74,7 @@ set(COMMON_HEADERS
     manip/translate_manipulator.h
     manip/zoom_manipulator.h
 
+    call_kernel.h
     cfile.h
     image.h
     image_base.h
