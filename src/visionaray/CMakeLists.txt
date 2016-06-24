@@ -79,6 +79,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/pixel_access.h
     ${HEADER_DIR}/detail/pixel_unpack_buffer_rt.inl
     ${HEADER_DIR}/detail/platform.h
+    ${HEADER_DIR}/detail/render_bvh.h
     ${HEADER_DIR}/detail/sched_common.h
     ${HEADER_DIR}/detail/semaphore.h
     ${HEADER_DIR}/detail/simple.inl
