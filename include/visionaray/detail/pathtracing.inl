@@ -87,7 +87,7 @@ struct kernel
 
                 src = mul( src, dot(n, refl_dir) / pdf, !emissive, src ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
                 dst = mul( dst, src, active_rays && !zero_pdf, dst );
-                dst = mul( dst, C(0.0), zero_pdf && active_rays, dst );
+                dst = select( zero_pdf && active_rays, C(0.0), dst );
 
                 active_rays &= !emissive;
                 active_rays &= !zero_pdf;
