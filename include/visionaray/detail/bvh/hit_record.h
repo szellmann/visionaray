@@ -109,18 +109,19 @@ template <
     typename FloatT,
     typename BVH,
     typename Base,
+    typename UnpackedBase = decltype(simd::unpack(Base{})),
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
 inline auto unpack(
         hit_record_bvh<basic_ray<FloatT>, BVH, Base> const& hr
         )
     -> std::array<
-            hit_record_bvh<ray, BVH, typename decltype(simd::unpack(Base{}))::value_type>,
+            hit_record_bvh<ray, BVH, typename UnpackedBase::value_type>,
             num_elements<FloatT>::value
             >
 {
     using int_array        = typename aligned_array<typename int_type<FloatT>::type>::type;
-    using scalar_base_type = typename decltype(simd::unpack(Base{}))::value_type;
+    using scalar_base_type = typename UnpackedBase::value_type;
 
     auto base = simd::unpack(static_cast<Base const&>(hr));
 
