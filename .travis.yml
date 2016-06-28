@@ -1,3 +1,7 @@
+#--------------------------------------------------------------------------------------------------
+# Configuration script for use with continuous integration service travis-ci.org
+#
+
 language: cpp
 compiler:
     - gcc
