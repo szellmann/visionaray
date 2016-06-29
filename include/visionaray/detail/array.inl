@@ -8,6 +8,14 @@
 #include <thrust/swap.h>
 #endif
 
+#include "compiler.h"
+
+#ifdef VSNRAY_CXX_HAS_CONSTEXPR
+#define VSNRAY_CONSTEXPR_ constexpr
+#else
+#define VSNRAY_CONSTEXPR_
+#endif
+
 namespace visionaray
 {
 
@@ -178,21 +186,21 @@ inline typename array<T, N>::const_reverse_iterator array<T, N>::crend() const
 
 template <typename T, size_t N>
 VSNRAY_FUNC
-inline constexpr bool array<T, N>::empty() const
+inline VSNRAY_CONSTEXPR_ bool array<T, N>::empty() const
 {
     return N == 0;
 }
 
 template <typename T, size_t N>
 VSNRAY_FUNC
-inline constexpr size_t array<T, N>::size() const
+inline VSNRAY_CONSTEXPR_ size_t array<T, N>::size() const
 {
     return N;
 }
 
 template <typename T, size_t N>
 VSNRAY_FUNC
-inline constexpr size_t array<T, N>::max_size() const
+inline VSNRAY_CONSTEXPR_ size_t array<T, N>::max_size() const
 {
     return N;
 }
@@ -235,25 +243,25 @@ namespace std
 //
 
 template <size_t I, typename  T, size_t N>
-constexpr T& get(visionaray::array<T, N>& a)
+VSNRAY_CONSTEXPR_ T& get(visionaray::array<T, N>& a)
 {
     return a[I];
 }
 
 template <size_t I, typename  T, size_t N>
-constexpr T&& get(visionaray::array<T, N>&& a)
+VSNRAY_CONSTEXPR_ T&& get(visionaray::array<T, N>&& a)
 {
     return a[I];
 }
 
 template <size_t I, typename  T, size_t N>
-constexpr T const& get(visionaray::array<T, N> const& a)
+VSNRAY_CONSTEXPR_ T const& get(visionaray::array<T, N> const& a)
 {
     return a[I];
 }
 
 template <size_t I, typename  T, size_t N>
-constexpr T const&& get(visionaray::array<T, N> const&& a)
+VSNRAY_CONSTEXPR_ T const&& get(visionaray::array<T, N> const&& a)
 {
     return a[I];
 }
@@ -272,32 +280,34 @@ namespace thrust
 
 template <size_t I, typename  T, size_t N>
 VSNRAY_FUNC
-constexpr T& get(visionaray::array<T, N>& a)
+VSNRAY_CONSTEXPR_ T& get(visionaray::array<T, N>& a)
 {
     return a[I];
 }
 
 template <size_t I, typename  T, size_t N>
 VSNRAY_FUNC
-constexpr T&& get(visionaray::array<T, N>&& a)
+VSNRAY_CONSTEXPR_ T&& get(visionaray::array<T, N>&& a)
 {
     return a[I];
 }
 
 template <size_t I, typename  T, size_t N>
 VSNRAY_FUNC
-constexpr T const& get(visionaray::array<T, N> const& a)
+VSNRAY_CONSTEXPR_ T const& get(visionaray::array<T, N> const& a)
 {
     return a[I];
 }
 
 template <size_t I, typename  T, size_t N>
 VSNRAY_FUNC
-constexpr T const&& get(visionaray::array<T, N> const&& a)
+VSNRAY_CONSTEXPR_ T const&& get(visionaray::array<T, N> const&& a)
 {
     return a[I];
 }
 
 } // thrust
+
+#undef VSNRAY_CONSTEXPR_
 
 #endif

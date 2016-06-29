@@ -83,12 +83,18 @@ public:
     VSNRAY_FUNC const_reverse_iterator  crend() const;
 
 
-    VSNRAY_FUNC constexpr bool      empty() const;
-    VSNRAY_FUNC constexpr size_t    size() const;
-    VSNRAY_FUNC constexpr size_t    max_size() const;
+#ifdef VSNRAY_CXX_HAS_CONSTEXPR
+    VSNRAY_FUNC constexpr bool          empty() const;
+    VSNRAY_FUNC constexpr size_t        size() const;
+    VSNRAY_FUNC constexpr size_t        max_size() const;
+#else
+    VSNRAY_FUNC bool                    empty() const;
+    VSNRAY_FUNC size_t                  size() const;
+    VSNRAY_FUNC size_t                  max_size() const;
+#endif
 
-    VSNRAY_FUNC void                fill(T const& value);
-    VSNRAY_FUNC void                swap(array& rhs);
+    VSNRAY_FUNC void                    fill(T const& value);
+    VSNRAY_FUNC void                    swap(array& rhs);
 
 private:
 
