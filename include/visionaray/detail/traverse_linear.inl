@@ -6,6 +6,7 @@
 #include <utility>
 #include <type_traits>
 
+#include <visionaray/bvh.h>
 #include <visionaray/intersector.h>
 #include <visionaray/update_if.h>
 
