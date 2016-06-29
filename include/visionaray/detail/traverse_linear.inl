@@ -190,7 +190,7 @@ inline auto any_hit(
         Intersector&    isect
         )
     -> decltype( detail::traverse<detail::AnyHit>(
-            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_any_bvh<Primitive>{},
             is_closer_t(),
             r,
             begin,
@@ -199,7 +199,7 @@ inline auto any_hit(
             ) )
 {
     return detail::traverse<detail::AnyHit>(
-            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_any_bvh<Primitive>{},
             is_closer_t(),
             r,
             begin,
@@ -237,7 +237,7 @@ inline auto any_hit(
         Intersector&                    isect
         )
     -> decltype( detail::traverse<detail::AnyHit>(
-            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_any_bvh<Primitive>{},
             is_closer_t(),
             r,
             begin,
@@ -247,7 +247,7 @@ inline auto any_hit(
             ) )
 {
     return detail::traverse<detail::AnyHit>(
-            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_any_bvh<Primitive>{},
             is_closer_t(),
             r,
             begin,
@@ -290,7 +290,7 @@ inline auto closest_hit(
         Intersector&    isect
         )
     -> decltype( detail::traverse<detail::ClosestHit>(
-            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_any_bvh<Primitive>{},
             is_closer_t(),
             r,
             begin,
@@ -299,7 +299,7 @@ inline auto closest_hit(
             ) )
 {
     return detail::traverse<detail::ClosestHit>(
-            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_any_bvh<Primitive>{},
             is_closer_t(),
             r,
             begin,
@@ -337,7 +337,7 @@ inline auto multi_hit(
         Intersector&    isect
         )
     -> decltype( detail::traverse<detail::MultiHit, N>(
-            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_any_bvh<Primitive>{},
             is_closer_t(),
             r,
             begin,
@@ -346,7 +346,7 @@ inline auto multi_hit(
             ) )
 {
     return detail::traverse<detail::MultiHit, N>(
-            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_any_bvh<Primitive>{},
             is_closer_t(),
             r,
             begin,
@@ -367,7 +367,7 @@ inline auto multi_hit(R const& r, Primitives begin, Primitives end)
     // The following FAILS with lots of recursive template instantiations!
 //  -> decltype( multi_hit<N>(r, begin, end, std::declval<default_intersector&>()) )
     -> decltype( detail::traverse<detail::MultiHit, N>(
-            std::integral_constant<bool, is_any_bvh<Primitive>::value>{},
+            is_any_bvh<Primitive>{},
             is_closer_t(),
             r,
             begin,
