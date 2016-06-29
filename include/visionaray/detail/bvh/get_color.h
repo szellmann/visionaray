@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include <visionaray/bvh.h>
+#include <visionaray/tags.h>
 
 #include "hit_record.h"
 
@@ -39,13 +40,22 @@ auto get_color(
             );
 }
 
+//
+// TODO:
+// The overloads below are essentially equivalent but for the color binding parameter
+// When being less specific about the color binding, overload resolution will however
+// consider the non-compound primitives' get_color() functions as candidates because
+// those are overloaded based on color binding
+//
+
+// colors per face ----------------------------------------
+
 template <
     typename Colors,
     typename R,
     typename BVH,
     typename Base,
     typename Primitive,
-    typename ColorBinding,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
@@ -54,20 +64,86 @@ auto get_color(
         Colors                              colors,
         hit_record_bvh<R, BVH, Base> const& hr,
         Primitive                           /* */,
-        ColorBinding                        /* */
+        colors_per_face_binding             /* */
         )
     -> decltype( get_color(
             colors,
             static_cast<Base const&>(hr),
             typename Primitive::primitive_type{},
-            ColorBinding{} 
+            colors_per_face_binding{} 
             ) )
 {
     return get_color(
             colors,
             static_cast<Base const&>(hr),
             typename Primitive::primitive_type{},
-            ColorBinding{}
+            colors_per_face_binding{}
+            );
+}
+
+// colors per vertex --------------------------------------
+
+template <
+    typename Colors,
+    typename R,
+    typename BVH,
+    typename Base,
+    typename Primitive,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
+    >
+VSNRAY_FUNC
+auto get_color(
+        Colors                              colors,
+        hit_record_bvh<R, BVH, Base> const& hr,
+        Primitive                           /* */,
+        colors_per_vertex_binding           /* */
+        )
+    -> decltype( get_color(
+            colors,
+            static_cast<Base const&>(hr),
+            typename Primitive::primitive_type{},
+            colors_per_vertex_binding{} 
+            ) )
+{
+    return get_color(
+            colors,
+            static_cast<Base const&>(hr),
+            typename Primitive::primitive_type{},
+            colors_per_vertex_binding{}
+            );
+}
+
+// colors per geometry ------------------------------------
+
+template <
+    typename Colors,
+    typename R,
+    typename BVH,
+    typename Base,
+    typename Primitive,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
+    >
+VSNRAY_FUNC
+auto get_color(
+        Colors                              colors,
+        hit_record_bvh<R, BVH, Base> const& hr,
+        Primitive                           /* */,
+        colors_per_geometry_binding         /* */
+        )
+    -> decltype( get_color(
+            colors,
+            static_cast<Base const&>(hr),
+            typename Primitive::primitive_type{},
+            colors_per_geometry_binding{} 
+            ) )
+{
+    return get_color(
+            colors,
+            static_cast<Base const&>(hr),
+            typename Primitive::primitive_type{},
+            colors_per_geometry_binding{}
             );
 }
 
