@@ -24,7 +24,8 @@ Build requirements
 
 - C++11 compliant compiler
    (tested with g++-4.8.2 on Ubuntu 14.04 x86_64,
-    tested with clang++-7.0 on Mac OS X 10.10)
+    tested with clang++-7.0 on Mac OS X 10.10,
+    tested with Microsoft Visual Studio 2015 VC14 for x64)
 
 - [CMake][1] version 2.8 or newer
 - [Boost][2]
@@ -34,7 +35,6 @@ Build requirements
 
 - All external dependencies but CMake are required as developer packages containing C/C++ header files
 - In the future we intend to relax the OpenGL and GLEW dependency
-- Microsoft Windows support is there but poor, most testing is done under Linux and Mac OS X
 - When targeting NVIDIA CUDA, make sure you have a C++11 compliant version (v7.0 or newer)
 - Visionaray supports Fermi+ NVIDIA GPUs (e.g. >= GeForce 400 series or >= Quadro {4|5|6}000)
 
