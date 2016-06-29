@@ -64,17 +64,16 @@ inline auto get_color(
 
 template <
     typename Colors,
-    template <typename, typename> class HR,
-    typename T,
-    typename HRP,
+    typename HR,
+    typename T = typename HR::scalar_type,
     typename Primitive,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
 inline vector<3, T> get_color(
-        Colors                          colors,
-        HR<basic_ray<T>, HRP> const&    hr,
-        Primitive                       /* */,
-        per_face_binding                /* */
+        Colors              colors,
+        HR const&           hr,
+        Primitive           /* */,
+        per_face_binding    /* */
         )
 {
     using C = typename std::iterator_traits<Colors>::value_type;
