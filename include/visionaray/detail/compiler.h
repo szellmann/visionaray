@@ -153,6 +153,9 @@
 #       define VSNRAY_CXX_HAS_GENERALIZED_INITIALIZERS
 #       define VSNRAY_CXX_HAS_VARIADIC_TEMPLATES
 #   endif
+#   if VSNRAY_CXX_MSVC >= 1900 // Visual C++ 14.0 (2015)
+#       define VSNRAY_CXX_HAS_CONSTEXPR
+#   endif
 #endif
 
 
