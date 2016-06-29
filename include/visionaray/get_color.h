@@ -20,7 +20,13 @@ namespace visionaray
 // Get face color from array
 //
 
-template <typename Colors, typename HR, typename Primitive>
+template <
+    typename Colors,
+    typename HR,
+    typename T = typename HR::scalar_type,
+    typename Primitive,
+    typename = typename std::enable_if<!simd::is_simd_vector<T>::value>::type
+    >
 VSNRAY_FUNC
 inline auto get_color(
         Colors              colors,
