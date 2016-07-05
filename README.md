@@ -23,8 +23,8 @@ Build requirements
 ------------------
 
 - C++11 compliant compiler
-   (tested with g++-4.8.2 on Ubuntu 14.04 x86_64,
-    tested with clang++-7.0 on Mac OS X 10.10,
+   (tested with g++-4.8.4 on Ubuntu 14.04 x86_64,
+    tested with clang++-7.0.2 on Mac OS X 10.10,
     tested with Microsoft Visual Studio 2015 VC14 for x64)
 
 - [CMake][1] version 2.8 or newer
