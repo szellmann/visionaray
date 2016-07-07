@@ -31,6 +31,9 @@ class unorm;
 template <size_t Dim, typename T>
 class vector;
 
+template <typename T>
+class quaternion;
+
 template <size_t N /* rows */, size_t M /* columns */, typename T>
 class matrix;
 
@@ -79,6 +82,11 @@ typedef vector<4, unsigned int>             vec4ui;
 typedef vector<4, float>                    vec4f;
 typedef vector<4, double>                   vec4d;
 typedef vector<4, float>                    vec4;
+
+
+typedef quaternion<float>                   quatf;
+typedef quaternion<double>                  quatd;
+typedef quaternion<float>                   quat;
 
 
 typedef matrix<3, 3, float>                 mat3f;

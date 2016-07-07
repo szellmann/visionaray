@@ -14,7 +14,7 @@
 #include "simd/type_traits.h"
 #include "matrix.h"
 #include "norm.h"
-#include "quat.h"
+#include "quaternion.h"
 #include "rectangle.h"
 #include "vector.h"
 

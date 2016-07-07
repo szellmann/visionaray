@@ -18,7 +18,7 @@
 #include "norm.h"
 #include "plane.h"
 #include "project.h"
-#include "quat.h"
+#include "quaternion.h"
 #include "ray.h"
 #include "rectangle.h"
 #include "sphere.h"
