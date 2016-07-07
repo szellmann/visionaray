@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_MATH_CONFIG_H
-#define VSNRAY_MATH_CONFIG_H
+#define VSNRAY_MATH_CONFIG_H 1
 
 //--------------------------------------------------------------------------------------------------
 // Project specific default namespace
