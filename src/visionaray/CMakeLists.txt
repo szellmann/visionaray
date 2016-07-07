@@ -110,7 +110,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/matrix4.inl
     ${HEADER_DIR}/math/detail/norm.inl
     ${HEADER_DIR}/math/detail/plane.inl
-    ${HEADER_DIR}/math/detail/quat.inl
+    ${HEADER_DIR}/math/detail/quaternion.inl
     ${HEADER_DIR}/math/detail/rectangle.inl
     ${HEADER_DIR}/math/detail/sphere.inl
     ${HEADER_DIR}/math/detail/triangle.inl
@@ -151,7 +151,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/primitive.h
     ${HEADER_DIR}/math/project.h
     ${HEADER_DIR}/math/plane.h
-    ${HEADER_DIR}/math/quat.h
+    ${HEADER_DIR}/math/quaternion.h
     ${HEADER_DIR}/math/ray.h
     ${HEADER_DIR}/math/rectangle.h
     ${HEADER_DIR}/math/serialization.h
