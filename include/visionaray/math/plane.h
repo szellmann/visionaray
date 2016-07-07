@@ -8,7 +8,9 @@
 
 #include <cstddef>
 
+#include "config.h"
 #include "primitive.h"
+#include "vector.h"
 
 namespace MATH_NAMESPACE
 {

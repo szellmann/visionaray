@@ -8,6 +8,8 @@
 
 #include <cstdint>
 
+#include "config.h"
+
 namespace MATH_NAMESPACE
 {
 namespace detail

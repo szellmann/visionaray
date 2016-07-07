@@ -6,6 +6,7 @@
 #ifndef VSNRAY_MATH_SPHERE_H
 #define VSNRAY_MATH_SPHERE_H 1
 
+#include "config.h"
 #include "primitive.h"
 #include "vector.h"
 

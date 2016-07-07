@@ -8,6 +8,8 @@
 
 #include <cstddef>
 
+#include "config.h"
+#include "vector.h"
 
 namespace MATH_NAMESPACE
 {

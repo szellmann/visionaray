@@ -6,6 +6,8 @@
 #ifndef VSNRAY_MATH_PRIMITIVE_H
 #define VSNRAY_MATH_PRIMITIVE_H 1
 
+#include "config.h"
+
 namespace MATH_NAMESPACE
 {
 
