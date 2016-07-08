@@ -53,7 +53,7 @@ RectA convert_xywh(RectB const& rect)
 // Tests
 //
 
-TEST(Rect, XYWH)
+TEST(Rectangle, XYWH)
 {
 
     // init -----------------------------------------------

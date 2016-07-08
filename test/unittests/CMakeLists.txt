@@ -89,7 +89,7 @@ set(UNITTESTS_SOURCES
     math/simd/simd.cpp
     math/matrix.cpp
     math/norm.cpp
-    math/rect.cpp
+    math/rectangle.cpp
     array.cpp
     generic_material.cpp
     generic_primitive.cpp
