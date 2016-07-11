@@ -38,5 +38,6 @@ build_script:
       -DGLUT_INCLUDE_DIR="C:\projects\nupengl.core.0.1.0.1\build\native\include"
       -DGLUT_glut_LIBRARY="C:\projects\nupengl.core.0.1.0.1\build\native\lib\x64\freeglut.lib"
       -DVSNRAY_ENABLE_EXAMPLES=ON
+      -DVSNRAY_ENABLE_UNITTESTS=ON
       ..
     - msbuild visionaray.sln
