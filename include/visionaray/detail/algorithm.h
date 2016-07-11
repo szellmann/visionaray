@@ -48,7 +48,7 @@ VSNRAY_FUNC
 void insert_sorted(T const& item, RandIt first, RandIt last, Cond cond)
 {
     RandIt it = first;
-    RandIt pos = 0;
+    RandIt pos = last;
 
     while (it < last)
     {
@@ -60,14 +60,14 @@ void insert_sorted(T const& item, RandIt first, RandIt last, Cond cond)
         ++it;
     }
 
-    it = pos ? last - 1 : 0;
+    it = pos ? last - 1 : last;
     while (it > pos)
     {
         *it = *(it - 1);
         --it;
     }
 
-    if (pos != 0)
+    if (pos != last)
     {
         *pos = item;
     }
