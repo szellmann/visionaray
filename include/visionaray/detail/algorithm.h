@@ -60,7 +60,7 @@ void insert_sorted(T const& item, RandIt first, RandIt last, Cond cond)
         ++it;
     }
 
-    it = pos ? last - 1 : last;
+    it = (pos != last) ? last - 1 : last;
     while (it > pos)
     {
         *it = *(it - 1);
