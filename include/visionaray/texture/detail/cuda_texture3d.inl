@@ -23,7 +23,7 @@ public:
 
 private:
 
-    using cuda_type   = typename cuda::map_texel_type<T, cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)>::cuda_type;
+    using cuda_type   = typename cuda::map_texel_type<T>::cuda_type;
 
 public:
 
@@ -336,7 +336,7 @@ class cuda_texture_ref<T, 3>
 {
 public:
 
-    using cuda_type   = typename cuda::map_texel_type<T, cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)>::cuda_type;
+    using cuda_type   = typename cuda::map_texel_type<T>::cuda_type;
 
 public:
 
