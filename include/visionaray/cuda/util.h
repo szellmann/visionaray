@@ -20,7 +20,7 @@ namespace cuda
 // cuda texel type <-> visionaray texel type
 //
 
-template <typename Type>
+template <typename Type, cudaTextureReadMode ReadMode>
 struct map_texel_type
 {
     using cuda_type             = Type;
@@ -41,7 +41,7 @@ struct map_texel_type
 //
 
 template <>
-struct map_texel_type<uchar4>
+struct map_texel_type<uchar4, cudaReadModeElementType>
 {
     using cuda_type             = uchar4;
     using vsnray_type           = vector<4, unsigned char>;
@@ -56,7 +56,127 @@ struct map_texel_type<uchar4>
 };
 
 template <>
-struct map_texel_type<float2>
+struct map_texel_type<unsigned char, cudaReadModeNormalizedFloat>
+{
+    using cuda_type             = unsigned char;
+    using vsnray_type           = unorm<8>;
+
+    using cuda_return_type      = float;
+    using vsnray_return_type    = float;
+
+    VSNRAY_FUNC static float convert_return_type(float value)
+    {
+        return value;
+    }
+};
+
+template <>
+struct map_texel_type<uchar2, cudaReadModeNormalizedFloat>
+{
+    using cuda_type             = uchar2;
+    using vsnray_type           = vector<2, unorm<8>>;
+
+    using cuda_return_type      = float2;
+    using vsnray_return_type    = vector<2, float>;
+
+    VSNRAY_FUNC static vector<2, float> convert_return_type(float2 const& value)
+    {
+        return vector<2, float>( value.x, value.y );
+    }
+};
+
+template <>
+struct map_texel_type<uchar3, cudaReadModeNormalizedFloat>
+{
+    using cuda_type             = uchar3;
+    using vsnray_type           = vector<3, unorm<8>>;
+
+    using cuda_return_type      = float3;
+    using vsnray_return_type    = vector<3, float>;
+
+    VSNRAY_FUNC static vector<3, float> convert_return_type(float3 const& value)
+    {
+        return vector<3, float>( value.x, value.y, value.z );
+    }
+};
+
+template <>
+struct map_texel_type<uchar4, cudaReadModeNormalizedFloat>
+{
+    using cuda_type             = uchar4;
+    using vsnray_type           = vector<4, unorm<8>>;
+
+    using cuda_return_type      = float4;
+    using vsnray_return_type    = vector<4, float>;
+
+    VSNRAY_FUNC static vector<4, float> convert_return_type(float4 const& value)
+    {
+        return vector<4, float>( value.x, value.y, value.z, value.w );
+    }
+};
+
+template <>
+struct map_texel_type<unsigned short, cudaReadModeNormalizedFloat>
+{
+    using cuda_type             = unsigned short;
+    using vsnray_type           = unorm<16>;
+
+    using cuda_return_type      = float;
+    using vsnray_return_type    = float;
+
+    VSNRAY_FUNC static float convert_return_type(float value)
+    {
+        return value;
+    }
+};
+
+template <>
+struct map_texel_type<ushort2, cudaReadModeNormalizedFloat>
+{
+    using cuda_type             = ushort2;
+    using vsnray_type           = vector<2, unorm<16>>;
+
+    using cuda_return_type      = float2;
+    using vsnray_return_type    = vector<2, float>;
+
+    VSNRAY_FUNC static vector<2, float> convert_return_type(float2 const& value)
+    {
+        return vector<2, float>( value.x, value.y );
+    }
+};
+
+template <>
+struct map_texel_type<ushort3, cudaReadModeNormalizedFloat>
+{
+    using cuda_type             = ushort3;
+    using vsnray_type           = vector<3, unorm<16>>;
+
+    using cuda_return_type      = float3;
+    using vsnray_return_type    = vector<3, float>;
+
+    VSNRAY_FUNC static vector<3, float> convert_return_type(float3 const& value)
+    {
+        return vector<3, float>( value.x, value.y, value.z );
+    }
+};
+
+template <>
+struct map_texel_type<ushort4, cudaReadModeNormalizedFloat>
+{
+    using cuda_type             = ushort4;
+    using vsnray_type           = vector<4, unorm<16>>;
+
+    using cuda_return_type      = float4;
+    using vsnray_return_type    = vector<4, float>;
+
+    VSNRAY_FUNC static vector<4, float> convert_return_type(float4 const& value)
+    {
+        return vector<4, float>( value.x, value.y, value.z, value.w );
+    }
+};
+
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<float2, ReadMode>
 {
     using cuda_type             = float2;
     using vsnray_type           = vector<2, float>;
@@ -70,8 +190,8 @@ struct map_texel_type<float2>
     }
 };
 
-template <>
-struct map_texel_type<float4>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<float4, ReadMode>
 {
     using cuda_type             = float4;
     using vsnray_type           = vector<4, float>;
@@ -90,8 +210,8 @@ struct map_texel_type<float4>
 // cuda <- visionaray
 //
 
-template <>
-struct map_texel_type<unorm<8>>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<unorm<8>, ReadMode>
 {
     using cuda_type   = unsigned char;
     using vsnray_type = unorm<8>;
@@ -102,8 +222,8 @@ struct map_texel_type<unorm<8>>
     }
 };
 
-template <>
-struct map_texel_type<vector<2, unorm<8>>>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<vector<2, unorm<8>>, ReadMode>
 {
     using cuda_type   = uchar2;
     using vsnray_type = vector<2, unorm<8>>;
@@ -117,8 +237,8 @@ struct map_texel_type<vector<2, unorm<8>>>
     }
 };
 
-template <>
-struct map_texel_type<vector<3, unorm<8>>>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<vector<3, unorm<8>>, ReadMode>
 {
     using cuda_type   = uchar3;
     using vsnray_type = vector<3, unorm<8>>;
@@ -133,8 +253,8 @@ struct map_texel_type<vector<3, unorm<8>>>
     }
 };
 
-template <>
-struct map_texel_type<vector<4, unorm<8>>>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<vector<4, unorm<8>>, ReadMode>
 {
     using cuda_type   = uchar4;
     using vsnray_type = vector<4, unorm<8>>;
@@ -150,8 +270,8 @@ struct map_texel_type<vector<4, unorm<8>>>
     }
 };
 
-template <>
-struct map_texel_type<unorm<16>>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<unorm<16>, ReadMode>
 {
     using cuda_type   = unsigned short;
     using vsnray_type = unorm<16>;
@@ -162,8 +282,8 @@ struct map_texel_type<unorm<16>>
     }
 };
 
-template <>
-struct map_texel_type<vector<2, unorm<16>>>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<vector<2, unorm<16>>, ReadMode>
 {
     using cuda_type   = ushort2;
     using vsnray_type = vector<2, unorm<16>>;
@@ -177,8 +297,8 @@ struct map_texel_type<vector<2, unorm<16>>>
     }
 };
 
-template <>
-struct map_texel_type<vector<3, unorm<16>>>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<vector<3, unorm<16>>, ReadMode>
 {
     using cuda_type   = ushort3;
     using vsnray_type = vector<3, unorm<16>>;
@@ -193,8 +313,8 @@ struct map_texel_type<vector<3, unorm<16>>>
     }
 };
 
-template <>
-struct map_texel_type<vector<4, unorm<16>>>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<vector<4, unorm<16>>, ReadMode>
 {
     using cuda_type   = ushort4;
     using vsnray_type = vector<4, unorm<16>>;
@@ -210,8 +330,8 @@ struct map_texel_type<vector<4, unorm<16>>>
     }
 };
 
-template <>
-struct map_texel_type<vector<2, float>>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<vector<2, float>, ReadMode>
 {
     using cuda_type   = float2;
     using vsnray_type = vector<2, float>;
@@ -222,8 +342,8 @@ struct map_texel_type<vector<2, float>>
     }
 };
 
-template <>
-struct map_texel_type<vector<4, float>>
+template <cudaTextureReadMode ReadMode>
+struct map_texel_type<vector<4, float>, ReadMode>
 {
     using cuda_type   = float4;
     using vsnray_type = vector<4, float>;
