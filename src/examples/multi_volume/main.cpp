@@ -370,14 +370,14 @@ struct renderer : viewer_type
     // textures and texture references
 
     // On the CPU, we can simply "ref" the arrays with data
-    std::vector<texture_ref<float, ElementType, 3>>             volumes;
-    std::vector<texture_ref<vec4, ElementType, 1>>              transfuncs;
+    std::vector<texture_ref<float, 3>>                          volumes;
+    std::vector<texture_ref<vec4, 1>>                           transfuncs;
 
 #ifdef __CUDACC__
     // On the GPU, we need permanent storage in texture memory
     // and will create references later on
-    std::vector<cuda_texture<float, ElementType, 3>>            device_volumes_storage;
-    std::vector<cuda_texture<vec4, ElementType, 1>>             device_transfuncs_storage;
+    std::vector<cuda_texture<float, 3>>                         device_volumes_storage;
+    std::vector<cuda_texture<vec4, 1>>                          device_transfuncs_storage;
 #endif
 
 
@@ -550,17 +550,17 @@ struct kernel
     size_t num_volumes;
 
 #ifdef __CUDACC__
-    cuda_texture_ref<float, ElementType, 3> const*  volumes;
-    cuda_texture_ref<vec4, ElementType, 1> const*   transfuncs;
+    cuda_texture_ref<float, 3> const*   volumes;
+    cuda_texture_ref<vec4, 1> const*    transfuncs;
 #else
-    texture_ref<float, ElementType, 3> const*       volumes;
-    texture_ref<vec4, ElementType, 1> const*        transfuncs;
+    texture_ref<float, 3> const*        volumes;
+    texture_ref<vec4, 1> const*         transfuncs;
 #endif
 
-    matrix<4, 4, S> const*                          transforms_inv;
-    aabb const*                                     bboxes;
-    plastic<S> const*                               materials;
-    point_light<float>                              light;
+    matrix<4, 4, S> const*              transforms_inv;
+    aabb const*                         bboxes;
+    plastic<S> const*                   materials;
+    point_light<float>                  light;
 };
 
 
@@ -635,13 +635,13 @@ void renderer::on_display()
     // w/ CUDA, it's the users' responsibility to copy the kernel data to
     // the GPU. thrust provides a convenient, STL-like interface for that.
 
-    thrust::device_vector<cuda_texture_ref<float, ElementType, 3>> device_volumes;
-    thrust::device_vector<cuda_texture_ref<vec4, ElementType, 1>> device_transfuncs;
+    thrust::device_vector<cuda_texture_ref<float, 3>> device_volumes;
+    thrust::device_vector<cuda_texture_ref<vec4, 1>> device_transfuncs;
     device_volumes.resize(volumes.size());
     device_transfuncs.resize(transfuncs.size());
 
-    using volume_ref = thrust::device_vector<cuda_texture_ref<float, ElementType, 3>>::value_type;
-    using transfunc_ref = thrust::device_vector<cuda_texture_ref<vec4, ElementType, 1>>::value_type;
+    using volume_ref = thrust::device_vector<cuda_texture_ref<float, 3>>::value_type;
+    using transfunc_ref = thrust::device_vector<cuda_texture_ref<vec4, 1>>::value_type;
 
     for (size_t i = 0; i < device_volumes_storage.size(); ++i)
     {

@@ -18,52 +18,48 @@ using namespace visionaray;
 // host texture typedefs
 //
 
-using h_texture_R8          = visionaray::texture<          unorm<8> , NormalizedFloat, 1>;
-using h_texture_RG8         = visionaray::texture<vector<2, unorm<8>>, NormalizedFloat, 1>;
-using h_texture_RGB8        = visionaray::texture<vector<3, unorm<8>>, NormalizedFloat, 1>;
-using h_texture_RGBA8       = visionaray::texture<vector<4, unorm<8>>, NormalizedFloat, 1>;
+using h_texture_R8          = visionaray::texture<          unorm<8> , 1>;
+using h_texture_RG8         = visionaray::texture<vector<2, unorm<8>>, 1>;
+using h_texture_RGB8        = visionaray::texture<vector<3, unorm<8>>, 1>;
+using h_texture_RGBA8       = visionaray::texture<vector<4, unorm<8>>, 1>;
 
 
 //-------------------------------------------------------------------------------------------------
 // device texture typedefs
 //
 
-using d_texture_R8          = cuda_texture<              unorm<8> , NormalizedFloat, 1>;
-using d_texture_RG8         = cuda_texture<    vector<2, unorm<8>>, NormalizedFloat, 1>;
-using d_texture_RGB8        = cuda_texture<    vector<3, unorm<8>>, NormalizedFloat, 1>;
-using d_texture_RGBA8       = cuda_texture<    vector<4, unorm<8>>, NormalizedFloat, 1>;
+using d_texture_R8          = cuda_texture<              unorm<8> , 1>;
+using d_texture_RG8         = cuda_texture<    vector<2, unorm<8>>, 1>;
+using d_texture_RGB8        = cuda_texture<    vector<3, unorm<8>>, 1>;
+using d_texture_RGBA8       = cuda_texture<    vector<4, unorm<8>>, 1>;
 
-using d_texture_R32F        = cuda_texture<              float    , NormalizedFloat, 1>;
-using d_texture_RG32F       = cuda_texture<    vector<2, float>   , NormalizedFloat, 1>;
+using d_texture_R32F        = cuda_texture<              float    , 1>;
+using d_texture_RG32F       = cuda_texture<    vector<2, float>   , 1>;
 
 
 //-------------------------------------------------------------------------------------------------
 // device texture ref typedefs
 //
 
-using d_texture_ref_R8      = cuda_texture_ref<          unorm<8> , NormalizedFloat, 1>;
-using d_texture_ref_RG8     = cuda_texture_ref<vector<2, unorm<8>>, NormalizedFloat, 1>;
-using d_texture_ref_RGB8    = cuda_texture_ref<vector<3, unorm<8>>, NormalizedFloat, 1>;
-using d_texture_ref_RGBA8   = cuda_texture_ref<vector<4, unorm<8>>, NormalizedFloat, 1>;
+using d_texture_ref_R8      = cuda_texture_ref<          unorm<8> , 1>;
+using d_texture_ref_RG8     = cuda_texture_ref<vector<2, unorm<8>>, 1>;
+using d_texture_ref_RGB8    = cuda_texture_ref<vector<3, unorm<8>>, 1>;
+using d_texture_ref_RGBA8   = cuda_texture_ref<vector<4, unorm<8>>, 1>;
 
-using d_texture_ref_R32F    = cuda_texture_ref<          float    , NormalizedFloat, 1>;
-using d_texture_ref_RG32F   = cuda_texture_ref<vector<2, float  > , NormalizedFloat, 1>;
+using d_texture_ref_R32F    = cuda_texture_ref<          float    , 1>;
+using d_texture_ref_RG32F   = cuda_texture_ref<vector<2, float  > , 1>;
 
 
 //-------------------------------------------------------------------------------------------------
 // sampler kernel
 //
 
-template <
-    typename T,
-    tex_read_mode ReadMode,
-    typename FloatT
-    >
+template <typename T, typename FloatT>
 __global__ void sample1D(
-        cuda_texture_ref<T, ReadMode, 1>    tex,
-        FloatT*                             coords,
-        T*                                  result,
-        size_t                              n
+        cuda_texture_ref<T, 1>  tex,
+        FloatT*                 coords,
+        T*                      result,
+        size_t                  n
         )
 {
     for (size_t i = 0; i < n; ++i)

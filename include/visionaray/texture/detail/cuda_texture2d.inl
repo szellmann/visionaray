@@ -13,17 +13,17 @@ namespace visionaray
 // CUDA texture2d
 //
 
-template <typename T, tex_read_mode ReadMode>
-class cuda_texture<T, ReadMode, 2>
+template <typename T>
+class cuda_texture<T, 2>
 {
 public:
 
     using value_type  = T;
-    using ref_type    = cuda_texture_ref<T, ReadMode, 2>;
+    using ref_type    = cuda_texture_ref<T, 2>;
 
 private:
 
-    using cuda_type   = typename cuda::map_texel_type<T, ReadMode>::cuda_type;
+    using cuda_type   = typename cuda::map_texel_type<T, tex_read_mode(tex_read_mode_from_type<T>::value)>::cuda_type;
 
 public:
 
@@ -95,7 +95,7 @@ public:
 
     // Construct from host texture
     template <typename U>
-    explicit cuda_texture(texture<U, ReadMode, 2> const& host_tex)
+    explicit cuda_texture(texture<U, 2> const& host_tex)
         : width_(host_tex.width())
         , height_(host_tex.height())
         , address_mode_(host_tex.get_address_mode())
@@ -121,7 +121,7 @@ public:
 
     // Construct from host texture ref (TODO: combine with previous)
     template <typename U>
-    explicit cuda_texture(texture_ref<U, ReadMode, 2> const& host_tex)
+    explicit cuda_texture(texture_ref<U, 2> const& host_tex)
         : width_(host_tex.width())
         , height_(host_tex.height())
         , address_mode_(host_tex.get_address_mode())
@@ -291,7 +291,7 @@ private:
         texture_desc.addressMode[0]             = detail::map_address_mode( address_mode_[0] );
         texture_desc.addressMode[1]             = detail::map_address_mode( address_mode_[1] );
         texture_desc.filterMode                 = detail::map_filter_mode( filter_mode_ );
-        texture_desc.readMode                   = detail::map_read_mode( ReadMode );
+        texture_desc.readMode                   = detail::map_read_mode( tex_read_mode(tex_read_mode_from_type<T>::value) );
         texture_desc.normalizedCoords           = true;
 
         cudaTextureObject_t obj = 0;
@@ -306,18 +306,18 @@ private:
 // CUDA texture2d reference
 //
 
-template <typename T, tex_read_mode ReadMode>
-class cuda_texture_ref<T, ReadMode, 2>
+template <typename T>
+class cuda_texture_ref<T, 2>
 {
 public:
 
-    using cuda_type   = typename cuda::map_texel_type<T, ReadMode>::cuda_type;
+    using cuda_type   = typename cuda::map_texel_type<T, tex_read_mode(tex_read_mode_from_type<T>::value)>::cuda_type;
 
 public:
 
     VSNRAY_FUNC cuda_texture_ref() = default;
 
-    VSNRAY_CPU_FUNC cuda_texture_ref(cuda_texture<T, ReadMode, 2> const& ref)
+    VSNRAY_CPU_FUNC cuda_texture_ref(cuda_texture<T, 2> const& ref)
         : texture_obj_(ref.texture_object())
         , width_(ref.width())
         , height_(ref.height())
@@ -326,7 +326,7 @@ public:
 
     VSNRAY_FUNC ~cuda_texture_ref() = default;
 
-    VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture<T, ReadMode, 2> const& rhs)
+    VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture<T, 2> const& rhs)
     {
         texture_obj_ = rhs.texture_object();
         width_ = rhs.width();

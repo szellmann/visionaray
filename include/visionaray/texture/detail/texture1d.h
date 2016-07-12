@@ -14,12 +14,12 @@
 namespace visionaray
 {
 
-template <typename Base, typename T, tex_read_mode ReadMode>
-class texture_iface<Base, T, ReadMode, 1> : public Base
+template <typename Base, typename T>
+class texture_iface<Base, T, 1> : public Base
 {
 public:
 
-    using ref_type = texture_ref<T, ReadMode, 1>;
+    using ref_type = texture_ref<T, 1>;
 
     using base_type = Base;
     using value_type = T;
@@ -35,7 +35,7 @@ public:
     }
 
     template <typename B2>
-    texture_iface(texture_iface<B2, T, ReadMode, 1> const& rhs)
+    texture_iface(texture_iface<B2, T, 1> const& rhs)
         : Base(rhs)
         , width_(rhs.width())
     {

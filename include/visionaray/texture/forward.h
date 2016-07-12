@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_TEXTURE_FORWARD_H
-#define VSNRAY_TEXTURE_FORWARD_H
+#define VSNRAY_TEXTURE_FORWARD_H 1
 
 #include <cstddef>
 
@@ -46,16 +46,15 @@ class texture_base;
 template <typename T, size_t Dim>
 class texture_ref_base;
 
-template <typename Base, typename T, tex_read_mode ReadMode, size_t Dim>
+template <typename Base, typename T, size_t Dim>
 class texture_iface;
 
-template <typename T, tex_read_mode ReadMode, size_t Dim>
-using texture = texture_iface<texture_base<T, Dim>, T, ReadMode, Dim>;
+template <typename T, size_t Dim>
+using texture = texture_iface<texture_base<T, Dim>, T, Dim>;
 
-template <typename T, tex_read_mode ReadMode, size_t Dim>
-using texture_ref = texture_iface<texture_ref_base<T, Dim>, T, ReadMode, Dim>;
+template <typename T, size_t Dim>
+using texture_ref = texture_iface<texture_ref_base<T, Dim>, T, Dim>;
 
 } // visionaray
-
 
 #endif // VSNRAY_TEXTURE_FORWARD_H

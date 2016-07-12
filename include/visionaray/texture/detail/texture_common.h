@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <array>
 
+#include <visionaray/math/norm.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/aligned_vector.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/swizzle.h>
@@ -32,6 +34,29 @@ struct cast
 };
 
 } // detail
+
+
+//-------------------------------------------------------------------------------------------------
+// Deduce texture read mode from type
+//
+
+template <typename T>
+struct tex_read_mode_from_type
+{
+    enum { value = ElementType };
+};
+
+template <unsigned Bits>
+struct tex_read_mode_from_type<unorm<Bits>>
+{
+    enum { value = NormalizedFloat };
+};
+
+template <size_t Dim, unsigned Bits>
+struct tex_read_mode_from_type<vector<Dim, unorm<Bits>>>
+{
+    enum { value = NormalizedFloat };
+};
 
 
 template <size_t Dim>

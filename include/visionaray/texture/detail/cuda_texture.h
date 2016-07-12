@@ -98,10 +98,10 @@ cudaTextureReadMode map_read_mode(tex_read_mode mode)
 // Forward declarations
 //
 
-template <typename T, tex_read_mode ReadMode, size_t Dim>
+template <typename T, size_t Dim>
 class cuda_texture;
 
-template <typename T, tex_read_mode ReadMode, size_t Dim>
+template <typename T, size_t Dim>
 class cuda_texture_ref;
 
 } // visionaray

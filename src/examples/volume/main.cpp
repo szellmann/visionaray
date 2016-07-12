@@ -86,8 +86,8 @@ struct renderer : viewer_type
 
     // texture references
 
-    texture_ref<float, ElementType, 3>          volume;
-    texture_ref<vec4, ElementType, 1>           transfunc;
+    texture_ref<float, 3>                       volume;
+    texture_ref<vec4, 1>                        transfunc;
 
 protected:
 

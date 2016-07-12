@@ -75,7 +75,7 @@ inline T spectrum<T>::operator()(float lambda) const
         return T(0.0);
     }
 
-    texture_ref<T, ElementType, 1> tex(num_samples);
+    texture_ref<T, 1> tex(num_samples);
     tex.set_data( samples_.data() );
     tex.set_filter_mode( Linear );
 
