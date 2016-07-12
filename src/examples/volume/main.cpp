@@ -140,8 +140,7 @@ void renderer::on_display()
             C color = tex1D(transfunc, voxel);
 
             // premultiplied alpha
-            auto premult = color.xyz() * color.w;
-            color = C(premult, color.w);
+            color.xyz() *= color.w;
 
             // front-to-back alpha compositing
             result.color += select(

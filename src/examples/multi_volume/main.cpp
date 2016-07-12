@@ -513,8 +513,7 @@ struct kernel
 //                    colori.w = 1.0f - pow(1.0f - colori.w, delta_t);
 
                     // premultiplied alpha
-                    auto premult = colori.xyz() * colori.w;
-                    colori = C(premult, colori.w);
+                    colori.xyz() *= colori.w;
 
                     color += select(inside, colori, C(0.0f));
                 }

@@ -225,8 +225,7 @@ struct kernel
             // Front-to-back alpha compositing
             auto color      = to_rgba(shaded_clr);
             color.w         = S(0.3);
-            auto premult    = color.xyz() * color.w;
-            color           = C(premult, color.w);
+            color.xyz()    *= color.w;
 
             result.color += select(
                     hit_rec[i].hit,
