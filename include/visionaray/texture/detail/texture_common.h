@@ -39,11 +39,7 @@ class texture_params_base
 {
 public:
 
-    texture_params_base()
-        : filter_mode_(Nearest)
-    {
-        std::fill(address_mode_.begin(), address_mode_.end(), Wrap);
-    }
+    texture_params_base() = default;
 
     void set_address_mode(size_t index, tex_address_mode mode)
     {
