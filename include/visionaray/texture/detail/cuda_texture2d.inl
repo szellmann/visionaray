@@ -24,7 +24,6 @@ public:
 private:
 
     using cuda_type   = typename cuda::map_texel_type<T, ReadMode>::cuda_type;
-    using vsnray_type = typename cuda::map_texel_type<T, ReadMode>::vsnray_type;
 
 public:
 
@@ -254,7 +253,7 @@ private:
     tex_filter_mode                 filter_mode_;
 
 
-    cudaError_t upload_data(vsnray_type const* data)
+    cudaError_t upload_data(T const* data)
     {
         // Cast from host type to device type
         return pitch_.upload( reinterpret_cast<cuda_type const*>(data), width_, height_ );
@@ -264,11 +263,11 @@ private:
     cudaError_t upload_data(U const* data)
     {
         // First promote to host type
-        aligned_vector<vsnray_type> dst( width_ * height_ );
+        aligned_vector<T> dst( width_ * height_ );
 
         for (size_t i = 0; i < width_ * height_; ++i)
         {
-            dst[i] = vsnray_type( data[i] );
+            dst[i] = T( data[i] );
         }
 
         return upload_data( dst.data() );
@@ -313,7 +312,6 @@ class cuda_texture_ref<T, ReadMode, 2>
 public:
 
     using cuda_type   = typename cuda::map_texel_type<T, ReadMode>::cuda_type;
-    using vsnray_type = typename cuda::map_texel_type<T, ReadMode>::vsnray_type;
 
 public:
 
