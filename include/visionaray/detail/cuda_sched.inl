@@ -295,6 +295,12 @@ cuda_sched<R>::cuda_sched(vec2ui block_size)
 }
 
 template <typename R>
+cuda_sched<R>::cuda_sched(unsigned block_size_x, unsigned block_size_y)
+    : block_size_(block_size_x, block_size_y)
+{
+}
+
+template <typename R>
 template <typename K, typename SP>
 void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {

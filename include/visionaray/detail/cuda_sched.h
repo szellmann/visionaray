@@ -28,6 +28,7 @@ public:
 
     cuda_sched() = default;
     cuda_sched(vec2ui block_size);
+    cuda_sched(unsigned block_size_x, unsigned block_size_y);
 
     template <typename K, typename SP>
     void frame(K kernel, SP sched_params, unsigned frame_num = 0);
