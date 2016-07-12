@@ -33,12 +33,6 @@ enum tex_filter_mode
     CardinalSpline
 };
 
-enum tex_read_mode
-{
-    ElementType,
-    NormalizedFloat
-};
-
 
 template <typename T, size_t Dim>
 class texture_base;

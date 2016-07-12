@@ -72,27 +72,6 @@ cudaTextureFilterMode map_filter_mode(tex_filter_mode mode)
 
 
 //-------------------------------------------------------------------------------------------------
-// Map visionaray texture read mode to cuda texture read mode
-//
-
-cudaTextureReadMode map_read_mode(tex_read_mode mode)
-{
-    switch (mode)
-    {
-
-    default:
-        // fall-through
-    case ElementType:
-        return cudaReadModeElementType;
-
-    case NormalizedFloat:
-        return cudaReadModeNormalizedFloat;
-
-    }
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // Deduce texture read mode from type
 //
 
