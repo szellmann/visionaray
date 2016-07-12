@@ -6,6 +6,7 @@
 #ifndef VSNRAY_BVH_H
 #define VSNRAY_BVH_H 1
 
+#include <cassert>
 #include <cstddef>
 #include <stdexcept>
 #include <type_traits>
