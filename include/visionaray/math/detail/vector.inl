@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include "../simd/type_traits.h"
+#include "math.h"
 
 namespace MATH_NAMESPACE
 {
