@@ -18,7 +18,7 @@
 #include <thrust/device_vector.h>
 #endif
 
-#include "math/math.h"
+#include "math/aabb.h"
 #include "aligned_vector.h"
 #include "tags.h"
 

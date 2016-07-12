@@ -7,7 +7,7 @@
 #define VSNRAY_MATERIAL_H 1
 
 #include "detail/macros.h"
-#include "math/math.h"
+#include "math/vector.h"
 #include "brdf.h"
 #include "shade_record.h"
 #include "spectrum.h"
