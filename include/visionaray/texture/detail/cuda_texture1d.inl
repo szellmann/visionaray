@@ -23,7 +23,7 @@ public:
 
 private:
 
-    using cuda_type   = typename cuda::map_texel_type<T, tex_read_mode(tex_read_mode_from_type<T>::value)>::cuda_type;
+    using cuda_type   = typename cuda::map_texel_type<T, cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)>::cuda_type;
 
 public:
 
@@ -283,7 +283,7 @@ private:
         memset(&texture_desc, 0, sizeof(texture_desc));
         texture_desc.addressMode[0]             = detail::map_address_mode( address_mode_[0] );
         texture_desc.filterMode                 = detail::map_filter_mode( filter_mode_ );
-        texture_desc.readMode                   = detail::map_read_mode( tex_read_mode(tex_read_mode_from_type<T>::value) );
+        texture_desc.readMode                   = cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value);
         texture_desc.normalizedCoords           = true;
 
         cudaTextureObject_t obj = 0;
@@ -303,7 +303,7 @@ class cuda_texture_ref<T, 1>
 {
 public:
 
-    using cuda_type   = typename cuda::map_texel_type<T, tex_read_mode(tex_read_mode_from_type<T>::value)>::cuda_type;
+    using cuda_type   = typename cuda::map_texel_type<T, cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)>::cuda_type;
 
 public:
 

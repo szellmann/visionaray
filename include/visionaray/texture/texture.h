@@ -58,7 +58,7 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> const& coord)
 
 template <
     typename T,
-    tex_read_mode ReadMode = tex_read_mode(tex_read_mode_from_type<T>::value)
+    cudaTextureReadMode ReadMode = cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)
     >
 VSNRAY_GPU_FUNC
 inline typename cuda::map_texel_type<typename cuda_texture_ref<T, 1>::cuda_type, ReadMode>::vsnray_return_type
@@ -81,7 +81,7 @@ tex1D(cuda_texture_ref<T, 1> const& tex, float coord)
 
 template <
     typename T,
-    tex_read_mode ReadMode = tex_read_mode(tex_read_mode_from_type<T>::value)
+    cudaTextureReadMode ReadMode = cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)
     >
 VSNRAY_GPU_FUNC
 inline typename cuda::map_texel_type<typename cuda_texture_ref<T, 2>::cuda_type, ReadMode>::vsnray_return_type
@@ -105,7 +105,7 @@ tex2D(cuda_texture_ref<T, 2> const& tex, vector<2, float> coord)
 
 template <
     typename T,
-    tex_read_mode ReadMode = tex_read_mode(tex_read_mode_from_type<T>::value)
+    cudaTextureReadMode ReadMode = cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)
     >
 VSNRAY_GPU_FUNC
 inline typename cuda::map_texel_type<typename cuda_texture_ref<T, 3>::cuda_type, ReadMode>::vsnray_return_type

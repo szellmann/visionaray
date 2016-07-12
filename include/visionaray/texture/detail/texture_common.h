@@ -36,29 +36,6 @@ struct cast
 } // detail
 
 
-//-------------------------------------------------------------------------------------------------
-// Deduce texture read mode from type
-//
-
-template <typename T>
-struct tex_read_mode_from_type
-{
-    enum { value = ElementType };
-};
-
-template <unsigned Bits>
-struct tex_read_mode_from_type<unorm<Bits>>
-{
-    enum { value = NormalizedFloat };
-};
-
-template <size_t Dim, unsigned Bits>
-struct tex_read_mode_from_type<vector<Dim, unorm<Bits>>>
-{
-    enum { value = NormalizedFloat };
-};
-
-
 template <size_t Dim>
 class texture_params_base
 {
