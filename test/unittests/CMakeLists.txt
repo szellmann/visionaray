@@ -104,7 +104,7 @@ if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     cuda_include_directories(${GTEST_INCLUDE_DIR})
     visionaray_cuda_compile(UNITTESTS_CUDA_SOURCES
         array.cu
-#        texture.cu
+        texture.cu
     )
 endif()
 
