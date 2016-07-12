@@ -42,10 +42,7 @@ public:
     texture_params_base()
         : filter_mode_(Nearest)
     {
-        for (size_t d = 0; d < Dim; ++d)
-        {
-            address_mode_[d] = Wrap;
-        }
+        std::fill(address_mode_.begin(), address_mode_.end(), Wrap);
     }
 
     void set_address_mode(size_t index, tex_address_mode mode)
@@ -56,10 +53,7 @@ public:
 
     void set_address_mode(tex_address_mode mode)
     {
-        for (size_t d = 0; d < Dim; ++d)
-        {
-            address_mode_[d] = mode;
-        }
+        std::fill(address_mode_.begin(), address_mode_.end(), mode);
     }
 
     tex_address_mode get_address_mode(size_t index) const
