@@ -49,7 +49,10 @@ public:
 
     void set_address_mode(tex_address_mode mode)
     {
-        std::fill(address_mode_.begin(), address_mode_.end(), mode);
+        for (size_t d = 0; d < Dim; ++d)
+        {
+            address_mode_[d] = mode;
+        }
     }
 
     tex_address_mode get_address_mode(size_t index) const
