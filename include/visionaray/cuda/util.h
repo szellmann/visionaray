@@ -11,6 +11,8 @@
 #include <visionaray/detail/macros.h>
 #include <visionaray/math/math.h>
 
+#include "cast.h"
+
 namespace visionaray
 {
 namespace cuda

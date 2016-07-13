@@ -66,6 +66,7 @@ tex1D(cuda_texture_ref<T, 1> const& tex, float coord)
 {
     using tex_type          = cuda_texture_ref<T, 1>;
     using cuda_type         = typename tex_type::cuda_type;
+    using return_type       = typename cuda::map_texel_type<cuda_type, ReadMode>::vsnray_return_type;
     using cuda_return_type  = typename cuda::map_texel_type<cuda_type, ReadMode>::cuda_return_type;
 
     cuda_return_type retval;
@@ -76,7 +77,7 @@ tex1D(cuda_texture_ref<T, 1> const& tex, float coord)
             coord
             );
 
-    return cuda::map_texel_type<cuda_type, ReadMode>::convert_return_type( retval );
+    return cuda::cast<return_type>(retval);
 }
 
 template <
@@ -89,6 +90,7 @@ tex2D(cuda_texture_ref<T, 2> const& tex, vector<2, float> coord)
 {
     using tex_type          = cuda_texture_ref<T, 2>;
     using cuda_type         = typename tex_type::cuda_type;
+    using return_type       = typename cuda::map_texel_type<cuda_type, ReadMode>::vsnray_return_type;
     using cuda_return_type  = typename cuda::map_texel_type<cuda_type, ReadMode>::cuda_return_type;
 
     cuda_return_type retval;
@@ -100,7 +102,7 @@ tex2D(cuda_texture_ref<T, 2> const& tex, vector<2, float> coord)
             coord.y
             );
 
-    return cuda::map_texel_type<cuda_type, ReadMode>::convert_return_type( retval );
+    return cuda::cast<return_type>(retval);
 }
 
 template <
@@ -113,6 +115,7 @@ tex3D(cuda_texture_ref<T, 3> const& tex, vector<3, float> coord)
 {
     using tex_type          = cuda_texture_ref<T, 3>;
     using cuda_type         = typename tex_type::cuda_type;
+    using return_type       = typename cuda::map_texel_type<cuda_type, ReadMode>::vsnray_return_type;
     using cuda_return_type  = typename cuda::map_texel_type<cuda_type, ReadMode>::cuda_return_type;
 
     cuda_return_type retval;
@@ -125,7 +128,7 @@ tex3D(cuda_texture_ref<T, 3> const& tex, vector<3, float> coord)
             coord.z
             );
 
-    return cuda::map_texel_type<cuda_type, ReadMode>::convert_return_type( retval );
+    return cuda::cast<return_type>(retval);
 }
 
 #endif // __CUDACC__
