@@ -8,7 +8,7 @@ compiler:
     - clang
 os:
     - linux
-#   - osx
+    - osx
 
 env:
     matrix:
