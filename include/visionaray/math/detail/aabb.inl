@@ -132,14 +132,16 @@ inline void basic_aabb<T>::insert(basic_aabb const& v)
 
 template <typename T>
 MATH_FUNC
-inline bool operator==(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+inline auto operator==(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+    -> decltype(lhs.min == rhs.min)
 {
     return lhs.min == rhs.min && lhs.max == rhs.max;
 }
 
 template <typename T>
 MATH_FUNC
-inline bool operator!=(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+inline auto operator!=(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+    -> decltype(lhs.min != rhs.min)
 {
     return lhs.min != rhs.min || lhs.max != rhs.max;
 }

@@ -237,42 +237,48 @@ inline vector<3, T> operator/(T const& s, vector<3, T> const& v)
 
 template <typename T>
 MATH_FUNC
-inline bool operator==(vector<3, T> const& u, vector<3, T> const& v)
+inline auto operator==(vector<3, T> const& u, vector<3, T> const& v)
+    -> decltype(u.x == v.x)
 {
     return u.x == v.x && u.y == v.y && u.z == v.z;
 }
 
 template <typename T>
 MATH_FUNC
-inline bool operator<(vector<3, T> const& u, vector<3, T> const& v)
+inline auto operator<(vector<3, T> const& u, vector<3, T> const& v)
+    -> decltype(u.x < v.x)
 {
     return u.x < v.x || ( (u.x == v.x && u.y < v.y) || (u.y == v.y && u.z < v.z) );
 }
 
 template <typename T>
 MATH_FUNC
-inline bool operator!=(vector<3, T> const& u, vector<3, T> const& v)
+inline auto operator!=(vector<3, T> const& u, vector<3, T> const& v)
+    -> decltype(u == v)
 {
     return !(u == v);
 }
 
 template <typename T>
 MATH_FUNC
-inline bool operator<=(vector<3, T> const& u, vector<3, T> const& v)
+inline auto operator<=(vector<3, T> const& u, vector<3, T> const& v)
+    -> decltype(v < u)
 {
     return !(v < u);
 }
 
 template <typename T>
 MATH_FUNC
-inline bool operator>(vector<3, T> const& u, vector<3, T> const& v)
+inline auto operator>(vector<3, T> const& u, vector<3, T> const& v)
+    -> decltype(v < u)
 {
     return v < u;
 }
 
 template <typename T>
 MATH_FUNC
-inline bool operator>=(vector<3, T> const& u, vector<3, T> const& v)
+inline auto operator>=(vector<3, T> const& u, vector<3, T> const& v)
+    -> decltype(u < v)
 {
     return !(u < v);
 }
