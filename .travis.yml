@@ -2,6 +2,9 @@
 # Configuration script for use with continuous integration service travis-ci.org
 #
 
+sudo: required
+dist: trusty
+
 language: cpp
 compiler:
     - gcc
@@ -29,8 +32,8 @@ addons:
             - boost-latest
             - ubuntu-toolchain-r-test
         packages:
-            - g++-4.8
             - libboost1.55-all-dev
+            - libglew-dev
             - libxi-dev
             - libxmu-dev
             - freeglut3-dev
@@ -38,15 +41,7 @@ addons:
 
 before_install:
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then travis_retry brew install glew ;fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then travis_retry wget http://launchpadlibrarian.net/161405671/libglew1.10_1.10.0-3_amd64.deb; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then travis_retry wget http://launchpadlibrarian.net/161405670/libglew-dev_1.10.0-3_amd64.deb; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo dpkg -i libglew1.10_1.10.0-3_amd64.deb; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo dpkg -i libglew-dev_1.10.0-3_amd64.deb; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then if [ "$CXX" = "g++" ]; then export CXX="g++-${GCC_VER}"; fi; fi
 script:
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then printf "set(GLEW_INCLUDE_DIR \"/usr/include\")\n" > cmake/FindGLEW.cmake; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then printf "set(GLEW_LIBRARY \"/usr/lib/x86_64-linux-gnu/libGLEW.so\")\n" >> cmake/FindGLEW.cmake; fi
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then printf "set(GLEW_FOUND TRUE)\n" >> cmake/FindGLEW.cmake; fi
 
     - export COMPILER_FLAGS="-msse4.1"
     - if [ "$STD" = "CPP11" ]; then export COMPILER_FLAGS="${COMPILER_FLAGS} -std=c++11"; fi
