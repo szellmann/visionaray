@@ -43,11 +43,8 @@ matrix:
 
 addons:
     apt: 
-        sources:
-            - boost-latest
-            - ubuntu-toolchain-r-test
         packages:
-            - libboost1.55-all-dev
+            - libboost-all-dev
             - libglew-dev
             - libxi-dev
             - libxmu-dev
