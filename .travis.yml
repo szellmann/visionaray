@@ -15,16 +15,16 @@ os:
 
 env:
     matrix:
-        - GCC_VER="4.8" STD="CPP11" BUILD_TYPE="None"
-        - GCC_VER="4.8" STD="CPP11" BUILD_TYPE="Debug"
-        - GCC_VER="4.8" STD="CPP11" BUILD_TYPE="RelWithDebInfo"
-        - GCC_VER="4.8" STD="CPP11" BUILD_TYPE="Release"
-        - GCC_VER="4.8" STD="CPP11" BUILD_TYPE="MinSizeRel"
-        - GCC_VER="4.8" STD="CPP14" BUILD_TYPE="None"
-        - GCC_VER="4.8" STD="CPP14" BUILD_TYPE="Debug"
-        - GCC_VER="4.8" STD="CPP14" BUILD_TYPE="RelWithDebInfo"
-        - GCC_VER="4.8" STD="CPP14" BUILD_TYPE="Release"
-        - GCC_VER="4.8" STD="CPP14" BUILD_TYPE="MinSizeRel"
+        - STD="CPP11" BUILD_TYPE="None"
+        - STD="CPP11" BUILD_TYPE="Debug"
+        - STD="CPP11" BUILD_TYPE="RelWithDebInfo"
+        - STD="CPP11" BUILD_TYPE="Release"
+        - STD="CPP11" BUILD_TYPE="MinSizeRel"
+        - STD="CPP14" BUILD_TYPE="None"
+        - STD="CPP14" BUILD_TYPE="Debug"
+        - STD="CPP14" BUILD_TYPE="RelWithDebInfo"
+        - STD="CPP14" BUILD_TYPE="Release"
+        - STD="CPP14" BUILD_TYPE="MinSizeRel"
 
 addons:
     apt: 
