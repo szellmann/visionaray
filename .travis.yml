@@ -26,6 +26,21 @@ env:
         - STD="CPP14" BUILD_TYPE="Release"
         - STD="CPP14" BUILD_TYPE="MinSizeRel"
 
+matrix:
+    exclude:
+        - env: STD="CPP14"
+          compiler: clang
+        - env: STD="CPP14" BUILD_TYPE="None"
+          compiler: clang
+        - env: STD="CPP14" BUILD_TYPE="Debug"
+          compiler: clang
+        - env: STD="CPP14" BUILD_TYPE="RelWithDebInfo"
+          compiler: clang
+        - env: STD="CPP14" BUILD_TYPE="Release"
+          compiler: clang
+        - env: STD="CPP14" BUILD_TYPE="MinSizeRel"
+          compiler: clang
+
 addons:
     apt: 
         sources:
