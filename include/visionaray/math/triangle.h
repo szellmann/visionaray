@@ -6,6 +6,8 @@
 #ifndef VSNRAY_MATH_TRIANGLE_H
 #define VSNRAY_MATH_TRIANGLE_H 1
 
+#include <cstddef>
+
 #include "primitive.h"
 #include "vector.h"
 

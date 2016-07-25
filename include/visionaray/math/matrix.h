@@ -6,7 +6,7 @@
 #ifndef VSNRAY_MATH_MATRIX_H
 #define VSNRAY_MATH_MATRIX_H 1
 
-#include <cassert>
+#include <cstddef>
 
 #include "forward.h"
 #include "vector.h"
