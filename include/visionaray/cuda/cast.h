@@ -3,7 +3,7 @@
 
 #pragma once
 
-#ifndef VNSRAY_CUDA_CAST_H
+#ifndef VSNRAY_CUDA_CAST_H
 #define VSNRAY_CUDA_CAST_H 1
 
 #include <cuda_runtime_api.h>
