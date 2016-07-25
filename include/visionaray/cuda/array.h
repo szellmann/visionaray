@@ -6,8 +6,6 @@
 #ifndef VSNRAY_CUDA_ARRAY_H
 #define VSNRAY_CUDA_ARRAY_H 1
 
-#include <cassert>
-
 #include <cuda_runtime_api.h>
 
 namespace visionaray
@@ -155,7 +153,6 @@ private:
     }
 
 };
-
 
 } // cuda
 } // visionaray

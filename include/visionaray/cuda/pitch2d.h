@@ -4,9 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_CUDA_PITCH2D_H
-#define VSNRAY_CUDA_PITCH2D_H
-
-#include <cassert>
+#define VSNRAY_CUDA_PITCH2D_H 1
 
 #include <cuda_runtime_api.h>
 
@@ -131,7 +129,6 @@ private:
     }
 
 };
-
 
 } // cuda
 } // visionaray
