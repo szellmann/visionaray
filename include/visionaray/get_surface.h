@@ -111,14 +111,30 @@ public:
 };
 
 
+//-------------------------------------------------------------------------------------------------
+// Struct containing both the geometric and the shading normal
+//
+
+template <typename V>
+struct normal_pair
+{
+    V geometric_normal;
+    V shading_normal;
+};
+
+template <typename V>
+VSNRAY_FUNC
+inline normal_pair<V> make_normal_pair(V const& gn, V const& sn)
+{
+    return normal_pair<V>{ gn, sn };
+}
+
+
 // TODO: consolidate the following with get_normal()?
 // TODO: consolidate interface with get_color() and get_tex_coord()?
 
 //-------------------------------------------------------------------------------------------------
 // get_normal_pair()
-//
-// first:   geometric normal
-// second:  shading normal
 //
 
 template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
@@ -130,12 +146,12 @@ inline auto get_normal_pair(
         NormalBinding               /* */,
         typename std::enable_if<num_normals<Primitive, NormalBinding>::value >= 2>::type* = 0
         )
-    -> decltype( std::make_pair(
+    -> decltype( make_normal_pair(
                 get_normal(normals, hr, prim, NormalBinding{}),
                 get_shading_normal(normals, hr, prim, NormalBinding{})
             ) )
 {
-    return std::make_pair(
+    return make_normal_pair(
             get_normal(normals, hr, prim, NormalBinding{}),
             get_shading_normal(normals, hr, prim, NormalBinding{})
         );
@@ -150,12 +166,12 @@ inline auto get_normal_pair(
         NormalBinding               /* */,
         typename std::enable_if<num_normals<Primitive, NormalBinding>::value == 1>::type* = 0
         )
-    -> decltype( std::make_pair(
+    -> decltype( make_normal_pair(
             get_normal(normals, hr, Primitive{}, NormalBinding{}),
             get_shading_normal(normals, hr, Primitive{}, NormalBinding{})
             ) )
 {
-    return std::make_pair(
+    return make_normal_pair(
             get_normal(normals, hr, Primitive{}, NormalBinding{}),
             get_shading_normal(normals, hr, Primitive{}, NormalBinding{})
             );
@@ -170,14 +186,14 @@ inline auto get_normal_pair(
         NormalBinding               /* */,
         typename std::enable_if<num_normals<Primitive, NormalBinding>::value == 0>::type* = 0
         )
-    -> decltype( std::make_pair(
+    -> decltype( make_normal_pair(
             get_normal(hr, prim),
             get_shading_normal(hr, prim)
             ) )
 {
     VSNRAY_UNUSED(normals);
 
-    return std::make_pair(
+    return make_normal_pair(
             get_normal(hr, prim),
             get_shading_normal(hr, prim)
             );
@@ -189,12 +205,12 @@ inline auto get_normal_pair(
         HR const&                   hr,
         Primitive                   prim
         )
-    -> decltype( std::make_pair(
+    -> decltype( make_normal_pair(
             get_normal(hr, prim),
             get_shading_normal(hr, prim)
             ) )
 {
-    return std::make_pair(
+    return make_normal_pair(
             get_normal(hr, prim),
             get_shading_normal(hr, prim)
             );
@@ -244,17 +260,11 @@ inline auto get_normal_pair(
         generic_primitive<Ts...>    prim,
         NormalBinding               /* */
         )
-    -> typename std::pair<
-            typename std::iterator_traits<Normals>::value_type,
-            typename std::iterator_traits<Normals>::value_type
-            >
+    -> normal_pair<typename std::iterator_traits<Normals>::value_type>
 {
     get_normal_from_generic_primitive_visitor<
         get_normal_pair_t,
-        typename std::pair<
-            typename std::iterator_traits<Normals>::value_type,
-            typename std::iterator_traits<Normals>::value_type
-            >,
+        normal_pair<typename std::iterator_traits<Normals>::value_type>,
         NormalBinding,
         Normals,
         HR
@@ -424,8 +434,8 @@ inline auto get_surface_impl(
 
     auto ns = get_normal_dispatch(primitives, nullptr, hr, P{}, unspecified_binding{});
     return make_surface(
-            ns.first,
-            ns.second,
+            ns.geometric_normal,
+            ns.shading_normal,
             materials[hr.geom_id]
             );
 }
@@ -454,8 +464,8 @@ inline auto get_surface_impl(
 
     auto ns = get_normal_dispatch(primitives, normals, hr, P{}, NormalBinding{});
     return make_surface(
-            ns.first,
-            ns.second,
+            ns.geometric_normal,
+            ns.shading_normal,
             materials[hr.geom_id]
             );
 }
@@ -496,8 +506,8 @@ inline auto get_surface_impl(
 
     auto ns = get_normal_dispatch(primitives, normals, hr, P{}, NormalBinding{});
     return make_surface(
-            ns.first,
-            ns.second,
+            ns.geometric_normal,
+            ns.shading_normal,
             materials[hr.geom_id],
             tex_color
             );
@@ -540,8 +550,8 @@ inline auto get_surface_impl(
 
     auto ns = get_normal_dispatch(primitives, nullptr, hr, P{}, unspecified_binding{});
     return make_surface(
-            ns.first,
-            ns.second,
+            ns.geometric_normal,
+            ns.shading_normal,
             materials[hr.geom_id],
             color * tex_color
             );
@@ -588,8 +598,8 @@ inline auto get_surface_impl(
 
     auto ns = get_normal_dispatch(primitives, normals, hr, P{}, NormalBinding{});
     return make_surface(
-            ns.first,
-            ns.second,
+            ns.geometric_normal,
+            ns.shading_normal,
             materials[hr.geom_id],
             color * tex_color
             );
@@ -631,8 +641,8 @@ inline auto get_surface_impl(
         auto ns = get_normal_dispatch(primitives, nullptr, hrs[i], P{}, unspecified_binding{});
 
         surfs[i] = make_surface(
-            hrs[i].hit ? ns.first                  : N{},
-            hrs[i].hit ? ns.second                 : N{},
+            hrs[i].hit ? ns.geometric_normal       : N{},
+            hrs[i].hit ? ns.shading_normal         : N{},
             hrs[i].hit ? materials[hrs[i].geom_id] : M{}
             );
     }
@@ -689,8 +699,8 @@ inline auto get_surface_impl(
         auto ns = get_normal_dispatch(primitives, nullptr, hrs[i], P{}, unspecified_binding{});
 
         surfs[i] = make_surface(
-            hrs[i].hit ? ns.first                  : N{},
-            hrs[i].hit ? ns.second                 : N{},
+            hrs[i].hit ? ns.geometric_normal       : N{},
+            hrs[i].hit ? ns.shading_normal         : N{},
             hrs[i].hit ? materials[hrs[i].geom_id] : M{},
             hrs[i].hit ? colorss[i] * tex_color    : C(1.0)
             );
@@ -734,8 +744,8 @@ inline auto get_surface_impl(
     {
         auto ns = get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{});
         surfs[i] = make_surface(
-            hrs[i].hit ? ns.first                  : N{},
-            hrs[i].hit ? ns.second                 : N{},
+            hrs[i].hit ? ns.geometric_normal       : N{},
+            hrs[i].hit ? ns.shading_normal         : N{},
             hrs[i].hit ? materials[hrs[i].geom_id] : M{}
             );
     }
@@ -791,8 +801,8 @@ inline auto get_surface_impl(
         auto ns = get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{});
 
         surfs[i] = make_surface(
-            hrs[i].hit ? ns.first                  : N{},
-            hrs[i].hit ? ns.second                 : N{},
+            hrs[i].hit ? ns.geometric_normal       : N{},
+            hrs[i].hit ? ns.shading_normal         : N{},
             hrs[i].hit ? materials[hrs[i].geom_id] : M{},
             hrs[i].hit ? tex_color                 : C(1.0)
             );
@@ -854,8 +864,8 @@ inline auto get_surface_impl(
         auto ns = get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{});
 
         surfs[i] = make_surface(
-            hrs[i].hit ? ns.first                  : N{},
-            hrs[i].hit ? ns.second                 : N{},
+            hrs[i].hit ? ns.geometric_normal       : N{},
+            hrs[i].hit ? ns.shading_normal         : N{},
             hrs[i].hit ? materials[hrs[i].geom_id] : M{},
             hrs[i].hit ? colorss[i] * tex_color    : C(1.0)
             );
