@@ -23,7 +23,10 @@ public:
 
 public:
 
-    VSNRAY_FUNC color_type color() const;
+    // Evalulate the light intensity at pos.
+    template <typename U>
+    VSNRAY_FUNC vector<3, U> intensity(vector<3, U> const& pos) const;
+
     VSNRAY_FUNC vec_type position() const;
     VSNRAY_FUNC T constant_attenuation() const;
     VSNRAY_FUNC T linear_attenuation() const;

@@ -9,10 +9,22 @@ namespace visionaray
 //
 
 template <typename T>
+template <typename U>
 VSNRAY_FUNC
-inline vector<3, T> point_light<T>::color() const
+inline vector<3, U> point_light<T>::intensity(vector<3, U> const& pos) const
 {
-    return cl_ * kl_;
+    U att(1.0);
+
+#if 1 // use attenuation
+    auto dist = length(vector<3, U>(position_) - pos);
+    att = U(
+        1.0 / (constant_attenuation_
+             + linear_attenuation_    * dist
+             + quadratic_attenuation_ * dist * dist)
+        );
+#endif
+
+    return vector<3, U>(cl_ * kl_) * att;
 }
 
 template <typename T>

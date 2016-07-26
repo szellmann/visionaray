@@ -21,7 +21,6 @@ VSNRAY_FUNC
 inline spectrum<typename SR::scalar_type> matte<T>::shade(SR const& sr) const
 {
     using U = typename SR::scalar_type;
-    using V = vector<3, U>;
 
     spectrum<U> result(0.0);
 
@@ -31,23 +30,11 @@ inline spectrum<typename SR::scalar_type> matte<T>::shade(SR const& sr) const
     auto n = sr.normal;
     auto ndotl = max( U(0.0), dot(n, wi) );
 
-    U att(1.0);
-
-#if 1 // use attenuation
-    auto dist = length(V(l.position()) - sr.isect_pos);
-    att = U(
-        1.0 / (l.constant_attenuation()
-             + l.linear_attenuation() * dist
-             + l.quadratic_attenuation() * dist * dist)
-        );
-#endif
-
     return spectrum<U>(
             constants::pi<U>()
           * cd(sr, n, wo, wi)
-          * spectrum<U>(from_rgb(l.color()))
+          * spectrum<U>(from_rgb(l.intensity(sr.isect_pos)))
           * ndotl
-          * att
             );
 }
 
