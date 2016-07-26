@@ -8,6 +8,7 @@
 
 #include <array>
 #include <type_traits>
+#include <utility>
 
 #include <visionaray/get_normal.h>
 #include <visionaray/get_shading_normal.h>

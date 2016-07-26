@@ -9,6 +9,7 @@
 #include <array>
 #include <cstddef>
 #include <type_traits>
+#include <utility>
 
 #include "filter.h"
 #include "texture_common.h"

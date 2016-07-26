@@ -3,8 +3,8 @@
 
 #include <cstddef>
 #include <iterator>
-#include <utility>
 #include <type_traits>
+#include <utility>
 
 #include <visionaray/bvh.h>
 #include <visionaray/intersector.h>

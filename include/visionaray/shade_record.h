@@ -8,6 +8,7 @@
 
 #include <array>
 #include <type_traits>
+#include <utility>
 
 #include "detail/tags.h"
 #include "math/math.h"
