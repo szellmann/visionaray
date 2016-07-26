@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <array>
+#include <cstddef>
 #include <utility>
 
 #include "../generic_material.h"
