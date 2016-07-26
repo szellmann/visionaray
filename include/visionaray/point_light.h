@@ -29,12 +29,12 @@ public:
     VSNRAY_FUNC T linear_attenuation() const;
     VSNRAY_FUNC T quadratic_attenuation() const;
 
-    void set_cl(color_type const& cl);
-    void set_kl(scalar_type kl);
-    void set_position(vec_type const& pos);
-    void set_constant_attenuation(T att);
-    void set_linear_attenuation(T att);
-    void set_quadratic_attenuation(T att);
+    VSNRAY_FUNC void set_cl(color_type const& cl);
+    VSNRAY_FUNC void set_kl(scalar_type kl);
+    VSNRAY_FUNC void set_position(vec_type const& pos);
+    VSNRAY_FUNC void set_constant_attenuation(T att);
+    VSNRAY_FUNC void set_linear_attenuation(T att);
+    VSNRAY_FUNC void set_quadratic_attenuation(T att);
 
 private:
 

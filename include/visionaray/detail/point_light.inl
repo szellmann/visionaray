@@ -44,36 +44,42 @@ inline T point_light<T>::quadratic_attenuation() const
 }
 
 template <typename T>
+VSNRAY_FUNC
 inline void point_light<T>::set_cl(vector<3, T> const& cl)
 {
     cl_ = cl;
 }
 
 template <typename T>
+VSNRAY_FUNC
 inline void point_light<T>::set_kl(T kl)
 {
     kl_ = kl;
 }
 
 template <typename T>
+VSNRAY_FUNC
 inline void point_light<T>::set_position(vector<3, T> const& pos)
 {
     position_ = pos;
 }
 
 template <typename t>
+VSNRAY_FUNC
 inline void point_light<t>::set_constant_attenuation(t att)
 {
     constant_attenuation_ = att;
 }
 
 template <typename t>
+VSNRAY_FUNC
 inline void point_light<t>::set_linear_attenuation(t att)
 {
     linear_attenuation_ = att;
 }
 
 template <typename t>
+VSNRAY_FUNC
 inline void point_light<t>::set_quadratic_attenuation(t att)
 {
     quadratic_attenuation_ = att;
