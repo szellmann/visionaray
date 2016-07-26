@@ -85,6 +85,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/simple_sched.h
     ${HEADER_DIR}/detail/simple_sched.inl
     ${HEADER_DIR}/detail/spectrum.inl
+    ${HEADER_DIR}/detail/spot_light.inl
     ${HEADER_DIR}/detail/stack.h
     ${HEADER_DIR}/detail/surface.inl
     ${HEADER_DIR}/detail/tags.h
@@ -214,6 +215,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/shade_record.h
     ${HEADER_DIR}/simple_buffer_rt.h
     ${HEADER_DIR}/spectrum.h
+    ${HEADER_DIR}/spot_light.h
     ${HEADER_DIR}/surface.h
     ${HEADER_DIR}/swizzle.h
     ${HEADER_DIR}/tags.h
