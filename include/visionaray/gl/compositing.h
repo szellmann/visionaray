@@ -6,6 +6,7 @@
 #ifndef VSNRAY_GL_COMPOSITING_H
 #define VSNRAY_GL_COMPOSITING_H 1
 
+#include <cstring>
 #include <iostream>
 #include <ostream>
 #include <vector>
