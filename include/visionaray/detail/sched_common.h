@@ -6,6 +6,7 @@
 #ifndef VSNRAY_DETAIL_SCHED_COMMON_H
 #define VSNRAY_DETAIL_SCHED_COMMON_H 1
 
+#include <array>
 #include <chrono>
 
 #include <visionaray/mc.h>
