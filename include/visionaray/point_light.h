@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_POINT_LIGHT_H
-#define VSNRAY_POINT_LIGHT_H
+#define VSNRAY_POINT_LIGHT_H 1
 
 #include "detail/macros.h"
 #include "math/math.h"
@@ -23,65 +23,18 @@ public:
 
 public:
 
-    VSNRAY_FUNC
-    color_type color() const
-    {
-        return cl_ * kl_;
-    }
+    VSNRAY_FUNC color_type color() const;
+    VSNRAY_FUNC vec_type position() const;
+    VSNRAY_FUNC T constant_attenuation() const;
+    VSNRAY_FUNC T linear_attenuation() const;
+    VSNRAY_FUNC T quadratic_attenuation() const;
 
-    VSNRAY_FUNC
-    vec_type position() const
-    {
-        return position_;
-    }
-
-    VSNRAY_FUNC
-    T constant_attenuation() const
-    {
-        return constant_attenuation_;
-    }
-
-    VSNRAY_FUNC
-    T linear_attenuation() const
-    {
-        return linear_attenuation_;
-    }
-
-    VSNRAY_FUNC
-    T quadratic_attenuation() const
-    {
-        return quadratic_attenuation_;
-    }
-
-    void set_cl(color_type const& cl)
-    {
-        cl_ = cl;
-    }
-
-    void set_kl(scalar_type kl)
-    {
-        kl_ = kl;
-    }
-
-    void set_position(vec_type const& pos)
-    {
-        position_ = pos;
-    }
-
-    void set_constant_attenuation(T att)
-    {
-        constant_attenuation_ = att;
-    }
-
-    void set_linear_attenuation(T att)
-    {
-        linear_attenuation_ = att;
-    }
-
-    void set_quadratic_attenuation(T att)
-    {
-        quadratic_attenuation_ = att;
-    }
+    void set_cl(color_type const& cl);
+    void set_kl(scalar_type kl);
+    void set_position(vec_type const& pos);
+    void set_constant_attenuation(T att);
+    void set_linear_attenuation(T att);
+    void set_quadratic_attenuation(T att);
 
 private:
 
@@ -95,5 +48,7 @@ private:
 };
 
 } // visionaray
+
+#include "detail/point_light.inl"
 
 #endif // VSNRAY_POINT_LIGHT_H
