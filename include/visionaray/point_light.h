@@ -23,7 +23,7 @@ public:
 
 public:
 
-    // Evalulate the light intensity at pos.
+    // Evaluate the light intensity at pos.
     template <typename U>
     VSNRAY_FUNC vector<3, U> intensity(vector<3, U> const& pos) const;
 
