@@ -819,7 +819,11 @@ inline T min_element(vector<Dim, T> const& u)
 
     for (size_t n = 1; n < Dim; ++n)
     {
-        result = u[n] < result ? u[n] : result;
+        result = select(
+                u[n] < result,
+                u[n],
+                result
+                );
     }
 
     return result;
@@ -834,7 +838,11 @@ inline T max_element(vector<Dim, T> const& u)
 
     for (size_t n = 1; n < Dim; ++n)
     {
-        result = u[n] > result ? u[n] : result;
+        result = select(
+                u[n] > result,
+                u[n],
+                result
+                );
     }
 
     return result;
