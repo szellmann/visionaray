@@ -352,6 +352,35 @@ static void test_logical_8()
 #endif
 
 
+template <typename F>
+static void test_math()
+{
+    // copysign(float)
+
+    F xf(1.0f);
+    F yf(2.0f);
+    F rf = copysign(xf, yf);
+    EXPECT_TRUE( all(rf == 1.0f) );
+
+    xf = F(1.0f);
+    yf = F(-2.0f);
+    rf = copysign(xf, yf);
+    EXPECT_TRUE( all(rf == -1.0f) );
+
+    xf = F(INFINITY);
+    yf = F(-2.0f);
+    rf = copysign(xf, yf);
+    EXPECT_TRUE( all(rf == -INFINITY) );
+
+    // Other than the standard demands,
+    // copysign(NAN, -y) will not return -NAN
+    xf = F(NAN);
+    yf = F(-2.0f);
+    rf = copysign(xf, yf);
+//  EXPECT_TRUE( all(rf == -NAN) );
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // Test simd::get()
 //
@@ -462,5 +491,18 @@ TEST(SIMD, Logical)
     test_logical_4();
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
     test_logical_8();
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Test math functions
+//
+
+TEST(SIMD, Math)
+{
+    test_math<simd::float4>();
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+    test_math<simd::float8>();
 #endif
 }
