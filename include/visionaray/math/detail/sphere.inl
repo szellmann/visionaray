@@ -12,7 +12,8 @@ namespace MATH_NAMESPACE
 //
 
 template <typename T, typename P>
-MATH_FUNC basic_sphere<T, P>::basic_sphere(vector<3, T> const& c, T r)
+MATH_FUNC
+inline basic_sphere<T, P>::basic_sphere(vector<3, T> const& c, T r)
     : center(c)
     , radius(r)
 {
@@ -25,7 +26,7 @@ MATH_FUNC basic_sphere<T, P>::basic_sphere(vector<3, T> const& c, T r)
 
 template <typename T, typename P>
 MATH_FUNC
-basic_aabb<T> get_bounds(basic_sphere<T, P> const& s)
+inline basic_aabb<T> get_bounds(basic_sphere<T, P> const& s)
 {
     basic_aabb<T> bounds;
 
@@ -39,7 +40,7 @@ basic_aabb<T> get_bounds(basic_sphere<T, P> const& s)
 
 template <typename T, typename P>
 MATH_FUNC
-T volume(basic_sphere<T, P> const& s)
+inline T volume(basic_sphere<T, P> const& s)
 {
     auto r3 = s.radius * s.radius * s.radius;
     return T(4.0) / T(3.0) * constants::pi<T>() * r3;
