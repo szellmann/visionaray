@@ -8,6 +8,22 @@
 using namespace visionaray;
 
 
+TEST(Vector, Ctor)
+{
+    // Test constructability from vectors with different
+    // sizes to define a higher-dimensional vector
+
+    vector<3, float> v3(1.0f, 2.0f, 3.0f);
+    vector<2, float> v2(4.0f, 5.0f);
+    vector<5, float> v5(v3, v2);
+    EXPECT_FLOAT_EQ(v5[0], 1.0f);
+    EXPECT_FLOAT_EQ(v5[1], 2.0f);
+    EXPECT_FLOAT_EQ(v5[2], 3.0f);
+    EXPECT_FLOAT_EQ(v5[3], 4.0f);
+    EXPECT_FLOAT_EQ(v5[4], 5.0f);
+}
+
+
 TEST(Vector, MinMaxElement)
 {
     // FPU
