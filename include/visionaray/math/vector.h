@@ -170,12 +170,12 @@ public:
     MATH_FUNC explicit vector(T const& s);
     MATH_FUNC explicit vector(T const* data/*[Dim]*/);
 
-    // Dim1 + Dim2 = Dim!
-    template <size_t Dim1, size_t Dim2>
-    MATH_FUNC explicit vector(vector<Dim1, T> const& first, vector<Dim2, T> const& second);
-
     template <typename U>
     MATH_FUNC explicit vector(vector<Dim, U> const& rhs);
+
+    // Dim1 + Dim2 = Dim!
+    template <size_t Dim1, size_t Dim2, typename U>
+    MATH_FUNC explicit vector(vector<Dim1, U> const& first, vector<Dim2, U> const& second);
 
     template <typename U>
     MATH_FUNC vector& operator=(vector<Dim, U> const& rhs);
