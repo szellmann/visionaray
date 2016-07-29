@@ -657,7 +657,7 @@ inline vector<Dim, T>& operator>>=(vector<Dim, T>& v, T const& s)
 
 template <size_t Dim, typename T>
 MATH_FUNC
-inline vector<Dim, T> dot(vector<Dim, T> const& u, vector<Dim, T> const& v)
+inline T dot(vector<Dim, T> const& u, vector<Dim, T> const& v)
 {
     T result(0.0);
 
