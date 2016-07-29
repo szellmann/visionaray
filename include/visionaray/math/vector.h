@@ -126,6 +126,9 @@ public:
     MATH_FUNC explicit vector(vector<2, U> const& rhs, U const& z, U const& w);
 
     template <typename U>
+    MATH_FUNC explicit vector(vector<2, U> const& first, vector<2, U> const& second);
+
+    template <typename U>
     MATH_FUNC explicit vector(vector<3, U> const& rhs, U const& w);
 
     template <typename U>

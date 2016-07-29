@@ -59,6 +59,17 @@ inline vector<4, T>::vector(vector<2, U> const& rhs, U const& z, U const& w)
 template <typename T>
 template <typename U>
 MATH_FUNC
+inline vector<4, T>::vector(vector<2, U> const& first, vector<2, U> const& second)
+    : x(first.x)
+    , y(first.y)
+    , z(second.x)
+    , w(second.y)
+{
+}
+
+template <typename T>
+template <typename U>
+MATH_FUNC
 inline vector<4, T>::vector(vector<3, U> const& rhs, U const& w)
     : x(rhs.x)
     , y(rhs.y)
