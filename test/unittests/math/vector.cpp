@@ -21,6 +21,14 @@ TEST(Vector, Ctor)
     EXPECT_FLOAT_EQ(v5[2], 3.0f);
     EXPECT_FLOAT_EQ(v5[3], 4.0f);
     EXPECT_FLOAT_EQ(v5[4], 5.0f);
+
+    // Test vec4 specialization of this ctor
+
+    vector<4, float> v4(v2, vector<2, float>(6.0f, 7.0f));
+    EXPECT_FLOAT_EQ(v4[0], 4.0f);
+    EXPECT_FLOAT_EQ(v4[1], 5.0f);
+    EXPECT_FLOAT_EQ(v4[2], 6.0f);
+    EXPECT_FLOAT_EQ(v4[3], 7.0f);
 }
 
 
