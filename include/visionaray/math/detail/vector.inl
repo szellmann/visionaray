@@ -33,6 +33,16 @@ inline vector<Dim, T>::vector(T const* data/*[Dim]*/)
 }
 
 template <size_t Dim, typename T>
+template <size_t Dim1, size_t Dim2>
+MATH_FUNC
+inline vector<Dim, T>::vector(vector<Dim1, T> const& first, vector<Dim2, T> const& second)
+{
+    static_assert(Dim1 + Dim2 == Dim, "Incompatible vector dimensions");
+    std::copy( first.data(),  first.data()  + Dim1, data_ );
+    std::copy( second.data(), second.data() + Dim2, data_ + Dim1 );
+}
+
+template <size_t Dim, typename T>
 template <typename U>
 MATH_FUNC
 inline vector<Dim, T>::vector(vector<Dim, U> const& rhs)
