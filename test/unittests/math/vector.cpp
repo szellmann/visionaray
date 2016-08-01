@@ -32,6 +32,37 @@ TEST(Vector, Ctor)
 }
 
 
+TEST(Vector, Dot)
+{
+    // Test dot product for different vector sizes
+    // (implementation may in general depend on size)
+
+    vector<2, float> v2_1(1.0f, 2.0f);
+    vector<2, float> v2_2(2.0f, 1.0f);
+    EXPECT_FLOAT_EQ(dot(v2_1, v2_2), 4.0f);
+
+    vector<3, float> v3_1(1.0f, 2.0f, 3.0f);
+    vector<3, float> v3_2(3.0f, 2.0f, 1.0f);
+    EXPECT_FLOAT_EQ(dot(v3_1, v3_2), 10.0f);
+
+    vector<4, float> v4_1(1.0f, 2.0f, 3.0f, 4.0f);
+    vector<4, float> v4_2(4.0f, 3.0f, 2.0f, 1.0f);
+    EXPECT_FLOAT_EQ(dot(v4_1, v4_2), 20.0f);
+
+    float f5_1[5] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f };
+    float f5_2[5] = { 5.0f, 4.0f, 3.0f, 2.0f, 1.0f };
+    vector<5, float> v5_1(f5_1);
+    vector<5, float> v5_2(f5_2);
+    EXPECT_FLOAT_EQ(dot(v5_1, v5_2), 35.0f);
+
+    float f6_1[6] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f };
+    float f6_2[6] = { 6.0f, 5.0f, 4.0f, 3.0f, 2.0f, 1.0f };
+    vector<6, float> v6_1(f6_1);
+    vector<6, float> v6_2(f6_2);
+    EXPECT_FLOAT_EQ(dot(v6_1, v6_2), 56.0f);
+}
+
+
 TEST(Vector, MinMaxElement)
 {
     // FPU
