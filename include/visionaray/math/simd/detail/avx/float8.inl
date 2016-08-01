@@ -289,5 +289,41 @@ VSNRAY_FORCE_INLINE mask8 isfinite(float8 const& v)
     return !(isinf(v) | isnan(v));
 }
 
+
+//-------------------------------------------------------------------------------------------------
+//
+//
+
+template <unsigned N>
+VSNRAY_FORCE_INLINE float8 rcp(float8 const& v)
+{
+    float8 x0 = _mm256_rcp_ps(v);
+    return rcp_step<N>(x0);
+}
+
+VSNRAY_FORCE_INLINE float8 rcp(float8 const& v)
+{
+    float8 x0 = _mm256_rcp_ps(v);
+    return rcp_step<1>(x0);
+}
+
+template <unsigned N>
+VSNRAY_FORCE_INLINE float8 rsqrt(float8 const& v)
+{
+    float8 x0 = _mm256_rsqrt_ps(v);
+    return rsqrt_step<N>(v, x0);
+}
+
+VSNRAY_FORCE_INLINE float8 rsqrt(float8 const& v)
+{
+    float8 x0 = _mm256_rsqrt_ps(v);
+    return rsqrt_step<1>(v, x0);
+}
+
+VSNRAY_FORCE_INLINE float8 approx_rsqrt(float8 const& v)
+{
+    return _mm256_rsqrt_ps(v);
+}
+
 } // simd
 } // MATH_NAMESPACE

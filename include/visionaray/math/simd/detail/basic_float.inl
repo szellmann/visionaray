@@ -81,5 +81,38 @@ VSNRAY_FORCE_INLINE basic_float<T> copysign(basic_float<T> const& x, basic_float
     return reinterpret_as_float(xi);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Newton-Raphson refinement for approximate mathematical functions
+//
+
+template <unsigned N, typename T>
+VSNRAY_FORCE_INLINE basic_float<T> rcp_step(basic_float<T> const& v)
+{
+    basic_float<T> t = v;
+
+    for (unsigned i = 0; i < N; ++i)
+    {
+        t = (t + t) - (v * t * t);
+    }
+
+    return t;
+}
+
+template <unsigned N, typename T>
+VSNRAY_FORCE_INLINE basic_float<T> rsqrt_step(basic_float<T> const& v, basic_float<T> const& x0)
+{
+    basic_float<T> threehalf(1.5f);
+    basic_float<T> vhalf = v * basic_float<T>(0.5f);
+    basic_float<T> t = x0;
+
+    for (unsigned i = 0; i < N; ++i)
+    {
+        t = t * (threehalf - vhalf * t * t);
+    }
+
+    return t;
+}
+
 } // simd
 } // MATH_NAMESPACE

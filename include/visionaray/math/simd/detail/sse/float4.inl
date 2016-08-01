@@ -366,19 +366,6 @@ VSNRAY_FORCE_INLINE mask4 isfinite(float4 const& v)
 //
 
 template <unsigned N>
-VSNRAY_FORCE_INLINE float4 rcp_step(float4 const& v)
-{
-    float4 t = v;
-
-    for (unsigned i = 0; i < N; ++i)
-    {
-        t = (t + t) - (v * t * t);
-    }
-
-    return t;
-}
-
-template <unsigned N>
 VSNRAY_FORCE_INLINE float4 rcp(float4 const& v)
 {
     float4 x0 = _mm_rcp_ps(v);
@@ -389,21 +376,6 @@ VSNRAY_FORCE_INLINE float4 rcp(float4 const& v)
 {
     float4 x0 = _mm_rcp_ps(v);
     return rcp_step<1>(x0);
-}
-
-template <unsigned N>
-VSNRAY_FORCE_INLINE float4 rsqrt_step(float4 const& v, float4 const& x0)
-{
-    float4 threehalf(1.5f);
-    float4 vhalf = v * float4(0.5f);
-    float4 t = x0;
-
-    for (unsigned i = 0; i < N; ++i)
-    {
-        t = t * (threehalf - vhalf * t * t);
-    }
-
-    return t;
 }
 
 template <unsigned N>
