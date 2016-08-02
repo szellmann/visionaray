@@ -6,6 +6,8 @@
 #ifndef VSNRAY_SWIZZLE_H
 #define VSNRAY_SWIZZLE_H 1
 
+#include <cstddef>
+
 #include <visionaray/math/math.h>
 #include <visionaray/pixel_format.h>
 
