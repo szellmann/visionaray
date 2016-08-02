@@ -2,7 +2,6 @@
 # visionaray_use_package(name)
 #
 
-
 function(visionaray_use_package name)
     string(TOUPPER ${name} upper_name)
 
@@ -41,6 +40,13 @@ function(visionaray_use_package name)
         elseif(${upper_name}_LIBRARY)
             set(pkg_LIBS ${${upper_name}_LIBRARY})
         endif()
+    endif()
+
+    #
+    # some special treatment for CMake Threads meta package..
+    #
+    if(${upper_name} STREQUAL "THREADS")
+        set(pkg_LIBS ${CMAKE_THREAD_LIBS_INIT} ${pkg_LIBS})
     endif()
 
     set(__VSNRAY_LINK_LIBRARIES ${__VSNRAY_LINK_LIBRARIES} ${pkg_LIBS} PARENT_SCOPE)
