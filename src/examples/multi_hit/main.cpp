@@ -303,7 +303,9 @@ void renderer::on_display()
             bvhs.data(),
             bvhs.data() + bvhs.size(),
             mod.shading_normals.data(),
+//          mod.tex_coords.data(),
             mod.materials.data(),
+//          mod.textures.data(),
             host_lights.data(),
             host_lights.data() + host_lights.size()
             );
