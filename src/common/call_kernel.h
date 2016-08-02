@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_DETAIL_CALL_KERNEL_H
-#define VSNRAY_DETAIL_CALL_KERNEL_H 1
+#ifndef VSNRAY_COMMON_CALL_KERNEL_H
+#define VSNRAY_COMMON_CALL_KERNEL_H 1
 
 #include <utility>
 
@@ -193,4 +193,4 @@ void call_kernel(
 
 } // visionaray
 
-#endif // VSNRAY_DETAIL_CALL_KERNEL_H
+#endif // VSNRAY_COMMON_CALL_KERNEL_H

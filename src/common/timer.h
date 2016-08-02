@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_TIMER_H
-#define VSNRAY_TIMER_H
+#ifndef VSNRAY_COMMON_TIMER_H
+#define VSNRAY_COMMON_TIMER_H 1
 
 #include <chrono>
 
@@ -85,4 +85,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_TIMER_H
+#endif // VSNRAY_COMMON_TIMER_H
