@@ -21,8 +21,10 @@
 #include "quaternion.h"
 #include "ray.h"
 #include "rectangle.h"
+#include "snorm.h"
 #include "sphere.h"
 #include "triangle.h"
+#include "unorm.h"
 #include "vector.h"
 
 #endif // VSNRAY_MATH_H

@@ -107,12 +107,13 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/limits.inl
     ${HEADER_DIR}/math/detail/math.h
     ${HEADER_DIR}/math/detail/matrix4.inl
-    ${HEADER_DIR}/math/detail/norm.inl
     ${HEADER_DIR}/math/detail/plane.inl
     ${HEADER_DIR}/math/detail/quaternion.inl
     ${HEADER_DIR}/math/detail/rectangle.inl
+    ${HEADER_DIR}/math/detail/snorm.inl
     ${HEADER_DIR}/math/detail/sphere.inl
     ${HEADER_DIR}/math/detail/triangle.inl
+    ${HEADER_DIR}/math/detail/unorm.inl
     ${HEADER_DIR}/math/detail/vector.inl
     ${HEADER_DIR}/math/detail/vector2.inl
     ${HEADER_DIR}/math/detail/vector3.inl
@@ -154,8 +155,10 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/ray.h
     ${HEADER_DIR}/math/rectangle.h
     ${HEADER_DIR}/math/serialization.h
+    ${HEADER_DIR}/math/snorm.h
     ${HEADER_DIR}/math/sphere.h
     ${HEADER_DIR}/math/triangle.h
+    ${HEADER_DIR}/math/unorm.h
     ${HEADER_DIR}/math/vector.h
 
     # Texture access

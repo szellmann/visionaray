@@ -4,7 +4,7 @@
 #include <cuda_runtime_api.h>
 
 #include <visionaray/cuda/cast.h>
-#include <visionaray/math/norm.h>
+#include <visionaray/math/unorm.h>
 #include <visionaray/math/vector.h>
 
 #include <gtest/gtest.h>
