@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_MATH_OUTPUT_H
-#define VSNRAY_MATH_OUTPUT_H 1
+#ifndef VSNRAY_MATH_IO_H
+#define VSNRAY_MATH_IO_H 1
 
 #include <cstddef>
 #include <istream>
@@ -276,4 +276,4 @@ operator<<(std::basic_ostream<CharT, Traits>& out, rectangle<xywh_layout, T> con
 
 } // MATH_NAMESPACE
 
-#endif // VSNRAY_MATH_OUTPUT_H
+#endif // VSNRAY_MATH_IO_H
