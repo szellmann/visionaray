@@ -183,3 +183,71 @@ TEST(Snorm, Comparisons)
     test_cmp<16>();
     test_cmp<32>();
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Test numeric limits
+// All representations (norm, int, float)
+//
+
+TEST(Snorm, NumericLimits)
+{
+    // Some convenience -----------------------------------
+
+//  static const int8_t   int8_max = numeric_limits<int8_t>::max();
+//  static const int16_t int16_max = numeric_limits<int16_t>::max();
+//  static const int32_t int32_max = numeric_limits<int32_t>::max();
+//
+//  static const int8_t  int8_low  = numeric_limits<int8_t>::lowest();
+//  static const int16_t int16_low = numeric_limits<int16_t>::lowest();
+//  static const int32_t int32_low = numeric_limits<int32_t>::lowest();
+//
+//  static const int8_t   int8_min = numeric_limits<int8_t>::min();
+//  static const int16_t int16_min = numeric_limits<int16_t>::min();
+//  static const int32_t int32_min = numeric_limits<int32_t>::min();
+
+
+    // Normalized reprentation ----------------------------
+
+    EXPECT_TRUE(numeric_limits<snorm< 8>>::max() == snorm< 8>(1.0f));
+    EXPECT_TRUE(numeric_limits<snorm<16>>::max() == snorm<16>(1.0f));
+    EXPECT_TRUE(numeric_limits<snorm<32>>::max() == snorm<32>(1.0f));
+
+    EXPECT_TRUE(numeric_limits<snorm< 8>>::lowest() == snorm< 8>(-1.0f));
+    EXPECT_TRUE(numeric_limits<snorm<16>>::lowest() == snorm<16>(-1.0f));
+    EXPECT_TRUE(numeric_limits<snorm<32>>::lowest() == snorm<32>(-1.0f));
+
+    EXPECT_TRUE(numeric_limits<snorm< 8>>::min() == snorm< 8>(0.0f));
+    EXPECT_TRUE(numeric_limits<snorm<16>>::min() == snorm<16>(0.0f));
+    EXPECT_TRUE(numeric_limits<snorm<32>>::min() == snorm<32>(0.0f));
+
+
+    // Integer representation -----------------------------
+
+//  EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::max()), int8_max);
+//  EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::max()), int16_max);
+//  EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::max()), int32_max);
+//
+//  EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::lowest()), int8_low);
+//  EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::lowest()), int16_low);
+//  EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::lowest()), int32_low);
+//
+//  EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::min()), int8_min);
+//  EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::min()), int16_min);
+//  EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::min()), int32_min);
+
+
+    // Float representation -------------------------------
+
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<snorm< 8>>::max()),     1.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<snorm<16>>::max()),     1.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<snorm<32>>::max()),     1.0f);
+
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<snorm< 8>>::lowest()), -1.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<snorm<16>>::lowest()), -1.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<snorm<32>>::lowest()), -1.0f);
+
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<snorm< 8>>::min()),     0.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<snorm<16>>::min()),     0.0f);
+    EXPECT_FLOAT_EQ(static_cast<float>(numeric_limits<snorm<32>>::min()),     0.0f);
+}
