@@ -81,6 +81,17 @@ public:
 };
 
 template <unsigned Bits>
+class numeric_limits<snorm<Bits>>
+{
+public:
+
+    MATH_FUNC static snorm<Bits> min();
+    MATH_FUNC static snorm<Bits> lowest();
+    MATH_FUNC static snorm<Bits> max();
+
+};
+
+template <unsigned Bits>
 class numeric_limits<unorm<Bits>>
 {
 public:

@@ -128,6 +128,29 @@ MATH_FUNC inline double numeric_limits<double>::epsilon()
 
 
 //-------------------------------------------------------------------------------------------------
+// snorm limits
+//
+
+template <unsigned Bits>
+MATH_FUNC inline snorm<Bits> numeric_limits<snorm<Bits>>::min()
+{
+    return snorm<Bits>(0.0f);
+}
+
+template <unsigned Bits>
+MATH_FUNC inline snorm<Bits> numeric_limits<snorm<Bits>>::lowest()
+{
+    return snorm<Bits>(-1.0f);
+}
+
+template <unsigned Bits>
+MATH_FUNC inline snorm<Bits> numeric_limits<snorm<Bits>>::max()
+{
+    return snorm<Bits>(1.0f);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // unorm limits
 //
 
