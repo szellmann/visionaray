@@ -95,7 +95,7 @@ TEST(Unorm, Initialization)
 //
 
 template <unsigned Bits>
-void test_cmp()
+static void test_cmp()
 {
     unorm<Bits> a;
     unorm<Bits> b;

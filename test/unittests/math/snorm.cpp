@@ -88,3 +88,98 @@ TEST(Snorm, Initialization)
 //      EXPECT_FLOAT_EQ(float(sn32s[i]), static_cast<float>(arr32[i]) / max8); // TODO
     }
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Test comparison operators
+//
+
+template <unsigned Bits>
+static void test_cmp()
+{
+    // negative numbers -----------------------------------
+
+    snorm<Bits> a;
+    snorm<Bits> b;
+
+    a = -1.0f;
+    b = -0.5f;
+
+    EXPECT_FALSE(a == b);
+    EXPECT_TRUE( a != b);
+    EXPECT_TRUE( a  < b);
+    EXPECT_TRUE( a <= b);
+    EXPECT_FALSE(a  > b);
+    EXPECT_FALSE(a >= b);
+
+    a = -0.5f;
+    b = -1.0f;
+
+    EXPECT_FALSE(a == b);
+    EXPECT_TRUE( a != b);
+    EXPECT_FALSE(a  < b);
+    EXPECT_FALSE(a <= b);
+    EXPECT_TRUE( a  > b);
+    EXPECT_TRUE( a >= b);
+
+    a = -1.0f;
+    b = -1.0f;
+
+    EXPECT_TRUE( a == b);
+    EXPECT_FALSE(a != b);
+    EXPECT_FALSE(a  < b);
+    EXPECT_TRUE( a <= b);
+    EXPECT_FALSE(a  > b);
+    EXPECT_TRUE( a >= b);
+
+    // all zeros ------------------------------------------
+
+    a = 0.0f;
+    b = 0.0f;
+
+    EXPECT_TRUE( a == b);
+    EXPECT_FALSE(a != b);
+    EXPECT_FALSE(a  < b);
+    EXPECT_TRUE( a <= b);
+    EXPECT_FALSE(a  > b);
+    EXPECT_TRUE( a >= b);
+
+    // positive numbers -----------------------------------
+
+    a = 0.5f;
+    b = 1.0f;
+
+    EXPECT_FALSE(a == b);
+    EXPECT_TRUE( a != b);
+    EXPECT_TRUE( a  < b);
+    EXPECT_TRUE( a <= b);
+    EXPECT_FALSE(a  > b);
+    EXPECT_FALSE(a >= b);
+
+    a = 1.0f;
+    b = 0.5f;
+
+    EXPECT_FALSE(a == b);
+    EXPECT_TRUE( a != b);
+    EXPECT_FALSE(a  < b);
+    EXPECT_FALSE(a <= b);
+    EXPECT_TRUE( a  > b);
+    EXPECT_TRUE( a >= b);
+
+    a = 1.0f;
+    b = 1.0f;
+
+    EXPECT_TRUE( a == b);
+    EXPECT_FALSE(a != b);
+    EXPECT_FALSE(a  < b);
+    EXPECT_TRUE( a <= b);
+    EXPECT_FALSE(a  > b);
+    EXPECT_TRUE( a >= b);
+}
+
+TEST(Snorm, Comparisons)
+{
+    test_cmp< 8>();
+    test_cmp<16>();
+    test_cmp<32>();
+}
