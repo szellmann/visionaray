@@ -91,6 +91,22 @@ operator<<(std::basic_ostream<CharT, Traits>& out, VecT const& v)
 
 template <typename CharT, typename Traits, unsigned Bits>
 std::basic_ostream<CharT, Traits>&
+operator<<(std::basic_ostream<CharT, Traits>& out, snorm<Bits> u)
+{
+
+    std::basic_ostringstream<CharT, Traits> s;
+    s.flags(out.flags());
+    s.imbue(out.getloc());
+    s.precision(out.precision());
+
+    s << static_cast<float>(u);
+
+    return out << s.str();
+
+}
+
+template <typename CharT, typename Traits, unsigned Bits>
+std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, unorm<Bits> u)
 {
 
