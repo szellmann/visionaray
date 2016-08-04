@@ -23,9 +23,17 @@ TEST(Snorm, Initialization)
     static const int16_t max16 = numeric_limits<int16_t>::max();
     static const int32_t max32 = numeric_limits<int32_t>::max();
 
-    static const int8_t  low8  = numeric_limits<int8_t>::lowest();
-    static const int16_t low16 = numeric_limits<int16_t>::lowest();
-    static const int32_t low32 = numeric_limits<int32_t>::lowest();
+    //
+    // cf. OpenGL 4.4, 2.3.4.1, p. 23:
+    //
+    // Only the range [−2^(b−1) + 1, 2^(b−1) − 1] is used to represent signed fixed-point
+    // values in the range [−1, 1]. For example, if b = 8, then the integer value −127
+    // corresponds to −1.0 and the value 127 corresponds to 1.0.
+    //
+
+    static const int8_t  low8  = numeric_limits<int8_t>::lowest()  + 1;
+    static const int16_t low16 = numeric_limits<int16_t>::lowest() + 1;
+    static const int32_t low32 = numeric_limits<int32_t>::lowest() + 1;
 
 
     // Test initialization --------------------------------
@@ -43,9 +51,9 @@ TEST(Snorm, Initialization)
     sn16 = -1.0f;
     sn32 = -1.0f;
 
-//  EXPECT_EQ(int8_t(sn8),   low8);  // TODO: why does intX_t(snX) yield lowX + 1?? 
-//  EXPECT_EQ(int16_t(sn16), low16); // TODO: why does intX_t(snX) yield lowX + 1??
-//  EXPECT_EQ(int32_t(sn32), low32); // TODO: why does intX_t(snX) yield lowX + 1??
+    EXPECT_EQ(int8_t(sn8),   low8);
+    EXPECT_EQ(int16_t(sn16), low16);
+    EXPECT_EQ(int32_t(sn32), low32);
 
     EXPECT_FLOAT_EQ(float(sn8),  -1.0f);
     EXPECT_FLOAT_EQ(float(sn16), -1.0f);
@@ -83,9 +91,9 @@ TEST(Snorm, Initialization)
         EXPECT_EQ(int16_t(sn16s[i]), arr16[i]);
         EXPECT_EQ(int32_t(sn32s[i]), arr32[i]);
 
-//      EXPECT_FLOAT_EQ(float(sn8s[i]),  static_cast<float>(arr8[i])  / max8); // TODO
-//      EXPECT_FLOAT_EQ(float(sn16s[i]), static_cast<float>(arr16[i]) / max8); // TODO
-//      EXPECT_FLOAT_EQ(float(sn32s[i]), static_cast<float>(arr32[i]) / max8); // TODO
+//      EXPECT_FLOAT_EQ(float(sn8s[i]),  static_cast<float>(arr8[i])  / max8);
+//      EXPECT_FLOAT_EQ(float(sn16s[i]), static_cast<float>(arr16[i]) / max8);
+//      EXPECT_FLOAT_EQ(float(sn32s[i]), static_cast<float>(arr32[i]) / max8);
     }
 }
 
@@ -198,10 +206,18 @@ TEST(Snorm, NumericLimits)
     static const int16_t int16_max = numeric_limits<int16_t>::max();
     static const int32_t int32_max = numeric_limits<int32_t>::max();
 
-//  static const int8_t  int8_low  = numeric_limits<int8_t>::lowest();
-//  static const int16_t int16_low = numeric_limits<int16_t>::lowest();
-//  static const int32_t int32_low = numeric_limits<int32_t>::lowest();
-//
+    //
+    // cf. OpenGL 4.4, 2.3.4.1, p. 23:
+    //
+    // Only the range [−2^(b−1) + 1, 2^(b−1) − 1] is used to represent signed fixed-point
+    // values in the range [−1, 1]. For example, if b = 8, then the integer value −127
+    // corresponds to −1.0 and the value 127 corresponds to 1.0.
+    //
+
+    static const int8_t  int8_low  = numeric_limits<int8_t>::lowest()  + 1;
+    static const int16_t int16_low = numeric_limits<int16_t>::lowest() + 1;
+    static const int32_t int32_low = numeric_limits<int32_t>::lowest() + 1;
+
 //  static const int8_t   int8_min = numeric_limits<int8_t>::min();
 //  static const int16_t int16_min = numeric_limits<int16_t>::min();
 //  static const int32_t int32_min = numeric_limits<int32_t>::min();
@@ -228,10 +244,10 @@ TEST(Snorm, NumericLimits)
     EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::max()), int16_max);
     EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::max()), int32_max);
 
-//  EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::lowest()), int8_low);
-//  EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::lowest()), int16_low);
-//  EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::lowest()), int32_low);
-//
+    EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::lowest()), int8_low);
+    EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::lowest()), int16_low);
+    EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::lowest()), int32_low);
+
 //  EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::min()), int8_min);
 //  EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::min()), int16_min);
 //  EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::min()), int32_min);
