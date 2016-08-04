@@ -194,10 +194,10 @@ TEST(Snorm, NumericLimits)
 {
     // Some convenience -----------------------------------
 
-//  static const int8_t   int8_max = numeric_limits<int8_t>::max();
-//  static const int16_t int16_max = numeric_limits<int16_t>::max();
-//  static const int32_t int32_max = numeric_limits<int32_t>::max();
-//
+    static const int8_t   int8_max = numeric_limits<int8_t>::max();
+    static const int16_t int16_max = numeric_limits<int16_t>::max();
+    static const int32_t int32_max = numeric_limits<int32_t>::max();
+
 //  static const int8_t  int8_low  = numeric_limits<int8_t>::lowest();
 //  static const int16_t int16_low = numeric_limits<int16_t>::lowest();
 //  static const int32_t int32_low = numeric_limits<int32_t>::lowest();
@@ -224,10 +224,10 @@ TEST(Snorm, NumericLimits)
 
     // Integer representation -----------------------------
 
-//  EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::max()), int8_max);
-//  EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::max()), int16_max);
-//  EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::max()), int32_max);
-//
+    EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::max()), int8_max);
+    EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::max()), int16_max);
+    EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::max()), int32_max);
+
 //  EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::lowest()), int8_low);
 //  EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::lowest()), int16_low);
 //  EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::lowest()), int32_low);
