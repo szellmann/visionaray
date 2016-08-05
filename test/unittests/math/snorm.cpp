@@ -90,10 +90,6 @@ TEST(Snorm, Initialization)
         EXPECT_EQ(int8_t(sn8s[i]),   arr8[i]);
         EXPECT_EQ(int16_t(sn16s[i]), arr16[i]);
         EXPECT_EQ(int32_t(sn32s[i]), arr32[i]);
-
-//      EXPECT_FLOAT_EQ(float(sn8s[i]),  static_cast<float>(arr8[i])  / max8);
-//      EXPECT_FLOAT_EQ(float(sn16s[i]), static_cast<float>(arr16[i]) / max8);
-//      EXPECT_FLOAT_EQ(float(sn32s[i]), static_cast<float>(arr32[i]) / max8);
     }
 }
 
