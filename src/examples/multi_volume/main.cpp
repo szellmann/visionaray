@@ -186,7 +186,7 @@ struct renderer : viewer_type
 
                 bboxes.emplace_back(vec3( -1.0f, -1.0f / 1.0f, -1.0f ), vec3( 1.0f, 1.0f / 1.0f, 1.0f ));
             }
- 
+
             transfuncs.emplace_back(5);
             auto& transfunc = transfuncs.back();
             transfunc.set_data(&tfdata[(i % 3) * 5]);

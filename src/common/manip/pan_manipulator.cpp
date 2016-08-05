@@ -79,7 +79,7 @@ void pan_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
         auto yaxis = camera_.up();
         auto xaxis = cross( yaxis, zaxis );
         vec3 d  =  (dx * s) * xaxis + (dy * s) * yaxis;
-        
+
         camera_.look_at( camera_.eye() + d, camera_.center() + d, camera_.up() );
 
         last_pos_ = event.get_pos();

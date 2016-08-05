@@ -42,7 +42,7 @@ matrix:
           compiler: clang
 
 addons:
-    apt: 
+    apt:
         packages:
             - libboost-all-dev
             - libglew-dev

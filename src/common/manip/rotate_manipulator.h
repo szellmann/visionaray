@@ -51,7 +51,7 @@ private:
     recti bounding_rect();
 
     mouse::buttons buttons_;
-    mouse::pos down_pos_; 
+    mouse::pos down_pos_;
 
     int hovered_ = -1;
     int selected_ = -1;

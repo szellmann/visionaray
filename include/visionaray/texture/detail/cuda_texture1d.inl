@@ -289,7 +289,7 @@ private:
         cudaTextureObject_t obj = 0;
         cudaCreateTextureObject( &obj, &resource_desc, &texture_desc, 0 );
         texture_obj_.reset(obj);
-    } 
+    }
 
 };
 

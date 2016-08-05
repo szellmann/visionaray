@@ -29,7 +29,7 @@ template <size_t Dim, typename T>
 MATH_FUNC
 inline vector<Dim, T>::vector(T const* data/*[Dim]*/)
 {
-    std::copy( data, data + Dim, data_ );    
+    std::copy( data, data + Dim, data_ );
 }
 
 template <size_t Dim, typename T>

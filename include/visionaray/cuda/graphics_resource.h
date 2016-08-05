@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#pragma once 
+#pragma once
 
 #ifndef VSNRAY_CUDA_GRAPHICS_RESOURCE_H
 #define VSNRAY_CUDA_GRAPHICS_RESOURCE_H 1

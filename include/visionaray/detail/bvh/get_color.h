@@ -70,7 +70,7 @@ auto get_color(
             colors,
             static_cast<Base const&>(hr),
             typename Primitive::primitive_type{},
-            colors_per_face_binding{} 
+            colors_per_face_binding{}
             ) )
 {
     return get_color(
@@ -103,7 +103,7 @@ auto get_color(
             colors,
             static_cast<Base const&>(hr),
             typename Primitive::primitive_type{},
-            colors_per_vertex_binding{} 
+            colors_per_vertex_binding{}
             ) )
 {
     return get_color(
@@ -136,7 +136,7 @@ auto get_color(
             colors,
             static_cast<Base const&>(hr),
             typename Primitive::primitive_type{},
-            colors_per_geometry_binding{} 
+            colors_per_geometry_binding{}
             ) )
 {
     return get_color(

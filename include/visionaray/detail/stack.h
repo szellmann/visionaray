@@ -7,7 +7,7 @@
 #define VSNRAY_DETAIL_STACK_H 1
 
 #include "macros.h"
-   
+
 namespace visionaray
 {
 namespace detail
