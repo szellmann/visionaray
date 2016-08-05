@@ -189,7 +189,7 @@ public:
 private:
 
     T data_[Dim];
-    
+
 };
 
 

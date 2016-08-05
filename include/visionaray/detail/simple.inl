@@ -79,7 +79,7 @@ struct kernel
     {
         default_intersector ignore;
         return (*this)(ignore, ray);
-    } 
+    }
 };
 
 } // simple

@@ -228,5 +228,5 @@ inline spectrum<U> plastic<T>::sample_impl(
 
     return           select( u < U(prob_diff), diff,  spec  );
 }
-    
+
 } // visionaray

@@ -116,7 +116,7 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
 
 
 //-------------------------------------------------------------------------------------------------
-// ray triangle
+// ray / triangle
 //
 
 template <typename T, typename U>
@@ -180,7 +180,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
 
 
 //-------------------------------------------------------------------------------------------------
-// ray sphere
+// ray / sphere
 //
 
 template <typename T, typename U>

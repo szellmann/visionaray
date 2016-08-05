@@ -385,7 +385,7 @@ VSNRAY_FORCE_INLINE float8 sin(float8 const& x)
 template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
-    > 
+    >
 VSNRAY_FORCE_INLINE FloatT exp(FloatT const& x)
 {
     FloatT y = x * constants::log2_e<FloatT>();

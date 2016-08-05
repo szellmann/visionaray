@@ -122,7 +122,7 @@ inline T const& matrix<4, 4, T>::operator()(size_t row, size_t col) const
 {
     return (operator()(col))[row];
 }
-    
+
 template <typename T>
 MATH_FUNC
 inline matrix<4, 4, T> matrix<4, 4, T>::identity()

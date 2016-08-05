@@ -79,7 +79,7 @@ struct kernel
                 sr.active   = active_rays;
                 sr.normal   = n;
                 sr.view_dir = view_dir;
- 
+
                 auto src = surf.sample(sr, refl_dir, pdf, s);
 
                 auto zero_pdf = pdf <= S(0.0);
@@ -122,7 +122,7 @@ struct kernel
     VSNRAY_FUNC result_record<typename R::scalar_type> operator()(
             R ray,
             Sampler& s
-            ) const 
+            ) const
     {
         default_intersector ignore;
         return (*this)(ignore, ray, s);
