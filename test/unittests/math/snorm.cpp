@@ -218,10 +218,6 @@ TEST(Snorm, NumericLimits)
     static const int16_t int16_low = numeric_limits<int16_t>::lowest() + 1;
     static const int32_t int32_low = numeric_limits<int32_t>::lowest() + 1;
 
-//  static const int8_t   int8_min = numeric_limits<int8_t>::min();
-//  static const int16_t int16_min = numeric_limits<int16_t>::min();
-//  static const int32_t int32_min = numeric_limits<int32_t>::min();
-
 
     // Normalized reprentation ----------------------------
 
@@ -248,9 +244,9 @@ TEST(Snorm, NumericLimits)
     EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::lowest()), int16_low);
     EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::lowest()), int32_low);
 
-//  EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::min()), int8_min);
-//  EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::min()), int16_min);
-//  EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::min()), int32_min);
+    EXPECT_EQ(static_cast< int8_t>(numeric_limits<snorm< 8>>::min()), 0);
+    EXPECT_EQ(static_cast<int16_t>(numeric_limits<snorm<16>>::min()), 0);
+    EXPECT_EQ(static_cast<int32_t>(numeric_limits<snorm<32>>::min()), 0);
 
 
     // Float representation -------------------------------
