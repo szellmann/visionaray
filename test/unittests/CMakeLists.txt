@@ -88,6 +88,7 @@ set(UNITTESTS_SOURCES
     math/simd/gather.cpp
     math/simd/simd.cpp
     math/matrix.cpp
+    math/ray.cpp
     math/rectangle.cpp
     math/snorm.cpp
     math/unorm.cpp
