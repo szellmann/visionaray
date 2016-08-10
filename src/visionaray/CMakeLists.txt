@@ -109,6 +109,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/matrix4.inl
     ${HEADER_DIR}/math/detail/plane.inl
     ${HEADER_DIR}/math/detail/quaternion.inl
+    ${HEADER_DIR}/math/detail/ray.inl
     ${HEADER_DIR}/math/detail/rectangle.inl
     ${HEADER_DIR}/math/detail/snorm.inl
     ${HEADER_DIR}/math/detail/sphere.inl

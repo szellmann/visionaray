@@ -26,14 +26,12 @@ public:
     vec_type dir;
 
     MATH_FUNC basic_ray() = default;
-    MATH_FUNC basic_ray(vec_type const& o, vec_type const& d)
-        : ori(o)
-        , dir(d)
-    {
-    }
+    MATH_FUNC basic_ray(vector<3, T> const& o, vector<3, T> const& d);
 
 };
 
 } // MATH_NAMESPACE
+
+#include "detail/ray.inl"
 
 #endif // VSNRAY_MATH_RAY_H
