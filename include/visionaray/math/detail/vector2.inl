@@ -382,9 +382,8 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
-inline std::array<vector<2, float>, num_elements<FloatT>::value> unpack(
-        vector<2, FloatT> const& v
-        )
+inline auto unpack(vector<2, FloatT> const& v)
+    -> std::array<vector<2, float>, num_elements<FloatT>::value>
 {
     using float_array = typename aligned_array<FloatT>::type;
 
