@@ -59,5 +59,48 @@ inline basic_ray<typename float_from_simd_width<N>::type> pack(
             );
 }
 
+// unpack -------------------------------------------------
+
+template <
+    typename FloatT,
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+inline auto unpack(basic_ray<FloatT> const& ray)
+    -> std::array<basic_ray<float>, num_elements<FloatT>::value>
+{
+    using float_array = typename aligned_array<FloatT>::type;
+
+    float_array ori_x;
+    float_array ori_y;
+    float_array ori_z;
+
+    float_array dir_x;
+    float_array dir_y;
+    float_array dir_z;
+
+    store(ori_x, ray.ori.x);
+    store(ori_y, ray.ori.y);
+    store(ori_z, ray.ori.z);
+
+    store(dir_x, ray.dir.x);
+    store(dir_y, ray.dir.y);
+    store(dir_z, ray.dir.z);
+
+    std::array<basic_ray<float>, num_elements<FloatT>::value> result;
+
+    for (int i = 0; i < num_elements<FloatT>::value; ++i)
+    {
+        result[i].ori.x = ori_x[i];
+        result[i].ori.y = ori_y[i];
+        result[i].ori.z = ori_z[i];
+
+        result[i].dir.x = dir_x[i];
+        result[i].dir.y = dir_y[i];
+        result[i].dir.z = dir_z[i];
+    }
+
+    return result;
+}
+
 } // simd
 } // MATH_NAMESPACE
