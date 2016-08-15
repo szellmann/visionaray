@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <array>
+#include <type_traits>
 
 #include "../simd/type_traits.h"
 
