@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_TAGS_H
-#define VSNRAH_TAGS_H 1
+#define VSNRAY_TAGS_H 1
 
 //-------------------------------------------------------------------------------------------------
 // Tags for API use
