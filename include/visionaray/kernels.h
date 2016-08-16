@@ -352,7 +352,8 @@ template <
     typename Primitives,
     typename Normals,
     typename Materials,
-    typename Lights
+    typename Lights,
+    typename = typename std::enable_if<is_normal_binding<NormalBinding>::value>::type
     >
 auto make_kernel_params(
         NormalBinding       /* */,
@@ -391,7 +392,8 @@ template <
     typename TexCoords,
     typename Materials,
     typename Textures,
-    typename Lights
+    typename Lights,
+    typename = typename std::enable_if<is_normal_binding<NormalBinding>::value>::type
     >
 auto make_kernel_params(
         NormalBinding       /* */,
@@ -436,7 +438,9 @@ template <
     typename Materials,
     typename Colors,
     typename Textures,
-    typename Lights
+    typename Lights,
+    typename = typename std::enable_if<is_normal_binding<NormalBinding>::value>::type,
+    typename = typename std::enable_if<is_color_binding<ColorBinding>::value>::type
     >
 auto make_kernel_params(
         NormalBinding       /* */,

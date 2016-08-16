@@ -6,11 +6,13 @@
 #ifndef VSNRAY_GET_NORMAL
 #define VSNRAY_GET_NORMAL 1
 
+#include <cstddef>
 #include <iterator>
 #include <type_traits>
 
 #include "math/math.h"
 #include "prim_traits.h"
+#include "tags.h"
 
 namespace visionaray
 {
@@ -27,7 +29,7 @@ inline auto get_normal(
         Normals                     normals,
         HR const&                   hr,
         basic_triangle<3, T>        /* */,
-        per_face_binding            /* */
+        normals_per_face_binding    /* */
         )
     -> typename std::iterator_traits<Normals>::value_type
 {
@@ -48,7 +50,7 @@ inline vector<3, T> get_normal(
         Normals                                                 normals,
         hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
         basic_triangle<3, U>                                    /* */,
-        per_face_binding                                        /* */
+        normals_per_face_binding                                /* */
         )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -86,7 +88,7 @@ inline auto get_normal(
         Normals                     normals,
         HR const&                   hr,
         basic_triangle<3, T>        prim,
-        per_vertex_binding          /* */
+        normals_per_vertex_binding  /* */
         )
     -> decltype( get_normal(hr, prim) )
 {

@@ -12,6 +12,7 @@
 #include "math/math.h"
 #include "get_normal.h"
 #include "prim_traits.h"
+#include "tags.h"
 
 namespace visionaray
 {
@@ -59,7 +60,7 @@ inline auto get_shading_normal(HR const& hr, Primitive prim)
 
 
 //-------------------------------------------------------------------------------------------------
-// get_shading_normal for triangles with per_vertex_binding
+// get_shading_normal for triangles with normals_per_vertex_binding
 //
 
 template <typename Normals, typename HR, typename T>
@@ -68,7 +69,7 @@ inline auto get_shading_normal(
         Normals                     normals,
         HR const&                   hr,
         basic_triangle<3, T>        /* */,
-        per_vertex_binding          /* */
+        normals_per_vertex_binding  /* */
         )
     -> typename std::iterator_traits<Normals>::value_type
 {
@@ -83,7 +84,7 @@ inline auto get_shading_normal(
 
 
 //-------------------------------------------------------------------------------------------------
-// get_shading_normal for triangles with per_vertex_binding for SIMD ray
+// get_shading_normal for triangles with normals_per_vertex_binding for SIMD ray
 //
 
 template <
@@ -96,7 +97,7 @@ inline vector<3, T> get_shading_normal(
         Normals                                                 normals,
         hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
         basic_triangle<3, U>                                    /* */,
-        per_vertex_binding                                      /* */
+        normals_per_vertex_binding                              /* */
         )
 {
     using N = typename std::iterator_traits<Normals>::value_type;

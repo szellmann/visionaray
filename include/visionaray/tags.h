@@ -6,6 +6,8 @@
 #ifndef VSNRAY_TAGS_H
 #define VSNRAY_TAGS_H 1
 
+#include <type_traits>
+
 //-------------------------------------------------------------------------------------------------
 // Tags for API use
 //-------------------------------------------------------------------------------------------------
@@ -27,19 +29,38 @@ struct dielectric_tag {};
 //
 
 struct data_binding {};
-struct unspecified_binding  : data_binding {};
-struct per_face_binding     : data_binding {};
-struct per_vertex_binding   : data_binding {};
-struct per_geometry_binding : data_binding {};
+struct unspecified_binding         : data_binding {};
+struct per_face_binding            : data_binding {};
+struct per_vertex_binding          : data_binding {};
+struct per_geometry_binding        : data_binding {};
 
-// more explicit versions ---------------------------------
 
-using colors_per_face_binding     = per_face_binding;
-using colors_per_vertex_binding   = per_vertex_binding;
-using colors_per_geometry_binding = per_geometry_binding;
+//-------------------------------------------------------------------------------------------------
+// Explicit data binding types for normals and colors
+//
 
-using normals_per_face_binding    = per_face_binding;
-using normals_per_vertex_binding  = per_vertex_binding;
+struct color_binding {};
+struct colors_per_face_binding     : color_binding {};
+struct colors_per_vertex_binding   : color_binding {};
+struct colors_per_geometry_binding : color_binding {};
+
+struct normal_binding {};
+struct normals_per_face_binding    : normal_binding {};
+struct normals_per_vertex_binding  : normal_binding {};
+
+
+//-------------------------------------------------------------------------------------------------
+// Traits to identify bindings
+//
+
+template <typename T>
+using is_general_binding = std::is_base_of<data_binding, T>;
+
+template <typename T>
+using is_color_binding   = std::is_base_of<color_binding, T>;
+
+template <typename T>
+using is_normal_binding  = std::is_base_of<normal_binding, T>;
 
 } // visionaray
 

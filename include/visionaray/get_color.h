@@ -29,10 +29,10 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_color(
-        Colors              colors,
-        HR const&           hr,
-        Primitive           /* */,
-        per_face_binding    /* */
+        Colors                  colors,
+        HR const&               hr,
+        Primitive               /* */,
+        colors_per_face_binding /* */
         )
     -> typename std::iterator_traits<Colors>::value_type
 {
@@ -47,10 +47,10 @@ inline auto get_color(
 template <typename Colors, typename HR, typename T>
 VSNRAY_FUNC
 inline auto get_color(
-        Colors                  colors,
-        HR const&               hr,
-        basic_triangle<3, T>    /* */,
-        per_vertex_binding      /* */
+        Colors                      colors,
+        HR const&                   hr,
+        basic_triangle<3, T>        /* */,
+        colors_per_vertex_binding   /* */
         )
     -> typename std::iterator_traits<Colors>::value_type
 {
@@ -76,10 +76,10 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
 inline vector<3, T> get_color(
-        Colors              colors,
-        HR const&           hr,
-        Primitive           /* */,
-        per_face_binding    /* */
+        Colors                  colors,
+        HR const&               hr,
+        Primitive               /* */,
+        colors_per_face_binding /* */
         )
 {
     using C = typename std::iterator_traits<Colors>::value_type;
@@ -121,7 +121,7 @@ inline vector<3, T> get_color(
         Colors                                                  colors,
         hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
         basic_triangle<3, U>                                    /* */,
-        per_vertex_binding                                      /* */
+        colors_per_vertex_binding                               /* */
         )
 {
     using C = typename std::iterator_traits<Colors>::value_type;
