@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_ALLOCATOR_H
-#define VSNRAY_ALLOCATOR_H
+#define VSNRAY_ALLOCATOR_H 1
 
 #include "macros.h"
 
@@ -34,16 +34,14 @@ public:
     typedef size_t size_type;
     typedef ptrdiff_t difference_type;
 
-    aligned_allocator()
-    {
-    }
+    aligned_allocator() = default;
 
-    aligned_allocator(const aligned_allocator& /* rhs */)
+    aligned_allocator(aligned_allocator const& /* rhs */)
     {
     }
 
     template <typename U>
-    aligned_allocator(const aligned_allocator<U, A>& /* rhs */)
+    aligned_allocator(aligned_allocator<U, A> const& /* rhs */)
     {
     }
 
@@ -63,7 +61,7 @@ public:
         return &r;
     }
 
-    pointer allocate(size_type n, void* /*hint */ = 0)
+    pointer allocate(size_type n, void* /* hint */ = 0)
     {
         return (pointer)_mm_malloc(n * sizeof(T), A);
     }
@@ -88,12 +86,12 @@ public:
         p->T::~T();
     }
 
-    bool operator==(const aligned_allocator& /* rhs */) const
+    bool operator==(aligned_allocator const& /* rhs */) const
     {
         return true;
     }
 
-    bool operator!=(const aligned_allocator& rhs) const
+    bool operator!=(aligned_allocator const& rhs) const
     {
         return !(*this == rhs);
     }
@@ -102,5 +100,3 @@ public:
 } // visionaray
 
 #endif // VSNRAY_ALLOCATOR_H
-
-
