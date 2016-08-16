@@ -628,7 +628,6 @@ inline auto get_surface_impl(
         )
     -> typename simd_decl_surface<vector<3, float>*, Materials, T>::type
 {
-    using P = typename std::iterator_traits<Primitives>::value_type;
     using N = vector<3, float>;
     using M = typename std::iterator_traits<Materials>::value_type;
 
@@ -638,13 +637,21 @@ inline auto get_surface_impl(
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
-        auto ns = get_normal_dispatch(primitives, nullptr, hrs[i], P{}, unspecified_binding{});
-
-        surfs[i] = make_surface(
-            hrs[i].hit ? ns.geometric_normal       : N{},
-            hrs[i].hit ? ns.shading_normal         : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id] : M{}
-            );
+        if (hrs[i].hit)
+        {
+            surfs[i] = get_surface_impl(
+                    has_no_normals_tag{},
+                    has_no_colors_tag{},
+                    has_no_textures_tag{},
+                    hrs[i],
+                    primitives,
+                    materials
+                    );
+        }
+        else
+        {
+            surfs[i] = make_surface(N(), N(), M());
+        }
     }
 
     return simd::pack(surfs);
@@ -676,34 +683,35 @@ inline auto get_surface_impl(
         )
     -> typename simd_decl_surface<vector<3, float>*, Materials, vector<3, float>, T>::type
 {
-    using P = typename std::iterator_traits<Primitives>::value_type;
     using N = vector<3, float>;
     using M = typename std::iterator_traits<Materials>::value_type;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
 
-    auto colorss = get_color(colors, hrs, P{}, ColorBinding{});
-
-    auto tcs = get_tex_coord(tex_coords, hrs, P{});
-
     std::array<typename decl_surface<vector<3, float>*, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
-        auto const& tex = textures[hrs[i].geom_id];
-        C tex_color = hrs[i].hit && tex.width() > 0 && tex.height() > 0
-                    ? C(visionaray::tex2D(tex, tcs[i]))
-                    : C(1.0);
-
-        auto ns = get_normal_dispatch(primitives, nullptr, hrs[i], P{}, unspecified_binding{});
-
-        surfs[i] = make_surface(
-            hrs[i].hit ? ns.geometric_normal       : N{},
-            hrs[i].hit ? ns.shading_normal         : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id] : M{},
-            hrs[i].hit ? colorss[i] * tex_color    : C(1.0)
-            );
+        if (hrs[i].hit)
+        {
+            surfs[i] = get_surface_impl(
+                    has_no_normals_tag{},
+                    has_colors_tag{},
+                    has_textures_tag{},
+                    ColorBinding{},
+                    hrs[i],
+                    primitives,
+                    tex_coords,
+                    materials,
+                    colors,
+                    textures
+                    );
+        }
+        else
+        {
+            surfs[i] = make_surface(N(), N(), M(), C(1.0));
+        }
     }
 
     return simd::pack(surfs);
@@ -732,7 +740,6 @@ inline auto get_surface_impl(
         )
     -> typename simd_decl_surface<Normals, Materials, T>::type
 {
-    using P = typename std::iterator_traits<Primitives>::value_type;
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
 
@@ -742,12 +749,23 @@ inline auto get_surface_impl(
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
-        auto ns = get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{});
-        surfs[i] = make_surface(
-            hrs[i].hit ? ns.geometric_normal       : N{},
-            hrs[i].hit ? ns.shading_normal         : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id] : M{}
-            );
+        if (hrs[i].hit)
+        {
+            surfs[i] = get_surface_impl(
+                    has_normals_tag{},
+                    has_no_colors_tag{},
+                    has_no_textures_tag{},
+                    NormalBinding{},
+                    hrs[i],
+                    primitives,
+                    normals,
+                    materials
+                    );
+        }
+        else
+        {
+            surfs[i] = make_surface(N(), N(), M());
+        }
     }
 
     return simd::pack(surfs);
@@ -780,32 +798,35 @@ inline auto get_surface_impl(
         )
     -> typename simd_decl_surface<Normals, Materials, vector<3, float>, T>::type
 {
-    using P = typename std::iterator_traits<Primitives>::value_type;
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
 
-    auto tcs = get_tex_coord(tex_coords, hrs, P{});
-
     std::array<typename detail::decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
-        auto const& tex = textures[hrs[i].geom_id];
-        C tex_color = hrs[i].hit && tex.width() > 0 && tex.height() > 0
-                    ? C(visionaray::tex2D(tex, tcs[i]))
-                    : C(1.0);
-
-        auto ns = get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{});
-
-        surfs[i] = make_surface(
-            hrs[i].hit ? ns.geometric_normal       : N{},
-            hrs[i].hit ? ns.shading_normal         : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id] : M{},
-            hrs[i].hit ? tex_color                 : C(1.0)
-            );
+        if (hrs[i].hit)
+        {
+            surfs[i] = get_surface_impl(
+                    has_normals_tag{},
+                    has_no_colors_tag{},
+                    has_textures_tag{},
+                    NormalBinding{},
+                    hrs[i],
+                    primitives,
+                    normals,
+                    tex_coords,
+                    materials,
+                    textures
+                    );
+        }
+        else
+        {
+            surfs[i] = make_surface(N(), N(), M(), C(1.0));
+        }
     }
 
     return simd::pack(surfs);
@@ -841,34 +862,37 @@ inline auto get_surface_impl(
         )
     -> typename simd_decl_surface<Normals, Materials, vector<3, float>, T>::type
 {
-    using P = typename std::iterator_traits<Primitives>::value_type;
     using N = typename std::iterator_traits<Normals>::value_type;
     using M = typename std::iterator_traits<Materials>::value_type;
     using C = vector<3, float>;
 
     auto hrs = unpack(hr);
 
-    auto colorss = get_color(colors, hrs, P{}, ColorBinding{});
-
-    auto tcs = get_tex_coord(tex_coords, hrs, P{});
-
     std::array<typename decl_surface<Normals, Materials, vector<3, float>>::type, simd::num_elements<T>::value> surfs;
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
-        auto const& tex = textures[hrs[i].geom_id];
-        C tex_color = hrs[i].hit && tex.width() > 0 && tex.height() > 0
-                    ? C(visionaray::tex2D(tex, tcs[i]))
-                    : C(1.0);
-
-        auto ns = get_normal_dispatch(primitives, normals, hrs[i], P{}, NormalBinding{});
-
-        surfs[i] = make_surface(
-            hrs[i].hit ? ns.geometric_normal       : N{},
-            hrs[i].hit ? ns.shading_normal         : N{},
-            hrs[i].hit ? materials[hrs[i].geom_id] : M{},
-            hrs[i].hit ? colorss[i] * tex_color    : C(1.0)
-            );
+        if (hrs[i].hit)
+        {
+            surfs[i] = get_surface_impl(
+                    has_normals_tag{},
+                    has_colors_tag{},
+                    has_textures_tag{},
+                    NormalBinding{},
+                    ColorBinding{},
+                    hrs[i],
+                    primitives,
+                    normals,
+                    tex_coords,
+                    materials,
+                    colors,
+                    textures
+                    );
+        }
+        else
+        {
+            surfs[i] = make_surface(N(), N(), M(), C(1.0));
+        }
     }
 
     return simd::pack(surfs);
