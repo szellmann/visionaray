@@ -22,7 +22,7 @@ struct dielectric_tag {};
 
 //-------------------------------------------------------------------------------------------------
 // Data binding tags
-// Determine how precalculated from an array is bound to the vertices of a primitive
+// Determine how precalculated data from an array is bound to the vertices of a primitive
 // In the case of primitives w/o vertices, unspecified_binding applies
 //
 
