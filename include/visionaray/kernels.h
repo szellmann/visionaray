@@ -383,7 +383,7 @@ auto make_kernel_params(
 }
 
 
-// w/ textures ------------------------------------------
+// w/ normals and textures --------------------------------
 
 template <
     typename NormalBinding,
@@ -427,7 +427,7 @@ auto make_kernel_params(
 }
 
 
-// w/ textures and colors ---------------------------------
+// w/ normals, colors and textures ------------------------
 
 template <
     typename NormalBinding,
