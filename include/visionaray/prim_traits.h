@@ -6,7 +6,7 @@
 #ifndef VSNRAY_PRIM_TRAITS_H
 #define VSNRAY_PRIM_TRAITS_H 1
 
-#include <type_traits>
+#include <cstddef>
 
 #include <visionaray/math/sphere.h>
 #include <visionaray/math/triangle.h>
