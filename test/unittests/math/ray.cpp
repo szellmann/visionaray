@@ -147,29 +147,29 @@ TEST(Ray, SIMDUnpack)
 
         EXPECT_FLOAT_EQ(rays[0].ori.x, simd::get<0>(ray4.ori.x));
         EXPECT_FLOAT_EQ(rays[0].ori.y, simd::get<0>(ray4.ori.y));
-        EXPECT_FLOAT_EQ(rays[0].ori.x, simd::get<0>(ray4.ori.z));
+        EXPECT_FLOAT_EQ(rays[0].ori.z, simd::get<0>(ray4.ori.z));
         EXPECT_FLOAT_EQ(rays[1].ori.x, simd::get<1>(ray4.ori.x));
         EXPECT_FLOAT_EQ(rays[1].ori.y, simd::get<1>(ray4.ori.y));
-        EXPECT_FLOAT_EQ(rays[1].ori.x, simd::get<1>(ray4.ori.z));
+        EXPECT_FLOAT_EQ(rays[1].ori.z, simd::get<1>(ray4.ori.z));
         EXPECT_FLOAT_EQ(rays[2].ori.x, simd::get<2>(ray4.ori.x));
         EXPECT_FLOAT_EQ(rays[2].ori.y, simd::get<2>(ray4.ori.y));
-        EXPECT_FLOAT_EQ(rays[2].ori.x, simd::get<2>(ray4.ori.z));
+        EXPECT_FLOAT_EQ(rays[2].ori.z, simd::get<2>(ray4.ori.z));
         EXPECT_FLOAT_EQ(rays[3].ori.x, simd::get<3>(ray4.ori.x));
         EXPECT_FLOAT_EQ(rays[3].ori.y, simd::get<3>(ray4.ori.y));
-        EXPECT_FLOAT_EQ(rays[3].ori.x, simd::get<3>(ray4.ori.z));
+        EXPECT_FLOAT_EQ(rays[3].ori.z, simd::get<3>(ray4.ori.z));
 
         EXPECT_FLOAT_EQ(rays[0].dir.x, simd::get<0>(ray4.dir.x));
         EXPECT_FLOAT_EQ(rays[0].dir.y, simd::get<0>(ray4.dir.y));
-        EXPECT_FLOAT_EQ(rays[0].dir.x, simd::get<0>(ray4.dir.z));
+        EXPECT_FLOAT_EQ(rays[0].dir.z, simd::get<0>(ray4.dir.z));
         EXPECT_FLOAT_EQ(rays[1].dir.x, simd::get<1>(ray4.dir.x));
         EXPECT_FLOAT_EQ(rays[1].dir.y, simd::get<1>(ray4.dir.y));
-        EXPECT_FLOAT_EQ(rays[1].dir.x, simd::get<1>(ray4.dir.z));
+        EXPECT_FLOAT_EQ(rays[1].dir.z, simd::get<1>(ray4.dir.z));
         EXPECT_FLOAT_EQ(rays[2].dir.x, simd::get<2>(ray4.dir.x));
         EXPECT_FLOAT_EQ(rays[2].dir.y, simd::get<2>(ray4.dir.y));
-        EXPECT_FLOAT_EQ(rays[2].dir.x, simd::get<2>(ray4.dir.z));
+        EXPECT_FLOAT_EQ(rays[2].dir.z, simd::get<2>(ray4.dir.z));
         EXPECT_FLOAT_EQ(rays[3].dir.x, simd::get<3>(ray4.dir.x));
         EXPECT_FLOAT_EQ(rays[3].dir.y, simd::get<3>(ray4.dir.y));
-        EXPECT_FLOAT_EQ(rays[3].dir.x, simd::get<3>(ray4.dir.z));
+        EXPECT_FLOAT_EQ(rays[3].dir.z, simd::get<3>(ray4.dir.z));
     }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -194,53 +194,53 @@ TEST(Ray, SIMDUnpack)
 
         EXPECT_FLOAT_EQ(rays[0].ori.x, simd::get<0>(ray8.ori.x));
         EXPECT_FLOAT_EQ(rays[0].ori.y, simd::get<0>(ray8.ori.y));
-        EXPECT_FLOAT_EQ(rays[0].ori.x, simd::get<0>(ray8.ori.z));
+        EXPECT_FLOAT_EQ(rays[0].ori.z, simd::get<0>(ray8.ori.z));
         EXPECT_FLOAT_EQ(rays[1].ori.x, simd::get<1>(ray8.ori.x));
         EXPECT_FLOAT_EQ(rays[1].ori.y, simd::get<1>(ray8.ori.y));
-        EXPECT_FLOAT_EQ(rays[1].ori.x, simd::get<1>(ray8.ori.z));
+        EXPECT_FLOAT_EQ(rays[1].ori.z, simd::get<1>(ray8.ori.z));
         EXPECT_FLOAT_EQ(rays[2].ori.x, simd::get<2>(ray8.ori.x));
         EXPECT_FLOAT_EQ(rays[2].ori.y, simd::get<2>(ray8.ori.y));
-        EXPECT_FLOAT_EQ(rays[2].ori.x, simd::get<2>(ray8.ori.z));
+        EXPECT_FLOAT_EQ(rays[2].ori.z, simd::get<2>(ray8.ori.z));
         EXPECT_FLOAT_EQ(rays[3].ori.x, simd::get<3>(ray8.ori.x));
         EXPECT_FLOAT_EQ(rays[3].ori.y, simd::get<3>(ray8.ori.y));
-        EXPECT_FLOAT_EQ(rays[3].ori.x, simd::get<3>(ray8.ori.z));
+        EXPECT_FLOAT_EQ(rays[3].ori.z, simd::get<3>(ray8.ori.z));
         EXPECT_FLOAT_EQ(rays[4].ori.x, simd::get<4>(ray8.ori.x));
         EXPECT_FLOAT_EQ(rays[4].ori.y, simd::get<4>(ray8.ori.y));
-        EXPECT_FLOAT_EQ(rays[4].ori.x, simd::get<4>(ray8.ori.z));
+        EXPECT_FLOAT_EQ(rays[4].ori.z, simd::get<4>(ray8.ori.z));
         EXPECT_FLOAT_EQ(rays[5].ori.x, simd::get<5>(ray8.ori.x));
         EXPECT_FLOAT_EQ(rays[5].ori.y, simd::get<5>(ray8.ori.y));
-        EXPECT_FLOAT_EQ(rays[5].ori.x, simd::get<5>(ray8.ori.z));
+        EXPECT_FLOAT_EQ(rays[5].ori.z, simd::get<5>(ray8.ori.z));
         EXPECT_FLOAT_EQ(rays[6].ori.x, simd::get<6>(ray8.ori.x));
         EXPECT_FLOAT_EQ(rays[6].ori.y, simd::get<6>(ray8.ori.y));
-        EXPECT_FLOAT_EQ(rays[6].ori.x, simd::get<6>(ray8.ori.z));
+        EXPECT_FLOAT_EQ(rays[6].ori.z, simd::get<6>(ray8.ori.z));
         EXPECT_FLOAT_EQ(rays[7].ori.x, simd::get<7>(ray8.ori.x));
         EXPECT_FLOAT_EQ(rays[7].ori.y, simd::get<7>(ray8.ori.y));
-        EXPECT_FLOAT_EQ(rays[7].ori.x, simd::get<7>(ray8.ori.z));
+        EXPECT_FLOAT_EQ(rays[7].ori.z, simd::get<7>(ray8.ori.z));
 
         EXPECT_FLOAT_EQ(rays[0].dir.x, simd::get<0>(ray8.dir.x));
         EXPECT_FLOAT_EQ(rays[0].dir.y, simd::get<0>(ray8.dir.y));
-        EXPECT_FLOAT_EQ(rays[0].dir.x, simd::get<0>(ray8.dir.z));
+        EXPECT_FLOAT_EQ(rays[0].dir.z, simd::get<0>(ray8.dir.z));
         EXPECT_FLOAT_EQ(rays[1].dir.x, simd::get<1>(ray8.dir.x));
         EXPECT_FLOAT_EQ(rays[1].dir.y, simd::get<1>(ray8.dir.y));
-        EXPECT_FLOAT_EQ(rays[1].dir.x, simd::get<1>(ray8.dir.z));
+        EXPECT_FLOAT_EQ(rays[1].dir.z, simd::get<1>(ray8.dir.z));
         EXPECT_FLOAT_EQ(rays[2].dir.x, simd::get<2>(ray8.dir.x));
         EXPECT_FLOAT_EQ(rays[2].dir.y, simd::get<2>(ray8.dir.y));
-        EXPECT_FLOAT_EQ(rays[2].dir.x, simd::get<2>(ray8.dir.z));
+        EXPECT_FLOAT_EQ(rays[2].dir.z, simd::get<2>(ray8.dir.z));
         EXPECT_FLOAT_EQ(rays[3].dir.x, simd::get<3>(ray8.dir.x));
         EXPECT_FLOAT_EQ(rays[3].dir.y, simd::get<3>(ray8.dir.y));
-        EXPECT_FLOAT_EQ(rays[3].dir.x, simd::get<3>(ray8.dir.z));
+        EXPECT_FLOAT_EQ(rays[3].dir.z, simd::get<3>(ray8.dir.z));
         EXPECT_FLOAT_EQ(rays[4].dir.x, simd::get<4>(ray8.dir.x));
         EXPECT_FLOAT_EQ(rays[4].dir.y, simd::get<4>(ray8.dir.y));
-        EXPECT_FLOAT_EQ(rays[4].dir.x, simd::get<4>(ray8.dir.z));
+        EXPECT_FLOAT_EQ(rays[4].dir.z, simd::get<4>(ray8.dir.z));
         EXPECT_FLOAT_EQ(rays[5].dir.x, simd::get<5>(ray8.dir.x));
         EXPECT_FLOAT_EQ(rays[5].dir.y, simd::get<5>(ray8.dir.y));
-        EXPECT_FLOAT_EQ(rays[5].dir.x, simd::get<5>(ray8.dir.z));
+        EXPECT_FLOAT_EQ(rays[5].dir.z, simd::get<5>(ray8.dir.z));
         EXPECT_FLOAT_EQ(rays[6].dir.x, simd::get<6>(ray8.dir.x));
         EXPECT_FLOAT_EQ(rays[6].dir.y, simd::get<6>(ray8.dir.y));
-        EXPECT_FLOAT_EQ(rays[6].dir.x, simd::get<6>(ray8.dir.z));
+        EXPECT_FLOAT_EQ(rays[6].dir.z, simd::get<6>(ray8.dir.z));
         EXPECT_FLOAT_EQ(rays[7].dir.x, simd::get<7>(ray8.dir.x));
         EXPECT_FLOAT_EQ(rays[7].dir.y, simd::get<7>(ray8.dir.y));
-        EXPECT_FLOAT_EQ(rays[7].dir.x, simd::get<7>(ray8.dir.z));
+        EXPECT_FLOAT_EQ(rays[7].dir.z, simd::get<7>(ray8.dir.z));
     }
 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
