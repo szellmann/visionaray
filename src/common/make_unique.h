@@ -7,6 +7,7 @@
 #define VSNRAY_COMMON_MAKE_UNIQUE_H 1
 
 #include <memory>
+#include <utility>
 
 namespace visionaray
 {
