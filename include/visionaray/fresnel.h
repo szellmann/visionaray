@@ -15,7 +15,7 @@ namespace visionaray
 
 template <typename T>
 VSNRAY_FUNC
-spectrum<T> fresnel_reflectance(
+inline spectrum<T> fresnel_reflectance(
         conductor_tag       /* */,
         spectrum<T> const&  eta,
         spectrum<T> const&  k,

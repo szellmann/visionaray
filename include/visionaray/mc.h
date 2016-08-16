@@ -147,7 +147,7 @@ private:
 
 template <typename T>
 VSNRAY_FUNC
-vector<3, T> uniform_sample_hemisphere(T u1, T u2)
+inline vector<3, T> uniform_sample_hemisphere(T u1, T u2)
 {
     auto r   = sqrt( max(T(0.0), T(1.0) - u1 * u1) );
     auto phi = constants::two_pi<T>() * u2;
@@ -156,7 +156,7 @@ vector<3, T> uniform_sample_hemisphere(T u1, T u2)
 
 template <typename T>
 VSNRAY_FUNC
-vector<3, T> cosine_sample_hemisphere(T u1, T u2)
+inline vector<3, T> cosine_sample_hemisphere(T u1, T u2)
 {
     auto r     = sqrt(u1);
     auto theta = constants::two_pi<T>() * u2;
