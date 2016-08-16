@@ -6,6 +6,7 @@
 #ifndef VSNRAY_GET_SHADING_NORMAL
 #define VSNRAY_GET_SHADING_NORMAL 1
 
+#include <cstddef>
 #include <iterator>
 #include <type_traits>
 
