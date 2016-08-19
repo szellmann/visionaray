@@ -67,14 +67,14 @@ inline auto get_normal_pair(
         typename std::enable_if<num_normals<Primitive, NormalBinding>::value >= 2>::type* = 0
         )
     -> decltype( make_normal_pair(
-                get_normal(normals, hr, prim, NormalBinding{}),
-                get_shading_normal(normals, hr, prim, NormalBinding{})
+            get_normal(normals, hr, prim, NormalBinding{}),
+            get_shading_normal(normals, hr, prim, NormalBinding{})
             ) )
 {
     return make_normal_pair(
             get_normal(normals, hr, prim, NormalBinding{}),
             get_shading_normal(normals, hr, prim, NormalBinding{})
-        );
+            );
 }
 
 template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
@@ -269,19 +269,19 @@ auto get_normal_dispatch(
         typename std::enable_if<num_normals<typename Primitive::primitive_type, NormalBinding>::value == 1>::type* = 0
         )
     -> decltype( get_normal_pair(
-                normals,
-                static_cast<Base const&>(hr),
-                typename Primitive::primitive_type{},
-                NormalBinding{}
+            normals,
+            static_cast<Base const&>(hr),
+            typename Primitive::primitive_type{},
+            NormalBinding{}
             ) )
 {
     VSNRAY_UNUSED(bvhs);
 
     return get_normal_pair(
-                normals,
-                static_cast<Base const&>(hr),
-                typename Primitive::primitive_type{},
-                NormalBinding{}
+            normals,
+            static_cast<Base const&>(hr),
+            typename Primitive::primitive_type{},
+            NormalBinding{}
             );
 }
 
@@ -545,21 +545,7 @@ inline auto get_surface_impl(
         Params                          params
         )
     -> decltype( simd::pack( std::declval< std::array<decltype(
-                        get_surface_impl(
-                                NormalsTag{},
-                                ColorsTag{},
-                                TexturesTag{},
-                                NormalBinding{},
-                                ColorBinding{},
-                                std::declval< typename decltype(unpack(hr))::value_type >(),
-                                params
-                            )
-                    ), simd::num_elements<T>::value> >()
-                ) )
-{
-    auto hrs = unpack(hr);
-
-    std::array<decltype(get_surface_impl(
+            get_surface_impl(
                     NormalsTag{},
                     ColorsTag{},
                     TexturesTag{},
@@ -567,8 +553,24 @@ inline auto get_surface_impl(
                     ColorBinding{},
                     std::declval< typename decltype(unpack(hr))::value_type >(),
                     params
-                )
-        ), simd::num_elements<T>::value> surfs;
+                    )
+            ),
+            simd::num_elements<T>::value>>() ) )
+{
+    auto hrs = unpack(hr);
+
+    std::array<decltype(
+            get_surface_impl(
+                    NormalsTag{},
+                    ColorsTag{},
+                    TexturesTag{},
+                    NormalBinding{},
+                    ColorBinding{},
+                    std::declval< typename decltype(unpack(hr))::value_type >(),
+                    params
+                    )
+            ),
+            simd::num_elements<T>::value> surfs;
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
