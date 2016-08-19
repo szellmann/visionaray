@@ -22,16 +22,14 @@ namespace detail
 // Surface
 //
 
-struct surface_tag {};
+struct has_normals_tag      : std::true_type {};
+struct has_no_normals_tag   : std::false_type {};
 
-struct has_normals_tag      : surface_tag {};
-struct has_no_normals_tag   : surface_tag {};
+struct has_colors_tag       : std::true_type {};
+struct has_no_colors_tag    : std::false_type {};
 
-struct has_colors_tag       : surface_tag {};
-struct has_no_colors_tag    : surface_tag {};
-
-struct has_textures_tag     : surface_tag {};
-struct has_no_textures_tag  : surface_tag {};
+struct has_textures_tag     : std::true_type {};
+struct has_no_textures_tag  : std::false_type {};
 
 template <typename T>
 struct has_normals_impl
