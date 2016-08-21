@@ -250,71 +250,71 @@ inline auto get_normal_pair(
 //
 
 template <
-    typename Primitives,
+    typename Params,
     typename Normals,
     typename HR,
-    typename Primitive,
-    typename NormalBinding,
+    typename Primitive = typename Params::primitive_type,
+    typename NormalBinding = typename Params::normal_binding,
     typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 inline auto get_normal_dispatch(
-        Primitives      primitives,
+        Params const&   params,
         Normals         normals,
         HR const&       hr,
-        Primitive       /* */,
-        NormalBinding   /* */,
-        typename std::enable_if<num_normals<Primitive, NormalBinding>::value == 1>::type* = 0
+        typename std::enable_if<
+            num_normals<Primitive, NormalBinding>::value == 1
+            >::type* = 0
         )
     -> decltype( get_normal_pair(normals, hr, Primitive{}, NormalBinding{}) )
 {
-    VSNRAY_UNUSED(primitives);
+    VSNRAY_UNUSED(params);
 
     return get_normal_pair(normals, hr, Primitive{}, NormalBinding{});
 }
 
 template <
-    typename Primitives,
+    typename Params,
     typename Normals,
     typename HR,
-    typename Primitive,
-    typename NormalBinding,
+    typename Primitive = typename Params::primitive_type,
+    typename NormalBinding = typename Params::normal_binding,
     typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 inline auto get_normal_dispatch(
-        Primitives      primitives,
+        Params const&   params,
         Normals         normals,
         HR const&       hr,
-        Primitive       /* */,
-        NormalBinding   /* */,
-        typename std::enable_if<num_normals<Primitive, NormalBinding>::value != 1>::type* = 0
+        typename std::enable_if<
+            num_normals<Primitive, NormalBinding>::value != 1
+            >::type* = 0
         )
-    -> decltype( get_normal_pair(normals, hr, primitives[hr.prim_id], NormalBinding{}) )
+    -> decltype( get_normal_pair(normals, hr, params.prims.begin[hr.prim_id], NormalBinding{}) )
 {
-    return get_normal_pair(normals, hr, primitives[hr.prim_id], NormalBinding{});
+    return get_normal_pair(normals, hr, params.prims.begin[hr.prim_id], NormalBinding{});
 }
 
 // overload for BVHs
 template <
-    typename Primitives,
+    typename Params,
     typename Normals,
     typename R,
     typename BVH,
     typename Base,
-    typename Primitive,
-    typename NormalBinding,
+    typename Primitive = typename Params::primitive_type,
+    typename NormalBinding = typename Params::normal_binding,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_normal_dispatch(
-        Primitives                          bvhs,
+        Params const&                       params,
         Normals                             normals,
         hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           /* */,
-        NormalBinding                       /* */,
-        typename std::enable_if<num_normals<typename Primitive::primitive_type, NormalBinding>::value == 1>::type* = 0
+        typename std::enable_if<
+            num_normals<typename Primitive::primitive_type, NormalBinding>::value == 1
+            >::type* = 0
         )
     -> decltype( get_normal_pair(
                 normals,
@@ -323,7 +323,7 @@ auto get_normal_dispatch(
                 NormalBinding{}
             ) )
 {
-    VSNRAY_UNUSED(bvhs);
+    VSNRAY_UNUSED(params);
 
     return get_normal_pair(
                 normals,
@@ -334,24 +334,24 @@ auto get_normal_dispatch(
 }
 
 template <
-    typename Primitives,
+    typename Params,
     typename Normals,
     typename R,
     typename BVH,
     typename Base,
-    typename Primitive,
-    typename NormalBinding,
+    typename Primitive = typename Params::primitive_type,
+    typename NormalBinding = typename Params::normal_binding,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_normal_dispatch(
-        Primitives                          bvhs,
+        Params const&                       params,
         Normals                             normals,
         hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           /* */,
-        NormalBinding                       /* */,
-        typename std::enable_if<num_normals<typename Primitive::primitive_type, NormalBinding>::value != 1>::type* = 0
+        typename std::enable_if<
+            num_normals<typename Primitive::primitive_type, NormalBinding>::value != 1
+            >::type* = 0
         )
     -> decltype( get_normal_pair(
             normals,
@@ -364,16 +364,16 @@ auto get_normal_dispatch(
     size_t num_primitives_total = 0;
 
     size_t i = 0;
-    while (static_cast<size_t>(hr.prim_id) >= num_primitives_total + bvhs[i].num_primitives())
+    while (static_cast<size_t>(hr.prim_id) >= num_primitives_total + params.prims.begin[i].num_primitives())
     {
-        num_primitives_total += bvhs[i++].num_primitives();
+        num_primitives_total += params.prims.begin[i++].num_primitives();
     }
 
     return get_normal_pair(
             normals,
             static_cast<Base const&>(hr),
-            bvhs[i].primitive(hr.primitive_list_index),
-            NormalBinding{}
+            params.prims.begin[i].primitive(hr.primitive_list_index),
+            typename Params::normal_binding{}
             );
 }
 
@@ -393,9 +393,7 @@ inline auto get_surface_impl(
         )
     -> surface<typename Params::normal_type, typename Params::material_type>
 {
-    using P = typename Params::primitive_type;
-
-    auto ns = get_normal_dispatch(params.primitives, nullptr, hr, P{}, unspecified_binding{});
+    auto ns = get_normal_dispatch(params, nullptr, hr);
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
@@ -414,9 +412,7 @@ inline auto get_surface_impl(
         )
     -> surface<typename Params::normal_type, typename Params::material_type>
 {
-    using P = typename Params::primitive_type;
-
-    auto ns = get_normal_dispatch(params.prims.begin, params.normals, hr, P{}, typename Params::normal_binding{});
+    auto ns = get_normal_dispatch(params, params.normals, hr);
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
@@ -449,7 +445,7 @@ inline auto get_surface_impl(
                    ? C(visionaray::tex2D(tex, tc))
                    : C(1.0);
 
-    auto ns = get_normal_dispatch(params.prims.begin, params.normals, hr, P{}, typename Params::normal_binding{});
+    auto ns = get_normal_dispatch(params, params.normals, hr);
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
@@ -484,7 +480,7 @@ inline auto get_surface_impl(
                    ? C(visionaray::tex2D(tex, tc))
                    : C(1.0);
 
-    auto ns = get_normal_dispatch(params.prims.begin, nullptr, hr, P{}, unspecified_binding{});
+    auto ns = get_normal_dispatch(params, nullptr, hr);
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
@@ -519,7 +515,7 @@ inline auto get_surface_impl(
                    ? C(visionaray::tex2D(tex, tc))
                    : C(1.0);
 
-    auto ns = get_normal_dispatch(params.prims.begin, params.normals, hr, P{}, typename Params::normal_binding{});
+    auto ns = get_normal_dispatch(params, params.normals, hr);
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
