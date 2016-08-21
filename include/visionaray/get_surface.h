@@ -115,8 +115,8 @@ inline auto get_normal_pair(
         typename std::enable_if<num_normals<Primitive, NormalBinding>::value >= 2>::type* = 0
         )
     -> decltype( make_normal_pair(
-                get_normal(normals, hr, prim, NormalBinding{}),
-                get_shading_normal(normals, hr, prim, NormalBinding{})
+            get_normal(normals, hr, prim, NormalBinding{}),
+            get_shading_normal(normals, hr, prim, NormalBinding{})
             ) )
 {
     return make_normal_pair(
