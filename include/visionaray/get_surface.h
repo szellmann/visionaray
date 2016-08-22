@@ -308,7 +308,7 @@ template <
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
-auto get_normal_dispatch(
+inline auto get_normal_dispatch(
         Params const&                       params,
         Normals                             normals,
         hit_record_bvh<R, BVH, Base> const& hr,
@@ -345,7 +345,7 @@ template <
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
-auto get_normal_dispatch(
+inline auto get_normal_dispatch(
         Params const&                       params,
         Normals                             normals,
         hit_record_bvh<R, BVH, Base> const& hr,
