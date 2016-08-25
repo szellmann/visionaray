@@ -795,7 +795,7 @@ template <size_t Dim, typename T>
 MATH_FUNC
 inline size_t min_index(vector<Dim, T> const& u)
 {
-    size_t i = u.y < u.x ? 1 : 0;
+    size_t i = u[1] < u[0] ? 1 : 0;
 
     for (size_t n = 2; n < Dim; ++n)
     {
@@ -810,7 +810,7 @@ template <size_t Dim, typename T>
 MATH_FUNC
 inline size_t max_index(vector<Dim, T> const& u)
 {
-    size_t i = u.y < u.x ? 0 : 1;
+    size_t i = u[1] < u[0] ? 0 : 1;
 
     for (size_t n = 2; n < Dim; ++n)
     {
