@@ -63,6 +63,20 @@ TEST(Vector, Dot)
 }
 
 
+TEST(Vector, MinMaxIndex)
+{
+    float f[7] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f };
+    vector<7, float> vf(f);
+    auto mini    = min_index(vf);
+    auto maxi    = max_index(vf);
+    auto minmaxi = minmax_index(vf);
+    EXPECT_EQ(mini, 0U);
+    EXPECT_EQ(maxi, 6U);
+    EXPECT_EQ(minmaxi.x, mini);
+    EXPECT_EQ(minmaxi.y, maxi);
+}
+
+
 TEST(Vector, MinMaxElement)
 {
     // FPU
