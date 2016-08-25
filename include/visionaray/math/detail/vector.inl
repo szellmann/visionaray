@@ -844,7 +844,7 @@ template <size_t Dim, typename T>
 MATH_FUNC
 inline T min_element(vector<Dim, T> const& u)
 {
-    T result = u.x;
+    T result = u[0];
 
     for (size_t n = 1; n < Dim; ++n)
     {
@@ -863,7 +863,7 @@ template <size_t Dim, typename T>
 MATH_FUNC
 inline T max_element(vector<Dim, T> const& u)
 {
-    T result = u.x;
+    T result = u[0];
 
     for (size_t n = 1; n < Dim; ++n)
     {
