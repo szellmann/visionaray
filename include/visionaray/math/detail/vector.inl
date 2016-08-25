@@ -820,6 +820,25 @@ inline size_t max_index(vector<Dim, T> const& u)
     return i;
 }
 
+// Returns the indices of the smallest and largest elements of the vector
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<2, size_t> minmax_index(vector<Dim, T> const& u)
+{
+    vector<2, size_t> i(
+            u[1] < u[0] ? 1 : 0,
+            u[1] < u[0] ? 0 : 1
+            );
+
+    for (size_t n = 2; n < Dim; ++n)
+    {
+        i.x = u[n] < u[i.x] ? n : i.x;
+        i.y = u[n] < u[i.y] ? i.y : n;
+    }
+
+    return i;
+}
+
 // Returns the smallest element
 template <size_t Dim, typename T>
 MATH_FUNC
