@@ -877,6 +877,31 @@ inline T max_element(vector<Dim, T> const& u)
     return result;
 }
 
+// Returns the smallest and the largest element
+template <size_t Dim, typename T>
+MATH_FUNC
+inline vector<2, T> minmax_element(vector<Dim, T> const& u)
+{
+    vector<2, T> result(u[0]);
+
+    for (size_t n = 1; n < Dim; ++n)
+    {
+        result.x = select(
+                u[n] < result.x,
+                u[n],
+                result.x
+                );
+
+        result.y = select(
+                u[n] > result.y,
+                u[n],
+                result.y
+                );
+    }
+
+    return result;
+}
+
 template <size_t Dim, typename T>
 MATH_FUNC
 inline T hadd(vector<Dim, T> const& u)
