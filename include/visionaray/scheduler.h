@@ -243,7 +243,7 @@ auto make_sched_params(
             );
 }
 
-template <typename PxSamplerT, typename Intersector, typename MT, typename RT>
+template <typename PxSamplerT, typename MT, typename RT, typename Intersector>
 auto make_sched_params(
         PxSamplerT      /* */,
         MT const&       view_matrix,
