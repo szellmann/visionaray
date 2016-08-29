@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <algorithm>
 #include <cstring>
 #ifndef NDEBUG
 #include <iostream>
@@ -82,6 +83,18 @@ typename cpu_buffer_rt<ColorFormat, DepthFormat>::ref_type cpu_buffer_rt<ColorFo
             width(),
             height()
             );
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_color(typename cpu_buffer_rt<ColorFormat, DepthFormat>::color_type color)
+{
+    std::fill(impl_->color_buffer.begin(), impl_->color_buffer.end(), color);
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth(typename cpu_buffer_rt<ColorFormat, DepthFormat>::depth_type depth)
+{
+    std::fill(impl_->depth_buffer.begin(), impl_->depth_buffer.end(), depth);
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>

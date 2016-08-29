@@ -1,11 +1,15 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cassert>
 #include <stdexcept>
 
 #include <GL/glew.h>
 
 #include <cuda_gl_interop.h>
+
+#include <thrust/fill.h>
+#include <thrust/execution_policy.h>
 
 #include <visionaray/cuda/graphics_resource.h>
 #include <visionaray/gl/compositing.h>
@@ -91,6 +95,30 @@ template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::ref_type pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::ref()
 {
     return ref_type( color(), depth(), width(), height() );
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_color(typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::color_type c)
+{
+    assert(color() == 0 && "clear_color() called between begin_frame() and end_frame()");
+
+    begin_frame();
+
+    thrust::fill(thrust::device, color(), color() + width() * height(), c);
+
+    end_frame();
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_depth(typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::depth_type d)
+{
+    assert(depth() == 0 && "clear_depth() called between begin_frame() and end_frame()");
+
+    begin_frame();
+
+    thrust::fill(thrust::device, depth(), depth() + width() * height(), d);
+
+    end_frame();
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
