@@ -3,9 +3,6 @@
 
 #include <algorithm>
 #include <cstring>
-#ifndef NDEBUG
-#include <iostream>
-#endif
 
 #include <GL/glew.h>
 
