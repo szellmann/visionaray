@@ -214,6 +214,57 @@ TEST(ArrayCU, ThrustSwap)
 
 
 //-------------------------------------------------------------------------------------------------
+// Test comparisons
+//
+
+__global__ void kernel_compare(bool* result)
+{
+    const int N = 50;
+
+    array<int, N> arr1;
+    arr1.fill(23);
+
+    array<int, N> arr2;
+    arr2.fill(24);
+
+    array<int, N> arr3;
+    arr3.fill(23);
+
+    array<int, N> arr4;
+    array<int, N> arr5;
+    for (int i = 0; i < N; ++i)
+    {
+        arr4[i] = i;
+        arr5[i] = (i + 1) % N;
+    }
+
+    result[0] = ( arr1 == arr1 );
+    result[1] = ( arr1 != arr2 );
+    result[2] = ( arr2 != arr1 );
+    result[3] = ( arr1 == arr3 );
+    result[4] = ( arr3 == arr1 );
+    result[5] = ( arr4 != arr5 );
+    result[6] = ( arr5 != arr4 );
+}
+
+
+TEST(ArrayCU, Compare)
+{
+    thrust::device_vector<bool> d_result(7);
+    thrust::fill(d_result.begin(), d_result.end(), false);
+
+    kernel_compare<<<1, 1>>>(thrust::raw_pointer_cast(d_result.data()));
+
+    thrust::host_vector<bool> h_result(d_result);
+
+    for (auto b : h_result)
+    {
+        EXPECT_TRUE(b);
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Test element access with thrust::get()
 //
 

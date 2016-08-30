@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <algorithm>
 #include <cstddef>
 #include <cstring> // memcpy
 #include <numeric>
@@ -108,6 +109,47 @@ TEST(Array, StdSwap)
         EXPECT_EQ(arr1[i], 24);
         EXPECT_EQ(arr2[i], 23);
     }
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Test comparisons
+//
+
+TEST(Array, Compare)
+{
+    // int array
+
+    const int N = 50;
+
+    array<int, N> arr1;
+    arr1.fill(23);
+
+    array<int, N> arr2;
+    arr2.fill(24);
+
+    array<int, N> arr3;
+    arr3.fill(23);
+
+    array<int, N> arr4;
+    array<int, N> arr5;
+    for (int i = 0; i < N; ++i)
+    {
+        arr4[i] = i;
+        arr5[i] = (i + 1) % N;
+    }
+
+    EXPECT_TRUE(arr1 == arr1);
+    EXPECT_TRUE(arr1 != arr2);
+    EXPECT_TRUE(arr2 != arr1);
+    EXPECT_TRUE(arr1 == arr3);
+    EXPECT_TRUE(arr3 == arr1);
+    EXPECT_TRUE(arr4 != arr5);
+    EXPECT_TRUE(arr5 != arr4);
+
+    std::rotate(arr4.begin(), arr4.begin() + 1, arr4.end());
+    EXPECT_TRUE(arr4 == arr5);
+    EXPECT_TRUE(arr5 == arr4);
 }
 
 
