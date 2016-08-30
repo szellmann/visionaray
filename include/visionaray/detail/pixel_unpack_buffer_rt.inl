@@ -16,6 +16,8 @@
 #include <visionaray/gl/handle.h>
 #include <visionaray/gl/util.h>
 
+#include "color_conversion.h"
+
 
 namespace visionaray
 {
@@ -98,25 +100,43 @@ typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::ref_type pixel_unpack
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_color(typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::color_type c)
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_color(vec4 const& c)
 {
     assert(color() == 0 && "clear_color() called between begin_frame() and end_frame()");
 
+    // Convert from RGBA32F to internal color format
+    color_type cc;
+    convert(
+        pixel_format_constant<ColorFormat>{},
+        pixel_format_constant<PF_RGBA32F>{},
+        cc,
+        c
+        );
+
     begin_frame();
 
-    thrust::fill(thrust::device, color(), color() + width() * height(), c);
+    thrust::fill(thrust::device, color(), color() + width() * height(), cc);
 
     end_frame();
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_depth(typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::depth_type d)
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_depth(float d)
 {
     assert(depth() == 0 && "clear_depth() called between begin_frame() and end_frame()");
 
+    // Convert from DEPTH32F to internal depth format
+    depth_type dd;
+    convert(
+        pixel_format_constant<DepthFormat>{},
+        pixel_format_constant<PF_DEPTH32F>{},
+        dd,
+        d
+        );
+
     begin_frame();
 
-    thrust::fill(thrust::device, depth(), depth() + width() * height(), d);
+    thrust::fill(thrust::device, depth(), depth() + width() * height(), dd);
 
     end_frame();
 }

@@ -11,6 +11,8 @@
 #include <visionaray/gl/util.h>
 #include <visionaray/aligned_vector.h>
 
+#include "color_conversion.h"
+
 #define VSNRAY_CPU_BUFFER_TEX 1
 
 namespace visionaray
@@ -83,15 +85,33 @@ typename cpu_buffer_rt<ColorFormat, DepthFormat>::ref_type cpu_buffer_rt<ColorFo
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_color(typename cpu_buffer_rt<ColorFormat, DepthFormat>::color_type color)
+void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_color(vec4 const& c)
 {
-    std::fill(impl_->color_buffer.begin(), impl_->color_buffer.end(), color);
+    // Convert from RGBA32F to internal color format
+    color_type cc;
+    convert(
+        pixel_format_constant<ColorFormat>{},
+        pixel_format_constant<PF_RGBA32F>{},
+        cc,
+        c
+        );
+
+    std::fill(impl_->color_buffer.begin(), impl_->color_buffer.end(), cc);
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth(typename cpu_buffer_rt<ColorFormat, DepthFormat>::depth_type depth)
+void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth(float d)
 {
-    std::fill(impl_->depth_buffer.begin(), impl_->depth_buffer.end(), depth);
+    // Convert from DEPTH32F to internal depth format
+    depth_type dd;
+    convert(
+        pixel_format_constant<DepthFormat>{},
+        pixel_format_constant<PF_DEPTH32F>{},
+        dd,
+        d
+        );
+
+    std::fill(impl_->depth_buffer.begin(), impl_->depth_buffer.end(), dd);
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>

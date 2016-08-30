@@ -38,8 +38,8 @@ public:
 
     ref_type ref();
 
-    void clear_color(color_type color = color_type(0.0));
-    void clear_depth(depth_type depth = depth_type(1.0));
+    void clear_color(vec4 const& color = vec4(0.0f));
+    void clear_depth(float depth = 1.0f);
     void begin_frame();
     void end_frame();
     void resize(size_t w, size_t h);
