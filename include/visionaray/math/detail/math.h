@@ -27,6 +27,7 @@ using std::atan;
 using std::ceil;
 using std::copysign;
 using std::cos;
+using std::exp;
 using std::floor;
 using std::isfinite;
 using std::isinf;
