@@ -329,7 +329,7 @@ VSNRAY_FORCE_INLINE T log2(T const& x)
 
 
 //-------------------------------------------------------------------------------------------------
-// cos() / sin()
+// Trigonometric functions
 // TODO: implement w/o context switch
 //
 
@@ -347,6 +347,38 @@ VSNRAY_FORCE_INLINE float4 sin(float4 const& x)
     store(tmp, x);
 
     return float4( std::sin(tmp[0]), std::sin(tmp[1]), std::sin(tmp[2]), std::sin(tmp[3]) );
+}
+
+VSNRAY_FORCE_INLINE float4 tan(float4 const& x)
+{
+    VSNRAY_ALIGN(16) float tmp[4];
+    store(tmp, x);
+
+    return float4( std::tan(tmp[0]), std::tan(tmp[1]), std::tan(tmp[2]), std::sin(tmp[3]) );
+}
+
+VSNRAY_FORCE_INLINE float4 acos(float4 const& x)
+{
+    VSNRAY_ALIGN(16) float tmp[4];
+    store(tmp, x);
+
+    return float4( std::acos(tmp[0]), std::acos(tmp[1]), std::acos(tmp[2]), std::acos(tmp[3]) );
+}
+
+VSNRAY_FORCE_INLINE float4 asin(float4 const& x)
+{
+    VSNRAY_ALIGN(16) float tmp[4];
+    store(tmp, x);
+
+    return float4( std::asin(tmp[0]), std::asin(tmp[1]), std::asin(tmp[2]), std::asin(tmp[3]) );
+}
+
+VSNRAY_FORCE_INLINE float4 atan(float4 const& x)
+{
+    VSNRAY_ALIGN(16) float tmp[4];
+    store(tmp, x);
+
+    return float4( std::atan(tmp[0]), std::atan(tmp[1]), std::atan(tmp[2]), std::asin(tmp[3]) );
 }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -372,6 +404,50 @@ VSNRAY_FORCE_INLINE float8 sin(float8 const& x)
     return float8(
         std::sin(tmp[0]), std::sin(tmp[1]), std::sin(tmp[2]), std::sin(tmp[3]),
         std::sin(tmp[4]), std::sin(tmp[5]), std::sin(tmp[6]), std::sin(tmp[7])
+        );
+}
+
+VSNRAY_FORCE_INLINE float8 tan(float8 const& x)
+{
+    VSNRAY_ALIGN(32) float tmp[8];
+    store(tmp, x);
+
+    return float8(
+        std::tan(tmp[0]), std::tan(tmp[1]), std::tan(tmp[2]), std::tan(tmp[3]),
+        std::tan(tmp[4]), std::tan(tmp[5]), std::tan(tmp[6]), std::tan(tmp[7])
+        );
+}
+
+VSNRAY_FORCE_INLINE float8 acos(float8 const& x)
+{
+    VSNRAY_ALIGN(32) float tmp[8];
+    store(tmp, x);
+
+    return float8(
+        std::acos(tmp[0]), std::acos(tmp[1]), std::acos(tmp[2]), std::acos(tmp[3]),
+        std::acos(tmp[4]), std::acos(tmp[5]), std::acos(tmp[6]), std::acos(tmp[7])
+        );
+}
+
+VSNRAY_FORCE_INLINE float8 asin(float8 const& x)
+{
+    VSNRAY_ALIGN(32) float tmp[8];
+    store(tmp, x);
+
+    return float8(
+        std::asin(tmp[0]), std::asin(tmp[1]), std::asin(tmp[2]), std::asin(tmp[3]),
+        std::asin(tmp[4]), std::asin(tmp[5]), std::asin(tmp[6]), std::asin(tmp[7])
+        );
+}
+
+VSNRAY_FORCE_INLINE float8 atan(float8 const& x)
+{
+    VSNRAY_ALIGN(32) float tmp[8];
+    store(tmp, x);
+
+    return float8(
+        std::atan(tmp[0]), std::atan(tmp[1]), std::atan(tmp[2]), std::atan(tmp[3]),
+        std::atan(tmp[4]), std::atan(tmp[5]), std::atan(tmp[6]), std::atan(tmp[7])
         );
 }
 

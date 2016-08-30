@@ -21,6 +21,9 @@ namespace MATH_NAMESPACE
 //
 
 using std::abs;
+using std::acos;
+using std::asin;
+using std::atan;
 using std::ceil;
 using std::copysign;
 using std::cos;
