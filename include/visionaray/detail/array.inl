@@ -19,6 +19,10 @@
 namespace visionaray
 {
 
+//-------------------------------------------------------------------------------------------------
+// array members
+//
+
 template <typename T, size_t N>
 VSNRAY_FUNC
 inline T& array<T, N>::at(size_t pos)
@@ -231,6 +235,35 @@ inline void array<T, N>::swap(array<T, N>& rhs)
         swap(data_[i], rhs.data_[i]);
     }
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+bool operator==(array<T, N> const& a, array<T, N> const& b)
+{
+    for (size_t i = 0; i < N; ++i)
+    {
+        if (a[i] != b[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
+bool operator!=(array<T, N> const& a, array<T, N> const& b)
+{
+    return !(a == b);
+}
+
+// TODO: lexicographic comparisons!
 
 } // visionaray
 
