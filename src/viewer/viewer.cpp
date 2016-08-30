@@ -166,7 +166,7 @@ struct renderer : viewer_type
 
     int                                     w               = 800;
     int                                     h               = 800;
-    unsigned                                frame           = 0;
+    unsigned                                frame_num       = 0;
     unsigned                                ssaa_samples    = 1;
     algorithm                               algo            = Simple;
     device_type                             dev_type        = CPU;
@@ -215,6 +215,7 @@ protected:
 
 private:
 
+    void clear_frame();
     void render_hud();
     void render_hud_ext();
 
@@ -243,6 +244,23 @@ std::ostream& operator<<(std::ostream& out, camera const& cam)
     out << cam.center() << '\n';
     out << cam.up() << '\n';
     return out;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// If path tracing, clear frame buffer and reset frame counter
+//
+
+void renderer::clear_frame()
+{
+    if (algo == Pathtracing)
+    {
+        frame_num = 0;
+        host_rt.clear_color();
+#ifdef __CUDACC__
+        device_rt.clear_color();
+#endif
+    }
 }
 
 
@@ -397,7 +415,7 @@ void renderer::render_hud_ext()
     }
 
     stream.str(std::string());
-    stream << "SPP: " << max(1U, frame);
+    stream << "SPP: " << max(1U, frame_num);
     str = stream.str();
     glRasterPos2i(300, h * 2 - 102);
     for (size_t i = 0; i < str.length(); ++i)
@@ -475,7 +493,7 @@ void renderer::on_display()
                 algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                 );
 
-        call_kernel( algo, device_sched, kparams, frame, ssaa_samples, cam, device_rt );
+        call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, device_rt );
 #endif
     }
     else if (dev_type == renderer::CPU)
@@ -501,7 +519,7 @@ void renderer::on_display()
                 algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                 );
 
-        call_kernel( algo, host_sched, kparams, frame, ssaa_samples, cam, host_rt );
+        call_kernel( algo, host_sched, kparams, frame_num, ssaa_samples, cam, host_rt );
 #endif
     }
 
@@ -573,21 +591,21 @@ void renderer::on_key_press(key_event const& event)
         std::cout << "Switching algorithm: simple\n";
         algo = Simple;
         counter.reset();
-        frame = 0;
+        clear_frame();
         break;
 
     case '2':
         std::cout << "Switching algorithm: whitted\n";
         algo = Whitted;
         counter.reset();
-        frame = 0;
+        clear_frame();
         break;
 
     case '3':
         std::cout << "Switching algorithm: path tracing\n";
         algo = Pathtracing;
         counter.reset();
-        frame = 0;
+        clear_frame();
         break;
 
     case 'b':
@@ -611,7 +629,7 @@ void renderer::on_key_press(key_event const& event)
             dev_type = renderer::CPU;
         }
         counter.reset();
-        frame = 0;
+        clear_frame();
 #endif
         break;
 
@@ -623,6 +641,7 @@ void renderer::on_key_press(key_event const& event)
         }
         std::cout << "Use " << ssaa_samples << "x supersampling anti-aliasing\n";
         counter.reset();
+        clear_frame();
         break;
 
     case 'u':
@@ -643,7 +662,7 @@ void renderer::on_key_press(key_event const& event)
             {
                 file >> cam;
                 counter.reset();
-                frame = 0;
+                clear_frame();
                 std::cout << "Load camera from file: " << camera_filename << '\n';
             }
         }
@@ -660,7 +679,7 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 {
     if (event.get_buttons() != mouse::NoButton)
     {
-        frame = 0;
+        clear_frame();
     }
 
     mouse_pos = event.get_pos();
@@ -669,8 +688,6 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 
 void renderer::on_resize(int w, int h)
 {
-    frame = 0;
-
     cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
     cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
@@ -678,6 +695,7 @@ void renderer::on_resize(int w, int h)
 #ifdef __CUDACC__
     device_rt.resize(w, h);
 #endif
+    clear_frame();
     viewer_type::on_resize(w, h);
 }
 

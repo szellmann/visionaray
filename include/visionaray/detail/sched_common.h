@@ -481,23 +481,10 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = typename decltype(invoke_kernel(kernel, r, samp, x, y))::color_type;
 
     auto result = invoke_kernel(kernel, r, samp, x, y);
     auto alpha  = S(1.0) / S(frame_num);
-    if (frame_num <= 1)
-    {//TODO: clear method in render target?
-        pixel_access::store(
-                pixel_format_constant<CF>{},
-                pixel_format_constant<PF_RGBA32F>{},
-                x,
-                y,
-                width,
-                height,
-                Color(0.0),
-                rt_ref.color()
-                );
-    }
+
     pixel_access::blend(
             pixel_format_constant<CF>{},
             pixel_format_constant<PF_RGBA32F>{},
@@ -541,22 +528,6 @@ inline void sample_pixel_impl(
 
     result.depth = select( result.hit, depth_transform(result.isect_pos, args...), S(1.0) );
 
-    if (frame_num <= 1)
-    {//TODO: clear method in render target?
-        pixel_access::store(
-                pixel_format_constant<CF>{},
-                pixel_format_constant<PF_RGBA32F>{},
-                pixel_format_constant<DF>{},
-                pixel_format_constant<PF_DEPTH32F>{},
-                x,
-                y,
-                width,
-                height,
-                result,
-                rt_ref.color(),
-                rt_ref.depth()
-                );
-    }
     pixel_access::blend(
             pixel_format_constant<CF>{},
             pixel_format_constant<PF_RGBA32F>{},
@@ -604,7 +575,6 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = typename decltype(invoke_kernel(kernel, R{}, samp, x, y))::color_type;
 
     auto ray_ptr = rays.data();
 
@@ -613,20 +583,6 @@ inline void sample_pixel_impl(
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
-        if (frame <= 1)
-        {//TODO: clear method in render target?
-            pixel_access::store(
-                    pixel_format_constant<CF>{},
-                    pixel_format_constant<PF_RGBA32F>{},
-                    x,
-                    y,
-                    width,
-                    height,
-                    Color(0.0),
-                    rt_ref.color()
-                    );
-        }
-
         auto result = invoke_kernel(kernel, *ray_ptr++, samp, x, y);
         auto alpha = S(1.0) / S(frame);
         pixel_access::blend(
@@ -675,24 +631,11 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S     = typename R::scalar_type;
-    using Color = typename decltype(invoke_kernel(kernel, R{}, samp, x, y))::color_type;
 
     auto ray_ptr = rays.data();
 
     auto frame_begin = 0;
     auto frame_end   = Num;
-
-    //TODO: clear method in render target?
-    pixel_access::store(
-            pixel_format_constant<CF>{},
-            pixel_format_constant<PF_RGBA32F>{},
-            x,
-            y,
-            width,
-            height,
-            Color(0.0),
-            rt_ref.color()
-            );
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
@@ -740,27 +683,11 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(args...);
 
     using S      = typename R::scalar_type;
-    using Result = decltype(invoke_kernel(kernel, R{}, samp, x, y));
 
     auto ray_ptr = rays.data();
 
     auto frame_begin = frame_num;
     auto frame_end   = frame_num + Num;
-
-    //TODO: clear method in render target?
-    pixel_access::store(
-            pixel_format_constant<CF>{},
-            pixel_format_constant<PF_RGBA32F>{},
-            pixel_format_constant<DF>{},
-            pixel_format_constant<PF_DEPTH32F>{},
-            x,
-            y,
-            width,
-            height,
-            Result{},
-            rt_ref.color(),
-            rt_ref.depth()
-            );
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
