@@ -167,28 +167,33 @@ inline auto specular_bounce(
     return apply_visitor(visitor<V>(view_dir, normal), mat);
 }
 
-template <typename ...Ts>
+template <
+    size_t N,
+    typename ...Ts,
+    typename T,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    >
 inline auto specular_bounce(
-        simd::generic_material4<Ts...> const&   mat,
-        vector<3, simd::float4> const&          view_dir,
-        vector<3, simd::float4> const&          normal
+        simd::generic_material<N, Ts...> const& mat,
+        vector<3, T> const&                     view_dir,
+        vector<3, T> const&                     normal
         )
-    -> bounce_result<vector<3, simd::float4>, simd::float4>
+    -> bounce_result<vector<3, T>, T>
 {
-    using float_array = typename simd::aligned_array<simd::float4>::type;
+    using float_array = typename simd::aligned_array<T>::type;
 
-    auto m4  = unpack(mat);
-    auto vd4 = unpack(view_dir);
-    auto n4  = unpack(normal);
+    auto ms  = unpack(mat);
+    auto vds = unpack(view_dir);
+    auto ns  = unpack(normal);
 
-    std::array<vector<3, float>, 4> refl_dir;
-    std::array<vector<3, float>, 4> refr_dir;
+    std::array<vector<3, float>, N> refl_dir;
+    std::array<vector<3, float>, N> refr_dir;
     float_array                     kr;
     float_array                     kt;
 
-    for (size_t i = 0; i < 4; ++i)
+    for (size_t i = 0; i < N; ++i)
     {
-        auto res = specular_bounce(m4[i], vd4[i], n4[i]);
+        auto res = specular_bounce(ms[i], vds[i], ns[i]);
         refl_dir[i] = res.reflected_dir;
         refr_dir[i] = res.refracted_dir;
         kr[i]       = res.kr;
@@ -198,50 +203,10 @@ inline auto specular_bounce(
     return make_bounce_result(
         simd::pack(refl_dir),
         simd::pack(refr_dir),
-        simd::float4(kr),
-        simd::float4(kt)
+        T(kr),
+        T(kt)
         );
 }
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-template <typename ...Ts>
-inline auto specular_bounce(
-        simd::generic_material8<Ts...> const&   mat,
-        vector<3, simd::float8> const&          view_dir,
-        vector<3, simd::float8> const&          normal
-        )
-    -> bounce_result<vector<3, simd::float8>, simd::float8>
-{
-    using float_array = typename simd::aligned_array<simd::float8>::type;
-
-    auto m8  = unpack(mat);
-    auto vd8 = unpack(view_dir);
-    auto n8  = unpack(normal);
-
-    std::array<vector<3, float>, 8> refl_dir;
-    std::array<vector<3, float>, 8> refr_dir;
-    float_array                     kr;
-    float_array                     kt;
-
-    for (size_t i = 0; i < 8; ++i)
-    {
-        auto res = specular_bounce(m8[i], vd8[i], n8[i]);
-        refl_dir[i] = res.reflected_dir;
-        refr_dir[i] = res.refracted_dir;
-        kr[i]       = res.kr;
-        kt[i]       = res.kt;
-    }
-
-    return make_bounce_result(
-        simd::pack(refl_dir),
-        simd::pack(refr_dir),
-        simd::float8(kr),
-        simd::float8(kt)
-        );
-}
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 } // detail
 

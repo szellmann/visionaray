@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <array>
+#include <cstddef>
 
 #include <visionaray/material.h>
 
@@ -144,30 +145,34 @@ struct generic_material<T, Ts...>::sample_visitor
 namespace simd
 {
 
+template <size_t N, typename ...Ts>
+class generic_material;
+
 //-------------------------------------------------------------------------------------------------
 // SSE type used internally. Contains four generic materials
 //
 
 template <typename ...Ts>
-class generic_material4
+class generic_material<4, Ts...>
 {
 public:
 
-    using scalar_type = simd::float4;
+    using scalar_type      = simd::float4;
+    using single_material  = visionaray::generic_material<Ts...>;
 
 public:
 
-    generic_material4(std::array<generic_material<Ts...>, 4> const& mats)
+    generic_material(std::array<single_material, 4> const& mats)
         : mats_(mats)
     {
     }
 
-    generic_material<Ts...>& get(int i)
+    single_material& get(int i)
     {
         return mats_[i];
     }
 
-    generic_material<Ts...> const& get(int i) const
+    single_material const& get(int i) const
     {
         return mats_[i];
     }
@@ -239,7 +244,7 @@ public:
 
 private:
 
-    std::array<generic_material<Ts...>, 4> mats_;
+    std::array<single_material, 4> mats_;
 
 };
 
@@ -250,25 +255,26 @@ private:
 //
 
 template <typename ...Ts>
-class generic_material8
+class generic_material<8, Ts...>
 {
 public:
 
-    using scalar_type = simd::float8;
+    using scalar_type     = simd::float8;
+    using single_material = visionaray::generic_material<Ts...>;
 
 public:
 
-    generic_material8(std::array<generic_material<Ts...>, 8> const& mats)
+    generic_material(std::array<single_material, 8> const& mats)
         : mats_(mats)
     {
     }
 
-    generic_material<Ts...>& get(int i)
+    single_material& get(int i)
     {
         return mats_[i];
     }
 
-    generic_material<Ts...> const& get(int i) const
+    single_material const& get(int i) const
     {
         return mats_[i];
     }
@@ -344,7 +350,7 @@ public:
 
 private:
 
-    std::array<generic_material<Ts...>, 8> mats_;
+    std::array<single_material, 8> mats_;
 
 };
 
@@ -356,29 +362,29 @@ private:
 //
 
 template <typename ...Ts>
-inline generic_material4<Ts...> pack(std::array<generic_material<Ts...>, 4> const& mats)
+inline generic_material<4, Ts...> pack(std::array<visionaray::generic_material<Ts...>, 4> const& mats)
 {
-    return generic_material4<Ts...>(mats);
+    return generic_material<4, Ts...>(mats);
 }
 
 template <typename ...Ts>
-inline std::array<generic_material<Ts...>, 4> unpack(generic_material4<Ts...> const& m4)
+inline std::array<visionaray::generic_material<Ts...>, 4> unpack(generic_material<4, Ts...> const& m4)
 {
-    return std::array<generic_material<Ts...>, 4>{{ m4.get(0), m4.get(1), m4.get(2), m4.get(3) }};
+    return std::array<visionaray::generic_material<Ts...>, 4>{{ m4.get(0), m4.get(1), m4.get(2), m4.get(3) }};
 }
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 template <typename ...Ts>
-inline generic_material8<Ts...> pack(std::array<generic_material<Ts...>, 8> const& mats)
+inline generic_material<8, Ts...> pack(std::array<visionaray::generic_material<Ts...>, 8> const& mats)
 {
-    return generic_material8<Ts...>(mats);
+    return generic_material<8, Ts...>(mats);
 }
 
 template <typename ...Ts>
-inline std::array<generic_material<Ts...>, 8> unpack(generic_material8<Ts...> const& m8)
+inline std::array<visionaray::generic_material<Ts...>, 8> unpack(generic_material<8, Ts...> const& m8)
 {
-    return std::array<generic_material<Ts...>, 8>{{
+    return std::array<visionaray::generic_material<Ts...>, 8>{{
             m8.get(0), m8.get(1), m8.get(2), m8.get(3),
             m8.get(4), m8.get(5), m8.get(6), m8.get(7)
             }};
