@@ -7,6 +7,7 @@
 #define VSNRAY_WHITTED_INL 1
 
 #include <array>
+#include <cstddef>
 
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
