@@ -166,7 +166,7 @@ template <
     typename Cond
     >
 VSNRAY_FUNC
-void update_if(HR1& dst, HR2 const& src, Cond const& cond)
+inline void update_if(HR1& dst, HR2 const& src, Cond const& cond)
 {
     VSNRAY_UNUSED(cond);
 
@@ -177,7 +177,7 @@ void update_if(HR1& dst, HR2 const& src, Cond const& cond)
 // disable_if<MultiHit> the more general update_if overload
 template <typename HR, size_t N, typename Cond>
 VSNRAY_FUNC
-void update_if(array<HR, N>& dst, array<HR, N> const& src, Cond const& cond)
+inline void update_if(array<HR, N>& dst, array<HR, N> const& src, Cond const& cond)
 {
     VSNRAY_UNUSED(cond);
 
@@ -215,7 +215,7 @@ template <
     typename T
     >
 VSNRAY_FUNC
-simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T max_t)
+inline simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T max_t)
 {
     using RT = simd::mask_type_t<T>;
 
@@ -243,7 +243,7 @@ template <
     typename T
     >
 VSNRAY_FUNC
-simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T max_t)
+inline simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T max_t)
 {
     VSNRAY_UNUSED(query, reference, max_t);
 
