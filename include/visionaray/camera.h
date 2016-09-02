@@ -6,7 +6,10 @@
 #ifndef VSNRAY_CAMERA_H
 #define VSNRAY_CAMERA_H 1
 
-#include "math/math.h"
+#include "math/aabb.h"
+#include "math/matrix.h"
+#include "math/rectangle.h"
+#include "math/vector.h"
 
 namespace visionaray
 {

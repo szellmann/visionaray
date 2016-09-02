@@ -7,6 +7,7 @@
 #define VSNRAY_ARRAY_REF_H 1
 
 #include <cassert>
+#include <cstddef>
 #include <algorithm>
 #include <type_traits>
 #include <vector>

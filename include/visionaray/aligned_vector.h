@@ -4,8 +4,9 @@
 #pragma once
 
 #ifndef VSNRAY_ALIGNED_VECTOR_H
-#define VSNRAY_ALIGNED_VECTOR_H
+#define VSNRAY_ALIGNED_VECTOR_H 1
 
+#include <cstddef>
 #include <vector>
 
 #include "detail/allocator.h"

@@ -11,7 +11,6 @@
 #include "brdf.h"
 #include "shade_record.h"
 #include "spectrum.h"
-#include "variant.h"
 
 
 namespace visionaray

@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "bvh.h"
-#include "generic_material.h"
 #include "generic_primitive.h"
 #include "get_color.h"
 #include "get_normal.h"
