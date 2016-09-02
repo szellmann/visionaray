@@ -145,24 +145,21 @@ struct generic_material<T, Ts...>::sample_visitor
 namespace simd
 {
 
-template <size_t N, typename ...Ts>
-class generic_material;
-
 //-------------------------------------------------------------------------------------------------
-// SSE type used internally. Contains four generic materials
+// SIMD type used internally. Contains N generic materials
 //
 
-template <typename ...Ts>
-class generic_material<4, Ts...>
+template <size_t N, typename ...Ts>
+class generic_material
 {
 public:
 
-    using scalar_type      = simd::float4;
+    using scalar_type      = typename float_from_simd_width<N>::type;
     using single_material  = visionaray::generic_material<Ts...>;
 
 public:
 
-    generic_material(std::array<single_material, 4> const& mats)
+    generic_material(std::array<single_material, N> const& mats)
         : mats_(mats)
     {
     }
@@ -177,184 +174,81 @@ public:
         return mats_[i];
     }
 
-    simd::mask4 is_emissive() const
+    typename mask_type<scalar_type>::type is_emissive() const
     {
-        return simd::mask4(
-                mats_[0].is_emissive(),
-                mats_[1].is_emissive(),
-                mats_[2].is_emissive(),
-                mats_[3].is_emissive()
-                );
-    }
+        using mask_t = typename mask_type<scalar_type>::type;
+        using mask_array = typename aligned_array<mask_t>::type;
 
-    spectrum<simd::float4> ambient() const
-    {
-        std::array<spectrum<float>, 4> amb;
+        mask_array arr;
 
         for (size_t i = 0; i < 4; ++i)
+        {
+            arr[i] = mats_[i].is_emissive();
+        }
+
+        return mask_t(arr);
+    }
+
+    spectrum<scalar_type> ambient() const
+    {
+        std::array<spectrum<float>, N> amb;
+
+        for (size_t i = 0; i < N; ++i)
         {
             amb[i] = mats_[i].ambient();
         }
 
-        return simd::pack(amb);
+        return pack(amb);
     }
 
 
     template <typename SR>
-    spectrum<simd::float4> shade(SR const& sr) const
+    spectrum<scalar_type> shade(SR const& sr) const
     {
-        auto sr4 = unpack(sr);
+        auto srs = unpack(sr);
 
-        std::array<spectrum<float>, 4> shaded;
+        std::array<spectrum<float>, N> shaded;
 
-        for (size_t i = 0; i < 4; ++i)
+        for (size_t i = 0; i < N; ++i)
         {
-            shaded[i] = mats_[i].shade(sr4[i]);
+            shaded[i] = mats_[i].shade(srs[i]);
         }
 
-        return simd::pack(shaded);
+        return pack(shaded);
     }
 
     template <typename SR, typename S /* sampler */>
     spectrum<simd::float4> sample(
-            SR const&                   sr,
-            vector<3, simd::float4>&    refl_dir,
-            simd::float4&               pdf,
-            S&                          samp
+            SR const&               sr,
+            vector<3, scalar_type>& refl_dir,
+            simd::float4&           pdf,
+            S&                      samp
             ) const
     {
-        using float_array = typename simd::aligned_array<simd::float4>::type;
+        using float_array = typename aligned_array<scalar_type>::type;
 
-        auto sr4 = unpack(sr);
+        auto srs = unpack(sr);
         auto& s = samp.get_sampler();
 
-        std::array<vector<3, float>, 4> rd4;
-        float_array                     pdf4;
-        std::array<spectrum<float>, 4>  sampled;
+        std::array<vector<3, float>, N> rds;
+        float_array                     pdfs;
+        std::array<spectrum<float>, N>  sampled;
 
-        for (size_t i = 0; i < 4; ++i)
+        for (size_t i = 0; i < N; ++i)
         {
-            sampled[i] = mats_[i].sample(sr4[i], rd4[i], pdf4[i], s);
+            sampled[i] = mats_[i].sample(srs[i], rds[i], pdfs[i], s);
         }
 
-        refl_dir = simd::pack(rd4);
-        pdf = simd::float4(pdf4);
-        return simd::pack(sampled);
+        refl_dir = pack(rds);
+        pdf = scalar_type(pdfs);
+        return pack(sampled);
     }
 
 private:
 
-    std::array<single_material, 4> mats_;
+    std::array<single_material, N> mats_;
 
 };
-
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
-
-//-------------------------------------------------------------------------------------------------
-// AVX type used internally. Contains eight generic materials
-//
-
-template <typename ...Ts>
-class generic_material<8, Ts...>
-{
-public:
-
-    using scalar_type     = simd::float8;
-    using single_material = visionaray::generic_material<Ts...>;
-
-public:
-
-    generic_material(std::array<single_material, 8> const& mats)
-        : mats_(mats)
-    {
-    }
-
-    single_material& get(int i)
-    {
-        return mats_[i];
-    }
-
-    single_material const& get(int i) const
-    {
-        return mats_[i];
-    }
-
-    simd::mask8 is_emissive() const
-    {
-        return simd::mask8(
-                mats_[0].is_emissive(),
-                mats_[1].is_emissive(),
-                mats_[2].is_emissive(),
-                mats_[3].is_emissive(),
-                mats_[4].is_emissive(),
-                mats_[5].is_emissive(),
-                mats_[6].is_emissive(),
-                mats_[7].is_emissive()
-                );
-    }
-
-    spectrum<simd::float8> ambient() const
-    {
-        std::array<spectrum<float>, 8> amb;
-
-        for (size_t i = 0; i < 8; ++i)
-        {
-            amb[i] = mats_[i].ambient();
-        }
-
-        return simd::pack(amb);
-    }
-
-
-    template <typename SR>
-    spectrum<simd::float8> shade(SR const& sr) const
-    {
-        auto sr8 = unpack(sr);
-
-        std::array<spectrum<float>, 8> shaded;
-
-        for (size_t i = 0; i < 8; ++i)
-        {
-            shaded[i] = mats_[i].shade(sr8[i]);
-        }
-
-        return simd::pack(shaded);
-    }
-
-    template <typename SR, typename S /* sampler */>
-    spectrum<simd::float8> sample(
-            SR const&                   sr,
-            vector<3, simd::float8>&    refl_dir,
-            simd::float8&               pdf,
-            S&                          samp
-            ) const
-    {
-        using float_array = typename simd::aligned_array<simd::float8>::type;
-
-        auto sr8 = unpack(sr);
-        auto& s = samp.get_sampler();
-
-        std::array<vector<3, float>, 8> rd8;
-        float_array                     pdf8;
-        std::array<spectrum<float>, 8>  sampled;
-
-        for (size_t i = 0; i < 8; ++i)
-        {
-            sampled[i] = mats_[i].sample(sr8[i], rd8[i], pdf8[i], s);
-        }
-
-        refl_dir = simd::pack(rd8);
-        pdf = simd::float8(pdf8);
-        return simd::pack(sampled);
-    }
-
-private:
-
-    std::array<single_material, 8> mats_;
-
-};
-
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
 //-------------------------------------------------------------------------------------------------
