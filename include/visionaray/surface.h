@@ -17,9 +17,6 @@ namespace visionaray
 template <typename ...Args>
 class surface;
 
-template <typename ...Args>
-class surface;
-
 template <typename N, typename M>
 class surface<N, M>
 {
