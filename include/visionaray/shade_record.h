@@ -20,7 +20,7 @@ template <typename L, typename T, typename ...Args>
 struct shade_record_base
 {
     using scalar_type = T;
-    using mask_type = typename simd::mask_type<T>::type;
+    using mask_type = simd::mask_type_t<T>;
 
     mask_type active;
     vector<3, T> isect_pos;
@@ -53,14 +53,14 @@ template <
     typename T,
     typename = typename std::enable_if<is_simd_vector<T>::value>::type,
     typename = typename std::enable_if<
-        std::is_floating_point<typename element_type<T>::type>::value
+        std::is_floating_point<element_type_t<T>>::value
         >::type
     >
 inline std::array<shade_record<L, float>, num_elements<T>::value> unpack(
         shade_record<L, T> const& sr
         )
 {
-    using int_array = typename aligned_array<typename int_type<T>::type>::type;
+    using int_array = aligned_array_t<int_type_t<T>>;
 
     auto isect_pos  = unpack(sr.isect_pos);
     auto normal     = unpack(sr.normal);
@@ -95,14 +95,14 @@ template <
     typename T,
     typename = typename std::enable_if<is_simd_vector<T>::value>::type,
     typename = typename std::enable_if<
-        std::is_floating_point<typename element_type<T>::type>::value
+        std::is_floating_point<element_type_t<T>>::value
         >::type
     >
 inline std::array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> unpack(
         shade_record<L, vector<3, T>, T> const& sr
         )
 {
-    using int_array = typename aligned_array<typename int_type<T>::type>::type;
+    using int_array = aligned_array_t<int_type_t<T>>;
 
     auto isect_pos  = unpack(sr.isect_pos);
     auto normal     = unpack(sr.normal);

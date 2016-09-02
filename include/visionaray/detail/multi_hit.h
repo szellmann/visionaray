@@ -85,9 +85,9 @@ template <
 VSNRAY_FUNC
 void insert_sorted(HR<basic_ray<S>, Args...> const& item, RandIt first, RandIt last, Cond cond)
 {
-    using I = typename simd::int_type<S>::type;
-    using M = typename simd::mask_type<S>::type;
-    using int_array = typename simd::aligned_array<I>::type;
+    using I = simd::int_type_t<S>;
+    using M = simd::mask_type_t<S>;
+    using int_array = simd::aligned_array_t<I>;
 
     int i = 0;
     int length = last - first;
@@ -215,10 +215,9 @@ template <
     typename T
     >
 VSNRAY_FUNC
-auto is_closer(HR1 const& query, HR2 const& reference, T max_t)
-    -> typename simd::mask_type<T>::type
+simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T max_t)
 {
-    using RT = typename simd::mask_type<T>::type;
+    using RT = simd::mask_type_t<T>;
 
     RT result(false);
 
@@ -244,14 +243,11 @@ template <
     typename T
     >
 VSNRAY_FUNC
-auto is_closer(HR1 const& query, HR2 const& reference, T max_t)
-    -> typename simd::mask_type<T>::type
+simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T max_t)
 {
     VSNRAY_UNUSED(query, reference, max_t);
 
-    using RT = typename simd::mask_type<T>::type;
-
-    return RT(true);
+    return simd::mask_type_t<T>(true);
 }
 
 } // visionaray

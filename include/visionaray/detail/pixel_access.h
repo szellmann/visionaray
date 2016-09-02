@@ -83,7 +83,7 @@ inline void store(
         OutputColor*                        buffer
         )
 {
-    using float_array = typename simd::aligned_array<FloatT>::type;
+    using float_array = simd::aligned_array_t<FloatT>;
 
     float_array r;
     float_array g;
@@ -138,7 +138,7 @@ inline void store(
         OutputColor*                        buffer
         )
 {
-    using float_array = typename simd::aligned_array<FloatT>::type;
+    using float_array = simd::aligned_array_t<FloatT>;
 
     float_array r;
     float_array g;
@@ -196,7 +196,7 @@ inline void store(
         OutputColor*                        buffer
         )
 {
-    using float_array = typename simd::aligned_array<FloatT>::type;
+    using float_array = simd::aligned_array_t<FloatT>;
 
     float_array r;
     float_array g;
@@ -253,7 +253,7 @@ inline void store(
         OutputColor*                        buffer
         )
 {
-    using float_array = typename simd::aligned_array<FloatT>::type;
+    using float_array = simd::aligned_array_t<FloatT>;
 
     float_array r;
     float_array g;
@@ -337,7 +337,7 @@ inline void store(
         float*                              buffer
         )
 {
-    using float_array = typename simd::aligned_array<FloatT>::type;
+    using float_array = simd::aligned_array_t<FloatT>;
 
     float_array v;
 
@@ -384,7 +384,7 @@ inline void store(
         unsigned*                                   buffer
         )
 {
-    using float_array = typename simd::aligned_array<T>::type;
+    using float_array = simd::aligned_array_t<T>;
 
     float_array v;
 
@@ -426,7 +426,7 @@ inline void store(
         float*                          buffer
         )
 {
-    using float_array = typename simd::aligned_array<FloatT>::type;
+    using float_array = simd::aligned_array_t<FloatT>;
 
     float_array v;
 

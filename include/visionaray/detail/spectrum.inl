@@ -430,11 +430,11 @@ namespace simd
 //
 
 template <size_t N>
-inline spectrum<typename float_from_simd_width<N>::type> pack(
+inline spectrum<float_from_simd_width_t<N>> pack(
         std::array<spectrum<float>, N> const& specs
         )
 {
-    using T = typename float_from_simd_width<N>::type;
+    using T = float_from_simd_width_t<N>;
     using V = vector<spectrum<T>::num_samples, float>;
 
     std::array<V, N> arr;

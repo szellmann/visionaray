@@ -154,7 +154,7 @@ class generic_material
 {
 public:
 
-    using scalar_type      = typename float_from_simd_width<N>::type;
+    using scalar_type      = float_from_simd_width_t<N>;
     using single_material  = visionaray::generic_material<Ts...>;
 
 public:
@@ -174,10 +174,10 @@ public:
         return mats_[i];
     }
 
-    typename mask_type<scalar_type>::type is_emissive() const
+    mask_type_t<scalar_type> is_emissive() const
     {
-        using mask_t = typename mask_type<scalar_type>::type;
-        using mask_array = typename aligned_array<mask_t>::type;
+        using mask_t = mask_type_t<scalar_type>;
+        using mask_array = aligned_array_t<mask_t>;
 
         mask_array arr;
 
@@ -225,7 +225,7 @@ public:
             S&                      samp
             ) const
     {
-        using float_array = typename aligned_array<scalar_type>::type;
+        using float_array = aligned_array_t<scalar_type>;
 
         auto srs = unpack(sr);
         auto& s = samp.get_sampler();

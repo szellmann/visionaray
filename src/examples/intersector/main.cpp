@@ -280,7 +280,8 @@ struct mask_intersector : basic_intersector<mask_intersector>
         // float4 ==> mask4
         // float8 ==> mask8
         //
-        using Mask = typename simd::mask_type<T>::type;
+//      using Mask = typename simd::mask_type<T>::type;
+        using Mask = simd::mask_type_t<T>; // shorthand for the above
 
 
         // Now we can write the algorithm in a platform independent manner.

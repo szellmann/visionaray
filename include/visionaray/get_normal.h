@@ -54,7 +54,7 @@ inline vector<3, T> get_normal(
         )
 {
     using N = typename std::iterator_traits<Normals>::value_type;
-    using float_array = typename simd::aligned_array<T>::type;
+    using float_array = simd::aligned_array_t<T>;
 
     auto hrs = unpack(hr);
 

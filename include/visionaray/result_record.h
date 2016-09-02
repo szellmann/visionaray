@@ -21,7 +21,7 @@ class result_record
 public:
 
     using scalar_type = T;
-    using mask_type = typename simd::mask_type<T>::type;
+    using mask_type   = simd::mask_type_t<T>;
     using vec_type    = vector<3, T>;
     using color_type  = vector<4, T>;
 

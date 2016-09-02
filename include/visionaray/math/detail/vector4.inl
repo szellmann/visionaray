@@ -420,10 +420,10 @@ namespace simd
 
 template <typename T, size_t N> // TODO: check that T is convertible to float
 inline auto pack(std::array<vector<4, T>, N> const& vecs)
-    -> vector<4, typename float_from_simd_width<N>::type>
+    -> vector<4, float_from_simd_width_t<N>>
 {
-    using U = typename float_from_simd_width<N>::type;
-    using float_array = typename aligned_array<U>::type;
+    using U = float_from_simd_width_t<N>;
+    using float_array = aligned_array_t<U>;
 
     float_array x;
     float_array y;
@@ -449,7 +449,7 @@ template <
 inline auto unpack(vector<4, FloatT> const& v)
     -> std::array<vector<4, float>, num_elements<FloatT>::value>
 {
-    using float_array = typename aligned_array<FloatT>::type;
+    using float_array = aligned_array_t<FloatT>;
 
     float_array x;
     float_array y;

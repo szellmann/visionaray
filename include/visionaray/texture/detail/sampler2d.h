@@ -143,7 +143,7 @@ inline auto tex2D(Tex const& tex, vector<2, FloatT> coord)
 {
     static_assert(Tex::dimensions == 2, "Incompatible texture type");
 
-    using I = typename simd::int_type<FloatT>::type;
+    using I = simd::int_type_t<FloatT>;
 
     vector<2, I> texsize(
             static_cast<int>(tex.width()),

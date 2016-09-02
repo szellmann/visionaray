@@ -34,7 +34,7 @@ template <typename T, typename U>
 struct hit_record<basic_ray<T>, basic_aabb<U>>
 {
     using scalar_type = T;
-    using mask_type = typename simd::mask_type<T>::type;
+    using mask_type = simd::mask_type_t<T>;
 
     MATH_FUNC hit_record()
         : hit(false)
@@ -89,8 +89,8 @@ template <typename T>
 struct hit_record<basic_ray<T>, primitive<unsigned>>
 {
     using scalar_type = T;
-    using int_type = typename simd::int_type<T>::type;
-    using mask_type = typename simd::mask_type<T>::type;
+    using int_type = simd::int_type_t<T>;
+    using mask_type = simd::mask_type_t<T>;
 
     MATH_FUNC hit_record()
         : hit(false)
@@ -268,7 +268,7 @@ template <typename T, typename P>
 struct hit_record<basic_plane<3, T>, basic_sphere<T, P>>
 {
     using scalar_type = T;
-    using mask_type = typename simd::mask_type<T>::type;
+    using mask_type = simd::mask_type_t<T>;
 
     // TODO: make this part of the API?
     struct basic_circle
@@ -328,15 +328,15 @@ namespace simd
 
 template <
     size_t N,
-    typename T = typename simd::float_from_simd_width<N>::type
+    typename T = float_from_simd_width_t<N>
     >
 inline hit_record<basic_ray<T>, primitive<unsigned>> pack(
         std::array<hit_record<ray, primitive<unsigned>>, N> const& hrs
         )
 {
-    using I = typename int_type<T>::type;
-    using float_array = typename aligned_array<T>::type;
-    using int_array = typename aligned_array<I>::type;
+    using I = int_type_t<T>;
+    using float_array = aligned_array_t<T>;
+    using int_array = aligned_array_t<I>;
 
     hit_record<basic_ray<T>, primitive<unsigned>> result;
 
@@ -378,8 +378,8 @@ inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::va
         hit_record<basic_ray<FloatT>, primitive<unsigned>> const& hr
         )
 {
-    using float_array = typename aligned_array<FloatT>::type;
-    using int_array = typename aligned_array<typename int_type<FloatT>::type>::type;
+    using float_array = aligned_array_t<FloatT>;
+    using int_array = aligned_array_t<int_type_t<FloatT>>;
 
     int_array hit;
     store(hit, hr.hit.i);

@@ -181,7 +181,7 @@ inline auto specular_bounce(
         )
     -> bounce_result<vector<3, T>, T>
 {
-    using float_array = typename simd::aligned_array<T>::type;
+    using float_array = simd::aligned_array_t<T>;
 
     auto ms  = unpack(mat);
     auto vds = unpack(view_dir);

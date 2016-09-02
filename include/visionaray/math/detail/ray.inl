@@ -29,10 +29,10 @@ namespace simd
 
 template <typename T, size_t N>
 inline auto pack(std::array<basic_ray<T>, N> const& rays)
-    -> basic_ray<typename float_from_simd_width<N>::type>
+    -> basic_ray<float_from_simd_width_t<N>>
 {
-    using U = typename float_from_simd_width<N>::type;
-    using float_array = typename aligned_array<U>::type;
+    using U = float_from_simd_width_t<N>;
+    using float_array = aligned_array_t<U>;
 
     float_array ori_x;
     float_array ori_y;
@@ -68,7 +68,7 @@ template <
 inline auto unpack(basic_ray<FloatT> const& ray)
     -> std::array<basic_ray<float>, num_elements<FloatT>::value>
 {
-    using float_array = typename aligned_array<FloatT>::type;
+    using float_array = aligned_array_t<FloatT>;
 
     float_array ori_x;
     float_array ori_y;

@@ -131,11 +131,11 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline FloatT tex3D_impl_expand_types(
-        T const*                                                tex,
-        vector<3, FloatT> const&                                coord,
-        vector<3, typename simd::int_type<FloatT>::type> const& texsize,
-        tex_filter_mode                                         filter_mode,
-        std::array<tex_address_mode, 3> const&                  address_mode
+        T const*                                    tex,
+        vector<3, FloatT> const&                    coord,
+        vector<3, simd::int_type_t<FloatT>> const&  texsize,
+        tex_filter_mode                             filter_mode,
+        std::array<tex_address_mode, 3> const&      address_mode
         )
 {
     using return_type   = FloatT;
@@ -161,14 +161,14 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline FloatT tex3D_impl_expand_types(
-        unorm<Bits> const*                                      tex,
-        vector<3, FloatT> const&                                coord,
-        vector<3, typename simd::int_type<FloatT>::type> const& texsize,
-        tex_filter_mode                                         filter_mode,
-        std::array<tex_address_mode, 3> const&                  address_mode
+        unorm<Bits> const*                          tex,
+        vector<3, FloatT> const&                    coord,
+        vector<3, simd::int_type_t<FloatT>> const&  texsize,
+        tex_filter_mode                             filter_mode,
+        std::array<tex_address_mode, 3> const&      address_mode
         )
 {
-    using return_type   = typename simd::int_type<FloatT>::type;
+    using return_type   = simd::int_type_t<FloatT>;
     using internal_type = FloatT;
 
     // use unnormalized types for internal calculations
@@ -196,15 +196,15 @@ template <
     typename = typename std::enable_if<std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-inline typename simd::int_type<FloatT>::type tex3D_impl_expand_types(
-        T const*                                                tex,
-        vector<3, FloatT> const&                                coord,
-        vector<3, typename simd::int_type<FloatT>::type> const& texsize,
-        tex_filter_mode                                         filter_mode,
-        std::array<tex_address_mode, 3> const&                  address_mode
+inline simd::int_type_t<FloatT> tex3D_impl_expand_types(
+        T const*                                    tex,
+        vector<3, FloatT> const&                    coord,
+        vector<3, simd::int_type_t<FloatT>> const&  texsize,
+        tex_filter_mode                             filter_mode,
+        std::array<tex_address_mode, 3> const&      address_mode
         )
 {
-    using return_type   = typename simd::int_type<FloatT>::type;
+    using return_type   = simd::int_type_t<FloatT>;
     using internal_type = FloatT;
 
     return choose_filter(
@@ -235,7 +235,7 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> coord)
 {
     static_assert(Tex::dimensions == 3, "Incompatible texture type");
 
-    using I = typename simd::int_type<FloatT>::type;
+    using I = simd::int_type_t<FloatT>;
 
     vector<3, I> texsize(
             static_cast<int>(tex.width()),

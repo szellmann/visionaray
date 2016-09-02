@@ -14,12 +14,12 @@ namespace simd
 //
 
 template <size_t N>
-inline emissive<typename simd::float_from_simd_width<N>::type> pack(
+inline emissive<float_from_simd_width_t<N>> pack(
         std::array<emissive<float>, N> const& mats
         )
 {
-    using T = typename simd::float_from_simd_width<N>::type;
-    using float_array = typename simd::aligned_array<T>::type;
+    using T = float_from_simd_width_t<N>;
+    using float_array = aligned_array_t<T>;
 
     emissive<T> result;
 
@@ -39,12 +39,12 @@ inline emissive<typename simd::float_from_simd_width<N>::type> pack(
 }
 
 template <size_t N>
-inline matte<typename simd::float_from_simd_width<N>::type> pack(
+inline matte<float_from_simd_width_t<N>> pack(
         std::array<matte<float>, N> const& mats
         )
 {
-    using T = typename simd::float_from_simd_width<N>::type;
-    using float_array = typename simd::aligned_array<T>::type;
+    using T = float_from_simd_width_t<N>;
+    using float_array = aligned_array_t<T>;
 
     matte<T> result;
 
@@ -70,12 +70,12 @@ inline matte<typename simd::float_from_simd_width<N>::type> pack(
 }
 
 template <size_t N>
-inline mirror<typename simd::float_from_simd_width<N>::type> pack(
+inline mirror<float_from_simd_width_t<N>> pack(
         std::array<mirror<float>, N> const& mats
         )
 {
-    using T = typename simd::float_from_simd_width<N>::type;
-    using float_array = typename simd::aligned_array<T>::type;
+    using T = float_from_simd_width_t<N>;
+    using float_array = aligned_array_t<T>;
 
     mirror<T> result;
 
@@ -95,12 +95,12 @@ inline mirror<typename simd::float_from_simd_width<N>::type> pack(
 }
 
 template <size_t N>
-inline plastic<typename simd::float_from_simd_width<N>::type> pack(
+inline plastic<float_from_simd_width_t<N>> pack(
     std::array<plastic<float>, N> const& mats
     )
 {
-    using T = typename simd::float_from_simd_width<N>::type;
-    using float_array = typename simd::aligned_array<T>::type;
+    using T = float_from_simd_width_t<N>;
+    using float_array = aligned_array_t<T>;
 
     plastic<T> result;
 

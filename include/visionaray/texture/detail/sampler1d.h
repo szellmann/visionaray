@@ -93,11 +93,11 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline vector<4, FloatT> tex1D_impl_expand_types(
-        vector<4, T> const*                             tex,
-        FloatT const&                                   coord,
-        typename simd::int_type<FloatT>::type const&    texsize,
-        tex_filter_mode                                 filter_mode,
-        std::array<tex_address_mode, 1> const&          address_mode
+        vector<4, T> const*                     tex,
+        FloatT const&                           coord,
+        simd::int_type_t<FloatT> const&         texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 1> const&  address_mode
         )
 {
     using return_type   = vector<4, FloatT>;
@@ -192,7 +192,7 @@ inline auto tex1D(Tex const& tex, FloatT coord)
 {
     static_assert(Tex::dimensions == 1, "Incompatible texture type");
 
-    using I = typename simd::int_type<FloatT>::type;
+    using I = simd::int_type_t<FloatT>;
 
     I texsize = static_cast<int>(tex.width());
 

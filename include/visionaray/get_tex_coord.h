@@ -56,7 +56,7 @@ inline vector<2, T> get_tex_coord(
         )
 {
     using TC = typename std::iterator_traits<TexCoords>::value_type;
-    using float_array = typename simd::aligned_array<T>::type;
+    using float_array = simd::aligned_array_t<T>;
 
     auto hrs = unpack(hr);
 

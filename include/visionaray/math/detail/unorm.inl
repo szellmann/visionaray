@@ -42,9 +42,9 @@ template <
     typename = typename std::enable_if<simd::is_simd_vector<I>::value>::type
     >
 MATH_FUNC
-inline typename simd::float_type<I>::type unorm_to_float(I const& u)
+inline simd::float_type_t<I> unorm_to_float(I const& u)
 {
-    using F = typename simd::float_type<I>::type;
+    using F = simd::float_type_t<I>;
     return F(u) / F(static_cast<float>((1ULL << Bits) - 1));
 }
 

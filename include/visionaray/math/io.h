@@ -56,7 +56,7 @@ template <
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, VecT const& v)
 {
-    using array_t = typename aligned_array<VecT>::type;
+    using array_t = aligned_array_t<VecT>;
     using elem_t  = typename element_type<VecT>::type;
     int vec_size  = num_elements<VecT>::value;
 

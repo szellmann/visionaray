@@ -31,12 +31,10 @@ struct hit_record_bvh : Base
 {
     using bvh_type    = BVH;
     using scalar_type = typename R::scalar_type;
-    using int_type    = typename simd::int_type<scalar_type>::type;
+    using int_type    = simd::int_type_t<scalar_type>;
 
     VSNRAY_FUNC hit_record_bvh() = default;
-    VSNRAY_FUNC explicit hit_record_bvh(
-            Base const& base,
-            int_type    i)
+    VSNRAY_FUNC explicit hit_record_bvh(Base const& base, int_type i)
         : Base(base)
         , primitive_list_index(i)
     {
@@ -75,7 +73,7 @@ namespace simd
 
 template <
     size_t N,
-    typename T = typename simd::float_from_simd_width<N>::type,
+    typename T = simd::float_from_simd_width_t<N>,
     typename BVH,
     typename Base
     >
@@ -83,9 +81,9 @@ inline hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(std::array<Base, N>
         std::array<hit_record_bvh<ray, BVH, Base>, N> const& hrs
         )
 {
-    using I = typename int_type<T>::type;
-    using int_array = typename aligned_array<I>::type;
-    using RT = hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(std::array<Base, N>{{}}))>;
+    using I = int_type_t<T>;
+    using int_array = aligned_array_t<I>;
+    using RT = hit_record_bvh<basic_ray<T>, BVH, decltype(pack(std::array<Base, N>{{}}))>;
 
     std::array<Base, N> bases;
     int_array primitive_list_index;
@@ -109,7 +107,7 @@ template <
     typename FloatT,
     typename BVH,
     typename Base,
-    typename UnpackedBase = decltype(simd::unpack(Base{})),
+    typename UnpackedBase = decltype(unpack(Base{})),
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
 inline auto unpack(
@@ -120,7 +118,7 @@ inline auto unpack(
             num_elements<FloatT>::value
             >
 {
-    using int_array        = typename aligned_array<typename int_type<FloatT>::type>::type;
+    using int_array        = aligned_array_t<int_type_t<FloatT>>;
     using scalar_base_type = typename UnpackedBase::value_type;
 
     auto base = simd::unpack(static_cast<Base const&>(hr));

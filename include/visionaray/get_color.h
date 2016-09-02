@@ -83,7 +83,7 @@ inline vector<3, T> get_color(
         )
 {
     using C = typename std::iterator_traits<Colors>::value_type;
-    using float_array = typename simd::aligned_array<T>::type;
+    using float_array = simd::aligned_array_t<T>;
 
     auto hrs = unpack(hr);
 
@@ -125,7 +125,7 @@ inline vector<3, T> get_color(
         )
 {
     using C = typename std::iterator_traits<Colors>::value_type;
-    using float_array = typename simd::aligned_array<T>::type;
+    using float_array = simd::aligned_array_t<T>;
 
     auto hrs = unpack(hr);
 
