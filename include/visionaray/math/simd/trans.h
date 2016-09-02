@@ -30,48 +30,55 @@ namespace detail
 // detail::frexp and detail::scalbn do not handle subnormals!
 //
 
-template <typename F, typename I>
-VSNRAY_FORCE_INLINE basic_float<F> frexp(basic_float<F> const& x, basic_int<I>* exp)
+template <
+    typename F,
+    typename I,
+    typename = typename std::enable_if<is_simd_vector<F>::value>::type,
+    typename = typename std::enable_if<is_simd_vector<I>::value>::type
+    >
+VSNRAY_FORCE_INLINE F frexp(F const& x, I* exp)
 {
-    typedef basic_int<I>        int_type;
-    typedef basic_mask<F, I>    mask_type;
+    using M = mask_type_t<F>;
 
-    static const int_type exp_mask(0x7f800000);
-    static const int_type inv_exp_mask(~0x7f800000);
-    static const int_type man_mask(0x3f000000);
+    static const I exp_mask(0x7f800000);
+    static const I inv_exp_mask(~0x7f800000);
+    static const I man_mask(0x3f000000);
 
-    int_type ptr = reinterpret_as_int(x);
+    I ptr = reinterpret_as_int(x);
     *exp = (ptr & exp_mask) >> 23;
-    mask_type is_zero = (*exp == 0);
-    *exp = select( is_zero, int_type(0), *exp - 126 ); // IEEE-754 stores a biased exponent
-    ptr  = select( is_zero, int_type(0), ptr & inv_exp_mask );
-    ptr  = select( is_zero, int_type(0), ptr | man_mask );
+    M is_zero = (*exp == 0);
+    *exp = select( is_zero, I(0), *exp - 126 ); // IEEE-754 stores a biased exponent
+    ptr  = select( is_zero, I(0), ptr & inv_exp_mask );
+    ptr  = select( is_zero, I(0), ptr | man_mask );
     return reinterpret_as_float(ptr);
 }
 
-template <typename F, typename I>
-VSNRAY_FORCE_INLINE basic_float<F> scalbn(basic_float<F> const& x, basic_int<I> const& exp)
+template <
+    typename F,
+    typename I,
+    typename = typename std::enable_if<is_simd_vector<F>::value>::type,
+    typename = typename std::enable_if<is_simd_vector<I>::value>::type
+    >
+VSNRAY_FORCE_INLINE F scalbn(F const& x, I const& exp)
 {
-    typedef basic_int<I>        int_type;
-    typedef basic_float<F>      float_type;
-    typedef basic_mask<F, I>    mask_type;
+    using M = mask_type_t<F>;
 
-    static const int_type exp_mask(0x7f800000);
-    static const float_type huge_val = reinterpret_as_float(int_type(0x7f800000));
-    static const float_type tiny_val = reinterpret_as_float(int_type(0x00000000));
+    static const I exp_mask(0x7f800000);
+    static const F huge_val = reinterpret_as_float(I(0x7f800000));
+    static const F tiny_val = reinterpret_as_float(I(0x00000000));
 
-    int_type xi = reinterpret_as_int(x);
-    float_type sign = reinterpret_as_float(xi & 0x80000000);
-    int_type k = (xi & exp_mask) >> 23;
+    I xi = reinterpret_as_int(x);
+    F sign = reinterpret_as_float(xi & 0x80000000);
+    I k = (xi & exp_mask) >> 23;
     k += exp;
 
     // overflow?
-    mask_type uoflow = k > int_type(0xfe);
-    float_type huge_or_tiny = select(uoflow, huge_val, tiny_val) | sign;
+    M uoflow = k > I(0xfe);
+    F huge_or_tiny = select(uoflow, huge_val, tiny_val) | sign;
 
     // overflow or underflow?
-    uoflow |= k < int_type(0);
-    return select( uoflow, huge_or_tiny, reinterpret_as_float((xi & int_type(0x807fffff)) | (k << 23)) );
+    uoflow |= k < I(0);
+    return select( uoflow, huge_or_tiny, reinterpret_as_float((xi & I(0x807fffff)) | (k << 23)) );
 }
 
 
