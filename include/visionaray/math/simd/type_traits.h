@@ -29,38 +29,46 @@ namespace simd
 //      get an array that adheres to the alignment requirements and that can store
 //      the contents of a SIMD vector type
 //      default: n/a
+//      helper type: aligned_array_t
 //
 //  - float_type:
 //      get a compatible float type for a SIMD vector type
-//      default: float
+//      default: type := float
+//      helper type: float_type_t
 //
 //  - int_type
 //      get a compatible int type for a SIMD vector type
-//      default: int
+//      default: type := int
+//      helper type: int_type_t
 //
 //  - mask_type:
 //      get a compatible mask type for a SIMD vector type
 //      default: type := bool
+//      helper type: mask_type_t
 //
 //  - native_type:
 //      get the native type for a SIMD vectory type
 //      mask types that are based on unions may map to int_type<T>
 //      default: n/a
+//      helper type: native_type_t
 //
 //  - float_from_simd_width:
 //      get the best matching floating point type for a given SIMD width
 //      the returned type depends on the ISA compiled for
 //      default: n/a
+//      helper type: float_from_simd_with_t
 //
 //  - int_from_simd_width:
 //      get the best matching signed integer type for a given SIMD width
 //      the returned type depends on the ISA compiled for
 //      default: n/a
+//      helper type: int_from_simd_width_t
 //
 //  - mask_from_simd_width:
 //      get the best matching mask type for a given SIMD width
 //      the returned type depends on the ISA compiled for
 //      default: n/a
+//      helper type: mask_from_simd_width_t
 //
 //  - is_simd_vector
 //      check if T is a SIMD vector type
@@ -69,6 +77,7 @@ namespace simd
 //  - element_type:
 //      get the elementary type of a SIMD vector component
 //      default: T <= T
+//      helper type: element_type_t
 //
 //  - num_elements:
 //      get the number of vector components for a SIMD vector type
@@ -189,6 +198,11 @@ struct aligned_array<simd::mask8>
 
 #endif
 
+// helper type --------------------------------------------
+
+template <typename T>
+using aligned_array_t = typename aligned_array<T>::type;
+
 
 //-------------------------------------------------------------------------------------------------
 // Deduce float type from SIMD vector types
@@ -245,6 +259,11 @@ struct float_type<simd::mask8>
 };
 
 #endif
+
+// helper type --------------------------------------------
+
+template <typename T>
+using float_type_t = typename float_type<T>::type;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -303,6 +322,11 @@ struct int_type<simd::mask8>
 
 #endif
 
+// helper type --------------------------------------------
+
+template <typename T>
+using int_type_t = typename int_type<T>::type;
+
 
 //-------------------------------------------------------------------------------------------------
 // Deduce mask type from SIMD vector types
@@ -360,6 +384,11 @@ struct mask_type<simd::mask8>
 
 #endif
 
+// helper type --------------------------------------------
+
+template <typename T>
+using mask_type_t = typename mask_type<T>::type;
+
 
 //-------------------------------------------------------------------------------------------------
 // Deduce native type from SIMD vector types
@@ -414,6 +443,11 @@ struct native_type<simd::mask8>
 
 #endif
 
+// helper type --------------------------------------------
+
+template <typename T>
+using native_type_t = typename native_type<T>::type;
+
 
 //-------------------------------------------------------------------------------------------------
 // Deduce SIMD floating point type from a given SIMD width
@@ -443,6 +477,11 @@ struct float_from_simd_width<8>
 };
 
 #endif
+
+// helper type --------------------------------------------
+
+template <unsigned Width>
+using float_from_simd_width_t = typename float_from_simd_width<Width>::type;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -474,6 +513,11 @@ struct int_from_simd_width<8>
 
 #endif
 
+// helper type --------------------------------------------
+
+template <unsigned Width>
+using int_from_simd_width_t = typename int_from_simd_width<Width>::type;
+
 
 //-------------------------------------------------------------------------------------------------
 // Deduce SIMD mask type from a given SIMD width
@@ -503,6 +547,11 @@ struct mask_from_simd_width<8>
 };
 
 #endif
+
+// helper type --------------------------------------------
+
+template <unsigned Width>
+using mask_from_simd_width_t = typename mask_from_simd_width<Width>::type;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -617,6 +666,11 @@ struct element_type<simd::mask8>
 };
 
 #endif
+
+// helper type --------------------------------------------
+
+template <typename T>
+using element_type_t = typename element_type<T>::type;
 
 
 //-------------------------------------------------------------------------------------------------
