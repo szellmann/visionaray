@@ -85,7 +85,7 @@ typename cpu_buffer_rt<ColorFormat, DepthFormat>::ref_type cpu_buffer_rt<ColorFo
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_color(vec4 const& c)
+void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_color_buffer(vec4 const& c)
 {
     // Convert from RGBA32F to internal color format
     color_type cc;
@@ -100,7 +100,7 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_color(vec4 const& c)
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth(float d)
+void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth_buffer(float d)
 {
     // Convert from DEPTH32F to internal depth format
     depth_type dd;

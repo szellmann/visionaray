@@ -100,9 +100,9 @@ typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::ref_type pixel_unpack
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_color(vec4 const& c)
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_color_buffer(vec4 const& c)
 {
-    assert(color() == 0 && "clear_color() called between begin_frame() and end_frame()");
+    assert(color() == 0 && "clear_color_buffer() called between begin_frame() and end_frame()");
 
     // Convert from RGBA32F to internal color format
     color_type cc;
@@ -121,9 +121,9 @@ void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_color(vec4 const& c
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_depth(float d)
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_depth_buffer(float d)
 {
-    assert(depth() == 0 && "clear_depth() called between begin_frame() and end_frame()");
+    assert(depth() == 0 && "clear_depth_buffer() called between begin_frame() and end_frame()");
 
     // Convert from DEPTH32F to internal depth format
     depth_type dd;

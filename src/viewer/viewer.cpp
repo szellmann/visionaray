@@ -256,9 +256,9 @@ void renderer::clear_frame()
     if (algo == Pathtracing)
     {
         frame_num = 0;
-        host_rt.clear_color();
+        host_rt.clear_color_buffer();
 #ifdef __CUDACC__
-        device_rt.clear_color();
+        device_rt.clear_color_buffer();
 #endif
     }
 }

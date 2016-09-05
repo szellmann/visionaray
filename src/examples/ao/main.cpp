@@ -193,7 +193,7 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
     if (event.get_buttons() != mouse::NoButton)
     {
         frame_num = 0;
-        host_rt.clear_color();
+        host_rt.clear_color_buffer();
     }
 
     viewer_type::on_mouse_move(event);
@@ -207,7 +207,7 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 void renderer::on_resize(int w, int h)
 {
     frame_num = 0;
-    host_rt.clear_color();
+    host_rt.clear_color_buffer();
 
     cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
