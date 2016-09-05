@@ -480,7 +480,7 @@ inline void sample_pixel_impl(
 {
     VSNRAY_UNUSED(args...);
 
-    using S     = typename R::scalar_type;
+    using S = typename R::scalar_type;
 
     auto result = invoke_kernel(kernel, r, samp, x, y);
     auto alpha  = S(1.0) / S(frame_num);
@@ -574,7 +574,7 @@ inline void sample_pixel_impl(
 {
     VSNRAY_UNUSED(args...);
 
-    using S     = typename R::scalar_type;
+    using S = typename R::scalar_type;
 
     auto ray_ptr = rays.data();
 
@@ -630,7 +630,7 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(frame_num);
     VSNRAY_UNUSED(args...);
 
-    using S     = typename R::scalar_type;
+    using S = typename R::scalar_type;
 
     auto ray_ptr = rays.data();
 
@@ -682,7 +682,7 @@ inline void sample_pixel_impl(
 {
     VSNRAY_UNUSED(args...);
 
-    using S      = typename R::scalar_type;
+    using S = typename R::scalar_type;
 
     auto ray_ptr = rays.data();
 
