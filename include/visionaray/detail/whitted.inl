@@ -249,8 +249,8 @@ struct kernel
         C color(0.0);
 
         size_t depth = 0;
-        auto no_hit_color = C(from_rgba(params.bg_color));
-        auto throughput = S(1.0);
+        C no_hit_color(from_rgba(params.bg_color));
+        S throughput(1.0);
         while (any(hit_rec.hit) && any(throughput > S(params.epsilon)) && depth++ < params.num_bounces)
         {
             hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
