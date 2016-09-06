@@ -6,7 +6,6 @@
 #ifndef VSNRAY_SCHEDULER_H
 #define VSNRAY_SCHEDULER_H 1
 
-#include <cassert>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
