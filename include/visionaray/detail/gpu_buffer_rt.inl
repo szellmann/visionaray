@@ -105,7 +105,7 @@ void gpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 
     rt.resize( width(), height() );
 
-    // TODO: make render targets templates!
+    // TODO:
     // This won't compile if cpu_buffer_rt::XXX_traits::format
     //      != gpu_buffer_rt::XXX_traits::format
     thrust::copy( color_buffer_.begin(), color_buffer_.end(), rt.color() );
