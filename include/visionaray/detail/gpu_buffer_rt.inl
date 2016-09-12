@@ -2,6 +2,8 @@
 // See the LICENSE file for details.
 
 #include <thrust/copy.h>
+#include <thrust/fill.h>
+#include <thrust/execution_policy.h>
 
 namespace visionaray
 {
@@ -39,6 +41,36 @@ typename gpu_buffer_rt<ColorFormat, DepthFormat>::ref_type gpu_buffer_rt<ColorFo
             width(),
             height()
             );
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void gpu_buffer_rt<ColorFormat, DepthFormat>::clear_color_buffer(vec4 const& c)
+{
+    // Convert from RGBA32F to internal color format
+    color_type cc;
+    convert(
+        pixel_format_constant<ColorFormat>{},
+        pixel_format_constant<PF_RGBA32F>{},
+        cc,
+        c
+        );
+
+    thrust::fill(thrust::device, color(), color() + width() * height(), cc);
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+void gpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth_buffer(float d)
+{
+    // Convert from DEPTH32F to internal depth format
+    depth_type dd;
+    convert(
+        pixel_format_constant<DepthFormat>{},
+        pixel_format_constant<PF_DEPTH32F>{},
+        dd,
+        d
+        );
+
+    thrust::fill(thrust::device, depth(), depth() + width() * height(), dd);
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
