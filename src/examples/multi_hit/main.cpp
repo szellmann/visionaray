@@ -67,7 +67,7 @@ struct renderer : viewer_type
     }
 
     camera                                                  cam;
-    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>               host_rt;
+    cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>                 host_rt;
     tiled_sched<ray_type>                                   host_sched;
 
     model mod;
@@ -75,7 +75,7 @@ struct renderer : viewer_type
 
 #ifdef __CUDACC__
     cuda_sched<ray_type>                                    device_sched;
-    pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>      device_rt;
+    pixel_unpack_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>        device_rt;
     device_bvh_type                                         device_bvh;
     thrust::device_vector<model::normal_list::value_type>   device_normals;
     thrust::device_vector<model::mat_list::value_type>      device_materials;

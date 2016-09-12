@@ -351,10 +351,10 @@ struct renderer : viewer_type
     camera                                                      cam;
     manipulators                                                manips;
     tiled_sched<ray_type>                                       host_sched;
-    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>                   host_rt;
+    cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>                     host_rt;
 #ifdef __CUDACC__
     cuda_sched<ray_type>                                        device_sched;
-    pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>          device_rt;
+    pixel_unpack_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>            device_rt;
 #endif
 
     model_manipulators                                          model_manips;
