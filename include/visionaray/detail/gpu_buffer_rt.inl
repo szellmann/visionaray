@@ -88,16 +88,14 @@ void gpu_buffer_rt<ColorFormat, DepthFormat>::end_frame()
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 void gpu_buffer_rt<ColorFormat, DepthFormat>::resize(size_t w, size_t h)
 {
-    pixel_format_info cinfo = map_pixel_format(ColorFormat);
-    color_buffer_.resize( w * h * cinfo.size );
+    render_target::resize(w, h);
+
+    color_buffer_.resize(w * h);
 
     if (DepthFormat != PF_UNSPECIFIED)
     {
-        pixel_format_info dinfo = map_pixel_format(DepthFormat);
-        depth_buffer_.resize( w * h * dinfo.size );
+        depth_buffer_.resize(w * h);
     }
-
-    render_target::resize(w, h);
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
