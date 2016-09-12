@@ -531,8 +531,7 @@ void renderer::on_display()
     if (dev_type == renderer::GPU && false /* no direct rendering */)
     {
 #ifdef __CUDACC__
-//        host_rt = device_rt;
-//        host_rt.display_color_buffer();
+//        device_rt.display_color_buffer();
 #endif
     }
     else if (dev_type == renderer::GPU && true /* direct rendering */)

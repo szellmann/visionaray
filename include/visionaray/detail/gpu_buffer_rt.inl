@@ -101,13 +101,6 @@ void gpu_buffer_rt<ColorFormat, DepthFormat>::resize(size_t w, size_t h)
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 void gpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 {
-    cpu_buffer_rt<ColorFormat, DepthFormat> rt = *this;
-    rt.display_color_buffer();
-}
-
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-gpu_buffer_rt<ColorFormat, DepthFormat>::operator cpu_buffer_rt<ColorFormat, DepthFormat>() const
-{
     cpu_buffer_rt<ColorFormat, DepthFormat> rt;
 
     rt.resize( width(), height() );
@@ -122,7 +115,7 @@ gpu_buffer_rt<ColorFormat, DepthFormat>::operator cpu_buffer_rt<ColorFormat, Dep
         thrust::copy( depth_buffer_.begin(), depth_buffer_.end(), rt.depth() );
     }
 
-    return rt;
+    rt.display_color_buffer();
 }
 
 } // visionaray

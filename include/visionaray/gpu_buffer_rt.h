@@ -43,8 +43,6 @@ public:
     void resize(size_t w, size_t h);
     void display_color_buffer() const;
 
-    operator cpu_buffer_rt<ColorFormat, DepthFormat>() const;
-
 private:
 
     thrust::device_vector<color_type> color_buffer_;
