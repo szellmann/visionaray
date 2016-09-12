@@ -39,6 +39,17 @@ struct cpu_buffer_rt<ColorFormat, DepthFormat>::impl
 //
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
+cpu_buffer_rt<ColorFormat, DepthFormat>::cpu_buffer_rt()
+    : impl_(new impl)
+{
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
+cpu_buffer_rt<ColorFormat, DepthFormat>::~cpu_buffer_rt()
+{
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename cpu_buffer_rt<ColorFormat, DepthFormat>::color_type* cpu_buffer_rt<ColorFormat, DepthFormat>::color()
 {
     return impl_->color_buffer.data();
