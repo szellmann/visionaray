@@ -26,9 +26,6 @@ public:
 
 public:
 
-    cpu_buffer_rt();
-   ~cpu_buffer_rt();
-
     color_type* color();
     depth_type* depth();
 
