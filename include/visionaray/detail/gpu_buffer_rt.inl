@@ -5,6 +5,8 @@
 #include <thrust/fill.h>
 #include <thrust/execution_policy.h>
 
+#include "../cpu_buffer_rt.h"
+
 namespace visionaray
 {
 
