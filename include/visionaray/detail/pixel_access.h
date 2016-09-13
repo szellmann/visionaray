@@ -173,6 +173,64 @@ inline void store(
 
 
 //-------------------------------------------------------------------------------------------------
+// Store SIMD rgba color to RGB32F render target, apply conversion
+// OutputColor must be rgb
+//
+
+template <
+    typename OutputColor,
+    typename FloatT,
+    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+    >
+VSNRAY_CPU_FUNC
+inline void store(
+        pixel_format_constant<PF_RGB32F>    /* dst format */,
+        pixel_format_constant<PF_RGBA32F>   /* src format */,
+        int                                 x,
+        int                                 y,
+        int                                 width,
+        int                                 height,
+        vector<4, FloatT> const&            color,
+        OutputColor*                        buffer
+        )
+{
+    using float_array = simd::aligned_array_t<FloatT>;
+
+    float_array r;
+    float_array g;
+    float_array b;
+    float_array a;
+
+    using simd::store;
+
+    store(r, color.x);
+    store(g, color.y);
+    store(b, color.z);
+    store(a, color.w);
+
+    auto w = packet_size<FloatT>::w;
+    auto h = packet_size<FloatT>::h;
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < width && y + row < height)
+            {
+                auto idx = row * w + col;
+                convert(
+                    pixel_format_constant<PF_RGB32F>{},
+                    pixel_format_constant<PF_RGBA32F>{},
+                    buffer[(y + row) * width + (x + col)],
+                    vec4(r[idx], g[idx], b[idx], a[idx])
+                    );
+            }
+        }
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Store SIMD rgba color to RGBA8 render target, apply conversion
 // OutputColor must be rgba
 // TODO: consolidate all rgba copies
