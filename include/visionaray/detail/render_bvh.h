@@ -38,7 +38,7 @@ public:
     // Render BVH outlines
     //
 
-    void frame()
+    void frame() const
     {
         glBindBuffer(GL_ARRAY_BUFFER, vbo_);
         glVertexPointer(3, GL_FLOAT, 0, NULL);
