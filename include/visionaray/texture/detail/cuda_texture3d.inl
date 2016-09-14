@@ -341,9 +341,9 @@ public:
 
 public:
 
-    VSNRAY_FUNC cuda_texture_ref() = default;
+    cuda_texture_ref() = default;
 
-    VSNRAY_CPU_FUNC cuda_texture_ref(cuda_texture<T, 3> const& ref)
+    cuda_texture_ref(cuda_texture<T, 3> const& ref)
         : texture_obj_(ref.texture_object())
         , width_(ref.width())
         , height_(ref.height())
@@ -351,7 +351,7 @@ public:
     {
     }
 
-    VSNRAY_FUNC ~cuda_texture_ref() = default;
+   ~cuda_texture_ref() = default;
 
     VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture<T, 3> const& rhs)
     {
