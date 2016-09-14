@@ -171,7 +171,7 @@ struct aligned_array<simd::int4>
 template <>
 struct aligned_array<simd::mask4>
 {
-    typedef VSNRAY_ALIGN(16) int type[4];
+    typedef VSNRAY_ALIGN(16) bool type[4];
 };
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -193,7 +193,7 @@ struct aligned_array<simd::int8>
 template <>
 struct aligned_array<simd::mask8>
 {
-    typedef VSNRAY_ALIGN(32) int type[8];
+    typedef VSNRAY_ALIGN(32) bool type[8];
 };
 
 #endif
