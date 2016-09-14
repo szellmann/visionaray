@@ -3,6 +3,7 @@
 
 #include <array>
 #include <cassert>
+#include <cstddef>
 
 #include <visionaray/cuda/pitch2d.h>
 
