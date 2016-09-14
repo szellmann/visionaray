@@ -218,10 +218,10 @@ public:
     }
 
     template <typename SR, typename S /* sampler */>
-    spectrum<simd::float4> sample(
+    spectrum<scalar_type> sample(
             SR const&               sr,
             vector<3, scalar_type>& refl_dir,
-            simd::float4&           pdf,
+            scalar_type&            pdf,
             S&                      samp
             ) const
     {
