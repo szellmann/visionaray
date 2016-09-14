@@ -181,7 +181,7 @@ public:
 
         mask_array arr;
 
-        for (size_t i = 0; i < 4; ++i)
+        for (size_t i = 0; i < N; ++i)
         {
             arr[i] = mats_[i].is_emissive();
         }
