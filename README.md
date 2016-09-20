@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/szellmann/visionaray.svg?branch=master)](https://travis-ci.org/szellmann/visionaray)
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/szellmann/visionaray/branch/master?svg=true)](https://ci.appveyor.com/project/szellmann/visionaray/branch/master)
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/szellmann/visionaray?svg=true&branch=master)](https://ci.appveyor.com/project/szellmann/visionaray/branch/master)
 
 Visionaray
 ==========
