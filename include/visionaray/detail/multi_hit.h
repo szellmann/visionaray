@@ -7,6 +7,7 @@
 #define VSNRAY_DETAIL_MULTI_HIT_H 1
 
 #include <cstddef>
+#include <iterator>
 #include <type_traits>
 
 #include <visionaray/math/math.h>
