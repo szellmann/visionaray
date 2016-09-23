@@ -170,8 +170,8 @@ inline void cuda_sched_impl_call_render(
             std::forward<Args>(args)...
             );
 
-    cudaPeekAtLastError();
-    cudaDeviceSynchronize();
+//  cudaPeekAtLastError();
+//  cudaDeviceSynchronize();
 }
 
 template <typename R, typename SP, typename Rect, typename ...Args>
@@ -191,8 +191,8 @@ inline void cuda_sched_impl_call_render(
             std::forward<Args>(args)...
             );
 
-    cudaPeekAtLastError();
-    cudaDeviceSynchronize();
+//  cudaPeekAtLastError();
+//  cudaDeviceSynchronize();
 }
 
 
