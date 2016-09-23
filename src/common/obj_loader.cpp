@@ -408,8 +408,6 @@ void load_obj(std::string const& filename, model& mod)
                 std::string tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
                 std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
 
-                auto tex_path = boost::filesystem::path(tex_filename);
-
                 if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename))
                 {
                     image img;
