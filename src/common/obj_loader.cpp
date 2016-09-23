@@ -416,7 +416,14 @@ void load_obj(std::string const& filename, model& mod)
                     {
                         tex_filename = kdp.string();
                     }
-                    else
+
+                    // Maybe boost::filesystem was wrong and a relative path
+                    // camouflaged as an absolute one (e.g. because it was
+                    // erroneously prefixed with a '/' under Unix.
+                    // Happens e.g. in the fairy forest model..
+                    // Let's also check for that..
+
+                    if (!boost::filesystem::exists(tex_filename) || !kdp.is_absolute())
                     {
                         // Find texture relative to the path the obj file is located in
                         boost::filesystem::path p(filename);
