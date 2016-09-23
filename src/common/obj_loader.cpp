@@ -394,7 +394,7 @@ void load_obj(std::string const& filename, model& mod)
             auto mat_it = matlib.find(std::string(mtl_name));
             if (mat_it != matlib.end())
             {
-                typedef model::tex_list::value_type tex_type;
+                typedef model::texture_type tex_type;
 
                 plastic<float> mat;
                 mat.set_ca( from_rgb(mat_it->second.ka) );
@@ -426,46 +426,60 @@ void load_obj(std::string const& filename, model& mod)
 
                     if (boost::filesystem::exists(tex_filename))
                     {
-                        image img;
-                        if (img.load(tex_filename))
+                        // Load the texture if we haven't done so yet
+                        auto tex_it = mod.texture_map.find(mat_it->second.map_kd);
+                        if (tex_it == mod.texture_map.end())
                         {
-                            tex_type tex(img.width(), img.height());
-                            tex.set_address_mode( Wrap );
-                            tex.set_filter_mode( Linear );
+                            image img;
+                            if (img.load(tex_filename))
+                            {
+                                tex_type tex(img.width(), img.height());
+                                tex.set_address_mode( Wrap );
+                                tex.set_filter_mode( Linear );
 
-                            if (img.format() == PF_RGBA16UI)
-                            {
-                                // Get rid of alpha channel and down-convert to 8-bit
-                                auto data_ptr = reinterpret_cast<vector<4, unorm<16>> const*>(img.data());
-                                tex.set_data(data_ptr, PF_RGBA16UI, PF_RGB8, PremultiplyAlpha);
-                            }
-                            else if (img.format() == PF_RGBA8)
-                            {
-                                // Just get rid of alpha channel
-                                auto data_ptr = reinterpret_cast<vector<4, unorm< 8>> const*>(img.data());
-                                tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
-                            }
-                            else if (img.format() == PF_RGB16UI)
-                            {
-                                // Down-convert to 8-bit
-                                auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
-                                tex.set_data(data_ptr, PF_RGB16UI, PF_RGB8);
-                            }
-                            else if (img.format() == PF_RGB8)
-                            {
-                                auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
-                                tex.set_data(data_ptr);
+                                if (img.format() == PF_RGBA16UI)
+                                {
+                                    // Get rid of alpha channel and down-convert to 8-bit
+                                    auto data_ptr = reinterpret_cast<vector<4, unorm<16>> const*>(img.data());
+                                    tex.set_data(data_ptr, PF_RGBA16UI, PF_RGB8, PremultiplyAlpha);
+                                }
+                                else if (img.format() == PF_RGBA8)
+                                {
+                                    // Just get rid of alpha channel
+                                    auto data_ptr = reinterpret_cast<vector<4, unorm< 8>> const*>(img.data());
+                                    tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
+                                }
+                                else if (img.format() == PF_RGB16UI)
+                                {
+                                    // Down-convert to 8-bit
+                                    auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
+                                    tex.set_data(data_ptr, PF_RGB16UI, PF_RGB8);
+                                }
+                                else if (img.format() == PF_RGB8)
+                                {
+                                    auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
+                                    tex.set_data(data_ptr);
+                                }
+                                else
+                                {
+                                    std::cerr << "Error: unsupported pixel format\n";
+                                }
+
+                                mod.texture_map.insert(std::make_pair(mat_it->second.map_kd, std::move(tex)));
+                                auto& loaded_tex = mod.texture_map.find(mat_it->second.map_kd)->second;
+                                mod.textures.push_back(typename tex_type::ref_type(loaded_tex));
                             }
                             else
                             {
-                                std::cerr << "Error: unsupported pixel format\n";
+                                std::cerr << "Error: cannot load texture from file: " << tex_filename << '\n';
                             }
-
-                            mod.textures.push_back(std::move(tex));
                         }
                         else
                         {
-                            std::cerr << "Error: cannot load texture from file: " << tex_filename << '\n';
+                            // File is already loaded and we have created a texture,
+                            // just push another reference to it!
+                            auto& loaded_tex = tex_it->second;
+                            mod.textures.push_back(typename tex_type::ref_type(loaded_tex));
                         }
                     }
                     else
@@ -477,7 +491,9 @@ void load_obj(std::string const& filename, model& mod)
                 // if no texture was loaded, insert an empty dummy
                 if (mod.textures.size() < mod.materials.size())
                 {
-                    mod.textures.push_back(tex_type(0, 0));
+                    typename tex_type::ref_type tex;
+                    tex.resize(0, 0);
+                    mod.textures.push_back(tex);
                 }
 
                 assert( mod.textures.size() == mod.materials.size() );
