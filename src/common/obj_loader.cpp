@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <iostream>
 #include <limits>
+#include <ostream>
 #include <map>
 #include <utility>
 
@@ -393,6 +394,8 @@ void load_obj(std::string const& filename, model& mod)
             auto mat_it = matlib.find(std::string(mtl_name));
             if (mat_it != matlib.end())
             {
+                typedef model::tex_list::value_type tex_type;
+
                 plastic<float> mat;
                 mat.set_ca( from_rgb(mat_it->second.ka) );
                 mat.set_cd( from_rgb(mat_it->second.kd) );
@@ -403,49 +406,59 @@ void load_obj(std::string const& filename, model& mod)
                 mat.set_specular_exp( mat_it->second.ns );
                 mod.materials.push_back(mat);
 
-                typedef model::tex_list::value_type tex_type;
-                boost::filesystem::path p(filename);
-                std::string tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
-                std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
-
-                if (!mat_it->second.map_kd.empty() && boost::filesystem::exists(tex_filename))
+                if (!mat_it->second.map_kd.empty()) // File path specified in mtl file
                 {
-                    image img;
-                    if (img.load(tex_filename))
-                    {
-                        tex_type tex(img.width(), img.height());
-                        tex.set_address_mode( Wrap );
-                        tex.set_filter_mode( Linear );
+                    boost::filesystem::path p(filename);
+                    std::string tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
+                    std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
 
-                        if (img.format() == PF_RGBA16UI)
+                    if (boost::filesystem::exists(tex_filename))
+                    {
+                        image img;
+                        if (img.load(tex_filename))
                         {
-                            // Get rid of alpha channel and down-convert to 8-bit
-                            auto data_ptr = reinterpret_cast<vector<4, unorm<16>> const*>(img.data());
-                            tex.set_data(data_ptr, PF_RGBA16UI, PF_RGB8, PremultiplyAlpha);
-                        }
-                        else if (img.format() == PF_RGBA8)
-                        {
-                            // Just get rid of alpha channel
-                            auto data_ptr = reinterpret_cast<vector<4, unorm< 8>> const*>(img.data());
-                            tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
-                        }
-                        else if (img.format() == PF_RGB16UI)
-                        {
-                            // Down-convert to 8-bit
-                            auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
-                            tex.set_data(data_ptr, PF_RGB16UI, PF_RGB8);
-                        }
-                        else if (img.format() == PF_RGB8)
-                        {
-                            auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
-                            tex.set_data(data_ptr);
+                            tex_type tex(img.width(), img.height());
+                            tex.set_address_mode( Wrap );
+                            tex.set_filter_mode( Linear );
+
+                            if (img.format() == PF_RGBA16UI)
+                            {
+                                // Get rid of alpha channel and down-convert to 8-bit
+                                auto data_ptr = reinterpret_cast<vector<4, unorm<16>> const*>(img.data());
+                                tex.set_data(data_ptr, PF_RGBA16UI, PF_RGB8, PremultiplyAlpha);
+                            }
+                            else if (img.format() == PF_RGBA8)
+                            {
+                                // Just get rid of alpha channel
+                                auto data_ptr = reinterpret_cast<vector<4, unorm< 8>> const*>(img.data());
+                                tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
+                            }
+                            else if (img.format() == PF_RGB16UI)
+                            {
+                                // Down-convert to 8-bit
+                                auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
+                                tex.set_data(data_ptr, PF_RGB16UI, PF_RGB8);
+                            }
+                            else if (img.format() == PF_RGB8)
+                            {
+                                auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
+                                tex.set_data(data_ptr);
+                            }
+                            else
+                            {
+                                std::cerr << "Error: unsupported pixel format\n";
+                            }
+
+                            mod.textures.push_back(std::move(tex));
                         }
                         else
                         {
-                            assert( 0 /* TODO */ );
+                            std::cerr << "Error: cannot load texture from file: " << tex_filename << '\n';
                         }
-
-                        mod.textures.push_back(std::move(tex));
+                    }
+                    else
+                    {
+                        std::cerr << "Error: file does not exist: " << tex_filename << '\n';
                     }
                 }
 
