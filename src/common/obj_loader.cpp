@@ -408,9 +408,21 @@ void load_obj(std::string const& filename, model& mod)
 
                 if (!mat_it->second.map_kd.empty()) // File path specified in mtl file
                 {
-                    boost::filesystem::path p(filename);
-                    std::string tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
-                    std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
+                    std::string tex_filename;
+
+                    boost::filesystem::path kdp(mat_it->second.map_kd);
+
+                    if (kdp.is_absolute())
+                    {
+                        tex_filename = kdp.string();
+                    }
+                    else
+                    {
+                        // Find texture relative to the path the obj file is located in
+                        boost::filesystem::path p(filename);
+                        tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
+                        std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
+                    }
 
                     if (boost::filesystem::exists(tex_filename))
                     {
