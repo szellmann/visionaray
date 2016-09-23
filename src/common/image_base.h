@@ -9,8 +9,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
-#include <vector>
 
+#include <visionaray/aligned_vector.h>
 #include <visionaray/pixel_format.h>
 
 namespace visionaray
@@ -41,7 +41,7 @@ protected:
 
     pixel_format format_ = PF_RGB8;
 
-    std::vector<uint8_t> data_;
+    aligned_vector<uint8_t> data_;
 
 };
 
