@@ -473,18 +473,19 @@ void load_obj(std::string const& filename, model& mod)
                                 }
 
                                 mod.texture_map.insert(std::make_pair(mat_it->second.map_kd, std::move(tex)));
-                                auto& loaded_tex = mod.texture_map.find(mat_it->second.map_kd)->second;
-                                mod.textures.push_back(typename tex_type::ref_type(loaded_tex));
+                                // Will be ref()'d below
+                                tex_it = mod.texture_map.find(mat_it->second.map_kd);
                             }
                             else
                             {
                                 std::cerr << "Error: cannot load texture from file: " << tex_filename << '\n';
                             }
                         }
-                        else
+
+                        if (tex_it != mod.texture_map.end())
                         {
-                            // File is already loaded and we have created a texture,
-                            // just push another reference to it!
+                            // File was already present in map or was
+                            // just loaded. Push a reference to it!
                             auto& loaded_tex = tex_it->second;
                             mod.textures.push_back(typename tex_type::ref_type(loaded_tex));
                         }
