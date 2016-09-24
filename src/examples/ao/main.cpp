@@ -61,7 +61,7 @@ struct renderer : viewer_type
     std::string                                 filename;
 
     model mod;
-    index_bvh<model::triangle_list::value_type> host_bvh;
+    index_bvh<model::triangle_type>             host_bvh;
     unsigned                                    frame_num       = 0;
 
 protected:
@@ -93,7 +93,7 @@ void renderer::on_display()
             );
 
 
-    using bvh_ref = index_bvh<model::triangle_list::value_type>::bvh_ref;
+    using bvh_ref = index_bvh<model::triangle_type>::bvh_ref;
 
     std::vector<bvh_ref> bvhs;
     bvhs.push_back(host_bvh.ref());
@@ -126,7 +126,7 @@ void renderer::on_display()
             auto n = get_normal(
                 mod.geometric_normals.data(),
                 hit_rec,
-                index_bvh<model::triangle_list::value_type>{},
+                index_bvh<model::triangle_type>{},
                 normals_per_face_binding{}
                 );
 
@@ -248,7 +248,7 @@ int main(int argc, char** argv)
 
     std::cout << "Creating BVH...\n";
 
-    rend.host_bvh = build<index_bvh<model::triangle_list::value_type>>(
+    rend.host_bvh = build<index_bvh<model::triangle_type>>(
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
             );

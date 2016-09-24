@@ -45,7 +45,7 @@ struct renderer : viewer_type
 {
 #ifdef __CUDACC__
     using ray_type = basic_ray<float>;
-    using device_bvh_type = cuda_index_bvh<model::triangle_list::value_type>;
+    using device_bvh_type = cuda_index_bvh<model::triangle_type>;
 #else
     using ray_type = basic_ray<simd::float4>;
 #endif
@@ -71,7 +71,7 @@ struct renderer : viewer_type
     tiled_sched<ray_type>                                   host_sched;
 
     model mod;
-    index_bvh<model::triangle_list::value_type>             host_bvh;
+    index_bvh<model::triangle_type>                         host_bvh;
 
 #ifdef __CUDACC__
     cuda_sched<ray_type>                                    device_sched;
@@ -265,7 +265,7 @@ void renderer::on_display()
 #endif
 
 
-    using bvh_ref = index_bvh<model::triangle_list::value_type>::bvh_ref;
+    using bvh_ref = index_bvh<model::triangle_type>::bvh_ref;
 
     std::vector<bvh_ref> bvhs;
     bvhs.push_back(host_bvh.ref());
@@ -387,7 +387,7 @@ int main(int argc, char** argv)
 
     std::cout << "Creating BVH...\n";
 
-    rend.host_bvh = build<index_bvh<model::triangle_list::value_type>>(
+    rend.host_bvh = build<index_bvh<model::triangle_type>>(
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
             );

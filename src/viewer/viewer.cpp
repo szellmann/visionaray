@@ -85,9 +85,9 @@ struct renderer : viewer_type
     using ray_type_cpu              = basic_ray<scalar_type_cpu>;
     using ray_type_gpu              = basic_ray<scalar_type_gpu>;
 
-    using primitive_type            = model::triangle_list::value_type;
-    using normal_type               = model::normal_list::value_type;
-    using material_type             = model::mat_list::value_type;
+    using primitive_type            = model::triangle_type;
+    using normal_type               = model::normal_type;
+    using material_type             = model::material_type;
 
     using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
     using host_bvh_type             = index_bvh<primitive_type>;
@@ -467,8 +467,6 @@ void renderer::on_display()
     auto diagonal   = bounds.max - bounds.min;
     auto bounces    = algo == Pathtracing ? 10U : 4U;
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
-
-    vec4 bg_color(0.1, 0.4, 1.0, 1.0);
 
     if (dev_type == renderer::GPU)
     {
