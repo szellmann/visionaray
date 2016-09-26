@@ -490,9 +490,9 @@ void renderer::on_display()
                 thrust::raw_pointer_cast(device_primitives.data()),
                 thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
                 thrust::raw_pointer_cast(device_normals.data()),
-              thrust::raw_pointer_cast(device_tex_coords.data()),
+//              thrust::raw_pointer_cast(device_tex_coords.data()),
                 thrust::raw_pointer_cast(device_materials.data()),
-              thrust::raw_pointer_cast(device_textures.data()),
+//              thrust::raw_pointer_cast(device_textures.data()),
                 thrust::raw_pointer_cast(device_lights.data()),
                 thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
                 bounces,
@@ -516,9 +516,9 @@ void renderer::on_display()
                 host_primitives.data(),
                 host_primitives.data() + host_primitives.size(),
                 mod.geometric_normals.data(),
-              mod.tex_coords.data(),
+//              mod.tex_coords.data(),
                 mod.materials.data(),
-              mod.textures.data(),
+//              mod.textures.data(),
                 host_lights.data(),
                 host_lights.data() + host_lights.size(),
                 bounces,
@@ -750,6 +750,7 @@ int main(int argc, char** argv)
     {
         rend.device_bvh = renderer::device_bvh_type(rend.host_bvh);
         rend.device_normals = rend.mod.geometric_normals;
+        rend.device_tex_coords = rend.mod.tex_coords;
         rend.device_materials = rend.mod.materials;
 
 
@@ -757,11 +758,11 @@ int main(int argc, char** argv)
 
         rend.device_textures.resize(rend.mod.textures.size());
 
-        for (auto const &pair_host_tex : rend.mod.texture_map)
+        for (auto const& pair_host_tex : rend.mod.texture_map)
         {
-            auto const &host_tex = pair_host_tex.second;
+            auto const& host_tex = pair_host_tex.second;
             renderer::device_tex_type device_tex(pair_host_tex.second);
-            auto const &p = rend.device_texture_map.emplace(pair_host_tex.first, std::move(device_tex));
+            auto const& p = rend.device_texture_map.emplace(pair_host_tex.first, std::move(device_tex));
 
             assert(p.second /* inserted */);
 
@@ -787,18 +788,23 @@ int main(int argc, char** argv)
         {
             if (rend.mod.textures[i].width() == 0 || rend.mod.textures[i].height() == 0)
             {
-                renderer::device_tex_type tex(nullptr, 0, 0, Clamp, Linear);
-                auto const& p = rend.device_texture_map.emplace("", std::move(tex));
-                rend.device_textures[i] = renderer::device_tex_ref_type(p.second);
+                vector<4, unorm<8>>* dummy = nullptr;
+                renderer::device_tex_type device_tex(dummy, 0, 0, Clamp, Nearest);
+                auto const& p = rend.device_texture_map.emplace("", std::move(device_tex));
+
+                assert(p.second /* inserted */);
+
+                auto it = p.first;
+                rend.device_textures[i] = renderer::device_tex_ref_type(it->second);
             }
         }
-
     }
     catch (std::bad_alloc&)
     {
         std::cerr << "GPU memory allocation failed" << std::endl;
         rend.device_bvh = renderer::device_bvh_type();
         rend.device_normals.resize(0);
+        rend.device_tex_coords.resize(0);
         rend.device_materials.resize(0);
         rend.device_textures.resize(0);
     }
