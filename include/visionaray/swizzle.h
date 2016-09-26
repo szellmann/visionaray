@@ -174,13 +174,15 @@ inline void swizzle_RGBA_to_RGB_cast_unorm(
 inline void swizzle_RGB8_to_RGBA8(
         vector<4, unorm<8>>*        dst,
         vector<3, unorm<8>> const*  src,
-        size_t                      len
+        size_t                      len,
+        swizzle_hint                hint
         )
 {
+    unsigned char a = hint == AlphaIsZero ? 0U : 255U;
     for (size_t i = 0; i < len; ++i)
     {
         auto rgb = src[i];
-        dst[i] = vector<4, unorm<8>>( rgb.x, rgb.y, rgb.z, 255U );
+        dst[i] = vector<4, unorm<8>>( rgb.x, rgb.y, rgb.z, a );
     }
 }
 
@@ -281,12 +283,13 @@ inline void swizzle_expand_types(
         pixel_format                format_dst,
         vector<3, unorm<8>> const*  src,
         pixel_format                format_src,
-        size_t                      len
+        size_t                      len,
+        swizzle_hint                hint
         )
 {
     if (format_dst == PF_RGBA8 && format_src == PF_RGB8)
     {
-        detail::swizzle_RGB8_to_RGBA8( dst, src, len );
+        detail::swizzle_RGB8_to_RGBA8( dst, src, len, hint );
     }
 }
 
