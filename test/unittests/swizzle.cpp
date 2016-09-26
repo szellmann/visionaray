@@ -186,7 +186,8 @@ TEST(Swizzle, RGB2RGBA)
             PF_RGBA8,
             rgb8.data(),
             PF_RGB8,
-            rgba8.size()
+            rgba8.size(),
+            AlphaIsOne
             );
 
     for (size_t i = 0; i < rgb8.size(); ++i)
