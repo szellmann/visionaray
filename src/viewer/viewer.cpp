@@ -781,6 +781,18 @@ int main(int argc, char** argv)
                 }
             }
         }
+
+        // Place some dummy textures where geometry has no texture
+        for (size_t i = 0; i < rend.mod.textures.size(); ++i)
+        {
+            if (rend.mod.textures[i].width() == 0 || rend.mod.textures[i].height() == 0)
+            {
+                renderer::device_tex_type tex(nullptr, 0, 0, Clamp, Linear);
+                auto const& p = rend.device_texture_map.emplace("", std::move(tex));
+                rend.device_textures[i] = renderer::device_tex_ref_type(p.second);
+            }
+        }
+
     }
     catch (std::bad_alloc&)
     {
