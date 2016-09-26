@@ -552,6 +552,15 @@ void load_obj(std::string const& filename, model& mod)
         mod.materials.emplace_back(make_default_material());
     }
 
+    // See that there is a (at least dummy) texture for each geometry
+    for (size_t i = mod.textures.size(); i <= geom_id; ++i)
+    {
+        using tex_type = model::texture_type;
+        typename tex_type::ref_type tex;
+        tex.resize(0, 0);
+        mod.textures.push_back(tex);
+    }
+
     mod.bbox = bounds(mod.primitives);
 }
 
