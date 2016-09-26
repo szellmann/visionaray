@@ -444,27 +444,29 @@ void load_obj(std::string const& filename, model& mod)
                                 tex.set_address_mode( Wrap );
                                 tex.set_filter_mode( Linear );
 
-                                if (img.format() == PF_RGBA16UI)
+                                if (img.format() == PF_RGB16UI)
                                 {
-                                    // Get rid of alpha channel and down-convert to 8-bit
-                                    auto data_ptr = reinterpret_cast<vector<4, unorm<16>> const*>(img.data());
-                                    tex.set_data(data_ptr, PF_RGBA16UI, PF_RGB8, PremultiplyAlpha);
+                                    // Down-convert to 8-bit, add alpha=1.0
+                                    auto data_ptr = reinterpret_cast<vector<3, unorm<16>> const*>(img.data());
+                                    tex.set_data(data_ptr, PF_RGB16UI, PF_RGBA8, AlphaIsOne);
                                 }
-                                else if (img.format() == PF_RGBA8)
-                                {
-                                    // Just get rid of alpha channel
-                                    auto data_ptr = reinterpret_cast<vector<4, unorm< 8>> const*>(img.data());
-                                    tex.set_data(data_ptr, PF_RGBA8, PF_RGB8, PremultiplyAlpha);
-                                }
-                                else if (img.format() == PF_RGB16UI)
+
+                                else if (img.format() == PF_RGBA16UI)
                                 {
                                     // Down-convert to 8-bit
-                                    auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
-                                    tex.set_data(data_ptr, PF_RGB16UI, PF_RGB8);
+                                    auto data_ptr = reinterpret_cast<vector<4, unorm<16>> const*>(img.data());
+                                    tex.set_data(data_ptr, PF_RGBA16UI, PF_RGBA8);
                                 }
                                 else if (img.format() == PF_RGB8)
                                 {
-                                    auto data_ptr = reinterpret_cast<tex_type::value_type const*>(img.data());
+                                    // Add alpha=1.0
+                                    auto data_ptr = reinterpret_cast<vector<3, unorm< 8>> const*>(img.data());
+                                    tex.set_data(data_ptr, PF_RGB8, PF_RGBA8, AlphaIsOne);
+                                }
+                                else if (img.format() == PF_RGBA8)
+                                {
+                                    // "Native" texture format
+                                    auto data_ptr = reinterpret_cast<vector<4, unorm< 8>> const*>(img.data());
                                     tex.set_data(data_ptr);
                                 }
                                 else
