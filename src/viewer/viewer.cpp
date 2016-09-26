@@ -1,11 +1,13 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cassert>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <istream>
 #include <ostream>
+#include <map>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -87,6 +89,7 @@ struct renderer : viewer_type
 
     using primitive_type            = model::triangle_type;
     using normal_type               = model::normal_type;
+    using tex_coord_type            = model::tex_coord_type;
     using material_type             = model::material_type;
 
     using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
@@ -94,6 +97,8 @@ struct renderer : viewer_type
 #ifdef __CUDACC__
     using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
     using device_bvh_type           = cuda_index_bvh<primitive_type>;
+    using device_tex_type           = cuda_texture<vector<4, unorm<8>>, 2>;
+    using device_tex_ref_type       = typename device_tex_type::ref_type;
 #endif
 
     enum device_type
@@ -164,46 +169,49 @@ struct renderer : viewer_type
     }
 
 
-    int                                     w               = 800;
-    int                                     h               = 800;
-    unsigned                                frame_num       = 0;
-    unsigned                                ssaa_samples    = 1;
-    algorithm                               algo            = Simple;
-    device_type                             dev_type        = CPU;
-    bool                                    show_hud        = true;
-    bool                                    show_hud_ext    = true;
-    bool                                    show_bvh        = false;
+    int                                         w               = 800;
+    int                                         h               = 800;
+    unsigned                                    frame_num       = 0;
+    unsigned                                    ssaa_samples    = 1;
+    algorithm                                   algo            = Simple;
+    device_type                                 dev_type        = CPU;
+    bool                                        show_hud        = true;
+    bool                                        show_hud_ext    = true;
+    bool                                        show_bvh        = false;
 
 
-    std::string                             filename;
-    std::string                             initial_camera;
+    std::string                                 filename;
+    std::string                                 initial_camera;
 
-    model                                   mod;
+    model                                       mod;
 
-    host_bvh_type                           host_bvh;
+    host_bvh_type                               host_bvh;
 #ifdef __CUDACC__
-    device_bvh_type                         device_bvh;
-    thrust::device_vector<normal_type>      device_normals;
-    thrust::device_vector<material_type>    device_materials;
+    device_bvh_type                             device_bvh;
+    thrust::device_vector<normal_type>          device_normals;
+    thrust::device_vector<tex_coord_type>       device_tex_coords;
+    thrust::device_vector<material_type>        device_materials;
+    std::map<std::string, device_tex_type>      device_texture_map;
+    thrust::device_vector<device_tex_ref_type>  device_textures;
 #endif
 
 #if defined(__MINGW32__) || defined(__MINGW64__)
-    tbb_sched<ray_type_cpu>                 host_sched;
+    tbb_sched<ray_type_cpu>                     host_sched;
 #else
-    tiled_sched<ray_type_cpu>               host_sched;
+    tiled_sched<ray_type_cpu>                   host_sched;
 #endif
-    host_render_target_type                 host_rt;
+    host_render_target_type                     host_rt;
 #ifdef __CUDACC__
-    cuda_sched<ray_type_gpu>                device_sched;
-    device_render_target_type               device_rt;
+    cuda_sched<ray_type_gpu>                    device_sched;
+    device_render_target_type                   device_rt;
 #endif
-    camera                                  cam;
+    camera                                      cam;
 
-    mouse::pos                              mouse_pos;
+    mouse::pos                                  mouse_pos;
 
-    visionaray::frame_counter               counter;
-    detail::bvh_outline_renderer            outlines;
-    gl::debug_callback                      gl_debug_callback;
+    visionaray::frame_counter                   counter;
+    detail::bvh_outline_renderer                outlines;
+    gl::debug_callback                          gl_debug_callback;
 
 protected:
 
@@ -482,7 +490,9 @@ void renderer::on_display()
                 thrust::raw_pointer_cast(device_primitives.data()),
                 thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
                 thrust::raw_pointer_cast(device_normals.data()),
+              thrust::raw_pointer_cast(device_tex_coords.data()),
                 thrust::raw_pointer_cast(device_materials.data()),
+              thrust::raw_pointer_cast(device_textures.data()),
                 thrust::raw_pointer_cast(device_lights.data()),
                 thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
                 bounces,
@@ -506,9 +516,9 @@ void renderer::on_display()
                 host_primitives.data(),
                 host_primitives.data() + host_primitives.size(),
                 mod.geometric_normals.data(),
-//              mod.tex_coords.data(),
+              mod.tex_coords.data(),
                 mod.materials.data(),
-//              mod.textures.data(),
+              mod.textures.data(),
                 host_lights.data(),
                 host_lights.data() + host_lights.size(),
                 bounces,
@@ -741,6 +751,36 @@ int main(int argc, char** argv)
         rend.device_bvh = renderer::device_bvh_type(rend.host_bvh);
         rend.device_normals = rend.mod.geometric_normals;
         rend.device_materials = rend.mod.materials;
+
+
+        // Copy textures and texture references to the GPU
+
+        rend.device_textures.resize(rend.mod.textures.size());
+
+        for (auto const &pair_host_tex : rend.mod.texture_map)
+        {
+            auto const &host_tex = pair_host_tex.second;
+            renderer::device_tex_type device_tex(pair_host_tex.second);
+            auto const &p = rend.device_texture_map.emplace(pair_host_tex.first, std::move(device_tex));
+
+            assert(p.second /* inserted */);
+
+            auto it = p.first;
+
+            // Texture references ensure that we don't allocate storage
+            // for the same texture map more than once.
+            // By checking if the pointer in the ref contains the
+            // address of the first texel of the map, we can identify
+            // which texture_ref references which texture and recreate
+            // that relation on the GPU.
+            for (size_t i = 0; i < rend.mod.textures.size(); ++i)
+            {
+                if (rend.mod.textures[i].data() == host_tex.data())
+                {
+                    rend.device_textures[i] = renderer::device_tex_ref_type(it->second);
+                }
+            }
+        }
     }
     catch (std::bad_alloc&)
     {
@@ -748,6 +788,7 @@ int main(int argc, char** argv)
         rend.device_bvh = renderer::device_bvh_type();
         rend.device_normals.resize(0);
         rend.device_materials.resize(0);
+        rend.device_textures.resize(0);
     }
 #endif
 
