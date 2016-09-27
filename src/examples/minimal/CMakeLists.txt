@@ -1,7 +1,7 @@
-set(MIN_SOURCES
+set(EX_MINIMAL_SOURCES
     main.cpp
 )
 
 visionaray_add_executable(minimal
-    ${MIN_SOURCES}
+    ${EX_MINIMAL_SOURCES}
 )
