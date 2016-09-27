@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <cassert>
+#include <exception>
 #include <memory>
 
 #include <GL/glew.h>
