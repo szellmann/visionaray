@@ -185,8 +185,8 @@ template <
 VSNRAY_FUNC
 inline auto any_hit(
         R const&        r,
-        Primitive       begin,
-        Primitive       end,
+        Primitives      begin,
+        Primitives      end,
         Intersector&    isect
         )
     -> decltype( detail::traverse<detail::AnyHit>(
