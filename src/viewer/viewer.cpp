@@ -791,12 +791,24 @@ int main(int argc, char** argv)
             {
                 vector<4, unorm<8>>* dummy = nullptr;
                 renderer::device_tex_type device_tex(dummy, 0, 0, Clamp, Nearest);
-                auto const& p = rend.device_texture_map.emplace("", std::move(device_tex));
 
-                assert(p.second /* inserted */);
+                // Try to insert the dummy texture into the
+                // device texture map...
+                auto p = rend.device_texture_map.emplace("", std::move(device_tex));
 
-                auto it = p.first;
-                rend.device_textures[i] = renderer::device_tex_ref_type(it->second);
+                // ... but maybe a dummy texture was already
+                // inserted, then just find that
+                if (!p.second)
+                {
+                    auto it = rend.device_texture_map.find("");
+                    rend.device_textures[i] = renderer::device_tex_ref_type(it->second);
+
+                }
+                else
+                {
+                    auto it = p.first;
+                    rend.device_textures[i] = renderer::device_tex_ref_type(it->second);
+                }
             }
         }
     }
