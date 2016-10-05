@@ -8,7 +8,7 @@
 
 #include "math/math.h"
 #include "fresnel.h"
-#include "mc.h"
+#include "sampling.h"
 #include "spectrum.h"
 
 namespace visionaray

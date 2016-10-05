@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_MC_H
-#define VSNRAY_MC_H 1
+#ifndef VSNRAY_SAMPLING_H
+#define VSNRAY_SAMPLING_H 1
 
 #ifdef __CUDA_ARCH__
 #include <thrust/random.h>
@@ -168,4 +168,4 @@ inline vector<3, T> cosine_sample_hemisphere(T u1, T u2)
 
 } // visionaray
 
-#endif // VSNRAY_MC_H
+#endif // VSNRAY_SAMPLING_H

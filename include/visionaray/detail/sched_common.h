@@ -9,11 +9,11 @@
 #include <array>
 #include <chrono>
 
-#include <visionaray/mc.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/render_target.h>
 #include <visionaray/result_record.h>
+#include <visionaray/sampling.h>
 #include <visionaray/scheduler.h>
 
 #include "macros.h"

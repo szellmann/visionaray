@@ -207,7 +207,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/intersector.h
     ${HEADER_DIR}/kernels.h
     ${HEADER_DIR}/material.h
-    ${HEADER_DIR}/mc.h
     ${HEADER_DIR}/packet_traits.h
     ${HEADER_DIR}/pixel_format.h
     ${HEADER_DIR}/pixel_traits.h
@@ -215,6 +214,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/point_light.h
     ${HEADER_DIR}/prim_traits.h
     ${HEADER_DIR}/render_target.h
+    ${HEADER_DIR}/sampling.h
     ${HEADER_DIR}/scheduler.h
     ${HEADER_DIR}/shade_record.h
     ${HEADER_DIR}/simple_buffer_rt.h
