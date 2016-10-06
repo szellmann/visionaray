@@ -1,3 +1,20 @@
+#.rst:
+# FindVisionaray
+# --------------
+#
+# Find the Visionaray ray tracing library
+#
+# Result Variables
+# ^^^^^^^^^^^^^^^^
+#
+# This module defines the following variables:
+#
+# ::
+#
+# VISIONARAY_INCLUDE_DIR - include directories of Visionaray
+# VISIONARAY_LIBRARIES - libraries to link against Visionaray
+# VISIONARAY_FOUND - true if Visionaray has been found and can be used
+
 include(FindPackageHandleStandardArgs)
 
 set(paths
