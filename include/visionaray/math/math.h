@@ -17,6 +17,7 @@
 #include "matrix.h"
 #include "norm.h"
 #include "plane.h"
+#include "primitive.h"
 #include "project.h"
 #include "quaternion.h"
 #include "ray.h"
