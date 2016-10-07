@@ -7,7 +7,7 @@
 #define VSNRAY_SPOT_LIGHT_H 1
 
 #include "detail/macros.h"
-#include "math/math.h"
+#include "math/vector.h"
 
 namespace visionaray
 {
