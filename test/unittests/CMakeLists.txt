@@ -98,6 +98,7 @@ set(UNITTESTS_SOURCES
     generic_primitive.cpp
     get_normal.cpp
     render_target.cpp
+    sampling.cpp
     swizzle.cpp
     variant.cpp
     version.cpp
