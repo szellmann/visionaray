@@ -16,6 +16,40 @@
 
 namespace visionaray
 {
+namespace detail
+{
+
+//-------------------------------------------------------------------------------------------------
+// Compute the radical inverse of a nonnegative integer
+//
+// d1|d2|d3|d4 ==> 0.d4|d3|d2|d1, where di in [0..Base)
+//
+
+template <
+    unsigned Base,
+    typename I,
+    typename F = simd::float_type_t<I>
+    >
+VSNRAY_FUNC
+inline F radical_inverse(I n)
+{
+    F result(0.0);
+    F inv_base(1.0f / Base);
+    F inv_bi = inv_base;
+
+    while (any(n > 0))
+    {
+        F digit = convert_to_float(n % Base);
+        result += digit * inv_bi;
+        n /= I(Base);
+        inv_bi *= inv_base;
+    }
+
+    return result;
+}
+
+} // detail
+
 
 //-------------------------------------------------------------------------------------------------
 // sampler classes
