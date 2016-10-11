@@ -1,11 +1,14 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <algorithm>
 #include <cassert>
+#include <cctype>
 #include <cstddef>
 #include <cstdint>
 #include <fstream>
 #include <string>
+#include <vector>
 
 #if 1//ndef NDEBUG
 #include <iostream>
@@ -22,6 +25,49 @@ namespace visionaray
 //-------------------------------------------------------------------------------------------------
 // Helper functions
 //
+
+static void load_ascii_rgb(
+        uint8_t*        dst,
+        std::ifstream&  file,
+        size_t          width,
+        size_t          height,
+        int             /*max_value*/
+        )
+{
+//  assert(max_value < 256);    // TODO: 16-bit
+//  assert(max_value == 255);   // TODO: scaling
+
+    for (size_t y = 0; y < height; ++y)
+    {
+        std::string line;
+        std::getline(file, line);
+
+        std::vector<std::string> tokens;
+        boost::algorithm::split(
+                tokens,
+                line,
+                boost::algorithm::is_any_of(" \t")
+                );
+
+        // Remove empty tokens and  spaces
+        tokens.erase(
+                std::remove_if(
+                        tokens.begin(),
+                        tokens.end(),
+                        [](std::string str) { return str.empty() || std::isspace(str[0]); }
+                        ),
+                tokens.end()
+                );
+
+        size_t pitch = width * 3;
+        assert(tokens.size() == pitch);
+
+        for (size_t x = 0; x < pitch; ++x)
+        {
+            dst[y * pitch + x] = static_cast<uint8_t>(std::stoi(tokens[x]));
+        }
+    }
+}
 
 static void load_binary_rgb(
         uint8_t*        dst,
@@ -129,6 +175,21 @@ bool pnm_image::load(std::string const& filename)
         format_ = PF_UNSPECIFIED;
         data_.resize(0);
         return false;
+
+    case P3:
+        assert(max_value < 256);
+        assert(max_value == 255);
+        format_ = PF_RGB8;
+        data_.resize(width_ * height_ * 3);
+
+        load_ascii_rgb(
+                data_.data(),
+                file,
+                width_,
+                height_,
+                max_value
+                );
+        return true;
 
     case P6:
         assert(max_value < 256);
