@@ -65,6 +65,49 @@ static void load_ascii_bw(
     }
 }
 
+static void load_ascii_gray(
+        uint8_t*        dst,
+        std::ifstream&  file,
+        size_t          width,
+        size_t          height,
+        int             /*max_value*/
+        )
+{
+//  assert(max_value < 256);    // TODO: 16-bit
+//  assert(max_value == 255);   // TODO: scaling
+
+    for (size_t y = 0; y < height; ++y)
+    {
+        std::string line;
+        std::getline(file, line);
+
+        std::vector<std::string> tokens;
+        boost::algorithm::split(
+                tokens,
+                line,
+                boost::algorithm::is_any_of(" \t")
+                );
+
+        // Remove empty tokens and  spaces
+        tokens.erase(
+                std::remove_if(
+                        tokens.begin(),
+                        tokens.end(),
+                        [](std::string str) { return str.empty() || std::isspace(str[0]); }
+                        ),
+                tokens.end()
+                );
+
+        size_t pitch = width;
+        assert(tokens.size() == pitch);
+
+        for (size_t x = 0; x < pitch; ++x)
+        {
+            dst[y * pitch + x] = static_cast<uint8_t>(std::stoi(tokens[x]));
+        }
+    }
+}
+
 static void load_ascii_rgb(
         uint8_t*        dst,
         std::ifstream&  file,
@@ -236,6 +279,19 @@ bool pnm_image::load(std::string const& filename)
                 file,
                 width_,
                 height_
+                );
+        return true;
+
+    case P2:
+        format_ = PF_R8;
+        data_.resize(width_ * height_);
+
+        load_ascii_gray(
+                data_.data(),
+                file,
+                width_,
+                height_,
+                max_value
                 );
         return true;
 
