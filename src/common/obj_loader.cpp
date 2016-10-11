@@ -457,6 +457,12 @@ void load_obj(std::string const& filename, model& mod)
                                     auto data_ptr = reinterpret_cast<vector<4, unorm<16>> const*>(img.data());
                                     tex.set_data(data_ptr, PF_RGBA16UI, PF_RGBA8);
                                 }
+                                else if (img.format() == PF_R8)
+                                {
+                                    // Let RGB=R and add alpha=1.0
+                                    auto data_ptr = reinterpret_cast<unorm< 8> const*>(img.data());
+                                    tex.set_data(data_ptr, PF_R8, PF_RGBA8, AlphaIsOne);
+                                }
                                 else if (img.format() == PF_RGB8)
                                 {
                                     // Add alpha=1.0
