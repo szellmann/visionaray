@@ -158,7 +158,7 @@ void renderer::on_display()
                         ao_ray,
                         prims_begin,
                         prims_end,
-                        R::scalar_type(radius)
+                        radius
                         );
 
                 clr = select(
