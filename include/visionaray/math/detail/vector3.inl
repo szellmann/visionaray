@@ -390,7 +390,7 @@ template <typename T>
 MATH_FUNC
 inline T hmul(vector<3, T> const& u)
 {
-    return u.x * u.y * y.z;
+    return u.x * u.y * u.z;
 }
 
 
