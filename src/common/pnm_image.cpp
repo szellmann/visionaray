@@ -29,12 +29,11 @@ static void load_ascii(
         std::ifstream&  file,
         size_t          pitch,
         size_t          height,
-        int             /*max_value*/,
+        int             max_value,
         AssignFunc      assign_func // specifies how to handle color components
         )
 {
-//  assert(max_value < 256);    // TODO: 16-bit
-//  assert(max_value == 255);   // TODO: scaling
+    assert(max_value < 256);    // TODO: 16-bit
 
     for (size_t y = 0; y < height; ++y)
     {
@@ -62,7 +61,14 @@ static void load_ascii(
 
         for (size_t x = 0; x < pitch; ++x)
         {
-            dst[y * pitch + x] = assign_func(std::stoi(tokens[x]));
+            int val = std::stoi(tokens[x]);
+            if (max_value != 255)
+            {
+                double n = val / static_cast<double>(max_value); // scale down to [0..1]
+                val = static_cast<int>(n * 255);                 // scale up to [0..255]
+            }
+
+            dst[y * pitch + x] = assign_func(val);
         }
     }
 }
