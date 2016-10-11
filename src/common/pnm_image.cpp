@@ -239,8 +239,6 @@ bool pnm_image::load(std::string const& filename)
         return true;
 
     case P3:
-        assert(max_value < 256);
-        assert(max_value == 255);
         format_ = PF_RGB8;
         data_.resize(width_ * height_ * 3);
 
@@ -272,8 +270,6 @@ bool pnm_image::load(std::string const& filename)
         return true;
 
     case P6:
-        assert(max_value < 256);
-        assert(max_value == 255);
         format_ = PF_RGB8;
         data_.resize(width_ * height_ * 3);
 
