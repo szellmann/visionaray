@@ -73,7 +73,7 @@ static void load_ascii(
     }
 }
 
-static void load_binary_rgb(
+static void load_binary(
         uint8_t*        dst,
         std::ifstream&  file,
         size_t          pitch,
@@ -258,13 +258,26 @@ bool pnm_image::load(std::string const& filename)
                 );
         return true;
 
+    case P5:
+        format_ = PF_R8;
+        data_.resize(width_ * height_);
+
+        load_binary(
+                data_.data(),
+                file,
+                width_,
+                height_,
+                max_value
+                );
+        return true;
+
     case P6:
         assert(max_value < 256);
         assert(max_value == 255);
         format_ = PF_RGB8;
         data_.resize(width_ * height_ * 3);
 
-        load_binary_rgb(
+        load_binary(
                 data_.data(),
                 file,
                 width_ * 3,
