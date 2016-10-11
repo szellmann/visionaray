@@ -16,10 +16,11 @@ namespace visionaray
 
 enum swizzle_hint
 {
-    PremultiplyAlpha,
-    TruncateAlpha,
-    AlphaIsZero,
-    AlphaIsOne
+    ExpandRGB               = 1,
+    PremultiplyAlpha        = 2,
+    TruncateAlpha           = 4,
+    AlphaIsZero             = 8,
+    AlphaIsOne              = 16
 };
 
 
