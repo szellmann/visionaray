@@ -7,13 +7,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <fstream>
-#include <string>
-#include <vector>
-
-#if 1//ndef NDEBUG
 #include <iostream>
 #include <ostream>
-#endif
+#include <string>
+#include <vector>
 
 #include <boost/algorithm/string.hpp>
 
