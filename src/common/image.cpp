@@ -46,9 +46,9 @@ static image_type get_type(std::string const& filename)
 
     // PNM
 
-    static const std::string pnm_extensions[] = { ".ppm", ".PPM" };
+    static const std::string pnm_extensions[] = { ".ppm", ".pbm", ".PPM", ".PBM" };
 
-    if (std::find(pnm_extensions, pnm_extensions + 2, p.extension()) != pnm_extensions + 2)
+    if (std::find(pnm_extensions, pnm_extensions + 4, p.extension()) != pnm_extensions + 4)
     {
         return PNM;
     }
