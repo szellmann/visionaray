@@ -349,6 +349,13 @@ inline vector<2, T> hadd(vector<2, T> const& u)
     return u.x + u.y;
 }
 
+template <typename T>
+MATH_FUNC
+inline vector<2, T> hmul(vector<2, T> const& u)
+{
+    return u.x * u.y;
+}
+
 
 namespace simd
 {
