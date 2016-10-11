@@ -83,7 +83,7 @@ bool pnm_image::load(std::string const& filename)
             boost::algorithm::split(
                     tokens,
                     line,
-                    boost::algorithm::is_any_of(" \f\n\r\t\v")
+                    boost::algorithm::is_any_of(" \t")
                     );
 
             if (tokens.size() != 2)
