@@ -78,13 +78,23 @@ static void load_binary_rgb(
         std::ifstream&  file,
         size_t          pitch,
         size_t          height,
-        int             /*max_value*/
+        int             max_value
         )
 {
-//  assert(max_value < 256);    // TODO: 16-bit
-//  assert(max_value == 255);   // TODO: scaling
+    assert(max_value < 256);    // TODO: 16-bit
 
     file.read(reinterpret_cast<char*>(dst), pitch * height);
+
+    if (max_value != 255)
+    {
+        double scale = (1.0 / max_value) * 255;
+
+        size_t size = height * pitch;
+        for (size_t i = 0; i < size; ++i)
+        {
+            dst[i] = static_cast<uint8_t>(dst[i] * scale);
+        }
+    }
 }
 
 
