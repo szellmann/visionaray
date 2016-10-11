@@ -113,7 +113,12 @@ bool pnm_image::load(std::string const& filename)
 
     format fmt = static_cast<format>(line[1] - '0');
 
-    // Width and height
+    // Header
+    int header[3]; // width, height, max. value
+    int index = 0;
+
+    bool is_bitmap = (fmt == P1 || fmt == P4);
+
     for (;;)
     {
         std::getline(file, line);
@@ -132,39 +137,46 @@ bool pnm_image::load(std::string const& filename)
                     boost::algorithm::is_any_of(" \t")
                     );
 
-            if (tokens.size() != 2)
+            if (tokens.size() > 3)
             {
-                std::cerr << "Invalid dimensions\n";
+                std::cerr << "Invalid pnm file header\n";
                 return false;
             }
 
-            width_  = static_cast<size_t>(std::stoi(tokens[0]));
-            height_ = static_cast<size_t>(std::stoi(tokens[1]));
-
-            break;
-        }
-    }
-
-    // Max. value
-    int max_value = 255;
-    if (fmt != P1 && fmt != P4)
-    {
-        for (;;)
-        {
-            std::getline(file, line);
-
-            if (line[0] == '#')
+            for (auto t : tokens)
             {
-                // Skip comments
-                continue;
+                header[index++] = std::stoi(t);
+
+                if ((is_bitmap && index > 2) || (!is_bitmap && index > 3))
+                {
+                    std::cerr << "Invalid pnm file header\n";
+                    return false;
+                }
             }
-            else
+
+            // BitMap: width and height read ==> break
+            if (is_bitmap && index == 2)
             {
-                max_value = std::stoi(line);
+                break;
+            }
+
+            // GrayMap/PixMap: width, height and max_value read ==> break
+            if (!is_bitmap && index == 3)
+            {
                 break;
             }
         }
     }
+
+    if (header[0] <= 0 || header[1] <= 0)
+    {
+        std::cerr << "Invalid image dimensions: " << header[0] << ' ' << header[1] << '\n';
+        return false;
+    }
+
+    width_  = static_cast<size_t>(header[0]);
+    height_ = static_cast<size_t>(header[1]);
+    int max_value = header[2];
 
     switch (fmt)
     {
