@@ -23,54 +23,14 @@ namespace visionaray
 // Helper functions
 //
 
-static void load_ascii_bw(
+template <typename AssignFunc>
+static void load_ascii(
         uint8_t*        dst,
         std::ifstream&  file,
-        size_t          width,
-        size_t          height
-        )
-{
-    for (size_t y = 0; y < height; ++y)
-    {
-        std::string line;
-        std::getline(file, line);
-
-        std::vector<std::string> tokens;
-        boost::algorithm::split(
-                tokens,
-                line,
-                boost::algorithm::is_any_of(" \t")
-                );
-
-        // Remove empty tokens and  spaces
-        tokens.erase(
-                std::remove_if(
-                        tokens.begin(),
-                        tokens.end(),
-                        [](std::string str) { return str.empty() || std::isspace(str[0]); }
-                        ),
-                tokens.end()
-                );
-
-        size_t pitch = width;
-        assert(tokens.size() == pitch);
-
-        for (size_t x = 0; x < pitch; ++x)
-        {
-            int val = std::stoi(tokens[x]);
-            assert(val == 0 || val == 1);
-
-            dst[y * pitch + x] = val ? 0U : 255U;
-        }
-    }
-}
-
-static void load_ascii_gray(
-        uint8_t*        dst,
-        std::ifstream&  file,
-        size_t          width,
+        size_t          pitch,
         size_t          height,
-        int             /*max_value*/
+        int             /*max_value*/,
+        AssignFunc      assign_func // specifies how to handle color components
         )
 {
 //  assert(max_value < 256);    // TODO: 16-bit
@@ -88,7 +48,7 @@ static void load_ascii_gray(
                 boost::algorithm::is_any_of(" \t")
                 );
 
-        // Remove empty tokens and  spaces
+        // Remove empty tokens and spaces
         tokens.erase(
                 std::remove_if(
                         tokens.begin(),
@@ -98,55 +58,11 @@ static void load_ascii_gray(
                 tokens.end()
                 );
 
-        size_t pitch = width;
         assert(tokens.size() == pitch);
 
         for (size_t x = 0; x < pitch; ++x)
         {
-            dst[y * pitch + x] = static_cast<uint8_t>(std::stoi(tokens[x]));
-        }
-    }
-}
-
-static void load_ascii_rgb(
-        uint8_t*        dst,
-        std::ifstream&  file,
-        size_t          width,
-        size_t          height,
-        int             /*max_value*/
-        )
-{
-//  assert(max_value < 256);    // TODO: 16-bit
-//  assert(max_value == 255);   // TODO: scaling
-
-    for (size_t y = 0; y < height; ++y)
-    {
-        std::string line;
-        std::getline(file, line);
-
-        std::vector<std::string> tokens;
-        boost::algorithm::split(
-                tokens,
-                line,
-                boost::algorithm::is_any_of(" \t")
-                );
-
-        // Remove empty tokens and  spaces
-        tokens.erase(
-                std::remove_if(
-                        tokens.begin(),
-                        tokens.end(),
-                        [](std::string str) { return str.empty() || std::isspace(str[0]); }
-                        ),
-                tokens.end()
-                );
-
-        size_t pitch = width * 3;
-        assert(tokens.size() == pitch);
-
-        for (size_t x = 0; x < pitch; ++x)
-        {
-            dst[y * pitch + x] = static_cast<uint8_t>(std::stoi(tokens[x]));
+            dst[y * pitch + x] = assign_func(std::stoi(tokens[x]));
         }
     }
 }
@@ -154,7 +70,7 @@ static void load_ascii_rgb(
 static void load_binary_rgb(
         uint8_t*        dst,
         std::ifstream&  file,
-        size_t          width,
+        size_t          pitch,
         size_t          height,
         int             /*max_value*/
         )
@@ -162,7 +78,6 @@ static void load_binary_rgb(
 //  assert(max_value < 256);    // TODO: 16-bit
 //  assert(max_value == 255);   // TODO: scaling
 
-    size_t pitch = width * 3;
     file.read(reinterpret_cast<char*>(dst), pitch * height);
 }
 
@@ -274,11 +189,18 @@ bool pnm_image::load(std::string const& filename)
         format_ = PF_R8;
         data_.resize(width_ * height_);
 
-        load_ascii_bw(
+        // black or white
+        load_ascii(
                 data_.data(),
                 file,
                 width_,
-                height_
+                height_,
+                max_value,
+                [](int val)
+                    {
+                        assert( val == 0 || val == 1);
+                        return val ? 0U : 255U;
+                    }
                 );
         return true;
 
@@ -286,12 +208,17 @@ bool pnm_image::load(std::string const& filename)
         format_ = PF_R8;
         data_.resize(width_ * height_);
 
-        load_ascii_gray(
+        // single gray component
+        load_ascii(
                 data_.data(),
                 file,
                 width_,
                 height_,
-                max_value
+                max_value,
+                [](int val)
+                    {
+                        return static_cast<uint8_t>(val);
+                    }
                 );
         return true;
 
@@ -301,12 +228,17 @@ bool pnm_image::load(std::string const& filename)
         format_ = PF_RGB8;
         data_.resize(width_ * height_ * 3);
 
-        load_ascii_rgb(
+        // RGB color components
+        load_ascii(
                 data_.data(),
                 file,
-                width_,
+                width_ * 3,
                 height_,
-                max_value
+                max_value,
+                [](int val)
+                    {
+                        return static_cast<uint8_t>(val);
+                    }
                 );
         return true;
 
@@ -319,7 +251,7 @@ bool pnm_image::load(std::string const& filename)
         load_binary_rgb(
                 data_.data(),
                 file,
-                width_,
+                width_ * 3,
                 height_,
                 max_value
                 );
