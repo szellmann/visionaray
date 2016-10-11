@@ -78,6 +78,7 @@ set(COMMON_HEADERS
     make_unique.h
     obj_loader.h
     png_image.h
+    pnm_image.h
     tga_image.h
     tiff_image.h
     timer.h
@@ -101,6 +102,7 @@ set(COMMON_SOURCES
     jpeg_image.cpp
     obj_loader.cpp
     png_image.cpp
+    pnm_image.cpp
     tga_image.cpp
     tiff_image.cpp
     viewer_base.cpp

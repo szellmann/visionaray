@@ -9,6 +9,7 @@
 #include "image.h"
 #include "jpeg_image.h"
 #include "png_image.h"
+#include "pnm_image.h"
 #include "tga_image.h"
 #include "tiff_image.h"
 
@@ -16,7 +17,7 @@
 // Helpers
 //
 
-enum image_type { JPEG, PNG, TGA, TIFF, Unknown };
+enum image_type { JPEG, PNG, PNM, TGA, TIFF, Unknown };
 
 static image_type get_type(std::string const& filename)
 {
@@ -40,6 +41,16 @@ static image_type get_type(std::string const& filename)
     if (std::find(png_extensions, png_extensions + 2, p.extension()) != png_extensions + 2)
     {
         return PNG;
+    }
+
+
+    // PNM
+
+    static const std::string pnm_extensions[] = { ".ppm", ".PPM" };
+
+    if (std::find(pnm_extensions, pnm_extensions + 2, p.extension()) != pnm_extensions + 2)
+    {
+        return PNM;
     }
 
 
@@ -130,6 +141,20 @@ bool image::load(std::string const& filename)
 
 
     // native formats
+
+    case PNM:
+    {
+        pnm_image pnm;
+        if (pnm.load(fn))
+        {
+            width_  = pnm.width_;
+            height_ = pnm.height_;
+            format_ = pnm.format_;
+            data_   = std::move(pnm.data_);
+            return true;
+        }
+        return false;
+    }
 
     case TGA:
     {
