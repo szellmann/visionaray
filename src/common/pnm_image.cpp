@@ -26,6 +26,48 @@ namespace visionaray
 // Helper functions
 //
 
+static void load_ascii_bw(
+        uint8_t*        dst,
+        std::ifstream&  file,
+        size_t          width,
+        size_t          height
+        )
+{
+    for (size_t y = 0; y < height; ++y)
+    {
+        std::string line;
+        std::getline(file, line);
+
+        std::vector<std::string> tokens;
+        boost::algorithm::split(
+                tokens,
+                line,
+                boost::algorithm::is_any_of(" \t")
+                );
+
+        // Remove empty tokens and  spaces
+        tokens.erase(
+                std::remove_if(
+                        tokens.begin(),
+                        tokens.end(),
+                        [](std::string str) { return str.empty() || std::isspace(str[0]); }
+                        ),
+                tokens.end()
+                );
+
+        size_t pitch = width;
+        assert(tokens.size() == pitch);
+
+        for (size_t x = 0; x < pitch; ++x)
+        {
+            int val = std::stoi(tokens[x]);
+            assert(val == 0 || val == 1);
+
+            dst[y * pitch + x] = val ? 0U : 255U;
+        }
+    }
+}
+
 static void load_ascii_rgb(
         uint8_t*        dst,
         std::ifstream&  file,
@@ -187,6 +229,18 @@ bool pnm_image::load(std::string const& filename)
         format_ = PF_UNSPECIFIED;
         data_.resize(0);
         return false;
+
+    case P1:
+        format_ = PF_R8;
+        data_.resize(width_ * height_);
+
+        load_ascii_bw(
+                data_.data(),
+                file,
+                width_,
+                height_
+                );
+        return true;
 
     case P3:
         assert(max_value < 256);
