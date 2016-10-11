@@ -16,11 +16,10 @@ namespace visionaray
 
 enum swizzle_hint
 {
-    ExpandRGB               = 1,
-    PremultiplyAlpha        = 2,
-    TruncateAlpha           = 4,
-    AlphaIsZero             = 8,
-    AlphaIsOne              = 16
+    PremultiplyAlpha,
+    TruncateAlpha,
+    AlphaIsZero,
+    AlphaIsOne
 };
 
 
@@ -194,6 +193,21 @@ inline void swizzle_RGB_to_RGBA_cast_unorm(
     }
 }
 
+inline void swizzle_R8_to_RGBA8(
+        vector<4, unorm<8>>*        dst,
+        unorm<8> const*             src,
+        size_t                      len,
+        swizzle_hint                hint
+        )
+{
+    unsigned char a = hint == AlphaIsZero ? 0U : 255U;
+    for (size_t i = 0; i < len; ++i)
+    {
+        auto r = src[i];
+        dst[i] = vector<4, unorm<8>>( r, r, r, a );
+    }
+}
+
 inline void swizzle_RGB8_to_RGBA8(
         vector<4, unorm<8>>*        dst,
         vector<3, unorm<8>> const*  src,
@@ -296,6 +310,23 @@ inline void swizzle_expand_types(
     if (format_dst == PF_RGB8 && format_src == PF_RGBA16UI)
     {
         swizzle_RGBA_to_RGB_cast_unorm( dst, src, len, hint );
+    }
+}
+
+// R8 -> RGBA8, 8-bit type is unorm<8>
+
+inline void swizzle_expand_types(
+        vector<4, unorm<8>>*        dst,
+        pixel_format                format_dst,
+        unorm<8> const*             src,
+        pixel_format                format_src,
+        size_t                      len,
+        swizzle_hint                hint
+        )
+{
+    if (format_dst == PF_RGBA8 && format_src == PF_R8)
+    {
+        detail::swizzle_R8_to_RGBA8( dst, src, len, hint );
     }
 }
 
@@ -456,7 +487,7 @@ inline void swizzle(
 
 
 //-------------------------------------------------------------------------------------------------
-// Dispatch function with two arrays and a hint about how to handle alpha
+// Dispatch function with two arrays and a hint about how to handle alpha (etc.)
 //
 
 template <typename T, typename U>
