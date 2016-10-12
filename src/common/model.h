@@ -25,6 +25,7 @@ public:
     using normal_type       = vector<3, float>;
     using tex_coord_type    = vector<2, float>;
     using material_type     = plastic<float>;
+//  using material_type     = generic_material<plastic<float>, emissive<float>>;
     using texture_type      = texture<vector<4, unorm<8>>, 2>;
 
     using triangle_list     = aligned_vector<triangle_type>;

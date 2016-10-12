@@ -236,6 +236,7 @@ struct mtl
     mtl(plastic<float> m)
         : ka( to_rgb(m.get_ca() * m.get_ka()) )
         , kd( to_rgb(m.get_cd() * m.get_kd()) )
+        , ke( vec3(0.0f, 0.0f, 0.0f) )
         , ks( to_rgb(m.get_cs() * m.get_ks()) )
         , ns(m.get_specular_exp())
     {
@@ -243,6 +244,7 @@ struct mtl
 
     vec3 ka;
     vec3 kd;
+    vec3 ke;
     vec3 ks;
     float ns;
     std::string map_kd;
@@ -269,6 +271,7 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
     qi::rule<It, vec3(), skip_t> r_vec3     = qi::float_ >> qi::float_ >> qi::float_;
     qi::rule<It, vec3(), skip_t> r_ka       = "Ka" >> r_vec3                                >> qi::eol;
     qi::rule<It, vec3(), skip_t> r_kd       = "Kd" >> r_vec3                                >> qi::eol;
+    qi::rule<It, vec3(), skip_t> r_ke       = "Ke" >> r_vec3                                >> qi::eol;
     qi::rule<It, vec3(), skip_t> r_ks       = "Ks" >> r_vec3                                >> qi::eol;
     qi::rule<It, float(), skip_t> r_ns      = "Ns" >> qi::float_                            >> qi::eol;
     qi::rule<It, string(), skip_t> r_map_kd = "map_Kd" >> *(qi::char_ - qi::eol)            >> qi::eol;
@@ -299,6 +302,9 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
         else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_kd, qi::blank, mtl_it->second.kd) )
         {
         }
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_ke, qi::blank, mtl_it->second.ke) )
+        {
+        }
         else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_ks, qi::blank, mtl_it->second.ks) )
         {
         }
@@ -311,6 +317,52 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
         else if ( qi::phrase_parse(it, text.cend(), r_unhandled, qi::blank) )
         {
         }
+    }
+}
+
+//-------------------------------------------------------------------------------------------------
+// Add material to container
+//
+
+template <typename Container>
+void add_material(
+        plastic<float>  /* */,
+        Container&      cont,
+        mtl             m
+        )
+{
+    plastic<float> mat;
+    mat.set_ca( from_rgb(m.ka) );
+    mat.set_cd( from_rgb(m.kd) );
+    mat.set_cs( from_rgb(m.ks) );
+    mat.set_ka( 1.0f );
+    mat.set_kd( 1.0f );
+    mat.set_ks( 1.0f );
+    mat.set_specular_exp( m.ns );
+    cont.emplace_back(mat);
+}
+
+template <typename ...Ts, typename Container>
+void add_material(
+        generic_material<Ts...> /* */,
+        Container&              cont,
+        mtl                     m
+        )
+{
+    if (length(m.ke) > 0.0f)
+    {
+        // TODO: it is not guaranteed that generic_material
+        // was intantiated with a parameter pack that
+        // contains emissive<float> (but it is quite likely..)
+
+        emissive<float> mat;
+        mat.set_ce( from_rgb(m.ke) );
+        mat.set_ls( 1.0f );
+        cont.emplace_back(mat);
+    }
+    else
+    {
+        add_material(plastic<float>{}, cont, m);
     }
 }
 
@@ -396,15 +448,11 @@ void load_obj(std::string const& filename, model& mod)
             {
                 typedef model::texture_type tex_type;
 
-                plastic<float> mat;
-                mat.set_ca( from_rgb(mat_it->second.ka) );
-                mat.set_cd( from_rgb(mat_it->second.kd) );
-                mat.set_cs( from_rgb(mat_it->second.ks) );
-                mat.set_ka( 1.0f );
-                mat.set_kd( 1.0f );
-                mat.set_ks( 1.0f );
-                mat.set_specular_exp( mat_it->second.ns );
-                mod.materials.push_back(mat);
+                add_material(
+                        model::material_type{},
+                        mod.materials,
+                        mat_it->second
+                        );
 
                 if (!mat_it->second.map_kd.empty()) // File path specified in mtl file
                 {
