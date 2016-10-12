@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_SPD_CORNELL_H
-#define VSNRAY_SPD_CORNELL_H
+#ifndef VSNRAY_DETAIL_SPD_CORNELL_H
+#define VSNRAY_DETAIL_SPD_CORNELL_H 1
 
 #include <cassert>
 #include <cmath>
@@ -316,4 +316,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_SPD_CORNELL_H
+#endif // VSNRAY_DETAIL_SPD_CORNELL_H

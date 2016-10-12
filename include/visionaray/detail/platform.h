@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_DETAIL_PLATFORM_H
-#define VSNRAY_DETAIL_PLATFORM_H
+#define VSNRAY_DETAIL_PLATFORM_H 1
 
 #if defined(__APPLE__)
 #define VSNRAY_OS_DARWIN 1
@@ -15,5 +15,3 @@
 #endif
 
 #endif // VSNRAY_DETAIL_PLATFORM_H
-
-

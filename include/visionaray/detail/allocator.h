@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_ALLOCATOR_H
-#define VSNRAY_ALLOCATOR_H 1
+#ifndef VSNRAY_DETAIL_ALLOCATOR_H
+#define VSNRAY_DETAIL_ALLOCATOR_H 1
 
 #include "macros.h"
 
@@ -99,4 +99,4 @@ public:
 
 } // visionaray
 
-#endif // VSNRAY_ALLOCATOR_H
+#endif // VSNRAY_DETAIL_ALLOCATOR_H

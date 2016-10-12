@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_DETAIL_SEMAPHORE_H
-#define VSNRAY_DETAIL_SEMAPHORE_H
+#define VSNRAY_DETAIL_SEMAPHORE_H 1
 
 #include "platform.h"
 
@@ -91,5 +91,3 @@ private:
 
 
 #endif // VSNRAY_DETAIL_SEMAPHORE_H
-
-

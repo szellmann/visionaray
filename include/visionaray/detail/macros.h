@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_MACROS_H
-#define VSNRAY_MACROS_H 1
+#ifndef VSNRAY_DETAIL_MACROS_H
+#define VSNRAY_DETAIL_MACROS_H 1
 
 #include "compiler.h"
 
@@ -127,4 +127,4 @@ inline void VSNRAY_UNUSED(Args&&...)
 #endif
 
 
-#endif // VSNRAY_MACROS_H
+#endif // VSNRAY_DETAIL_MACROS_H

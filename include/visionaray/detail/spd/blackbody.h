@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_SPD_BLACKBODY_H
-#define VSNRAY_SPD_BLACKBODY_H
+#ifndef VSNRAY_DETAIL_SPD_BLACKBODY_H
+#define VSNRAY_DETAIL_SPD_BLACKBODY_H 1
 
 #include <cmath>
 
@@ -43,4 +43,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_SPD_BLACKBODY_H
+#endif // VSNRAY_DETAIL_SPD_BLACKBODY_H

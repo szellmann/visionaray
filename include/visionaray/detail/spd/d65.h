@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_SPD_D65_H
-#define VSNRAY_SPD_D65_H
+#ifndef VSNRAY_DETAIL_SPD_D65_H
+#define VSNRAY_DETAIL_SPD_D65_H 1
 
 #include "../../math/vector.h"
 
@@ -44,4 +44,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_SPD_D65_H
+#endif // VSNRAY_DETAIL_SPD_D65_H
