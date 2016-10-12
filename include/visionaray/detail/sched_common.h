@@ -266,8 +266,8 @@ inline std::array<R, 8> make_primary_rays(
 
 
 template <
-    typename R,
     size_t   Num,
+    typename R,
     typename PxSamplerT,
     typename Sampler,
     typename ...Args
