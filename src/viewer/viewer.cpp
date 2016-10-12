@@ -262,9 +262,10 @@ std::ostream& operator<<(std::ostream& out, camera const& cam)
 
 void renderer::clear_frame()
 {
+    frame_num = 0;
+
     if (algo == Pathtracing)
     {
-        frame_num = 0;
         host_rt.clear_color_buffer();
 #ifdef __CUDACC__
         device_rt.clear_color_buffer();
