@@ -16,12 +16,6 @@
 namespace visionaray
 {
 
-class camera_manipulator;
-class qgl_widget;
-class key_event;
-class mouse_event;
-
-
 //-------------------------------------------------------------------------------------------------
 // Windowed Qt viewer
 //

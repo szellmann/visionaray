@@ -14,10 +14,6 @@
 namespace visionaray
 {
 
-class camera_manipulator;
-class key_event;
-class mouse_event;
-
 class viewer_glut : public viewer_base
 {
 public:
