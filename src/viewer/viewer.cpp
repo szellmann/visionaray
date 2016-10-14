@@ -584,7 +584,11 @@ void renderer::on_key_press(key_event const& event)
 
         break;
 
-    case 'm':
+     case 'h':
+        show_hud = !show_hud;
+        break;
+
+   case 'm':
 #ifdef __CUDACC__
         if (dev_type == renderer::CPU)
         {
