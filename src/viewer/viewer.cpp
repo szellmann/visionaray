@@ -226,7 +226,6 @@ private:
 
     void clear_frame();
     void render_hud();
-    void render_hud_ext();
 
 };
 
@@ -320,6 +319,8 @@ void renderer::clear_frame()
 
 void renderer::render_hud()
 {
+    // gather data to render
+
     int w = width();
     int h = height();
 
@@ -327,6 +328,25 @@ void renderer::render_hud()
     int y = visionaray::clamp( mouse_pos.y, 0, h - 1 );
     auto color = host_rt.color();
     auto rgba = color[(h - 1 - y) * w + x];
+
+    int num_nodes = 0;
+    int num_leaves = 0;
+
+    traverse_depth_first(
+        host_bvh,
+        [&](renderer::host_bvh_type::node_type const& node)
+        {
+            ++num_nodes;
+
+            if (is_leaf(node))
+            {
+                ++num_leaves;
+            }
+        }
+        );
+
+
+    // render
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -374,44 +394,6 @@ void renderer::render_hud()
     hud.print_buffer(10, h * 2 - 136);
     hud.clear_buffer();
 
-
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-
-}
-
-void renderer::render_hud_ext()
-{
-
-    auto w = width();
-    auto h = height();
-
-    int num_nodes = 0;
-    int num_leaves = 0;
-
-    traverse_depth_first(
-        host_bvh,
-        [&](renderer::host_bvh_type::node_type const& node)
-        {
-            ++num_nodes;
-
-            if (is_leaf(node))
-            {
-                ++num_leaves;
-            }
-        }
-        );
-
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0, w * 2, 0, h * 2);
-
-
-    hud_util hud;
-
     hud.buffer() << "# Triangles: " << mod.primitives.size();
     hud.print_buffer(300, h * 2 - 34);
     hud.clear_buffer();
@@ -429,15 +411,10 @@ void renderer::render_hud_ext()
     hud.clear_buffer();
 
 
-    glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
-    glLoadIdentity();
-
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
-
 }
 
 void renderer::on_close()
@@ -548,11 +525,6 @@ void renderer::on_display()
     if (show_hud)
     {
         render_hud();
-    }
-
-    if (show_hud_ext)
-    {
-        render_hud_ext();
     }
 
     if (show_bvh)
