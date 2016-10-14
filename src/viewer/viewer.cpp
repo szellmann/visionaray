@@ -232,6 +232,46 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
+// Utility for HUD rendering
+//
+
+class hud_util
+{
+public:
+
+    // Stream to buffer string that will be printed
+    std::stringstream& buffer()
+    {
+        return buffer_;
+    }
+
+    // Clear string buffer
+    void clear_buffer()
+    {
+        buffer_.str(std::string());
+    }
+
+    // Print buffer with origin at pixel (x,y)
+    void print_buffer(int x, int y)
+    {
+        glRasterPos2i(x, y);
+
+        std::string str = buffer_.str();
+
+        for (size_t i = 0; i < str.length(); ++i)
+        {
+            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
+        }
+    }
+
+private:
+
+    std::stringstream buffer_;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // I/O utility for camera lookat only - not fit for the general case!
 //
 
@@ -280,9 +320,8 @@ void renderer::clear_frame()
 
 void renderer::render_hud()
 {
-
-    auto w = width();
-    auto h = height();
+    int w = width();
+    int h = height();
 
     int x = visionaray::clamp( mouse_pos.x, 0, w - 1 );
     int y = visionaray::clamp( mouse_pos.y, 0, h - 1 );
@@ -298,79 +337,43 @@ void renderer::render_hud()
     glPushMatrix();
     glLoadIdentity();
 
-    std::stringstream stream;
-    stream << "X: " << x;
-    std::string str = stream.str();
-    glRasterPos2i(10, h * 2 - 34);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
 
-    stream.str(std::string());
-    stream << "Y: " << y;
-    str = stream.str();
-    glRasterPos2i(10, h * 2 - 68);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
+    hud_util hud;
 
-    stream.str(std::string());
-    stream << "W: " << w;
-    str = stream.str();
-    glRasterPos2i(100, h * 2 - 34);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
+    hud.buffer() << "X: " << x;
+    hud.print_buffer(10, h * 2 - 34);
+    hud.clear_buffer();
 
-    stream.str(std::string());
-    stream << "H: " << h;
-    str = stream.str();
-    glRasterPos2i(100, h * 2 - 68);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
+    hud.buffer() << "Y: " << y;
+    hud.print_buffer(10, h * 2 - 68);
+    hud.clear_buffer();
 
-    stream << std::fixed << std::setprecision(2);
+    hud.buffer() << "W: " << w;
+    hud.print_buffer(100, h * 2 - 34);
+    hud.clear_buffer();
 
-    stream.str(std::string());
-    stream << "R: " << rgba.x;
-    str = stream.str();
-    glRasterPos2i(10, h * 2 - 102);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
+    hud.buffer() << "H: " << h;
+    hud.print_buffer(100, h * 2 - 68);
+    hud.clear_buffer();
 
-    stream.str(std::string());
-    stream << "G: " << rgba.y;
-    str = stream.str();
-    glRasterPos2i(100, h * 2 - 102);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
+    hud.buffer() << std::fixed << std::setprecision(2);
 
-    stream.str(std::string());
-    stream << "B: " << rgba.z;
-    str = stream.str();
-    glRasterPos2i(190, h * 2 - 102);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
+    hud.buffer() << "R: " << rgba.x;
+    hud.print_buffer(10, h * 2 - 102);
+    hud.clear_buffer();
 
-    stream.str(std::string());
-    stream << "FPS: " << counter.register_frame();
-    str = stream.str();
-    glRasterPos2i(10, h * 2 - 136);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
+    hud.buffer() << "G: " << rgba.y;
+    hud.print_buffer(100, h * 2 - 102);
+    hud.clear_buffer();
+
+    hud.buffer() << "B: " << rgba.z;
+    hud.print_buffer(190, h * 2 - 102);
+    hud.clear_buffer();
+
+    hud.buffer() << "FPS: " << counter.register_frame();
+    hud.print_buffer(10, h * 2 - 136);
+    hud.clear_buffer();
+
 
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
@@ -406,42 +409,24 @@ void renderer::render_hud_ext()
     glLoadIdentity();
     gluOrtho2D(0, w * 2, 0, h * 2);
 
-    std::stringstream stream;
-    stream << "# Triangles: " << mod.primitives.size();
-    std::string str = stream.str();
-    glRasterPos2i(300, h * 2 - 34);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
 
-    stream.str(std::string());
-    stream << "# BVH Nodes/Leaves: " << num_nodes << '/' << num_leaves;
-    str = stream.str();
-    glRasterPos2i(300, h * 2 - 68);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
+    hud_util hud;
 
-    stream.str(std::string());
-    stream << "SPP: " << max(1U, frame_num);
-    str = stream.str();
-    glRasterPos2i(300, h * 2 - 102);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
+    hud.buffer() << "# Triangles: " << mod.primitives.size();
+    hud.print_buffer(300, h * 2 - 34);
+    hud.clear_buffer();
 
+    hud.buffer() << "# BVH Nodes/Leaves: " << num_nodes << '/' << num_leaves;
+    hud.print_buffer(300, h * 2 - 68);
+    hud.clear_buffer();
 
-    stream.str(std::string());
-    stream << "Device: " << ( (dev_type == renderer::GPU) ? "GPU" : "CPU" );
-    str = stream.str();
-    glRasterPos2i(300, h * 2 - 136);
-    for (size_t i = 0; i < str.length(); ++i)
-    {
-        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-    }
+    hud.buffer() << "SPP: " << max(1U, frame_num);
+    hud.print_buffer(300, h * 2 - 102);
+    hud.clear_buffer();
+
+    hud.buffer() << "Device: " << ( (dev_type == renderer::GPU) ? "GPU" : "CPU" );
+    hud.print_buffer(300, h * 2 - 136);
+    hud.clear_buffer();
 
 
     glMatrixMode( GL_MODELVIEW );
