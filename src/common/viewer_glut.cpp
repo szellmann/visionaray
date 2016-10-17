@@ -165,20 +165,6 @@ void viewer_glut::impl::idle_func()
     viewer->on_idle();
 }
 
-void viewer_glut::impl::motion_func(int x, int y)
-{
-    mouse::pos p = { x, y };
-
-    mouse_event event(
-            mouse::Move,
-            p,
-            down_button,
-            keyboard::NoKey
-            );
-
-    viewer->on_mouse_move(event);
-}
-
 void viewer_glut::impl::keyboard_func(unsigned char key, int, int)
 {
     auto k = keyboard::map_glut_key(key);
@@ -193,6 +179,20 @@ void viewer_glut::impl::keyboard_up_func(unsigned char key, int, int)
     auto m = keyboard::map_glut_modifiers(glutGetModifiers());
 
     viewer->on_key_release( key_event(keyboard::KeyRelease, k, m) );
+}
+
+void viewer_glut::impl::motion_func(int x, int y)
+{
+    mouse::pos p = { x, y };
+
+    mouse_event event(
+            mouse::Move,
+            p,
+            down_button,
+            keyboard::NoKey
+            );
+
+    viewer->on_mouse_move(event);
 }
 
 void viewer_glut::impl::mouse_func(int button, int state, int x, int y)
