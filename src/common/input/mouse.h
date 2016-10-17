@@ -21,10 +21,13 @@
 
 
 #if defined(VSNRAY_HAVE_QT5CORE)
-
 #include <Qt>
-
 #endif // VSNRAY_HAVE_QT5CORE
+
+
+#if defined(VSNRAY_HAVE_SDL2)
+#include <SDL2/SDL.h>
+#endif // VSNRAY_HAVE_SDL2
 
 #include "exception.h"
 #include "keyboard.h"
@@ -151,6 +154,34 @@ static inline buttons map_qt_button(Qt::MouseButton but)
 }
 
 #endif // VSNRAY_HAVE_QT5CORE
+
+#if defined(VSNRAY_HAVE_SDL2)
+
+//-------------------------------------------------------------------------------------------------
+// Map SDL2 entities
+//
+
+static inline buttons map_sdl2_button(Uint8 but)
+{
+    // TODO: multiple buttons
+    switch (but)
+    {
+
+    case SDL_BUTTON_LEFT:
+        return mouse::Left;
+    case SDL_BUTTON_MIDDLE:
+        return mouse::Middle;
+    case SDL_BUTTON_RIGHT:
+        return mouse::Right;
+    default:
+        return NoButton;
+
+    }
+
+    return NoButton;
+}
+
+#endif // VSNRAY_HAVE_SDL2
 
 } // mouse
 
