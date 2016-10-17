@@ -6,7 +6,6 @@
 #ifndef VSNRAY_CUDA_PIXEL_PACK_BUFFER_H
 #define VSNRAY_CUDA_PIXEL_PACK_BUFFER_H 1
 
-#include <cstddef>
 #include <memory>
 
 #include <visionaray/math/math.h>
