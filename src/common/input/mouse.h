@@ -6,9 +6,6 @@
 #ifndef VSNRAY_INPUT_MOUSE_H
 #define VSNRAY_INPUT_MOUSE_H 1
 
-#include <bitset>
-#include <cassert>
-
 #include <visionaray/detail/platform.h>
 #include <visionaray/math/vector.h>
 
