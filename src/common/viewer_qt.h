@@ -55,7 +55,6 @@ public slots:
 private:
 
     struct impl;
-    friend struct impl;
     std::unique_ptr<impl> impl_;
 
 };
