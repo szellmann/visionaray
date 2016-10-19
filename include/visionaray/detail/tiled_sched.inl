@@ -53,7 +53,7 @@ template <typename R>
 struct tiled_sched<R>::impl
 {
     // TODO: any sampler
-    typedef std::function<void(recti const&, sampler<typename R::scalar_type>&)> render_tile_func;
+    typedef std::function<void(recti const&, random_sampler<typename R::scalar_type>&)> render_tile_func;
 
     void init_threads(unsigned num_threads);
     void destroy_threads();
@@ -187,7 +187,7 @@ void tiled_sched<R>::impl::render_loop()
         }
 
     // case event.render:
-        sampler<typename R::scalar_type> samp(detail::tic());
+        random_sampler<typename R::scalar_type> samp(detail::tic());
         for (;;)
         {
             auto tile_idx = sync_params.tile_idx_counter.fetch_add(1);
@@ -242,7 +242,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 
     recti clip_rect(scissor_box.x, scissor_box.y, scissor_box.w - 1, scissor_box.h - 1);
 
-    render_tile = [=](recti const& tile, sampler<T>& samp)
+    render_tile = [=](recti const& tile, random_sampler<T>& samp)
     {
         using namespace detail;
 
@@ -303,7 +303,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
     vec3 cam_v = u * tan(sparams.cam.fovy() / 2.0f);
     vec3 cam_w = -f;
 
-    render_tile = [=](recti const& tile, sampler<T>& samp)
+    render_tile = [=](recti const& tile, random_sampler<T>& samp)
     {
         using namespace detail;
 

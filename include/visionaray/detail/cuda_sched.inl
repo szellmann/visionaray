@@ -72,7 +72,7 @@ __global__ void render(
     }
 
     // TODO: support any sampler
-    sampler<typename R::scalar_type> samp(detail::cuda_seed());
+    random_sampler<typename R::scalar_type> samp(detail::cuda_seed());
 
     auto r = detail::make_primary_rays(
             R{},
@@ -124,7 +124,7 @@ __global__ void render(
     }
 
     // TODO: support any sampler
-    sampler<typename R::scalar_type> samp(detail::cuda_seed());
+    random_sampler<typename R::scalar_type> samp(detail::cuda_seed());
 
     auto r = detail::make_primary_rays(
             R{},

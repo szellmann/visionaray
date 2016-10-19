@@ -93,7 +93,7 @@ template <typename K, typename SP, typename ...Args>
 void simple_sched<R>::impl::sample_pixels(K kernel, SP sched_params, unsigned frame_num, Args&&... args)
 {
     // TODO: support any sampler
-    sampler<typename R::scalar_type> samp(detail::tic());
+    random_sampler<typename R::scalar_type> samp(detail::tic());
 
     for (size_t y = 0; y < sched_params.rt.height(); ++y)
     {

@@ -104,7 +104,7 @@ void renderer::on_display()
 
     auto bgcolor = background_color();
 
-    host_sched.frame([&](R ray, sampler<S>& samp) -> result_record<S>
+    host_sched.frame([&](R ray, random_sampler<S>& samp) -> result_record<S>
     {
         result_record<S> result;
         result.color = C(bgcolor, 1.0f);

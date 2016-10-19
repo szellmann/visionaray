@@ -99,7 +99,7 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             tile2d( x0, x1, y0, y1, pw, ph,
                 [=](int i0, int /*i1*/, int j0, int /*j1*/)
                 {
-                    sampler<typename R::scalar_type> samp(detail::tic());
+                    random_sampler<typename R::scalar_type> samp(detail::tic());
 
                     auto r = make_primary_rays(
                         R{},

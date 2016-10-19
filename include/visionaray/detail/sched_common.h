@@ -11,9 +11,9 @@
 
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
+#include <visionaray/random_sampler.h>
 #include <visionaray/render_target.h>
 #include <visionaray/result_record.h>
-#include <visionaray/sampling.h>
 
 #include "macros.h"
 #include "pixel_access.h"
