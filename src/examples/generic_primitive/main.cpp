@@ -261,7 +261,7 @@ void renderer::on_display()
             0.0001                      // epsilon to avoid self intersection by secondary rays
             );
 
-    auto kernel = whitted::kernel<decltype(kparams)>();
+    whitted::kernel<decltype(kparams)> kernel;
     kernel.params = kparams;
 
     host_sched.frame(kernel, sparams);
