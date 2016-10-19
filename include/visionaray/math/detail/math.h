@@ -246,12 +246,28 @@ namespace simd
 // SIMD intrinsics
 //
 
-template <typename M, typename T>
-MATH_FUNC
-inline T select(M k, T const& a, T const& b)
-{
-    return k ? a : b;
+#define __VSNRAY_DEFINE_SELECT(T)                                               \
+MATH_FUNC                                                                       \
+inline T select(bool k, T a, T b)                                               \
+{                                                                               \
+    return k ? a : b;                                                           \
 }
+
+__VSNRAY_DEFINE_SELECT(char)
+__VSNRAY_DEFINE_SELECT(short)
+__VSNRAY_DEFINE_SELECT(int)
+__VSNRAY_DEFINE_SELECT(long)
+__VSNRAY_DEFINE_SELECT(long long)
+__VSNRAY_DEFINE_SELECT(unsigned char)
+__VSNRAY_DEFINE_SELECT(unsigned short)
+__VSNRAY_DEFINE_SELECT(unsigned int)
+__VSNRAY_DEFINE_SELECT(unsigned long)
+__VSNRAY_DEFINE_SELECT(unsigned long long)
+__VSNRAY_DEFINE_SELECT(float)
+__VSNRAY_DEFINE_SELECT(double)
+__VSNRAY_DEFINE_SELECT(long double)
+
+#undef __VSNRAY_DEF_SELECT
 
 MATH_FUNC
 inline bool any(bool b)
