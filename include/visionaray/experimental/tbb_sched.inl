@@ -1,12 +1,13 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/math/math.h>
-#include <visionaray/packet_traits.h>
-
 #include <tbb/blocked_range2d.h>
 #include <tbb/parallel_for.h>
 #include <tbb/task_scheduler_init.h>
+
+#include <visionaray/math/math.h>
+#include <visionaray/packet_traits.h>
+#include <visionaray/random_sampler.h>
 
 namespace visionaray
 {

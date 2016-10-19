@@ -11,7 +11,6 @@
 
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
-#include <visionaray/render_target.h>
 #include <visionaray/result_record.h>
 
 #include "color_conversion.h"

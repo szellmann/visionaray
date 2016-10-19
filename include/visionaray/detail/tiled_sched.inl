@@ -9,6 +9,7 @@
 #include <utility>
 
 #include <visionaray/math/math.h>
+#include <visionaray/random_sampler.h>
 
 #include "macros.h"
 #include "sched_common.h"
@@ -229,7 +230,7 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
     // overload for two matrices
 
     using T = typename R::scalar_type;
-    using matrix_type   = matrix<4, 4, T>;
+    using matrix_type = matrix<4, 4, T>;
 
     width       = sparams.rt.width();
     height      = sparams.rt.height();

@@ -15,6 +15,7 @@
 #include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/get_normal.h>
+#include <visionaray/random_sampler.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/traverse.h>
 

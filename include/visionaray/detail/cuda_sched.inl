@@ -6,6 +6,8 @@
 
 #include <cuda_runtime_api.h>
 
+#include <visionaray/random_sampler.h>
+
 #include "sched_common.h"
 
 namespace visionaray

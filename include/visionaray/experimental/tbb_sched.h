@@ -4,11 +4,9 @@
 #pragma once
 
 #ifndef VSNRAY_DETAIL_TBB_SCHED_H
-#define VSNRAY_DETAIL_TBB_SCHED_H
+#define VSNRAY_DETAIL_TBB_SCHED_H 1
 
 #include <memory>
-
-#include <visionaray/render_target.h>
 
 namespace visionaray
 {
