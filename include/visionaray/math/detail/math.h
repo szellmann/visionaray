@@ -246,16 +246,9 @@ namespace simd
 // SIMD intrinsics
 //
 
-template <typename T, typename M>
+template <typename M, typename T>
 MATH_FUNC
-inline T select(M const& k, T const& a, T const& b)
-{
-    return k ? a : b;
-}
-
-template <typename T1, typename T2, typename M>
-MATH_FUNC
-inline bool select(M const& k, T1 const& a, T2 const& b)
+inline T select(M k, T const& a, T const& b)
 {
     return k ? a : b;
 }
