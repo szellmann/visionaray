@@ -9,8 +9,7 @@
 #include <iterator>
 #include <limits>
 
-#include <visionaray/math/math.h>
-#include <visionaray/scheduler.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/tags.h>
 
 namespace visionaray
