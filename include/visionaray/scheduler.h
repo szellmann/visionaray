@@ -10,42 +10,11 @@
 #include <type_traits>
 #include <utility>
 
+#include "detail/sched_common.h"
 #include "camera.h"
 
 namespace visionaray
 {
-
-class render_target;
-
-//-------------------------------------------------------------------------------------------------
-// Pixel sampler tags for use in scheduler params
-//
-
-namespace pixel_sampler
-{
-
-// Pixel sampler tag base ---------------------------------
-
-struct base_type {};
-
-
-// Built-in pixel sampler types ---------------------------
-
-// Supersampling anti-aliasing
-template <size_t NumSamples>
-struct ssaa_type : base_type {};
-
-// 1x SSAA (no supersampling)
-using uniform_type = ssaa_type<1>;
-
-// Jittered pixel positions
-struct jittered_type : base_type {};
-
-// Jittered and successive blending
-struct jittered_blend_type : jittered_type {};
-
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // Base classes for scheduler params
