@@ -215,6 +215,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/prim_traits.h
     ${HEADER_DIR}/random_sampler.h
     ${HEADER_DIR}/render_target.h
+    ${HEADER_DIR}/result_record.h
     ${HEADER_DIR}/sampling.h
     ${HEADER_DIR}/scheduler.h
     ${HEADER_DIR}/shade_record.h
