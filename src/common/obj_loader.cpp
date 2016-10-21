@@ -562,6 +562,11 @@ void load_obj(std::string const& filename, model& mod)
 
                 assert( mod.textures.size() == mod.materials.size() );
             }
+            else
+            {
+                std::cerr << "Error: material not present in mtllib: " << mtl_name << '\n';
+            }
+
             geom_id = mod.materials.size() == 0 ? 0 : mod.materials.size() - 1;
         }
         else if ( qi::phrase_parse(it, text.cend(), r_vertices, qi::blank, vertices) )
