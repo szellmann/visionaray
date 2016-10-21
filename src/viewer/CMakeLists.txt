@@ -1,6 +1,6 @@
-set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
-set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/common/CmdLine)
+set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/CmdLine)
 set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
+set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
 
 if (NOT EXISTS ${CMD_LINE_DIR}/.git)
     message(SEND_ERROR "Git submodules not initialized.\nPlease run \"git submodule update --init --recursive\"")

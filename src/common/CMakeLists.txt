@@ -41,7 +41,7 @@ if (WIN32)
     set(Boost_USE_STATIC_LIBS ON)
 endif()
 
-set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/common/CmdLine)
+set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/CmdLine)
 set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
 
 if (NOT EXISTS ${CMD_LINE_DIR}/.git)
