@@ -142,7 +142,7 @@ struct renderer : viewer_type
 
                 volumes.emplace_back(w, h, d);
                 auto& volume = volumes.back();
-                volume.set_data(marschner_lobb.data());
+                volume.reset(marschner_lobb.data());
                 volume.set_filter_mode(Linear);
                 volume.set_address_mode(Clamp);
 
@@ -161,7 +161,7 @@ struct renderer : viewer_type
 
                 volumes.emplace_back(w, h, d);
                 auto& volume = volumes.back();
-                volume.set_data(heart.data());
+                volume.reset(heart.data());
                 volume.set_filter_mode(Linear);
                 volume.set_address_mode(Clamp);
 
@@ -181,7 +181,7 @@ struct renderer : viewer_type
 
                 volumes.emplace_back(w, h, d);
                 auto& volume = volumes.back();
-                volume.set_data(mandelbulb.data());
+                volume.reset(mandelbulb.data());
                 volume.set_filter_mode(Linear);
                 volume.set_address_mode(Clamp);
 
@@ -190,7 +190,7 @@ struct renderer : viewer_type
 
             transfuncs.emplace_back(5);
             auto& transfunc = transfuncs.back();
-            transfunc.set_data(&tfdata[(i % 3) * 5]);
+            transfunc.reset(&tfdata[(i % 3) * 5]);
             transfunc.set_filter_mode(Nearest);
             transfunc.set_address_mode(Clamp);
 

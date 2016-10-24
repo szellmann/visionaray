@@ -69,11 +69,11 @@ struct renderer : viewer_type
         , volume({2, 2, 2})
         , transfunc({4})
     {
-        volume.set_data(voldata);
+        volume.reset(voldata);
         volume.set_filter_mode(Nearest);
         volume.set_address_mode(Clamp);
 
-        transfunc.set_data(tfdata);
+        transfunc.reset(tfdata);
         transfunc.set_filter_mode(Linear);
         transfunc.set_address_mode(Clamp);
     }

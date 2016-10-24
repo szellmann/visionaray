@@ -206,7 +206,7 @@ public:
     }
 
     template <typename U>
-    void set_data(U const* data)
+    void reset(U const* data)
     {
         if ( upload_data(data) != cudaSuccess )
         {

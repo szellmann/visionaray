@@ -62,13 +62,6 @@ public:
     size_t width() const { return width_; }
     size_t height() const { return height_; }
 
-    void resize(size_t w, size_t h)
-    {
-        width_ = w;
-        height_ = h;
-        Base::reset(w * h);
-    }
-
 private:
 
     size_t width_;

@@ -496,32 +496,32 @@ void load_obj(std::string const& filename, model& mod)
                                 {
                                     // Down-convert to 8-bit, add alpha=1.0
                                     auto data_ptr = reinterpret_cast<vector<3, unorm<16>> const*>(img.data());
-                                    tex.set_data(data_ptr, PF_RGB16UI, PF_RGBA8, AlphaIsOne);
+                                    tex.reset(data_ptr, PF_RGB16UI, PF_RGBA8, AlphaIsOne);
                                 }
 
                                 else if (img.format() == PF_RGBA16UI)
                                 {
                                     // Down-convert to 8-bit
                                     auto data_ptr = reinterpret_cast<vector<4, unorm<16>> const*>(img.data());
-                                    tex.set_data(data_ptr, PF_RGBA16UI, PF_RGBA8);
+                                    tex.reset(data_ptr, PF_RGBA16UI, PF_RGBA8);
                                 }
                                 else if (img.format() == PF_R8)
                                 {
                                     // Let RGB=R and add alpha=1.0
                                     auto data_ptr = reinterpret_cast<unorm< 8> const*>(img.data());
-                                    tex.set_data(data_ptr, PF_R8, PF_RGBA8, AlphaIsOne);
+                                    tex.reset(data_ptr, PF_R8, PF_RGBA8, AlphaIsOne);
                                 }
                                 else if (img.format() == PF_RGB8)
                                 {
                                     // Add alpha=1.0
                                     auto data_ptr = reinterpret_cast<vector<3, unorm< 8>> const*>(img.data());
-                                    tex.set_data(data_ptr, PF_RGB8, PF_RGBA8, AlphaIsOne);
+                                    tex.reset(data_ptr, PF_RGB8, PF_RGBA8, AlphaIsOne);
                                 }
                                 else if (img.format() == PF_RGBA8)
                                 {
                                     // "Native" texture format
                                     auto data_ptr = reinterpret_cast<vector<4, unorm< 8>> const*>(img.data());
-                                    tex.set_data(data_ptr);
+                                    tex.reset(data_ptr);
                                 }
                                 else
                                 {
@@ -555,8 +555,7 @@ void load_obj(std::string const& filename, model& mod)
                 // if no texture was loaded, insert an empty dummy
                 if (mod.textures.size() < mod.materials.size())
                 {
-                    typename tex_type::ref_type tex;
-                    tex.resize(0, 0);
+                    typename tex_type::ref_type tex(0, 0);
                     mod.textures.push_back(tex);
                 }
 
@@ -617,8 +616,7 @@ void load_obj(std::string const& filename, model& mod)
     for (size_t i = mod.textures.size(); i <= geom_id; ++i)
     {
         using tex_type = model::texture_type;
-        typename tex_type::ref_type tex;
-        tex.resize(0, 0);
+        typename tex_type::ref_type tex(0, 0);
         mod.textures.push_back(tex);
     }
 

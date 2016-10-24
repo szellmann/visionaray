@@ -125,7 +125,7 @@ struct sampler_R8
         , d_result(NumCoords)
         , h_texture(TexSize)
     {
-        h_texture.set_data( reinterpret_cast<unorm<8> const*>(data) );
+        h_texture.reset( reinterpret_cast<unorm<8> const*>(data) );
 
         reset();
     }

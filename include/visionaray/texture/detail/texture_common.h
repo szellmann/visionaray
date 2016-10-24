@@ -98,53 +98,61 @@ public:
 
     texture_base() = default;
 
-    texture_base(size_t size)
+    explicit texture_base(size_t size)
         : data_(aligned_vector<T>(size))
     {
     }
 
-    void reset(size_t size)
-    {
-        data_.resize(size);
-    }
-
-    void set_data(T const* data)
+    void reset(T const* data)
     {
         std::copy( data, data + data_.size(), data_.begin() );
     }
 
-    void set_data(T const* data, pixel_format format, pixel_format internal_format)
+    void reset(
+            T const* data,
+            pixel_format format,
+            pixel_format internal_format
+            )
     {
         if (format != internal_format)
         {
             // Swizzle in-place
-            aligned_vector<T> tmp( data, data + data_.size() );
-            swizzle( tmp.data(), internal_format, format, tmp.size() );
-            set_data( tmp.data() );
+            aligned_vector<T> tmp(data, data + data_.size());
+            swizzle(tmp.data(), internal_format, format, tmp.size());
+            reset(tmp.data());
         }
         else
         {
             // Simple copy
-            set_data( data );
+            reset(data);
         }
     }
 
     template <typename U>
-    void set_data(U const* data, pixel_format format, pixel_format internal_format)
+    void reset(
+            U const* data,
+            pixel_format format,
+            pixel_format internal_format
+            )
     {
         // Copy to temporary array, then swizzle
-        aligned_vector<T> dst( data_.size() );
-        swizzle( dst.data(), internal_format, data, format, dst.size() );
-        set_data( dst.data() );
+        aligned_vector<T> dst(data_.size());
+        swizzle(dst.data(), internal_format, data, format, dst.size());
+        reset(dst.data());
     }
 
     template <typename U>
-    void set_data(U const* data, pixel_format format, pixel_format internal_format, swizzle_hint hint)
+    void reset(
+            U const* data,
+            pixel_format format,
+            pixel_format internal_format,
+            swizzle_hint hint
+            )
     {
         // Copy with temporary array, hint about how to handle alpha
-        aligned_vector<T> dst( data_.size() );
-        swizzle( dst.data(), internal_format, data, format, dst.size(), hint );
-        set_data( dst.data() );
+        aligned_vector<T> dst(data_.size());
+        swizzle(dst.data(), internal_format, data, format, dst.size(), hint);
+        reset(dst.data());
     }
 
     value_type const* data() const
@@ -171,29 +179,30 @@ public:
 
     texture_ref_base() = default;
 
+    explicit texture_ref_base(size_t size)
+    {
+        VSNRAY_UNUSED(size);
+    }
+
     texture_ref_base(texture_base<T, Dim> const& tex)
         : base_type(tex)
         , data_(tex.data())
     {
     }
 
-    explicit texture_ref_base(size_t size)
-        : data_(nullptr)
+    void reset(T const* data)
     {
-        VSNRAY_UNUSED(size);
+        data_ = data;
     }
 
-    void reset(size_t size)
+    T const* data() const
     {
-        VSNRAY_UNUSED(size);
+        return data_;
     }
-
-    void set_data(value_type const* data) { data_ = data; } // TODO: initialize through c'tor
-    value_type const* data() const { return data_; }
 
 protected:
 
-    value_type const* data_;
+    T const* data_;
 
 };
 
