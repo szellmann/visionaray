@@ -55,7 +55,7 @@ public slots:
 private:
 
     struct impl;
-    std::unique_ptr<impl> impl_;
+    std::unique_ptr<impl> const impl_;
 
 };
 
@@ -88,7 +88,7 @@ public:
 private:
 
     struct impl;
-    std::unique_ptr<impl> impl_;
+    std::unique_ptr<impl> const impl_;
 
     // Qt interface, use viewer_base::on_XXX() to implement event handlers
     void initializeGL();

@@ -69,7 +69,7 @@ protected:
 private:
 
     struct impl;
-    std::unique_ptr<impl> impl_;
+    std::unique_ptr<impl> const impl_;
 
 };
 
