@@ -4,6 +4,7 @@
 #include <array>
 #include <cassert>
 #include <cstddef>
+#include <utility>
 
 #include <visionaray/cuda/array.h>
 
