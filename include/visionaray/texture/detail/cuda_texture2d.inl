@@ -317,7 +317,17 @@ public:
 
 public:
 
-    VSNRAY_FUNC cuda_texture_ref() = default;
+    // Default ctor, dtor and assignment
+
+    VSNRAY_FUNC cuda_texture_ref()                                          = default;
+    VSNRAY_FUNC cuda_texture_ref(cuda_texture_ref<T, 2> const&)             = default;
+    VSNRAY_FUNC cuda_texture_ref(cuda_texture_ref<T, 2>&&)                  = default;
+    VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture_ref<T, 2> const&)  = default;
+    VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture_ref<T, 2>&&)       = default;
+    VSNRAY_FUNC ~cuda_texture_ref()                                         = default;
+
+
+    // Construct assign from cuda_texture
 
     VSNRAY_CPU_FUNC cuda_texture_ref(cuda_texture<T, 2> const& ref)
         : texture_obj_(ref.texture_object())
@@ -326,15 +336,15 @@ public:
     {
     }
 
-    VSNRAY_FUNC ~cuda_texture_ref() = default;
 
-    VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture<T, 2> const& rhs)
+    VSNRAY_CPU_FUNC cuda_texture_ref& operator=(cuda_texture<T, 2> const& rhs)
     {
         texture_obj_ = rhs.texture_object();
         width_ = rhs.width();
         height_ = rhs.height();
         return *this;
     }
+
 
     VSNRAY_FUNC cudaTextureObject_t texture_object() const
     {
