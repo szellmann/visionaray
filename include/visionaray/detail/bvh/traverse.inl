@@ -42,8 +42,8 @@ void traverse_depth_first(B const& b, F func)
 
         if (is_inner(node))
         {
-            addr = node.first_child;
-            st.push(node.first_child + 1);
+            addr = node.get_child(0);
+            st.push(node.get_child(1));
         }
         else
         {
@@ -102,7 +102,7 @@ void traverse_parents(B const& b, N const& node, F func)
 
         for (auto it = nit; it != b.nodes().crend(); ++it)
         {
-            if (is_inner(*it) && (addr == it->first_child || addr == it->first_child + 1))
+            if (is_inner(*it) && (addr == it->get_child(0) || addr == it->get_child(1)))
             {
                 func(*it);
                 addr = b.nodes().rend() - it - 1;

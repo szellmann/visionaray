@@ -84,6 +84,12 @@ struct bvh_node
         return { first_prim, first_prim + num_prims };
     }
 
+    VSNRAY_FUNC unsigned get_first_primitive() const
+    {
+        assert(is_leaf());
+        return first_prim;
+    }
+
     VSNRAY_FUNC unsigned get_num_primitives() const
     {
         assert(is_leaf());
@@ -122,8 +128,8 @@ inline bool is_leaf(bvh_node const& node)
 VSNRAY_FUNC
 inline bool operator==(bvh_node const& a, bvh_node const& b)
 {
-    return (is_inner(a) && is_inner(b) && a.first_child == b.first_child)
-        || ( is_leaf(a) && is_leaf(b)  &&  a.first_prim == b.first_prim );
+    return (is_inner(a) && is_inner(b) && a.get_child(0) == b.get_child(0))
+        || ( is_leaf(a) && is_leaf(b)  && a.get_first_primitive() == b.get_first_primitive() );
 }
 
 

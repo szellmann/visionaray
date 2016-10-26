@@ -64,7 +64,7 @@ public:
         std::vector<float> vertices;
         traverse_depth_first(b, [&](typename BVH::node_type const& n)
         {
-            auto box = n.bbox;
+            auto box = n.get_bounds();
 
             auto ilist =
             {

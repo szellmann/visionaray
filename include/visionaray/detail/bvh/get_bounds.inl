@@ -20,7 +20,7 @@ aabb get_bounds(BVH const& bvh)
 
     if (bvh.num_nodes() > 0)
     {
-        result = bvh.node(0).bbox;
+        result = bvh.node(0).get_bounds();
     }
 
     return result;

@@ -73,10 +73,10 @@ next:
 
         while (!is_leaf(node))
         {
-            auto children = &b.node(node.first_child);
+            auto children = &b.node(node.get_child(0));
 
-            auto hr1 = isect(ray, children[0].bbox, inv_dir);
-            auto hr2 = isect(ray, children[1].bbox, inv_dir);
+            auto hr1 = isect(ray, children[0].get_bounds(), inv_dir);
+            auto hr2 = isect(ray, children[1].get_bounds(), inv_dir);
 
             auto b1 = any( is_closer(hr1, result, max_t) );
             auto b2 = any( is_closer(hr2, result, max_t) );
@@ -84,16 +84,16 @@ next:
             if (b1 && b2)
             {
                 unsigned near_addr = all( hr1.tnear < hr2.tnear ) ? 0 : 1;
-                st.push(node.first_child + (!near_addr));
-                node = b.node(node.first_child + near_addr);
+                st.push(node.get_child(!near_addr));
+                node = b.node(node.get_child(near_addr));
             }
             else if (b1)
             {
-                node = b.node(node.first_child);
+                node = b.node(node.get_child(0));
             }
             else if (b2)
             {
-                node = b.node(node.first_child + 1);
+                node = b.node(node.get_child(1));
             }
             else
             {
@@ -105,10 +105,7 @@ next:
         // while node contains untested primitives
         //     perform a ray-primitive intersection test
 
-        auto begin = node.first_prim;
-        auto end   = node.first_prim + node.num_prims;
-
-        for (auto i = begin; i != end; ++i)
+        for (auto i = node.get_indices().first; i != node.get_indices().last; ++i)
         {
             auto prim = b.primitive(i);
 
