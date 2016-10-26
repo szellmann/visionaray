@@ -112,6 +112,9 @@ struct renderer : viewer_type
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
         , host_sched(std::thread::hardware_concurrency())
+#ifdef __CUDACC__
+        , device_sched(8, 8)
+#endif
         , mouse_pos(0)
     {
         using namespace support;
