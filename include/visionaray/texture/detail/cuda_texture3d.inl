@@ -31,6 +31,26 @@ public:
 
     cuda_texture() = default;
 
+    // Only allocate texture
+    cuda_texture(size_t w, size_t h, size_t d)
+        : width_(w)
+        , height_(h)
+        , depth_(d)
+    {
+        if (width_ == 0 || height_ == 0 || depth_ == 0)
+        {
+            return;
+        }
+
+
+        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+
+        if ( array_.allocate3D(desc, width_, height_, depth_) != cudaSuccess )
+        {
+            return;
+        }
+    }
+
     // Construct from pointer to host data
     template <typename U>
     cuda_texture(

@@ -31,6 +31,22 @@ public:
 
     cuda_texture() = default;
 
+    // Only allocate texture
+    cuda_texture(size_t w, size_t h)
+        : width_(w)
+        , height_(h)
+    {
+        if (width_ == 0 || height_ == 0)
+        {
+            return;
+        }
+
+        if ( pitch_.allocate(width_, height_) != cudaSuccess )
+        {
+            return;
+        }
+    }
+
     // Construct from pointer to host data
     template <typename U>
     cuda_texture(
