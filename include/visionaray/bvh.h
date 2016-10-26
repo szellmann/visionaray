@@ -49,7 +49,7 @@ T const* get_pointer(thrust::device_vector<T> const& vec)
 // bvh_node
 //
 
-struct bvh_node
+struct VSNRAY_ALIGN(32) bvh_node
 {
     float bbox_min[3];
     union
