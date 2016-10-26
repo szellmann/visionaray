@@ -99,4 +99,4 @@ public:
     }
 };
 
-}
+} // MATH_NAMESPACE
