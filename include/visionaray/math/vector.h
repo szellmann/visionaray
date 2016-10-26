@@ -60,7 +60,7 @@ public:
 //
 
 template <typename T>
-class VSNRAY_ALIGN(16) vector<3, T>
+class vector<3, T>
 {
 public:
 
@@ -198,6 +198,8 @@ private:
 #include "detail/vector.inl"
 #include "detail/vector2.inl"
 #include "detail/vector3.inl"
+// vector<3, float> with 16-byte alignment
+#include "detail/vector3f.inl"
 #include "detail/vector4.inl"
 
 #endif // VSNRAY_MATH_VECTOR_H
