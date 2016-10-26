@@ -60,7 +60,7 @@ public:
 //
 
 template <typename T>
-class vector<3, T>
+class VSNRAY_ALIGN(16) vector<3, T>
 {
 public:
 
