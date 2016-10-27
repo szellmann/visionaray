@@ -22,22 +22,13 @@ using namespace visionaray;
 bvh<basic_triangle<3, float>> build_tiny_bvh()
 {
     bvh_node n0;
-    n0.bbox.min     = vec3(-1.0f, -1.0f, -1.0f);
-    n0.bbox.max     = vec3( 1.0f,  1.0f,  1.0f);
-    n0.first_child  = 1;
-    n0.num_prims    = 0;
+    n0.set_inner(aabb(vec3(-1.0f, -1.0f, -1.0f), vec3( 1.0f,  1.0f,  1.0f)), 1);
 
     bvh_node n1;
-    n1.bbox.min     = vec3(-1.0f, -1.0f, -1.0f);
-    n1.bbox.max     = vec3( 0.0f,  1.0f,  1.0f);
-    n1.first_prim   = 0;
-    n1.num_prims    = 2;
+    n1.set_leaf( aabb(vec3(-1.0f, -1.0f, -1.0f), vec3( 0.0f,  1.0f,  1.0f)), 0, 2);
 
     bvh_node n2;
-    n2.bbox.min     = vec3( 0.0f, -1.0f, -1.0f);
-    n2.bbox.max     = vec3( 1.0f,  1.0f,  1.0f);
-    n2.first_prim   = 2;
-    n2.num_prims    = 2;
+    n2.set_leaf( aabb(vec3( 0.0f, -1.0f, -1.0f), vec3( 1.0f,  1.0f,  1.0f)), 2, 2);
 
 
     bvh<basic_triangle<3, float>> tree;
@@ -64,46 +55,25 @@ bvh<basic_triangle<3, float>> build_tiny_bvh()
 bvh<basic_triangle<3, float>> build_medium_bvh()
 {
     bvh_node n0;
-    n0.bbox.min     = vec3(-1.0f, -1.0f, -1.0f);
-    n0.bbox.max     = vec3( 1.0f,  1.0f,  1.0f);
-    n0.first_child  = 1;
-    n0.num_prims    = 0;
+    n0.set_inner(aabb(vec3(-1.0f, -1.0f, -1.0f), vec3( 1.0f,  1.0f,  1.0f)), 1);
 
     bvh_node n1;
-    n1.bbox.min     = vec3(-1.0f, -1.0f, -1.0f);
-    n1.bbox.max     = vec3( 0.0f,  1.0f,  1.0f);
-    n1.first_child  = 4;
-    n1.num_prims    = 0;
+    n1.set_inner(aabb(vec3(-1.0f, -1.0f, -1.0f), vec3( 0.0f,  1.0f,  1.0f)), 4);
 
     bvh_node n2;
-    n2.bbox.min     = vec3( 0.0f, -1.0f, -1.0f);
-    n2.bbox.max     = vec3( 1.0f,  1.0f,  1.0f);
-    n2.first_prim   = 0;
-    n2.num_prims    = 2;
+    n2.set_leaf( aabb(vec3( 0.0f, -1.0f, -1.0f), vec3( 1.0f,  1.0f,  1.0f)), 0, 2);
 
     bvh_node n3;
-    n3.bbox.min     = vec3(-1.0f, -1.0f, -1.0f);
-    n3.bbox.max     = vec3(-0.5f,  1.0f,  1.0f);
-    n3.first_child  = 6;
-    n3.num_prims    = 0;
+    n3.set_inner(aabb(vec3(-1.0f, -1.0f, -1.0f), vec3(-0.5f,  1.0f,  1.0f)), 6);
 
     bvh_node n4;
-    n4.bbox.min     = vec3(-0.5f, -1.0f, -1.0f);
-    n4.bbox.max     = vec3( 1.0f,  1.0f,  1.0f);
-    n4.first_prim   = 2;
-    n4.num_prims    = 2;
+    n4.set_leaf( aabb(vec3(-0.5f, -1.0f, -1.0f), vec3( 1.0f,  1.0f,  1.0f)), 2, 2);
 
     bvh_node n5;
-    n5.bbox.min     = vec3(-1.0f, -1.0f, -1.0f);
-    n5.bbox.max     = vec3(-0.7f,  1.0f,  1.0f);
-    n5.first_prim   = 4;
-    n5.num_prims    = 2;
+    n5.set_leaf( aabb(vec3(-1.0f, -1.0f, -1.0f), vec3(-0.7f,  1.0f,  1.0f)), 4, 2);
 
     bvh_node n6;
-    n6.bbox.min     = vec3(-0.7f, -1.0f, -1.0f);
-    n6.bbox.max     = vec3(-0.5f,  1.0f,  1.0f);
-    n6.first_prim   = 4;
-    n6.num_prims    = 2;
+    n6.set_leaf( aabb(vec3(-0.7f, -1.0f, -1.0f), vec3(-0.5f,  1.0f,  1.0f)), 4, 2);
 
 
     bvh<basic_triangle<3, float>> tree;
