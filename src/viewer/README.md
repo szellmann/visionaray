@@ -16,6 +16,9 @@ Options:
       =whitted            - Whitted style ray tracing kernel
       =pathtracing        - Pathtracing global illumination kernel
    -bgcolor               Background color
+   -bvh=<ARG>             BVH build strategy:
+      =default            - Binned SAH
+      =split              - Binned SAH with spatial splits
    -camera=<ARG>          Text file with camera parameters
    -fullscreen            Full screen window
    -height=<ARG>          Window height

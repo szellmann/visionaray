@@ -108,6 +108,12 @@ struct renderer : viewer_type
         GPU
     };
 
+    enum bvh_build_strategy
+    {
+        Binned = 0,  // Binned SAH builder, no spatial splits
+        Split        // Split BVH, also binned and with SAH
+    };
+
 
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
@@ -147,6 +153,16 @@ struct renderer : viewer_type
             cl::init(this->algo)
             ) );
 
+        add_cmdline_option( cl::makeOption<bvh_build_strategy&>({
+                { "default",            Binned,         "Binned SAH" },
+                { "split",              Split,          "Binned SAH with spatial splits" }
+            },
+            "bvh",
+            cl::Desc("BVH build strategy"),
+            cl::ArgRequired,
+            cl::init(this->builder)
+            ) );
+
         add_cmdline_option( cl::makeOption<unsigned&>({
                 { "1",      1,      "1x supersampling" },
                 { "2",      2,      "2x supersampling" },
@@ -178,6 +194,7 @@ struct renderer : viewer_type
     unsigned                                    frame_num       = 0;
     unsigned                                    ssaa_samples    = 1;
     algorithm                                   algo            = Simple;
+    bvh_build_strategy                          builder         = Binned;
     device_type                                 dev_type        = CPU;
     bool                                        show_hud        = true;
     bool                                        show_hud_ext    = true;
@@ -706,7 +723,11 @@ int main(int argc, char** argv)
     std::cout << "Creating BVH...\n";
 
     // Create the BVH on the host
-    rend.host_bvh = build<renderer::host_bvh_type>(rend.mod.primitives.data(), rend.mod.primitives.size());
+    rend.host_bvh = build<renderer::host_bvh_type>(
+            rend.mod.primitives.data(),
+            rend.mod.primitives.size(),
+            rend.builder == renderer::Split
+            );
 
     std::cout << "Ready\n";
 
