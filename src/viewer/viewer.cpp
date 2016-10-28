@@ -40,7 +40,7 @@
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
-#include <visionaray/detail/render_bvh.h>
+#include <visionaray/detail/bvh/outline_renderer.h>
 #include <visionaray/gl/debug_callback.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>

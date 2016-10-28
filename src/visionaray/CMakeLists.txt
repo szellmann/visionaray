@@ -45,6 +45,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/bvh/get_tex_coord.h
     ${HEADER_DIR}/detail/bvh/hit_record.h
     ${HEADER_DIR}/detail/bvh/intersect.inl
+    ${HEADER_DIR}/detail/bvh/outline_renderer.h
     ${HEADER_DIR}/detail/bvh/prim_traits.h
     ${HEADER_DIR}/detail/bvh/sah.h
     ${HEADER_DIR}/detail/bvh/traverse.inl
@@ -77,7 +78,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/pixel_unpack_buffer_rt.inl
     ${HEADER_DIR}/detail/platform.h
     ${HEADER_DIR}/detail/point_light.inl
-    ${HEADER_DIR}/detail/render_bvh.h
     ${HEADER_DIR}/detail/sched_common.h
     ${HEADER_DIR}/detail/semaphore.h
     ${HEADER_DIR}/detail/simple.inl

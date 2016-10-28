@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_DETAIL_RENDER_BVH_H
-#define VSNRAY_DETAIL_RENDER_BVH_H 1
+#ifndef VSNRAY_DETAIL_BVH_OUTLINE_RENDERER_H
+#define VSNRAY_DETAIL_BVH_OUTLINE_RENDERER_H 1
 
 #include "platform.h"
 
@@ -138,4 +138,4 @@ private:
 } // detail
 } // visionaray
 
-#endif // VSNRAY_DETAIL_RENDER_BVH_H
+#endif // VSNRAY_DETAIL_BVH_OUTLINE_RENDERER_H
