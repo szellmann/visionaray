@@ -6,7 +6,7 @@
 #ifndef VSNRAY_DETAIL_BVH_OUTLINE_RENDERER_H
 #define VSNRAY_DETAIL_BVH_OUTLINE_RENDERER_H 1
 
-#include "platform.h"
+#include "../platform.h"
 
 #include <vector>
 
