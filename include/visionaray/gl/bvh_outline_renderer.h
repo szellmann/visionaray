@@ -47,8 +47,14 @@ public:
 
     struct display_config
     {
-        display_filter filter = Full;
-//      int            level  = -1;
+        display_config()
+            : filter(Full)
+//          , level(-1)
+        {
+        }
+
+        display_filter filter;
+//      int            level ;
     };
 
 
