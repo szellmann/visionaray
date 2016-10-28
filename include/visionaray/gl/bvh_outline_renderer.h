@@ -3,14 +3,14 @@
 
 #pragma once
 
-#ifndef VSNRAY_DETAIL_BVH_OUTLINE_RENDERER_H
-#define VSNRAY_DETAIL_BVH_OUTLINE_RENDERER_H 1
+#ifndef VSNRAY_GL_BVH_OUTLINE_RENDERER_H
+#define VSNRAY_GL_BVH_OUTLINE_RENDERER_H 1
 
 #include <vector>
 
 #include <GL/glew.h>
 
-#include "../platform.h"
+#include "../detail/platform.h"
 
 #if defined(VSNRAY_OS_DARWIN)
 #include <OpenGL/gl.h>
@@ -22,7 +22,7 @@
 
 namespace visionaray
 {
-namespace detail
+namespace gl
 {
 
 //-------------------------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ private:
 
 };
 
-} // detail
+} // gl
 } // visionaray
 
-#endif // VSNRAY_DETAIL_BVH_OUTLINE_RENDERER_H
+#endif // VSNRAY_GL_BVH_OUTLINE_RENDERER_H

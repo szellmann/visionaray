@@ -45,7 +45,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/bvh/get_tex_coord.h
     ${HEADER_DIR}/detail/bvh/hit_record.h
     ${HEADER_DIR}/detail/bvh/intersect.inl
-    ${HEADER_DIR}/detail/bvh/outline_renderer.h
     ${HEADER_DIR}/detail/bvh/prim_traits.h
     ${HEADER_DIR}/detail/bvh/sah.h
     ${HEADER_DIR}/detail/bvh/traverse.inl
@@ -96,6 +95,7 @@ set(VSNRAY_HEADERS
 
     # OpenGL
 
+    ${HEADER_DIR}/gl/bvh_outline_renderer.h
     ${HEADER_DIR}/gl/compositing.h
     ${HEADER_DIR}/gl/debug_callback.h
     ${HEADER_DIR}/gl/handle.h

@@ -40,7 +40,7 @@
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
-#include <visionaray/detail/bvh/outline_renderer.h>
+#include <visionaray/gl/bvh_outline_renderer.h>
 #include <visionaray/gl/debug_callback.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
@@ -231,7 +231,7 @@ struct renderer : viewer_type
     mouse::pos                                  mouse_pos;
 
     visionaray::frame_counter                   counter;
-    detail::bvh_outline_renderer                outlines;
+    gl::bvh_outline_renderer                    outlines;
     gl::debug_callback                          gl_debug_callback;
 
 protected:
