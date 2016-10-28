@@ -6,11 +6,11 @@
 #ifndef VSNRAY_DETAIL_BVH_OUTLINE_RENDERER_H
 #define VSNRAY_DETAIL_BVH_OUTLINE_RENDERER_H 1
 
-#include "../platform.h"
-
 #include <vector>
 
 #include <GL/glew.h>
+
+#include "../platform.h"
 
 #if defined(VSNRAY_OS_DARWIN)
 #include <OpenGL/gl.h>
@@ -35,6 +35,24 @@ class bvh_outline_renderer
 public:
 
     //-------------------------------------------------------------------------
+    // Configuration
+    //
+
+    enum display_filter
+    {
+        Full = 0,   // display the whole BVH
+        Leaves,     // display only leave nodes
+//      Level       // display only nodes at a certain level
+    };
+
+    struct display_config
+    {
+        display_filter filter = Full;
+//      int            level  = -1;
+    };
+
+
+    //-------------------------------------------------------------------------
     // Render BVH outlines
     //
 
@@ -56,13 +74,13 @@ public:
     //
 
     template <typename BVH>
-    void init(BVH const& b)
+    void init(BVH const& b, display_config config = display_config())
     {
         glDeleteBuffers(1, &vbo_);
         glGenBuffers(1, &vbo_);
 
         std::vector<float> vertices;
-        traverse_depth_first(b, [&](typename BVH::node_type const& n)
+        auto func =  [&](typename BVH::node_type const& n)
         {
             auto box = n.get_bounds();
 
@@ -106,7 +124,16 @@ public:
             };
 
             vertices.insert(vertices.end(), ilist.begin(), ilist.end());
-        });
+        };
+
+        if (config.filter == Full)
+        {
+            traverse_depth_first(b, func);
+        }
+        else if (config.filter == Leaves)
+        {
+            traverse_leaves(b, func);
+        }
 
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo_);
