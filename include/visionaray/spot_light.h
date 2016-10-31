@@ -32,11 +32,14 @@ public:
 
     // Get a single sampled position (always the same).
     template <typename Sampler>
-    VSNRAY_FUNC vec_type sample(Sampler& samp) const;
+    VSNRAY_FUNC vector<3, typename Sampler::value_type> sample(Sampler& samp) const;
 
     // Get N sampled positions (all the same).
     template <size_t N, typename Sampler>
-    VSNRAY_FUNC void sample(array<vec_type, N>& result, Sampler& samp) const;
+    VSNRAY_FUNC void sample(
+            array<vector<3, typename Sampler::value_type>, N>& result,
+            Sampler& samp
+            ) const;
 
     VSNRAY_FUNC vec_type position() const;
     VSNRAY_FUNC vec_type spot_direction() const;
