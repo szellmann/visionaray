@@ -73,15 +73,67 @@ void traverse_leaves(B const& b, F func)
 // parameter func(B::node_type) to traversal functions
 //
 // Traversal functions:
+//  - traverse_depth_first()
+//  - traverse_leaves()
 //  - traverse_parents()
 //
 // TODO:
 //  - traverse_breadth_first()
-//  - traverse_depth_first()
-//  - traverse_leaves()
 //
 //
 //-------------------------------------------------------------------------------------------------
+
+
+template <typename B, typename N, typename F>
+void traverse_depth_first(B const& b, N const& n, F func)
+{
+    detail::stack<64> st;
+
+    // find node address
+    unsigned addr = 0;
+
+    for (size_t i = 0; i < b.nodes().size(); ++i)
+    {
+        auto rhs = b.node(i);
+        if (n == rhs)
+        {
+            addr = static_cast<unsigned>(i);
+            break;
+        }
+    }
+
+    st.push(addr);
+
+
+    while (!st.empty())
+    {
+        auto node = b.node(addr);
+
+        func(node);
+
+        if (is_inner(node))
+        {
+            addr = node.get_child(0);
+            st.push(node.get_child(1));
+        }
+        else
+        {
+            addr = st.pop();
+        }
+    }
+}
+
+template <typename B, typename N, typename F>
+void traverse_leaves(B const& b, N const& n, F func)
+{
+    traverse_depth_first(b, n, [&](typename B::node_type const& node)
+    {
+        if (is_leaf(node))
+        {
+            func(node);
+        }
+    });
+}
 
 
 //-------------------------------------------------------------------------------------------------
