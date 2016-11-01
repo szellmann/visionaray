@@ -91,6 +91,79 @@ bvh<basic_triangle<3, float>> build_medium_bvh()
 
 
 //-------------------------------------------------------------------------------------------------
+// Test leaf traversal
+//
+
+TEST(BVH, TraverseLeaves)
+{
+    // test setup -----------------------------------------
+
+    // count the leaves we found (0 or max. 1!)
+    static const int MaxLeaves = 8;
+    int counts[MaxLeaves] = { 0 };
+
+    // helper function to check counts
+
+    auto check_count = [&](std::vector<int> vals)
+    {
+        for (int i = 0; i < MaxLeaves; ++i)
+        {
+            if (std::find(vals.begin(), vals.end(), i) != vals.end())
+            {
+                EXPECT_TRUE(counts[i]);
+            }
+            else
+            {
+                EXPECT_FALSE(counts[i]);
+            }
+        }
+    };
+
+    // test tiny bvh --------------------------------------
+
+    auto tree = build_tiny_bvh();
+
+    // whole bvh
+    traverse_leaves(
+        tree,
+        [&](bvh_node n)
+        {
+            for (size_t i = 0; i < tree.nodes().size(); ++i)
+            {
+                if (n == tree.node(i))
+                {
+                    ++counts[i];
+                }
+            }
+        }
+        );
+
+    check_count({1,2});
+
+    // reset
+    std::fill(counts, counts + MaxLeaves, 0);
+
+    // node(1) is a leaf
+    traverse_leaves(
+        tree,
+        tree.node(1),
+        [&](bvh_node n)
+        {
+            for (size_t i = 0; i < tree.nodes().size(); ++i)
+            {
+                if (n == tree.node(i))
+                {
+                    ++counts[i];
+                }
+            }
+        }
+        );
+
+    check_count({1});
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Test parent traversal
 //
 
