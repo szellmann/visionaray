@@ -160,6 +160,52 @@ TEST(BVH, TraverseLeaves)
         );
 
     check_count({1});
+
+
+    // test medium bvh ------------------------------------
+
+    tree = build_medium_bvh();
+
+    // reset
+    std::fill(counts, counts + MaxLeaves, 0);
+
+    // whole bvh
+    traverse_leaves(
+        tree,
+        [&](bvh_node n)
+        {
+            for (size_t i = 0; i < tree.nodes().size(); ++i)
+            {
+                if (n == tree.node(i))
+                {
+                    ++counts[i];
+                }
+            }
+        }
+        );
+
+    check_count({2,4,5,6});
+
+    // reset
+    std::fill(counts, counts + MaxLeaves, 0);
+
+    // node 2 is a leaf
+    traverse_leaves(
+        tree,
+        tree.node(2),
+        [&](bvh_node n)
+        {
+            for (size_t i = 0; i < tree.nodes().size(); ++i)
+            {
+                if (n == tree.node(i))
+                {
+                    ++counts[i];
+                }
+            }
+        }
+        );
+
+    check_count({2});
 }
 
 
