@@ -543,7 +543,7 @@ void load_obj(std::string const& filename, model& mod)
                             // File was already present in map or was
                             // just loaded. Push a reference to it!
                             auto& loaded_tex = tex_it->second;
-                            mod.textures.push_back(typename tex_type::ref_type(loaded_tex));
+                            mod.textures.push_back(tex_type::ref_type(loaded_tex));
                         }
                     }
                     else
@@ -555,7 +555,7 @@ void load_obj(std::string const& filename, model& mod)
                 // if no texture was loaded, insert an empty dummy
                 if (mod.textures.size() < mod.materials.size())
                 {
-                    typename tex_type::ref_type tex(0, 0);
+                    tex_type::ref_type tex(0, 0);
                     mod.textures.push_back(tex);
                 }
 
@@ -616,7 +616,7 @@ void load_obj(std::string const& filename, model& mod)
     for (size_t i = mod.textures.size(); i <= geom_id; ++i)
     {
         using tex_type = model::texture_type;
-        typename tex_type::ref_type tex(0, 0);
+        tex_type::ref_type tex(0, 0);
         mod.textures.push_back(tex);
     }
 
