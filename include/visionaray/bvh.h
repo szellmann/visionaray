@@ -435,9 +435,9 @@ struct is_any_bvh : std::integral_constant<bool, is_bvh<T>::value || is_index_bv
 //
 
 template <typename P>
-using bvh               = bvh_t<aligned_vector<P>, aligned_vector<bvh_node>>;
+using bvh               = bvh_t<aligned_vector<P>, aligned_vector<bvh_node, 32>>;
 template <typename P>
-using index_bvh         = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node>, aligned_vector<unsigned>>;
+using index_bvh         = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node, 32>, aligned_vector<unsigned>>;
 
 #ifdef __CUDACC__
 template <typename P>
