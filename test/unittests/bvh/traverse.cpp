@@ -126,7 +126,7 @@ TEST(BVH, TraverseLeaves)
     // whole bvh
     traverse_leaves(
         tree,
-        [&](bvh_node n)
+        [&](bvh_node const& n)
         {
             for (size_t i = 0; i < tree.nodes().size(); ++i)
             {
@@ -147,7 +147,7 @@ TEST(BVH, TraverseLeaves)
     traverse_leaves(
         tree,
         tree.node(1),
-        [&](bvh_node n)
+        [&](bvh_node const& n)
         {
             for (size_t i = 0; i < tree.nodes().size(); ++i)
             {
@@ -172,7 +172,7 @@ TEST(BVH, TraverseLeaves)
     // whole bvh
     traverse_leaves(
         tree,
-        [&](bvh_node n)
+        [&](bvh_node const& n)
         {
             for (size_t i = 0; i < tree.nodes().size(); ++i)
             {
@@ -193,7 +193,7 @@ TEST(BVH, TraverseLeaves)
     traverse_leaves(
         tree,
         tree.node(2),
-        [&](bvh_node n)
+        [&](bvh_node const& n)
         {
             for (size_t i = 0; i < tree.nodes().size(); ++i)
             {
@@ -222,7 +222,7 @@ TEST(BVH, TraverseParents)
     traverse_parents(
         tree,
         tree.node(1),
-        [&](bvh_node n)
+        [&](bvh_node const& n)
         {
             EXPECT_TRUE(n == tree.node(0));
         }
@@ -231,7 +231,7 @@ TEST(BVH, TraverseParents)
     traverse_parents(
         tree,
         tree.node(2),
-        [&](bvh_node n)
+        [&](bvh_node const& n)
         {
             EXPECT_TRUE(n == tree.node(0));
         }
@@ -250,7 +250,7 @@ TEST(BVH, TraverseParents)
     traverse_parents(
         tree,
         tree.node(6),
-        [&](bvh_node n)
+        [&](bvh_node const& n)
         {
             EXPECT_TRUE(count >= 0 && count < 3);
 
@@ -278,7 +278,7 @@ TEST(BVH, TraverseParents)
     traverse_parents(
         tree,
         tree.node(5),
-        [&](bvh_node n)
+        [&](bvh_node const& n)
         {
             EXPECT_TRUE(count >= 0 && count < 3);
 
@@ -306,7 +306,7 @@ TEST(BVH, TraverseParents)
     traverse_parents(
         tree,
         tree.node(4),
-        [&](bvh_node n)
+        [&](bvh_node const& n)
         {
             EXPECT_TRUE(count >= 0 && count < 2);
 
@@ -330,7 +330,7 @@ TEST(BVH, TraverseParents)
     traverse_parents(
         tree,
         tree.node(3),
-        [&](bvh_node n)
+        [&](bvh_node const& n)
         {
             EXPECT_TRUE(count >= 0 && count < 2);
 
