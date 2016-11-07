@@ -26,10 +26,8 @@ namespace visionaray
 //
 
 template <typename T, size_t N>
-class array
+struct array
 {
-public:
-
     using value_type                = T;
     using size_type                 = size_t;
     using difference_type           = ptrdiff_t;
@@ -48,7 +46,6 @@ public:
     using const_reverse_iterator    = std::reverse_iterator<const_iterator>;
 #endif
 
-public:
 
     VSNRAY_FUNC reference               at(size_type pos);
     VSNRAY_FUNC const_reference         at(size_type pos) const;
@@ -96,10 +93,8 @@ public:
     VSNRAY_FUNC void                    fill(T const& value);
     VSNRAY_FUNC void                    swap(array& rhs);
 
-private:
-
+    // Public, to allow for aggregate initialization!
     T data_[N];
-
 };
 
 } // visionaray
