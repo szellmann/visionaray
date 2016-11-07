@@ -6,9 +6,9 @@
 #ifndef VSNRAY_DETAIL_SCHED_COMMON_H
 #define VSNRAY_DETAIL_SCHED_COMMON_H 1
 
-#include <array>
 #include <chrono>
 
+#include <visionaray/array.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/render_target.h>
@@ -220,7 +220,7 @@ inline R make_primary_rays(
 
 template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline std::array<R, 2> make_primary_rays(
+inline array<R, 2> make_primary_rays(
         R                           /* */,
         pixel_sampler::ssaa_type<2> /* */,
         Sampler&                    samp,
@@ -243,7 +243,7 @@ inline std::array<R, 2> make_primary_rays(
 
 template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline std::array<R, 4> make_primary_rays(
+inline array<R, 4> make_primary_rays(
         R                           /* */,
         pixel_sampler::ssaa_type<4> /* */,
         Sampler&                    samp,
@@ -268,7 +268,7 @@ inline std::array<R, 4> make_primary_rays(
 
 template <typename R, typename Sampler, typename ...Args>
 VSNRAY_FUNC
-inline std::array<R, 8> make_primary_rays(
+inline array<R, 8> make_primary_rays(
         R                           /* */,
         pixel_sampler::ssaa_type<8> /* */,
         Sampler&                    samp,
@@ -302,7 +302,7 @@ template <
     typename ...Args
     >
 VSNRAY_FUNC
-inline std::array<R, Num> make_primary_rays(
+inline array<R, Num> make_primary_rays(
         R               /* */,
         PxSamplerT      /* */,
         Sampler&        samp,
@@ -311,7 +311,7 @@ inline std::array<R, Num> make_primary_rays(
         Args&&...       args
         )
 {
-    std::array<R, Num> result;
+    array<R, Num> result;
 
     for (size_t i = 0; i < Num; ++i)
     {
@@ -590,7 +590,7 @@ VSNRAY_FUNC
 inline void sample_pixel_impl(
         K                                   kernel,
         pixel_sampler::jittered_blend_type  /* */,
-        std::array<R, Num> const&           rays,
+        array<R, Num> const&                rays,
         Sampler&                            samp,
         unsigned                            frame_num,
         render_target_ref<CF>               rt_ref,
@@ -645,7 +645,7 @@ VSNRAY_FUNC
 inline void sample_pixel_impl(
         K                               kernel,
         pixel_sampler::ssaa_type<Num>   /* */,
-        std::array<R, Num> const&       rays,
+        array<R, Num> const&            rays,
         Sampler&                        samp,
         unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
@@ -698,7 +698,7 @@ VSNRAY_FUNC
 inline void sample_pixel_impl(
         K                               kernel,
         pixel_sampler::ssaa_type<Num>   /* */,
-        std::array<R, Num> const&       rays,
+        array<R, Num> const&            rays,
         Sampler&                        samp,
         unsigned                        frame_num,
         render_target_ref<CF, DF>       rt_ref,
