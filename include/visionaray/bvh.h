@@ -65,6 +65,7 @@ struct VSNRAY_ALIGN(32) bvh_node
 
     VSNRAY_FUNC aabb const& get_bounds() const
     {
+        static_assert( sizeof(bvh_node) == sizeof(aabb), "Size mismatch" );
         return *reinterpret_cast<aabb const*>(this);
     }
 
