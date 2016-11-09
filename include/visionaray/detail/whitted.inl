@@ -248,7 +248,7 @@ struct kernel
 
         C color(0.0);
 
-        size_t depth = 0;
+        unsigned depth = 0;
         C no_hit_color(from_rgba(params.bg_color));
         S throughput(1.0);
         while (any(hit_rec.hit) && any(throughput > S(params.epsilon)) && depth++ < params.num_bounces)
