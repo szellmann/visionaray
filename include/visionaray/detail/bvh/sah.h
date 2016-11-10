@@ -367,7 +367,7 @@ struct sah_builder
     }
 
     //--------------------------------------------------------------------------
-    // object patrtition
+    // object partition
     //
 
     // Projects the given primitive into the bins.
