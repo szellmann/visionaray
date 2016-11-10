@@ -47,6 +47,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/bvh/intersect.inl
     ${HEADER_DIR}/detail/bvh/prim_traits.h
     ${HEADER_DIR}/detail/bvh/sah.h
+    ${HEADER_DIR}/detail/bvh/statistics.h
     ${HEADER_DIR}/detail/bvh/traverse.inl
     ${HEADER_DIR}/detail/material/emissive.inl
     ${HEADER_DIR}/detail/material/matte.inl
