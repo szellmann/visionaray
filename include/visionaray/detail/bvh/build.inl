@@ -167,7 +167,7 @@ Tree build(P* primitives, size_t num_prims, bool enable_spatial_splits)
 {
     Tree tree(primitives, num_prims);
 
-    detail::sah_builder builder;
+    detail::binned_sah_builder builder;
 
     builder.enable_spatial_splits(enable_spatial_splits);
     builder.set_alpha(1.0e-5f);

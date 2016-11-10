@@ -147,7 +147,7 @@ namespace detail
 {
 
 
-struct sah_builder
+struct binned_sah_builder
 {
     // TODO:
     // Add a bounds class with prim_bounds and cent_bounds members...
