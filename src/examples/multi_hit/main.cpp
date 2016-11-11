@@ -4,6 +4,7 @@
 #include <cassert>
 #include <exception>
 #include <memory>
+#include <new>
 
 #include <GL/glew.h>
 

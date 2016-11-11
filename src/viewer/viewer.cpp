@@ -10,6 +10,7 @@
 #include <ostream>
 #include <map>
 #include <memory>
+#include <new>
 #include <sstream>
 #include <string>
 #include <thread>
