@@ -1,6 +1,11 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
+#ifndef VSNRAY_DETAIL_BVH_TRAVERSE_H
+#define VSNRAY_DETAIL_BVH_TRAVERSE_H 1
+
 #include <algorithm>
 
 #include "../stack.h"
@@ -164,3 +169,5 @@ void traverse_parents(B const& b, N const& node, F func)
 }
 
 } // visionaray
+
+#endif // VSNRAY_DETAIL_BVH_TRAVERSE_H
