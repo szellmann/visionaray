@@ -1,3 +1,6 @@
 [submodule "src/viewer/CmdLine"]
 	path = src/3rdparty/CmdLine
 	url = https://github.com/abolz/CmdLine.git
+[submodule "src/3rdparty/nanort"]
+	path = src/3rdparty/nanort
+	url = https://github.com/lighttransport/nanort
