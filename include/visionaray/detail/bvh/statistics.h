@@ -18,6 +18,9 @@ namespace visionaray
 //
 // Parameters:
 //
+// [in] B
+//      BVH tree
+//
 // [in] CI
 //      Estimated costs to traverse an inner node
 //
@@ -43,11 +46,15 @@ inline float sah_cost(BVH const& b, float ci = 1.2f, float cl = 0.0f, float cp =
     // Summed surface area of all inner nodes
     float A_i = 0.0f;
 
+    // Summed surface area of all leaves times #primitives of all leaves
+    float A_l_x_N_n = 0.0f;
+
     for (auto n : b.nodes())
     {
         if (is_leaf(n))
         {
             A_l += surface_area(n.get_bounds());
+            A_l_x_N_n += surface_area(n.get_bounds()) * static_cast<float>(n.get_num_primitives());
         }
         else
         {
@@ -57,7 +64,7 @@ inline float sah_cost(BVH const& b, float ci = 1.2f, float cl = 0.0f, float cp =
 
     return ci * (A_i / A_r)
          + cl * (A_l / A_r)
-         + cp * (A_l / A_r) * static_cast<float>(b.primitives().size());
+         + cp * (A_l_x_N_n / A_r);
 }
 
 
