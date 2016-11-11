@@ -4,6 +4,8 @@
 Visionaray
 ==========
 
+[![Join the chat at https://gitter.im/visionaray/Lobby](https://badges.gitter.im/visionaray/Lobby.svg)](https://gitter.im/visionaray/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A C++ based, cross platform ray tracing library
 
 > **Note that the current version of Visionaray is an early preview. At this stage, the framework, including the API, are likely to undergo frequent changes.**
