@@ -481,6 +481,6 @@ void traverse_parents(B const& b, N const& n, F func);
 #include "detail/bvh/intersect.inl"
 #include "detail/bvh/prim_traits.h"
 #include "detail/bvh/statistics.h"
-#include "detail/bvh/traverse.inl"
+#include "detail/bvh/traverse.h"
 
 #endif // VSNRAY_BVH_H

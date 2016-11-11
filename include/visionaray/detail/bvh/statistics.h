@@ -60,6 +60,43 @@ inline float sah_cost(BVH const& b, float ci = 1.2f, float cl = 0.0f, float cp =
          + cp * (A_l / A_r) * static_cast<float>(b.primitives().size());
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Recursively compute the SAH cost of a node
+//
+// Parameters:
+//
+// [in] B
+//      BVH tree
+//
+// [in] N
+//      BVH node
+//
+// [in] CI
+//      Estimated costs to traverse an inner node
+//
+// [in] CP
+//      Estimated costs to intersect a primitive
+//
+
+template <
+    typename BVH,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type
+    >
+inline float sah_cost(BVH const& b, bvh_node const& n, float ci = 1.2f, float cp = 1.0f)
+{
+    if (is_inner(n))
+    {
+        return ci * surface_area(n.get_bounds())
+             + sah_cost(b, b.node(n.get_child(0)))
+             + sah_cost(b, b.node(n.get_child(1)));
+    }
+    else
+    {
+        return cp * surface_area(n.get_bounds()) * static_cast<float>(n.get_num_primitives());
+    }
+}
+
 } // visionaray
 
 #endif // VSNRAY_DETAIL_BVH_STATISTICS_H
