@@ -997,6 +997,46 @@ inline auto pack(std::array<vector<Dim, T>, N> const& vecs)
     return result;
 }
 
+// pack for vectors
+
+template <size_t Dim, typename T>
+inline auto pack(
+        vector<Dim, T> const& v1,
+        vector<Dim, T> const& v2,
+        vector<Dim, T> const& v3,
+        vector<Dim, T> const& v4
+        )
+    -> vector<Dim, float_from_simd_width_t<4>>
+{
+    return pack( std::array<vector<Dim, T>, 4>{{
+            v1, v2, v3, v4
+            }} );
+}
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
+// pack eight vectors
+
+template <size_t Dim, typename T>
+inline auto pack(
+        vector<Dim, T> const& v1,
+        vector<Dim, T> const& v2,
+        vector<Dim, T> const& v3,
+        vector<Dim, T> const& v4,
+        vector<Dim, T> const& v5,
+        vector<Dim, T> const& v6,
+        vector<Dim, T> const& v7,
+        vector<Dim, T> const& v8
+        )
+    -> vector<Dim, float_from_simd_width_t<8>>
+{
+    return pack( std::array<vector<Dim, T>, 8>{{
+            v1, v2, v3, v4, v5, v6, v7, v8
+            }} );
+}
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+
 // unpack -------------------------------------------------
 
 template <
