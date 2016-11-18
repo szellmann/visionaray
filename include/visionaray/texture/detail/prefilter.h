@@ -55,12 +55,12 @@ inline float init_anticausal_coeff(short* c)
 }
 
 template <typename T>
-static void convert_to_bspline_coeffs(T*, size_t, size_t)
+inline void convert_to_bspline_coeffs(T*, size_t, size_t)
 {
     throw std::runtime_error("not implemented yet");
 }
 
-static void convert_to_bspline_coeffs(short* c, size_t len, size_t stride)
+inline void convert_to_bspline_coeffs(short* c, size_t len, size_t stride)
 {
 
     typedef float float_type;
@@ -94,7 +94,7 @@ static void convert_to_bspline_coeffs(short* c, size_t len, size_t stride)
 
 
 template <typename T>
-static void convert_for_bspline_interpol(texture_ref<T, 1>* tex)
+inline void convert_for_bspline_interpol(texture_ref<T, 1>* tex)
 {
     using namespace detail;
 
@@ -103,7 +103,7 @@ static void convert_for_bspline_interpol(texture_ref<T, 1>* tex)
 }
 
 template <typename T>
-static void convert_for_bspline_interpol(texture_ref<T, 2>* tex)
+inline void convert_for_bspline_interpol(texture_ref<T, 2>* tex)
 {
     using namespace detail;
 
@@ -123,7 +123,7 @@ static void convert_for_bspline_interpol(texture_ref<T, 2>* tex)
 }
 
 template <typename T>
-static void convert_for_bspline_interpol(texture_ref<T, 3>* tex)
+inline void convert_for_bspline_interpol(texture_ref<T, 3>* tex)
 {
     using namespace detail;
 
