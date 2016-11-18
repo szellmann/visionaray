@@ -434,7 +434,7 @@ void load_obj(std::string const& filename, model& mod)
             boost::filesystem::path p(filename);
             std::string mtl_dir = p.parent_path().string();
 
-            std::string mtl_path = mtl_dir + "/" + std::string(mtl_file);
+            std::string mtl_path = mtl_dir + "/" + std::string(mtl_file.begin(), mtl_file.length());
 
             if (boost::filesystem::exists(mtl_path))
             {
@@ -443,7 +443,7 @@ void load_obj(std::string const& filename, model& mod)
         }
         else if ( qi::phrase_parse(it, text.cend(), r_usemtl, qi::blank, mtl_name) )
         {
-            auto mat_it = matlib.find(std::string(mtl_name));
+            auto mat_it = matlib.find(std::string(mtl_name.begin(), mtl_file.length()));
             if (mat_it != matlib.end())
             {
                 typedef model::texture_type tex_type;
