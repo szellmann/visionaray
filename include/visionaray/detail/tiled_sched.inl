@@ -81,7 +81,7 @@ struct tiled_sched<R>::impl
                 R{},
                 typename SP::pixel_sampler_type{},
                 samp,
-                args...
+                std::forward<Args>(args)...
                 );
 
         sample_pixel(
@@ -109,7 +109,7 @@ struct tiled_sched<R>::impl
                 R{},
                 typename SP::pixel_sampler_type{},
                 samp,
-                args...
+                std::forward<Args>(args)...
                 );
 
         sample_pixel(
