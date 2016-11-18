@@ -710,8 +710,6 @@ inline void sample_pixel_impl(
         Args&&...                       args
         )
 {
-    VSNRAY_UNUSED(args...);
-
     using S = typename R::scalar_type;
 
     auto ray_ptr = rays.data();
