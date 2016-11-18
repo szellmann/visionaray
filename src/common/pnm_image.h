@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VNSRAY_COMMON_PNM_IMAGE_H
-#define VNSRAY_COMMON_PNM_IMAGE_H 1
+#ifndef VSNRAY_COMMON_PNM_IMAGE_H
+#define VSNRAY_COMMON_PNM_IMAGE_H 1
 
 #include <string>
 
@@ -23,4 +23,4 @@ public:
 
 } // visionaray
 
-#endif // VNSRAY_COMMON_PNM_IMAGE_H
+#endif // VSNRAY_COMMON_PNM_IMAGE_H
