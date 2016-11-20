@@ -4,7 +4,6 @@
 #include <cassert>
 #include <cstddef>
 #include <iostream>
-#include <limits>
 #include <ostream>
 #include <map>
 #include <utility>
@@ -209,7 +208,8 @@ void store_faces(
 
 aabb bounds(model::triangle_list const& tris)
 {
-    aabb result( vec3(std::numeric_limits<float>::max()), -vec3(std::numeric_limits<float>::max()) );
+    aabb result;
+    result.invalidate();
 
     for (auto const& tri : tris)
     {
