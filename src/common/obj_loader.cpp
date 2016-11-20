@@ -443,7 +443,7 @@ void load_obj(std::string const& filename, model& mod)
         }
         else if ( qi::phrase_parse(it, text.cend(), r_usemtl, qi::blank, mtl_name) )
         {
-            auto mat_it = matlib.find(std::string(mtl_name.begin(), mtl_file.length()));
+            auto mat_it = matlib.find(std::string(mtl_name.begin(), mtl_name.length()));
             if (mat_it != matlib.end())
             {
                 typedef model::texture_type tex_type;
