@@ -37,7 +37,7 @@ std::string backtrace()
         std::stringstream str;
         for (int n = 1; n < cnt; ++n) // skip the 1st entry (address of this function)
         {
-            str << symbols[n] << std::endl;
+            str << symbols[n] << '\n';
         }
         free(symbols);
         return str.str();
