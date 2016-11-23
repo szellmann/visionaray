@@ -130,7 +130,9 @@ bool store_triangle(model& result, vertex_vector const& vertices, int i1, int i2
 
     if (length(cross(tri.e1, tri.e2)) == 0.0f)
     {
-        // TODO: implement some kind of error logging
+        std::cerr << "Error: rejecting degenerate triangle: zero-based indices: ("
+                  << i1 << ' ' << i2 << ' ' << i3 << "), v1|e1|e2: "
+                  << tri.v1 << ' ' << tri.e1 << ' ' << tri.e2 << '\n';
         return false;
     }
     else
