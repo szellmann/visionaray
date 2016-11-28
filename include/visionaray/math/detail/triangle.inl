@@ -43,4 +43,15 @@ basic_aabb<T> get_bounds(basic_triangle<Dim, T, P> const& t)
     return bounds;
 }
 
+template <size_t Dim, typename T, typename P, typename U>
+MATH_FUNC
+inline vector<3, T> sample(basic_triangle<Dim, T, P> const& t, U const& u1, U const& u2)
+{
+    vector<3, U> v1(t.v1);
+    vector<3, U> v2(t.v1 + t.e1);
+    vector<3, U> v3(t.v1 + t.e2);
+
+    return v1 * (U(1.0) - sqrt(u1)) + v2 * sqrt(u1) * (U(1.0) - u2) + v3 * sqrt(u1) * u2;
+}
+
 } // MATH_NAMESPACE
