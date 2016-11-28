@@ -8,6 +8,7 @@
 
 #include "detail/macros.h"
 #include "math/vector.h"
+#include "array.h"
 
 namespace visionaray
 {
@@ -26,6 +27,13 @@ public:
 
     template <typename Sampler>
     VSNRAY_FUNC vector<3, typename Sampler::value_type> sample(Sampler& samp) const;
+
+    // Get N sampled positions.
+    template <size_t N, typename Sampler>
+    VSNRAY_FUNC void sample(
+            array<vector<3, typename Sampler::value_type>, N>& result,
+            Sampler& samp
+            ) const;
 
 private:
 

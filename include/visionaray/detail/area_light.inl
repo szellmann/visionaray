@@ -29,4 +29,18 @@ inline vector<3, typename Sampler::value_type> area_light<Geometry>::sample(Samp
     return sample(geometry_, samp);
 }
 
+template <typename T>
+template <size_t N, typename Sampler>
+VSNRAY_FUNC
+inline void area_light<T>::sample(
+        array<vector<3, typename Sampler::value_type>, N>& result,
+        Sampler& samp
+        ) const
+{
+    for (size_t i = 0; i < N; ++i)
+    {
+        result[i] = sample(samp);
+    }
+}
+
 } // visionaray
