@@ -47,8 +47,10 @@ template <size_t Dim, typename T, typename P, typename Sampler>
 MATH_FUNC
 inline vector<3, T> sample(basic_triangle<Dim, T, P> const& t, Sampler& samp)
 {
-    auto u1 = samp.next();
-    auto u2 = samp.next();
+    using U = typename Sampler::value_type;
+
+    U u1 = samp.next();
+    U u2 = samp.next();
 
     vector<3, U> v1(t.v1);
     vector<3, U> v2(t.v1 + t.e1);
