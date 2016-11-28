@@ -130,7 +130,7 @@ bool store_triangle(model& result, vertex_vector const& vertices, int i1, int i2
 
     if (length(cross(tri.e1, tri.e2)) == 0.0f)
     {
-        std::cerr << "Error: rejecting degenerate triangle: zero-based indices: ("
+        std::cerr << "Warning: rejecting degenerate triangle: zero-based indices: ("
                   << i1 << ' ' << i2 << ' ' << i3 << "), v1|e1|e2: "
                   << tri.v1 << ' ' << tri.e1 << ' ' << tri.e2 << '\n';
         return false;
@@ -527,7 +527,7 @@ void load_obj(std::string const& filename, model& mod)
                                 }
                                 else
                                 {
-                                    std::cerr << "Error: unsupported pixel format\n";
+                                    std::cerr << "Warning: unsupported pixel format\n";
                                 }
 
                                 mod.texture_map.insert(std::make_pair(mat_it->second.map_kd, std::move(tex)));
@@ -536,7 +536,7 @@ void load_obj(std::string const& filename, model& mod)
                             }
                             else
                             {
-                                std::cerr << "Error: cannot load texture from file: " << tex_filename << '\n';
+                                std::cerr << "Warning: cannot load texture from file: " << tex_filename << '\n';
                             }
                         }
 
@@ -550,7 +550,7 @@ void load_obj(std::string const& filename, model& mod)
                     }
                     else
                     {
-                        std::cerr << "Error: file does not exist: " << tex_filename << '\n';
+                        std::cerr << "Warning: file does not exist: " << tex_filename << '\n';
                     }
                 }
 
@@ -565,7 +565,7 @@ void load_obj(std::string const& filename, model& mod)
             }
             else
             {
-                std::cerr << "Error: material not present in mtllib: " << mtl_name << '\n';
+                std::cerr << "Warning: material not present in mtllib: " << mtl_name << '\n';
             }
 
             geom_id = mod.materials.size() == 0 ? 0 : mod.materials.size() - 1;
