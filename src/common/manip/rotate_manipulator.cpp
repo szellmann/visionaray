@@ -97,6 +97,8 @@ rotate_manipulator::rotate_manipulator(
 
 void rotate_manipulator::render()
 {
+    glPushAttrib(GL_CURRENT_BIT | GL_TRANSFORM_BIT);
+
     auto scaling = get_scaling(model_matrix_);
     auto radius = (length((scaling * vec4(size_, 1.0f)).xyz()) / 2.0f) * ball_.radius;
     vec3 center(model_matrix_(0, 3), model_matrix_(1, 3), model_matrix_(2, 3));
@@ -204,7 +206,7 @@ void rotate_manipulator::render()
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
 
-    // TODO: reset GL state
+    glPopAttrib();
 }
 
 bool rotate_manipulator::handle_mouse_down(visionaray::mouse_event const& event)

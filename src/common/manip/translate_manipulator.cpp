@@ -96,6 +96,8 @@ translate_manipulator::translate_manipulator(
 
 void translate_manipulator::render()
 {
+    glPushAttrib(GL_CURRENT_BIT | GL_TRANSFORM_BIT);
+
     auto size = max_element(get_scaling(model_matrix_)/* really? */ * vec4(size_, 1.0f));
 
     vec2i c = get_projected_center(camera_, model_matrix_);
@@ -136,7 +138,7 @@ void translate_manipulator::render()
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
 
-    // TODO: reset GL state
+    glPopAttrib();
 }
 
 bool translate_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
