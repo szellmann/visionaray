@@ -43,10 +43,13 @@ basic_aabb<T> get_bounds(basic_triangle<Dim, T, P> const& t)
     return bounds;
 }
 
-template <size_t Dim, typename T, typename P, typename U>
+template <size_t Dim, typename T, typename P, typename Sampler>
 MATH_FUNC
-inline vector<3, T> sample(basic_triangle<Dim, T, P> const& t, U const& u1, U const& u2)
+inline vector<3, T> sample(basic_triangle<Dim, T, P> const& t, Sampler& samp)
 {
+    auto u1 = samp.next();
+    auto u2 = samp.next();
+
     vector<3, U> v1(t.v1);
     vector<3, U> v2(t.v1 + t.e1);
     vector<3, U> v3(t.v1 + t.e2);
