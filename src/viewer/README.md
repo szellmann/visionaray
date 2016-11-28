@@ -15,6 +15,7 @@ Options:
       =simple             - Simple ray casting kernel
       =whitted            - Whitted style ray tracing kernel
       =pathtracing        - Pathtracing global illumination kernel
+   -ambient               Ambient color
    -bgcolor               Background color
    -bvh=<ARG>             BVH build strategy:
       =default            - Binned SAH

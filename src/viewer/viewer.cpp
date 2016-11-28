@@ -176,6 +176,19 @@ struct renderer : viewer_type
             cl::init(this->ssaa_samples)
             ) );
 
+        add_cmdline_option( cl::makeOption<vec3&, cl::ScalarType>(
+            [&](StringRef name, StringRef /*arg*/, vec3& value)
+            {
+                cl::Parser<>()(name + "-r", cmd_line_inst().bump(), value.x);
+                cl::Parser<>()(name + "-g", cmd_line_inst().bump(), value.y);
+                cl::Parser<>()(name + "-b", cmd_line_inst().bump(), value.z);
+            },
+            "ambient",
+            cl::Desc("Ambient color"),
+            cl::ArgDisallowed,
+            cl::init(this->ambient)
+            ) );
+
 #ifdef __CUDACC__
         add_cmdline_option( cl::makeOption<device_type&>({
                 { "cpu",                CPU,            "Rendering on the CPU" },
@@ -206,6 +219,7 @@ struct renderer : viewer_type
     std::string                                 initial_camera;
 
     model                                       mod;
+    vec3                                        ambient         = vec3(-1.0f);
 
     host_bvh_type                               host_bvh;
 #ifdef __CUDACC__
@@ -460,6 +474,10 @@ void renderer::on_display()
     auto diagonal   = bounds.max - bounds.min;
     auto bounces    = algo == Pathtracing ? 10U : 4U;
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
+    auto amb        = ambient.x >= 0.0f // if set via cmdline
+                            ? vec4(ambient, 1.0f)
+                            : algo == Pathtracing ? vec4(1.0) : vec4(0.0)
+                            ;
 
     if (dev_type == renderer::GPU)
     {
@@ -483,7 +501,7 @@ void renderer::on_display()
                 bounces,
                 epsilon,
                 vec4(background_color(), 1.0f),
-                algo == Pathtracing ? vec4(1.0) : vec4(0.0)
+                amb
                 );
 
         call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, device_rt );
@@ -509,7 +527,7 @@ void renderer::on_display()
                 bounces,
                 epsilon,
                 vec4(background_color(), 1.0f),
-                algo == Pathtracing ? vec4(1.0) : vec4(0.0)
+                amb
                 );
 
         call_kernel( algo, host_sched, kparams, frame_num, ssaa_samples, cam, host_rt );
