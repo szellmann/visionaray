@@ -170,6 +170,11 @@ vec3 viewer_base::background_color() const
     return impl_->bgcolor;
 }
 
+cl::CmdLine& viewer_base::cmd_line_inst()
+{
+    return impl_->cmd;
+}
+
 void viewer_base::event_loop()
 {
 }

@@ -15,6 +15,7 @@ namespace support
 {
 namespace cl
 {
+class CmdLine;
 class OptionBase;
 } // cl
 } // support
@@ -48,6 +49,9 @@ public:
     int width() const;
     int height() const;
     vec3 background_color() const;
+
+    // Returns a reference to the command line instance
+    support::cl::CmdLine& cmd_line_inst();
 
     virtual void event_loop();
     virtual void resize(int width, int height);
