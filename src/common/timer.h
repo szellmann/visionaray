@@ -8,9 +8,17 @@
 
 #include <chrono>
 
+#ifdef __CUDACC__
+#include <cuda.h>
+#endif
+
 
 namespace visionaray
 {
+
+//-------------------------------------------------------------------------------------------------
+// Timer class using std::chrono's high-resolution clock
+//
 
 class timer
 {
@@ -40,6 +48,59 @@ private:
     time_point start_;
 
 };
+
+
+#ifdef __CUDACC__
+
+namespace cuda
+{
+
+//-------------------------------------------------------------------------------------------------
+// CUDA event-based timer class
+//
+
+class timer
+{
+public:
+
+    timer()
+    {
+        cudaEventCreate(&start_);
+        cudaEventCreate(&stop_);
+
+        reset();
+    }
+
+    ~timer()
+    {
+        cudaEventDestroy(stop_);
+        cudaEventDestroy(start_);
+    }
+
+    void reset()
+    {
+        cudaEventRecord(start_);
+    }
+
+    double elapsed() const
+    {
+        cudaEventRecord(stop_);
+        cudaEventSynchronize(stop_);
+        float ms = 0.0f;
+        cudaEventElapsedTime(&ms, start_, stop_);
+        return static_cast<double>(ms) / 1000.0;
+    }
+
+private:
+
+    cudaEvent_t start_;
+    cudaEvent_t stop_;
+
+};
+
+} // cuda
+
+#endif
 
 
 class frame_counter
