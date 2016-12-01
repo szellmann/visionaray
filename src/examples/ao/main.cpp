@@ -132,14 +132,10 @@ void renderer::on_display()
                 normals_per_face_binding{}
                 );
 
-            // Make an ortho basis (TODO: move to library)
-            auto w = n;
-            auto v = select(
-                    abs(w.x) > abs(w.y),
-                    normalize( V(-w.z, S(0.0), w.x) ),
-                    normalize( V(S(0.0), w.z, -w.y) )
-                    );
-            auto u = cross(v, w);
+            V u(0.0);
+            V v(0.0);
+            V w = n;
+            make_orthonormal_basis(u, v, w);
 
             static const int AO_Samples = 8;
             S radius(0.1);

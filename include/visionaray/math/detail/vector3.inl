@@ -336,6 +336,37 @@ inline vector<3, T> normalize(vector<3, T> const& v)
 }
 
 
+//-------------------------------------------------------------------------------------------------
+// make_orthonormal_basis
+//
+// Make an orthonormal basis over 3D vectors u,v,w, where u and v are (bi)tangent
+// and w is normal.
+//
+// Parameters:
+//
+// [out] U
+//      Vector in the tangent plane.
+//
+// [out] V
+//      Vector in the tangent plane.
+//
+// [in] W
+//      Normal vector.
+//
+
+template <typename T>
+MATH_FUNC
+inline void make_orthonormal_basis(vector<3, T>& u, vector<3, T>& v, vector<3, T> const& w)
+{
+    v = select(
+            abs(w.x) > abs(w.y),
+            normalize( vector<3, T>(-w.z, T(0.0), w.x) ),
+            normalize( vector<3, T>(T(0.0), w.z, -w.y) )
+            );
+    u = cross(v, w);
+}
+
+
 //--------------------------------------------------------------------------------------------------
 // Misc.
 //
