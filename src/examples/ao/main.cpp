@@ -132,8 +132,8 @@ void renderer::on_display()
                 normals_per_face_binding{}
                 );
 
-            V u(0.0);
-            V v(0.0);
+            V u;
+            V v;
             V w = n;
             make_orthonormal_basis(u, v, w);
 
