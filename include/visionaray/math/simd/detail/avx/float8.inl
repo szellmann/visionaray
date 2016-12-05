@@ -264,7 +264,7 @@ VSNRAY_FORCE_INLINE float8 sqrt(float8 const& v)
 
 VSNRAY_FORCE_INLINE mask8 isinf(float8 const& v)
 {
-    VSNRAY_ALIGN(32) float values[8] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+    VSNRAY_ALIGN(32) float values[8] = {};
     store(values, v);
 
     return mask8(
