@@ -111,9 +111,6 @@ public:
             bool x8
             );
     basic_mask(bool const v[8]);
-    basic_mask(basic_float<__m256> const& m);
-
-    operator basic_float<__m256>() const;
 };
 
 } // simd

@@ -62,16 +62,6 @@ VSNRAY_FORCE_INLINE mask8::basic_mask(bool const v[8])
 {
 }
 
-VSNRAY_FORCE_INLINE mask8::basic_mask(basic_float<__m256> const& m)
-    : f(m)
-{
-}
-
-VSNRAY_FORCE_INLINE mask8::operator basic_float<__m256>() const
-{
-    return f;
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // any / all intrinsics

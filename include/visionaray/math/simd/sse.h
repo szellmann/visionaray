@@ -83,9 +83,6 @@ public:
     basic_mask(bool x, bool y, bool z, bool w);
     basic_mask(bool const v[4]);
     basic_mask(bool b);
-    basic_mask(basic_float<__m128> const& m);
-
-    operator basic_float<__m128>() const;
 };
 
 } // simd

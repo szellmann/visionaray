@@ -45,16 +45,6 @@ VSNRAY_FORCE_INLINE mask4::basic_mask(bool b)
 {
 }
 
-VSNRAY_FORCE_INLINE mask4::basic_mask(basic_float<__m128> const& m)
-    : f(m)
-{
-}
-
-VSNRAY_FORCE_INLINE mask4::operator basic_float<__m128>() const
-{
-    return f;
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // any / all intrinsics
