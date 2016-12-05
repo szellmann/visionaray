@@ -85,6 +85,7 @@ struct renderer : viewer_type
 //  using scalar_type_cpu           = float;
     using scalar_type_cpu           = simd::float4;
 //  using scalar_type_cpu           = simd::float8;
+//  using scalar_type_cpu           = simd::float16;
     using scalar_type_gpu           = float;
     using ray_type_cpu              = basic_ray<scalar_type_cpu>;
     using ray_type_gpu              = basic_ray<scalar_type_gpu>;

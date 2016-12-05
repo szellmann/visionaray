@@ -124,6 +124,9 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/simd/detail/avx/int8.inl
     ${HEADER_DIR}/math/simd/detail/avx/float8.inl
     ${HEADER_DIR}/math/simd/detail/avx/mask8.inl
+    ${HEADER_DIR}/math/simd/detail/avx512/int16.inl
+    ${HEADER_DIR}/math/simd/detail/avx512/float16.inl
+    ${HEADER_DIR}/math/simd/detail/avx512/mask16.inl
     ${HEADER_DIR}/math/simd/detail/sse/int4.inl
     ${HEADER_DIR}/math/simd/detail/sse/float4.inl
     ${HEADER_DIR}/math/simd/detail/sse/mask4.inl
@@ -133,6 +136,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/simd/detail/basic_mask.inl
     ${HEADER_DIR}/math/simd/detail/common.h
     ${HEADER_DIR}/math/simd/avx.h
+    ${HEADER_DIR}/math/simd/avx512.h
     ${HEADER_DIR}/math/simd/forward.h
     ${HEADER_DIR}/math/simd/gather.h
     ${HEADER_DIR}/math/simd/intrinsics.h

@@ -126,7 +126,58 @@ public:
                 );
     }
 
-    // TODO: maybe don't have a random_sampler4 at all?
+    // TODO: maybe don't have a random_sampler8 at all?
+    sampler_type& get_sampler()
+    {
+        return sampler_;
+    }
+
+private:
+
+    sampler_type sampler_;
+};
+#endif
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+template <>
+class random_sampler<simd::float16>
+{
+public:
+
+    using value_type = simd::float16;
+
+public:
+
+    typedef random_sampler<float> sampler_type;
+
+    VSNRAY_CPU_FUNC random_sampler(unsigned seed)
+        : sampler_(seed)
+    {
+    }
+
+    VSNRAY_CPU_FUNC simd::float16 next()
+    {
+        return simd::float16(
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next(),
+                sampler_.next()
+                );
+    }
+
+    // TODO: maybe don't have a random_sampler16 at all?
     sampler_type& get_sampler()
     {
         return sampler_;

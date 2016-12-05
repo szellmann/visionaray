@@ -415,6 +415,53 @@ inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::va
     return result;
 }
 
+// TODO: consolidate!
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+template <>
+inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float16>::value> unpack(
+        hit_record<basic_ray<simd::float16>, primitive<unsigned>> const& hr
+        )
+{
+    using FloatT = simd::float16;
+    using float_array = aligned_array_t<FloatT>;
+    using int_array = aligned_array_t<int_type_t<FloatT>>;
+    using mask_array = aligned_array_t<mask_type_t<FloatT>>;
+
+    mask_array hit;
+    store(hit, hr.hit);
+
+    int_array prim_id;
+    store(prim_id, hr.prim_id);
+
+    int_array geom_id;
+    store(geom_id, hr.geom_id);
+
+    float_array t;
+    store(t, hr.t);
+
+    auto isect_pos = unpack(hr.isect_pos);
+
+    float_array u;
+    store(u, hr.u);
+
+    float_array v;
+    store(v, hr.v);
+
+    std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
+    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    {
+        result[i].hit       = hit[i] != 0;
+        result[i].prim_id   = prim_id[i];
+        result[i].geom_id   = geom_id[i];
+        result[i].t         = t[i];
+        result[i].isect_pos = isect_pos[i];
+        result[i].u         = u[i];
+        result[i].v         = v[i];
+    }
+    return result;
+}
+#endif
+
 } // simd
 
 } // MATH_NAMESPACE

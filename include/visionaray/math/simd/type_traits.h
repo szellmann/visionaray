@@ -143,6 +143,30 @@ struct alignment_of<simd::mask8>
 
 #endif
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct alignment_of<simd::float16>
+{
+    enum { value = 64 };
+};
+
+template <>
+struct alignment_of<simd::int16>
+{
+    enum { value = 64 };
+};
+
+template <>
+struct alignment_of<simd::mask16>
+{
+    enum { value = 64 };
+};
+
+#endif
+
 
 //-------------------------------------------------------------------------------------------------
 // Get an array that adheres to the alignment requirements and that can store
@@ -194,6 +218,30 @@ template <>
 struct aligned_array<simd::mask8>
 {
     typedef VSNRAY_ALIGN(32) bool type[8];
+};
+
+#endif
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct aligned_array<simd::float16>
+{
+    typedef VSNRAY_ALIGN(64) float type[16];
+};
+
+template <>
+struct aligned_array<simd::int16>
+{
+    typedef VSNRAY_ALIGN(64) int type[16];
+};
+
+template <>
+struct aligned_array<simd::mask16>
+{
+    typedef VSNRAY_ALIGN(64) bool type[16];
 };
 
 #endif
@@ -260,6 +308,30 @@ struct float_type<simd::mask8>
 
 #endif
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct float_type<simd::float16>
+{
+    using type = simd::float16;
+};
+
+template <>
+struct float_type<simd::int16>
+{
+    using type = simd::float16;
+};
+
+template <>
+struct float_type<simd::mask16>
+{
+    using type = simd::float16;
+};
+
+#endif
+
 // helper type --------------------------------------------
 
 template <typename T>
@@ -318,6 +390,30 @@ template <>
 struct int_type<simd::mask8>
 {
     using type = simd::int8;
+};
+
+#endif
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct int_type<simd::float16>
+{
+    using type = simd::int16;
+};
+
+template <>
+struct int_type<simd::int16>
+{
+    using type = simd::int16;
+};
+
+template <>
+struct int_type<simd::mask16>
+{
+    using type = simd::int16;
 };
 
 #endif
@@ -384,6 +480,30 @@ struct mask_type<simd::mask8>
 
 #endif
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct mask_type<simd::float16>
+{
+    using type = simd::mask16;
+};
+
+template <>
+struct mask_type<simd::int16>
+{
+    using type = simd::mask16;
+};
+
+template <>
+struct mask_type<simd::mask16>
+{
+    using type = simd::mask16;
+};
+
+#endif
+
 // helper type --------------------------------------------
 
 template <typename T>
@@ -443,6 +563,30 @@ struct native_type<simd::mask8>
 
 #endif
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct native_type<simd::float16>
+{
+    using type = __m512;
+};
+
+template <>
+struct native_type<simd::int16>
+{
+    using type = __m512i;
+};
+
+template <>
+struct native_type<simd::mask16>
+{
+    using type = __mmask16;
+};
+
+#endif
+
 // helper type --------------------------------------------
 
 template <typename T>
@@ -474,6 +618,18 @@ template <>
 struct float_from_simd_width<8>
 {
     using type = simd::float8;
+};
+
+#endif
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct float_from_simd_width<16>
+{
+    using type = simd::float16;
 };
 
 #endif
@@ -513,6 +669,18 @@ struct int_from_simd_width<8>
 
 #endif
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct int_from_simd_width<16>
+{
+    using type = simd::int16;
+};
+
+#endif
+
 // helper type --------------------------------------------
 
 template <unsigned Width>
@@ -544,6 +712,18 @@ template <>
 struct mask_from_simd_width<8>
 {
     using type = simd::mask8;
+};
+
+#endif
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct mask_from_simd_width<16>
+{
+    using type = simd::mask16;
 };
 
 #endif
@@ -610,6 +790,30 @@ struct is_simd_vector<simd::mask8>
 
 #endif
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct is_simd_vector<simd::float16>
+{
+    enum { value = true };
+};
+
+template <>
+struct is_simd_vector<simd::int16>
+{
+    enum { value = true };
+};
+
+template <>
+struct is_simd_vector<simd::mask16>
+{
+    enum { value = true };
+};
+
+#endif
+
 
 //-------------------------------------------------------------------------------------------------
 // Get the elementary type belonging to a SIMD vector type
@@ -661,6 +865,30 @@ struct element_type<simd::int8>
 
 template <>
 struct element_type<simd::mask8>
+{
+    using type = bool;
+};
+
+#endif
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct element_type<simd::float16>
+{
+    using type = float;
+};
+
+template <>
+struct element_type<simd::int16>
+{
+    using type = int;
+};
+
+template <>
+struct element_type<simd::mask16>
 {
     using type = bool;
 };
@@ -725,6 +953,30 @@ template <>
 struct num_elements<simd::mask8>
 {
     enum { value = 8 };
+};
+
+#endif
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct num_elements<simd::float16>
+{
+    enum { value = 16 };
+};
+
+template <>
+struct num_elements<simd::int16>
+{
+    enum { value = 16 };
+};
+
+template <>
+struct num_elements<simd::mask16>
+{
+    enum { value = 16 };
 };
 
 #endif

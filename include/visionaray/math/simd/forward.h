@@ -40,10 +40,20 @@ typedef basic_float<__m256>                     float8;
 typedef basic_mask<__m256, __m256i>             mask8;
 #endif
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+typedef basic_int<__m512i>                      int16;
+typedef basic_float<__m512>                     float16;
+typedef basic_mask<__mmask16>                   mask16;
+#endif
+
 typedef basic_ray<float4>                       ray4;
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 typedef basic_ray<float8>                       ray8;
+#endif
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+typedef basic_ray<float16>                      ray16;
 #endif
 
 

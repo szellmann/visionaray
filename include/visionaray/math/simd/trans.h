@@ -460,6 +460,90 @@ VSNRAY_FORCE_INLINE float8 atan(float8 const& x)
 
 #endif
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+// TODO: consolidate stuff with float4 (template)
+
+VSNRAY_FORCE_INLINE float16 cos(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::cos(tmp[ 0]), std::cos(tmp[ 1]), std::cos(tmp[ 2]), std::cos(tmp[ 3]),
+        std::cos(tmp[ 4]), std::cos(tmp[ 5]), std::cos(tmp[ 6]), std::cos(tmp[ 7]),
+        std::cos(tmp[ 8]), std::cos(tmp[ 9]), std::cos(tmp[10]), std::cos(tmp[11]),
+        std::cos(tmp[12]), std::cos(tmp[13]), std::cos(tmp[14]), std::cos(tmp[15])
+        );
+}
+
+VSNRAY_FORCE_INLINE float16 sin(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::sin(tmp[ 0]), std::sin(tmp[ 1]), std::sin(tmp[ 2]), std::sin(tmp[ 3]),
+        std::sin(tmp[ 4]), std::sin(tmp[ 5]), std::sin(tmp[ 6]), std::sin(tmp[ 7]),
+        std::sin(tmp[ 8]), std::sin(tmp[ 9]), std::sin(tmp[10]), std::sin(tmp[11]),
+        std::sin(tmp[12]), std::sin(tmp[13]), std::sin(tmp[14]), std::sin(tmp[15])
+        );
+}
+
+VSNRAY_FORCE_INLINE float16 tan(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::tan(tmp[ 0]), std::tan(tmp[ 1]), std::tan(tmp[ 2]), std::tan(tmp[ 3]),
+        std::tan(tmp[ 4]), std::tan(tmp[ 5]), std::tan(tmp[ 6]), std::tan(tmp[ 7]),
+        std::tan(tmp[ 8]), std::tan(tmp[ 9]), std::tan(tmp[10]), std::tan(tmp[11]),
+        std::tan(tmp[12]), std::tan(tmp[13]), std::tan(tmp[14]), std::tan(tmp[15])
+        );
+}
+
+VSNRAY_FORCE_INLINE float16 acos(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::acos(tmp[ 0]), std::acos(tmp[ 1]), std::acos(tmp[ 2]), std::acos(tmp[ 3]),
+        std::acos(tmp[ 4]), std::acos(tmp[ 5]), std::acos(tmp[ 6]), std::acos(tmp[ 7]),
+        std::acos(tmp[ 8]), std::acos(tmp[ 9]), std::acos(tmp[10]), std::acos(tmp[11]),
+        std::acos(tmp[12]), std::acos(tmp[13]), std::acos(tmp[14]), std::acos(tmp[15])
+        );
+}
+
+VSNRAY_FORCE_INLINE float16 asin(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::asin(tmp[ 0]), std::asin(tmp[ 1]), std::asin(tmp[ 2]), std::asin(tmp[ 3]),
+        std::asin(tmp[ 4]), std::asin(tmp[ 5]), std::asin(tmp[ 6]), std::asin(tmp[ 7]),
+        std::asin(tmp[ 8]), std::asin(tmp[ 9]), std::asin(tmp[10]), std::asin(tmp[11]),
+        std::asin(tmp[12]), std::asin(tmp[13]), std::asin(tmp[14]), std::asin(tmp[15])
+        );
+}
+
+VSNRAY_FORCE_INLINE float16 atan(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::atan(tmp[ 0]), std::atan(tmp[ 1]), std::atan(tmp[ 2]), std::atan(tmp[ 3]),
+        std::atan(tmp[ 4]), std::atan(tmp[ 5]), std::atan(tmp[ 6]), std::atan(tmp[ 7]),
+        std::atan(tmp[ 8]), std::atan(tmp[ 9]), std::atan(tmp[10]), std::atan(tmp[11]),
+        std::atan(tmp[12]), std::atan(tmp[13]), std::atan(tmp[14]), std::atan(tmp[15])
+        );
+}
+
+#endif
+
 
 //-------------------------------------------------------------------------------------------------
 // exp() / log() / log2()
@@ -519,6 +603,19 @@ VSNRAY_FORCE_INLINE float8 pow(float8 const& x, float8 const& y)
 {
 #if VSNRAY_SIMD_HAS_SVML
     return _mm256_pow_ps(x, y);
+#else
+    return exp( y * log(x) );
+#endif
+}
+
+#endif
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+
+VSNRAY_FORCE_INLINE float16 pow(float16 const& x, float16 const& y)
+{
+#if VSNRAY_SIMD_HAS_SVML
+    return _mm512_pow_ps(x, y); // TODO: exists?
 #else
     return exp( y * log(x) );
 #endif
