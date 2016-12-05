@@ -177,12 +177,12 @@ VSNRAY_FORCE_INLINE float8 operator^(float8 const& u, float8 const& v)
 // Logical operations
 //
 
-VSNRAY_FORCE_INLINE mask8 operator&&(float8 const& u, float8 const& v)
+VSNRAY_FORCE_INLINE float8 operator&&(float8 const& u, float8 const& v)
 {
     return _mm256_and_ps(u, v);
 }
 
-VSNRAY_FORCE_INLINE mask8 operator||(float8 const& u, float8 const& v)
+VSNRAY_FORCE_INLINE float8 operator||(float8 const& u, float8 const& v)
 {
     return _mm256_or_ps(u, v);
 }

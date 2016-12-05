@@ -199,12 +199,12 @@ VSNRAY_FORCE_INLINE float4 operator^(float4 const& u, float4 const& v)
 // Logical operations
 //
 
-VSNRAY_FORCE_INLINE mask4 operator&&(float4 const& u, float4 const& v)
+VSNRAY_FORCE_INLINE float4 operator&&(float4 const& u, float4 const& v)
 {
     return _mm_and_ps(u, v);
 }
 
-VSNRAY_FORCE_INLINE mask4 operator||(float4 const& u, float4 const& v)
+VSNRAY_FORCE_INLINE float4 operator||(float4 const& u, float4 const& v)
 {
     return _mm_or_ps(u, v);
 }

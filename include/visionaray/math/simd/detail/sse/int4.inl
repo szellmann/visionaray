@@ -189,12 +189,12 @@ VSNRAY_FORCE_INLINE int4 operator>>(int4 const& a, int count)
 // Logical operations
 //
 
-VSNRAY_FORCE_INLINE mask4 operator&&(int4 const& u, int4 const& v)
+VSNRAY_FORCE_INLINE int4 operator&&(int4 const& u, int4 const& v)
 {
     return _mm_and_si128(u, v);
 }
 
-VSNRAY_FORCE_INLINE mask4 operator||(int4 const& u, int4 const& v)
+VSNRAY_FORCE_INLINE int4 operator||(int4 const& u, int4 const& v)
 {
     return _mm_or_si128(u, v);
 }
