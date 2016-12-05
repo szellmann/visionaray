@@ -24,10 +24,12 @@
 #define VSNRAY_SIMD_ISA_SSE4_2      42
 #define VSNRAY_SIMD_ISA_AVX         50
 #define VSNRAY_SIMD_ISA_AVX2        60
-#define VSNRAY_SIMD_ISA_AVX_512     70
+#define VSNRAY_SIMD_ISA_AVX512F     70
 
 #ifndef VSNRAY_SIMD_ISA
-#if defined(__AVX2__)
+#if defined(__AVX512F__)
+#define VSNRAY_SIMD_ISA VSNRAY_SIMD_ISA_AVX512F
+#elif defined(__AVX2__)
 #define VSNRAY_SIMD_ISA VSNRAY_SIMD_ISA_AVX2
 #elif defined(__AVX__)
 #define VSNRAY_SIMD_ISA VSNRAY_SIMD_ISA_AVX
@@ -54,7 +56,7 @@
 #endif
 
 //--------------------------------------------------------------------------------------------------
-// SSE #include's
+// SIMD intrinsic #include's
 //
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
@@ -74,7 +76,4 @@
 #endif
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 #include <immintrin.h>
-#endif
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX_512
-#include <zmmintrin.h>
 #endif
