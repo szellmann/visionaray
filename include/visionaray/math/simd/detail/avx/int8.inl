@@ -181,17 +181,29 @@ VSNRAY_FORCE_INLINE int8 operator/(int8 const& u, int8 const& v)
 
 VSNRAY_FORCE_INLINE int8 operator&(int8 const& u, int8 const& v)
 {
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
+    return _mm256_and_si256(u, v);
+#else
     return reinterpret_as_int(reinterpret_as_float(u) & reinterpret_as_float(v));
+#endif
 }
 
 VSNRAY_FORCE_INLINE int8 operator|(int8 const& u, int8 const& v)
 {
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
+    return _mm256_or_si256(u, v);
+#else
     return reinterpret_as_int(reinterpret_as_float(u) | reinterpret_as_float(v));
+#endif
 }
 
 VSNRAY_FORCE_INLINE int8 operator^(int8 const& u, int8 const& v)
 {
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX2
+    return _mm256_xor_si256(u, v);
+#else
     return reinterpret_as_int(reinterpret_as_float(u) ^ reinterpret_as_float(v));
+#endif
 }
 
 VSNRAY_FORCE_INLINE int8 operator<<(int8 const& a, int count)
