@@ -51,6 +51,14 @@ struct packet_size<simd::float8>
 };
 #endif
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+template <>
+struct packet_size<simd::float16>
+{
+    enum { w = 4, h = 4 };
+};
+#endif
+
 
 //-------------------------------------------------------------------------------------------------
 // Type traits to expand a pixel according to a ray packet type
@@ -82,6 +90,32 @@ struct expand_pixel<simd::float8>
     VSNRAY_CPU_FUNC inline simd::float8 y(int y)
     {
         return simd::float8(y, y, y, y, y + 1, y + 1, y + 1, y + 1);
+    }
+};
+#endif
+
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+template <>
+struct expand_pixel<simd::float16>
+{
+    VSNRAY_CPU_FUNC inline simd::float16 x(int x)
+    {
+        return simd::float16(
+                x, x + 1, x + 2, x + 3,
+                x, x + 1, x + 2, x + 3,
+                x, x + 1, x + 2, x + 3,
+                x, x + 1, x + 2, x + 3
+                );
+    }
+
+    VSNRAY_CPU_FUNC inline simd::float16 y(int y)
+    {
+        return simd::float16(
+                y,     y,     y,     y,
+                y + 1, y + 1, y + 1, y + 1,
+                y + 2, y + 2, y + 2, y + 2,
+                y + 3, y + 3, y + 3, y + 3
+                );
     }
 };
 #endif
