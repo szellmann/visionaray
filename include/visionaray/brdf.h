@@ -118,7 +118,11 @@ public:
         auto h = normalize(wo + wi);
         auto hdotn = max( U(0.0), dot(h, n) );
 
-        return spectrum<U>( cs * ks * ((exp + U(2.0)) / (U(8.0) * constants::pi<U>())) * pow(hdotn, exp) );
+        auto spec = cs * ks;
+        auto schlick = spec + (U(1.0) - spec) * pow(U(1.0) - saturate(dot(wi, h)), U(5.0));
+        auto nfactor = ((exp + U(2.0)) / (U(8.0) * constants::pi<U>()));
+
+        return spectrum<U>(schlick * nfactor * pow(hdotn, exp) );
     }
 
     template <typename U, typename S /* sampler */>
