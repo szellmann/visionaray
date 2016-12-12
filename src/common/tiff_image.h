@@ -6,8 +6,6 @@
 #ifndef VSNRAY_COMMON_TIFF_IMAGE_H
 #define VSNRAY_COMMON_TIFF_IMAGE_H 1
 
-#if defined(VSNRAY_HAVE_TIFF)
-
 #include <string>
 
 #include "image_base.h"
@@ -24,7 +22,5 @@ public:
 };
 
 } // visionaray
-
-#endif // VSNRAY_HAVE_TIFF
 
 #endif // VSNRAY_COMMON_TIFF_IMAGE_H

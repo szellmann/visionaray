@@ -1,23 +1,23 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#if defined(VSNRAY_HAVE_JPEG)
-
 #include <cstddef>
 #include <csetjmp>
 #include <cstdio>
 
+#if defined(VSNRAY_HAVE_JPEG)
 #include <jpeglib.h>
+#endif
 
 #include "cfile.h"
 #include "jpeg_image.h"
 
 namespace visionaray
 {
-
 namespace detail
 {
 
+#if defined(VSNRAY_HAVE_JPEG)
 struct error_mngr
 {
     jpeg_error_mgr pub;
@@ -45,11 +45,13 @@ struct decompress_ptr
         jpeg_destroy_decompress(info);
     }
 };
+#endif
 
-}
+} // detail
 
 bool jpeg_image::load(std::string const& filename)
 {
+#if defined(VSNRAY_HAVE_JPEG)
     cfile file(filename.c_str(), "r");
 
     if (!file.good())
@@ -92,8 +94,11 @@ bool jpeg_image::load(std::string const& filename)
     }
 
     return true;
+#else
+    VSNRAY_UNUSED(filename);
+
+    return false;
+#endif
 }
 
-}
-
-#endif // VSNRAY_HAVE_JPEG
+} // visionaray

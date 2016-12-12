@@ -6,8 +6,6 @@
 #ifndef VSNRAY_COMMON_JPEG_IMAGE_H
 #define VSNRAY_COMMON_JPEG_IMAGE_H 1
 
-#if defined(VSNRAY_HAVE_JPEG)
-
 #include <string>
 
 #include "image_base.h"
@@ -24,7 +22,5 @@ public:
 };
 
 } // visionaray
-
-#endif // VSNRAY_HAVE_JPEG
 
 #endif // VSNRAY_COMMON_JPEG_IMAGE_H

@@ -6,8 +6,6 @@
 #ifndef VSNRAY_COMMON_PNG_IMAGE_H
 #define VSNRAY_COMMON_PNG_IMAGE_H 1
 
-#if defined(VSNRAY_HAVE_PNG)
-
 #include <string>
 
 #include "image_base.h"
@@ -24,7 +22,5 @@ public:
 };
 
 } // visionaray
-
-#endif // VSNRAY_HAVE_PNG
 
 #endif // VSNRAY_COMMON_PNG_IMAGE_H
