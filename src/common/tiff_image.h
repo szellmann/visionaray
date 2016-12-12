@@ -6,7 +6,7 @@
 #ifndef VSNRAY_COMMON_TIFF_IMAGE_H
 #define VSNRAY_COMMON_TIFF_IMAGE_H 1
 
-#if defined(VSNRAY_HAVE_JPEG)
+#if defined(VSNRAY_HAVE_TIFF)
 
 #include <string>
 
