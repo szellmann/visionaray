@@ -136,9 +136,9 @@ operator<<(std::basic_ostream<CharT, Traits>& out, unorm<Bits> u)
 // quaternions
 //
 
-template <typename CharT, typename Traits>
+template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, quat q)
+operator<<(std::basic_ostream<CharT, Traits>& out, quaternion<T> const& q)
 {
 
     std::basic_ostringstream<CharT, Traits> s;
