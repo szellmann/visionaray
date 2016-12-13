@@ -15,8 +15,6 @@
 
 namespace visionaray
 {
-namespace detail
-{
 
 #if defined(VSNRAY_HAVE_PNG)
 struct png_read_context
@@ -67,8 +65,6 @@ static int png_num_components(int color_type)
 }
 #endif
 
-} // detail
-
 
 bool png_image::load(std::string const& filename)
 {
@@ -81,13 +77,13 @@ bool png_image::load(std::string const& filename)
     }
 
 
-    detail::png_read_context context;
+    png_read_context context;
 
     context.png = png_create_read_struct(
             PNG_LIBPNG_VER_STRING,
             0 /*user-data*/,
-            detail::png_error_callback,
-            detail::png_warning_callback
+            png_error_callback,
+            png_warning_callback
             );
 
     if (context.png == 0)
@@ -134,7 +130,7 @@ bool png_image::load(std::string const& filename)
         return false;
     }
 
-    auto num_components = detail::png_num_components(color_type);
+    auto num_components = png_num_components(color_type);
 
     switch (num_components)
     {

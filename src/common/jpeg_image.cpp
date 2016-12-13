@@ -14,8 +14,6 @@
 
 namespace visionaray
 {
-namespace detail
-{
 
 #if defined(VSNRAY_HAVE_JPEG)
 struct error_mngr
@@ -24,14 +22,12 @@ struct error_mngr
     jmp_buf jmpbuf;
 };
 
-
 static void error_exit_func(j_common_ptr info)
 {
     error_mngr* err = reinterpret_cast<error_mngr*>(info->err);
     // TODO: print debug info
     longjmp(err->jmpbuf, 1);
 }
-
 
 struct decompress_ptr
 {
@@ -47,7 +43,6 @@ struct decompress_ptr
 };
 #endif
 
-} // detail
 
 bool jpeg_image::load(std::string const& filename)
 {
@@ -60,11 +55,11 @@ bool jpeg_image::load(std::string const& filename)
     }
 
     struct jpeg_decompress_struct info;
-    detail::decompress_ptr info_ptr;
-    detail::error_mngr err;
+    decompress_ptr info_ptr;
+    error_mngr err;
 
     info.err = jpeg_std_error(&err.pub);
-    err.pub.error_exit = detail::error_exit_func;
+    err.pub.error_exit = error_exit_func;
 
     if (setjmp(err.jmpbuf))
     {
