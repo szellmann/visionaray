@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_PAN_MANIPULATOR_H
-#define VSNRAY_PAN_MANIPULATOR_H 1
+#ifndef VSNRAY_COMMON_MANIP_PAN_MANIPULATOR_H
+#define VSNRAY_COMMON_MANIP_PAN_MANIPULATOR_H 1
 
 #include "../input/keyboard.h"
 #include "camera_manipulator.h"
@@ -45,4 +45,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_PAN_MANIPULATOR_H
+#endif // VSNRAY_COMMON_MANIP_PAN_MANIPULATOR_H

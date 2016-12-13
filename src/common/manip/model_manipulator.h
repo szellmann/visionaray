@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_MODEL_MANIPULATOR_H
-#define VSNRAY_MODEL_MANIPULATOR_H 1
+#ifndef VSNRAY_COMMON_MANIP_MODEL_MANIPULATOR_H
+#define VSNRAY_COMMON_MANIP_MODEL_MANIPULATOR_H 1
 
 #include <visionaray/math/math.h>
 
@@ -51,4 +51,4 @@ protected:
 
 } // visionaray
 
-#endif // VSNRAY_MODEL_MANIPULATOR_H
+#endif // VSNRAY_COMMON_MANIP_MODEL_MANIPULATOR_H

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_INPUT_KEYBOARD_H
-#define VSNRAY_INPUT_KEYBOARD_H 1
+#ifndef VSNRAY_COMMON_INPUT_KEYBOARD_H
+#define VSNRAY_COMMON_INPUT_KEYBOARD_H 1
 
 #include <cassert>
 #include <bitset>
@@ -535,4 +535,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_INPUT_KEYBOARD_H
+#endif // VSNRAY_COMMON_INPUT_KEYBOARD_H

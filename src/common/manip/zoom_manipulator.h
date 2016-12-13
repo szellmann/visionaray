@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_ZOOM_MANIPULATOR_H
-#define VSNRAY_ZOOM_MANIPULATOR_H 1
+#ifndef VSNRAY_COMMON_MANIP_ZOOM_MANIPULATOR_H
+#define VSNRAY_COMMON_MANIP_ZOOM_MANIPULATOR_H 1
 
 #include <visionaray/math/math.h>
 
@@ -48,4 +48,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_ZOOM_MANIPULATOR_H
+#endif // VSNRAY_COMMON_MANIP_ZOOM_MANIPULATOR_H

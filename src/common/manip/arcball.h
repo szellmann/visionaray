@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_ARCBALL_H
-#define VSNRAY_ARCBALL_H 1
+#ifndef VSNRAY_COMMON_MANIP_ARCBALL_H
+#define VSNRAY_COMMON_MANIP_ARCBALL_H 1
 
 #include <visionaray/math/math.h>
 
@@ -29,4 +29,4 @@ public:
 
 } // visionaray
 
-#endif // VSNRAY_ARCBALL_H
+#endif // VSNRAY_COMMON_MANIP_ARCBALL_H

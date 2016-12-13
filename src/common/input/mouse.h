@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_INPUT_MOUSE_H
-#define VSNRAY_INPUT_MOUSE_H 1
+#ifndef VSNRAY_COMMON_INPUT_MOUSE_H
+#define VSNRAY_COMMON_INPUT_MOUSE_H 1
 
 #include <visionaray/detail/platform.h>
 #include <visionaray/math/vector.h>
@@ -235,4 +235,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_INPUT_MOUSE_H
+#endif // VSNRAY_COMMON_INPUT_MOUSE_H

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_INPUT_EXCEPTION_H
-#define VSNRAY_INPUT_EXCEPTION_H
+#ifndef VSNRAY_COMMON_INPUT_EXCEPTION_H
+#define VSNRAY_COMMON_INPUT_EXCEPTION_H 1
 
 #include <visionaray/exception.h>
 
@@ -24,4 +24,4 @@ public:
 
 } // visionaray
 
-#endif // VSNRAY_INPUT_EXCEPTION_H
+#endif // VSNRAY_COMMON_INPUT_EXCEPTION_H

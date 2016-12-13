@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_ROTATE_MANIPULATOR_H
-#define VSNRAY_ROTATE_MANIPULATOR_H 1
+#ifndef VSNRAY_COMMON_MANIP_ROTATE_MANIPULATOR_H
+#define VSNRAY_COMMON_MANIP_ROTATE_MANIPULATOR_H 1
 
 #include "../input/mouse.h"
 #include "arcball.h"
@@ -65,4 +65,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_ROTATE_MANIPULATOR_H
+#endif // VSNRAY_COMMON_MANIP_ROTATE_MANIPULATOR_H

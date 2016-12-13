@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_CAMERA_MANIPULATOR_H
-#define VSNRAY_CAMERA_MANIPULATOR_H
+#ifndef VSNRAY_COMMON_MANIP_CAMERA_MANIPULATOR_H
+#define VSNRAY_COMMON_MANIP_CAMERA_MANIPULATOR_H 1
 
 #include <visionaray/detail/macros.h>
 #include <visionaray/math/math.h>
@@ -54,4 +54,4 @@ public:
 
 } // visionaray
 
-#endif // VSNRAY_CAMERA_MANIPULATOR_H
+#endif // VSNRAY_COMMON_MANIP_CAMERA_MANIPULATOR_H
