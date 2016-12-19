@@ -88,7 +88,7 @@ VSNRAY_FORCE_INLINE float8 gather(unorm<Bits> const* base_addr, int8 const& inde
 {
     static_assert(Bits <= 32, "Incompatible unorm type");
 
-    VSNRAY_ALIGN(16) int indices[8];
+    VSNRAY_ALIGN(32) int indices[8];
     store(&indices[0], index);
 
     return float8(
