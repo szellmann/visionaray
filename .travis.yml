@@ -51,6 +51,7 @@ addons:
             - freeglut3-dev
 
 before_install:
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then travis_retry brew update; fi
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then travis_retry brew install glew ;fi
 
 script:
