@@ -2,7 +2,7 @@
 # Configuration script for use with continuous integration service travis-ci.org
 #
 
-sudo: required
+sudo: false
 dist: trusty
 
 language: cpp
@@ -50,9 +50,9 @@ addons:
             - libxmu-dev
             - freeglut3-dev
 
-
 before_install:
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then travis_retry brew install glew ;fi
+
 script:
 
     - export COMPILER_FLAGS="-msse4.1"
@@ -62,7 +62,7 @@ script:
 
     - mkdir -p build
     - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} "-DCMAKE_CXX_FLAGS=${COMPILER_FLAGS}" -DVSNRAY_ENABLE_EXAMPLES=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} "-DCMAKE_INSTALL_PREFIX=${HOME}/install" "-DCMAKE_CXX_FLAGS=${COMPILER_FLAGS}" -DVSNRAY_ENABLE_EXAMPLES=ON
     - make VERBOSE=1
     - ctest -E 'surface_.*_illegal_integral_2|vector._pack_illegal_integral|vector._unpack_illegal_integral'
-    - sudo make install
+    - make install
