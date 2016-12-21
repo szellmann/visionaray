@@ -58,7 +58,6 @@ script:
     - export COMPILER_FLAGS="-msse4.1"
     - if [ "$STD" = "CPP11" ]; then export COMPILER_FLAGS="${COMPILER_FLAGS} -std=c++11"; fi
     - if [ "$STD" = "CPP14" ]; then export COMPILER_FLAGS="${COMPILER_FLAGS} -std=c++1y"; fi
-    - echo ${COMPILER_FLAGS}
 
     - mkdir -p build
     - cd build
