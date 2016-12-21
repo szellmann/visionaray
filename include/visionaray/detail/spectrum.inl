@@ -76,7 +76,7 @@ inline T spectrum<T>::operator()(float lambda) const
     }
 
     texture_ref<T, 1> tex(num_samples);
-    tex.set_data( samples_.data() );
+    tex.reset( samples_.data() );
     tex.set_filter_mode( Linear );
 
     float coord = (lambda - lambda_min) / (lambda_max - lambda_min);
