@@ -442,6 +442,10 @@ void load_obj(std::string const& filename, model& mod)
             {
                 parse_mtl(mtl_path, matlib);
             }
+            else
+            {
+                std::cerr << "Warning: file does not exist: " << mtl_path << '\n';
+            }
         }
         else if ( qi::phrase_parse(it, text.cend(), r_usemtl, qi::blank, mtl_name) )
         {
