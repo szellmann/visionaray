@@ -660,12 +660,24 @@ inline void sample_pixel_impl(
     VSNRAY_UNUSED(frame_num);
     VSNRAY_UNUSED(args...);
 
-    using S = typename R::scalar_type;
+    using S     = typename R::scalar_type;
+    using Color = typename decltype(invoke_kernel(kernel, R{}, samp, x, y))::color_type;
 
     auto ray_ptr = rays.data();
 
     auto frame_begin = 0;
     auto frame_end   = Num;
+
+    pixel_access::store(
+            pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
+            x,
+            y,
+            width,
+            height,
+            Color(0.0),
+            rt_ref.color()
+            );
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
@@ -710,12 +722,27 @@ inline void sample_pixel_impl(
         Args&&...                       args
         )
 {
-    using S = typename R::scalar_type;
+    using S      = typename R::scalar_type;
+    using Result = decltype(invoke_kernel(kernel, R{}, samp, x, y));
 
     auto ray_ptr = rays.data();
 
     auto frame_begin = frame_num;
     auto frame_end   = frame_num + Num;
+
+    pixel_access::store(
+            pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
+            pixel_format_constant<DF>{},
+            pixel_format_constant<PF_DEPTH32F>{},
+            x,
+            y,
+            width,
+            height,
+            Result{},
+            rt_ref.color(),
+            rt_ref.depth()
+            );
 
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
