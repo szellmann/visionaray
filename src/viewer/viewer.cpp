@@ -828,6 +828,7 @@ int main(int argc, char** argv)
         rend.device_tex_coords.shrink_to_fit();
         rend.device_materials.clear();
         rend.device_materials.shrink_to_fit();
+        rend.device_texture_map.clear();
         rend.device_textures.clear();
         rend.device_textures.shrink_to_fit();
     }
