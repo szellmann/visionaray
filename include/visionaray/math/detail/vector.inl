@@ -997,7 +997,7 @@ inline auto pack(std::array<vector<Dim, T>, N> const& vecs)
     return result;
 }
 
-// pack for vectors
+// pack four vectors
 
 template <size_t Dim, typename T>
 inline auto pack(
