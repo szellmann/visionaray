@@ -12,7 +12,25 @@
 #include <new>
 
 #if VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
+#ifdef __arm__ // TODO: identify via internal macro
+
+// TODO:!!!
+
+#include <cstdlib>
+
+inline void* _mm_malloc(size_t aln, size_t s)
+{
+    return aligned_alloc(aln, s);
+}
+
+inline void _mm_free(void* ptr)
+{
+    free(ptr);
+}
+
+#else
 #include <mm_malloc.h>
+#endif
 #else
 #include <malloc.h>
 #endif
