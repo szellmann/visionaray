@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_PATHTRACING_INL
-#define VSNRAY_PATHTRACING_INL 1
+#ifndef VSNRAY_DETAIL_PATHTRACING_INL
+#define VSNRAY_DETAIL_PATHTRACING_INL 1
 
 #ifndef NDEBUG
 #include <iostream>
@@ -134,4 +134,4 @@ struct kernel
 } // pathtracing
 } // visionaray
 
-#endif // VSNRAY_PATHTRACING_INL
+#endif // VSNRAY_DETAIL_PATHTRACING_INL

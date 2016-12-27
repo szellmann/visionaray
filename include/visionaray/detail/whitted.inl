@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_WHITTED_INL
-#define VSNRAY_WHITTED_INL 1
+#ifndef VSNRAY_DETAIL_WHITTED_INL
+#define VSNRAY_DETAIL_WHITTED_INL 1
 
 #include <array>
 #include <cstddef>
@@ -332,4 +332,4 @@ struct kernel
 } // whitted
 } // visionaray
 
-#endif // VSNRAY_WHITTED_INL
+#endif // VSNRAY_DETAIL_WHITTED_INL

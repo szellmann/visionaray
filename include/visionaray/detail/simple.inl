@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_SIMPLE_INL
-#define VSNRAY_SIMPLE_INL 1
+#ifndef VSNRAY_DETAIL_SIMPLE_INL
+#define VSNRAY_DETAIL_SIMPLE_INL 1
 
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
@@ -85,4 +85,4 @@ struct kernel
 } // simple
 } // visionaray
 
-#endif // VSNRAY_SIMPLE_INL
+#endif // VSNRAY_DETAIL_SIMPLE_INL
