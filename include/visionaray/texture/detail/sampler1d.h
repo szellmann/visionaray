@@ -115,6 +115,8 @@ inline vector<4, FloatT> tex1D_impl_expand_types(
 }
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 // SIMD: SoA textures
 
 template <
@@ -143,6 +145,8 @@ inline simd::float4 tex1D_impl_expand_types(
             address_mode
             );
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 

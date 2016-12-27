@@ -54,6 +54,8 @@ namespace simd
 //-------------------------------------------------------------------------------------------------
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Gather float4 from N-bit unorm array, N <= 32
 // No dedicated AVX2 instruction!
@@ -74,6 +76,8 @@ VSNRAY_FORCE_INLINE float4 gather(unorm<Bits> const* base_addr, int4 const& inde
         static_cast<float>(base_addr[indices[3]])
         );
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -106,6 +110,8 @@ VSNRAY_FORCE_INLINE float8 gather(unorm<Bits> const* base_addr, int8 const& inde
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Gather float4 from 32-bit float array
 //
@@ -128,6 +134,8 @@ VSNRAY_FORCE_INLINE float4 gather(float const* base_addr, int4 const& index)
 
 #endif
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -162,6 +170,8 @@ VSNRAY_FORCE_INLINE float8 gather(float const* base_addr, int8 const& index)
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Gather int4 from any integer array
 // No dedicated AVX2 instruction (see special case for 32-bit integer arrays)!
@@ -183,6 +193,8 @@ VSNRAY_FORCE_INLINE int4 gather(I const* base_addr, int4 const& index)
         static_cast<int32_t>(base_addr[indices[3]])
         );
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -216,6 +228,8 @@ VSNRAY_FORCE_INLINE int8 gather(I const* base_addr, int8 const& index)
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Gather int4 from 32-bit integer array
 //
@@ -238,6 +252,8 @@ VSNRAY_FORCE_INLINE int4 gather(int const* base_addr, int4 const& index)
 
 #endif
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -272,6 +288,8 @@ VSNRAY_FORCE_INLINE int8 gather(int const* base_addr, int8 const& index)
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Gather vector<N, float4> from vector<N, float> array
 //
@@ -291,6 +309,8 @@ VSNRAY_FORCE_INLINE vector<Dim, float4> gather(vector<Dim, float> const* base_ad
 
     return simd::pack(arr);
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -326,6 +346,8 @@ VSNRAY_FORCE_INLINE vector<Dim, float8> gather(vector<Dim, float> const* base_ad
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Gather vector<4, float4> from vector<4, float> array
 //
@@ -355,6 +377,8 @@ VSNRAY_FORCE_INLINE vector<4, float4> gather(vector<4, float> const* base_addr, 
     result = transpose(result);
     return result;
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -401,6 +425,8 @@ VSNRAY_FORCE_INLINE vector<4, float8> gather(vector<4, float> const* base_addr, 
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Gather vector<Dim, int4> from vector<Dim, Int> array
 // No dedicated AVX2 instruction!
@@ -427,6 +453,8 @@ VSNRAY_FORCE_INLINE vector<Dim, int4> gather(vector<Dim, I> const* base_addr, in
 
     return simd::pack(arr);
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -465,6 +493,8 @@ VSNRAY_FORCE_INLINE vector<Dim, int8> gather(vector<Dim, I> const* base_addr, in
 #endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Gather vector<Dim, float8> from vector<Dim, unorm<Bits>> array, Bits <= 32
 // No dedicated AVX2 instruction!
@@ -489,6 +519,8 @@ VSNRAY_FORCE_INLINE vector<Dim, float4> gather(vector<Dim, unorm<Bits>> const* b
 
     return simd::pack(arr);
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX

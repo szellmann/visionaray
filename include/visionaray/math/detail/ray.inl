@@ -59,6 +59,8 @@ inline auto pack(std::array<basic_ray<T>, N> const& rays)
             );
 }
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 // pack four rays
 
 template <typename T>
@@ -74,6 +76,8 @@ inline auto pack(
             r1, r2, r3, r4
             }} );
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 

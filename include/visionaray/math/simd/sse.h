@@ -12,6 +12,7 @@
 #include "forward.h"
 #include "intrinsics.h"
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 namespace MATH_NAMESPACE
 {
@@ -91,5 +92,7 @@ public:
 #include "detail/sse/mask4.inl"
 #include "detail/sse/float4.inl"
 #include "detail/sse/int4.inl"
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 #endif // VSNRAY_SIMD_SSE_H

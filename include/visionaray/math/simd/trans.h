@@ -335,6 +335,8 @@ VSNRAY_FORCE_INLINE T log2(T const& x)
 } // detail
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Trigonometric functions
 // TODO: implement w/o context switch
@@ -387,6 +389,8 @@ VSNRAY_FORCE_INLINE float4 atan(float4 const& x)
 
     return float4( std::atan(tmp[0]), std::atan(tmp[1]), std::atan(tmp[2]), std::asin(tmp[3]) );
 }
+
+#endif
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
@@ -587,6 +591,8 @@ VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
 // pow()
 //
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
 {
 #if VSNRAY_SIMD_HAS_SVML
@@ -596,6 +602,7 @@ VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
 #endif
 }
 
+#endif
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 

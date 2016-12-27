@@ -107,6 +107,8 @@ public:
 // SIMD specializations
 //
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 template <>
 class numeric_limits<simd::float4>
 {
@@ -128,6 +130,7 @@ public:
     MATH_CPU_FUNC static simd::int4 max();
 };
 
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 

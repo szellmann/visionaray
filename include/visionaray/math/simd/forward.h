@@ -30,9 +30,11 @@ union basic_mask;
 // typedefs
 //
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 typedef basic_int<__m128i>                      int4;
 typedef basic_float<__m128>                     float4;
 typedef basic_mask<__m128, __m128i>             mask4;
+#endif
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 typedef basic_int<__m256i>                      int8;
@@ -46,7 +48,9 @@ typedef basic_float<__m512>                     float16;
 typedef basic_mask<__mmask16>                   mask16;
 #endif
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 typedef basic_ray<float4>                       ray4;
+#endif
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 typedef basic_ray<float8>                       ray8;
