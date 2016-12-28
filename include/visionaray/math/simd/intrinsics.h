@@ -14,15 +14,11 @@
 #define VSNRAY_ARCH_ARM64           21
 
 #if defined(_M_X64) || defined(_M_AMD64) || defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
-// SSE2 is always available on 64-bit platforms
 #define VSNRAY_ARCH VSNRAY_ARCH_X86_64
-#define VSNRAY_SIMD_ON_64_BIT 1
 #elif defined(__arm__) || defined(__arm) || defined(_ARM) || defined(_M_ARM)
 #define VSNRAY_ARCH VSNRAY_ARCH_ARM
-#define VSNRAY_SIMD_ON_64_BIT 0
 #elif defined(__aarch64__)
 #define VSNRAY_ARCH VSNRAY_ARCH_ARM64
-#define VSNRAY_SIMD_ON_64_BIT 1
 #endif
 
 //--------------------------------------------------------------------------------------------------
@@ -54,7 +50,7 @@
 #define VSNRAY_SIMD_ISA VSNRAY_SIMD_ISA_SSSE3
 #elif defined(__SSE3__)
 #define VSNRAY_SIMD_ISA VSNRAY_SIMD_ISA_SSE3
-#elif defined(__SSE2__) || defined(VSNRAY_SIMD_ON_64_BIT)
+#elif defined(__SSE2__) || VSNRAY_ARCH == VSNRAY_ARCH_X86_64 // SSE2 is always available on 64-bit Intel compatible platforms
 #define VSNRAY_SIMD_ISA VSNRAY_SIMD_ISA_SSE2
 #else
 #define VSNRAY_SIMD_ISA 0
