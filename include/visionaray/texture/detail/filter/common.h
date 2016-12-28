@@ -118,7 +118,7 @@ inline RT point(
         RT              /* */
         )
 {
-    return simd::gather(tex, index);
+    return gather(tex, index);
 }
 
 
