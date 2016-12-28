@@ -267,7 +267,7 @@ __VSNRAY_DEFINE_SELECT(float)
 __VSNRAY_DEFINE_SELECT(double)
 __VSNRAY_DEFINE_SELECT(long double)
 
-#undef __VSNRAY_DEF_SELECT
+#undef __VSNRAY_DEFINE_SELECT
 
 #define __VSNRAY_DEFINE_STORE(T)                                                \
 MATH_FUNC                                                                       \
@@ -290,7 +290,7 @@ __VSNRAY_DEFINE_STORE(float)
 __VSNRAY_DEFINE_STORE(double)
 __VSNRAY_DEFINE_STORE(long double)
 
-#undef __VSNRAY_DEF_STORE
+#undef __VSNRAY_DEFINE_STORE
 
 MATH_FUNC
 inline bool any(bool b)
