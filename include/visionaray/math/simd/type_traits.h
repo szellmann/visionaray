@@ -99,7 +99,7 @@ struct alignment_of
     enum { value = alignof(T) };
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -123,7 +123,7 @@ struct alignment_of<simd::mask4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -147,7 +147,7 @@ struct alignment_of<simd::mask8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -182,7 +182,7 @@ struct alignment_of<simd::mask16>
 template <typename T>
 struct aligned_array;
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -206,7 +206,7 @@ struct aligned_array<simd::mask4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -230,7 +230,7 @@ struct aligned_array<simd::mask8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -272,7 +272,7 @@ struct float_type
     using type = float;
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -296,7 +296,7 @@ struct float_type<simd::mask4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -320,7 +320,7 @@ struct float_type<simd::mask8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -362,7 +362,7 @@ struct int_type
     using type = int;
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -386,7 +386,7 @@ struct int_type<simd::mask4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -410,7 +410,7 @@ struct int_type<simd::mask8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -452,7 +452,7 @@ struct mask_type
     using type = bool;
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -476,7 +476,7 @@ struct mask_type<simd::mask4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -500,7 +500,7 @@ struct mask_type<simd::mask8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -539,7 +539,7 @@ using mask_type_t = typename mask_type<T>::type;
 template <typename T>
 struct native_type;
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -563,7 +563,7 @@ struct native_type<simd::mask4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -587,7 +587,7 @@ struct native_type<simd::mask8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -626,7 +626,7 @@ using native_type_t = typename native_type<T>::type;
 template <unsigned Width>
 struct float_from_simd_width;
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -638,7 +638,7 @@ struct float_from_simd_width<4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -650,7 +650,7 @@ struct float_from_simd_width<8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -677,7 +677,7 @@ using float_from_simd_width_t = typename float_from_simd_width<Width>::type;
 template <unsigned Width>
 struct int_from_simd_width;
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -689,7 +689,7 @@ struct int_from_simd_width<4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -701,7 +701,7 @@ struct int_from_simd_width<8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -728,7 +728,7 @@ using int_from_simd_width_t = typename int_from_simd_width<Width>::type;
 template <unsigned Width>
 struct mask_from_simd_width;
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -740,7 +740,7 @@ struct mask_from_simd_width<4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -752,7 +752,7 @@ struct mask_from_simd_width<8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -782,7 +782,7 @@ struct is_simd_vector
     enum { value = false };
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -806,7 +806,7 @@ struct is_simd_vector<simd::mask4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -830,7 +830,7 @@ struct is_simd_vector<simd::mask8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -867,7 +867,7 @@ struct element_type
     using type = T;
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -891,7 +891,7 @@ struct element_type<simd::mask4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -915,7 +915,7 @@ struct element_type<simd::mask8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 
@@ -957,7 +957,7 @@ struct num_elements
     enum { value = 1 };
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SSE ----------------------------------------------------
 
@@ -981,7 +981,7 @@ struct num_elements<simd::mask4>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // AVX ----------------------------------------------------
 
@@ -1005,7 +1005,7 @@ struct num_elements<simd::mask8>
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // AVX-512 ------------------------------------------------
 

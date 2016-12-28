@@ -89,7 +89,7 @@ TEST(Ray, SIMDPack)
         EXPECT_FLOAT_EQ(simd::get<3>(ray44.dir.z), rays[3].dir.z);
     }
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
     // AVX ------------------------------------------------
 
@@ -221,7 +221,7 @@ TEST(Ray, SIMDPack)
         EXPECT_FLOAT_EQ(simd::get<7>(ray88.dir.z), rays[7].dir.z);
     }
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 }
 
 
@@ -272,7 +272,7 @@ TEST(Ray, SIMDUnpack)
         EXPECT_FLOAT_EQ(rays[3].dir.z, simd::get<3>(ray4.dir.z));
     }
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
     // AVX ------------------------------------------------
 
@@ -343,5 +343,5 @@ TEST(Ray, SIMDUnpack)
         EXPECT_FLOAT_EQ(rays[7].dir.z, simd::get<7>(ray8.dir.z));
     }
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 }

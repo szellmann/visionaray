@@ -107,7 +107,7 @@ public:
 // SIMD specializations
 //
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 template <>
 class numeric_limits<simd::float4>
@@ -130,9 +130,9 @@ public:
     MATH_CPU_FUNC static simd::int4 max();
 };
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 template <>
 class numeric_limits<simd::float8>
@@ -155,7 +155,7 @@ public:
     MATH_CPU_FUNC static simd::int8 max();
 };
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 } // MATH_NAMESPACE
 

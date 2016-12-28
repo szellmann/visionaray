@@ -69,7 +69,7 @@ VSNRAY_FORCE_INLINE int4 convert_to_int(float4 const& a)
 
 VSNRAY_FORCE_INLINE float4 select(mask4 const& m, float4 const& a, float4 const& b)
 {
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE4_1)
     return _mm_blendv_ps(b, a, m.f);
 #else
     return _mm_or_ps(_mm_and_ps(m.f, a), _mm_andnot_ps(m.f, b));
@@ -251,7 +251,7 @@ VSNRAY_FORCE_INLINE mask4 operator!=(float4 const& u, float4 const& v)
 
 VSNRAY_FORCE_INLINE float4 dot(float4 const& u, float4 const& v)
 {
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE4_1)
     return _mm_dp_ps(u, v, 0xFF);
 #else
    __m128 t1 = _mm_mul_ps(u, v);
@@ -286,7 +286,7 @@ VSNRAY_FORCE_INLINE float4 abs(float4 const& u)
 
 VSNRAY_FORCE_INLINE float4 round(float4 const& v)
 {
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE4_1)
     return _mm_round_ps(v, _MM_FROUND_TO_NEAREST_INT);
 #else
     // Mask out the signbits of v
@@ -302,7 +302,7 @@ VSNRAY_FORCE_INLINE float4 round(float4 const& v)
 
 VSNRAY_FORCE_INLINE float4 ceil(float4 const& v)
 {
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE4_1)
     return _mm_ceil_ps(v);
 #else
     // i = trunc(v)
@@ -318,7 +318,7 @@ VSNRAY_FORCE_INLINE float4 ceil(float4 const& v)
 
 VSNRAY_FORCE_INLINE float4 floor(float4 const& v)
 {
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE4_1)
     return _mm_floor_ps(v);
 #else
     // i = trunc(v)

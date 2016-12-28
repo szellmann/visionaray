@@ -18,7 +18,7 @@ int main()
 
 #elif defined GET_NORMAL_TRIANGLE_PERFACE_FLOAT8
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     vector<3, float>* normals;
     hit_record<basic_ray<simd::float8>, primitive<unsigned>> hr;
     vector<3, simd::float8> n = get_normal(normals, hr, basic_triangle<3, float, unsigned>{}, normals_per_face_binding{});
@@ -44,7 +44,7 @@ int main()
 
 #elif defined GET_NORMAL_TRIANGLE_PERVERTEX_FLOAT8
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     vector<3, float>* normals;
     hit_record<basic_ray<simd::float8>, primitive<unsigned>> hr;
     vector<3, simd::float8> n = get_shading_normal(normals, hr, basic_triangle<3, float, unsigned>{}, normals_per_vertex_binding{});

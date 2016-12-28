@@ -416,7 +416,7 @@ inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::va
 }
 
 // TODO: consolidate!
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 template <>
 inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float16>::value> unpack(
         hit_record<basic_ray<simd::float16>, primitive<unsigned>> const& hr

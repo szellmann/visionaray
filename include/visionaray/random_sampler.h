@@ -58,7 +58,7 @@ private:
 
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 template <>
 class random_sampler<simd::float4>
 {
@@ -97,7 +97,7 @@ private:
 };
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 template <>
 class random_sampler<simd::float8>
 {
@@ -140,7 +140,7 @@ private:
 };
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 template <>
 class random_sampler<simd::float16>
 {

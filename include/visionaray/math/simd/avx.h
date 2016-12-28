@@ -12,7 +12,7 @@
 #include "forward.h"
 #include "intrinsics.h"
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 namespace MATH_NAMESPACE
 {
@@ -120,6 +120,6 @@ public:
 #include "detail/avx/float8.inl"
 #include "detail/avx/int8.inl"
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 #endif // VSNRAY_MATH_SIMD_AVX_H

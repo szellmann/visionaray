@@ -122,7 +122,7 @@ inline RT point(
 }
 
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // SIMD: special case, if multi-channel texture, assume SoA
 
@@ -135,7 +135,7 @@ inline simd::float4 point(
     return tex[coord];
 }
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 
 //-------------------------------------------------------------------------------------------------

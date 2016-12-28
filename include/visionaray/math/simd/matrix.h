@@ -9,7 +9,7 @@
 #include "intrinsics.h"
 #include "sse.h"
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 namespace MATH_NAMESPACE
 {
@@ -72,6 +72,6 @@ matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m);
 
 #include "detail/sse/matrix4.inl"
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 #endif // VISIONARAY_MATH_SIMD_MATRIX_H

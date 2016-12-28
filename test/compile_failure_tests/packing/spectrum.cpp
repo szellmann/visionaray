@@ -17,7 +17,7 @@ int main()
 
 #elif defined SPECTRUM_PACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     std::array<spectrum<float>, 8> spec_array;
     spectrum<simd::float8> spec = simd::pack(spec_array);
 #endif

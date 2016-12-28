@@ -34,7 +34,7 @@ int main()
 
 #elif defined MATERIAL_PACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     std::array<mat_type<float>, 8> mat_array;
     mat_type<simd::float8> mat = simd::pack(mat_array);
 #endif

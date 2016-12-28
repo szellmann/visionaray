@@ -37,7 +37,7 @@ struct packet_size
     enum { w = 1, h = 1 };
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 template <>
 struct packet_size<simd::float4>
 {
@@ -45,7 +45,7 @@ struct packet_size<simd::float4>
 };
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 template <>
 struct packet_size<simd::float8>
 {
@@ -53,7 +53,7 @@ struct packet_size<simd::float8>
 };
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 template <>
 struct packet_size<simd::float16>
 {
@@ -73,7 +73,7 @@ struct expand_pixel
     VSNRAY_FUNC inline T y(int y) { return T(y); }
 };
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 template <>
 struct expand_pixel<simd::float4>
 {
@@ -82,7 +82,7 @@ struct expand_pixel<simd::float4>
 };
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 template <>
 struct expand_pixel<simd::float8>
 {
@@ -98,7 +98,7 @@ struct expand_pixel<simd::float8>
 };
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 template <>
 struct expand_pixel<simd::float16>
 {

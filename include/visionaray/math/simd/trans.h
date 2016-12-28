@@ -335,7 +335,7 @@ VSNRAY_FORCE_INLINE T log2(T const& x)
 } // detail
 
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 //-------------------------------------------------------------------------------------------------
 // Trigonometric functions
@@ -392,7 +392,7 @@ VSNRAY_FORCE_INLINE float4 atan(float4 const& x)
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // TODO: consolidate stuff with float4 (template)
 
@@ -464,7 +464,7 @@ VSNRAY_FORCE_INLINE float8 atan(float8 const& x)
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // TODO: consolidate stuff with float4 (template)
 
@@ -591,7 +591,7 @@ VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
 // pow()
 //
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
 {
@@ -604,7 +604,7 @@ VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 VSNRAY_FORCE_INLINE float8 pow(float8 const& x, float8 const& y)
 {
@@ -617,7 +617,7 @@ VSNRAY_FORCE_INLINE float8 pow(float8 const& x, float8 const& y)
 
 #endif
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 VSNRAY_FORCE_INLINE float16 pow(float16 const& x, float16 const& y)
 {

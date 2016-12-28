@@ -20,7 +20,7 @@ int main()
 
 #elif defined SHADE_RECORD_UNPACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     shade_record<point_light<float>, simd::float8> sr;
     std::array<shade_record<point_light<float>, float>, 8> sr_array = simd::unpack(sr);
 #endif

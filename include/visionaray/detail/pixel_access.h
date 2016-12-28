@@ -407,7 +407,7 @@ inline void store(
 }
 
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 //-------------------------------------------------------------------------------------------------
 // Store SSE rgba color to RGBA32F color buffer, no conversion necessary
@@ -688,7 +688,7 @@ inline void get(
         );
 }
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 //-------------------------------------------------------------------------------------------------
 // Get SSE rgba color from RGB32F color buffer, let alpha = 1.0
@@ -823,10 +823,10 @@ inline void get(
     result = simd::int4(out);
 }
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 //-------------------------------------------------------------------------------------------------
 // Get AVX rgba color from output color buffer, apply conversion
@@ -976,7 +976,7 @@ inline void get(
     result = simd::int8(out);
 }
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 
 // Blend ------------------------------------------------------------------

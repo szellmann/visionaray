@@ -103,7 +103,7 @@ TEST(Vector, MinMaxElement)
     EXPECT_TRUE( all(minmaxe4.y == maxe4) );
 
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
     // AVX
 
@@ -116,5 +116,5 @@ TEST(Vector, MinMaxElement)
     EXPECT_TRUE( all(minmaxe8.x == mine8) );
     EXPECT_TRUE( all(minmaxe8.y == maxe8) );
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 }

@@ -139,7 +139,7 @@ VSNRAY_FORCE_INLINE int4 operator-(int4 const& u, int4 const& v)
 
 VSNRAY_FORCE_INLINE int4 operator*(int4 const& u, int4 const& v)
 {
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE4_1)
     return _mm_mullo_epi32(u, v);
 #else
     __m128i t0 = shuffle<1,0,3,0>(u);             // a1  ... a3  ...
@@ -241,7 +241,7 @@ VSNRAY_FORCE_INLINE mask4 operator!=(int4 const& u, int4 const& v)
 
 VSNRAY_FORCE_INLINE int4 min(int4 const& u, int4 const& v)
 {
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
+#if VSNRAY_SIMD_ISA_GE(SNRAY_SIMD_ISA_SSE4_1)
     return _mm_min_epi32(u, v);
 #else
     return select(mask4(u < v), u, v);
@@ -250,7 +250,7 @@ VSNRAY_FORCE_INLINE int4 min(int4 const& u, int4 const& v)
 
 VSNRAY_FORCE_INLINE int4 max(int4 const& u, int4 const& v)
 {
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE4_1
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE4_1)
     return _mm_max_epi32(u, v);
 #else
     return select(mask4(u > v), u, v);

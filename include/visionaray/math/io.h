@@ -45,7 +45,7 @@ basic_int<I> int_from_mask(basic_mask<F, I> const& m)
     return m.i;
 }
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX512F
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 inline basic_int<__m512i> int_from_mask(basic_mask<__mmask16> const& m)
 {
     VSNRAY_ALIGN(64) int arr[16];

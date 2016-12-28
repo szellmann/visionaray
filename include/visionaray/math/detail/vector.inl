@@ -997,7 +997,7 @@ inline auto pack(std::array<vector<Dim, T>, N> const& vecs)
     return result;
 }
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 // pack four vectors
 
@@ -1015,9 +1015,9 @@ inline auto pack(
             }} );
 }
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // pack eight vectors
 
@@ -1039,7 +1039,7 @@ inline auto pack(
             }} );
 }
 
-#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // unpack -------------------------------------------------
 

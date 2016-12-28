@@ -21,7 +21,7 @@ int main()
 
 #elif defined VECTOR_PACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     std::array<vector<LEN, float>, 8> v_array;
     vector<LEN, simd::float8> v = simd::pack(v_array);
 #endif
@@ -48,7 +48,7 @@ int main()
 
 #elif defined VECTOR_UNPACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     vector<LEN, simd::float8> v;
     std::array<vector<LEN, float>, 8> v_array = simd::unpack(v);
 #endif

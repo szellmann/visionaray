@@ -38,7 +38,7 @@ int main()
 
 #elif defined SURFACE_PACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     param_type<vec3f, mat_type<float>, 8> surf_array;
     result_type<vector<3, simd::float8>, mat_type<simd::float8>> surf = simd::pack(surf_array);
 #endif
