@@ -269,6 +269,29 @@ __VSNRAY_DEFINE_SELECT(long double)
 
 #undef __VSNRAY_DEF_SELECT
 
+#define __VSNRAY_DEFINE_STORE(T)                                                \
+MATH_FUNC                                                                       \
+inline void store(T dst[1], T const& src)                                       \
+{                                                                               \
+    dst[0] = src;                                                               \
+}
+
+__VSNRAY_DEFINE_STORE(char)
+__VSNRAY_DEFINE_STORE(short)
+__VSNRAY_DEFINE_STORE(int)
+__VSNRAY_DEFINE_STORE(long)
+__VSNRAY_DEFINE_STORE(long long)
+__VSNRAY_DEFINE_STORE(unsigned char)
+__VSNRAY_DEFINE_STORE(unsigned short)
+__VSNRAY_DEFINE_STORE(unsigned int)
+__VSNRAY_DEFINE_STORE(unsigned long)
+__VSNRAY_DEFINE_STORE(unsigned long long)
+__VSNRAY_DEFINE_STORE(float)
+__VSNRAY_DEFINE_STORE(double)
+__VSNRAY_DEFINE_STORE(long double)
+
+#undef __VSNRAY_DEF_STORE
+
 MATH_FUNC
 inline bool any(bool b)
 {
@@ -291,6 +314,7 @@ inline bool all(bool b)
 //
 
 using simd::select;
+using simd::store;
 using simd::any;
 using simd::all;
 
