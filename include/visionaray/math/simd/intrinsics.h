@@ -7,8 +7,21 @@
 // Detect architecture
 //
 
-// SSE2 is always available on 64-bit platforms
+#define VSNRAY_ARCH_UNKNOWN          0
+#define VSNRAY_ARCH_X86             10
+#define VSNRAY_ARCH_X86_64          11
+#define VSNRAY_ARCH_ARM             20
+#define VSNRAY_ARCH_ARM64           21
+
 #if defined(_M_X64) || defined(_M_AMD64) || defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
+// SSE2 is always available on 64-bit platforms
+#define VSNRAY_ARCH VSNRAY_ARCH_X86_64
+#define VSNRAY_SIMD_ON_64_BIT 1
+#elif defined(__arm__) || defined(__arm) || defined(_ARM) || defined(_M_ARM)
+#define VSNRAY_ARCH VSNRAY_ARCH_ARM
+#define VSNRAY_SIMD_ON_64_BIT 0
+#elif defined(__aarch64__)
+#define VSNRAY_ARCH VSNRAY_ARCH_ARM64
 #define VSNRAY_SIMD_ON_64_BIT 1
 #endif
 

@@ -6,13 +6,15 @@
 #ifndef VSNRAY_DETAIL_ALLOCATOR_H
 #define VSNRAY_DETAIL_ALLOCATOR_H 1
 
-#include "macros.h"
-
 #include <cstddef>
 #include <new>
 
+#include <visionaray/math/simd/intrinsics.h> // VSNRAY_ARCH
+
+#include "macros.h"
+
 #if VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
-#ifdef __arm__ // TODO: identify via internal macro
+#if VSNRAY_ARCH == VSNRAY_ARCH_ARM
 
 // TODO:!!!
 
