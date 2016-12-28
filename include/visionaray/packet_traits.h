@@ -37,11 +37,13 @@ struct packet_size
     enum { w = 1, h = 1 };
 };
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 template <>
 struct packet_size<simd::float4>
 {
     enum { w = 2, h = 2 };
 };
+#endif
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 template <>
@@ -71,12 +73,14 @@ struct expand_pixel
     VSNRAY_FUNC inline T y(int y) { return T(y); }
 };
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 template <>
 struct expand_pixel<simd::float4>
 {
     VSNRAY_CPU_FUNC inline simd::float4 x(int x) { return simd::float4(x, x + 1, x, x + 1); }
     VSNRAY_CPU_FUNC inline simd::float4 y(int y) { return simd::float4(y, y, y + 1, y + 1); }
 };
+#endif
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 template <>

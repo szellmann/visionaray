@@ -407,6 +407,8 @@ inline void store(
 }
 
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Store SSE rgba color to RGBA32F color buffer, no conversion necessary
 // Special treatment, can convert from SoA to AoS using transpose
@@ -433,6 +435,8 @@ inline void store(
     if ( x      < width && (y + 1) < height) store( buffer[(y + 1) * width +  x     ].data(), c.z);
     if ((x + 1) < width && (y + 1) < height) store( buffer[(y + 1) * width + (x + 1)].data(), c.w);
 }
+
+#endif
 
 //-------------------------------------------------------------------------------------------------
 // Store single SIMD channel to 32-bit FP buffer, no conversion
@@ -684,6 +688,8 @@ inline void get(
         );
 }
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
+
 //-------------------------------------------------------------------------------------------------
 // Get SSE rgba color from RGB32F color buffer, let alpha = 1.0
 //
@@ -816,6 +822,8 @@ inline void get(
 
     result = simd::int4(out);
 }
+
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
@@ -968,7 +976,7 @@ inline void get(
     result = simd::int8(out);
 }
 
-#endif
+#endif // VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 
 
 // Blend ------------------------------------------------------------------

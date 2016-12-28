@@ -58,6 +58,7 @@ private:
 
 };
 
+#if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_SSE2
 template <>
 class random_sampler<simd::float4>
 {
@@ -94,6 +95,7 @@ private:
 
     sampler_type sampler_;
 };
+#endif
 
 #if VSNRAY_SIMD_ISA >= VSNRAY_SIMD_ISA_AVX
 template <>
