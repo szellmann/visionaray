@@ -246,51 +246,51 @@ namespace simd
 // SIMD intrinsics
 //
 
-#define __VSNRAY_DEFINE_SELECT(T)                                               \
+#define VSNRAY_DEFINE_SELECT__(T)                                               \
 MATH_FUNC                                                                       \
 inline T select(bool k, T a, T b)                                               \
 {                                                                               \
     return k ? a : b;                                                           \
 }
 
-__VSNRAY_DEFINE_SELECT(char)
-__VSNRAY_DEFINE_SELECT(short)
-__VSNRAY_DEFINE_SELECT(int)
-__VSNRAY_DEFINE_SELECT(long)
-__VSNRAY_DEFINE_SELECT(long long)
-__VSNRAY_DEFINE_SELECT(unsigned char)
-__VSNRAY_DEFINE_SELECT(unsigned short)
-__VSNRAY_DEFINE_SELECT(unsigned int)
-__VSNRAY_DEFINE_SELECT(unsigned long)
-__VSNRAY_DEFINE_SELECT(unsigned long long)
-__VSNRAY_DEFINE_SELECT(float)
-__VSNRAY_DEFINE_SELECT(double)
-__VSNRAY_DEFINE_SELECT(long double)
+VSNRAY_DEFINE_SELECT__(char)
+VSNRAY_DEFINE_SELECT__(short)
+VSNRAY_DEFINE_SELECT__(int)
+VSNRAY_DEFINE_SELECT__(long)
+VSNRAY_DEFINE_SELECT__(long long)
+VSNRAY_DEFINE_SELECT__(unsigned char)
+VSNRAY_DEFINE_SELECT__(unsigned short)
+VSNRAY_DEFINE_SELECT__(unsigned int)
+VSNRAY_DEFINE_SELECT__(unsigned long)
+VSNRAY_DEFINE_SELECT__(unsigned long long)
+VSNRAY_DEFINE_SELECT__(float)
+VSNRAY_DEFINE_SELECT__(double)
+VSNRAY_DEFINE_SELECT__(long double)
 
-#undef __VSNRAY_DEFINE_SELECT
+#undef VSNRAY_DEFINE_SELECT__
 
-#define __VSNRAY_DEFINE_STORE(T)                                                \
+#define VSNRAY_DEFINE_STORE__(T)                                                \
 MATH_FUNC                                                                       \
 inline void store(T dst[1], T const& src)                                       \
 {                                                                               \
     dst[0] = src;                                                               \
 }
 
-__VSNRAY_DEFINE_STORE(char)
-__VSNRAY_DEFINE_STORE(short)
-__VSNRAY_DEFINE_STORE(int)
-__VSNRAY_DEFINE_STORE(long)
-__VSNRAY_DEFINE_STORE(long long)
-__VSNRAY_DEFINE_STORE(unsigned char)
-__VSNRAY_DEFINE_STORE(unsigned short)
-__VSNRAY_DEFINE_STORE(unsigned int)
-__VSNRAY_DEFINE_STORE(unsigned long)
-__VSNRAY_DEFINE_STORE(unsigned long long)
-__VSNRAY_DEFINE_STORE(float)
-__VSNRAY_DEFINE_STORE(double)
-__VSNRAY_DEFINE_STORE(long double)
+VSNRAY_DEFINE_STORE__(char)
+VSNRAY_DEFINE_STORE__(short)
+VSNRAY_DEFINE_STORE__(int)
+VSNRAY_DEFINE_STORE__(long)
+VSNRAY_DEFINE_STORE__(long long)
+VSNRAY_DEFINE_STORE__(unsigned char)
+VSNRAY_DEFINE_STORE__(unsigned short)
+VSNRAY_DEFINE_STORE__(unsigned int)
+VSNRAY_DEFINE_STORE__(unsigned long)
+VSNRAY_DEFINE_STORE__(unsigned long long)
+VSNRAY_DEFINE_STORE__(float)
+VSNRAY_DEFINE_STORE__(double)
+VSNRAY_DEFINE_STORE__(long double)
 
-#undef __VSNRAY_DEFINE_STORE
+#undef VSNRAY_DEFINE_STORE__
 
 MATH_FUNC
 inline bool any(bool b)
