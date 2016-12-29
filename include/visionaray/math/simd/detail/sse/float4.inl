@@ -76,16 +76,6 @@ VSNRAY_FORCE_INLINE float4 select(mask4 const& m, float4 const& a, float4 const&
 #endif
 }
 
-VSNRAY_FORCE_INLINE float4 select(mask4 const& m, float4 const& a, float b)
-{
-    return select(m, a, float4(b));
-}
-
-VSNRAY_FORCE_INLINE float4 select(mask4 const& m, float a, float4 const& b)
-{
-    return select(m, float4(a), b);
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // Load / store / get

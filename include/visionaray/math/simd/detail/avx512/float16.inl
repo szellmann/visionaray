@@ -76,16 +76,6 @@ VSNRAY_FORCE_INLINE float16 select(mask16 const& m, float16 const& a, float16 co
     return _mm512_mask_blend_ps(m, a, b);
 }
 
-VSNRAY_FORCE_INLINE float16 select(mask16 const& m, float16 const& a, float b)
-{
-    return select(m, a, float16(b));
-}
-
-VSNRAY_FORCE_INLINE float16 select(mask16 const& m, float a, float16 const& b)
-{
-    return select(m, float16(a), b);
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // Load / store

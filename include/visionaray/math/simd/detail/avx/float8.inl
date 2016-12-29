@@ -81,16 +81,6 @@ VSNRAY_FORCE_INLINE float8 select(mask8 const& m, float8 const& a, float8 const&
     return _mm256_blendv_ps(b, a, m.f);
 }
 
-VSNRAY_FORCE_INLINE float8 select(mask8 const& m, float8 const& a, float b)
-{
-    return select(m, a, float8(b));
-}
-
-VSNRAY_FORCE_INLINE float8 select(mask8 const& m, float a, float8 const& b)
-{
-    return select(m, float8(a), b);
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // Load / store
