@@ -20,7 +20,7 @@
 
 #include <cstdlib>
 
-inline void* _mm_malloc(size_t aln, size_t s)
+inline void* _mm_malloc(size_t s, size_t aln)
 {
     return aligned_alloc(aln, s);
 }
