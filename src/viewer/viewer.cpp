@@ -116,6 +116,12 @@ struct renderer : viewer_type
         Split        // Split BVH, also binned and with SAH
     };
 
+    enum color_space
+    {
+        RGB = 0,
+        SRGB
+    };
+
 
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
@@ -190,6 +196,16 @@ struct renderer : viewer_type
             cl::init(this->ambient)
             ) );
 
+        add_cmdline_option( cl::makeOption<color_space&>({
+                { "rgb",                RGB,            "RGB color space for display" },
+                { "srgb",               SRGB,           "sRGB color space for display" },
+            },
+            "colorspace",
+            cl::Desc("Color space"),
+            cl::ArgRequired,
+            cl::init(this->col_space)
+            ) );
+
 #ifdef __CUDACC__
         add_cmdline_option( cl::makeOption<device_type&>({
                 { "cpu",                CPU,            "Rendering on the CPU" },
@@ -211,6 +227,7 @@ struct renderer : viewer_type
     algorithm                                   algo            = Simple;
     bvh_build_strategy                          builder         = Binned;
     device_type                                 dev_type        = CPU;
+    color_space                                 col_space       = SRGB;
     bool                                        show_hud        = true;
     bool                                        show_hud_ext    = true;
     bool                                        show_bvh        = false;
@@ -538,7 +555,14 @@ void renderer::on_display()
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glEnable(GL_FRAMEBUFFER_SRGB);
+    if (col_space == SRGB)
+    {
+        glEnable(GL_FRAMEBUFFER_SRGB);
+    }
+    else
+    {
+        glDisable(GL_FRAMEBUFFER_SRGB);
+    }
 
     if (dev_type == renderer::GPU && false /* no direct rendering */)
     {
@@ -622,6 +646,17 @@ void renderer::on_key_press(key_event const& event)
             outlines.init(host_bvh);
         }
 
+        break;
+
+    case 'c':
+        if (col_space == renderer::RGB)
+        {
+            col_space = renderer::SRGB;
+        }
+        else
+        {
+            col_space = renderer::RGB;
+        }
         break;
 
      case 'h':
