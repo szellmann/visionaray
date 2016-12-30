@@ -41,6 +41,7 @@ The viewer supports the following mouse interaction modes and keyboard shortcuts
 * **Key-1**: Switch to **ray casting** algorithm (default).
 * **Key-2**: Switch to **ray tracing** algorithm.
 * **Key-3**: Switch to **path tracing** algorithm.
+* **Key-b**: Toggle displaying outlines of the BVH.
 * **Key-h**: Toggle visibility of head up display.
 * **Key-m**: **Switch** between **CPU** mode and **GPU** mode (must be [compiled with CUDA](#build-cuda)).
 * **Key-s**: Toggle supersampling anti-aliasing mode. Only applies to ray casting and ray tracing algorithm (simple|whitted). Supported modes: 1x, 2x, 4x, and 8x supersampling.
