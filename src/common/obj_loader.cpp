@@ -8,84 +8,26 @@
 #include <map>
 #include <utility>
 
-#include <boost/fusion/include/adapt_struct.hpp>
-#include <boost/fusion/include/define_struct.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/optional.hpp>
 
 #include <visionaray/math/vector.h>
 #include <visionaray/texture/texture.h>
 
 #include "image.h"
 #include "model.h"
+#include "obj_grammar.h"
 #include "obj_loader.h"
 
 namespace qi = boost::spirit::qi;
 
-
-//-------------------------------------------------------------------------------------------------
-// boost::fusion-adapt/define some structs for parsing
-//
-
-BOOST_FUSION_DEFINE_STRUCT
-(
-    (visionaray), face_index_t,
-    (int, vertex_index)
-    (boost::optional<int>, tex_coord_index)
-    (boost::optional<int>, normal_index)
-)
-
-BOOST_FUSION_ADAPT_STRUCT
-(
-    visionaray::vec2,
-    (float, x)
-    (float, y)
-)
-
-BOOST_FUSION_ADAPT_STRUCT
-(
-    visionaray::vec3,
-    (float, x)
-    (float, y)
-    (float, z)
-)
-
-
 using boost::string_ref;
-
-namespace boost
-{
-namespace spirit
-{
-namespace traits
-{
-
-template <typename Iterator, typename Enable>
-struct assign_to_attribute_from_iterators<string_ref, Iterator, Enable>
-{
-    static void call(Iterator const& first, Iterator const& last, string_ref& attr)
-    {
-        attr = { first, static_cast<size_t>(last - first) };
-    }
-};
-
-} // traits
-} // spirit
-} // boost
 
 
 namespace visionaray
 {
-
-using triangle_type     = basic_triangle<3, float>;
-using vertex_vector     = aligned_vector<vec3>;
-using tex_coord_vector  = aligned_vector<vec2>;
-using normal_vector     = aligned_vector<vec3>;
-using face_vector       = aligned_vector<face_index_t>;
-
 
 //-------------------------------------------------------------------------------------------------
 // Default gray material
@@ -257,26 +199,11 @@ struct mtl
 // Parse mtllib
 //
 
-void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
+void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib, obj_grammar const& grammar)
 {
     boost::iostreams::mapped_file_source file(filename);
 
     std::map<std::string, mtl>::iterator mtl_it = matlib.end();
-
-    using It = string_ref::const_iterator;
-    using skip_t = decltype(qi::blank);
-    using sref_t = string_ref;
-    using string = std::string;
-
-    qi::rule<It> r_unhandled                = *(qi::char_ - qi::eol)                        >> qi::eol;
-    qi::rule<It, sref_t(), skip_t> r_newmtl = "newmtl" >> qi::raw[*(qi::char_ - qi::eol)]   >> qi::eol;
-    qi::rule<It, vec3(), skip_t> r_vec3     = qi::float_ >> qi::float_ >> qi::float_;
-    qi::rule<It, vec3(), skip_t> r_ka       = "Ka" >> r_vec3                                >> qi::eol;
-    qi::rule<It, vec3(), skip_t> r_kd       = "Kd" >> r_vec3                                >> qi::eol;
-    qi::rule<It, vec3(), skip_t> r_ke       = "Ke" >> r_vec3                                >> qi::eol;
-    qi::rule<It, vec3(), skip_t> r_ks       = "Ks" >> r_vec3                                >> qi::eol;
-    qi::rule<It, float(), skip_t> r_ns      = "Ns" >> qi::float_                            >> qi::eol;
-    qi::rule<It, string(), skip_t> r_map_kd = "map_Kd" >> *(qi::char_ - qi::eol)            >> qi::eol;
 
     string_ref text(file.data(), file.size());
     auto it = text.cbegin();
@@ -285,7 +212,7 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
 
     while (it != text.cend())
     {
-        if ( qi::phrase_parse(it, text.cend(), r_newmtl, qi::blank, mtl_name) )
+        if ( qi::phrase_parse(it, text.cend(), grammar.r_newmtl, qi::blank, mtl_name) )
         {
             auto r = matlib.insert({
                     std::string(mtl_name.begin(), mtl_name.length()),
@@ -298,25 +225,25 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib)
 
             mtl_it = r.first;
         }
-        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_ka, qi::blank, mtl_it->second.ka) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_ka, qi::blank, mtl_it->second.ka) )
         {
         }
-        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_kd, qi::blank, mtl_it->second.kd) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_kd, qi::blank, mtl_it->second.kd) )
         {
         }
-        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_ke, qi::blank, mtl_it->second.ke) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_ke, qi::blank, mtl_it->second.ke) )
         {
         }
-        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_ks, qi::blank, mtl_it->second.ks) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_ks, qi::blank, mtl_it->second.ks) )
         {
         }
-        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_ns, qi::blank, mtl_it->second.ns) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_ns, qi::blank, mtl_it->second.ns) )
         {
         }
-        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), r_map_kd, qi::blank, mtl_it->second.map_kd) )
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_map_kd, qi::blank, mtl_it->second.map_kd) )
         {
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_unhandled, qi::blank) )
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_unhandled, qi::blank) )
         {
         }
     }
@@ -377,47 +304,17 @@ void load_obj(std::string const& filename, model& mod)
 
     size_t geom_id = 0;
 
-    using It = string_ref::const_iterator;
-    using skip_t = decltype(qi::blank);
-    using sref_t = string_ref;
-    using VV = vertex_vector;
-    using TV = tex_coord_vector;
-    using NV = normal_vector;
-    using FV = face_vector;
-    using FI = face_index_t;
-
-    // obj grammar
-
-    qi::rule<It> r_unhandled                = *(qi::char_ - qi::eol)                                                >> qi::eol;
-    qi::rule<It, sref_t()> r_text_to_eol    = qi::raw[*(qi::char_ - qi::eol)];
-
-    qi::rule<It, sref_t()> r_comment        = "#" >> r_text_to_eol                                                  >> qi::eol;
-    qi::rule<It, sref_t(), skip_t> r_mtllib = "mtllib" >> r_text_to_eol                                             >> qi::eol;
-    qi::rule<It, sref_t(), skip_t> r_usemtl = "usemtl" >> r_text_to_eol                                             >> qi::eol;
-
-    qi::rule<It, vec3(), skip_t> r_v        = "v" >> qi::float_ >> qi::float_ >> qi::float_ >> -qi::float_          >> qi::eol  // TODO: mind w
-                                            | "v" >> qi::float_ >> qi::float_ >> qi::float_
-                                                      >> qi::float_ >> qi::float_ >> qi::float_                     >> qi::eol; // RGB color (extension)
-    qi::rule<It, vec2(), skip_t> r_vt       = "vt" >> qi::float_ >> qi::float_ >> -qi::float_                       >> qi::eol; // TODO: mind w
-    qi::rule<It, vec3(), skip_t> r_vn       = "vn" >> qi::float_ >> qi::float_ >> qi::float_                        >> qi::eol;
-
-    qi::rule<It, VV(), skip_t> r_vertices   = r_v >> *r_v;
-    qi::rule<It, TV(), skip_t> r_tex_coords = r_vt >> *r_vt;
-    qi::rule<It, NV(), skip_t> r_normals    = r_vn >> *r_vn;
-
-    qi::rule<It, FI()> r_face_idx           = qi::int_ >> -qi::lit("/") >> -qi::int_ >> -qi::lit("/") >> -qi::int_;
-    qi::rule<It, FV(), skip_t> r_face       = "f" >> r_face_idx >> r_face_idx >> r_face_idx >> *r_face_idx          >> qi::eol;
-
+    obj_grammar grammar;
 
     string_ref text(file.data(), file.size());
     auto it = text.cbegin();
 
     // containers for parsing
 
-    vertex_vector       vertices;
-    tex_coord_vector    tex_coords;
-    normal_vector       normals;
-    face_vector         faces;
+    vertex_vector    vertices;
+    tex_coord_vector tex_coords;
+    normal_vector    normals;
+    face_vector      faces;
 
     string_ref comment;
     string_ref mtl_file;
@@ -428,10 +325,10 @@ void load_obj(std::string const& filename, model& mod)
     {
         faces.clear();
 
-        if ( qi::phrase_parse(it, text.cend(), r_comment, qi::blank, comment) )
+        if ( qi::phrase_parse(it, text.cend(), grammar.r_comment, qi::blank, comment) )
         {
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_mtllib, qi::blank, mtl_file) )
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_mtllib, qi::blank, mtl_file) )
         {
             boost::filesystem::path p(filename);
             std::string mtl_dir = p.parent_path().string();
@@ -440,14 +337,14 @@ void load_obj(std::string const& filename, model& mod)
 
             if (boost::filesystem::exists(mtl_path))
             {
-                parse_mtl(mtl_path, matlib);
+                parse_mtl(mtl_path, matlib, grammar);
             }
             else
             {
                 std::cerr << "Warning: file does not exist: " << mtl_path << '\n';
             }
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_usemtl, qi::blank, mtl_name) )
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
         {
             auto mat_it = matlib.find(std::string(mtl_name.begin(), mtl_name.length()));
             if (mat_it != matlib.end())
@@ -574,20 +471,20 @@ void load_obj(std::string const& filename, model& mod)
 
             geom_id = mod.materials.size() == 0 ? 0 : mod.materials.size() - 1;
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_vertices, qi::blank, vertices) )
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_vertices, qi::blank, vertices) )
         {
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_tex_coords, qi::blank, tex_coords) )
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_tex_coords, qi::blank, tex_coords) )
         {
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_normals, qi::blank, normals) )
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_normals, qi::blank, normals) )
         {
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_face, qi::blank, faces) )
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_face, qi::blank, faces) )
         {
             store_faces(mod, vertices, tex_coords, normals, faces);
         }
-        else if ( qi::phrase_parse(it, text.cend(), r_unhandled, qi::blank) )
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_unhandled, qi::blank) )
         {
         }
         else

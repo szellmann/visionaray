@@ -77,6 +77,7 @@ set(COMMON_HEADERS
     jpeg_image.h
     make_unique.h
     model.h
+    obj_grammar.h
     obj_loader.h
     png_image.h
     pnm_image.h
@@ -101,6 +102,7 @@ set(COMMON_SOURCES
     image.cpp
     image_base.cpp
     jpeg_image.cpp
+    obj_grammar.cpp
     obj_loader.cpp
     png_image.cpp
     pnm_image.cpp
