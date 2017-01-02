@@ -64,6 +64,8 @@ depth_compositor::~depth_compositor()
 
 void depth_compositor::composite_textures() const
 {
+    glPushAttrib(GL_ENABLE_BIT);
+
     glEnable(GL_DEPTH_TEST);
 
     enable_program();
@@ -71,6 +73,8 @@ void depth_compositor::composite_textures() const
     gl::draw_full_screen_quad();
 
     disable_program();
+
+    glPopAttrib();
 }
 
 void depth_compositor::display_color_texture() const

@@ -4,16 +4,11 @@
 #include <algorithm>
 #include <cstring>
 
-#include <GL/glew.h>
-
 #include <visionaray/gl/compositing.h>
-#include <visionaray/gl/handle.h>
-#include <visionaray/gl/util.h>
 #include <visionaray/aligned_vector.h>
 
 #include "color_conversion.h"
 
-#define VSNRAY_CPU_BUFFER_TEX 1
 
 namespace visionaray
 {
@@ -139,10 +134,6 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::resize(size_t w, size_t h)
         impl_->depth_buffer.resize(w * h);
     }
 
-#if VSNRAY_CPU_BUFFER_TEX
-
-    glPushAttrib( GL_TEXTURE_BIT );
-
     if (!impl_->compositor)
     {
         impl_->compositor.reset(new gl::depth_compositor);
@@ -161,21 +152,13 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::resize(size_t w, size_t h)
 
         impl_->compositor->setup_depth_texture(dinfo, w, h);
     }
-
-    glPopAttrib();
-
-#endif
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 void cpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 {
-#if VSNRAY_CPU_BUFFER_TEX
-
     if (DepthFormat != PF_UNSPECIFIED)
     {
-        glPushAttrib( GL_TEXTURE_BIT | GL_ENABLE_BIT );
-
         // Update color texture
 
         pixel_format_info cinfo = map_pixel_format(ColorFormat);
@@ -203,8 +186,6 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
         // Combine textures using a shader
 
         impl_->compositor->composite_textures();
-
-        glPopAttrib();
     }
     else
     {
@@ -219,40 +200,6 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 
         impl_->compositor->display_color_texture();
     }
-
-#else
-
-    // Use glDrawPixels
-
-    if (DepthFormat != PF_UNSPECIFIED)
-    {
-        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ENABLE_BIT );
-
-        glEnable(GL_STENCIL_TEST);
-        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-        glStencilFunc(GL_ALWAYS, 1, 1);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-
-        pixel_format_info dinfo = map_pixel_format(DepthFormat);
-        gl::blend_pixels( width(), height(), dinfo.format, dinfo.type, impl_->depth_buffer.data() );
-
-        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-        glStencilFunc(GL_EQUAL, 1, 1);
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-        glDisable(GL_DEPTH_TEST);
-
-        pixel_format_info cinfo = map_pixel_format(ColorFormat);
-        gl::blend_pixels( width(), height(), cinfo.format, cinfo.type, impl_->color_buffer.data() );
-
-        glPopAttrib();
-    }
-    else
-    {
-        pixel_format_info info = map_pixel_format(ColorFormat);
-        gl::blend_pixels( width(), height(), info.format, info.type, impl_->color_buffer.data() );
-    }
-
-#endif
 }
 
 } // visionaray
