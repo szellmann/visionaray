@@ -2,7 +2,9 @@
 // See the LICENSE file for details.
 
 #include <chrono>
+#include <iostream>
 #include <memory>
+#include <ostream>
 #include <vector>
 
 #include <GL/glew.h>

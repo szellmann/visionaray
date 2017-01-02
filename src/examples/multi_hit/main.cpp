@@ -3,8 +3,10 @@
 
 #include <cassert>
 #include <exception>
+#include <iostream>
 #include <memory>
 #include <new>
+#include <ostream>
 
 #include <GL/glew.h>
 

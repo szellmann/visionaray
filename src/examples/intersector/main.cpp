@@ -3,7 +3,9 @@
 
 #include <exception>
 #include <cstring> // memset
+#include <iostream>
 #include <memory>
+#include <ostream>
 
 #include <GL/glew.h>
 
