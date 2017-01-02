@@ -76,6 +76,7 @@ set(COMMON_HEADERS
     image_base.h
     jpeg_image.h
     make_unique.h
+    model.h
     obj_loader.h
     png_image.h
     pnm_image.h
