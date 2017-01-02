@@ -64,7 +64,7 @@ depth_compositor::~depth_compositor()
 
 void depth_compositor::composite_textures() const
 {
-    glPushAttrib(GL_ENABLE_BIT);
+    glPushAttrib(GL_TEXTURE_BIT | GL_ENABLE_BIT);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -84,24 +84,30 @@ void depth_compositor::display_color_texture() const
 
 void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
+    glPushAttrib(GL_TEXTURE_BIT);
+
     color_texture_.reset( create_texture() );
 
     glBindTexture(GL_TEXTURE_2D, color_texture_.get());
 
     set_texture_params();
-
     alloc_texture(info, w, h);
+
+    glPopAttrib();
 }
 
 void depth_compositor::setup_depth_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
+    glPushAttrib(GL_TEXTURE_BIT);
+
     depth_texture_.reset( create_texture() );
 
     glBindTexture(GL_TEXTURE_2D, depth_texture_.get());
 
     set_texture_params();
-
     alloc_texture(info, w, h);
+
+    glPopAttrib();
 }
 
 void depth_compositor::update_color_texture(
@@ -111,9 +117,13 @@ void depth_compositor::update_color_texture(
         GLvoid const*       data
         ) const
 {
+    glPushAttrib(GL_TEXTURE_BIT);
+
     glBindTexture(GL_TEXTURE_2D, color_texture_.get());
 
     gl::update_texture( info, w, h, data );
+
+    glPopAttrib();
 }
 
 void depth_compositor::update_depth_texture(
@@ -123,9 +133,13 @@ void depth_compositor::update_depth_texture(
         GLvoid const*       data
         ) const
 {
+    glPushAttrib(GL_TEXTURE_BIT);
+
     glBindTexture(GL_TEXTURE_2D, depth_texture_.get());
 
     gl::update_texture( info, w, h, data );
+
+    glPopAttrib();
 }
 
 bool depth_compositor::check_shader_compiled() const

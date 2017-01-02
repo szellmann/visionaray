@@ -215,8 +215,6 @@ void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() co
 {
     if (DepthFormat != PF_UNSPECIFIED)
     {
-        glPushAttrib( GL_TEXTURE_BIT | GL_ENABLE_BIT );
-
         // Update color texture
 
         pixel_format_info cinfo = map_pixel_format(ColorFormat);
@@ -252,8 +250,6 @@ void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() co
         // Combine textures using a shader
 
         impl_->compositor->composite_textures();
-
-        glPopAttrib();
     }
     else
     {
