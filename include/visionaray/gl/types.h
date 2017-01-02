@@ -32,8 +32,10 @@ typedef ptrdiff_t           GLsizeiptr;
 // OpenGL 2.0
 typedef char                GLchar;
 
+#if 0
 // OpenGL 3.0
 typedef int64_t             GLint64;
 typedef uint64_t            GLuint64;
+#endif
 
 #endif // VSNRAY_GL_TYPES_H
