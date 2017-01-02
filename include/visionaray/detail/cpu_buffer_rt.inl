@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <cstring>
 
+#include <GL/glew.h>
+
 #include <visionaray/gl/compositing.h>
 #include <visionaray/aligned_vector.h>
 
@@ -159,6 +161,8 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 {
     if (DepthFormat != PF_UNSPECIFIED)
     {
+        glPushAttrib( GL_TEXTURE_BIT );
+
         // Update color texture
 
         pixel_format_info cinfo = map_pixel_format(ColorFormat);
@@ -186,6 +190,8 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
         // Combine textures using a shader
 
         impl_->compositor->composite_textures();
+
+        glPopAttrib();
     }
     else
     {
