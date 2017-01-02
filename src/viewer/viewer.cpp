@@ -28,12 +28,10 @@
 
 #endif
 
-#include <OpenGL/gl.h>
 #include <GLUT/glut.h>
 
 #else // VSNRAY_OS_DARWIN
 
-#include <GL/gl.h>
 #include <GL/glut.h>
 
 #endif
