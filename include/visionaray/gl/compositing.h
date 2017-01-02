@@ -6,6 +6,8 @@
 #ifndef VSNRAY_GL_COMPOSITING_H
 #define VSNRAY_GL_COMPOSITING_H 1
 
+#include <memory>
+
 #include <visionaray/gl/handle.h>
 #include <visionaray/pixel_format.h>
 
@@ -51,28 +53,8 @@ public:
 
 private:
 
-    // GL color texture handle
-    gl::texture color_texture_;
-
-    // GL color texture handle
-    gl::texture depth_texture_;
-
-    // The program
-    GLuint program_;
-
-    // The fragment shader
-    GLuint frag_;
-
-    // Uniform location of color texture
-    GLint color_loc_;
-
-    // Uniform location of depth texture
-    GLint depth_loc_;
-
-
-    bool check_shader_compiled() const;
-
-    bool check_program_linked() const;
+    struct impl;
+    std::unique_ptr<impl> impl_;
 
     void enable_program() const;
 
