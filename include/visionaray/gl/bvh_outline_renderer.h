@@ -8,16 +8,6 @@
 
 #include <vector>
 
-#include <GL/glew.h>
-
-#include "../detail/platform.h"
-
-#if defined(VSNRAY_OS_DARWIN)
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
-
 #include <visionaray/bvh.h>
 
 namespace visionaray
@@ -57,34 +47,15 @@ public:
 //      int            level ;
     };
 
+public:
 
-    //-------------------------------------------------------------------------
     // Render BVH outlines
-    //
+    void frame() const;
 
-    void frame() const
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glVertexPointer(3, GL_FLOAT, 0, NULL);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-        glDrawArrays(GL_LINES, 0, (GLsizei)(num_vertices_));
-        glDisableClientState(GL_VERTEX_ARRAY);
-    }
-
-
-    //-------------------------------------------------------------------------
-    // init()
-    // Call with a valid OpenGL context!
-    //
-
+    // Call init() with a valid OpenGL context!
     template <typename BVH>
     void init(BVH const& b, display_config config = display_config())
     {
-        glDeleteBuffers(1, &vbo_);
-        glGenBuffers(1, &vbo_);
-
         std::vector<float> vertices;
         auto func =  [&](typename BVH::node_type const& n)
         {
@@ -142,29 +113,22 @@ public:
         }
 
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        init_vbo(vertices.data(), vertices.size() * sizeof(float));
 
         num_vertices_ = vertices.size() / 3;
     }
 
 
-    //-------------------------------------------------------------------------
-    // destroy()
-    // Call while OpenGL context is still valid!
-    //
-
-    void destroy()
-    {
-        glDeleteBuffers(1, &vbo_);
-    }
-
+    // Call destroy() while OpenGL context is still valid!
+    void destroy();
 
 private:
 
     GLuint vbo_ = 0;
     size_t num_vertices_ = 0;
+
+    // init vbo, pointer to vertices, buffer size in bytes
+    void init_vbo(float const* data, size_t size);
 
 };
 

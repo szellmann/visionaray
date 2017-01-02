@@ -252,6 +252,7 @@ set(VSNRAY_SOURCES
 
     detail/spd/d65.cpp
 
+    gl/bvh_outline_renderer.cpp
     gl/compositing.cpp
     gl/debug_callback.cpp
     gl/handle.cpp
