@@ -17,14 +17,11 @@
 #undef max
 #endif
 #endif
-#if defined(VSNRAY_OS_DARWIN)
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
 
 #include <visionaray/math/forward.h>
 #include <visionaray/pixel_format.h>
+
+#include "types.h"
 
 
 namespace visionaray

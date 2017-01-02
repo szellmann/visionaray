@@ -9,11 +9,7 @@
 #include <visionaray/detail/macros.h>
 #include <visionaray/detail/platform.h>
 
-#if defined(VSNRAY_OS_DARWIN)
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
+#include "types.h"
 
 namespace visionaray
 {

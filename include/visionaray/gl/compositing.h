@@ -6,14 +6,10 @@
 #ifndef VSNRAY_GL_COMPOSITING_H
 #define VSNRAY_GL_COMPOSITING_H 1
 
-#if defined(VSNRAY_OS_DARWIN)
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#endif
-
 #include <visionaray/gl/handle.h>
 #include <visionaray/pixel_format.h>
+
+#include "types.h"
 
 namespace visionaray
 {

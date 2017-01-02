@@ -101,6 +101,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/gl/compositing.h
     ${HEADER_DIR}/gl/debug_callback.h
     ${HEADER_DIR}/gl/handle.h
+    ${HEADER_DIR}/gl/types.h
     ${HEADER_DIR}/gl/util.h
 
     # Math
