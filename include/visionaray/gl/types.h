@@ -25,9 +25,11 @@ typedef float               GLclampf;
 typedef double              GLdouble;
 typedef double              GLclampd;
 
+#if 0
 // OpenGL 1.5
 typedef ptrdiff_t           GLintptr;
 typedef ptrdiff_t           GLsizeiptr;
+#endif
 
 // OpenGL 2.0
 typedef char                GLchar;
