@@ -7,6 +7,7 @@
 #define VSNRAY_SIMD_TYPE_TRAITS_H 1
 
 #include "avx.h"
+#include "avx512.h"
 #include "sse.h"
 
 namespace MATH_NAMESPACE
