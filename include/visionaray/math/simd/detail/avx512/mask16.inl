@@ -37,7 +37,7 @@ VSNRAY_FORCE_INLINE mask16::basic_mask(
 {
 }
 
-VSNRAY_FORCE_INLINE mask16::basic_mask(bool const v[8])
+VSNRAY_FORCE_INLINE mask16::basic_mask(bool const v[16])
     : value(
         (0x1    & v[ 0]) | (0x2    & v[ 1]) | (0x4    & v[ 2]) | (0x8    & v[ 3]) |
         (0x10   & v[ 4]) | (0x20   & v[ 5]) | (0x40   & v[ 6]) | (0x80   & v[ 7]) |
