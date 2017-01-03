@@ -13,8 +13,6 @@
 #include <visionaray/gl/util.h>
 #include <visionaray/pixel_format.h>
 
-#define VSNRAY_COMP_LEGACY_ 0
-
 namespace visionaray
 {
 namespace gl
@@ -26,7 +24,7 @@ namespace gl
 
 struct depth_compositor::impl
 {
-#if !VSNRAY_COMP_LEGACY_
+#if !defined(VSNRAY_OPENGL_LEGACY)
     impl()
         : program(glCreateProgram())
         , frag(glCreateShader(GL_FRAGMENT_SHADER))
@@ -76,7 +74,7 @@ struct depth_compositor::impl
 };
 
 
-#if !VSNRAY_COMP_LEGACY_
+#if !defined(VSNRAY_OPENGL_LEGACY)
 bool depth_compositor::impl::check_shader_compiled() const
 {
     GLint success = GL_FALSE;
@@ -158,7 +156,7 @@ void depth_compositor::impl::set_texture_params() const
 depth_compositor::depth_compositor()
     : impl_(new impl)
 {
-#if !VSNRAY_COMP_LEGACY_
+#if !defined(VSNRAY_OPENGL_LEGACY)
     auto source = R"(
         uniform sampler2D color_tex;
     uniform sampler2D depth_tex;
@@ -200,7 +198,7 @@ depth_compositor::~depth_compositor()
 
 void depth_compositor::composite_textures() const
 {
-#if !VSNRAY_COMP_LEGACY_
+#if !defined(VSNRAY_OPENGL_LEGACY)
     // Store OpenGL state
     GLint active_texture = GL_TEXTURE0;
     GLboolean depth_test = GL_FALSE;
@@ -262,7 +260,7 @@ void depth_compositor::composite_textures() const
 
 void depth_compositor::display_color_texture() const
 {
-#if !VSNRAY_COMP_LEGACY_
+#if !defined(VSNRAY_OPENGL_LEGACY)
     gl::blend_texture(impl_->color_texture.get());
 #else
     gl::blend_pixels(
@@ -277,7 +275,7 @@ void depth_compositor::display_color_texture() const
 
 void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
-#if !VSNRAY_COMP_LEGACY_
+#if !defined(VSNRAY_OPENGL_LEGACY)
     impl_->color_texture.reset( create_texture() );
 
     glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
@@ -293,7 +291,7 @@ void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GL
 
 void depth_compositor::setup_depth_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
-#if !VSNRAY_COMP_LEGACY_
+#if !defined(VSNRAY_OPENGL_LEGACY)
     impl_->depth_texture.reset( create_texture() );
 
     glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
@@ -314,7 +312,7 @@ void depth_compositor::update_color_texture(
         GLvoid const*       data
         ) const
 {
-#if !VSNRAY_COMP_LEGACY_
+#if !defined(VSNRAY_OPENGL_LEGACY)
     glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
 
     gl::update_texture( info, w, h, data );
@@ -333,7 +331,7 @@ void depth_compositor::update_depth_texture(
         GLvoid const*       data
         ) const
 {
-#if !VSNRAY_COMP_LEGACY_
+#if !defined(VSNRAY_OPENGL_LEGACY)
     glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
 
     gl::update_texture( info, w, h, data );

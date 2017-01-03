@@ -57,6 +57,7 @@ void blend_texture(
         GLenum          dfactor     = GL_ONE_MINUS_SRC_ALPHA
         );
 
+#if defined(VSNRAY_OPENGL_LEGACY)
 void blend_pixels(
         GLsizei         w,
         GLsizei         h,
@@ -66,6 +67,7 @@ void blend_pixels(
         GLenum          sfactor     = GL_ONE,
         GLenum          dfactor     = GL_ONE_MINUS_SRC_ALPHA
         );
+#endif
 
 recti viewport();
 

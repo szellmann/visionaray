@@ -129,6 +129,7 @@ void gl::blend_texture(GLuint texture, GLenum sfactor, GLenum dfactor)
     glPopAttrib();
 }
 
+#if defined(VSNRAY_OPENGL_LEGACY)
 void gl::blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid const* pixels, GLenum sfactor, GLenum dfactor)
 {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -148,6 +149,7 @@ void gl::blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid c
 
     glPopAttrib();
 }
+#endif
 
 recti gl::viewport()
 {
