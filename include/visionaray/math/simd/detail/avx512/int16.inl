@@ -138,7 +138,7 @@ VSNRAY_FORCE_INLINE int16 operator-(int16 const& u, int16 const& v)
 
 VSNRAY_FORCE_INLINE int16 operator*(int16 const& u, int16 const& v)
 {
-    return _mm512_mul_epi32(u, v);
+    return _mm512_mullo_epi32(u, v);
 }
 
 VSNRAY_FORCE_INLINE int16 operator/(int16 const& u, int16 const& v)
