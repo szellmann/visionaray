@@ -82,6 +82,7 @@ void test_representability()
     EXPECT_TRUE ( all(isfinite(T(DBL_MIN / 2.0))) );
 }
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 static void test_pred_4()
 {
     using M = simd::mask4;
@@ -97,7 +98,7 @@ static void test_pred_4()
     EXPECT_TRUE( any(i) );
     EXPECT_TRUE( all(i) );
 }
-
+#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 static void test_pred_8()
@@ -117,6 +118,7 @@ static void test_pred_8()
 }
 #endif
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 static void test_cmp_4()
 {
     using F = simd::float4;
@@ -208,6 +210,7 @@ static void test_cmp_4()
         EXPECT_TRUE( all((a != c) == M(1,0,1,0)) );
     }
 }
+#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 static void test_cmp_8()
@@ -301,6 +304,7 @@ static void test_cmp_8()
 }
 #endif
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 static void test_logical_4()
 {
     using M = simd::mask4;
@@ -324,6 +328,7 @@ static void test_logical_4()
     EXPECT_TRUE( any(!(a || b)) );
     EXPECT_TRUE(!any(!(a || c)) );
 }
+#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 static void test_logical_8()
@@ -387,6 +392,8 @@ static void test_math()
 
 TEST(SIMD, Get)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
     // int4 -----------------------------------------------
 
     simd::int4 i4;
@@ -407,6 +414,8 @@ TEST(SIMD, Get)
     EXPECT_FLOAT_EQ( simd::get<1>(f4), 1.0f );
     EXPECT_FLOAT_EQ( simd::get<2>(f4), 2.0f );
     EXPECT_FLOAT_EQ( simd::get<3>(f4), 3.0f );
+
+#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
@@ -449,7 +458,10 @@ TEST(SIMD, Get)
 
 TEST(SIMD, Representability)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
     test_representability<simd::float4>();
+#endif
+
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_representability<simd::float8>();
 #endif
@@ -462,7 +474,10 @@ TEST(SIMD, Representability)
 
 TEST(SIMD, Pred)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
     test_pred_4();
+#endif
+
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_pred_8();
 #endif
@@ -475,7 +490,10 @@ TEST(SIMD, Pred)
 
 TEST(SIMD, Comparison)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
     test_cmp_4();
+#endif
+
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_cmp_8();
 #endif
@@ -488,7 +506,10 @@ TEST(SIMD, Comparison)
 
 TEST(SIMD, Logical)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
     test_logical_4();
+#endif
+
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_logical_8();
 #endif
@@ -501,7 +522,10 @@ TEST(SIMD, Logical)
 
 TEST(SIMD, Math)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
     test_math<simd::float4>();
+#endif
+
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_math<simd::float8>();
 #endif
