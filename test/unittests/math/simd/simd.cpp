@@ -343,7 +343,7 @@ static void test_cmp_8()
 }
 #endif
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 static void test_cmp_16()
 {
     using F = simd::float16;
