@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include <visionaray/gl/handle.h>
 #include <visionaray/pixel_format.h>
 
 #include "types.h"
