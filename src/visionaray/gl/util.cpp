@@ -129,26 +129,6 @@ void gl::blend_texture(GLuint texture, GLenum sfactor, GLenum dfactor)
     glPopAttrib();
 }
 
-void gl::blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid const* pixels, GLenum sfactor, GLenum dfactor)
-{
-    glPushAttrib(GL_ALL_ATTRIB_BITS);
-
-    recti vp = gl::viewport();
-    glWindowPos2i(vp[0], vp[1]);
-
-    GLfloat scalex = vp[2] / static_cast<GLfloat>(w);
-    GLfloat scaley = vp[3] / static_cast<GLfloat>(h);
-
-    glPixelZoom(scalex, scaley);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(sfactor, dfactor);
-
-    glDrawPixels(w, h, format, type, pixels);
-
-    glPopAttrib();
-}
-
 recti gl::viewport()
 {
     GLint vp[4];
