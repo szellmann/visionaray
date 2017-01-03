@@ -183,7 +183,12 @@ depth_compositor::~depth_compositor()
 
 void depth_compositor::composite_textures() const
 {
-    glPushAttrib(GL_TEXTURE_BIT | GL_ENABLE_BIT);
+    // Store OpenGL state
+    GLint active_texture = GL_TEXTURE0;
+    GLboolean depth_test = GL_FALSE;
+    glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
+    glGetBooleanv(GL_DEPTH_TEST, &depth_test);
+
 
     glEnable(GL_DEPTH_TEST);
 
@@ -193,7 +198,17 @@ void depth_compositor::composite_textures() const
 
     impl_->disable_program();
 
-    glPopAttrib();
+
+    // Restore OpenGL state
+    glActiveTexture(active_texture);
+    if (depth_test)
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
+    else
+    {
+        glDisable(GL_DEPTH_TEST);
+    }
 }
 
 void depth_compositor::display_color_texture() const
@@ -203,30 +218,22 @@ void depth_compositor::display_color_texture() const
 
 void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
-    glPushAttrib(GL_TEXTURE_BIT);
-
     impl_->color_texture.reset( create_texture() );
 
     glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
 
     impl_->set_texture_params();
     alloc_texture(info, w, h);
-
-    glPopAttrib();
 }
 
 void depth_compositor::setup_depth_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
-    glPushAttrib(GL_TEXTURE_BIT);
-
     impl_->depth_texture.reset( create_texture() );
 
     glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
 
     impl_->set_texture_params();
     alloc_texture(info, w, h);
-
-    glPopAttrib();
 }
 
 void depth_compositor::update_color_texture(
@@ -236,13 +243,9 @@ void depth_compositor::update_color_texture(
         GLvoid const*       data
         ) const
 {
-    glPushAttrib(GL_TEXTURE_BIT);
-
     glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
 
     gl::update_texture( info, w, h, data );
-
-    glPopAttrib();
 }
 
 void depth_compositor::update_depth_texture(
@@ -252,13 +255,9 @@ void depth_compositor::update_depth_texture(
         GLvoid const*       data
         ) const
 {
-    glPushAttrib(GL_TEXTURE_BIT);
-
     glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
 
     gl::update_texture( info, w, h, data );
-
-    glPopAttrib();
 }
 
 } // gl
