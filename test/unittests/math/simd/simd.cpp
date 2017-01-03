@@ -139,7 +139,7 @@ static void test_pred_8()
 }
 #endif
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA512F)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 static void test_pred_16()
 {
     using M = simd::mask16;
