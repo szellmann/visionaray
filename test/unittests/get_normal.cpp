@@ -28,7 +28,7 @@ TEST(GetNormal, BVH)
 
     triangles[1].v1 = vec3( 1.0f, -1.0f, -1.0f);
     triangles[1].e1 = vec3(-1.0f, -1.0f, -1.0f) - triangles[1].v1;
-    triangles[1].e2 = vec3(-1.0f,  1.0f, -1.0f) - triangles[2].v1;
+    triangles[1].e2 = vec3(-1.0f,  1.0f, -1.0f) - triangles[1].v1;
     triangles[1].prim_id = 1;
     triangles[1].geom_id = 1;
 
