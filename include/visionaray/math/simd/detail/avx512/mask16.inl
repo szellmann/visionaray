@@ -241,12 +241,12 @@ VSNRAY_FORCE_INLINE mask16 operator||(bool a, mask16 const& b)
 
 VSNRAY_FORCE_INLINE mask16 operator==(mask16 const& u, mask16 const& v)
 {
-    return *reinterpret_cast<short const*>(&u.value) == *reinterpret_cast<short const*>(&v.value);
+    return _mm512_knot(_mm512_kxor(u, v));
 }
 
 VSNRAY_FORCE_INLINE mask16 operator!=(mask16 const& u, mask16 const& v)
 {
-    return *reinterpret_cast<short const*>(&u.value) != *reinterpret_cast<short const*>(&v.value);
+    return _mm512_kxor(u, v);
 }
 
 } // simd
