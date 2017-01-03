@@ -36,6 +36,8 @@ static void test_gather_unorm()
     }
 
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_SSE2)
+
     // test float4
 
     simd::int4 index4(0, 2, 4, 6);
@@ -45,6 +47,8 @@ static void test_gather_unorm()
     EXPECT_FLOAT_EQ( simd::get<1>(res4), static_cast<float>(unorm<Bits>( 2 / 16.0f)) );
     EXPECT_FLOAT_EQ( simd::get<2>(res4), static_cast<float>(unorm<Bits>( 4 / 16.0f)) );
     EXPECT_FLOAT_EQ( simd::get<3>(res4), static_cast<float>(unorm<Bits>( 6 / 16.0f)) );
+
+#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
@@ -84,6 +88,8 @@ static void test_gather_vector_unorm()
     }
 
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
     // test vector<Dim, float4>
 
     simd::int4 index4(0, 2, 4, 6);
@@ -103,6 +109,8 @@ static void test_gather_vector_unorm()
         EXPECT_FLOAT_EQ( simd::get<2>(f), static_cast<float>(u2) );
         EXPECT_FLOAT_EQ( simd::get<3>(f), static_cast<float>(u3) );
     }
+
+#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
@@ -168,6 +176,8 @@ TEST(SIMD, GatherFloat)
     }
 
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
     // test float4
 
     simd::int4 index4(0, 2, 4, 6);
@@ -177,6 +187,8 @@ TEST(SIMD, GatherFloat)
     EXPECT_FLOAT_EQ(simd::get<1>(res4),  2.0f);
     EXPECT_FLOAT_EQ(simd::get<2>(res4),  4.0f);
     EXPECT_FLOAT_EQ(simd::get<3>(res4),  6.0f);
+
+#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
@@ -216,6 +228,8 @@ TEST(SIMD, GatherInt)
     }
 
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
     // test int4
 
     simd::int4 index4(0, 2, 4, 6);
@@ -225,6 +239,8 @@ TEST(SIMD, GatherInt)
     EXPECT_TRUE(simd::get<1>(res4) ==  2);
     EXPECT_TRUE(simd::get<2>(res4) ==  4);
     EXPECT_TRUE(simd::get<3>(res4) ==  6);
+
+#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
@@ -290,6 +306,8 @@ TEST(SIMD, GatherVec4)
     }
 
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
     // test vector<4, float4>
 
     simd::int4 index4(0, 2, 4, 6);
@@ -314,6 +332,8 @@ TEST(SIMD, GatherVec4)
     EXPECT_FLOAT_EQ(simd::get<3>(res4.y), 25.0f);
     EXPECT_FLOAT_EQ(simd::get<3>(res4.z), 26.0f);
     EXPECT_FLOAT_EQ(simd::get<3>(res4.w), 27.0f);
+
+#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
