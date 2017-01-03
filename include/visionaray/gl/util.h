@@ -57,6 +57,16 @@ void blend_texture(
         GLenum          dfactor     = GL_ONE_MINUS_SRC_ALPHA
         );
 
+void blend_pixels(
+        GLsizei         w,
+        GLsizei         h,
+        GLenum          format,
+        GLenum          type,
+        GLvoid const*   pixels,
+        GLenum          sfactor     = GL_ONE,
+        GLenum          dfactor     = GL_ONE_MINUS_SRC_ALPHA
+        );
+
 recti viewport();
 
 } // gl
