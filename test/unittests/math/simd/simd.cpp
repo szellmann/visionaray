@@ -526,29 +526,71 @@ static void test_logical_16()
 template <typename F>
 static void test_math()
 {
+    using I = simd::int_type_t<F>;
+
+    // basic arithmetic
+
+    {
+        // float
+        VSNRAY_ALIGN(64) float af_arr[] = {
+                 0.0f,  1.0f,  2.0f,  3.0f,
+                 4.0f,  5.0f,  6.0f,  7.0f,
+                 8.0f,  9.0f, 10.0f, 11.0f,
+                12.0f, 13.0f, 14.0f, 15.0f
+                };
+        F af(af_arr);
+        F bf(2.0);
+
+        EXPECT_TRUE( all(+af     == F(0.0) + af) );
+        EXPECT_TRUE( all(-af     == F(0.0) - af) );
+        EXPECT_TRUE( all(af + af == af * F(2.0)) );
+        EXPECT_TRUE( all(af - af == F(0.0)) );
+        EXPECT_TRUE( all(af * af == pow(af, F(2.0))) );
+        EXPECT_TRUE( all(af / bf == af * F(0.5)) );
+
+
+        // int
+        VSNRAY_ALIGN(64) int ai_arr[] = {
+                 0,  1,  2,  3,
+                 4,  5,  6,  7,
+                 8,  9, 10, 11,
+                12, 13, 14, 15
+                };
+        I ai(ai_arr);
+        I bi(2);
+
+        EXPECT_TRUE( all(+ai     == I(0) + ai) );
+        EXPECT_TRUE( all(-ai     == I(0) - ai) );
+        EXPECT_TRUE( all(ai + ai == ai * I(2)) );
+        EXPECT_TRUE( all(ai - ai == I(0)) );
+    }
+
+
     // copysign(float)
 
-    F xf(1.0f);
-    F yf(2.0f);
-    F rf = copysign(xf, yf);
-    EXPECT_TRUE( all(rf == 1.0f) );
+    {
+        F xf(1.0f);
+        F yf(2.0f);
+        F rf = copysign(xf, yf);
+        EXPECT_TRUE( all(rf == 1.0f) );
 
-    xf = F(1.0f);
-    yf = F(-2.0f);
-    rf = copysign(xf, yf);
-    EXPECT_TRUE( all(rf == -1.0f) );
+        xf = F(1.0f);
+        yf = F(-2.0f);
+        rf = copysign(xf, yf);
+        EXPECT_TRUE( all(rf == -1.0f) );
 
-    xf = F(INFINITY);
-    yf = F(-2.0f);
-    rf = copysign(xf, yf);
-    EXPECT_TRUE( all(rf == -INFINITY) );
+        xf = F(INFINITY);
+        yf = F(-2.0f);
+        rf = copysign(xf, yf);
+        EXPECT_TRUE( all(rf == -INFINITY) );
 
-    // Other than the standard demands,
-    // copysign(NAN, -y) will not return -NAN
-    xf = F(NAN);
-    yf = F(-2.0f);
-    rf = copysign(xf, yf);
-//  EXPECT_TRUE( all(rf == -NAN) );
+        // Other than the standard demands,
+        // copysign(NAN, -y) will not return -NAN
+        xf = F(NAN);
+        yf = F(-2.0f);
+        rf = copysign(xf, yf);
+//      EXPECT_TRUE( all(rf == -NAN) );
+    }
 }
 
 
