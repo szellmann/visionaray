@@ -13,6 +13,8 @@
 #include <visionaray/gl/util.h>
 #include <visionaray/pixel_format.h>
 
+#define VSNRAY_COMP_LEGACY_ 0
+
 namespace visionaray
 {
 namespace gl
@@ -24,6 +26,7 @@ namespace gl
 
 struct depth_compositor::impl
 {
+#if !VSNRAY_COMP_LEGACY_
     impl()
         : program(glCreateProgram())
         , frag(glCreateShader(GL_FRAGMENT_SHADER))
@@ -60,9 +63,20 @@ struct depth_compositor::impl
     void enable_program() const;
     void disable_program() const;
     void set_texture_params() const;
+#else
+    pixel_format_info color_info;
+    pixel_format_info depth_info;
+
+    GLvoid const* depth_buffer = nullptr;
+    GLvoid const* color_buffer = nullptr;
+
+    int width;
+    int height;
+#endif
 };
 
 
+#if !VSNRAY_COMP_LEGACY_
 bool depth_compositor::impl::check_shader_compiled() const
 {
     GLint success = GL_FALSE;
@@ -134,6 +148,7 @@ void depth_compositor::impl::set_texture_params() const
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
+#endif
 
 
 //-------------------------------------------------------------------------------------------------
@@ -143,6 +158,7 @@ void depth_compositor::impl::set_texture_params() const
 depth_compositor::depth_compositor()
     : impl_(new impl)
 {
+#if !VSNRAY_COMP_LEGACY_
     auto source = R"(
         uniform sampler2D color_tex;
     uniform sampler2D depth_tex;
@@ -175,6 +191,7 @@ depth_compositor::depth_compositor()
 
     impl_->color_loc = glGetUniformLocation(impl_->program, "color_tex");
     impl_->depth_loc = glGetUniformLocation(impl_->program, "depth_tex");
+#endif
 }
 
 depth_compositor::~depth_compositor()
@@ -183,6 +200,7 @@ depth_compositor::~depth_compositor()
 
 void depth_compositor::composite_textures() const
 {
+#if !VSNRAY_COMP_LEGACY_
     // Store OpenGL state
     GLint active_texture = GL_TEXTURE0;
     GLboolean depth_test = GL_FALSE;
@@ -209,31 +227,84 @@ void depth_compositor::composite_textures() const
     {
         glDisable(GL_DEPTH_TEST);
     }
+#else
+    glPushAttrib( GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ENABLE_BIT );
+
+    glEnable(GL_STENCIL_TEST);
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glStencilFunc(GL_ALWAYS, 1, 1);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+    gl::blend_pixels(
+            impl_->width,
+            impl_->height,
+            impl_->depth_info.format,
+            impl_->depth_info.type,
+            impl_->depth_buffer
+            );
+
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glStencilFunc(GL_EQUAL, 1, 1);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glDisable(GL_DEPTH_TEST);
+
+    gl::blend_pixels(
+            impl_->width,
+            impl_->height,
+            impl_->color_info.format,
+            impl_->color_info.type,
+            impl_->color_buffer
+            );
+
+    glPopAttrib();
+#endif
 }
 
 void depth_compositor::display_color_texture() const
 {
+#if !VSNRAY_COMP_LEGACY_
     gl::blend_texture(impl_->color_texture.get());
+#else
+    gl::blend_pixels(
+            impl_->width,
+            impl_->height,
+            impl_->color_info.format,
+            impl_->color_info.type,
+            impl_->color_buffer
+            );
+#endif
 }
 
 void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
+#if !VSNRAY_COMP_LEGACY_
     impl_->color_texture.reset( create_texture() );
 
     glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
 
     impl_->set_texture_params();
     alloc_texture(info, w, h);
+#else
+    impl_->color_info = info;
+    impl_->width = w;
+    impl_->height = h;
+#endif
 }
 
 void depth_compositor::setup_depth_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
+#if !VSNRAY_COMP_LEGACY_
     impl_->depth_texture.reset( create_texture() );
 
     glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
 
     impl_->set_texture_params();
     alloc_texture(info, w, h);
+#else
+    impl_->depth_info = info;
+    impl_->width = w;
+    impl_->height = h;
+#endif
 }
 
 void depth_compositor::update_color_texture(
@@ -243,9 +314,16 @@ void depth_compositor::update_color_texture(
         GLvoid const*       data
         ) const
 {
+#if !VSNRAY_COMP_LEGACY_
     glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
 
     gl::update_texture( info, w, h, data );
+#else
+    impl_->color_info = info;
+    impl_->width = w;
+    impl_->height = h;
+    impl_->color_buffer = data;
+#endif
 }
 
 void depth_compositor::update_depth_texture(
@@ -255,9 +333,16 @@ void depth_compositor::update_depth_texture(
         GLvoid const*       data
         ) const
 {
+#if !VSNRAY_COMP_LEGACY_
     glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
 
     gl::update_texture( info, w, h, data );
+#else
+    impl_->depth_info = info;
+    impl_->width = w;
+    impl_->height = h;
+    impl_->depth_buffer = data;
+#endif
 }
 
 } // gl
