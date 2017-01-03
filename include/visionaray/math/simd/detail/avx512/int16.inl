@@ -143,7 +143,7 @@ VSNRAY_FORCE_INLINE int16 operator*(int16 const& u, int16 const& v)
 
 VSNRAY_FORCE_INLINE int16 operator/(int16 const& u, int16 const& v)
 {
-    return reinterpret_as_int(reinterpret_as_float(u) / reinterpret_as_float(v));
+    return convert_to_int(convert_to_float(u) / convert_to_float(v));
 }
 
 
