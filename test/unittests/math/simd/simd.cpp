@@ -38,6 +38,27 @@ static void iota8(T& t)
     simd::get<7>(t) = 7;
 }
 
+template <typename T>
+static void iota16(T& t)
+{
+    simd::get< 0>(t) =  0;
+    simd::get< 1>(t) =  1;
+    simd::get< 2>(t) =  2;
+    simd::get< 3>(t) =  3;
+    simd::get< 4>(t) =  4;
+    simd::get< 5>(t) =  5;
+    simd::get< 6>(t) =  6;
+    simd::get< 7>(t) =  7;
+    simd::get< 8>(t) =  8;
+    simd::get< 9>(t) =  9;
+    simd::get<10>(t) = 10;
+    simd::get<11>(t) = 11;
+    simd::get<12>(t) = 12;
+    simd::get<13>(t) = 13;
+    simd::get<14>(t) = 14;
+    simd::get<15>(t) = 15;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Test helper functions
@@ -108,6 +129,24 @@ static void test_pred_8()
     M z(0,0,0,0, 0,0,0,0);
     M a(1,1,0,0, 1,1,0,0);
     M i(1,1,1,1, 1,1,1,1);
+
+    EXPECT_TRUE(!any(z) );
+    EXPECT_TRUE(!all(z) );
+    EXPECT_TRUE( any(a) );
+    EXPECT_TRUE(!all(a) );
+    EXPECT_TRUE( any(i) );
+    EXPECT_TRUE( all(i) );
+}
+#endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA512F)
+static void test_pred_16()
+{
+    using M = simd::mask16;
+
+    M z(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0);
+    M a(1,1,0,0, 1,1,0,0, 1,1,0,0, 1,1,0,0);
+    M i(1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1);
 
     EXPECT_TRUE(!any(z) );
     EXPECT_TRUE(!all(z) );
@@ -304,6 +343,107 @@ static void test_cmp_8()
 }
 #endif
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512)
+static void test_cmp_16()
+{
+    using F = simd::float16;
+    using I = simd::int16;
+    using M = simd::mask16;
+
+    // float
+
+    {
+        F a(
+             1.0f,  2.0f,  3.0f,  4.0f,   5.0f,  6.0f,  7.0f,  8.0f,
+             9.0f, 10.0f, 11.0f, 12.0f,  13.0f, 14.0f, 15.0f, 16.0f
+            );
+        F b(
+            17.0f, 18.0f, 19.0f, 20.0f,  21.0f, 22.0f, 23.0f, 24.0f,
+            25.0f, 26.0f, 27.0f, 28.0f,  29.0f, 30.0f, 31.0f, 32.0f
+            );
+        F c(
+             1.0f,  0.0f,  3.0f,  0.0f,   5.0f,  0.0f,  7.0f,  0.0f,
+             9.0f,  0.0f, 11.0f,  0.0f,  13.0f,  0.0f, 15.0f,  0.0f
+            );
+        F x(std::numeric_limits<float>::max());
+        F y(std::numeric_limits<float>::min());
+        F z(std::numeric_limits<float>::lowest());
+
+        EXPECT_TRUE( all(a == a) );
+        EXPECT_TRUE( all(a != b) );
+        EXPECT_TRUE( all(a <  b) );
+        EXPECT_TRUE( all(a <= b) );
+        EXPECT_TRUE( all(b >  a) );
+        EXPECT_TRUE( all(b >= a) );
+        EXPECT_TRUE( all(c <= a) );
+        EXPECT_TRUE( all(a >= c) );
+
+        EXPECT_TRUE( all((a > c) == M(0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1)) );
+        EXPECT_TRUE( all((c < a) == M(0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1)) );
+
+        EXPECT_TRUE( all(x >  F(0.0f)) );
+        EXPECT_TRUE( all(y >  F(0.0f)) );
+        EXPECT_TRUE( all(z <  F(0.0f)) );
+        EXPECT_TRUE( all(x >= F(0.0f)) );
+        EXPECT_TRUE( all(y >= F(0.0f)) );
+        EXPECT_TRUE( all(z <= F(0.0f)) );
+
+        EXPECT_TRUE( all(y  < x) );
+        EXPECT_TRUE( all(z  < y) );
+        EXPECT_TRUE( all(z  < x) );
+        EXPECT_TRUE( all(y <= x) );
+        EXPECT_TRUE( all(z <= y) );
+        EXPECT_TRUE( all(z <= x) );
+    }
+
+
+    // int
+
+    {
+        I a( 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16);
+        I b(17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32);
+        I c( 1,  0,  3,  0,  5,  0,  7,  0,  9,  0, 11,  0, 13,  0, 15,  0);
+        I x(std::numeric_limits<int>::max());
+        I y(std::numeric_limits<int>::min());
+
+        EXPECT_TRUE( all(a == a) );
+        EXPECT_TRUE( all(a != b) );
+        EXPECT_TRUE( all(a <  b) );
+        EXPECT_TRUE( all(a <= b) );
+        EXPECT_TRUE( all(b >  a) );
+        EXPECT_TRUE( all(b >= a) );
+        EXPECT_TRUE( all(c <= a) );
+        EXPECT_TRUE( all(a >= c) );
+
+        EXPECT_TRUE( all((a > c) == M(0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1)) );
+        EXPECT_TRUE( all((c < a) == M(0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1)) );
+
+        EXPECT_TRUE( all(x >  I(0)) );
+        EXPECT_TRUE( all(y <  I(0)) );
+        EXPECT_TRUE( all(x >= I(0)) );
+        EXPECT_TRUE( all(y <= I(0)) );
+
+        EXPECT_TRUE( all(y <  x) );
+        EXPECT_TRUE( all(y <= x) );
+    }
+
+
+    // mask
+
+    {
+        M a(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0);
+        M b(1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1);
+        M c(1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0);
+
+        EXPECT_TRUE( all(a == a) );
+        EXPECT_TRUE( all(a != b) );
+
+        EXPECT_TRUE( all((a == c) == M(0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1)) );
+        EXPECT_TRUE( all((a != c) == M(1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0)) );
+    }
+}
+#endif
+
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 static void test_logical_4()
 {
@@ -343,6 +483,32 @@ static void test_logical_8()
     EXPECT_TRUE( all((a && c) == M(0,0,0,0, 0,0,0,0)) );
     EXPECT_TRUE( all((a || b) == M(1,1,1,0, 1,1,1,0)) );
     EXPECT_TRUE( all((a || c) == M(1,1,1,1, 1,1,1,1)) );
+
+    EXPECT_TRUE( any(a && b) );
+    EXPECT_TRUE(!any(a && c) );
+    EXPECT_TRUE( any(a || b) );
+    EXPECT_TRUE( all(a || c) );
+
+    EXPECT_TRUE( any(!(a && b)) );
+    EXPECT_TRUE( all(!(a && c)) );
+    EXPECT_TRUE( any(!(a || b)) );
+    EXPECT_TRUE(!any(!(a || c)) );
+}
+#endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+static void test_logical_16()
+{
+    using M = simd::mask16;
+
+    M a(1,1,0,0, 1,1,0,0, 1,1,0,0, 1,1,0,0);
+    M b(1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0);
+    M c(0,0,1,1, 0,0,1,1, 0,0,1,1, 0,0,1,1);
+
+    EXPECT_TRUE( all((a && b) == M(1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0)) );
+    EXPECT_TRUE( all((a && c) == M(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0)) );
+    EXPECT_TRUE( all((a || b) == M(1,1,1,0, 1,1,1,0, 1,1,1,0, 1,1,1,0)) );
+    EXPECT_TRUE( all((a || c) == M(1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1)) );
 
     EXPECT_TRUE( any(a && b) );
     EXPECT_TRUE(!any(a && c) );
@@ -449,6 +615,55 @@ TEST(SIMD, Get)
     EXPECT_FLOAT_EQ( simd::get<7>(f8), 7.0f );
 
 #endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+
+    // int16 ----------------------------------------------
+
+    simd::int16 i16;
+    iota16(i16);
+
+    EXPECT_TRUE( simd::get< 0>(i16) ==  0 );
+    EXPECT_TRUE( simd::get< 1>(i16) ==  1 );
+    EXPECT_TRUE( simd::get< 2>(i16) ==  2 );
+    EXPECT_TRUE( simd::get< 3>(i16) ==  3 );
+    EXPECT_TRUE( simd::get< 4>(i16) ==  4 );
+    EXPECT_TRUE( simd::get< 5>(i16) ==  5 );
+    EXPECT_TRUE( simd::get< 6>(i16) ==  6 );
+    EXPECT_TRUE( simd::get< 7>(i16) ==  7 );
+    EXPECT_TRUE( simd::get< 8>(i16) ==  8 );
+    EXPECT_TRUE( simd::get< 9>(i16) ==  9 );
+    EXPECT_TRUE( simd::get<10>(i16) == 10 );
+    EXPECT_TRUE( simd::get<11>(i16) == 11 );
+    EXPECT_TRUE( simd::get<12>(i16) == 12 );
+    EXPECT_TRUE( simd::get<13>(i16) == 13 );
+    EXPECT_TRUE( simd::get<14>(i16) == 14 );
+    EXPECT_TRUE( simd::get<15>(i16) == 15 );
+
+
+    // float16 --------------------------------------------
+
+    simd::float16 f16;
+    iota16(f16);
+
+    EXPECT_FLOAT_EQ( simd::get< 0>(f16),  0.0f );
+    EXPECT_FLOAT_EQ( simd::get< 1>(f16),  1.0f );
+    EXPECT_FLOAT_EQ( simd::get< 2>(f16),  2.0f );
+    EXPECT_FLOAT_EQ( simd::get< 3>(f16),  3.0f );
+    EXPECT_FLOAT_EQ( simd::get< 4>(f16),  4.0f );
+    EXPECT_FLOAT_EQ( simd::get< 5>(f16),  5.0f );
+    EXPECT_FLOAT_EQ( simd::get< 6>(f16),  6.0f );
+    EXPECT_FLOAT_EQ( simd::get< 7>(f16),  7.0f );
+    EXPECT_FLOAT_EQ( simd::get< 8>(f16),  8.0f );
+    EXPECT_FLOAT_EQ( simd::get< 9>(f16),  9.0f );
+    EXPECT_FLOAT_EQ( simd::get<10>(f16), 10.0f );
+    EXPECT_FLOAT_EQ( simd::get<11>(f16), 11.0f );
+    EXPECT_FLOAT_EQ( simd::get<12>(f16), 12.0f );
+    EXPECT_FLOAT_EQ( simd::get<13>(f16), 13.0f );
+    EXPECT_FLOAT_EQ( simd::get<14>(f16), 14.0f );
+    EXPECT_FLOAT_EQ( simd::get<15>(f16), 15.0f );
+
+#endif
 }
 
 
@@ -464,6 +679,10 @@ TEST(SIMD, Representability)
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_representability<simd::float8>();
+#endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+    test_representability<simd::float16>();
 #endif
 }
 
@@ -481,6 +700,10 @@ TEST(SIMD, Pred)
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_pred_8();
 #endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+    test_pred_16();
+#endif
 }
 
 
@@ -496,6 +719,10 @@ TEST(SIMD, Comparison)
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_cmp_8();
+#endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+    test_cmp_16();
 #endif
 }
 
@@ -513,6 +740,10 @@ TEST(SIMD, Logical)
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_logical_8();
 #endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+    test_logical_16();
+#endif
 }
 
 
@@ -528,5 +759,9 @@ TEST(SIMD, Math)
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_math<simd::float8>();
+#endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+    test_math<simd::float16>();
 #endif
 }
