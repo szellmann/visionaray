@@ -73,7 +73,7 @@ VSNRAY_FORCE_INLINE int16 convert_to_int(float16 const& a)
 
 VSNRAY_FORCE_INLINE float16 select(mask16 const& m, float16 const& a, float16 const& b)
 {
-    return _mm512_mask_blend_ps(m, a, b);
+    return _mm512_mask_blend_ps(m, b, a);
 }
 
 
