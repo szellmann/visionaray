@@ -14,6 +14,7 @@
 #include <type_traits>
 
 #include "avx.h"
+#include "avx512.h"
 #include "sse.h"
 #include "type_traits.h"
 #include "../detail/math.h"
