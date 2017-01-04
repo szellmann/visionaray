@@ -763,7 +763,7 @@ inline void get(
         T const*                        buffer
         )
 {
-    VSNRAY_ALIGN(16) float out[4];
+    simd::aligned_array_t<simd::float4> out;
 
     out[0] = ( x      < width &&  y      < height) ? buffer[ y      * width +  x     ] : T();
     out[1] = ((x + 1) < width &&  y      < height) ? buffer[ y      * width + (x + 1)] : T();
@@ -788,7 +788,7 @@ inline void get(
         T const*                            buffer
         )
 {
-    VSNRAY_ALIGN(16) float out[4];
+    simd::aligned_array_t<simd::float4> out;
 
     out[0] = ( x      < width &&  y      < height) ? buffer[ y      * width +  x     ] : T();
     out[1] = ((x + 1) < width &&  y      < height) ? buffer[ y      * width + (x + 1)] : T();
@@ -813,7 +813,7 @@ inline void get(
         T const*                                    buffer
         )
 {
-    VSNRAY_ALIGN(16) int out[4];
+    simd::aligned_array_t<simd::int4> out;
 
     out[0] = ( x      < width &&  y      < height) ? buffer[ y      * width +  x     ] : T();
     out[1] = ((x + 1) < width &&  y      < height) ? buffer[ y      * width + (x + 1)] : T();
@@ -892,7 +892,7 @@ inline void get(
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
 
-    VSNRAY_ALIGN(32) float out[8];
+    simd::aligned_array_t<simd::float8> out;
 
     for (auto row = 0; row < h; ++row)
     {
@@ -925,7 +925,7 @@ inline void get(
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
 
-    VSNRAY_ALIGN(32) float out[8];
+    simd::aligned_array_t<simd::float8> out;
 
     for (auto row = 0; row < h; ++row)
     {
@@ -959,7 +959,7 @@ inline void get(
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
 
-    VSNRAY_ALIGN(32) int out[8];
+    simd::aligned_array_t<simd::int8> out;
 
     for (auto row = 0; row < h; ++row)
     {
@@ -1057,7 +1057,7 @@ inline void get(
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
 
-    VSNRAY_ALIGN(64) float out[16];
+    simd::aligned_array_t<simd::float16> out;
 
     for (auto row = 0; row < h; ++row)
     {
@@ -1090,7 +1090,7 @@ inline void get(
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
 
-    VSNRAY_ALIGN(64) float out[16];
+    simd::aligned_array_t<simd::float16> out;
 
     for (auto row = 0; row < h; ++row)
     {
@@ -1124,7 +1124,7 @@ inline void get(
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
 
-    VSNRAY_ALIGN(64) int out[16];
+    simd::aligned_array_t<simd::int16> out;
 
     for (auto row = 0; row < h; ++row)
     {
