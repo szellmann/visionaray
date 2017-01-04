@@ -81,14 +81,14 @@ VSNRAY_FORCE_INLINE float4 select(mask4 const& m, float4 const& a, float4 const&
 // Load / store / get
 //
 
-VSNRAY_FORCE_INLINE float4 load(float const dst[4])
+VSNRAY_FORCE_INLINE float4 load(float const src[4])
 {
-    return _mm_load_ps(dst);
+    return _mm_load_ps(src);
 }
 
-VSNRAY_FORCE_INLINE float4 load_unaligned(float const dst[4])
+VSNRAY_FORCE_INLINE float4 load_unaligned(float const src[4])
 {
-    return _mm_loadu_ps(dst);
+    return _mm_loadu_ps(src);
 }
 
 VSNRAY_FORCE_INLINE void store(float dst[4], float4 const& v)
