@@ -20,6 +20,9 @@
 
 #include <cstdlib>
 
+namespace visionaray
+{
+
 inline void* _mm_malloc(size_t s, size_t aln)
 {
     return aligned_alloc(aln, s);
@@ -29,6 +32,8 @@ inline void _mm_free(void* ptr)
 {
     free(ptr);
 }
+
+} // visionaray
 
 #else
 #include <mm_malloc.h>
