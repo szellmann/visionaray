@@ -86,6 +86,7 @@ set(UNITTESTS_SOURCES
     bvh/traverse.cpp
     detail/algorithm.cpp
     math/simd/gather.cpp
+    math/simd/select.cpp
     math/simd/simd.cpp
     math/matrix.cpp
     math/ray.cpp
