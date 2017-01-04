@@ -979,6 +979,170 @@ inline void get(
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+
+//-------------------------------------------------------------------------------------------------
+// Get AVX-512 rgba color from output color buffer, apply conversion
+// OutputColor must be rgba (TODO: ensure through source pixel format!)
+//
+
+template <pixel_format DF, pixel_format SF, typename OutputColor>
+VSNRAY_CPU_FUNC
+inline void get(
+        pixel_format_constant<DF>   /* dst format */,
+        pixel_format_constant<SF>   /* src format */,
+        int                         x,
+        int                         y,
+        int                         width,
+        int                         height,
+        vector<4, simd::float16>&   color,
+        OutputColor const*          buffer
+        )
+{
+    const int w = packet_size<simd::float16>::w;
+    const int h = packet_size<simd::float16>::h;
+
+    vec4 v[w * h];
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < width && y + row < height)
+            {
+                auto idx = row * w + col;
+                v[idx] = buffer[(y + row) * width + (x + col)];
+            }
+        }
+    }
+
+    color = vector<4, simd::float16>(
+        simd::float16(
+            v[ 0].x, v[ 1].x, v[ 2].x, v[ 3].x, v[ 4].x, v[ 5].x, v[ 6].x, v[ 7].x,
+            v[ 8].x, v[ 9].x, v[10].x, v[11].x, v[12].x, v[13].x, v[14].x, v[15].x
+            ),
+        simd::float16(
+            v[ 0].y, v[ 1].y, v[ 2].y, v[ 3].y, v[ 4].y, v[ 5].y, v[ 6].y, v[ 7].y,
+            v[ 8].y, v[ 9].y, v[10].y, v[11].y, v[12].y, v[13].y, v[14].y, v[15].y
+            ),
+        simd::float16(
+            v[ 0].z, v[ 1].z, v[ 2].z, v[ 3].z, v[ 4].z, v[ 5].z, v[ 6].z, v[ 7].z,
+            v[ 8].z, v[ 9].z, v[10].z, v[11].z, v[12].z, v[13].z, v[14].z, v[15].z
+            ),
+        simd::float16(
+            v[ 0].w, v[ 1].w, v[ 2].w, v[ 3].w, v[ 4].w, v[ 5].w, v[ 6].w, v[ 7].w,
+            v[ 8].w, v[ 9].w, v[10].w, v[11].w, v[12].w, v[13].w, v[14].w, v[15].w
+            )
+        );
+}
+
+//-------------------------------------------------------------------------------------------------
+// Get AVX simd vector from scalar buffer
+// TODO: consolidate w/ float4 version
+//
+
+template <typename T>
+VSNRAY_CPU_FUNC
+inline void get(
+        pixel_format_constant<PF_R32F>  /* dst format */,
+        pixel_format_constant<PF_R32F>  /* src format */,
+        int                             x,
+        int                             y,
+        int                             width,
+        int                             height,
+        simd::float16&                  result,
+        T const*                        buffer
+        )
+{
+    const int w = packet_size<simd::float8>::w;
+    const int h = packet_size<simd::float8>::h;
+
+    VSNRAY_ALIGN(64) float out[16];
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < width && y + row < height)
+            {
+                auto idx = row * w + col;
+                out[idx] = buffer[(y + row) * width + (x + col)];
+            }
+        }
+    }
+
+    result = simd::float16(out);
+}
+
+template <typename T>
+VSNRAY_CPU_FUNC
+inline void get(
+        pixel_format_constant<PF_DEPTH32F>  /* dst format */,
+        pixel_format_constant<PF_DEPTH32F>  /* src format */,
+        int                                 x,
+        int                                 y,
+        int                                 width,
+        int                                 height,
+        simd::float16&                      result,
+        T const*                            buffer
+        )
+{
+    const int w = packet_size<simd::float8>::w;
+    const int h = packet_size<simd::float8>::h;
+
+    VSNRAY_ALIGN(64) float out[16];
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < width && y + row < height)
+            {
+                auto idx = row * w + col;
+                out[idx] = buffer[(y + row) * width + (x + col)];
+            }
+        }
+    }
+
+    result = simd::float16(out);
+}
+
+// TODO: merge w/ overload(s) from above
+template <typename T>
+VSNRAY_CPU_FUNC
+inline void get(
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* dst format */,
+        pixel_format_constant<PF_DEPTH24_STENCIL8>  /* src format */,
+        int                                         x,
+        int                                         y,
+        int                                         width,
+        int                                         height,
+        simd::int16&                                result,
+        T const*                                    buffer
+        )
+{
+    const int w = packet_size<simd::float8>::w;
+    const int h = packet_size<simd::float8>::h;
+
+    VSNRAY_ALIGN(64) int out[16];
+
+    for (auto row = 0; row < h; ++row)
+    {
+        for (auto col = 0; col < w; ++col)
+        {
+            if (x + col < width && y + row < height)
+            {
+                auto idx = row * w + col;
+                out[idx] = buffer[(y + row) * width + (x + col)];
+            }
+        }
+    }
+
+    result = simd::int16(out);
+}
+
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+
 // Blend ------------------------------------------------------------------
 
 
