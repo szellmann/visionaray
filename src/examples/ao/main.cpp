@@ -76,6 +76,22 @@ struct renderer : viewer_type
             cl::ArgRequired,
             cl::init(this->builder)
             ) );
+
+        add_cmdline_option( cl::makeOption<int&>(
+            cl::Parser<>(),
+            "samples",
+            cl::Desc("Number of shadow rays for ambient occlusion"),
+            cl::ArgRequired,
+            cl::init(this->AO_Samples)
+            ) );
+
+        add_cmdline_option( cl::makeOption<float&>(
+            cl::Parser<>(),
+            "radius",
+            cl::Desc("Ambient occlusion radius"),
+            cl::ArgRequired,
+            cl::init(this->AO_Radius)
+            ) );
     }
 
     enum bvh_build_strategy
@@ -95,6 +111,9 @@ struct renderer : viewer_type
     model mod;
     index_bvh<model::triangle_type>             host_bvh;
     unsigned                                    frame_num       = 0;
+
+    int                                         AO_Samples      = 8;
+    float                                       AO_Radius       = 0.1f;
 
 protected:
 
@@ -193,9 +212,7 @@ void renderer::on_display()
             V w = n;
             make_orthonormal_basis(u, v, w);
 
-            static const int AO_Samples = 8;
-            S radius(0.1);
-
+            S radius= AO_Radius;
 
             for (int i = 0; i < AO_Samples; ++i)
             {
