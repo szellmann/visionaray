@@ -66,11 +66,28 @@ struct renderer : viewer_type
             cl::ArgRequired,
             cl::init(this->initial_camera)
             ) );
+
+        add_cmdline_option( cl::makeOption<bvh_build_strategy&>({
+                { "default",            Binned,         "Binned SAH" },
+                { "split",              Split,          "Binned SAH with spatial splits" }
+            },
+            "bvh",
+            cl::Desc("BVH build strategy"),
+            cl::ArgRequired,
+            cl::init(this->builder)
+            ) );
     }
+
+    enum bvh_build_strategy
+    {
+        Binned = 0,  // Binned SAH builder, no spatial splits
+        Split        // Split BVH, also binned and with SAH
+    };
 
     camera                                      cam;
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
     tiled_sched<host_ray_type>                  host_sched;
+    bvh_build_strategy                          builder         = Binned;
 
     std::string                                 filename;
     std::string                                 initial_camera;
@@ -328,7 +345,8 @@ int main(int argc, char** argv)
 
     rend.host_bvh = build<index_bvh<model::triangle_type>>(
             rend.mod.primitives.data(),
-            rend.mod.primitives.size()
+            rend.mod.primitives.size(),
+            rend.builder == renderer::Split
             );
 
     std::cout << "Ready\n";
