@@ -5,6 +5,7 @@
 #include <tbb/parallel_for.h>
 #include <tbb/task_scheduler_init.h>
 
+#include <visionaray/detail/sched_common.h>
 #include <visionaray/math/math.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/random_sampler.h>
