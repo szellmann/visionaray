@@ -34,6 +34,10 @@ union basic_mask;
 typedef basic_int<__m128i>                      int4;
 typedef basic_float<__m128>                     float4;
 typedef basic_mask<__m128, __m128i>             mask4;
+#elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
+typedef basic_int<int32x4_t>                    int4;
+typedef basic_float<float32x4_t>                float4;
+typedef basic_mask<uint32x4_t>                  mask4;
 #endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
@@ -49,6 +53,8 @@ typedef basic_mask<__mmask16>                   mask16;
 #endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+typedef basic_ray<float4>                       ray4;
+#elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 typedef basic_ray<float4>                       ray4;
 #endif
 

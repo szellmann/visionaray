@@ -15,6 +15,7 @@
 
 #include "avx.h"
 #include "avx512.h"
+#include "neon.h"
 #include "sse.h"
 #include "type_traits.h"
 #include "../detail/math.h"
@@ -336,7 +337,7 @@ VSNRAY_FORCE_INLINE T log2(T const& x)
 } // detail
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 //-------------------------------------------------------------------------------------------------
 // Trigonometric functions
@@ -592,7 +593,7 @@ VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
 // pow()
 //
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
 {

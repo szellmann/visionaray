@@ -8,6 +8,7 @@
 
 #include "avx.h"
 #include "avx512.h"
+#include "neon.h"
 #include "sse.h"
 
 namespace MATH_NAMESPACE
@@ -100,7 +101,7 @@ struct alignment_of
     enum { value = alignof(T) };
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 
@@ -183,7 +184,7 @@ struct alignment_of<simd::mask16>
 template <typename T>
 struct aligned_array;
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 
@@ -273,7 +274,7 @@ struct float_type
     using type = float;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 
@@ -363,7 +364,7 @@ struct int_type
     using type = int;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 
@@ -453,7 +454,7 @@ struct mask_type
     using type = bool;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 
@@ -562,6 +563,27 @@ struct native_type<simd::mask4>
     using type = __m128i;
 };
 
+#elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
+
+// NEON ---------------------------------------------------
+
+template <>
+struct native_type<simd::float4>
+{
+    using type = float32x4_t;
+};
+
+template <>
+struct native_type<simd::int4>
+{
+    using type = int32x4_t;
+};
+
+template <>
+struct native_type<simd::mask4>
+{
+    using type = uint32x4_t;
+};
 #endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
@@ -627,7 +649,7 @@ using native_type_t = typename native_type<T>::type;
 template <unsigned Width>
 struct float_from_simd_width;
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 
@@ -678,7 +700,7 @@ using float_from_simd_width_t = typename float_from_simd_width<Width>::type;
 template <unsigned Width>
 struct int_from_simd_width;
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 
@@ -729,7 +751,7 @@ using int_from_simd_width_t = typename int_from_simd_width<Width>::type;
 template <unsigned Width>
 struct mask_from_simd_width;
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 
@@ -783,7 +805,7 @@ struct is_simd_vector
     enum { value = false };
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 
@@ -868,7 +890,7 @@ struct element_type
     using type = T;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 
@@ -958,7 +980,7 @@ struct num_elements
     enum { value = 1 };
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SSE ----------------------------------------------------
 

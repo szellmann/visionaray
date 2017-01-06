@@ -481,7 +481,7 @@ inline auto unpack(vector<4, FloatT> const& v)
     return result;
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // Transpose to get from SoA to AoS (and vice versa)
 // Similar to mat4 transpose
@@ -500,9 +500,9 @@ inline vector<4, float4> transpose(vector<4, float4> const& v)
             );
 }
 
-// TODO: transpose for AVX?
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+// TODO: transpose for AVX?
 
 } // simd
 } // MATH_NAMESPACE

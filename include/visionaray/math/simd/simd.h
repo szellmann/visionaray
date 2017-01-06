@@ -11,6 +11,7 @@
 #include "forward.h"
 #include "gather.h"
 #include "matrix.h"
+#include "neon.h"
 #include "sse.h"
 #include "trans.h"
 #include "type_traits.h"

@@ -37,7 +37,7 @@ struct packet_size
     enum { w = 1, h = 1 };
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 template <>
 struct packet_size<simd::float4>
 {
@@ -73,7 +73,7 @@ struct expand_pixel
     VSNRAY_FUNC inline T y(int y) { return T(y); }
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 template <>
 struct expand_pixel<simd::float4>
 {

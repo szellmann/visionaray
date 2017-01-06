@@ -9,7 +9,7 @@
 #include "intrinsics.h"
 #include "sse.h"
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 namespace MATH_NAMESPACE
 {
@@ -70,8 +70,8 @@ matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m);
 
 } // MATH_NAMESPACE
 
-#include "detail/sse/matrix4.inl"
+#include "detail/matrix4.inl"
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 #endif // VISIONARAY_MATH_SIMD_MATRIX_H

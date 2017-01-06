@@ -103,7 +103,7 @@ void test_representability()
     EXPECT_TRUE ( all(isfinite(T(DBL_MIN / 2.0))) );
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 static void test_pred_4()
 {
     using M = simd::mask4;
@@ -157,7 +157,7 @@ static void test_pred_16()
 }
 #endif
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 static void test_cmp_4()
 {
     using F = simd::float4;
@@ -444,7 +444,7 @@ static void test_cmp_16()
 }
 #endif
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 static void test_logical_4()
 {
     using M = simd::mask4;
@@ -637,7 +637,7 @@ static void test_math()
 
 TEST(SIMD, Get)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
     // int4 -----------------------------------------------
 
@@ -752,7 +752,7 @@ TEST(SIMD, Get)
 
 TEST(SIMD, Representability)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     test_representability<simd::float4>();
 #endif
 
@@ -772,7 +772,7 @@ TEST(SIMD, Representability)
 
 TEST(SIMD, Pred)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     test_pred_4();
 #endif
 
@@ -792,7 +792,7 @@ TEST(SIMD, Pred)
 
 TEST(SIMD, Comparison)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     test_cmp_4();
 #endif
 
@@ -812,7 +812,7 @@ TEST(SIMD, Comparison)
 
 TEST(SIMD, Logical)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     test_logical_4();
 #endif
 
@@ -832,7 +832,7 @@ TEST(SIMD, Logical)
 
 TEST(SIMD, Transposition)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
     // shuffle
 
@@ -870,7 +870,7 @@ TEST(SIMD, Transposition)
 
 TEST(SIMD, Math)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     test_math<simd::float4>();
 #endif
 
@@ -888,7 +888,7 @@ TEST(SIMD, Math)
 // Transpose vector<4, float4> (SoA to AoS and vice versa)
 //
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 TEST(SIMD, TransposeVec4)
 {

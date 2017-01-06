@@ -59,7 +59,7 @@ inline auto pack(std::array<basic_ray<T>, N> const& rays)
             );
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // pack four rays
 
@@ -77,7 +77,7 @@ inline auto pack(
             }} );
 }
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
