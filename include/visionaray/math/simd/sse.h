@@ -79,8 +79,8 @@ public:
     __m128i i;
 
     basic_mask() = default;
-    basic_mask(__m128 m);
-    basic_mask(__m128i m);
+    basic_mask(__m128 const& m);
+    basic_mask(__m128i const& m);
     basic_mask(bool x, bool y, bool z, bool w);
     basic_mask(bool const v[4]);
     basic_mask(bool b);
