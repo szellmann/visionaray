@@ -566,6 +566,29 @@ static void test_math()
     }
 
 
+    // floor() / ceil()
+
+    {
+        F fmin  = numeric_limits<F>::lowest();
+        F fmax  = numeric_limits<F>::max();
+        F fzero = 0.0f;
+        F fp    = 23.0f;
+        F fn    = -23.0f;
+
+        EXPECT_TRUE( all(ceil(fmin)   == ceil(numeric_limits<float>::lowest())) );
+        EXPECT_TRUE( all(ceil(fmax)   == ceil(numeric_limits<float>::max())) );
+        EXPECT_TRUE( all(ceil(fzero)  == ceil(0.0f)) );
+        EXPECT_TRUE( all(ceil(fp)     == 23.0f) );
+        EXPECT_TRUE( all(ceil(fn)     == -23.0f) );
+
+        EXPECT_TRUE( all(floor(fmin)  == ceil(numeric_limits<float>::lowest())) );
+        EXPECT_TRUE( all(floor(fmax)  == ceil(numeric_limits<float>::max())) );
+        EXPECT_TRUE( all(floor(fzero) == ceil(0.0f)) );
+        EXPECT_TRUE( all(floor(fp)    == 23.0f) );
+        EXPECT_TRUE( all(floor(fn)    == -23.0f) );
+    }
+
+
     // copysign(float)
 
     {
@@ -807,3 +830,28 @@ TEST(SIMD, Math)
     test_math<simd::float16>();
 #endif
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Transpose vector<4, float4> (SoA to AoS and vice versa)
+//
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
+TEST(SIMD, TransposeVec4)
+{
+    vector<4, simd::float4> v(
+            simd::float4( 0.0f,  1.0f,  2.0f,  3.0f),
+            simd::float4( 4.0f,  5.0f,  6.0f,  7.0f),
+            simd::float4( 8.0f,  9.0f, 10.0f, 11.0f),
+            simd::float4(12.0f, 13.0f, 14.0f, 15.0f)
+            );
+
+    vector<4, simd::float4> vt = transpose(v);
+    EXPECT_TRUE( all(vt.x == simd::float4( 0.0f,  4.0f,  8.0f, 12.0f)) );
+    EXPECT_TRUE( all(vt.y == simd::float4( 1.0f,  5.0f,  9.0f, 13.0f)) );
+    EXPECT_TRUE( all(vt.z == simd::float4( 2.0f,  6.0f, 10.0f, 14.0f)) );
+    EXPECT_TRUE( all(vt.w == simd::float4( 3.0f,  7.0f, 11.0f, 15.0f)) );
+}
+
+#endif
