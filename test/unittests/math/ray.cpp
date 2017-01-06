@@ -12,6 +12,8 @@ using namespace visionaray;
 
 TEST(Ray, SIMDPack)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
     // SSE ------------------------------------------------
 
     {
@@ -88,6 +90,8 @@ TEST(Ray, SIMDPack)
         EXPECT_FLOAT_EQ(simd::get<3>(ray44.dir.y), rays[3].dir.y);
         EXPECT_FLOAT_EQ(simd::get<3>(ray44.dir.z), rays[3].dir.z);
     }
+
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
@@ -227,6 +231,8 @@ TEST(Ray, SIMDPack)
 
 TEST(Ray, SIMDUnpack)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
     // SSE ------------------------------------------------
 
     {
@@ -271,6 +277,8 @@ TEST(Ray, SIMDUnpack)
         EXPECT_FLOAT_EQ(rays[3].dir.y, simd::get<3>(ray4.dir.y));
         EXPECT_FLOAT_EQ(rays[3].dir.z, simd::get<3>(ray4.dir.z));
     }
+
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
