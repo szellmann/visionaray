@@ -813,6 +813,28 @@ TEST(SIMD, Logical)
 
 
 //-------------------------------------------------------------------------------------------------
+// Test shuffle()
+//
+
+TEST(SIMD, Shuffle)
+{
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+    simd::float4 u(1.0f, 2.0f, 3.0f, 4.0f);
+    simd::float4 v(5.0f, 6.0f, 7.0f, 8.0f);
+
+    EXPECT_TRUE( all(simd::shuffle<0, 1, 2, 3>(u)    == simd::float4(1.0f, 2.0f, 3.0f, 4.0f)) );
+    EXPECT_TRUE( all(simd::shuffle<3, 2, 1, 0>(u)    == simd::float4(4.0f, 3.0f, 2.0f, 1.0f)) );
+    EXPECT_TRUE( all(simd::shuffle<0, 0, 3, 3>(u)    == simd::float4(1.0f, 1.0f, 4.0f, 4.0f)) );
+    EXPECT_TRUE( all(simd::shuffle<3, 3, 0, 0>(u)    == simd::float4(4.0f, 4.0f, 1.0f, 1.0f)) );
+    EXPECT_TRUE( all(simd::shuffle<0, 1, 2, 3>(u, v) == simd::float4(1.0f, 2.0f, 7.0f, 8.0f)) );
+    EXPECT_TRUE( all(simd::shuffle<3, 2, 1, 0>(u, v) == simd::float4(4.0f, 3.0f, 6.0f, 5.0f)) );
+    EXPECT_TRUE( all(simd::shuffle<0, 0, 3, 3>(u, v) == simd::float4(1.0f, 1.0f, 8.0f, 8.0f)) );
+    EXPECT_TRUE( all(simd::shuffle<3, 3, 0, 0>(u, v) == simd::float4(4.0f, 4.0f, 5.0f, 5.0f)) );
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Test math functions
 //
 
