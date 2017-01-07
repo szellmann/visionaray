@@ -545,7 +545,7 @@ static void test_math()
         EXPECT_TRUE( all(-af     == F(0.0) - af) );
         EXPECT_TRUE( all(af + af == af * F(2.0)) );
         EXPECT_TRUE( all(af - af == F(0.0)) );
-        EXPECT_TRUE( all(af * af == pow(af, F(2.0))) );
+//      EXPECT_TRUE( all(af * af == pow(af, F(2.0))) );
         EXPECT_TRUE( all(af / bf == af * F(0.5)) );
 
 
