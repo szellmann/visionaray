@@ -116,13 +116,10 @@ VSNRAY_FORCE_INLINE vector<4, simd::float4> operator*(
 
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m)
 {
-
-    using simd::float4;
-
-    float4 tmp0 = _mm_unpacklo_ps( m(0), m(1) );
-    float4 tmp1 = _mm_unpacklo_ps( m(2), m(3) );
-    float4 tmp2 = _mm_unpackhi_ps( m(0), m(1) );
-    float4 tmp3 = _mm_unpackhi_ps( m(2), m(3) );
+    __m128 tmp0 = _mm_unpacklo_ps( m(0), m(1) );
+    __m128 tmp1 = _mm_unpacklo_ps( m(2), m(3) );
+    __m128 tmp2 = _mm_unpackhi_ps( m(0), m(1) );
+    __m128 tmp3 = _mm_unpackhi_ps( m(2), m(3) );
 
     return matrix<4, 4, simd::float4>(
             _mm_movelh_ps(tmp0, tmp1),
