@@ -109,6 +109,21 @@ VSNRAY_FORCE_INLINE float const& get(float8 const& v)
 
 
 //-------------------------------------------------------------------------------------------------
+// Transposition
+//
+
+VSNRAY_FORCE_INLINE float8 interleave_lo(float8 const& u, float8 const& v)
+{
+    return _mm256_unpacklo_ps(u, v);
+}
+
+VSNRAY_FORCE_INLINE float8 interleave_hi(float8 const& u, float8 const& v)
+{
+    return _mm256_unpackhi_ps(u, v);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Basic arithmetic
 //
 
