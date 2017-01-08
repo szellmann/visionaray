@@ -134,6 +134,16 @@ VSNRAY_FORCE_INLINE float4 shuffle(float4 const& v)
     return _mm_shuffle_ps(v, v, _MM_SHUFFLE(V3, V2, V1, V0));
 }
 
+VSNRAY_FORCE_INLINE float4 move_lo(float4 const& u, float4 const& v)
+{
+    return _mm_movelh_ps(u, v);
+}
+
+VSNRAY_FORCE_INLINE float4 move_hi(float4 const& u, float4 const& v)
+{
+    return _mm_movehl_ps(u, v);
+}
+
 VSNRAY_FORCE_INLINE float4 interleave_lo(float4 const& u, float4 const& v)
 {
     return _mm_unpacklo_ps(u, v);
