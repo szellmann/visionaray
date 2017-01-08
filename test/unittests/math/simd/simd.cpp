@@ -813,12 +813,15 @@ TEST(SIMD, Logical)
 
 
 //-------------------------------------------------------------------------------------------------
-// Test shuffle()
+// Test transposition operations (TODO: all ISA)
 //
 
-TEST(SIMD, Shuffle)
+TEST(SIMD, Transposition)
 {
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
+    // shuffle
+
     simd::float4 u(1.0f, 2.0f, 3.0f, 4.0f);
     simd::float4 v(5.0f, 6.0f, 7.0f, 8.0f);
 
@@ -830,6 +833,13 @@ TEST(SIMD, Shuffle)
     EXPECT_TRUE( all(simd::shuffle<3, 2, 1, 0>(u, v) == simd::float4(4.0f, 3.0f, 6.0f, 5.0f)) );
     EXPECT_TRUE( all(simd::shuffle<0, 0, 3, 3>(u, v) == simd::float4(1.0f, 1.0f, 8.0f, 8.0f)) );
     EXPECT_TRUE( all(simd::shuffle<3, 3, 0, 0>(u, v) == simd::float4(4.0f, 4.0f, 5.0f, 5.0f)) );
+
+
+    // interleave_xx
+
+    EXPECT_TRUE( all(interleave_lo(u, v) == simd::float4(1.0f, 5.0f, 2.0f, 6.0f)) );
+    EXPECT_TRUE( all(interleave_hi(u, v) == simd::float4(3.0f, 7.0f, 4.0f, 8.0f)) );
+
 #endif
 }
 
