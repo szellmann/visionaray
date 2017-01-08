@@ -835,10 +835,16 @@ TEST(SIMD, Transposition)
     EXPECT_TRUE( all(simd::shuffle<3, 3, 0, 0>(u, v) == simd::float4(4.0f, 4.0f, 5.0f, 5.0f)) );
 
 
+    // move_xx
+
+    EXPECT_TRUE( all(move_lo(u, v)                   == simd::float4(1.0f, 2.0f, 5.0f, 6.0f)) );
+    EXPECT_TRUE( all(move_hi(u, v)                   == simd::float4(7.0f, 8.0f, 3.0f, 4.0f)) );
+
+
     // interleave_xx
 
-    EXPECT_TRUE( all(interleave_lo(u, v) == simd::float4(1.0f, 5.0f, 2.0f, 6.0f)) );
-    EXPECT_TRUE( all(interleave_hi(u, v) == simd::float4(3.0f, 7.0f, 4.0f, 8.0f)) );
+    EXPECT_TRUE( all(interleave_lo(u, v)             == simd::float4(1.0f, 5.0f, 2.0f, 6.0f)) );
+    EXPECT_TRUE( all(interleave_hi(u, v)             == simd::float4(3.0f, 7.0f, 4.0f, 8.0f)) );
 
 #endif
 }
