@@ -116,18 +116,17 @@ VSNRAY_FORCE_INLINE vector<4, simd::float4> operator*(
 
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m)
 {
-    __m128 tmp0 = _mm_unpacklo_ps( m(0), m(1) );
-    __m128 tmp1 = _mm_unpacklo_ps( m(2), m(3) );
-    __m128 tmp2 = _mm_unpackhi_ps( m(0), m(1) );
-    __m128 tmp3 = _mm_unpackhi_ps( m(2), m(3) );
+    simd::float4 tmp0 = interleave_lo( m(0), m(1) );
+    simd::float4 tmp1 = interleave_lo( m(2), m(3) );
+    simd::float4 tmp2 = interleave_hi( m(0), m(1) );
+    simd::float4 tmp3 = interleave_hi( m(2), m(3) );
 
     return matrix<4, 4, simd::float4>(
-            _mm_movelh_ps(tmp0, tmp1),
-            _mm_movehl_ps(tmp1, tmp0),
-            _mm_movelh_ps(tmp2, tmp3),
-            _mm_movehl_ps(tmp3, tmp2)
+            move_lo(tmp0, tmp1),
+            move_hi(tmp1, tmp0),
+            move_lo(tmp2, tmp3),
+            move_hi(tmp3, tmp2)
             );
-
 }
 
 } // MATH_NAMESPACE
