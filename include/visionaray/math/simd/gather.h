@@ -60,7 +60,7 @@ namespace simd
 //-------------------------------------------------------------------------------------------------
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 //-------------------------------------------------------------------------------------------------
 // Gather float4 from N-bit unorm array, N <= 32
@@ -83,7 +83,7 @@ VSNRAY_FORCE_INLINE float4 gather(unorm<Bits> const* base_addr, int4 const& inde
         );
 }
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
@@ -154,7 +154,7 @@ VSNRAY_FORCE_INLINE float16 gather(unorm<Bits> const* base_addr, int16 const& in
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 //-------------------------------------------------------------------------------------------------
 // Gather float4 from 32-bit float array
@@ -179,7 +179,7 @@ VSNRAY_FORCE_INLINE float4 gather(float const* base_addr, int4 const& index)
 #endif
 }
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
@@ -228,7 +228,7 @@ VSNRAY_FORCE_INLINE float16 gather(float const* base_addr, int16 const& index)
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 //-------------------------------------------------------------------------------------------------
 // Gather int4 from any integer array
@@ -252,7 +252,7 @@ VSNRAY_FORCE_INLINE int4 gather(I const* base_addr, int4 const& index)
         );
 }
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
@@ -325,7 +325,7 @@ VSNRAY_FORCE_INLINE int16 gather(I const* base_addr, int16 const& index)
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 //-------------------------------------------------------------------------------------------------
 // Gather int4 from 32-bit integer array
@@ -350,7 +350,7 @@ VSNRAY_FORCE_INLINE int4 gather(int const* base_addr, int4 const& index)
 #endif
 }
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
@@ -399,7 +399,7 @@ VSNRAY_FORCE_INLINE int16 gather(int const* base_addr, int16 const& index)
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 //-------------------------------------------------------------------------------------------------
 // Gather vector<N, float4> from vector<N, float> array
@@ -421,7 +421,7 @@ VSNRAY_FORCE_INLINE vector<Dim, float4> gather(vector<Dim, float> const* base_ad
     return simd::pack(arr);
 }
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
@@ -492,7 +492,7 @@ VSNRAY_FORCE_INLINE vector<Dim, float16> gather(vector<Dim, float> const* base_a
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 //-------------------------------------------------------------------------------------------------
 // Gather vector<4, float4> from vector<4, float> array
@@ -524,7 +524,7 @@ VSNRAY_FORCE_INLINE vector<4, float4> gather(vector<4, float> const* base_addr, 
     return result;
 }
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
@@ -592,7 +592,7 @@ VSNRAY_FORCE_INLINE vector<4, float16> gather(vector<4, float> const* base_addr,
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 //-------------------------------------------------------------------------------------------------
 // Gather vector<Dim, int4> from vector<Dim, Int> array
@@ -621,7 +621,7 @@ VSNRAY_FORCE_INLINE vector<Dim, int4> gather(vector<Dim, I> const* base_addr, in
     return simd::pack(arr);
 }
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
@@ -704,7 +704,7 @@ VSNRAY_FORCE_INLINE vector<Dim, int16> gather(vector<Dim, I> const* base_addr, i
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 //-------------------------------------------------------------------------------------------------
 // Gather vector<Dim, float8> from vector<Dim, unorm<Bits>> array, Bits <= 32
@@ -731,7 +731,7 @@ VSNRAY_FORCE_INLINE vector<Dim, float4> gather(vector<Dim, unorm<Bits>> const* b
     return simd::pack(arr);
 }
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
