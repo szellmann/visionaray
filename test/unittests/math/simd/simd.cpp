@@ -566,7 +566,7 @@ static void test_math()
     }
 
 
-    // misc stdlib functions.
+    // misc math functions
 
     {
         F flow  = numeric_limits<F>::lowest();
@@ -576,21 +576,28 @@ static void test_math()
         F fp    = 23.0f;
         F fn    = -23.0f;
 
-        EXPECT_TRUE( all(ceil(flow)   == ceil(numeric_limits<float>::lowest())) );
-        EXPECT_TRUE( all(ceil(fmin)   == ceil(numeric_limits<float>::min())) );
-        EXPECT_TRUE( all(ceil(fzero)  == ceil(0.0f)) );
-        EXPECT_TRUE( all(ceil(fp)     == 23.0f) );
-        EXPECT_TRUE( all(ceil(fn)     == -23.0f) );
+        EXPECT_TRUE( all(ceil(flow)      == ceil(numeric_limits<float>::lowest())) );
+        EXPECT_TRUE( all(ceil(fmin)      == ceil(numeric_limits<float>::min())) );
+        EXPECT_TRUE( all(ceil(fzero)     == ceil(0.0f)) );
+        EXPECT_TRUE( all(ceil(fp)        == 23.0f) );
+        EXPECT_TRUE( all(ceil(fn)        == -23.0f) );
 
-        EXPECT_TRUE( all(floor(flow)  == ceil(numeric_limits<float>::lowest())) );
-        EXPECT_TRUE( all(floor(fmax)  == ceil(numeric_limits<float>::max())) );
-        EXPECT_TRUE( all(floor(fzero) == ceil(0.0f)) );
-        EXPECT_TRUE( all(floor(fp)    == 23.0f) );
-        EXPECT_TRUE( all(floor(fn)    == -23.0f) );
+        EXPECT_TRUE( all(floor(flow)     == ceil(numeric_limits<float>::lowest())) );
+        EXPECT_TRUE( all(floor(fmax)     == ceil(numeric_limits<float>::max())) );
+        EXPECT_TRUE( all(floor(fzero)    == ceil(0.0f)) );
+        EXPECT_TRUE( all(floor(fp)       == 23.0f) );
+        EXPECT_TRUE( all(floor(fn)       == -23.0f) );
 
-        EXPECT_TRUE( all(sqrt(fmax)   == sqrt(numeric_limits<float>::max())) );
-        EXPECT_TRUE( all(sqrt(fzero)  == sqrt(0.0f)) );
-        EXPECT_TRUE( all(sqrt(fp)     == sqrt(23.0f)) );
+        EXPECT_TRUE( all(saturate(flow)  == 0.0f) );
+        EXPECT_TRUE( all(saturate(fmin)  == numeric_limits<float>::min()) );
+        EXPECT_TRUE( all(saturate(fmax)  == 1.0f) );
+        EXPECT_TRUE( all(saturate(fzero) == 0.0f) );
+        EXPECT_TRUE( all(saturate(fp)    == 1.0f) );
+        EXPECT_TRUE( all(saturate(fn)    == 0.0f) );
+
+        EXPECT_TRUE( all(sqrt(fmax)      == sqrt(numeric_limits<float>::max())) );
+        EXPECT_TRUE( all(sqrt(fzero)     == sqrt(0.0f)) );
+        EXPECT_TRUE( all(sqrt(fp)        == sqrt(23.0f)) );
     }
 
 
