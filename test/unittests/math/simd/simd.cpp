@@ -566,26 +566,33 @@ static void test_math()
     }
 
 
-    // floor() / ceil()
+    // misc stdlib functions.
 
     {
-        F fmin  = numeric_limits<F>::lowest();
+        F flow  = numeric_limits<F>::lowest();
+        F fmin  = numeric_limits<F>::min();
         F fmax  = numeric_limits<F>::max();
         F fzero = 0.0f;
         F fp    = 23.0f;
         F fn    = -23.0f;
 
-        EXPECT_TRUE( all(ceil(fmin)   == ceil(numeric_limits<float>::lowest())) );
+        EXPECT_TRUE( all(ceil(flow)   == ceil(numeric_limits<float>::lowest())) );
+        EXPECT_TRUE( all(ceil(fmin)   == ceil(numeric_limits<float>::min())) );
         EXPECT_TRUE( all(ceil(fmax)   == ceil(numeric_limits<float>::max())) );
         EXPECT_TRUE( all(ceil(fzero)  == ceil(0.0f)) );
         EXPECT_TRUE( all(ceil(fp)     == 23.0f) );
         EXPECT_TRUE( all(ceil(fn)     == -23.0f) );
 
-        EXPECT_TRUE( all(floor(fmin)  == ceil(numeric_limits<float>::lowest())) );
+        EXPECT_TRUE( all(floor(flow)  == ceil(numeric_limits<float>::lowest())) );
+        EXPECT_TRUE( all(floor(fmin)  == ceil(numeric_limits<float>::min())) );
         EXPECT_TRUE( all(floor(fmax)  == ceil(numeric_limits<float>::max())) );
         EXPECT_TRUE( all(floor(fzero) == ceil(0.0f)) );
         EXPECT_TRUE( all(floor(fp)    == 23.0f) );
         EXPECT_TRUE( all(floor(fn)    == -23.0f) );
+
+        EXPECT_TRUE( all(sqrt(fmax)   == sqrt(numeric_limits<float>::max())) );
+        EXPECT_TRUE( all(sqrt(fzero)  == sqrt(0.0f)) );
+        EXPECT_TRUE( all(sqrt(fp)     == sqrt(23.0f)) );
     }
 
 
