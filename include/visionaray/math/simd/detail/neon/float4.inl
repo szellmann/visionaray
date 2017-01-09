@@ -113,11 +113,22 @@ VSNRAY_FORCE_INLINE float const& get(float4 const& v)
 template <int U0, int U1, int V2, int V3>
 VSNRAY_FORCE_INLINE float4 shuffle(float4 const& u, float4 const& v)
 {
+    // TODO: are dedicated implementations using
+    // vget_{low|high}, vcombine, vzip, etc. faster?
+    auto uu = reinterpret_cast<float const*>(&u);
+    auto vv = reinterpret_cast<float const*>(&v);
+
+    return float4(uu[U0], uu[U1], vv[V2], vv[V3]);
 }
 
 template <int V0, int V1, int V2, int V3>
 VSNRAY_FORCE_INLINE float4 shuffle(float4 const& v)
 {
+    // TODO: are dedicated implementations using
+    // vget_{low|high}, vcombine, vzip, etc. faster?
+    auto vv = reinterpret_cast<float const*>(&v);
+
+    return float4(vv[V0], vv[V1], vv[V2], vv[V3]);
 }
 
 VSNRAY_FORCE_INLINE float4 move_lo(float4 const& u, float4 const& v)
