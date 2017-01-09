@@ -578,13 +578,15 @@ static void test_math()
 
         EXPECT_TRUE( all(ceil(flow)      == ceil(numeric_limits<float>::lowest())) );
         EXPECT_TRUE( all(ceil(fmin)      == ceil(numeric_limits<float>::min())) );
+        EXPECT_TRUE( all(ceil(fmax)      == ceil(numeric_limits<float>::max())) );
         EXPECT_TRUE( all(ceil(fzero)     == ceil(0.0f)) );
         EXPECT_TRUE( all(ceil(fp)        == 23.0f) );
         EXPECT_TRUE( all(ceil(fn)        == -23.0f) );
 
-        EXPECT_TRUE( all(floor(flow)     == ceil(numeric_limits<float>::lowest())) );
-        EXPECT_TRUE( all(floor(fmax)     == ceil(numeric_limits<float>::max())) );
-        EXPECT_TRUE( all(floor(fzero)    == ceil(0.0f)) );
+        EXPECT_TRUE( all(floor(flow)     == floor(numeric_limits<float>::lowest())) );
+        EXPECT_TRUE( all(floor(fmin)     == floor(numeric_limits<float>::min())) );
+        EXPECT_TRUE( all(floor(fmax)     == floor(numeric_limits<float>::max())) );
+        EXPECT_TRUE( all(floor(fzero)    == floor(0.0f)) );
         EXPECT_TRUE( all(floor(fp)       == 23.0f) );
         EXPECT_TRUE( all(floor(fn)       == -23.0f) );
 
