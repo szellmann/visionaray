@@ -49,6 +49,26 @@ if (NOT EXISTS ${CMD_LINE_DIR}/.git)
     return()
 endif()
 
+
+#---------------------------------------------------------------------------------------------------
+# Create config file
+#
+
+
+foreach(p ${__VSNRAY_USED_PACKAGES})
+    set(VSNRAY_HAVE_${p} 1)
+endforeach()
+
+set(CONFIG_DIR ${__VSNRAY_COMMON_CONFIG_DIR})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CONFIG_DIR}/config.h)
+
+include_directories(${__VSNRAY_CONFIG_DIR})
+
+
+#---------------------------------------------------------------------------------------------------
+# Visionaray common library
+#
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${CMD_LINE_INCLUDE_DIR})
@@ -56,6 +76,8 @@ include_directories(${CMD_LINE_INCLUDE_DIR})
 set(CMAKE_AUTOMOC ON)
 
 set(COMMON_HEADERS
+
+    ${CONFIG_DIR}/config.h
 
     input/exception.h
     input/keyboard.h

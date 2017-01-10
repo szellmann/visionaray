@@ -1,8 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <GL/glew.h>
-
 #include <visionaray/gl/bvh_outline_renderer.h>
 
 namespace visionaray

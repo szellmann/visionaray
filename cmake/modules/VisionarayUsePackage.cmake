@@ -9,6 +9,8 @@ function(visionaray_use_package name)
         return()
     endif()
 
+    set(__VSNRAY_USED_PACKAGES ${__VSNRAY_USED_PACKAGES} ${upper_name} PARENT_SCOPE)
+
     #
     # search for cmake variables in the following order:
     #  name_INCLUDE_DIR, NAME_INCLUDE_DIR, name_INCLUDE_DIRS, NAME_INCLUDE_DIRS
@@ -50,6 +52,4 @@ function(visionaray_use_package name)
     endif()
 
     set(__VSNRAY_LINK_LIBRARIES ${__VSNRAY_LINK_LIBRARIES} ${pkg_LIBS} PARENT_SCOPE)
-
-    add_definitions(-DVSNRAY_HAVE_${upper_name}=1)
 endfunction()

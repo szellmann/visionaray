@@ -6,6 +6,12 @@
 #ifndef VSNRAY_GL_UTIL_H
 #define VSNRAY_GL_UTIL_H 1
 
+#include <visionaray/config.h>
+
+#if VSNRAY_HAVE_GLEW
+#include <GL/glew.h>
+#endif
+
 #include <string>
 
 #include <visionaray/detail/platform.h>
@@ -20,8 +26,6 @@
 
 #include <visionaray/math/forward.h>
 #include <visionaray/pixel_format.h>
-
-#include "types.h"
 
 
 namespace visionaray

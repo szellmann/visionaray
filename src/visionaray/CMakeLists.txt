@@ -20,11 +20,34 @@ include_directories(${PROJECT_SOURCE_DIR}/include/visionaray)
 set(HEADER_DIR ${PROJECT_SOURCE_DIR}/include/visionaray)
 
 
+#---------------------------------------------------------------------------------------------------
+# Create config file
+#
+
+
+foreach(p ${__VSNRAY_USED_PACKAGES})
+    set(VSNRAY_HAVE_${p} 1)
+endforeach()
+
+set(CONFIG_DIR ${__VSNRAY_VISIONARAY_CONFIG_DIR})
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CONFIG_DIR}/config.h)
+
+include_directories(${__VSNRAY_CONFIG_DIR})
+
+
+#---------------------------------------------------------------------------------------------------
+# Visionaray library
+#
+
 set(VSNRAY_HEADERS
 
     #----------------------------------------------------------------------------------------------
     # Public headers
     #
+
+    # Config
+
+    ${CONFIG_DIR}/config.h
 
     # Cuda
 
@@ -101,7 +124,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/gl/compositing.h
     ${HEADER_DIR}/gl/debug_callback.h
     ${HEADER_DIR}/gl/handle.h
-    ${HEADER_DIR}/gl/types.h
     ${HEADER_DIR}/gl/util.h
 
     # Math
@@ -278,7 +300,7 @@ visionaray_add_library(visionaray
 # Install headers and library
 #
 
-install(DIRECTORY ${HEADER_DIR}
+install(DIRECTORY ${HEADER_DIR} ${CONFIG_DIR}
     DESTINATION include
     COMPONENT headers
     FILES_MATCHING

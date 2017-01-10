@@ -6,10 +6,14 @@
 #ifndef VSNRAY_GL_HANDLE_H
 #define VSNRAY_GL_HANDLE_H 1
 
+#include <visionaray/config.h>
+
+#if VSNRAY_HAVE_GLEW
+#include <GL/glew.h>
+#endif
+
 #include <visionaray/detail/macros.h>
 #include <visionaray/detail/platform.h>
-
-#include "types.h"
 
 namespace visionaray
 {

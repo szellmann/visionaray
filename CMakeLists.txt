@@ -29,6 +29,20 @@ endif()
 
 
 #---------------------------------------------------------------------------------------------------
+# Directories containing config headers
+#
+
+# Config file location (#include <visionaray/config.h>,#include <common/config.h>,...)
+set(__VSNRAY_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/config")
+
+# Config file location for the public visionaray library
+set(__VSNRAY_VISIONARAY_CONFIG_DIR "${__VSNRAY_CONFIG_DIR}/visionaray")
+
+# Config file location for the private visionaray_common library
+set(__VSNRAY_COMMON_CONFIG_DIR "${__VSNRAY_CONFIG_DIR}/common")
+
+
+#---------------------------------------------------------------------------------------------------
 # Visionaray Options
 #
 

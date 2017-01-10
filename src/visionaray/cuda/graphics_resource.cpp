@@ -1,7 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#ifdef VSNRAY_HAVE_CUDA
+#include <visionaray/config.h>
+
+#if VSNRAY_HAVE_CUDA
 
 #ifdef _WIN32
 #include <windows.h> // APIENTRY

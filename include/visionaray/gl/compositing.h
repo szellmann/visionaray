@@ -6,11 +6,15 @@
 #ifndef VSNRAY_GL_COMPOSITING_H
 #define VSNRAY_GL_COMPOSITING_H 1
 
+#include <visionaray/config.h>
+
+#if VSNRAY_HAVE_GLEW
+#include <GL/glew.h>
+#endif
+
 #include <memory>
 
 #include <visionaray/pixel_format.h>
-
-#include "types.h"
 
 namespace visionaray
 {

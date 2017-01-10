@@ -31,6 +31,7 @@ visionaray_link_libraries(visionaray_common)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${__VSNRAY_CONFIG_DIR})
 include_directories(${CMD_LINE_INCLUDE_DIR})
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)

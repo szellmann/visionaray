@@ -1,12 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#ifndef NDEBUG
-#include <iostream>
-#include <ostream>
-#endif
+#include <common/config.h>
 
-#if defined(VSNRAY_HAVE_PNG)
+#if VSNRAY_HAVE_PNG
 #include <png.h>
 #endif
 
@@ -16,7 +13,7 @@
 namespace visionaray
 {
 
-#if defined(VSNRAY_HAVE_PNG)
+#if VSNRAY_HAVE_PNG
 struct png_read_context
 {
     png_structp png;
@@ -68,7 +65,7 @@ static int png_num_components(int color_type)
 
 bool png_image::load(std::string const& filename)
 {
-#if defined(VSNRAY_HAVE_PNG)
+#if VSNRAY_HAVE_PNG
     cfile file(filename.c_str(), "r");
 
     if (!file.good())

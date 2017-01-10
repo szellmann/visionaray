@@ -6,6 +6,12 @@
 #ifndef VSNRAY_GL_BVH_OUTLINE_RENDERER_H
 #define VSNRAY_GL_BVH_OUTLINE_RENDERER_H 1
 
+#include <visionaray/config.h>
+
+#if VSNRAY_HAVE_GLEW
+#include <GL/glew.h>
+#endif
+
 #include <vector>
 
 #include <visionaray/bvh.h>

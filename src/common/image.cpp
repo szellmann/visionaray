@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <common/config.h>
+
 #include <algorithm>
 #include <utility>
 
@@ -91,7 +93,7 @@ bool image::load(std::string const& filename)
 
     switch (it)
     {
-#if defined(VSNRAY_HAVE_JPEG)
+#if VSNRAY_HAVE_JPEG
     case JPEG:
     {
         jpeg_image jpg;
@@ -107,7 +109,7 @@ bool image::load(std::string const& filename)
     }
 #endif // VSNRAY_HAVE_JPEG
 
-#if defined(VSNRAY_HAVE_PNG)
+#if VSNRAY_HAVE_PNG
     case PNG:
     {
         png_image png;
@@ -123,7 +125,7 @@ bool image::load(std::string const& filename)
     }
 #endif // VSNRAY_HAVE_PNG
 
-#if defined(VSNRAY_HAVE_TIFF)
+#if VSNRAY_HAVE_TIFF
     case TIFF:
     {
         tiff_image tiff;

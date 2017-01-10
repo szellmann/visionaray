@@ -26,6 +26,7 @@ endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${__VSNRAY_CONFIG_DIR})
 include_directories(${CMD_LINE_INCLUDE_DIR})
 
 add_subdirectory(ao)

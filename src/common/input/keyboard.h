@@ -6,12 +6,14 @@
 #ifndef VSNRAY_COMMON_INPUT_KEYBOARD_H
 #define VSNRAY_COMMON_INPUT_KEYBOARD_H 1
 
+#include <common/config.h>
+
 #include <cassert>
 #include <bitset>
 
 #include <visionaray/detail/platform.h>
 
-#if defined(VSNRAY_HAVE_GLUT)
+#if VSNRAY_HAVE_GLUT
 
 #if defined(VSNRAY_OS_DARWIN)
 #include <GLUT/glut.h>
@@ -22,12 +24,12 @@
 #endif // VSNRAY_HAVE_GLUT
 
 
-#if defined(VSNRAY_HAVE_QT5CORE)
+#if VSNRAY_HAVE_QT5CORE
 #include <Qt>
 #endif // VSNRAY_HAVE_QT5CORE
 
 
-#if defined(VSNRAY_HAVE_SDL2)
+#if VSNRAY_HAVE_SDL2
 #include <SDL2/SDL.h>
 #endif // VSNRAY_HAVE_SDL2
 
@@ -124,7 +126,7 @@ inline key_modifiers& operator^=(key_modifiers& a, key b)
 }
 
 
-#if defined(VSNRAY_HAVE_GLUT)
+#if VSNRAY_HAVE_GLUT
 
 //-------------------------------------------------------------------------------------------------
 // Map GLUT entities
@@ -279,7 +281,7 @@ static inline key_modifiers map_glut_modifiers(unsigned char code)
 #endif // VSNRAY_HAVE_GLUT
 
 
-#if defined(VSNRAY_HAVE_QT5CORE)
+#if VSNRAY_HAVE_QT5CORE
 
 static inline key map_qt_key(int code, Qt::KeyboardModifiers modifiers = Qt::NoModifier)
 {
@@ -399,7 +401,7 @@ static inline key_modifiers map_qt_modifiers(Qt::KeyboardModifiers code)
 #endif // VSNRAY_HAVE_QT5CORE
 
 
-#if defined(VSNRAY_HAVE_SDL2)
+#if VSNRAY_HAVE_SDL2
 
 //-------------------------------------------------------------------------------------------------
 // Map SDL2 entities
