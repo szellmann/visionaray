@@ -33,6 +33,7 @@ include_directories(${__VSNRAY_CONFIG_DIR})
 include_directories(${CMD_LINE_INCLUDE_DIR})
 
 add_subdirectory(ao)
+add_subdirectory(ao_gpu)
 add_subdirectory(generic_primitive)
 add_subdirectory(intersector)
 add_subdirectory(minimal)
