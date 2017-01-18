@@ -188,6 +188,16 @@ VSNRAY_FORCE_INLINE int4 operator>>(int4 const& a, int count)
 // Logical operations
 //
 
+VSNRAY_FORCE_INLINE int4 operator&&(int4 const& u, int4 const& v)
+{
+    return vandq_s32(u, v);
+}
+
+VSNRAY_FORCE_INLINE int4 operator||(int4 const& u, int4 const& v)
+{
+    return vorrq_s32(u, v);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Comparisons

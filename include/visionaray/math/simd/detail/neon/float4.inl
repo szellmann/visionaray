@@ -240,6 +240,22 @@ VSNRAY_FORCE_INLINE float4 operator^(float4 const& u, float4 const& v)
 // Logical operations
 //
 
+VSNRAY_FORCE_INLINE float4 operator&&(float4 const& u, float4 const& v)
+{
+    int32x4_t ui = vreinterpretq_s32_f32(u);
+    int32x4_t vi = vreinterpretq_s32_f32(v);
+    int32x4_t ri = vandq_s32(ui, vi);
+    return vreinterpretq_f32_s32(ri);
+}
+
+VSNRAY_FORCE_INLINE float4 operator||(float4 const& u, float4 const& v)
+{
+    int32x4_t ui = vreinterpretq_s32_f32(u);
+    int32x4_t vi = vreinterpretq_s32_f32(v);
+    int32x4_t ri = vorrq_s32(ui, vi);
+    return vreinterpretq_f32_s32(ri);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Comparisons
