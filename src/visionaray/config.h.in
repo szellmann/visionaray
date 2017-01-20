@@ -15,6 +15,7 @@
 #cmakedefine01 VSNRAY_HAVE_CUDA
 #cmakedefine01 VSNRAY_HAVE_GLEW
 #cmakedefine01 VSNRAY_HAVE_OPENGL
+#cmakedefine01 VSNRAY_HAVE_OPENGLES
 #cmakedefine01 VSNRAY_HAVE_THREADS
 
 #endif // VSNRAY_CONFIG_H
