@@ -1,10 +1,14 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/config.h>
+
 #include <cassert>
 #include <stdexcept>
 
+#if VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
+#endif
 
 #include <cuda_gl_interop.h>
 
