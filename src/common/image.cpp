@@ -8,6 +8,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "hdr_image.h"
 #include "image.h"
 #include "jpeg_image.h"
 #include "png_image.h"
@@ -19,11 +20,21 @@
 // Helpers
 //
 
-enum image_type { JPEG, PNG, PNM, TGA, TIFF, Unknown };
+enum image_type { HDR, JPEG, PNG, PNM, TGA, TIFF, Unknown };
 
 static image_type get_type(std::string const& filename)
 {
     boost::filesystem::path p(filename);
+
+
+    // HDR
+
+    static const std::string hdr_extensions[] = { ".hdr", ".HDR" };
+
+    if (std::find(hdr_extensions, hdr_extensions + 2, p.extension()) != hdr_extensions + 2)
+    {
+        return HDR;
+    }
 
 
     // JPEG
@@ -143,6 +154,20 @@ bool image::load(std::string const& filename)
 
 
     // native formats
+
+//    case HDR:
+//    {
+//        hdr_image hdr;
+//        if (hdr.load(fn))
+//        {
+//            width_  = hdr.width_;
+//            height_ = hdr.height_;
+//            format_ = hdr.format_;
+//            data_   = std::move(hdr.data_);
+//            return true;
+//        }
+//        return false;
+//    }
 
     case PNM:
     {

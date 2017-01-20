@@ -94,6 +94,7 @@ set(COMMON_HEADERS
 
     call_kernel.h
     cfile.h
+    hdr_image.h
     image.h
     image_base.h
     jpeg_image.h
@@ -121,6 +122,7 @@ set(COMMON_SOURCES
     manip/translate_manipulator.cpp
     manip/zoom_manipulator.cpp
 
+    hdr_image.cpp
     image.cpp
     image_base.cpp
     jpeg_image.cpp
