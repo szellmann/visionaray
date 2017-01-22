@@ -7,6 +7,7 @@
 #define VISIONARAY_MATH_SIMD_MATRIX_H 1
 
 #include "intrinsics.h"
+#include "neon.h"
 #include "sse.h"
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
