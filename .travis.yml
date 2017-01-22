@@ -15,30 +15,18 @@ os:
 
 env:
     matrix:
-        - STD="CPP11" BUILD_TYPE="None"
         - STD="CPP11" BUILD_TYPE="Debug"
-        - STD="CPP11" BUILD_TYPE="RelWithDebInfo"
         - STD="CPP11" BUILD_TYPE="Release"
-        - STD="CPP11" BUILD_TYPE="MinSizeRel"
-        - STD="CPP14" BUILD_TYPE="None"
         - STD="CPP14" BUILD_TYPE="Debug"
-        - STD="CPP14" BUILD_TYPE="RelWithDebInfo"
         - STD="CPP14" BUILD_TYPE="Release"
-        - STD="CPP14" BUILD_TYPE="MinSizeRel"
 
 matrix:
     exclude:
         - env: STD="CPP14"
           compiler: clang
-        - env: STD="CPP14" BUILD_TYPE="None"
-          compiler: clang
         - env: STD="CPP14" BUILD_TYPE="Debug"
           compiler: clang
-        - env: STD="CPP14" BUILD_TYPE="RelWithDebInfo"
-          compiler: clang
         - env: STD="CPP14" BUILD_TYPE="Release"
-          compiler: clang
-        - env: STD="CPP14" BUILD_TYPE="MinSizeRel"
           compiler: clang
 
 addons:
