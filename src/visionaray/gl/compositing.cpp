@@ -133,14 +133,14 @@ depth_compositor::depth_compositor()
 #if !defined(VSNRAY_OPENGL_LEGACY)
     auto source = R"(
         uniform sampler2D color_tex;
-    uniform sampler2D depth_tex;
+        uniform sampler2D depth_tex;
 
-    void main(void)
-    {
-        gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);
-        gl_FragDepth = texture2D(depth_tex, gl_TexCoord[0].xy).x;
-    }
-    )";
+        void main(void)
+        {
+            gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);
+            gl_FragDepth = texture2D(depth_tex, gl_TexCoord[0].xy).x;
+        }
+        )";
 
     GLint len = static_cast<GLint>(std::strlen(source));
 
