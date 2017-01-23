@@ -8,6 +8,7 @@
 
 #include <visionaray/gl/compositing.h>
 #include <visionaray/gl/handle.h>
+#include <visionaray/gl/program.h>
 #include <visionaray/gl/util.h>
 #include <visionaray/pixel_format.h>
 
@@ -24,16 +25,15 @@ struct depth_compositor::impl
 {
 #if !defined(VSNRAY_OPENGL_LEGACY)
     impl()
-        : program(glCreateProgram())
+        : prog(glCreateProgram())
         , frag(glCreateShader(GL_FRAGMENT_SHADER))
     {
     }
 
    ~impl()
     {
-        glDetachShader(program, frag);
+        glDetachShader(prog.get(), frag);
         glDeleteShader(frag);
-        glDeleteProgram(program);
     }
 
     // GL color texture handle
@@ -43,7 +43,7 @@ struct depth_compositor::impl
     gl::texture depth_texture;
 
     // The program
-    GLuint program;
+    gl::program prog;
 
     // The fragment shader
     GLuint frag;
@@ -55,7 +55,6 @@ struct depth_compositor::impl
     GLint depth_loc;
 
     bool check_shader_compiled() const;
-    bool check_program_linked() const;
     void enable_program() const;
     void disable_program() const;
     void set_texture_params() const;
@@ -96,32 +95,9 @@ bool depth_compositor::impl::check_shader_compiled() const
     return true;
 }
 
-bool depth_compositor::impl::check_program_linked() const
-{
-    GLint success = GL_FALSE;
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-
-    if (!success)
-    {
-        GLint length = 0;
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
-
-        if (length > 0)
-        {
-            std::vector<GLchar> buf( static_cast<size_t>(length) );
-            glGetProgramInfoLog( program, length, &length, buf.data() );
-            std::cerr << std::string(buf.data()) << std::endl;
-        }
-
-        return false;
-    }
-
-    return true;
-}
-
 void depth_compositor::impl::enable_program() const
 {
-    glUseProgram(program);
+    prog.enable();
 
     glUniform1i(color_loc, 0);
     glActiveTexture(GL_TEXTURE0 + 0);
@@ -134,7 +110,7 @@ void depth_compositor::impl::enable_program() const
 
 void depth_compositor::impl::disable_program() const
 {
-    glUseProgram(0);
+    prog.disable();
 }
 
 void depth_compositor::impl::set_texture_params() const
@@ -176,17 +152,17 @@ depth_compositor::depth_compositor()
         return;
     }
 
-    impl_->program = glCreateProgram();
-    glAttachShader(impl_->program, impl_->frag);
+    impl_->prog.reset(glCreateProgram());
+    glAttachShader(impl_->prog.get(), impl_->frag);
 
-    glLinkProgram(impl_->program);
-    if (!impl_->check_program_linked())
+    impl_->prog.link();
+    if (!impl_->prog.check_linked())
     {
         return;
     }
 
-    impl_->color_loc = glGetUniformLocation(impl_->program, "color_tex");
-    impl_->depth_loc = glGetUniformLocation(impl_->program, "depth_tex");
+    impl_->color_loc = glGetUniformLocation(impl_->prog.get(), "color_tex");
+    impl_->depth_loc = glGetUniformLocation(impl_->prog.get(), "depth_tex");
 #endif
 }
 
