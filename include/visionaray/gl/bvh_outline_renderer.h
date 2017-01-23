@@ -6,17 +6,11 @@
 #ifndef VSNRAY_GL_BVH_OUTLINE_RENDERER_H
 #define VSNRAY_GL_BVH_OUTLINE_RENDERER_H 1
 
-#include <visionaray/config.h>
-
-#if VSNRAY_HAVE_GLEW
-#include <GL/glew.h>
-#elif VSNRAY_HAVE_OPENGLES
-#include <GLES2/gl2.h>
-#endif
-
 #include <vector>
 
 #include <visionaray/bvh.h>
+
+#include "handle.h"
 
 namespace visionaray
 {
@@ -132,7 +126,7 @@ public:
 
 private:
 
-    GLuint vbo_ = 0;
+    gl::buffer vertex_buffer_;
     size_t num_vertices_ = 0;
 
     // init vbo, pointer to vertices, buffer size in bytes
