@@ -286,6 +286,7 @@ set(VSNRAY_SOURCES
     gl/debug_callback.cpp
     gl/handle.cpp
     gl/program.cpp
+    gl/shader.cpp
     gl/util.cpp
 
     exception.cpp
