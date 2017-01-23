@@ -110,6 +110,21 @@ private:
 };
 
 
+class vertex_array : public handle<vertex_array>
+{
+public:
+
+    explicit vertex_array(GLuint name = 0) : handle<vertex_array>(name) {}
+
+    void destroy();
+
+private:
+
+    VSNRAY_NOT_COPYABLE(vertex_array)
+
+};
+
+
 //-------------------------------------------------------------------------------------------------
 // factory functions
 //
@@ -118,6 +133,7 @@ GLuint create_buffer();
 GLuint create_framebuffer();
 GLuint create_renderbuffer();
 GLuint create_texture();
+GLuint create_vertex_array();
 
 } // gl
 } // visionaray

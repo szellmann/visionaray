@@ -28,6 +28,11 @@ void texture::destroy()
     glDeleteTextures(1, &name_);
 }
 
+void vertex_array::destroy()
+{
+    glDeleteVertexArrays(1, &name_);
+}
+
 
 GLuint create_buffer()
 {
@@ -57,7 +62,12 @@ GLuint create_texture()
     return buf;
 }
 
+GLuint create_vertex_array()
+{
+    GLuint buf = 0;
+    glGenVertexArrays(1, &buf);
+    return buf;
+}
+
 } // gl
 } // visionaray
-
-
