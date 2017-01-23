@@ -1,13 +1,19 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/config.h>
+
 #include <cassert>
 
 #include <algorithm>
 #include <map>
 #include <utility>
 
+#if VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
+#elif VSNRAY_HAVE_OPENGLES
+#include <GLES2/gl2.h>
+#endif
 
 #include <visionaray/pixel_format.h>
 

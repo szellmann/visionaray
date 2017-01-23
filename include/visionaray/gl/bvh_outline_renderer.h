@@ -10,6 +10,8 @@
 
 #if VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
+#elif VSNRAY_HAVE_OPENGLES
+#include <GLES2/gl2.h>
 #endif
 
 #include <vector>

@@ -11,7 +11,11 @@
 #include <windows.h>
 #endif
 
+#include <visionaray/config.h>
+
+#if VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
+#endif
 
 #include <visionaray/gl/debug_callback.h>
 

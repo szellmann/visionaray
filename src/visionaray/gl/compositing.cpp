@@ -6,8 +6,6 @@
 #include <ostream>
 #include <vector>
 
-#include <GL/glew.h>
-
 #include <visionaray/gl/compositing.h>
 #include <visionaray/gl/handle.h>
 #include <visionaray/gl/util.h>
