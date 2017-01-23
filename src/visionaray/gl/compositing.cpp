@@ -29,6 +29,34 @@ struct depth_compositor::impl
         : prog(glCreateProgram())
         , frag(glCreateShader(GL_FRAGMENT_SHADER))
     {
+        frag.set_source(R"(
+            uniform sampler2D color_tex;
+            uniform sampler2D depth_tex;
+
+            void main(void)
+            {
+                gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);
+                gl_FragDepth = texture2D(depth_tex, gl_TexCoord[0].xy).x;
+            }
+            )");
+
+        frag.compile();
+        if (!frag.check_compiled())
+        {
+            return;
+        }
+
+        prog.reset(glCreateProgram());
+        prog.attach_shader(frag);
+
+        prog.link();
+        if (!prog.check_linked())
+        {
+            return;
+        }
+
+        color_loc = glGetUniformLocation(prog.get(), "color_tex");
+        depth_loc = glGetUniformLocation(prog.get(), "depth_tex");
     }
 
    ~impl()
@@ -107,36 +135,6 @@ void depth_compositor::impl::set_texture_params() const
 depth_compositor::depth_compositor()
     : impl_(new impl)
 {
-#if !defined(VSNRAY_OPENGL_LEGACY)
-    impl_->frag.set_source(R"(
-        uniform sampler2D color_tex;
-        uniform sampler2D depth_tex;
-
-        void main(void)
-        {
-            gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);
-            gl_FragDepth = texture2D(depth_tex, gl_TexCoord[0].xy).x;
-        }
-        )");
-
-    impl_->frag.compile();
-    if (!impl_->frag.check_compiled())
-    {
-        return;
-    }
-
-    impl_->prog.reset(glCreateProgram());
-    impl_->prog.attach_shader(impl_->frag);
-
-    impl_->prog.link();
-    if (!impl_->prog.check_linked())
-    {
-        return;
-    }
-
-    impl_->color_loc = glGetUniformLocation(impl_->prog.get(), "color_tex");
-    impl_->depth_loc = glGetUniformLocation(impl_->prog.get(), "depth_tex");
-#endif
 }
 
 depth_compositor::~depth_compositor()
