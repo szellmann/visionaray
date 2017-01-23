@@ -33,7 +33,7 @@ struct depth_compositor::impl
 
    ~impl()
     {
-        glDetachShader(prog.get(), frag.get());
+        prog.detach_shader(frag);
     }
 
     // GL color texture handle
@@ -126,7 +126,7 @@ depth_compositor::depth_compositor()
     }
 
     impl_->prog.reset(glCreateProgram());
-    glAttachShader(impl_->prog.get(), impl_->frag.get());
+    impl_->prog.attach_shader(impl_->frag);
 
     impl_->prog.link();
     if (!impl_->prog.check_linked())

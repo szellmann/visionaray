@@ -8,11 +8,22 @@
 #include <vector>
 
 #include <visionaray/gl/program.h>
+#include <visionaray/gl/shader.h>
 
 namespace visionaray
 {
 namespace gl
 {
+
+void program::attach_shader(shader const& s) const
+{
+    glAttachShader(name_, s.get());
+}
+
+void program::detach_shader(shader const& s) const
+{
+    glDetachShader(name_, s.get());
+}
 
 void program::link() const
 {

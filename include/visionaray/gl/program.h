@@ -22,6 +22,8 @@ namespace visionaray
 namespace gl
 {
 
+class shader;
+
 class program
 {
 public:
@@ -44,6 +46,9 @@ public:
     }
 
     GLuint get() const { return name_; }
+
+    void attach_shader(shader const& s) const;
+    void detach_shader(shader const& s) const;
 
     void link() const;
     void enable() const;
