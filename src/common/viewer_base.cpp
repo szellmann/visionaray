@@ -1,9 +1,16 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <common/config.h>
+
 #include <iostream>
+#include <memory>
 #include <ostream>
 #include <vector>
+
+#if VSNRAY_HAVE_GLEW
+#include <GL/glew.h> // glViewport() (TODO!)
+#endif
 
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>

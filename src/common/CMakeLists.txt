@@ -91,8 +91,11 @@ set(COMMON_HEADERS
     ${CONFIG_DIR}/config.h
 
     input/exception.h
+    input/glut.h
     input/keyboard.h
     input/mouse.h
+    input/qt.h
+    input/sdl2.h
 
     manip/arcball.h
     manip/arcball_manipulator.h

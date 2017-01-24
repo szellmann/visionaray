@@ -10,8 +10,7 @@
 #include <QMouseEvent>
 #include <QWindow>
 
-#include "input/keyboard.h"
-#include "input/mouse.h"
+#include "input/qt.h"
 #include "viewer_qt.h"
 
 

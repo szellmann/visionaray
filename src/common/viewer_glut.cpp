@@ -44,8 +44,7 @@
 
 #endif
 
-#include "input/keyboard.h"
-#include "input/mouse.h"
+#include "input/glut.h"
 #include "viewer_glut.h"
 
 
