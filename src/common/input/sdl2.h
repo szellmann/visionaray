@@ -151,4 +151,6 @@ static inline key_modifiers map_sdl2_modifiers(Uint16 code)
 } // keyboard
 } // visionaray
 
+#endif // VSNRAY_COMMON_HAVE_SDL2
+
 #endif // VSNRAY_COMMON_INPUT_SDL2_H
