@@ -1,8 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <algorithm>
 #include <array>
+#include <cstring> // memcpy
 #include <type_traits>
 
 #include "../simd/type_traits.h"
@@ -29,7 +29,7 @@ template <size_t Dim, typename T>
 MATH_FUNC
 inline vector<Dim, T>::vector(T const* data/*[Dim]*/)
 {
-    std::copy( data, data + Dim, data_ );
+    memcpy(data_, data, sizeof(data));
 }
 
 template <size_t Dim, typename T>
@@ -37,7 +37,7 @@ template <typename U>
 MATH_FUNC
 inline vector<Dim, T>::vector(vector<Dim, U> const& rhs)
 {
-    std::copy( rhs.data(), rhs.data() + Dim, data_ );
+    memcpy(data_, rhs.data(), sizeof(rhs));
 }
 
 template <size_t Dim, typename T>
@@ -46,8 +46,8 @@ MATH_FUNC
 inline vector<Dim, T>::vector(vector<Dim1, U> const& first, vector<Dim2, U> const& second)
 {
     static_assert(Dim1 + Dim2 == Dim, "Incompatible vector dimensions");
-    std::copy( first.data(),  first.data()  + Dim1, data_ );
-    std::copy( second.data(), second.data() + Dim2, data_ + Dim1 );
+    memcpy(data_, first.data(), sizeof(first));
+    memcpy(data_ + Dim1, second.data(), sizeof(second));
 }
 
 template <size_t Dim, typename T>
