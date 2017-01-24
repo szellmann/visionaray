@@ -1,26 +1,31 @@
+#--------------------------------------------------------------------------------------------------
+# External libraries
+#
+
 find_package(Boost REQUIRED)
-if (VSNRAY_ENABLE_CUDA)
-find_package(CUDA)
-endif()
-if (${VSNRAY_GRAPHICS_API} STREQUAL "GL")
-find_package(GLEW REQUIRED)
-find_package(OpenGL REQUIRED)
-elseif (${VSNRAY_GRAPHICS_API} STREQUAL "GLES")
-find_package(OpenGLES REQUIRED)
-endif()
 find_package(Threads REQUIRED)
 
 visionaray_use_package(Boost)
-if (VSNRAY_ENABLE_CUDA)
-visionaray_use_package(CUDA)
-endif()
-if (${VSNRAY_GRAPHICS_API} STREQUAL "GL")
-visionaray_use_package(GLEW)
-visionaray_use_package(OpenGL)
-elseif (${VSNRAY_GRAPHICS_API} STREQUAL "GLES")
-visionaray_use_package(OpenGLES)
-endif()
 visionaray_use_package(Threads)
+
+# Graphics API
+
+if (${VSNRAY_GRAPHICS_API} STREQUAL "GL")
+    find_package(GLEW REQUIRED)
+    find_package(OpenGL REQUIRED)
+    visionaray_use_package(GLEW)
+    visionaray_use_package(OpenGL)
+elseif (${VSNRAY_GRAPHICS_API} STREQUAL "GLES")
+    find_package(OpenGLES REQUIRED)
+    visionaray_use_package(OpenGLES)
+endif()
+
+# CUDA
+
+if (VSNRAY_ENABLE_CUDA)
+    find_package(CUDA)
+    visionaray_use_package(CUDA)
+endif()
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/include/visionaray)
