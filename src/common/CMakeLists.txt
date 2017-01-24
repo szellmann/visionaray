@@ -1,38 +1,49 @@
+#--------------------------------------------------------------------------------------------------
+# External libraries
+#
+
 find_package(Boost COMPONENTS chrono filesystem iostreams system thread REQUIRED)
-if (VSNRAY_ENABLE_CUDA)
-find_package(CUDA)
-endif()
 find_package(GLEW REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(JPEG)
 find_package(OpenGL REQUIRED)
 find_package(PNG)
-if (VSNRAY_ENABLE_QT5)
-find_package(Qt5Core)
-find_package(Qt5Gui)
-find_package(Qt5OpenGL)
-find_package(Qt5Widgets)
-endif()
 find_package(Threads REQUIRED)
 find_package(TIFF)
 
 visionaray_use_package(Boost)
-if (VSNRAY_ENABLE_CUDA)
-visionaray_use_package(CUDA)
-endif()
 visionaray_use_package(GLEW)
 visionaray_use_package(GLUT)
 visionaray_use_package(JPEG)
 visionaray_use_package(OpenGL)
 visionaray_use_package(PNG)
-if (VSNRAY_ENABLE_QT5)
-visionaray_use_package(Qt5Core)
-visionaray_use_package(Qt5Gui)
-visionaray_use_package(Qt5OpenGL)
-visionaray_use_package(Qt5Widgets)
-endif()
 visionaray_use_package(Threads)
 visionaray_use_package(TIFF)
+
+# CUDA
+
+if (VSNRAY_ENABLE_CUDA)
+    find_package(CUDA)
+    visionaray_use_package(CUDA)
+endif()
+
+# Qt5
+
+if (VSNRAY_ENABLE_QT5)
+    find_package(Qt5Core)
+    find_package(Qt5Gui)
+    find_package(Qt5OpenGL)
+    find_package(Qt5Widgets)
+    visionaray_use_package(Qt5Core)
+    visionaray_use_package(Qt5Gui)
+    visionaray_use_package(Qt5OpenGL)
+    visionaray_use_package(Qt5Widgets)
+endif()
+
+
+#--------------------------------------------------------------------------------------------------
+#
+#
 
 visionaray_link_libraries(visionaray)
 

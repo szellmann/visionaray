@@ -27,6 +27,11 @@ if (VSNRAY_ENABLE_CUDA)
     visionaray_use_package(CUDA)
 endif()
 
+
+#--------------------------------------------------------------------------------------------------
+#
+#
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/include/visionaray)
 
