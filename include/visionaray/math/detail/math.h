@@ -25,7 +25,11 @@ using std::acos;
 using std::asin;
 using std::atan;
 using std::ceil;
+#ifdef __CUDA_ARCH__
+using ::copysign;
+#else
 using std::copysign;
+#endif
 using std::cos;
 using std::exp;
 using std::floor;
