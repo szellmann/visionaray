@@ -8,7 +8,7 @@
 #include <ostream>
 #include <vector>
 
-#if VSNRAY_HAVE_GLEW
+#if VSNRAY_COMMON_HAVE_GLEW
 #include <GL/glew.h> // glViewport() (TODO!)
 #endif
 

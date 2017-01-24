@@ -8,7 +8,7 @@
 
 #include <common/config.h>
 
-#if VSNRAY_HAVE_SDL2
+#if VSNRAY_COMMON_HAVE_SDL2
 
 #include <SDL2/SDL.h>
 

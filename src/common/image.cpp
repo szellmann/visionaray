@@ -104,7 +104,7 @@ bool image::load(std::string const& filename)
 
     switch (it)
     {
-#if VSNRAY_HAVE_JPEG
+#if VSNRAY_COMMON_HAVE_JPEG
     case JPEG:
     {
         jpeg_image jpg;
@@ -118,9 +118,9 @@ bool image::load(std::string const& filename)
         }
         return false;
     }
-#endif // VSNRAY_HAVE_JPEG
+#endif // VSNRAY_COMMON_HAVE_JPEG
 
-#if VSNRAY_HAVE_PNG
+#if VSNRAY_COMMON_HAVE_PNG
     case PNG:
     {
         png_image png;
@@ -134,9 +134,9 @@ bool image::load(std::string const& filename)
         }
         return false;
     }
-#endif // VSNRAY_HAVE_PNG
+#endif // VSNRAY_COMMON_HAVE_PNG
 
-#if VSNRAY_HAVE_TIFF
+#if VSNRAY_COMMON_HAVE_TIFF
     case TIFF:
     {
         tiff_image tiff;
@@ -150,7 +150,7 @@ bool image::load(std::string const& filename)
         }
         return false;
     }
-#endif // VSNRAY_HAVE_TIFF
+#endif // VSNRAY_COMMON_HAVE_TIFF
 
 
     // native formats

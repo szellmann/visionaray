@@ -3,7 +3,7 @@
 
 #include <common/config.h>
 
-#if VSNRAY_HAVE_PNG
+#if VSNRAY_COMMON_HAVE_PNG
 #include <png.h>
 #endif
 
@@ -13,7 +13,7 @@
 namespace visionaray
 {
 
-#if VSNRAY_HAVE_PNG
+#if VSNRAY_COMMON_HAVE_PNG
 struct png_read_context
 {
     png_structp png;
@@ -65,7 +65,7 @@ static int png_num_components(int color_type)
 
 bool png_image::load(std::string const& filename)
 {
-#if VSNRAY_HAVE_PNG
+#if VSNRAY_COMMON_HAVE_PNG
     cfile file(filename.c_str(), "r");
 
     if (!file.good())

@@ -8,7 +8,7 @@
 
 #include <common/config.h>
 
-#if VSNRAY_HAVE_QT5CORE
+#if VSNRAY_COMMON_HAVE_QT5CORE
 
 #include <Qt>
 
@@ -180,6 +180,6 @@ static inline key_modifiers map_qt_modifiers(Qt::KeyboardModifiers code)
 } // keyboard
 } // visionaray
 
-#endif // VSNRAY_HAVE_QT5CORE
+#endif // VSNRAY_COMMON_HAVE_QT5CORE
 
 #endif // VSNRAY_COMMON_INPUT_QT_H

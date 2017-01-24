@@ -67,7 +67,7 @@ endif()
 
 
 foreach(p ${__VSNRAY_USED_PACKAGES})
-    set(VSNRAY_HAVE_${p} 1)
+    set(VSNRAY_COMMON_HAVE_${p} 1)
 endforeach()
 
 set(CONFIG_DIR ${__VSNRAY_COMMON_CONFIG_DIR})

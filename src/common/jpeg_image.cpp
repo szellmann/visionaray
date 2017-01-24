@@ -7,7 +7,7 @@
 #include <csetjmp>
 #include <cstdio>
 
-#if VSNRAY_HAVE_JPEG
+#if VSNRAY_COMMON_HAVE_JPEG
 #include <jpeglib.h>
 #endif
 
@@ -17,7 +17,7 @@
 namespace visionaray
 {
 
-#if VSNRAY_HAVE_JPEG
+#if VSNRAY_COMMON_HAVE_JPEG
 struct error_mngr
 {
     jpeg_error_mgr pub;
@@ -48,7 +48,7 @@ struct decompress_ptr
 
 bool jpeg_image::load(std::string const& filename)
 {
-#if VSNRAY_HAVE_JPEG
+#if VSNRAY_COMMON_HAVE_JPEG
     cfile file(filename.c_str(), "r");
 
     if (!file.good())

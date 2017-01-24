@@ -3,7 +3,7 @@
 
 #include <common/config.h>
 
-#if VSNRAY_HAVE_TIFF
+#if VSNRAY_COMMON_HAVE_TIFF
 #include <tiffio.h>
 #endif
 
@@ -12,7 +12,7 @@
 namespace visionaray
 {
 
-#if VSNRAY_HAVE_TIFF
+#if VSNRAY_COMMON_HAVE_TIFF
 
 //-------------------------------------------------------------------------------------------------
 // RAII wrapper for tiff files
@@ -45,7 +45,7 @@ private:
 
 bool tiff_image::load(std::string const& filename)
 {
-#if VSNRAY_HAVE_TIFF
+#if VSNRAY_COMMON_HAVE_TIFF
     tiff_file file(filename.c_str(), "r");
 
     if (!file.good())

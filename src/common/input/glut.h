@@ -8,7 +8,7 @@
 
 #include <common/config.h>
 
-#if VSNRAY_HAVE_GLUT
+#if VSNRAY_COMMON_HAVE_GLUT
 
 #include <visionaray/detail/platform.h>
 
@@ -212,6 +212,6 @@ static inline key_modifiers map_glut_modifiers(unsigned char code)
 } // keyboard
 } // visionaray
 
-#endif // VSNRAY_HAVE_GLUT
+#endif // VSNRAY_COMMON_HAVE_GLUT
 
 #endif // VSNRAY_COMMON_INPUT_GLUT_H
