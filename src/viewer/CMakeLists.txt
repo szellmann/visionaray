@@ -44,6 +44,13 @@ if (VSNRAY_ENABLE_QT5)
     visionaray_use_package(Qt5Widgets)
 endif()
 
+# SDL2
+
+if (VSNRAY_ENABLE_SDL2)
+    find_package(SDL2)
+    visionaray_use_package(SDL2)
+endif()
+
 
 #--------------------------------------------------------------------------------------------------
 #

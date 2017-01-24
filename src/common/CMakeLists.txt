@@ -40,6 +40,13 @@ if (VSNRAY_ENABLE_QT5)
     visionaray_use_package(Qt5Widgets)
 endif()
 
+# SDL2
+
+if (VSNRAY_ENABLE_SDL2)
+    find_package(SDL2)
+    visionaray_use_package(SDL2)
+endif()
+
 
 #--------------------------------------------------------------------------------------------------
 #
@@ -152,18 +159,13 @@ set(COMMON_SOURCES
 )
 
 if (VSNRAY_ENABLE_QT5)
+    set(COMMON_HEADERS ${COMMON_HEADERS} viewer_qt.h)
+    set(COMMON_SOURCES ${COMMON_SOURCES} viewer_qt.cpp)
+endif()
 
-set(COMMON_HEADERS
-    ${COMMON_HEADERS}
-    viewer_qt.h
-)
-
-set(COMMON_SOURCES
-    ${COMMON_SOURCES}
-    viewer_qt.cpp
-
-)
-
+if (VSNRAY_ENABLE_SDL2)
+    set(COMMON_HEADERS ${COMMON_HEADERS} viewer_sdl2.h)
+    set(COMMON_SOURCES ${COMMON_SOURCES} viewer_sdl2.cpp)
 endif()
 
 set(CMD_LINE_HEADERS
@@ -202,5 +204,5 @@ visionaray_add_library(visionaray_common
 #
 
 if (VSNRAY_ENABLE_QT5)
-qt5_use_modules(visionaray_common Core Gui OpenGL Widgets)
+    qt5_use_modules(visionaray_common Core Gui OpenGL Widgets)
 endif()
