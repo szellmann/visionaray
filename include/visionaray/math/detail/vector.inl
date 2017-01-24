@@ -29,7 +29,7 @@ template <size_t Dim, typename T>
 MATH_FUNC
 inline vector<Dim, T>::vector(T const* data/*[Dim]*/)
 {
-    memcpy(data_, data, sizeof(data));
+    memcpy(data_, data, Dim * sizeof(T));
 }
 
 template <size_t Dim, typename T>
