@@ -46,8 +46,8 @@ MATH_FUNC
 inline vector<Dim, T>::vector(vector<Dim1, U> const& first, vector<Dim2, U> const& second)
 {
     static_assert(Dim1 + Dim2 == Dim, "Incompatible vector dimensions");
-    memcpy(data_, first.data(), sizeof(first));
-    memcpy(data_ + Dim1, second.data(), sizeof(second));
+    memcpy(data_, first.data(), Dim1 * sizeof(U));
+    memcpy(data_ + Dim1, second.data(), Dim2 * sizeof(U));
 }
 
 template <size_t Dim, typename T>
