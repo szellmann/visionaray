@@ -5,6 +5,8 @@
 #include <cstring> // memcpy
 #include <type_traits>
 
+#include <visionaray/detail/algorithm.h>
+
 #include "../simd/type_traits.h"
 #include "math.h"
 
@@ -29,7 +31,7 @@ template <size_t Dim, typename T>
 MATH_FUNC
 inline vector<Dim, T>::vector(T const* data/*[Dim]*/)
 {
-    memcpy(data_, data, Dim * sizeof(T));
+    algo::copy(data, data + Dim, data_);
 }
 
 template <size_t Dim, typename T>
@@ -37,7 +39,7 @@ template <typename U>
 MATH_FUNC
 inline vector<Dim, T>::vector(vector<Dim, U> const& rhs)
 {
-    memcpy(data_, rhs.data(), sizeof(rhs));
+    algo::copy(rhs.data(), rhs.data() + Dim, data_);
 }
 
 template <size_t Dim, typename T>
@@ -46,8 +48,8 @@ MATH_FUNC
 inline vector<Dim, T>::vector(vector<Dim1, U> const& first, vector<Dim2, U> const& second)
 {
     static_assert(Dim1 + Dim2 == Dim, "Incompatible vector dimensions");
-    memcpy(data_, first.data(), Dim1 * sizeof(U));
-    memcpy(data_ + Dim1, second.data(), Dim2 * sizeof(U));
+    algo::copy(first.data(), first.data() + Dim1, data_);
+    algo::copy(second.data(), second.data() + Dim2, data_ + Dim1);
 }
 
 template <size_t Dim, typename T>

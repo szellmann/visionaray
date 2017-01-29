@@ -17,6 +17,30 @@ namespace algo
 {
 
 //-------------------------------------------------------------------------------------------------
+// copy
+//
+// Copies the range [first,...,last) to another range beginning at d_first.
+//
+// Custom implementation to run in CUDA kernels, resorts to std::copy otherwise.
+//
+
+template <typename T, typename U>
+VSNRAY_FUNC
+U copy(T first, T last, U d_first)
+{
+#ifdef __CUDA_ARCH__
+    while (first != last)
+    {
+        *d_first++ = *first++;
+    }
+    return d_first;
+#else
+    return std::copy(first, last, d_first);
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // insert_sorted
 //
 // Inserts an element into the sorted sequence [first,...,last) so that the
