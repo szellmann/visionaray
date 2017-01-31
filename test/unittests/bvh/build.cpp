@@ -18,14 +18,14 @@ using sphere_t   = basic_sphere<float>;
 using triangle_t = basic_triangle<3, float>;
 
 template <typename P>
-using array_ref_bvh = index_bvh_t<array_ref<P>, aligned_vector<bvh_node>, aligned_vector<unsigned>>;
+using array_ref_bvh = index_bvh_t<array_ref<P>, aligned_vector<bvh_node, 32>, aligned_vector<unsigned, 32>>;
 
 
 // generate some triangles --------------------------------
 
-aligned_vector<triangle_t> make_triangles()
+aligned_vector<triangle_t, 32> make_triangles()
 {
-    aligned_vector<triangle_t> triangles;
+    aligned_vector<triangle_t, 32> triangles;
     triangles.emplace_back(
             vec3(0.0f, 0.0f, 0.0f),
             vec3(1.0f, 0.0f, 0.0f),
@@ -48,9 +48,9 @@ aligned_vector<triangle_t> make_triangles()
 
 // generate some spheres ----------------------------------
 
-aligned_vector<sphere_t> make_spheres()
+aligned_vector<sphere_t, 32> make_spheres()
 {
-    aligned_vector<sphere_t> spheres;
+    aligned_vector<sphere_t, 32> spheres;
     spheres.emplace_back(vec3(0.0f, 0.0f, 0.0f), 1.0f);
     spheres.emplace_back(vec3(1.0f, 2.0f, 0.1f), 1000.0f);
     spheres.emplace_back(vec3(2.0f, 4.0f, 0.2f), 100000.0f);
