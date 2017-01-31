@@ -13,7 +13,6 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
 
-#include <visionaray/math/triangle.h>
 #include <visionaray/math/vector.h>
 #include <visionaray/aligned_vector.h>
 
