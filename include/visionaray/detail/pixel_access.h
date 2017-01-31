@@ -88,8 +88,6 @@ inline void store(
     float_array g;
     float_array b;
 
-    using simd::store;
-
     store(r, color.x);
     store(g, color.y);
     store(b, color.z);
@@ -142,8 +140,6 @@ inline void store(
     float_array r;
     float_array g;
     float_array b;
-
-    using simd::store;
 
     store(r, color.x);
     store(g, color.y);
@@ -199,8 +195,6 @@ inline void store(
     float_array g;
     float_array b;
     float_array a;
-
-    using simd::store;
 
     store(r, color.x);
     store(g, color.y);
@@ -260,8 +254,6 @@ inline void store(
     float_array b;
     float_array a;
 
-    using simd::store;
-
     store(r, color.x);
     store(g, color.y);
     store(b, color.z);
@@ -320,8 +312,6 @@ inline void store(
     float_array b;
     float_array a;
 
-    using simd::store;
-
     store(r, color.x);
     store(g, color.y);
     store(b, color.z);
@@ -378,8 +368,6 @@ inline void store(
     float_array b;
     float_array a;
 
-    using simd::store;
-
     store(r, color.x);
     store(g, color.y);
     store(b, color.z);
@@ -426,8 +414,6 @@ inline void store(
         vector<4, float>*                   buffer
         )
 {
-    using simd::store;
-
     auto c = transpose(color);
 
     if ( x      < width &&  y      < height) store( buffer[ y      * width +  x     ].data(), c.x);
@@ -463,7 +449,7 @@ inline void store(
 
     float_array v;
 
-    simd::store(v, value);
+    store(v, value);
 
     auto w = packet_size<FloatT>::w;
     auto h = packet_size<FloatT>::h;
@@ -510,7 +496,7 @@ inline void store(
 
     float_array v;
 
-    simd::store(v, value);
+    store(v, value);
 
     auto w = packet_size<T>::w;
     auto h = packet_size<T>::h;
@@ -552,7 +538,7 @@ inline void store(
 
     float_array v;
 
-    simd::store(v, value);
+    store(v, value);
 
     auto w = packet_size<FloatT>::w;
     auto h = packet_size<FloatT>::h;
