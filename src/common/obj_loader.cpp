@@ -64,7 +64,7 @@ Int remap_index(Int idx, Int size)
 
 bool store_triangle(model& result, vertex_vector const& vertices, int i1, int i2, int i3)
 {
-    triangle_type tri;
+    model::triangle_type tri;
 
     tri.v1 = vertices[i1];
     tri.e1 = vertices[i2] - tri.v1;

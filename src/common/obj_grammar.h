@@ -51,7 +51,6 @@ namespace visionaray
 // Typedefs (TODO: not in namespace visionaray!)
 //
 
-using triangle_type     = basic_triangle<3, float>;
 using vertex_vector     = aligned_vector<vec3>;
 using tex_coord_vector  = aligned_vector<vec2>;
 using normal_vector     = aligned_vector<vec3>;
