@@ -36,7 +36,7 @@ static void test_gather_unorm()
     }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
     // test float4
 
@@ -119,7 +119,7 @@ static void test_gather_vector_unorm()
     }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
     // test vector<Dim, float4>
 
@@ -260,7 +260,7 @@ TEST(SIMD, GatherFloat)
     }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
     // test float4
 
@@ -343,7 +343,7 @@ TEST(SIMD, GatherInt)
     }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
     // test int4
 
@@ -452,7 +452,7 @@ TEST(SIMD, GatherVec4)
     }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
     // test vector<4, float4>
 
