@@ -628,6 +628,18 @@ static void test_math()
         rf = copysign(xf, yf);
 //      EXPECT_TRUE( all(rf == -NAN) );
     }
+
+
+    // dot() (horizontal)
+
+    {
+        F xf(1.0f, 2.0f, 3.0f, 4.0f);
+        F yf(5.0f, 6.0f, 7.0f, 8.0f);
+        EXPECT_TRUE( all(dot(xf, yf) == F(70.0f)) );
+
+        xf *= F(-1.0f);
+        EXPECT_TRUE( all(dot(xf, yf) == F(-70.0f)) );
+    }
 }
 
 
