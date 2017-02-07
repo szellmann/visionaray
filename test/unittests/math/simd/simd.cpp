@@ -630,16 +630,18 @@ static void test_math()
     }
 
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     // dot() (horizontal)
 
     {
-        F xf(1.0f, 2.0f, 3.0f, 4.0f);
-        F yf(5.0f, 6.0f, 7.0f, 8.0f);
-        EXPECT_TRUE( all(dot(xf, yf) == F(70.0f)) );
+        simd::float4 xf(1.0f, 2.0f, 3.0f, 4.0f);
+        simd::float4 yf(5.0f, 6.0f, 7.0f, 8.0f);
+        EXPECT_TRUE( all(dot(xf, yf) == simd::float4(70.0f)) );
 
-        xf *= F(-1.0f);
-        EXPECT_TRUE( all(dot(xf, yf) == F(-70.0f)) );
+        xf *= simd::float4(-1.0f);
+        EXPECT_TRUE( all(dot(xf, yf) == simd::float4(-70.0f)) );
     }
+#endif
 }
 
 
