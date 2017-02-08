@@ -329,6 +329,18 @@ VSNRAY_FORCE_INLINE float4 abs(float4 const& u)
     return vreinterpretq_f32_s32(vandq_s32(a, b));
 }
 
+VSNRAY_FORCE_INLINE float4 round(float4 const& v)
+{
+    // Mask out the signbits of v
+    int32x4_t s = vandq_s32(vreinterpretq_s32_f32(v), vdupq_n_s32(0x80000000));
+    // Magic number: 2^23 with the signbits of v
+    int32x4_t m = vorrq_s32(s, vdupq_n_s32(0x4B000000));
+    float32x4_t x = vaddq_f32(v, vreinterpretq_f32_s32(m));
+    float32x4_t y = vsubq_f32(x, vreinterpretq_f32_s32(m));
+
+    return y;
+}
+
 VSNRAY_FORCE_INLINE float4 ceil(float4 const& v)
 {
     // i = trunc(v)
