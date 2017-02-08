@@ -252,6 +252,11 @@ VSNRAY_FORCE_INLINE float8 abs(float8 const& u)
     return _mm256_and_ps(u, _mm256_castsi256_ps(_mm256_set1_epi32(0x7FFFFFFF)));
 }
 
+VSNRAY_FORCE_INLINE float8 round(float8 const& v)
+{
+    return _mm256_round_ps(v, _MM_FROUND_TO_NEAREST_INT);
+}
+
 VSNRAY_FORCE_INLINE float8 ceil(float8 const& v)
 {
     return _mm256_ceil_ps(v);
