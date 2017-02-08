@@ -576,6 +576,11 @@ static void test_math()
         F fp    = 23.0f;
         F fn    = -23.0f;
 
+        EXPECT_TRUE( all(round(F(3.14f)) == F(3.0f)) );
+        EXPECT_TRUE( all(round(F(0.6f))  == F(1.0f)) );
+        EXPECT_TRUE( all(round(F(-0.1f)) == F(0.0f)) );
+        EXPECT_TRUE( all(round(F(-0.6f)) == F(-1.0f)) );
+
         EXPECT_TRUE( all(ceil(flow)      == ceil(numeric_limits<float>::lowest())) );
         EXPECT_TRUE( all(ceil(fmin)      == ceil(numeric_limits<float>::min())) );
         EXPECT_TRUE( all(ceil(fmax)      == ceil(numeric_limits<float>::max())) );
