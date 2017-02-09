@@ -8,9 +8,12 @@
 
 #include <vector>
 
+#include <visionaray/math/matrix.h>
 #include <visionaray/bvh.h>
 
 #include "handle.h"
+#include "program.h"
+#include "shader.h"
 
 namespace visionaray
 {
@@ -52,11 +55,11 @@ public:
 public:
 
     // Render BVH outlines
-    void frame() const;
+    void frame(mat4 const& view, mat4 const& proj) const;
 
     // Call init() with a valid OpenGL context!
     template <typename BVH>
-    void init(BVH const& b, display_config config = display_config())
+    bool init(BVH const& b, display_config config = display_config())
     {
         std::vector<float> vertices;
         auto func =  [&](typename BVH::node_type const& n)
@@ -114,10 +117,9 @@ public:
             traverse_leaves(b, func);
         }
 
-
-        init_vbo(vertices.data(), vertices.size() * sizeof(float));
-
         num_vertices_ = vertices.size() / 3;
+
+        return init_gl(vertices.data(), vertices.size() * sizeof(float));
     }
 
 
@@ -127,10 +129,16 @@ public:
 private:
 
     gl::buffer vertex_buffer_;
+    gl::program prog_;
+    gl::shader vert_;
+    gl::shader frag_;
+    GLuint view_loc_;
+    GLuint proj_loc_;
+    GLuint vertex_loc_;
     size_t num_vertices_ = 0;
 
-    // init vbo, pointer to vertices, buffer size in bytes
-    void init_vbo(float const* data, size_t size);
+    // Init shaders and vbo from pointer to vertices. Buffer size in bytes!
+    bool init_gl(float const* data, size_t size);
 
 };
 

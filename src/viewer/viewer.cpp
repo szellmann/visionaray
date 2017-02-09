@@ -591,21 +591,7 @@ void renderer::on_display()
 
     if (show_bvh)
     {
-        glMatrixMode(GL_PROJECTION);
-        glPushMatrix();
-        glLoadMatrixf(cam.get_proj_matrix().data());
-
-        glMatrixMode(GL_MODELVIEW);
-        glPushMatrix();
-        glLoadMatrixf(cam.get_view_matrix().data());
-
-        outlines.frame();
-
-        glMatrixMode(GL_MODELVIEW);
-        glPopMatrix();
-
-        glMatrixMode(GL_PROJECTION);
-        glPopMatrix();
+        outlines.frame(cam.get_view_matrix(), cam.get_proj_matrix());
     }
 }
 
