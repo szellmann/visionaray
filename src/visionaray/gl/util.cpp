@@ -27,11 +27,13 @@ std::string gl::last_error()
 
 void gl::alloc_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
+#if defined(GL_VERSION_4_2) && GL_VERSION_4_2 || defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0
     if (glTexStorage2D)
     {
         glTexStorage2D(GL_TEXTURE_2D, 1, info.internal_format, w, h);
     }
     else
+#endif
     {
         glTexImage2D(GL_TEXTURE_2D, 0, info.internal_format, w, h, 0, info.format, info.type, 0);
     }
