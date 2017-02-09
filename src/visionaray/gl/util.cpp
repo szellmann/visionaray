@@ -18,7 +18,9 @@ std::string gl::last_error()
     GLenum err = glGetError();
     if (err != GL_NO_ERROR)
     {
+#if VSNRAY_HAVE_GLEW
         return std::string(reinterpret_cast<char const*>(glewGetErrorString(err)));
+#endif
     }
     return "";
 }
