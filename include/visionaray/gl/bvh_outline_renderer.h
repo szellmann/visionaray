@@ -6,14 +6,11 @@
 #ifndef VSNRAY_GL_BVH_OUTLINE_RENDERER_H
 #define VSNRAY_GL_BVH_OUTLINE_RENDERER_H 1
 
+#include <memory>
 #include <vector>
 
 #include <visionaray/math/matrix.h>
 #include <visionaray/bvh.h>
-
-#include "handle.h"
-#include "program.h"
-#include "shader.h"
 
 namespace visionaray
 {
@@ -53,6 +50,9 @@ public:
     };
 
 public:
+
+    bvh_outline_renderer();
+   ~bvh_outline_renderer();
 
     // Render BVH outlines
     void frame(mat4 const& view, mat4 const& proj) const;
@@ -128,13 +128,9 @@ public:
 
 private:
 
-    gl::buffer vertex_buffer_;
-    gl::program prog_;
-    gl::shader vert_;
-    gl::shader frag_;
-    GLuint view_loc_;
-    GLuint proj_loc_;
-    GLuint vertex_loc_;
+    struct impl;
+    std::unique_ptr<impl> const impl_;
+
     size_t num_vertices_ = 0;
 
     // Init shaders and vbo from pointer to vertices. Buffer size in bytes!
