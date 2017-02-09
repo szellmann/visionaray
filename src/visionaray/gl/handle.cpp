@@ -28,12 +28,12 @@ void texture::destroy()
     glDeleteTextures(1, &name_);
 }
 
-#if defined(GL_VERSION_3_0) && GL_VERSION_3_0 || defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0
 void vertex_array::destroy()
 {
+#if defined(GL_VERSION_3_0) && GL_VERSION_3_0 || defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0
     glDeleteVertexArrays(1, &name_);
-}
 #endif
+}
 
 
 GLuint create_buffer()
@@ -64,14 +64,14 @@ GLuint create_texture()
     return buf;
 }
 
-#if defined(GL_VERSION_3_0) && GL_VERSION_3_0 || defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0
 GLuint create_vertex_array()
 {
     GLuint buf = 0;
+#if defined(GL_VERSION_3_0) && GL_VERSION_3_0 || defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0
     glGenVertexArrays(1, &buf);
+#endif
     return buf;
 }
-#endif
 
 } // gl
 } // visionaray

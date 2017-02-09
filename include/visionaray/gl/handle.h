@@ -110,7 +110,6 @@ private:
 };
 
 
-#if defined(GL_VERSION_3_0) && GL_VERSION_3_0 || defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0
 class vertex_array : public handle<vertex_array>
 {
 public:
@@ -124,7 +123,6 @@ private:
     VSNRAY_NOT_COPYABLE(vertex_array)
 
 };
-#endif
 
 
 //-------------------------------------------------------------------------------------------------
@@ -135,9 +133,7 @@ GLuint create_buffer();
 GLuint create_framebuffer();
 GLuint create_renderbuffer();
 GLuint create_texture();
-#if defined(GL_VERSION_3_0) && GL_VERSION_3_0 || defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0
 GLuint create_vertex_array();
-#endif
 
 } // gl
 } // visionaray
