@@ -56,7 +56,12 @@ void bvh_outline_renderer::frame(mat4 const& view, mat4 const& proj) const
     glUniformMatrix4fv(impl_->proj_loc, 1, GL_FALSE, proj.data());
 
     glBindBuffer(GL_ARRAY_BUFFER, impl_->vertex_buffer.get());
+    glVertexAttribPointer(impl_->vertex_loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(impl_->vertex_loc);
+
     glDrawArrays(GL_LINES, 0, (GLsizei)(num_vertices_));
+
+    glDisableVertexAttribArray(impl_->vertex_loc);
 
     impl_->prog.disable();
 }
@@ -133,8 +138,6 @@ bool bvh_outline_renderer::init_gl(float const* data, size_t size)
 
     glBindBuffer(GL_ARRAY_BUFFER, impl_->vertex_buffer.get());
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-    glVertexAttribPointer(impl_->vertex_loc, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(impl_->vertex_loc);
 
     return true;
 }
