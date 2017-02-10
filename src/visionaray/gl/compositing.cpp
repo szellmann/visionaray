@@ -305,6 +305,8 @@ struct depth_compositor::impl
 
     // GL color texture handle
     gl::texture depth_texture;
+
+    void set_texture_params() const;
 #else
     pixel_format_info color_info;
     pixel_format_info depth_info;
@@ -316,6 +318,17 @@ struct depth_compositor::impl
     int height;
 #endif
 };
+
+
+#if !defined(VSNRAY_OPENGL_LEGACY)
+void depth_compositor::impl::set_texture_params() const
+{
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
+#endif
 
 
 //-------------------------------------------------------------------------------------------------
@@ -450,6 +463,7 @@ void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GL
 
     glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
 
+    impl_->set_texture_params();
     alloc_texture(info, w, h);
 #else
     impl_->color_info = info;
@@ -465,6 +479,7 @@ void depth_compositor::setup_depth_texture(pixel_format_info info, GLsizei w, GL
 
     glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
 
+    impl_->set_texture_params();
     alloc_texture(info, w, h);
 #else
     impl_->depth_info = info;
