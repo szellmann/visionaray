@@ -64,8 +64,16 @@ void bvh_outline_renderer::frame(mat4 const& view, mat4 const& proj) const
 void bvh_outline_renderer::destroy()
 {
     impl_->vertex_buffer.destroy();
-    impl_->prog.detach_shader(impl_->vert);
-    impl_->prog.detach_shader(impl_->frag);
+
+    if (impl_->prog.check_attached(impl_->vert))
+    {
+        impl_->prog.detach_shader(impl_->vert);
+    }
+
+    if (impl_->prog.check_attached(impl_->frag))
+    {
+        impl_->prog.detach_shader(impl_->frag);
+    }
 }
 
 bool bvh_outline_renderer::init_gl(float const* data, size_t size)

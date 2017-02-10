@@ -53,6 +53,7 @@ public:
     void link() const;
     void enable() const;
     void disable() const;
+    bool check_attached(shader const& s) const;
     bool check_linked() const;
 
 protected:

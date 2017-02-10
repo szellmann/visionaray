@@ -40,6 +40,34 @@ void program::disable() const
     glUseProgram(0);
 }
 
+bool program::check_attached(shader const& s) const
+{
+    // Check if program was created at all.
+    if (name_ == 0)
+    {
+        return false;
+    }
+
+
+    // Check list of attached shaders.
+    static const GLsizei MaxCount = 16;
+
+    GLsizei count = 0;
+    GLuint shaders[MaxCount];
+
+    glGetAttachedShaders(name_, MaxCount, &count, shaders);
+
+    for (GLsizei i = 0; i < count; ++i)
+    {
+        if (shaders[i] == s.get())
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool program::check_linked() const
 {
     GLint success = GL_FALSE;
