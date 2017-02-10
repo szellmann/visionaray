@@ -32,8 +32,17 @@ struct color_program
     // The program
     gl::program prog;
 
+    // The vertex shader
+    gl::shader vert;
+
     // The fragment shader
     gl::shader frag;
+
+    // Attribute location of vertex
+    GLint vertex_loc;
+
+    // Attribute location of texture coordinate
+    GLint tex_coord_loc;
 
     // Uniform location of color texture
     GLint color_loc;
@@ -49,14 +58,35 @@ struct color_program
 
 color_program::color_program()
     : prog(glCreateProgram())
+    , vert(glCreateShader(GL_VERTEX_SHADER))
     , frag(glCreateShader(GL_FRAGMENT_SHADER))
 {
+    vert.set_source(R"(
+        in vec2 vertex;
+        in vec2 tex_coord;
+
+        varying out vec2 uv;
+
+        void main(void)
+        {
+            gl_Position = vec4(vertex, 0.0, 1.0);
+            uv = tex_coord;
+        }
+        )");
+
+    vert.compile();
+    if (!vert.check_compiled())
+    {
+        return;
+    }
+
     frag.set_source(R"(
+        varying in vec2 uv;
         uniform sampler2D color_tex;
 
         void main(void)
         {
-            gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);
+            gl_FragColor = texture2D(color_tex, uv);
         }
         )");
 
@@ -66,6 +96,7 @@ color_program::color_program()
         return;
     }
 
+    prog.attach_shader(vert);
     prog.attach_shader(frag);
 
     prog.link();
@@ -74,11 +105,14 @@ color_program::color_program()
         return;
     }
 
-    color_loc = glGetUniformLocation(prog.get(), "color_tex");
+    vertex_loc    = glGetAttribLocation(prog.get(), "vertex");
+    tex_coord_loc = glGetAttribLocation(prog.get(), "tex_coord");
+    color_loc     = glGetUniformLocation(prog.get(), "color_tex");
 }
 
 color_program::~color_program()
 {
+    prog.detach_shader(vert);
     prog.detach_shader(frag);
 }
 
@@ -109,8 +143,17 @@ struct depth_program
     // The program
     gl::program prog;
 
+    // The vertex shader
+    gl::shader vert;
+
     // The fragment shader
     gl::shader frag;
+
+    // Attribute location of vertex
+    GLint vertex_loc;
+
+    // Attribute location of texture coordinate
+    GLint tex_coord_loc;
 
     // Uniform location of color texture
     GLint color_loc;
@@ -129,16 +172,37 @@ struct depth_program
 
 depth_program::depth_program()
     : prog(glCreateProgram())
+    , vert(glCreateShader(GL_VERTEX_SHADER))
     , frag(glCreateShader(GL_FRAGMENT_SHADER))
 {
+    vert.set_source(R"(
+        in vec2 vertex;
+        in vec2 tex_coord;
+
+        varying out vec2 uv;
+
+        void main(void)
+        {
+            gl_Position = vec4(vertex, 0.0, 1.0);
+            uv = tex_coord;
+        }
+        )");
+
+    vert.compile();
+    if (!vert.check_compiled())
+    {
+        return;
+    }
+
     frag.set_source(R"(
+        varying in vec2 uv;
         uniform sampler2D color_tex;
         uniform sampler2D depth_tex;
 
         void main(void)
         {
-            gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);
-            gl_FragDepth = texture2D(depth_tex, gl_TexCoord[0].xy).x;
+            gl_FragColor = texture2D(color_tex, uv);
+            gl_FragDepth = texture2D(depth_tex, uv).x;
         }
         )");
 
@@ -148,6 +212,7 @@ depth_program::depth_program()
         return;
     }
 
+    prog.attach_shader(vert);
     prog.attach_shader(frag);
 
     prog.link();
@@ -156,8 +221,10 @@ depth_program::depth_program()
         return;
     }
 
-    color_loc = glGetUniformLocation(prog.get(), "color_tex");
-    depth_loc = glGetUniformLocation(prog.get(), "depth_tex");
+    vertex_loc    = glGetAttribLocation(prog.get(), "vertex");
+    tex_coord_loc = glGetAttribLocation(prog.get(), "tex_coord");
+    color_loc     = glGetUniformLocation(prog.get(), "color_tex");
+    depth_loc     = glGetUniformLocation(prog.get(), "depth_tex");
 }
 
 depth_program::~depth_program()
@@ -196,11 +263,42 @@ void depth_program::disable() const
 struct depth_compositor::impl
 {
 #if !defined(VSNRAY_OPENGL_LEGACY)
+    impl()
+        : vertex_buffer(create_buffer())
+        , tex_coord_buffer(create_buffer())
+    {
+        GLfloat verts[8] = {
+                -1.0f, -1.0f,
+                 1.0f, -1.0f,
+                 1.0f,  1.0f,
+                -1.0f,  1.0f
+                };
+
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer.get());
+        glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), verts, GL_STATIC_DRAW);
+
+        GLfloat tex_coords[8] = {
+                0.0f, 0.0f,
+                1.0f, 0.0f,
+                1.0f, 1.0f,
+                0.0f, 1.0f
+                };
+
+        glBindBuffer(GL_ARRAY_BUFFER, tex_coord_buffer.get());
+        glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), tex_coords, GL_STATIC_DRAW);
+    }
+
     // Shader program to only display color texture w/o depth compositing
     color_program color_prog;
 
     // Shader program for depth compositing
     depth_program depth_prog;
+
+    // Quad vertex buffer
+    gl::buffer vertex_buffer;
+
+    // Quad texture coordinate buffer
+    gl::buffer tex_coord_buffer;
 
     // GL color texture handle
     gl::texture color_texture;
@@ -260,7 +358,18 @@ void depth_compositor::composite_textures() const
 
     impl_->depth_prog.enable(impl_->color_texture, impl_->depth_texture);
 
-    gl::draw_full_screen_quad();
+    glBindBuffer(GL_ARRAY_BUFFER, impl_->vertex_buffer.get());
+    glVertexAttribPointer(impl_->depth_prog.vertex_loc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(impl_->depth_prog.vertex_loc);
+
+    glBindBuffer(GL_ARRAY_BUFFER, impl_->tex_coord_buffer.get());
+    glVertexAttribPointer(impl_->depth_prog.tex_coord_loc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(impl_->depth_prog.tex_coord_loc);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    glDisableVertexAttribArray(impl_->depth_prog.tex_coord_loc);
+    glDisableVertexAttribArray(impl_->depth_prog.vertex_loc);
 
     impl_->depth_prog.disable();
 
@@ -318,7 +427,18 @@ void depth_compositor::display_color_texture() const
 
     impl_->color_prog.enable(impl_->color_texture);
 
-    gl::draw_full_screen_quad();
+    glBindBuffer(GL_ARRAY_BUFFER, impl_->vertex_buffer.get());
+    glVertexAttribPointer(impl_->color_prog.vertex_loc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(impl_->color_prog.vertex_loc);
+
+    glBindBuffer(GL_ARRAY_BUFFER, impl_->tex_coord_buffer.get());
+    glVertexAttribPointer(impl_->color_prog.tex_coord_loc, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(impl_->color_prog.tex_coord_loc);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    glDisableVertexAttribArray(impl_->color_prog.tex_coord_loc);
+    glDisableVertexAttribArray(impl_->color_prog.vertex_loc);
 
     impl_->color_prog.disable();
 
