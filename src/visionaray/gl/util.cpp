@@ -111,10 +111,6 @@ void gl::draw_full_screen_quad()
     glPopAttrib();
 }
 
-#if defined(GL_VERSION_1_1) && GL_VERSION_1_1
-// TODO: many features were probably not around w/ OpenGL 1.1
-// The above compiler guard guarantees that they are not used
-// with OpenGLES
 void gl::blend_texture(GLuint texture, GLenum sfactor, GLenum dfactor)
 {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
@@ -135,6 +131,7 @@ void gl::blend_texture(GLuint texture, GLenum sfactor, GLenum dfactor)
     glPopAttrib();
 }
 
+#if defined(VSNRAY_OPENGL_LEGACY)
 void gl::blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid const* pixels, GLenum sfactor, GLenum dfactor)
 {
     glPushAttrib(GL_ALL_ATTRIB_BITS);
