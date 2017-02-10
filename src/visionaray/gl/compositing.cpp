@@ -46,7 +46,6 @@ struct depth_compositor::impl
             return;
         }
 
-        prog.reset(glCreateProgram());
         prog.attach_shader(frag);
 
         prog.link();

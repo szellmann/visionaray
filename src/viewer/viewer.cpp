@@ -308,6 +308,8 @@ public:
 
         std::string str = buffer_.str();
 
+        glColor3f(1.0f, 1.0f, 1.0f);
+
         for (size_t i = 0; i < str.length(); ++i)
         {
             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
@@ -581,8 +583,6 @@ void renderer::on_display()
 
 
     // OpenGL overlay rendering
-
-    glColor3f(1.0f, 1.0f, 1.0f);
 
     if (show_hud)
     {
