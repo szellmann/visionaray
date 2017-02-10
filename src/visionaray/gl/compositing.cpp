@@ -81,7 +81,6 @@ struct depth_compositor::impl
     // Uniform location of depth texture
     GLint depth_loc;
 
-    bool check_shader_compiled() const;
     void enable_program() const;
     void disable_program() const;
     void set_texture_params() const;
