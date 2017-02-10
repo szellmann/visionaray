@@ -62,10 +62,10 @@ color_program::color_program()
     , frag(glCreateShader(GL_FRAGMENT_SHADER))
 {
     vert.set_source(R"(
-        in vec2 vertex;
-        in vec2 tex_coord;
+        attribute vec2 vertex;
+        attribute vec2 tex_coord;
 
-        varying out vec2 uv;
+        varying vec2 uv;
 
         void main(void)
         {
@@ -81,7 +81,7 @@ color_program::color_program()
     }
 
     frag.set_source(R"(
-        varying in vec2 uv;
+        varying vec2 uv;
         uniform sampler2D color_tex;
 
         void main(void)
