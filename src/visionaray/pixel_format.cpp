@@ -38,7 +38,6 @@ struct format_key
 
 static std::map<format_key, pixel_format> gl_formats(
 {
-#if defined(GL_VERSION_1_1) && GL_ES_VERSION_1_1 // TODO!
     { { GL_R8,                      GL_UNSIGNED_BYTE,                   1 },                PF_R8                   },
     { { GL_RG8,                     GL_UNSIGNED_BYTE,                   2 },                PF_RG8                  },
     { { GL_RGB8,                    GL_UNSIGNED_BYTE,                   3 },                PF_RGB8                 },
@@ -127,12 +126,8 @@ static std::map<format_key, pixel_format> gl_formats(
     { { GL_LUMINANCE,               GL_UNSIGNED_BYTE,                   1 },                PF_LUMINANCE8           },
     { { GL_LUMINANCE,               GL_UNSIGNED_SHORT,                  2 },                PF_LUMINANCE16          },
     { { GL_LUMINANCE,               GL_FLOAT,                           4 },                PF_LUMINANCE32F         },
-#elif defined(GL_ES_VERSION_2_0) && GL_ES_VERSION_2_0
-    { { GL_RGB,                     GL_UNSIGNED_BYTE,                   3 },                PF_RGB8                 },
-    { { GL_RGBA,                    GL_UNSIGNED_BYTE,                   4 },                PF_RGBA8                },
-    { { GL_LUMINANCE,               GL_UNSIGNED_BYTE,                   1 },                PF_LUMINANCE8           },
-#endif
 });
+
 
 pixel_format map_gl_format(unsigned format, unsigned type, unsigned size)
 {
@@ -168,8 +163,6 @@ static const pixel_format_info color_formats[] =
 {
 
     { 0, 0, 0, 0, 0 }, // PF_UNSPECIFIED
-
-#if defined(GL_VERSION_1_1) && GL_ES_VERSION_1_1 // TODO!
 
     //----------------------------------------------------------------------------------------------
     // for colors etc.
@@ -225,13 +218,6 @@ static const pixel_format_info color_formats[] =
     { GL_LUMINANCE16,           GL_LUMINANCE,           GL_UNSIGNED_SHORT,                  1,  2   },      // PF_LUMINANCE16
     { GL_LUMINANCE32F_ARB,      GL_LUMINANCE,           GL_FLOAT,                           1,  4   }       // PF_LUMINANCE32F
 
-#elif defined(GL_ES_VERSION_2_0) && GL_ES_VERSION_2_0
-
-    { GL_RGB,                   GL_RGB,                 GL_UNSIGNED_BYTE,                   3,  3   },      // PF_RGB8
-    { GL_RGBA,                  GL_RGBA,                GL_UNSIGNED_BYTE,                   4,  4   },      // PF_RGBA8
-    { GL_LUMINANCE,             GL_LUMINANCE,           GL_UNSIGNED_BYTE,                   1,  1   },      // PF_LUMINANCE8
-
-#endif
 };
 
 
