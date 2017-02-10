@@ -83,6 +83,7 @@ void gl::update_texture(
 
 void gl::draw_full_screen_quad()
 {
+#if defined(GL_VERSION_2_0) && GL_VERSION_2_0
     glPushAttrib(GL_TEXTURE_BIT | GL_TRANSFORM_BIT);
 
     glMatrixMode(GL_PROJECTION);
@@ -109,10 +110,12 @@ void gl::draw_full_screen_quad()
     glPopMatrix();
 
     glPopAttrib();
+#endif
 }
 
 void gl::blend_texture(GLuint texture, GLenum sfactor, GLenum dfactor)
 {
+#if defined(GL_VERSION_2_0) && GL_VERSION_2_0
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
     glActiveTexture(GL_TEXTURE0);
@@ -129,11 +132,14 @@ void gl::blend_texture(GLuint texture, GLenum sfactor, GLenum dfactor)
     draw_full_screen_quad();
 
     glPopAttrib();
+#else
+    VSNRAY_UNUSED(texture, sfactor, dfactor);
+#endif
 }
 
-#if defined(VSNRAY_OPENGL_LEGACY)
 void gl::blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid const* pixels, GLenum sfactor, GLenum dfactor)
 {
+#if defined(GL_VERSION_1_1) && GL_VERSION_1_1
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
     recti vp = gl::viewport();
@@ -150,8 +156,10 @@ void gl::blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid c
     glDrawPixels(w, h, format, type, pixels);
 
     glPopAttrib();
-}
+#else
+    VSNRAY_UNUSED(w, h, format, type, pixels, sfactor, dfactor);
 #endif
+}
 
 recti gl::viewport()
 {
