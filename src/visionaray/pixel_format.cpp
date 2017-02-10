@@ -169,7 +169,7 @@ static const pixel_format_info color_formats[] =
 
     { 0, 0, 0, 0, 0 }, // PF_UNSPECIFIED
 
-#if defined(GL_VERSION_1_1) && GL_ES_VERSION_1_1 // TODO!
+#if defined(GL_VERSION_1_1) && GL_VERSION_1_1 // TODO!
 
     //----------------------------------------------------------------------------------------------
     // for colors etc.
