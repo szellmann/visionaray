@@ -18,56 +18,93 @@ namespace visionaray
 namespace gl
 {
 
+#if !defined(VSNRAY_OPENGL_LEGACY)
+
 //-------------------------------------------------------------------------------------------------
-// depth compositor private implementation
+// Shader program to display color texture w/o depth compositing
 //
 
-struct depth_compositor::impl
+struct color_program
 {
-#if !defined(VSNRAY_OPENGL_LEGACY)
-    impl()
-        : prog(glCreateProgram())
-        , frag(glCreateShader(GL_FRAGMENT_SHADER))
+    color_program();
+   ~color_program();
+
+    // The program
+    gl::program prog;
+
+    // The fragment shader
+    gl::shader frag;
+
+    // Uniform location of color texture
+    GLint color_loc;
+
+    void enable(gl::texture const& color_texture) const;
+    void disable() const;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// color program implementation
+//
+
+color_program::color_program()
+    : prog(glCreateProgram())
+    , frag(glCreateShader(GL_FRAGMENT_SHADER))
+{
+    frag.set_source(R"(
+        uniform sampler2D color_tex;
+
+        void main(void)
+        {
+            gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);
+        }
+        )");
+
+    frag.compile();
+    if (!frag.check_compiled())
     {
-        frag.set_source(R"(
-            uniform sampler2D color_tex;
-            uniform sampler2D depth_tex;
-
-            void main(void)
-            {
-                gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);
-                gl_FragDepth = texture2D(depth_tex, gl_TexCoord[0].xy).x;
-            }
-            )");
-
-        frag.compile();
-        if (!frag.check_compiled())
-        {
-            return;
-        }
-
-        prog.attach_shader(frag);
-
-        prog.link();
-        if (!prog.check_linked())
-        {
-            return;
-        }
-
-        color_loc = glGetUniformLocation(prog.get(), "color_tex");
-        depth_loc = glGetUniformLocation(prog.get(), "depth_tex");
+        return;
     }
 
-   ~impl()
+    prog.attach_shader(frag);
+
+    prog.link();
+    if (!prog.check_linked())
     {
-        prog.detach_shader(frag);
+        return;
     }
 
-    // GL color texture handle
-    gl::texture color_texture;
+    color_loc = glGetUniformLocation(prog.get(), "color_tex");
+}
 
-    // GL color texture handle
-    gl::texture depth_texture;
+color_program::~color_program()
+{
+    prog.detach_shader(frag);
+}
+
+void color_program::enable(gl::texture const& color_texture) const
+{
+    prog.enable();
+
+    glUniform1i(color_loc, 0);
+    glActiveTexture(GL_TEXTURE0 + 0);
+    glBindTexture(GL_TEXTURE_2D, color_texture.get());
+}
+
+void color_program::disable() const
+{
+    prog.disable();
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Shader program to composite depth textures
+//
+
+struct depth_program
+{
+    depth_program();
+   ~depth_program();
 
     // The program
     gl::program prog;
@@ -81,8 +118,96 @@ struct depth_compositor::impl
     // Uniform location of depth texture
     GLint depth_loc;
 
-    void enable_program() const;
-    void disable_program() const;
+    void enable(gl::texture const& color_texture, gl::texture const& depth_texture) const;
+    void disable() const;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// depth program implementation
+//
+
+depth_program::depth_program()
+    : prog(glCreateProgram())
+    , frag(glCreateShader(GL_FRAGMENT_SHADER))
+{
+    frag.set_source(R"(
+        uniform sampler2D color_tex;
+        uniform sampler2D depth_tex;
+
+        void main(void)
+        {
+            gl_FragColor = texture2D(color_tex, gl_TexCoord[0].xy);
+            gl_FragDepth = texture2D(depth_tex, gl_TexCoord[0].xy).x;
+        }
+        )");
+
+    frag.compile();
+    if (!frag.check_compiled())
+    {
+        return;
+    }
+
+    prog.attach_shader(frag);
+
+    prog.link();
+    if (!prog.check_linked())
+    {
+        return;
+    }
+
+    color_loc = glGetUniformLocation(prog.get(), "color_tex");
+    depth_loc = glGetUniformLocation(prog.get(), "depth_tex");
+}
+
+depth_program::~depth_program()
+{
+    prog.detach_shader(frag);
+}
+
+void depth_program::enable(
+        gl::texture const& color_texture,
+        gl::texture const& depth_texture
+        ) const
+{
+    prog.enable();
+
+    glUniform1i(color_loc, 0);
+    glActiveTexture(GL_TEXTURE0 + 0);
+    glBindTexture(GL_TEXTURE_2D, color_texture.get());
+
+    glUniform1i(depth_loc, 1);
+    glActiveTexture(GL_TEXTURE0 + 1);
+    glBindTexture(GL_TEXTURE_2D, depth_texture.get());
+}
+
+void depth_program::disable() const
+{
+    prog.disable();
+}
+
+#endif // !VSNRAY_OPENGL_LEGACY
+
+
+//-------------------------------------------------------------------------------------------------
+// depth compositor private implementation
+//
+
+struct depth_compositor::impl
+{
+#if !defined(VSNRAY_OPENGL_LEGACY)
+    // Shader program to only display color texture w/o depth compositing
+    color_program color_prog;
+
+    // Shader program for depth compositing
+    depth_program depth_prog;
+
+    // GL color texture handle
+    gl::texture color_texture;
+
+    // GL color texture handle
+    gl::texture depth_texture;
+
     void set_texture_params() const;
 #else
     pixel_format_info color_info;
@@ -98,24 +223,6 @@ struct depth_compositor::impl
 
 
 #if !defined(VSNRAY_OPENGL_LEGACY)
-void depth_compositor::impl::enable_program() const
-{
-    prog.enable();
-
-    glUniform1i(color_loc, 0);
-    glActiveTexture(GL_TEXTURE0 + 0);
-    glBindTexture(GL_TEXTURE_2D, color_texture.get());
-
-    glUniform1i(depth_loc, 1);
-    glActiveTexture(GL_TEXTURE0 + 1);
-    glBindTexture(GL_TEXTURE_2D, depth_texture.get());
-}
-
-void depth_compositor::impl::disable_program() const
-{
-    prog.disable();
-}
-
 void depth_compositor::impl::set_texture_params() const
 {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -151,11 +258,11 @@ void depth_compositor::composite_textures() const
 
     glEnable(GL_DEPTH_TEST);
 
-    impl_->enable_program();
+    impl_->depth_prog.enable(impl_->color_texture, impl_->depth_texture);
 
     gl::draw_full_screen_quad();
 
-    impl_->disable_program();
+    impl_->depth_prog.disable();
 
 
     // Restore OpenGL state
@@ -204,7 +311,20 @@ void depth_compositor::composite_textures() const
 void depth_compositor::display_color_texture() const
 {
 #if !defined(VSNRAY_OPENGL_LEGACY)
-    gl::blend_texture(impl_->color_texture.get());
+    // Store OpenGL state
+    GLint active_texture = GL_TEXTURE0;
+    glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
+
+
+    impl_->color_prog.enable(impl_->color_texture);
+
+    gl::draw_full_screen_quad();
+
+    impl_->color_prog.disable();
+
+
+    // Restore OpenGL state
+    glActiveTexture(active_texture);
 #else
     gl::blend_pixels(
             impl_->width,
