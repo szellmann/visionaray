@@ -15,6 +15,7 @@
 
 #include <visionaray/detail/platform.h>
 
+#include <visionaray/math/simd/sse.h>
 #include <visionaray/bvh.h>
 #include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
