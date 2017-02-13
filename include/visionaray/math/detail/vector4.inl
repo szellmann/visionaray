@@ -4,6 +4,7 @@
 #include <array>
 #include <type_traits>
 
+#include "../simd/sse.h"
 #include "../simd/type_traits.h"
 
 #include "math.h"
