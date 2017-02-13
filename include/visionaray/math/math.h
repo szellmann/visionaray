@@ -7,6 +7,7 @@
 #define VSNRAY_MATH_H 1
 
 #include "detail/math.h"
+#include "simd/simd.h"
 
 #include "aabb.h"
 #include "axis.h"
