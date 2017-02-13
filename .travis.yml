@@ -50,7 +50,13 @@ script:
 
     - mkdir -p build
     - cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE} "-DCMAKE_INSTALL_PREFIX=${HOME}/install" "-DCMAKE_CXX_FLAGS=${COMPILER_FLAGS}" -DVSNRAY_ENABLE_EXAMPLES=ON -DVSNRAY_ENABLE_UNITTESTS=ON
+    - cmake ..
+        -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+        "-DCMAKE_INSTALL_PREFIX=${HOME}/install"
+        "-DCMAKE_CXX_FLAGS=${COMPILER_FLAGS}"
+        -DVSNRAY_ENABLE_EXAMPLES=ON
+        -DVSNRAY_ENABLE_COMPILE_FAILURE_TESTS=ON
+        -DVSNRAY_ENABLE_UNITTESTS=ON
     - make VERBOSE=1
     - ctest -E 'surface_.*_illegal_integral_2|vector._pack_illegal_integral|vector._unpack_illegal_integral'
     - make install
