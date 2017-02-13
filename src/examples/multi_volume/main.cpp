@@ -13,7 +13,7 @@
 
 #include <visionaray/detail/platform.h>
 
-#include <visionaray/math/simd/sse.h>
+#include <visionaray/math/math.h>
 
 #include <visionaray/texture/texture.h>
 
