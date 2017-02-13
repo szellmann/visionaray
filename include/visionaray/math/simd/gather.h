@@ -11,6 +11,8 @@
 #include <type_traits>
 
 #include "avx.h"
+#include "avx512.h"
+#include "neon.h"
 #include "sse.h"
 
 // Insert math headers after platform headers to inhibit ADL!
