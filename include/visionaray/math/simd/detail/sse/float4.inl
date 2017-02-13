@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+#include "../../trans.h"
+
 namespace MATH_NAMESPACE
 {
 namespace simd
@@ -344,6 +346,15 @@ VSNRAY_FORCE_INLINE float4 floor(float4 const& v)
     __m128 r = _mm_add_ps(i, d);
 
     return r;
+#endif
+}
+
+VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
+{
+#if VSNRAY_SIMD_HAS_SVML
+    return _mm_pow_ps(x, y);
+#else
+    return exp(y * log(x));
 #endif
 }
 

@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+#include "../../trans.h"
+
 namespace MATH_NAMESPACE
 {
 namespace simd
@@ -365,6 +367,11 @@ VSNRAY_FORCE_INLINE float4 floor(float4 const& v)
     float32x4_t r = vaddq_f32(i, d);
 
     return r;
+}
+
+VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
+{
+    return exp(y * log(x));
 }
 
 VSNRAY_FORCE_INLINE float4 sqrt(float4 const& v)
