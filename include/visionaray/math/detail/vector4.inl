@@ -4,7 +4,6 @@
 #include <array>
 #include <type_traits>
 
-#include "../simd/sse.h"
 #include "../simd/type_traits.h"
 
 #include "math.h"
@@ -481,29 +480,6 @@ inline auto unpack(vector<4, FloatT> const& v)
 
     return result;
 }
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
-// Transpose to get from SoA to AoS (and vice versa)
-// Similar to mat4 transpose
-inline vector<4, float4> transpose(vector<4, float4> const& v)
-{
-    float4 tmp0 = interleave_lo(v.x, v.y);
-    float4 tmp1 = interleave_lo(v.z, v.w);
-    float4 tmp2 = interleave_hi(v.x, v.y);
-    float4 tmp3 = interleave_hi(v.z, v.w);
-
-    return vector<4, float4>(
-            move_lo(tmp0, tmp1),
-            move_hi(tmp1, tmp0),
-            move_lo(tmp2, tmp3),
-            move_hi(tmp3, tmp2)
-            );
-}
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
-// TODO: transpose for AVX?
 
 } // simd
 } // MATH_NAMESPACE
