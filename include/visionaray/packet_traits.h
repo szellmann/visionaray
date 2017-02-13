@@ -6,7 +6,10 @@
 #ifndef VSNRAY_PACKET_TRAITS_H
 #define VSNRAY_PACKET_TRAITS_H 1
 
-#include "math/math.h"
+#include "math/simd/avx.h"
+#include "math/simd/avx512.h"
+#include "math/simd/neon.h"
+#include "math/simd/sse.h"
 
 namespace visionaray
 {
