@@ -13,6 +13,8 @@
 
 #include <visionaray/detail/platform.h>
 
+#include <visionaray/math/simd/sse.h>
+
 #include <visionaray/texture/texture.h>
 
 #include <visionaray/camera.h>

@@ -126,7 +126,7 @@ void insert_sorted(HR<basic_ray<S>, Args...> const& item, RandIt first, RandIt l
             else if (any(condition))
             {
                 int_array mask;
-                store(mask, condition.i);
+                simd::store(mask, condition.i);
 
                 auto dst = unpack(first[i]);
                 auto src = unpack(item);
