@@ -3,7 +3,6 @@
 
 #include <cmath>
 
-#include "../../../vector.h"
 #include "../../trans.h"
 
 namespace MATH_NAMESPACE
@@ -421,23 +420,6 @@ VSNRAY_FORCE_INLINE float4 rsqrt(float4 const& v)
 VSNRAY_FORCE_INLINE float4 approx_rsqrt(float4 const& v)
 {
     return _mm_rsqrt_ps(v);
-}
-
-// Transpose to get from SoA to AoS (and vice versa)
-// Similar to mat4 transpose
-inline vector<4, float4> transpose(vector<4, float4> const& v)
-{
-    float4 tmp0 = interleave_lo(v.x, v.y);
-    float4 tmp1 = interleave_lo(v.z, v.w);
-    float4 tmp2 = interleave_hi(v.x, v.y);
-    float4 tmp3 = interleave_hi(v.z, v.w);
-
-    return vector<4, float4>(
-            move_lo(tmp0, tmp1),
-            move_hi(tmp1, tmp0),
-            move_lo(tmp2, tmp3),
-            move_hi(tmp3, tmp2)
-            );
 }
 
 } // simd
