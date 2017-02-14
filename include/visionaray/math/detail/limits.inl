@@ -173,55 +173,148 @@ MATH_FUNC inline unorm<Bits> numeric_limits<unorm<Bits>>::max()
 }
 
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
+
 //-------------------------------------------------------------------------------------------------
-// simd::basic_float
+// simd::float4
 //
 
-template <typename T>
-MATH_CPU_FUNC inline simd::basic_float<T> numeric_limits<simd::basic_float<T>>::min()
+MATH_CPU_FUNC inline simd::float4 numeric_limits<simd::float4>::min()
 {
-    return simd::basic_float<T>(FLT_MIN);
+    return simd::float4(FLT_MIN);
 }
 
-template <typename T>
-MATH_CPU_FUNC inline simd::basic_float<T> numeric_limits<simd::basic_float<T>>::lowest()
+MATH_CPU_FUNC inline simd::float4 numeric_limits<simd::float4>::lowest()
 {
-    return simd::basic_float<T>(-FLT_MAX);
+    return simd::float4(-FLT_MAX);
 }
 
-template <typename T>
-MATH_CPU_FUNC inline simd::basic_float<T> numeric_limits<simd::basic_float<T>>::max()
+MATH_CPU_FUNC inline simd::float4 numeric_limits<simd::float4>::max()
 {
-    return simd::basic_float<T>(FLT_MAX);
+    return simd::float4(FLT_MAX);
 }
 
-template <typename T>
-MATH_CPU_FUNC inline simd::basic_float<T> numeric_limits<simd::basic_float<T>>::epsilon()
+MATH_CPU_FUNC inline simd::float4 numeric_limits<simd::float4>::epsilon()
 {
-    return simd::basic_float<T>(FLT_EPSILON);
+    return simd::float4(FLT_EPSILON);
 }
 
 
 //-------------------------------------------------------------------------------------------------
-// simd::basic_int
+// simd::int4
 //
 
-template <typename T>
-MATH_CPU_FUNC inline simd::basic_int<T> numeric_limits<simd::basic_int<T>>::min()
+MATH_CPU_FUNC inline simd::int4 numeric_limits<simd::int4>::min()
 {
-    return simd::basic_int<T>(INT_MIN);
+    return simd::int4(INT_MIN);
 }
 
-template <typename T>
-MATH_CPU_FUNC inline simd::basic_int<T> numeric_limits<simd::basic_int<T>>::lowest()
+MATH_CPU_FUNC inline simd::int4 numeric_limits<simd::int4>::lowest()
 {
-    return simd::basic_int<T>(INT_MIN);
+    return simd::int4(INT_MIN);
 }
 
-template <typename T>
-MATH_CPU_FUNC inline simd::basic_int<T> numeric_limits<simd::basic_int<T>>::max()
+MATH_CPU_FUNC inline simd::int4 numeric_limits<simd::int4>::max()
 {
-    return simd::basic_int<T>(INT_MAX);
+    return simd::int4(INT_MAX);
 }
+
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
+
+//-------------------------------------------------------------------------------------------------
+// simd::float8
+//
+
+MATH_CPU_FUNC inline simd::float8 numeric_limits<simd::float8>::min()
+{
+    return simd::float8(FLT_MIN);
+}
+
+MATH_CPU_FUNC inline simd::float8 numeric_limits<simd::float8>::lowest()
+{
+    return simd::float8(-FLT_MAX);
+}
+
+MATH_CPU_FUNC inline simd::float8 numeric_limits<simd::float8>::max()
+{
+    return simd::float8(FLT_MAX);
+}
+
+MATH_CPU_FUNC inline simd::float8 numeric_limits<simd::float8>::epsilon()
+{
+    return simd::float8(FLT_EPSILON);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// simd::int8
+//
+
+MATH_CPU_FUNC inline simd::int8 numeric_limits<simd::int8>::min()
+{
+    return simd::int8(INT_MIN);
+}
+
+MATH_CPU_FUNC inline simd::int8 numeric_limits<simd::int8>::lowest()
+{
+    return simd::int8(INT_MIN);
+}
+
+MATH_CPU_FUNC inline simd::int8 numeric_limits<simd::int8>::max()
+{
+    return simd::int8(INT_MAX);
+}
+
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+
+//-------------------------------------------------------------------------------------------------
+// simd::float16
+//
+
+MATH_CPU_FUNC inline simd::float16 numeric_limits<simd::float16>::min()
+{
+    return simd::float16(FLT_MIN);
+}
+
+MATH_CPU_FUNC inline simd::float16 numeric_limits<simd::float16>::lowest()
+{
+    return simd::float16(-FLT_MAX);
+}
+
+MATH_CPU_FUNC inline simd::float16 numeric_limits<simd::float16>::max()
+{
+    return simd::float16(FLT_MAX);
+}
+
+MATH_CPU_FUNC inline simd::float16 numeric_limits<simd::float16>::epsilon()
+{
+    return simd::float16(FLT_EPSILON);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// simd::int16
+//
+
+MATH_CPU_FUNC inline simd::int16 numeric_limits<simd::int16>::min()
+{
+    return simd::int16(INT_MIN);
+}
+
+MATH_CPU_FUNC inline simd::int16 numeric_limits<simd::int16>::lowest()
+{
+    return simd::int16(INT_MIN);
+}
+
+MATH_CPU_FUNC inline simd::int16 numeric_limits<simd::int16>::max()
+{
+    return simd::int16(INT_MAX);
+}
+
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 } // MATH_NAMESPACE

@@ -107,26 +107,80 @@ public:
 // SIMD specializations
 //
 
-template <typename T>
-class numeric_limits<simd::basic_float<T>>
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
+
+template <>
+class numeric_limits<simd::float4>
 {
 public:
 
-    MATH_CPU_FUNC static simd::basic_float<T> min();
-    MATH_CPU_FUNC static simd::basic_float<T> lowest();
-    MATH_CPU_FUNC static simd::basic_float<T> max();
-    MATH_CPU_FUNC static simd::basic_float<T> epsilon();
+    MATH_CPU_FUNC static simd::float4 min();
+    MATH_CPU_FUNC static simd::float4 lowest();
+    MATH_CPU_FUNC static simd::float4 max();
+    MATH_CPU_FUNC static simd::float4 epsilon();
 };
 
-template <typename T>
-class numeric_limits<simd::basic_int<T>>
+template <>
+class numeric_limits<simd::int4>
 {
 public:
 
-    MATH_CPU_FUNC static simd::basic_int<T> min();
-    MATH_CPU_FUNC static simd::basic_int<T> lowest();
-    MATH_CPU_FUNC static simd::basic_int<T> max();
+    MATH_CPU_FUNC static simd::int4 min();
+    MATH_CPU_FUNC static simd::int4 lowest();
+    MATH_CPU_FUNC static simd::int4 max();
 };
+
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)  || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
+
+template <>
+class numeric_limits<simd::float8>
+{
+public:
+
+    MATH_CPU_FUNC static simd::float8 min();
+    MATH_CPU_FUNC static simd::float8 lowest();
+    MATH_CPU_FUNC static simd::float8 max();
+    MATH_CPU_FUNC static simd::float8 epsilon();
+};
+
+template <>
+class numeric_limits<simd::int8>
+{
+public:
+
+    MATH_CPU_FUNC static simd::int8 min();
+    MATH_CPU_FUNC static simd::int8 lowest();
+    MATH_CPU_FUNC static simd::int8 max();
+};
+
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+
+template <>
+class numeric_limits<simd::float16>
+{
+public:
+
+    MATH_CPU_FUNC static simd::float16 min();
+    MATH_CPU_FUNC static simd::float16 lowest();
+    MATH_CPU_FUNC static simd::float16 max();
+    MATH_CPU_FUNC static simd::float16 epsilon();
+};
+
+template <>
+class numeric_limits<simd::int16>
+{
+public:
+
+    MATH_CPU_FUNC static simd::int16 min();
+    MATH_CPU_FUNC static simd::int16 lowest();
+    MATH_CPU_FUNC static simd::int16 max();
+};
+
+#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 } // MATH_NAMESPACE
 
