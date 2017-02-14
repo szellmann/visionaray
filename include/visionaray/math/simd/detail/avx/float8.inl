@@ -3,8 +3,6 @@
 
 #include <cmath>
 
-#include "../../trans.h"
-
 namespace MATH_NAMESPACE
 {
 namespace simd
@@ -267,15 +265,6 @@ VSNRAY_FORCE_INLINE float8 ceil(float8 const& v)
 VSNRAY_FORCE_INLINE float8 floor(float8 const& v)
 {
     return _mm256_floor_ps(v);
-}
-
-VSNRAY_FORCE_INLINE float8 pow(float8 const& x, float8 const& y)
-{
-#if VSNRAY_SIMD_HAS_SVML
-    return _mm256_pow_ps(x, y);
-#else
-    return exp(y * log(x));
-#endif
 }
 
 VSNRAY_FORCE_INLINE float8 sqrt(float8 const& v)

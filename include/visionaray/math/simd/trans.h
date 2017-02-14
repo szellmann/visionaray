@@ -13,6 +13,10 @@
 
 #include <type_traits>
 
+#include "avx.h"
+#include "avx512.h"
+#include "neon.h"
+#include "sse.h"
 #include "type_traits.h"
 #include "../detail/math.h"
 
@@ -333,112 +337,218 @@ VSNRAY_FORCE_INLINE T log2(T const& x)
 } // detail
 
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
+
 //-------------------------------------------------------------------------------------------------
 // Trigonometric functions
 // TODO: implement w/o context switch
 //
 
-template <
-    typename T,
-    typename = typename std::enable_if<is_simd_vector<T>::value>::type
-    >
-VSNRAY_FORCE_INLINE T cos(T const& x)
+VSNRAY_FORCE_INLINE float4 cos(float4 const& x)
 {
-    aligned_array_t<T> tmp;
+    VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    for (unsigned i = 0; i < num_elements<T>::value; ++i)
-    {
-        tmp[i] = std::cos(tmp[i]);
-    }
-
-    return T(tmp);
+    return float4( std::cos(tmp[0]), std::cos(tmp[1]), std::cos(tmp[2]), std::cos(tmp[3]) );
 }
 
-template <
-    typename T,
-    typename = typename std::enable_if<is_simd_vector<T>::value>::type
-    >
-VSNRAY_FORCE_INLINE T sin(T const& x)
+VSNRAY_FORCE_INLINE float4 sin(float4 const& x)
 {
-    aligned_array_t<T> tmp;
+    VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    for (unsigned i = 0; i < num_elements<T>::value; ++i)
-    {
-        tmp[i] = std::sin(tmp[i]);
-    }
-
-    return T(tmp);
+    return float4( std::sin(tmp[0]), std::sin(tmp[1]), std::sin(tmp[2]), std::sin(tmp[3]) );
 }
 
-template <
-    typename T,
-    typename = typename std::enable_if<is_simd_vector<T>::value>::type
-    >
-VSNRAY_FORCE_INLINE T tan(T const& x)
+VSNRAY_FORCE_INLINE float4 tan(float4 const& x)
 {
-    aligned_array_t<T> tmp;
+    VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    for (unsigned i = 0; i < num_elements<T>::value; ++i)
-    {
-        tmp[i] = std::tan(tmp[i]);
-    }
-
-    return T(tmp);
+    return float4( std::tan(tmp[0]), std::tan(tmp[1]), std::tan(tmp[2]), std::sin(tmp[3]) );
 }
 
-template <
-    typename T,
-    typename = typename std::enable_if<is_simd_vector<T>::value>::type
-    >
-VSNRAY_FORCE_INLINE T acos(T const& x)
+VSNRAY_FORCE_INLINE float4 acos(float4 const& x)
 {
-    aligned_array_t<T> tmp;
+    VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    for (unsigned i = 0; i < num_elements<T>::value; ++i)
-    {
-        tmp[i] = std::acos(tmp[i]);
-    }
-
-    return T(tmp);
+    return float4( std::acos(tmp[0]), std::acos(tmp[1]), std::acos(tmp[2]), std::acos(tmp[3]) );
 }
 
-template <
-    typename T,
-    typename = typename std::enable_if<is_simd_vector<T>::value>::type
-    >
-VSNRAY_FORCE_INLINE T asin(T const& x)
+VSNRAY_FORCE_INLINE float4 asin(float4 const& x)
 {
-    aligned_array_t<T> tmp;
+    VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    for (unsigned i = 0; i < num_elements<T>::value; ++i)
-    {
-        tmp[i] = std::asin(tmp[i]);
-    }
-
-    return T(tmp);
+    return float4( std::asin(tmp[0]), std::asin(tmp[1]), std::asin(tmp[2]), std::asin(tmp[3]) );
 }
 
-template <
-    typename T,
-    typename = typename std::enable_if<is_simd_vector<T>::value>::type
-    >
-VSNRAY_FORCE_INLINE T atan(T const& x)
+VSNRAY_FORCE_INLINE float4 atan(float4 const& x)
 {
-    aligned_array_t<T> tmp;
+    VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    for (unsigned i = 0; i < num_elements<T>::value; ++i)
-    {
-        tmp[i] = std::atan(tmp[i]);
-    }
-
-    return T(tmp);
+    return float4( std::atan(tmp[0]), std::atan(tmp[1]), std::atan(tmp[2]), std::asin(tmp[3]) );
 }
+
+#endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
+
+// TODO: consolidate stuff with float4 (template)
+
+VSNRAY_FORCE_INLINE float8 cos(float8 const& x)
+{
+    VSNRAY_ALIGN(32) float tmp[8];
+    store(tmp, x);
+
+    return float8(
+        std::cos(tmp[0]), std::cos(tmp[1]), std::cos(tmp[2]), std::cos(tmp[3]),
+        std::cos(tmp[4]), std::cos(tmp[5]), std::cos(tmp[6]), std::cos(tmp[7])
+        );
+}
+
+VSNRAY_FORCE_INLINE float8 sin(float8 const& x)
+{
+    VSNRAY_ALIGN(32) float tmp[8];
+    store(tmp, x);
+
+    return float8(
+        std::sin(tmp[0]), std::sin(tmp[1]), std::sin(tmp[2]), std::sin(tmp[3]),
+        std::sin(tmp[4]), std::sin(tmp[5]), std::sin(tmp[6]), std::sin(tmp[7])
+        );
+}
+
+VSNRAY_FORCE_INLINE float8 tan(float8 const& x)
+{
+    VSNRAY_ALIGN(32) float tmp[8];
+    store(tmp, x);
+
+    return float8(
+        std::tan(tmp[0]), std::tan(tmp[1]), std::tan(tmp[2]), std::tan(tmp[3]),
+        std::tan(tmp[4]), std::tan(tmp[5]), std::tan(tmp[6]), std::tan(tmp[7])
+        );
+}
+
+VSNRAY_FORCE_INLINE float8 acos(float8 const& x)
+{
+    VSNRAY_ALIGN(32) float tmp[8];
+    store(tmp, x);
+
+    return float8(
+        std::acos(tmp[0]), std::acos(tmp[1]), std::acos(tmp[2]), std::acos(tmp[3]),
+        std::acos(tmp[4]), std::acos(tmp[5]), std::acos(tmp[6]), std::acos(tmp[7])
+        );
+}
+
+VSNRAY_FORCE_INLINE float8 asin(float8 const& x)
+{
+    VSNRAY_ALIGN(32) float tmp[8];
+    store(tmp, x);
+
+    return float8(
+        std::asin(tmp[0]), std::asin(tmp[1]), std::asin(tmp[2]), std::asin(tmp[3]),
+        std::asin(tmp[4]), std::asin(tmp[5]), std::asin(tmp[6]), std::asin(tmp[7])
+        );
+}
+
+VSNRAY_FORCE_INLINE float8 atan(float8 const& x)
+{
+    VSNRAY_ALIGN(32) float tmp[8];
+    store(tmp, x);
+
+    return float8(
+        std::atan(tmp[0]), std::atan(tmp[1]), std::atan(tmp[2]), std::atan(tmp[3]),
+        std::atan(tmp[4]), std::atan(tmp[5]), std::atan(tmp[6]), std::atan(tmp[7])
+        );
+}
+
+#endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+
+// TODO: consolidate stuff with float4 (template)
+
+VSNRAY_FORCE_INLINE float16 cos(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::cos(tmp[ 0]), std::cos(tmp[ 1]), std::cos(tmp[ 2]), std::cos(tmp[ 3]),
+        std::cos(tmp[ 4]), std::cos(tmp[ 5]), std::cos(tmp[ 6]), std::cos(tmp[ 7]),
+        std::cos(tmp[ 8]), std::cos(tmp[ 9]), std::cos(tmp[10]), std::cos(tmp[11]),
+        std::cos(tmp[12]), std::cos(tmp[13]), std::cos(tmp[14]), std::cos(tmp[15])
+        );
+}
+
+VSNRAY_FORCE_INLINE float16 sin(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::sin(tmp[ 0]), std::sin(tmp[ 1]), std::sin(tmp[ 2]), std::sin(tmp[ 3]),
+        std::sin(tmp[ 4]), std::sin(tmp[ 5]), std::sin(tmp[ 6]), std::sin(tmp[ 7]),
+        std::sin(tmp[ 8]), std::sin(tmp[ 9]), std::sin(tmp[10]), std::sin(tmp[11]),
+        std::sin(tmp[12]), std::sin(tmp[13]), std::sin(tmp[14]), std::sin(tmp[15])
+        );
+}
+
+VSNRAY_FORCE_INLINE float16 tan(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::tan(tmp[ 0]), std::tan(tmp[ 1]), std::tan(tmp[ 2]), std::tan(tmp[ 3]),
+        std::tan(tmp[ 4]), std::tan(tmp[ 5]), std::tan(tmp[ 6]), std::tan(tmp[ 7]),
+        std::tan(tmp[ 8]), std::tan(tmp[ 9]), std::tan(tmp[10]), std::tan(tmp[11]),
+        std::tan(tmp[12]), std::tan(tmp[13]), std::tan(tmp[14]), std::tan(tmp[15])
+        );
+}
+
+VSNRAY_FORCE_INLINE float16 acos(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::acos(tmp[ 0]), std::acos(tmp[ 1]), std::acos(tmp[ 2]), std::acos(tmp[ 3]),
+        std::acos(tmp[ 4]), std::acos(tmp[ 5]), std::acos(tmp[ 6]), std::acos(tmp[ 7]),
+        std::acos(tmp[ 8]), std::acos(tmp[ 9]), std::acos(tmp[10]), std::acos(tmp[11]),
+        std::acos(tmp[12]), std::acos(tmp[13]), std::acos(tmp[14]), std::acos(tmp[15])
+        );
+}
+
+VSNRAY_FORCE_INLINE float16 asin(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::asin(tmp[ 0]), std::asin(tmp[ 1]), std::asin(tmp[ 2]), std::asin(tmp[ 3]),
+        std::asin(tmp[ 4]), std::asin(tmp[ 5]), std::asin(tmp[ 6]), std::asin(tmp[ 7]),
+        std::asin(tmp[ 8]), std::asin(tmp[ 9]), std::asin(tmp[10]), std::asin(tmp[11]),
+        std::asin(tmp[12]), std::asin(tmp[13]), std::asin(tmp[14]), std::asin(tmp[15])
+        );
+}
+
+VSNRAY_FORCE_INLINE float16 atan(float16 const& x)
+{
+    VSNRAY_ALIGN(64) float tmp[16];
+    store(tmp, x);
+
+    return float16(
+        std::atan(tmp[ 0]), std::atan(tmp[ 1]), std::atan(tmp[ 2]), std::atan(tmp[ 3]),
+        std::atan(tmp[ 4]), std::atan(tmp[ 5]), std::atan(tmp[ 6]), std::atan(tmp[ 7]),
+        std::atan(tmp[ 8]), std::atan(tmp[ 9]), std::atan(tmp[10]), std::atan(tmp[11]),
+        std::atan(tmp[12]), std::atan(tmp[13]), std::atan(tmp[14]), std::atan(tmp[15])
+        );
+}
+
+#endif
 
 
 //-------------------------------------------------------------------------------------------------
@@ -477,6 +587,50 @@ VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
     m *= 2.0f;
     return FloatT(n - 1) + detail::log2(m - 1.0f);
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// pow()
+//
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
+
+VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
+{
+#if VSNRAY_SIMD_HAS_SVML
+    return _mm_pow_ps(x, y);
+#else
+    return exp( y * log(x) );
+#endif
+}
+
+#endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
+
+VSNRAY_FORCE_INLINE float8 pow(float8 const& x, float8 const& y)
+{
+#if VSNRAY_SIMD_HAS_SVML
+    return _mm256_pow_ps(x, y);
+#else
+    return exp( y * log(x) );
+#endif
+}
+
+#endif
+
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+
+VSNRAY_FORCE_INLINE float16 pow(float16 const& x, float16 const& y)
+{
+#if VSNRAY_SIMD_HAS_SVML
+    return _mm512_pow_ps(x, y); // TODO: exists?
+#else
+    return exp( y * log(x) );
+#endif
+}
+
+#endif
 
 } // simd
 } // MATH_NAMESPACE
