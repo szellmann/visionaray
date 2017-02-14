@@ -15,7 +15,7 @@
 
 #include <visionaray/detail/platform.h>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/simd/sse.h>
 
 #include <visionaray/bvh.h>
 #include <visionaray/camera.h>
