@@ -6,7 +6,10 @@
 #ifndef VSNRAY_SIMD_TYPE_TRAITS_H
 #define VSNRAY_SIMD_TYPE_TRAITS_H 1
 
-#include "forward.h"
+#include "avx.h"
+#include "avx512.h"
+#include "neon.h"
+#include "sse.h"
 
 namespace MATH_NAMESPACE
 {
