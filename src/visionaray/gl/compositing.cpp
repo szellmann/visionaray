@@ -349,8 +349,10 @@ void depth_compositor::composite_textures() const
 #if !defined(VSNRAY_OPENGL_LEGACY)
     // Store OpenGL state
     GLint active_texture = GL_TEXTURE0;
+    GLuint bound_texture = 0;
     GLboolean depth_test = GL_FALSE;
     glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
     glGetBooleanv(GL_DEPTH_TEST, &depth_test);
 
 
@@ -376,6 +378,7 @@ void depth_compositor::composite_textures() const
 
     // Restore OpenGL state
     glActiveTexture(active_texture);
+    glBindTexture(GL_TEXTURE_2D, bound_texture);
     if (depth_test)
     {
         glEnable(GL_DEPTH_TEST);
@@ -422,7 +425,9 @@ void depth_compositor::display_color_texture() const
 #if !defined(VSNRAY_OPENGL_LEGACY)
     // Store OpenGL state
     GLint active_texture = GL_TEXTURE0;
+    GLuint bound_texture = 0;
     glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
 
 
     impl_->color_prog.enable(impl_->color_texture);
@@ -445,6 +450,7 @@ void depth_compositor::display_color_texture() const
 
     // Restore OpenGL state
     glActiveTexture(active_texture);
+    glBindTexture(GL_TEXTURE_2D, bound_texture);
 #else
     gl::blend_pixels(
             impl_->width,
@@ -459,12 +465,21 @@ void depth_compositor::display_color_texture() const
 void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
 #if !defined(VSNRAY_OPENGL_LEGACY)
+    // Store OpenGL state
+    GLuint bound_texture = 0;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
+
+
     impl_->color_texture.reset( create_texture() );
 
     glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
 
     impl_->set_texture_params();
     alloc_texture(info, w, h);
+
+
+    // Restore OpenGL state
+    glBindTexture(GL_TEXTURE_2D, bound_texture);
 #else
     impl_->color_info = info;
     impl_->width = w;
@@ -475,12 +490,21 @@ void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GL
 void depth_compositor::setup_depth_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
 #if !defined(VSNRAY_OPENGL_LEGACY)
+    // Store OpenGL state
+    GLuint bound_texture = 0;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
+
+
     impl_->depth_texture.reset( create_texture() );
 
     glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
 
     impl_->set_texture_params();
     alloc_texture(info, w, h);
+
+
+    // Restore OpenGL state
+    glBindTexture(GL_TEXTURE_2D, bound_texture);
 #else
     impl_->depth_info = info;
     impl_->width = w;
@@ -496,9 +520,18 @@ void depth_compositor::update_color_texture(
         ) const
 {
 #if !defined(VSNRAY_OPENGL_LEGACY)
+    // Store OpenGL state
+    GLuint bound_texture = 0;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
+
+
     glBindTexture(GL_TEXTURE_2D, impl_->color_texture.get());
 
     gl::update_texture( info, w, h, data );
+
+
+    // Restore OpenGL state
+    glBindTexture(GL_TEXTURE_2D, bound_texture);
 #else
     impl_->color_info = info;
     impl_->width = w;
@@ -515,9 +548,18 @@ void depth_compositor::update_depth_texture(
         ) const
 {
 #if !defined(VSNRAY_OPENGL_LEGACY)
+    // Store OpenGL state
+    GLuint bound_texture = 0;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
+
+
     glBindTexture(GL_TEXTURE_2D, impl_->depth_texture.get());
 
     gl::update_texture( info, w, h, data );
+
+
+    // Restore OpenGL state
+    glBindTexture(GL_TEXTURE_2D, bound_texture);
 #else
     impl_->depth_info = info;
     impl_->width = w;
