@@ -28,7 +28,12 @@ class program
 {
 public:
 
-    explicit program(GLuint name = 0) : name_(name) {}
+    explicit program(GLuint name = 0)
+        : name_(name)
+        , old_(0)
+    {
+    }
+
    ~program() { reset(); }
 
     void destroy()
@@ -60,7 +65,11 @@ protected:
 
     VSNRAY_NOT_COPYABLE(program)
 
+    // This program
     GLuint name_;
+
+    // The previously bound program
+    GLuint old_;
 
 };
 

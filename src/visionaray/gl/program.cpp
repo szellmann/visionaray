@@ -32,12 +32,13 @@ void program::link() const
 
 void program::enable() const
 {
+    glGetIntegerv(GL_CURRENT_PROGRAM, const_cast<GLint*>(reinterpret_cast<GLint const*>(&old_)));
     glUseProgram(name_);
 }
 
 void program::disable() const
 {
-    glUseProgram(0);
+    glUseProgram(old_);
 }
 
 bool program::check_attached(shader const& s) const
