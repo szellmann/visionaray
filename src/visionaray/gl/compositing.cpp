@@ -13,12 +13,14 @@
 #include <visionaray/gl/util.h>
 #include <visionaray/pixel_format.h>
 
+#define VSNRAY_OPENGL_LEGACY 0
+
 namespace visionaray
 {
 namespace gl
 {
 
-#if !defined(VSNRAY_OPENGL_LEGACY)
+#if !VSNRAY_OPENGL_LEGACY
 
 //-------------------------------------------------------------------------------------------------
 // Shader program to display color texture w/o depth compositing
@@ -262,7 +264,7 @@ void depth_program::disable() const
 
 struct depth_compositor::impl
 {
-#if !defined(VSNRAY_OPENGL_LEGACY)
+#if !VSNRAY_OPENGL_LEGACY
     impl()
         : vertex_buffer(create_buffer())
         , tex_coord_buffer(create_buffer())
@@ -320,7 +322,7 @@ struct depth_compositor::impl
 };
 
 
-#if !defined(VSNRAY_OPENGL_LEGACY)
+#if !VSNRAY_OPENGL_LEGACY
 void depth_compositor::impl::set_texture_params() const
 {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -346,7 +348,7 @@ depth_compositor::~depth_compositor()
 
 void depth_compositor::composite_textures() const
 {
-#if !defined(VSNRAY_OPENGL_LEGACY)
+#if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLint active_texture = GL_TEXTURE0;
     GLuint bound_texture = 0;
@@ -422,7 +424,7 @@ void depth_compositor::composite_textures() const
 
 void depth_compositor::display_color_texture() const
 {
-#if !defined(VSNRAY_OPENGL_LEGACY)
+#if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLint active_texture = GL_TEXTURE0;
     GLuint bound_texture = 0;
@@ -464,7 +466,7 @@ void depth_compositor::display_color_texture() const
 
 void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
-#if !defined(VSNRAY_OPENGL_LEGACY)
+#if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLuint bound_texture = 0;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
@@ -489,7 +491,7 @@ void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GL
 
 void depth_compositor::setup_depth_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
-#if !defined(VSNRAY_OPENGL_LEGACY)
+#if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLuint bound_texture = 0;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
@@ -519,7 +521,7 @@ void depth_compositor::update_color_texture(
         GLvoid const*       data
         ) const
 {
-#if !defined(VSNRAY_OPENGL_LEGACY)
+#if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLuint bound_texture = 0;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
@@ -547,7 +549,7 @@ void depth_compositor::update_depth_texture(
         GLvoid const*       data
         ) const
 {
-#if !defined(VSNRAY_OPENGL_LEGACY)
+#if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLuint bound_texture = 0;
     glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
