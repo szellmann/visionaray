@@ -97,6 +97,10 @@ set(COMMON_HEADERS
 
     ${CONFIG_DIR}/config.h
 
+    async/connection.h
+    async/connection_manager.h
+    async/message.h
+
     input/exception.h
     input/glut.h
     input/keyboard.h
@@ -133,6 +137,10 @@ set(COMMON_HEADERS
 )
 
 set(COMMON_SOURCES
+
+    async/connection.cpp
+    async/connection_manager.cpp
+    async/message.cpp
 
     manip/arcball.cpp
     manip/arcball_manipulator.cpp
