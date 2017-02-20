@@ -353,7 +353,7 @@ void depth_compositor::composite_textures() const
     GLint active_texture = GL_TEXTURE0;
     GLuint bound_texture = 0;
     GLboolean blend = glIsEnabled(GL_BLEND);
-    GLenum sfactor = GL_SRC_ALPHA;
+    GLenum sfactor = GL_ONE;
     GLenum dfactor = GL_ONE_MINUS_SRC_ALPHA;
     GLboolean depth_test = GL_FALSE;
     glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
@@ -363,7 +363,7 @@ void depth_compositor::composite_textures() const
     glGetIntegerv(GL_BLEND_DST, reinterpret_cast<GLint*>(&dfactor));
 
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 
@@ -445,7 +445,7 @@ void depth_compositor::display_color_texture() const
     GLint active_texture = GL_TEXTURE0;
     GLuint bound_texture = 0;
     GLboolean blend = glIsEnabled(GL_BLEND);
-    GLenum sfactor = GL_SRC_ALPHA;
+    GLenum sfactor = GL_ONE;
     GLenum dfactor = GL_ONE_MINUS_SRC_ALPHA;
     glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
     glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
@@ -453,7 +453,7 @@ void depth_compositor::display_color_texture() const
     glGetIntegerv(GL_BLEND_DST, reinterpret_cast<GLint*>(&dfactor));
 
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
 
     impl_->color_prog.enable(impl_->color_texture);
