@@ -352,12 +352,19 @@ void depth_compositor::composite_textures() const
     // Store OpenGL state
     GLint active_texture = GL_TEXTURE0;
     GLuint bound_texture = 0;
+    GLboolean blend = glIsEnabled(GL_BLEND);
+    GLenum sfactor = GL_SRC_ALPHA;
+    GLenum dfactor = GL_ONE_MINUS_SRC_ALPHA;
     GLboolean depth_test = GL_FALSE;
     glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
     glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
     glGetBooleanv(GL_DEPTH_TEST, &depth_test);
+    glGetIntegerv(GL_BLEND_SRC, reinterpret_cast<GLint*>(&sfactor));
+    glGetIntegerv(GL_BLEND_DST, reinterpret_cast<GLint*>(&dfactor));
 
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 
     impl_->depth_prog.enable(impl_->color_texture, impl_->depth_texture);
@@ -381,6 +388,15 @@ void depth_compositor::composite_textures() const
     // Restore OpenGL state
     glActiveTexture(active_texture);
     glBindTexture(GL_TEXTURE_2D, bound_texture);
+    glBlendFunc(sfactor, dfactor);
+    if (blend)
+    {
+        glEnable(GL_BLEND);
+    }
+    else
+    {
+        glDisable(GL_BLEND);
+    }
     if (depth_test)
     {
         glEnable(GL_DEPTH_TEST);
@@ -428,9 +444,17 @@ void depth_compositor::display_color_texture() const
     // Store OpenGL state
     GLint active_texture = GL_TEXTURE0;
     GLuint bound_texture = 0;
+    GLboolean blend = glIsEnabled(GL_BLEND);
+    GLenum sfactor = GL_SRC_ALPHA;
+    GLenum dfactor = GL_ONE_MINUS_SRC_ALPHA;
     glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
     glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
+    glGetIntegerv(GL_BLEND_SRC, reinterpret_cast<GLint*>(&sfactor));
+    glGetIntegerv(GL_BLEND_DST, reinterpret_cast<GLint*>(&dfactor));
 
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
     impl_->color_prog.enable(impl_->color_texture);
 
@@ -453,6 +477,15 @@ void depth_compositor::display_color_texture() const
     // Restore OpenGL state
     glActiveTexture(active_texture);
     glBindTexture(GL_TEXTURE_2D, bound_texture);
+    glBlendFunc(sfactor, dfactor);
+    if (blend)
+    {
+        glEnable(GL_BLEND);
+    }
+    else
+    {
+        glDisable(GL_BLEND);
+    }
 #else
     gl::blend_pixels(
             impl_->width,
