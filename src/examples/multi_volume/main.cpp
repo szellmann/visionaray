@@ -240,6 +240,9 @@ struct renderer : viewer_type
             return cos(2 * constants::pi<float>() * fM * cos(constants::pi<float>() * r / 2));
         };
 
+#ifdef _OPENMP
+        #pragma omp parallel for
+#endif
         for (int z = 0; z < d; ++z)
         {
             for (int y = 0; y < h; ++y)
@@ -264,6 +267,9 @@ struct renderer : viewer_type
     {
         heart.resize(w * h * d);
 
+#ifdef _OPENMP
+        #pragma omp parallel for
+#endif
         for (int z = 0; z < d; ++z)
         {
             for (int y = 0; y < h; ++y)
@@ -289,6 +295,9 @@ struct renderer : viewer_type
 
         float n = 8;
 
+#ifdef _OPENMP
+        #pragma omp parallel for
+#endif
         for (int z = 0; z < d; ++z)
         {
             for (int y = 0; y < h; ++y)
