@@ -121,6 +121,7 @@ set(COMMON_HEADERS
     manip/translate_manipulator.h
     manip/zoom_manipulator.h
 
+    blocking_queue.h
     call_kernel.h
     cfile.h
     hdr_image.h
