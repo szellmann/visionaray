@@ -1,3 +1,6 @@
+# This file is distributed under the MIT license.
+# See the LICENSE file for details.
+
 set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/CmdLine)
 set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)

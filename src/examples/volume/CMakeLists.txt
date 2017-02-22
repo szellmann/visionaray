@@ -1,3 +1,6 @@
+# This file is distributed under the MIT license.
+# See the LICENSE file for details.
+
 find_package(GLUT REQUIRED)
 
 visionaray_use_package(GLUT)

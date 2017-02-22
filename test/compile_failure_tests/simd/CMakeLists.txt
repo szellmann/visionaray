@@ -1,3 +1,6 @@
+# This file is distributed under the MIT license.
+# See the LICENSE file for details.
+
 visionaray_test_compile_success(math.cpp       math_div_up           MATH_DIV_UP                          )
 visionaray_test_compile_failure(math.cpp       math_div_up_float     MATH_DIV_UP_FLOAT                    )
 visionaray_test_compile_success(math.cpp       math_round_up         MATH_ROUND_UP                        )

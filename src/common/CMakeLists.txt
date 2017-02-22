@@ -1,3 +1,7 @@
+# This file is distributed under the MIT license.
+# See the LICENSE file for details.
+
+
 #--------------------------------------------------------------------------------------------------
 # External libraries
 #
@@ -134,6 +138,8 @@ set(COMMON_HEADERS
     timer.h
     viewer_base.h
     viewer_glut.h
+    viewer_remote.h
+
 )
 
 set(COMMON_SOURCES
@@ -163,6 +169,7 @@ set(COMMON_SOURCES
     tiff_image.cpp
     viewer_base.cpp
     viewer_glut.cpp
+    viewer_remote.cpp
 
 )
 

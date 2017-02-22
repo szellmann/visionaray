@@ -1,3 +1,6 @@
+# This file is distributed under the MIT license.
+# See the LICENSE file for details.
+
 visionaray_test_compile_success(generic_material.cpp generic_material_pack_float4             GENMAT_PACK_FLOAT4                   )
 visionaray_test_compile_success(generic_material.cpp generic_material_pack_float8             GENMAT_PACK_FLOAT8                   )
 visionaray_test_compile_failure(generic_material.cpp generic_material_pack_illegal_length_1   GENMAT_PACK_ILLEGAL_LENGTH_1         )
