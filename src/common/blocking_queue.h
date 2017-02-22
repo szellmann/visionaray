@@ -33,7 +33,7 @@ public:
             queue_.push_back(value);
         }
 
-        non_empty_.signal();
+        non_empty_.notify();
     }
 
     T pop_front()
