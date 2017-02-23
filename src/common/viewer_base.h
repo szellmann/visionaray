@@ -50,6 +50,9 @@ public:
     int height() const;
     vec3 background_color() const;
 
+    // Allow for unknown or unhandled command line arguments
+    void set_allow_unknown_cmd_line_args(bool allow);
+
     // Returns a reference to the command line instance
     support::cl::CmdLine& cmd_line_inst();
 
