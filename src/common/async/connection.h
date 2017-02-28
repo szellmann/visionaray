@@ -75,7 +75,7 @@ public:
     // Sends a message to the other side.
     void write(message_pointer message);
 
-    // Sends a message to the other size.
+    // Sends a message to the other side.
     template <typename It>
     void write(unsigned type, It first, It last)
     {
