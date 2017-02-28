@@ -198,6 +198,10 @@ void viewer_base::resize(int width, int height)
     impl_->height = height;
 }
 
+void viewer_base::swap_buffers()
+{
+}
+
 void viewer_base::toggle_full_screen()
 {
     impl_->full_screen = !impl_->full_screen;

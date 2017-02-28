@@ -267,6 +267,11 @@ void viewer_sdl2::resize(int width, int height)
     viewer_base::resize(width, height);
 }
 
+void viewer_sdl2::swap_buffers()
+{
+    SDL_GL_SwapWindow(impl_->window);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Event handlers

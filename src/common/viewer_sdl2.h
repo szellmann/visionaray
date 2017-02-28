@@ -29,6 +29,7 @@ public:
 
     void event_loop();
     void resize(int width, int height);
+    void swap_buffers();
     void toggle_full_screen();
     void quit();
 
