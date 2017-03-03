@@ -283,7 +283,7 @@ bool pnm_image::load(std::string const& filename)
         return true;
     }
 
-    return true;
+    return false;
 }
 
 }
