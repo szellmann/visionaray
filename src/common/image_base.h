@@ -9,6 +9,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <utility>
+#include <vector>
+
+#include <boost/any.hpp>
 
 #include <visionaray/aligned_vector.h>
 #include <visionaray/pixel_format.h>
@@ -22,10 +26,19 @@ public:
 
     friend class image;
 
+    using save_option  = std::pair<std::string, boost::any>;
+    using save_options = std::vector<save_option>;
+
 public:
 
+    // Default constructor.
+    image_base() = default;
+
+    // Construct image from width, height, format, and data (data is copied).
+    image_base(size_t width, size_t height, pixel_format format, uint8_t const* data);
+
     virtual bool load(std::string const& filename);
-    virtual bool save(std::string const& filename);
+    virtual bool save(std::string const& filename, save_options const& options);
 
     size_t width() const;
     size_t height() const;

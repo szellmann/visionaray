@@ -96,6 +96,11 @@ namespace visionaray
 // image members
 //
 
+image::image(size_t width, size_t height, pixel_format format, uint8_t const* data)
+    : image_base(width, height, format, data)
+{
+}
+
 bool image::load(std::string const& filename)
 {
     std::string fn(filename);
@@ -209,9 +214,9 @@ bool image::load(std::string const& filename)
     return false;
 }
 
-bool image::save(std::string const& filename)
+bool image::save(std::string const& filename, image_base::save_options const& options)
 {
-    return image_base::save(filename); // TODO: oups, this will throw
+    return image_base::save(filename, options); // TODO: oups, this will throw
 }
 
 } // visionaray
