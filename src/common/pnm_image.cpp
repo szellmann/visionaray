@@ -107,6 +107,7 @@ static void save_binary(
     file.write(reinterpret_cast<char const*>(src), pitch * height);
 }
 
+
 //-------------------------------------------------------------------------------------------------
 // pnm_image
 //
