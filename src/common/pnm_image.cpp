@@ -97,10 +97,24 @@ static void load_binary(
     }
 }
 
+static void save_binary(
+        std::ofstream&  file,
+        uint8_t const*  src,
+        size_t          pitch,
+        size_t          height
+        )
+{
+    file.write(reinterpret_cast<char const*>(src), pitch * height);
+}
 
 //-------------------------------------------------------------------------------------------------
 // pnm_image
 //
+
+pnm_image::pnm_image(size_t width, size_t height, pixel_format format, uint8_t const* data)
+    : image_base(width, height, format, data)
+{
+}
 
 bool pnm_image::load(std::string const& filename)
 {
@@ -283,6 +297,42 @@ bool pnm_image::load(std::string const& filename)
         return true;
     }
 
+    return false;
+}
+
+bool pnm_image::save(std::string const& filename, image_base::save_options const& options)
+{
+    auto it = std::find_if(
+            options.begin(),
+            options.end(),
+            [](save_option const& opt) { return opt.first == "binary"; }
+            );
+
+    if (it == options.end())
+    {
+        std::cerr << "Option \"binary\" is mandatory!\n";
+        return false;
+    }
+
+    bool binary = boost::any_cast<bool>(it->second);
+
+    std::ofstream file(filename);
+
+    if (binary && format_ == PF_RGB8)
+    {
+        file << "P6\n";
+        file << width_ << ' ' << height_ << '\n';
+        file << 255 << '\n';
+        save_binary(
+                file,
+                data_.data(),
+                width_ * 3,
+                height_
+                );
+        return true;
+    }
+
+    std::cerr << "Unsupported image format\n";
     return false;
 }
 
