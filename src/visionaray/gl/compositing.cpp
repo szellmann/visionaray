@@ -358,14 +358,12 @@ void depth_compositor::composite_textures() const
     GLboolean depth_test = GL_FALSE;
     glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
     glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
-    glGetBooleanv(GL_DEPTH_TEST, &depth_test);
     glGetIntegerv(GL_BLEND_SRC, reinterpret_cast<GLint*>(&sfactor));
     glGetIntegerv(GL_BLEND_DST, reinterpret_cast<GLint*>(&dfactor));
 
 
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
-    glEnable(GL_DEPTH_TEST);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     impl_->depth_prog.enable(impl_->color_texture, impl_->depth_texture);
 
@@ -396,14 +394,6 @@ void depth_compositor::composite_textures() const
     else
     {
         glDisable(GL_BLEND);
-    }
-    if (depth_test)
-    {
-        glEnable(GL_DEPTH_TEST);
-    }
-    else
-    {
-        glDisable(GL_DEPTH_TEST);
     }
 #else
     glPushAttrib( GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ENABLE_BIT );
