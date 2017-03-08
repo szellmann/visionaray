@@ -106,7 +106,7 @@ Visionaray can optionally interoperate with graphics and GPGPU APIs. Interoperab
 - `include/visionaray/cuda/`, `src/visionaray/cuda`: CUDA interoperability classes
 - `include/visionaray/gl`, `src/visionaray/gl`: OpenGL(ES) interoperability classes
 
-Headers in `./detail` subfolders are not part of the public API. Code in namespace `detail` contains private implementation. Template class implementations go into files with ending `.inl`, which are included at the bottom of the public interface header file.
+Headers in `./detail` subfolders are not part of the public API. Code in namespace `detail` contains private implementation. Template class implementations go into files ending with `.inl`, which are included at the bottom of the public interface header file.
 
 ### Applications
 
