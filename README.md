@@ -89,6 +89,46 @@ Documentation
 
 Thorough documentation can be found in the [Wiki](https://github.com/szellmann/visionaray/wiki).
 
+
+Source Code Organization
+------------------------
+
+### Library
+
+Visionaray is a template library, so that most algorithms are implemented in headers located in `include/visionaray`.
+
+- `include/visionaray/math`: GLSL-inspired math templates, wrappers for SIMD types, geometric primitives
+- `include/visionaray/texture`: texture management templates and texture access routines
+- `include/visionaray`: misc. ray tracing templates, BVHs, render targets, etc.
+
+Visionaray can optionally interoperate with graphics and GPGPU APIs. Interoperability with the respective libraries is compiled into the Visionaray library. When not needing GPU interoperability, chances are high that you don't need to link with the library but can just include headers.
+
+- `include/visionaray/cuda/`, `src/visionaray/cuda`: CUDA interoperability classes
+- `include/visionaray/gl`, `src/visionaray/gl`: OpenGL(ES) interoperability classes
+
+Headers in `./detail` subfolders are not part of the public API. Code in namespace `detail` contains private implementation. Template class implementations go into files with ending `.inl`, which are included at the bottom of the public interface header file.
+
+### Applications
+
+Visionaray comes with a rudimentary viewer (see above) and a set of [example applications](https://github.com/szellmann/visionaray/tree/master/src/examples). Those are implemented under
+
+- `src/viewer`: visionaray viewer application
+- `src/examples`: visionaray example applications
+
+### Common library
+
+The viewer application and the examples statically link with the Visionaray-common library that provides functionality such as windowing classes or mouse interaction. The Visionaray-common library is *not part of the public API* and interfaces may change between releases.
+
+- `src/common`: library private to the viewer and example applications
+
+### 3rd party libraries
+
+- `src/3rdparty`: third-party libraries go in here
+
+Visionaray currently uses the following third-party libraries:
+- [CmdLine](https://github.com/abolz/CmdLine) library to handle command line arguments in the viewer and example applications.
+
+
 License
 -------
 
