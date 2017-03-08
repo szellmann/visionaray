@@ -123,7 +123,7 @@ The viewer application and the examples statically link with the Visionaray-comm
 
 ### 3rd party libraries
 
-- `src/3rdparty`: third-party libraries go in here
+- `src/3rdparty`: third-party code goes in here
 
 Visionaray currently uses the following third-party libraries:
 - [CmdLine](https://github.com/abolz/CmdLine) library to handle command line arguments in the viewer and example applications.
