@@ -103,6 +103,59 @@ private:
 #endif
 
 
+#ifdef __HIPCC__
+
+namespace hip
+{
+
+//-------------------------------------------------------------------------------------------------
+// HIP event-based timer class
+//
+
+class timer
+{
+public:
+
+    timer()
+    {
+        hipEventCreate(&start_);
+        hipEventCreate(&stop_);
+
+        reset();
+    }
+
+    ~timer()
+    {
+        hipEventDestroy(stop_);
+        hipEventDestroy(start_);
+    }
+
+    void reset()
+    {
+        hipEventRecord(start_);
+    }
+
+    double elapsed() const
+    {
+        hipEventRecord(stop_);
+        hipEventSynchronize(stop_);
+        float ms = 0.0f;
+        hipEventElapsedTime(&ms, start_, stop_);
+        return static_cast<double>(ms) / 1000.0;
+    }
+
+private:
+
+    hipEvent_t start_;
+    hipEvent_t stop_;
+
+};
+
+} // hip
+
+#endif
+
+
 class frame_counter
 {
 public:
