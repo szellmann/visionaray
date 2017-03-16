@@ -121,7 +121,7 @@ The viewer application and the examples statically link with the Visionaray-comm
 
 - `src/common`: library private to the viewer and example applications
 
-### 3rd party libraries
+### Third-party libraries
 
 - `src/3rdparty`: third-party code goes in here
 
