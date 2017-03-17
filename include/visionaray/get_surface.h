@@ -384,7 +384,28 @@ inline auto get_normal_dispatch(
 
 template <typename HR, typename Params>
 VSNRAY_FUNC
-inline typename Params::color_type get_tex_color(HR const& hr, Params const& params)
+inline typename Params::color_type get_tex_color(
+        HR const&                      hr,
+        Params const&                  params,
+        std::integral_constant<int, 1> /* */
+        )
+{
+    using P = typename Params::primitive_type;
+    using C = typename Params::color_type;
+
+    auto coord = get_tex_coord(params.tex_coords, hr, P{});
+
+    auto const& tex = params.textures[hr.geom_id];
+    return tex.width() > 0 ? C(visionaray::tex1D(tex, coord)) : C(1.0);
+}
+
+template <typename HR, typename Params>
+VSNRAY_FUNC
+inline typename Params::color_type get_tex_color(
+        HR const&                      hr,
+        Params const&                  params,
+        std::integral_constant<int, 2> /* */
+        )
 {
     using P = typename Params::primitive_type;
     using C = typename Params::color_type;
@@ -394,6 +415,25 @@ inline typename Params::color_type get_tex_color(HR const& hr, Params const& par
     auto const& tex = params.textures[hr.geom_id];
     return tex.width() > 0 && tex.height() > 0
             ? C(visionaray::tex2D(tex, coord))
+            : C(1.0);
+}
+
+template <typename HR, typename Params>
+VSNRAY_FUNC
+inline typename Params::color_type get_tex_color(
+        HR const&                      hr,
+        Params const&                  params,
+        std::integral_constant<int, 3> /* */
+        )
+{
+    using P = typename Params::primitive_type;
+    using C = typename Params::color_type;
+
+    auto coord = get_tex_coord(params.tex_coords, hr, P{});
+
+    auto const& tex = params.textures[hr.geom_id];
+    return tex.width() > 0 && tex.height() > 0 && tex.depth() > 0
+            ? C(visionaray::tex3D(tex, coord))
             : C(1.0);
 }
 
@@ -456,12 +496,17 @@ inline auto get_surface_impl(
             >
 {
     auto ns = get_normal_dispatch(params, params.normals, hr);
+    auto tc = get_tex_color(
+                    hr,
+                    params,
+                    std::integral_constant<int, Params::texture_type::dimensions>{}
+                    );
 
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
             params.materials[hr.geom_id],
-            get_tex_color(hr, params)
+            tc
             );
 }
 
@@ -482,14 +527,19 @@ inline auto get_surface_impl(
 {
     using P = typename Params::primitive_type;
 
-    auto color = get_color(params.colors, hr, P{}, typename Params::color_binding{});
     auto ns    = get_normal_dispatch(params, nullptr, hr);
+    auto color = get_color(params.colors, hr, P{}, typename Params::color_binding{});
+    auto tc    = get_tex_color(
+                        hr,
+                        params,
+                        std::integral_constant<int, Params::texture_type::dimensions>{}
+                        );
 
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
             params.materials[hr.geom_id],
-            color * get_tex_color(hr, params)
+            color * tc
             );
 }
 
@@ -510,14 +560,19 @@ inline auto get_surface_impl(
 {
     using P = typename Params::primitive_type;
 
-    auto color = get_color(params.colors, hr, P{}, typename Params::color_binding{});
     auto ns    = get_normal_dispatch(params, params.normals, hr);
+    auto color = get_color(params.colors, hr, P{}, typename Params::color_binding{});
+    auto tc    = get_tex_color(
+                        hr,
+                        params,
+                        std::integral_constant<int, Params::texture_type::dimensions>{}
+                        );
 
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
             params.materials[hr.geom_id],
-            color * get_tex_color(hr, params)
+            color * tc
             );
 }
 
