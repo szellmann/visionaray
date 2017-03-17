@@ -65,8 +65,8 @@ template <
     >
 inline vector<Dim, T> tex3D_impl_expand_types(
         vector<Dim, T> const*                   tex,
-        vector<Dim, FloatT> const&              coord,
-        vector<Dim, int> const&                 texsize,
+        vector<3, FloatT> const&                coord,
+        vector<3, int> const&                   texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
