@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "texture/texture.h"
 #include "bvh.h"
 #include "generic_primitive.h"
 #include "get_color.h"
