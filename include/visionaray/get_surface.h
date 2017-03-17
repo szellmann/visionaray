@@ -378,6 +378,26 @@ inline auto get_normal_dispatch(
 
 
 //-------------------------------------------------------------------------------------------------
+// Sample textures with range check
+//
+
+template <typename HR, typename Params>
+VSNRAY_FUNC
+inline typename Params::color_type get_tex_color(HR const& hr, Params const& params)
+{
+    using P = typename Params::primitive_type;
+    using C = typename Params::color_type;
+
+    auto coord = get_tex_coord(params.tex_coords, hr, P{});
+
+    auto const& tex = params.textures[hr.geom_id];
+    return tex.width() > 0 && tex.height() > 0
+            ? C(visionaray::tex2D(tex, coord))
+            : C(1.0);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 //
 //
 
@@ -434,22 +454,13 @@ inline auto get_surface_impl(
             typename Params::color_type
             >
 {
-    using P = typename Params::primitive_type;
-    using C = typename Params::color_type;
-
-    auto tc = get_tex_coord(params.tex_coords, hr, P{});
-
-    auto const& tex = params.textures[hr.geom_id];
-    auto tex_color = tex.width() > 0 && tex.height() > 0
-                   ? C(visionaray::tex2D(tex, tc))
-                   : C(1.0);
-
     auto ns = get_normal_dispatch(params, params.normals, hr);
+
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
             params.materials[hr.geom_id],
-            tex_color
+            get_tex_color(hr, params)
             );
 }
 
@@ -469,22 +480,15 @@ inline auto get_surface_impl(
             >
 {
     using P = typename Params::primitive_type;
-    using C = typename Params::color_type;
 
     auto color = get_color(params.colors, hr, P{}, typename Params::color_binding{});
-    auto tc = get_tex_coord(params.tex_coords, hr, P{});
+    auto ns    = get_normal_dispatch(params, nullptr, hr);
 
-    auto const& tex = params.textures[hr.geom_id];
-    auto tex_color = tex.width() > 0 && tex.height() > 0
-                   ? C(visionaray::tex2D(tex, tc))
-                   : C(1.0);
-
-    auto ns = get_normal_dispatch(params, nullptr, hr);
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
             params.materials[hr.geom_id],
-            color * tex_color
+            color * get_tex_color(hr, params)
             );
 }
 
@@ -504,22 +508,15 @@ inline auto get_surface_impl(
             >
 {
     using P = typename Params::primitive_type;
-    using C = typename Params::color_type;
 
     auto color = get_color(params.colors, hr, P{}, typename Params::color_binding{});
-    auto tc = get_tex_coord(params.tex_coords, hr, P{});
+    auto ns    = get_normal_dispatch(params, params.normals, hr);
 
-    auto const& tex = params.textures[hr.geom_id];
-    auto tex_color = tex.width() > 0 && tex.height() > 0
-                   ? C(visionaray::tex2D(tex, tc))
-                   : C(1.0);
-
-    auto ns = get_normal_dispatch(params, params.normals, hr);
     return make_surface(
             ns.geometric_normal,
             ns.shading_normal,
             params.materials[hr.geom_id],
-            color * tex_color
+            color * get_tex_color(hr, params)
             );
 }
 
