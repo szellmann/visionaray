@@ -30,5 +30,3 @@ The Visionaray 3D Texture Example supports the following mouse interaction modes
 * **Key-F5**: Toggle **full screen** mode.
 * **Key-ESC**: Exit **full screen** mode.
 * **Key-q**: Quit example application.
-* **Key-u**: **Store** the current **camera** in the working directory (visionaray-camera.txt). Be **careful**, **old** cameras are **overwritten**.
-* **Key-v**: **Load** the file "visionaray-camera.txt" from the current working directory, if it exists, and adjust the **camera** accordingly.
