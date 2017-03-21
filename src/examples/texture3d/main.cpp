@@ -182,11 +182,15 @@ void renderer::on_display()
 
     auto bounds     = mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
-    // number of bounces during path tracing.
+    // number of bounces used during path tracing.
     auto bounces    = 4U;
     // eps is used when generating secondary rays.
-    // to avoid self-intersection
+    // to avoid self-intersection.
     auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
+
+    //-----------------------------------------------------
+    // Setup scheduler parameters.
+    //
 
     // We use path tracing. We therefore use the
     // jittered_blend_type pixel sampler. That way
@@ -206,10 +210,17 @@ void renderer::on_display()
     // this file!)
     auto sparams = make_sched_params(
             pixel_sampler::jittered_blend_type{},
-            cam, // the camera object (note: could also be two matrices!)
+            cam,    // the camera object (note: could also be two matrices!)
             host_rt // render target, that's where we store the pixel result.
             );
 
+    //-----------------------------------------------------
+    // Setup kernel parameters
+    //
+
+    // The default kernels use a dedicated kernel parameter
+    // type (custom kernels may obtain state in any other way,
+    // e.g. by direct lambda capture).
 
     // *_ref types have the same interface like the
     // types they refer to, but internally only store
@@ -223,10 +234,10 @@ void renderer::on_display()
     using tex_ref = texture_ref<vec4, 3>;
 
     // Algorithms like closest_hit(), which are called
-    // in the path tracing kernel, perform range based
+    // by the path tracing kernel, perform range-based
     // traversal over a set of primitives. In Visionaray,
     // BVHs are also primitives, so we need to construct
-    // a list of BVHs to make range based traversal work.
+    // a list of BVHs to make range-based traversal work.
     aligned_vector<bvh_ref> primitives;
     primitives.push_back(host_bvh.ref());
 
@@ -245,8 +256,8 @@ void renderer::on_display()
     struct no_lights {};
     no_lights* ignore = 0;
 
-    // Construct a params object that the builtin
-    // path tracing kernel can understand.
+    // Construct a parameter object that is
+    // compatible with the builtin path tracing kernel.
     auto kparams = make_kernel_params(
             normals_per_face_binding{},
             primitives.data(),
@@ -262,6 +273,10 @@ void renderer::on_display()
             vec4(background_color(), 1.0f)
             );
 
+    //-----------------------------------------------------
+    // Naive path tracing with the builtin kernel.
+    //
+
     // Instantiate the path tracing kernel, and
     // call it by executing the scheduler's
     // frame() function.
@@ -272,7 +287,7 @@ void renderer::on_display()
     host_sched.frame(kernel, sparams, ++frame_num);
 
 
-    // Display the rendered image with OpenGL
+    // Display the rendered image with OpenGL.
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
