@@ -2,7 +2,6 @@
 // See the LICENSE file for details.
 
 #include <exception>
-#include <fstream>
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -19,7 +18,6 @@
 #include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h>
-#include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/traverse.h>
 
