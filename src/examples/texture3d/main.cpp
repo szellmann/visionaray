@@ -19,7 +19,6 @@
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h>
 #include <visionaray/scheduler.h>
-#include <visionaray/traverse.h>
 
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
