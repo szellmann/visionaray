@@ -95,7 +95,7 @@ Source Code Organization
 
 ### Library
 
-Visionaray is a template library, so that most algorithms are implemented in headers located in `include/visionaray`.
+Visionaray is a template library, so that most algorithms are implemented in headers located under `include/visionaray`.
 
 - `include/visionaray/math`: GLSL-inspired math templates, wrappers for SIMD types, geometric primitives
 - `include/visionaray/texture`: texture management templates and texture access routines
