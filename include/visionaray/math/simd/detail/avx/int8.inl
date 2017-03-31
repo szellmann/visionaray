@@ -174,6 +174,19 @@ VSNRAY_FORCE_INLINE int8 operator/(int8 const& u, int8 const& v)
 #endif
 }
 
+VSNRAY_FORCE_INLINE int8 operator%(int8 const& u, int8 const& v)
+{
+    float8 uf = convert_to_float(u);
+    float8 vf = convert_to_float(v);
+
+    int8   t0 = u / v;
+    float8 t1 = convert_to_float(t0);
+    float8 t2 = t1 * vf;
+    float8 t3 = uf - t2;
+
+    return convert_to_int(t3);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Bitwise operations

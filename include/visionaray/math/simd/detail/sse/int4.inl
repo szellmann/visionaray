@@ -159,6 +159,19 @@ VSNRAY_FORCE_INLINE int4 operator/(int4 const& u, int4 const& v)
     return convert_to_int(convert_to_float(u) / convert_to_float(v));
 }
 
+VSNRAY_FORCE_INLINE int4 operator%(int4 const& u, int4 const& v)
+{
+    float4 uf = convert_to_float(u);
+    float4 vf = convert_to_float(v);
+
+    int4   t0 = u / v;
+    float4 t1 = convert_to_float(t0);
+    float4 t2 = t1 * vf;
+    float4 t3 = uf - t2;
+
+    return convert_to_int(t3);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Bitwise operations
