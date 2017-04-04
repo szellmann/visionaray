@@ -181,6 +181,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/simd/gather.h
     ${HEADER_DIR}/math/simd/intrinsics.h
     ${HEADER_DIR}/math/simd/matrix.h
+    ${HEADER_DIR}/math/simd/random.h
     ${HEADER_DIR}/math/simd/simd.h
     ${HEADER_DIR}/math/simd/sse.h
     ${HEADER_DIR}/math/simd/trans.h
