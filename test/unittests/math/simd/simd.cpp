@@ -565,6 +565,38 @@ static void test_math()
         EXPECT_TRUE( all(ai - ai == I(0)) );
     }
 
+    // modulo
+
+    {
+        EXPECT_TRUE( all(I( 0) % I( 2) == I( 0)) );
+        EXPECT_TRUE( all(I( 1) % I( 2) == I( 1)) );
+        EXPECT_TRUE( all(I( 2) % I( 2) == I( 0)) );
+        EXPECT_TRUE( all(I( 3) % I( 2) == I( 1)) );
+        EXPECT_TRUE( all(I( 4) % I( 2) == I( 0)) );
+        EXPECT_TRUE( all(I( 5) % I( 2) == I( 1)) );
+
+        EXPECT_TRUE( all(I(-0) % I( 2) == I(-0)) );
+        EXPECT_TRUE( all(I(-1) % I( 2) == I(-1)) );
+        EXPECT_TRUE( all(I(-2) % I( 2) == I(-0)) );
+        EXPECT_TRUE( all(I(-3) % I( 2) == I(-1)) );
+        EXPECT_TRUE( all(I(-4) % I( 2) == I(-0)) );
+        EXPECT_TRUE( all(I(-5) % I( 2) == I(-1)) );
+
+        EXPECT_TRUE( all(I( 0) % I(-2) == I( 0)) );
+        EXPECT_TRUE( all(I( 1) % I(-2) == I( 1)) );
+        EXPECT_TRUE( all(I( 2) % I(-2) == I( 0)) );
+        EXPECT_TRUE( all(I( 3) % I(-2) == I( 1)) );
+        EXPECT_TRUE( all(I( 4) % I(-2) == I( 0)) );
+        EXPECT_TRUE( all(I( 5) % I(-2) == I( 1)) );
+
+        EXPECT_TRUE( all(I(-0) % I(-2) == I(-0)) );
+        EXPECT_TRUE( all(I(-1) % I(-2) == I(-1)) );
+        EXPECT_TRUE( all(I(-2) % I(-2) == I(-0)) );
+        EXPECT_TRUE( all(I(-3) % I(-2) == I(-1)) );
+        EXPECT_TRUE( all(I(-4) % I(-2) == I(-0)) );
+        EXPECT_TRUE( all(I(-5) % I(-2) == I(-1)) );
+    }
+
 
     // misc math functions
 
