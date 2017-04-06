@@ -1,3 +1,7 @@
+# This file is distributed under the MIT license.
+# See the LICENSE file for details.
+
+
 #---------------------------------------------------------------------------------------------------
 # visionaray_use_package(name)
 #

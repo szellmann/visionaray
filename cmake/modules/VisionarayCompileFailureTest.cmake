@@ -1,3 +1,8 @@
+# This file is distributed under the MIT license.
+# See the LICENSE file for details.
+
+
+#--------------------------------------------------------------------------------------------------
 # These macros define CMake tests (for ctest) which can test whether a certain
 # code does *not* compile.
 #
@@ -8,6 +13,7 @@
 # file.
 #
 # visionaray_test_compile_success can be used to test a reference code.
+#
 
 function(visionaray_test_compile_failure FILENAME TESTNAME)
     add_executable(cft_${TESTNAME} ${FILENAME})
@@ -45,5 +51,3 @@ function(visionaray_test_compile_success FILENAME TESTNAME)
              COMMAND ${CMAKE_COMMAND} --build . --target cft_${TESTNAME} --config $<CONFIGURATION>
              WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
 endfunction()
-
-

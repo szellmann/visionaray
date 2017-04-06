@@ -1,3 +1,6 @@
+# This file is distributed under the MIT license.
+# See the LICENSE file for details.
+
 macro(visionaray_link_libraries)
     set(__VSNRAY_LINK_LIBRARIES ${__VSNRAY_LINK_LIBRARIES} ${ARGN})
 endmacro()
@@ -28,4 +31,3 @@ function(visionaray_add_library name)
     add_library(${name} ${ARGN})
     target_link_libraries(${name} ${__VSNRAY_LINK_LIBRARIES})
 endfunction()
-
