@@ -146,8 +146,10 @@ set(VSNRAY_HEADERS
 
     # HCC
 
+    ${HEADER_DIR}/hcc/detail/reverse_iterator.inl
     ${HEADER_DIR}/hcc/compat.h
     ${HEADER_DIR}/hcc/device_malloc_allocator.h
+    ${HEADER_DIR}/hcc/reverse_iterator.h
 
     # Math
 
