@@ -6,7 +6,9 @@
 #ifndef VSNRAY_UPDATE_IF_H
 #define VSNRAY_UPDATE_IF_H 1
 
-#include <visionaray/math/math.h>
+#include "detail/macros.h"
+#include "math/aabb.h"
+#include "math/ray.h"
 
 namespace visionaray
 {
