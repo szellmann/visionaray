@@ -23,6 +23,10 @@
 #include "aligned_vector.h"
 #include "tags.h"
 
+#ifdef __HCC__
+#include "hcc/compat.h"
+#endif
+
 namespace visionaray
 {
 namespace detail

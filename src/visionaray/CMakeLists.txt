@@ -144,6 +144,10 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/gl/handle.h
     ${HEADER_DIR}/gl/util.h
 
+    # HCC
+
+    ${HEADER_DIR}/hcc/compat.h
+
     # Math
 
     ${HEADER_DIR}/math/detail/aabb.inl
