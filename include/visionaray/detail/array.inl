@@ -29,7 +29,9 @@ inline T& array<T, N>::at(size_t pos)
 {
     if (pos >= N)
     {
+#if VSNRAY_CPU_MODE
         throw std::out_of_range("Index out of range");
+#endif
     }
 
     return data_[pos];
@@ -41,7 +43,9 @@ inline T const& array<T, N>::at(size_t pos) const
 {
     if (pos >= N)
     {
+#if VSNRAY_CPU_MODE
         throw std::out_of_range("Index out of range");
+#endif
     }
 
     return data_[pos];
