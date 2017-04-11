@@ -48,11 +48,29 @@
 #define VSNRAY_FUNC __device__ __host__
 #define VSNRAY_GPU_FUNC __device__
 #define VSNRAY_CPU_FUNC __host__
+#elif defined(__HCC__)
+#define VSNRAY_FUNC __attribute__((hc,cpu))
+#define VSNRAY_GPU_FUNC __attribute__((hc))
+#define VSNRAY_CPU_FUNC __attribute__((cpu))
 #else
 #define VSNRAY_FUNC
 #define VSNRAY_GPU_FUNC
 #define VSNRAY_CPU_FUNC
 #endif // __CUDACC__ || __HIPCC__
+
+
+//-------------------------------------------------------------------------------------------------
+// VSNRAY_CPU_MODE|VSNRAY_GPU_MODE
+// Determine if code is compiled for the CPU or the GPU
+//
+
+#if (defined(__CUDA_ARCH__) && __CUDA_ARCH__ > 0) || defined(__KALMAR_ACCELERATOR__)
+#define VSNRAY_CPU_MODE 0
+#define VSNRAY_GPU_MODE 1
+#else
+#define VSNRAY_CPU_MODE 1
+#define VSNRAY_GPU_MODE 0
+#endif
 
 
 //-------------------------------------------------------------------------------------------------
