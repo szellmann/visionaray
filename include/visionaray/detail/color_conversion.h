@@ -31,7 +31,7 @@ inline float cie_x(float lambda)
     float t2 = (lambda - 599.8f) * ((lambda < 599.8f) ? 0.0264f : 0.0323f);
     float t3 = (lambda - 501.1f) * ((lambda < 501.1f) ? 0.0490f : 0.0382f);
 
-    return 0.362f * expf(-0.5f * t1 * t1) + 1.056f * expf(-0.5f * t2 * t2) - 0.065f * expf(-0.5f * t3 * t3);
+    return 0.362f * exp(-0.5f * t1 * t1) + 1.056f * exp(-0.5f * t2 * t2) - 0.065f * exp(-0.5f * t3 * t3);
 }
 
 VSNRAY_FUNC
@@ -40,7 +40,7 @@ inline float cie_y(float lambda)
     float t1 = (lambda - 568.8f) * ((lambda < 568.8f) ? 0.0213f : 0.0247f);
     float t2 = (lambda - 530.9f) * ((lambda < 530.9f) ? 0.0613f : 0.0322f);
 
-    return 0.821f * expf(-0.5f * t1 * t1) + 0.286f * expf(-0.5f * t2 * t2);
+    return 0.821f * exp(-0.5f * t1 * t1) + 0.286f * exp(-0.5f * t2 * t2);
 }
 
 VSNRAY_FUNC
@@ -49,7 +49,7 @@ inline float cie_z(float lambda)
     float t1 = (lambda - 437.0f) * ((lambda < 437.0f) ? 0.0845f : 0.0278f);
     float t2 = (lambda - 459.0f) * ((lambda < 459.0f) ? 0.0385f : 0.0725f);
 
-    return 1.217f * expf(-0.5f * t1 * t1) + 0.681f * expf(-0.5f * t2 * t2);
+    return 1.217f * exp(-0.5f * t1 * t1) + 0.681f * exp(-0.5f * t2 * t2);
 }
 
 
