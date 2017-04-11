@@ -98,6 +98,18 @@ public:
         return !(*this == rhs);
     }
 
+    VSNRAY_CPU_FUNC
+    hc::accelerator& accelerator()
+    {
+        return accelerator_;
+    }
+
+    VSNRAY_CPU_FUNC
+    hc::accelerator const& accelerator() const
+    {
+        return accelerator_;
+    }
+
 private:
 
     hc::accelerator accelerator_;
