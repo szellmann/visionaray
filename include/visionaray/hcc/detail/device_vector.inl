@@ -80,6 +80,14 @@ device_vector<T, Alloc>::device_vector(It first, It last)
 
 template <typename T, typename Alloc>
 VSNRAY_CPU_FUNC
+device_vector<T, Alloc>::~device_vector()
+{
+    // TODO: erase all elements
+    alloc_.deallocate(data_, capacity_);
+}
+
+template <typename T, typename Alloc>
+VSNRAY_CPU_FUNC
 device_vector<T, Alloc>& device_vector<T, Alloc>::operator=(device_vector<T, Alloc> const& rhs)
 {
     if (&rhs != this)

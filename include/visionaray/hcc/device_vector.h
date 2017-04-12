@@ -65,6 +65,10 @@ public:
     // TODO: device-ctor
     //
 
+    // Destructor, erases all elements and deallocates capacity.
+    VSNRAY_CPU_FUNC
+    ~device_vector();
+
     // Copy-constuct from an std::vector.
     template <typename T2, typename Alloc2>
     VSNRAY_CPU_FUNC
