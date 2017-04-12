@@ -15,7 +15,7 @@ if(UNIX)
         OUTPUT_VARIABLE output
         )
 
-    if(${output} MATCHES ".*HCC.*")
+    if("${output}" MATCHES ".*HCC.*")
 
         # invoke hcc-config
 
