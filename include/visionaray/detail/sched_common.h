@@ -64,8 +64,6 @@ inline unsigned tic()
 {
 #if defined(__CUDA_ARCH__)
     return clock64();
-#elif defined(__KALMAR_ACCELERATOR__)
-    return -1; //TODO!
 #else
     auto t = std::chrono::high_resolution_clock::now();
     return t.time_since_epoch().count();

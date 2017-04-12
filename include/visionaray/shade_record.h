@@ -145,7 +145,6 @@ struct R2 {};
 struct R1 : R2 {};
 
 template <typename P, typename T>
-VSNRAY_FUNC
 inline auto test_shade_record_type(R1)
     -> decltype(
         std::declval<P>().textures,
@@ -153,7 +152,6 @@ inline auto test_shade_record_type(R1)
        );
 
 template <typename P, typename T>
-VSNRAY_FUNC
 inline auto test_shade_record_type(R2)
     -> shade_record<typename P::light_type, T>;
 

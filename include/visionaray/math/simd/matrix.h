@@ -51,6 +51,24 @@ public:
 
 };
 
+
+//-------------------------------------------------------------------------------------------------
+// Free function declarations
+//
+
+matrix<4, 4, simd::float4> operator*(
+        matrix<4, 4, simd::float4> const& a,
+        matrix<4, 4, simd::float4> const& b
+        );
+
+vector<4, simd::float4> operator*(
+        matrix<4, 4, simd::float4> const& m,
+        vector<4, simd::float4> const& v
+        );
+
+matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m);
+
+
 } // MATH_NAMESPACE
 
 #include "detail/matrix4.inl"
