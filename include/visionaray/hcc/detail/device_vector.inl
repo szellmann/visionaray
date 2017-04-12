@@ -351,5 +351,12 @@ typename device_vector<T, Alloc>::iterator device_vector<T, Alloc>::erase(
     return last;
 }
 
+template <typename T, typename Alloc>
+VSNRAY_CPU_FUNC
+typename device_vector<T, Alloc>::allocator_type device_vector<T, Alloc>::get_allocator() const
+{
+    return alloc_;
+}
+
 } // hcc
 } // visionaray

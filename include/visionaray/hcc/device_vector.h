@@ -231,6 +231,10 @@ public:
     // TODO!
     //
 
+    // Get a copy of the allocator
+    VSNRAY_CPU_FUNC
+    allocator_type get_allocator() const;
+
 private:
 
     Alloc alloc_;
