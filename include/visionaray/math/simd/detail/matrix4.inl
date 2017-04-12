@@ -71,47 +71,8 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> matrix<4, 4, simd::float4>::ident
 }
 
 
-//--------------------------------------------------------------------------------------------------
-// Basic arithmetic
-//
-
-VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> operator*(
-        matrix<4, 4, simd::float4> const& a,
-        matrix<4, 4, simd::float4> const& b
-        )
-{
-
-    using simd::shuffle;
-
-    matrix<4, 4, simd::float4> result;
-
-    for (size_t i = 0; i < 4; ++i)
-    {
-        result(i) = a(0) * shuffle<0, 0, 0, 0>( b(i) )
-                  + a(1) * shuffle<1, 1, 1, 1>( b(i) )
-                  + a(2) * shuffle<2, 2, 2, 2>( b(i) )
-                  + a(3) * shuffle<3, 3, 3, 3>( b(i) );
-    }
-
-    return result;
-
-}
-
-VSNRAY_FORCE_INLINE vector<4, simd::float4> operator*(
-        matrix<4, 4, simd::float4> const& m,
-        vector<4, simd::float4> const& v
-        )
-{
-
-    matrix<4, 4, simd::float4> tmp(v.x, v.y, v.z, v.w);
-    matrix<4, 4, simd::float4> res = tmp * transpose(m);
-    return vector<4, simd::float4>( res.col0, res.col1, res.col2, res.col3 );
-
-}
-
-
 //-------------------------------------------------------------------------------------------------
-// Geometric functions
+// Transpose
 //
 
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m)
@@ -127,6 +88,41 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::floa
             move_lo(tmp2, tmp3),
             move_hi(tmp3, tmp2)
             );
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// Basic arithmetic
+//
+
+VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> operator*(
+        matrix<4, 4, simd::float4> const& a,
+        matrix<4, 4, simd::float4> const& b
+        )
+{
+    using simd::shuffle;
+
+    matrix<4, 4, simd::float4> result;
+
+    for (size_t i = 0; i < 4; ++i)
+    {
+        result(i) = a(0) * shuffle<0, 0, 0, 0>( b(i) )
+                  + a(1) * shuffle<1, 1, 1, 1>( b(i) )
+                  + a(2) * shuffle<2, 2, 2, 2>( b(i) )
+                  + a(3) * shuffle<3, 3, 3, 3>( b(i) );
+    }
+
+    return result;
+}
+
+VSNRAY_FORCE_INLINE vector<4, simd::float4> operator*(
+        matrix<4, 4, simd::float4> const& m,
+        vector<4, simd::float4> const& v
+        )
+{
+    matrix<4, 4, simd::float4> tmp(v.x, v.y, v.z, v.w);
+    matrix<4, 4, simd::float4> res = tmp * transpose(m);
+    return vector<4, simd::float4>( res.col0, res.col1, res.col2, res.col3 );
 }
 
 } // MATH_NAMESPACE
