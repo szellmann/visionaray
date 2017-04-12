@@ -25,6 +25,7 @@
 
 #ifdef __HCC__
 #include "hcc/compat.h"
+#include "hcc/device_vector.h"
 #endif
 
 namespace visionaray
@@ -449,6 +450,13 @@ template <typename P>
 using cuda_bvh          = bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>>;
 template <typename P>
 using cuda_index_bvh    = index_bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>, thrust::device_vector<unsigned>>;
+#endif
+
+#ifdef __HCC__
+template <typename P>
+using hcc_bvh           = bvh_t<hcc::device_vector<P>, hcc::device_vector<bvh_node>>;
+template <typename P>
+using hcc_index_bvh     = index_bvh_t<hcc::device_vector<P>, hcc::device_vector<bvh_node>, hcc::device_vector<unsigned>>;
 #endif
 
 
