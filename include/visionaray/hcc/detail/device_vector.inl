@@ -297,6 +297,8 @@ void device_vector<T, Alloc>::push_back(typename device_vector<T, Alloc>::value_
 
     hc::accelerator_view av = alloc_.accelerator().get_default_view();
     av.copy(&x, data_ + size_, sizeof(T));
+
+    ++size_;
 }
 
 // TODO: pop_back() and swap()
