@@ -82,7 +82,7 @@ template <typename T, typename Alloc>
 VSNRAY_CPU_FUNC
 device_vector<T, Alloc>::~device_vector()
 {
-    // TODO: erase all elements
+    erase(begin(), end());
     alloc_.deallocate(data_, capacity_);
 }
 
@@ -216,7 +216,49 @@ typename device_vector<T, Alloc>::const_reference device_vector<T, Alloc>::opera
     return data_[n];
 }
 
-// TODO: iterator interface
+template <typename T, typename Alloc>
+VSNRAY_FUNC
+typename device_vector<T, Alloc>::iterator device_vector<T, Alloc>::begin()
+{
+    return data_;
+}
+
+template <typename T, typename Alloc>
+VSNRAY_FUNC
+typename device_vector<T, Alloc>::const_iterator device_vector<T, Alloc>::begin() const
+{
+    return data_;
+}
+
+template <typename T, typename Alloc>
+VSNRAY_FUNC
+typename device_vector<T, Alloc>::const_iterator device_vector<T, Alloc>::cbegin() const
+{
+    return data_;
+}
+
+template <typename T, typename Alloc>
+VSNRAY_FUNC
+typename device_vector<T, Alloc>::iterator device_vector<T, Alloc>::end()
+{
+    return data_ + size_;
+}
+
+template <typename T, typename Alloc>
+VSNRAY_FUNC
+typename device_vector<T, Alloc>::const_iterator device_vector<T, Alloc>::end() const
+{
+    return data_ + size_;
+}
+
+template <typename T, typename Alloc>
+VSNRAY_FUNC
+typename device_vector<T, Alloc>::const_iterator device_vector<T, Alloc>::cend() const
+{
+    return data_ + size_;
+}
+
+// TODO: reverse iterators
 
 template <typename T, typename Alloc>
 VSNRAY_FUNC
@@ -236,6 +278,7 @@ template <typename T, typename Alloc>
 VSNRAY_CPU_FUNC
 void device_vector<T, Alloc>::clear()
 {
+    erase(begin(), end());
     size_ = 0;
 }
 
@@ -254,6 +297,58 @@ void device_vector<T, Alloc>::push_back(typename device_vector<T, Alloc>::value_
 
     hc::accelerator_view av = alloc_.accelerator().get_default_view();
     av.copy(&x, data_ + size_, sizeof(T));
+}
+
+// TODO: pop_back() and swap()
+
+template <typename T, typename Alloc>
+VSNRAY_CPU_FUNC
+typename device_vector<T, Alloc>::iterator device_vector<T, Alloc>::erase(
+        typename device_vector<T, Alloc>::iterator pos
+        )
+{
+    pos->~T();
+
+    iterator it = pos;
+    while (it != end())
+    {
+        iterator curr = it++;
+
+        if (it != end())
+        {
+            *curr = *it;
+        }
+
+    }
+
+    return pos;
+}
+
+template <typename T, typename Alloc>
+VSNRAY_CPU_FUNC
+typename device_vector<T, Alloc>::iterator device_vector<T, Alloc>::erase(
+        typename device_vector<T, Alloc>::iterator first,
+        typename device_vector<T, Alloc>::iterator last
+        )
+{
+    for (auto it = first; it != last; ++it)
+    {
+        it->~T();
+    }
+
+    iterator it = last;
+    while (it != end())
+    {
+        iterator curr = it++;
+
+        if (it != end())
+        {
+            *curr = *it;
+        }
+
+    }
+
+    return last;
 }
 
 } // hcc

@@ -216,6 +216,18 @@ public:
     VSNRAY_CPU_FUNC
     void pop_back();
 
+    // Swap two vectors.
+    VSNRAY_CPU_FUNC
+    void swap(device_vector& rhs);
+
+    // Remove the element at position pos.
+    VSNRAY_CPU_FUNC
+    iterator erase(iterator pos);
+
+    // Remove elements in range [first..last).
+    VSNRAY_CPU_FUNC
+    iterator erase(iterator first, iterator last);
+
     // TODO!
     //
 
