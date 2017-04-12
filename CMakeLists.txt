@@ -16,6 +16,7 @@ enable_testing()
 include(VisionarayCompileFailureTest)
 
 include(VisionarayAddTarget)
+include(VisionarayHCCSupport)
 include(VisionarayUseFramework)
 include(VisionarayUsePackage)
 

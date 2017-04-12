@@ -25,9 +25,23 @@ endfunction()
 function(visionaray_add_executable name)
     add_executable(${name} ${ARGN})
     target_link_libraries(${name} ${__VSNRAY_LINK_LIBRARIES})
+
+    if(__VSNRAY_CXX_COMPILER_IS_HCC)
+        set_target_properties(${name} PROPERTIES
+            COMPILE_FLAGS  ${__VSNRAY_HCC_COMPILE_FLAGS}
+            LINK_FLAGS ${__VSNRAY_HCC_LINK_FLAGS}
+        )
+    endif()
 endfunction()
 
 function(visionaray_add_library name)
     add_library(${name} ${ARGN})
     target_link_libraries(${name} ${__VSNRAY_LINK_LIBRARIES})
+
+    if(__VSNRAY_CXX_COMPILER_IS_HCC)
+        set_target_properties(${name} PROPERTIES
+            COMPILE_FLAGS  ${__VSNRAY_HCC_COMPILE_FLAGS}
+            LINK_FLAGS ${__VSNRAY_HCC_LINK_FLAGS}
+        )
+    endif()
 endfunction()
