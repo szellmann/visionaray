@@ -59,15 +59,18 @@ namespace detail
 // TODO: move to a better place
 //
 
-VSNRAY_FUNC
+#if defined(__CUDA_ARCH__)
+VSNRAY_GPU_FUNC
 inline unsigned tic()
 {
-#if defined(__CUDA_ARCH__)
     return clock64();
-#else
+}
+#endif
+
+inline unsigned tic()
+{
     auto t = std::chrono::high_resolution_clock::now();
     return t.time_since_epoch().count();
-#endif
 }
 
 
