@@ -6,8 +6,10 @@
 #ifndef VSNRAY_RANDOM_SAMPLER_H
 #define VSNRAY_RANDOM_SAMPLER_H 1
 
-#ifdef __CUDA_ARCH__
+#if defined(__CUDA_ARCH__)
 #include <thrust/random.h>
+#elif defined(__KALMAR_ACCELERATOR__)
+#include "hcc/random.h"
 #else
 #include <random>
 #endif
@@ -30,26 +32,45 @@ public:
 
 public:
 
-#ifdef __CUDA_ARCH__
+#if defined(__CUDA_ARCH__)
     typedef thrust::default_random_engine rand_engine;
     typedef thrust::uniform_real_distribution<T> uniform_dist;
+#elif defined(__KALMAR_ACCELERATOR__)
+    typedef hcc::default_random_engine rand_engine;
+    typedef hcc::uniform_real_distribution<T> uniform_dist;
 #else
     typedef std::default_random_engine rand_engine;
     typedef std::uniform_real_distribution<T> uniform_dist;
 #endif
 
-    VSNRAY_FUNC random_sampler() = default;
+// TODO: avoid code duplication here (somehow)
+#if VSNRAY_GPU_MODE
+    VSNRAY_GPU_FUNC random_sampler() = default;
 
-    VSNRAY_FUNC random_sampler(unsigned seed)
+    VSNRAY_GPU_FUNC random_sampler(unsigned seed)
         : rng_(rand_engine(seed))
         , dist_(uniform_dist(0, 1))
     {
     }
 
-    VSNRAY_FUNC T next()
+    VSNRAY_GPU_FUNC T next()
     {
         return dist_(rng_);
     }
+#else
+    random_sampler() = default;
+
+    random_sampler(unsigned seed)
+        : rng_(rand_engine(seed))
+        , dist_(uniform_dist(0, 1))
+    {
+    }
+
+    T next()
+    {
+        return dist_(rng_);
+    }
+#endif
 
 private:
 
