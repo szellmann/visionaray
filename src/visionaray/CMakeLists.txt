@@ -149,6 +149,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/hcc/detail/device_vector.inl
     ${HEADER_DIR}/hcc/detail/host_vector.inl
     ${HEADER_DIR}/hcc/detail/reverse_iterator.inl
+    ${HEADER_DIR}/hcc/detail/linear_congruential_engine.inl
     ${HEADER_DIR}/hcc/detail/uniform_real_distribution.inl
     ${HEADER_DIR}/hcc/compat.h
     ${HEADER_DIR}/hcc/device_malloc_allocator.h
