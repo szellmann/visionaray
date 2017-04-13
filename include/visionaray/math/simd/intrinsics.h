@@ -77,6 +77,14 @@
 #endif
 #endif
 
+// Undef VSNRAY_SIMD_ISA__ when compiling device code with hcc
+#if defined(__KALMAR_ACCELERATOR__)
+#ifdef VSNRAY_SIMD_ISA__
+#undef VSNRAY_SIMD_ISA__
+#endif
+#define VSNRAY_SIMD_ISA__ 0
+#endif
+
 // Intel Short Vector Math Library available?
 #ifndef VSNRAY_SIMD_HAS_SVML
 #if defined(__INTEL_COMPILER)
