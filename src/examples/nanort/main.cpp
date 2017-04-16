@@ -2,7 +2,9 @@
 // See the LICENSE file for details.
 
 #include <exception>
+#include <iostream>
 #include <memory>
+#include <ostream>
 
 #include <GL/glew.h>
 
