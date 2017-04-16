@@ -237,10 +237,10 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
     height      = sparams.rt.height();
     scissor_box = sparams.scissor_box;
 
-    auto view_matrix     = matrix_type( sparams.view_matrix );
-    auto proj_matrix     = matrix_type( sparams.proj_matrix );
-    auto inv_view_matrix = matrix_type( inverse(sparams.view_matrix) );
-    auto inv_proj_matrix = matrix_type( inverse(sparams.proj_matrix) );
+    matrix_type view_matrix( sparams.view_matrix );
+    matrix_type proj_matrix( sparams.proj_matrix );
+    matrix_type inv_view_matrix( inverse(sparams.view_matrix) );
+    matrix_type inv_proj_matrix( inverse(sparams.proj_matrix) );
 
     recti clip_rect(scissor_box.x, scissor_box.y, scissor_box.w - 1, scissor_box.h - 1);
 
