@@ -252,11 +252,10 @@ template <
     >
 VSNRAY_FORCE_INLINE FloatT pow2(FloatT const& x)
 {
-    using IntT = int_type_t<FloatT>;
-
     FloatT xi = floor(x);
     FloatT xf = x - xi;
-    return detail::scalbn(FloatT(1.0), IntT(xi)) * pow2_t<7>::value(xf);
+    FloatT tr = convert_to_float(convert_to_int(xi)); // truncate
+    return detail::scalbn(FloatT(1.0), tr) * pow2_t<7>::value(xf);
 }
 
 
@@ -585,7 +584,7 @@ VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
     IntT n = 0;
     FloatT m = detail::frexp(x, &n);
     m *= 2.0f;
-    return FloatT(n - 1) + detail::log2(m - 1.0f);
+    return convert_to_float(n - 1) + detail::log2(m - 1.0f);
 }
 
 
