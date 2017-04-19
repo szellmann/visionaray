@@ -254,8 +254,7 @@ VSNRAY_FORCE_INLINE FloatT pow2(FloatT const& x)
 {
     FloatT xi = floor(x);
     FloatT xf = x - xi;
-    FloatT tr = convert_to_float(convert_to_int(xi)); // truncate
-    return detail::scalbn(FloatT(1.0), tr) * pow2_t<7>::value(xf);
+    return detail::scalbn(FloatT(1.0), convert_to_int(xi)) * pow2_t<7>::value(xf);
 }
 
 
