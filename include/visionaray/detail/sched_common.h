@@ -65,13 +65,13 @@ inline unsigned tic()
 {
     return clock64();
 }
-#endif
-
+#else
 inline unsigned tic()
 {
     auto t = std::chrono::high_resolution_clock::now();
     return t.time_since_epoch().count();
 }
+#endif
 
 
 //-------------------------------------------------------------------------------------------------
