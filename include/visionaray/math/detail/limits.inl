@@ -173,8 +173,6 @@ MATH_FUNC inline unorm<Bits> numeric_limits<unorm<Bits>>::max()
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
 //-------------------------------------------------------------------------------------------------
 // simd::float4
 //
@@ -218,8 +216,6 @@ MATH_CPU_FUNC inline simd::int4 numeric_limits<simd::int4>::max()
 {
     return simd::int4(INT_MAX);
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 

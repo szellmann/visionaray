@@ -15,6 +15,7 @@
 
 #include "avx.h"
 #include "avx512.h"
+#include "builtin.h"
 #include "neon.h"
 #include "sse.h"
 #include "type_traits.h"
@@ -335,8 +336,6 @@ VSNRAY_FORCE_INLINE T log2(T const& x)
 } // detail
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
 //-------------------------------------------------------------------------------------------------
 // Trigonometric functions
 // TODO: implement w/o context switch
@@ -389,8 +388,6 @@ VSNRAY_FORCE_INLINE float4 atan(float4 const& x)
 
     return float4( std::atan(tmp[0]), std::atan(tmp[1]), std::atan(tmp[2]), std::asin(tmp[3]) );
 }
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
@@ -591,18 +588,22 @@ VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
 // pow()
 //
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
 VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
 {
 #if VSNRAY_SIMD_HAS_SVML
     return _mm_pow_ps(x, y);
-#else
+#elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     return exp( y * log(x) );
+#else
+    // No dedicated simd instructions
+    return float4(
+            powf(x.value[0], y.value[0]),
+            powf(x.value[1], y.value[1]),
+            powf(x.value[2], y.value[2]),
+            powf(x.value[3], y.value[3])
+            );
 #endif
 }
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 

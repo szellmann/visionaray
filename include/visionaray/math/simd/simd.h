@@ -8,6 +8,7 @@
 
 #include "avx.h"
 #include "avx512.h"
+#include "builtin.h"
 #include "forward.h"
 #include "gather.h"
 #include "matrix.h"

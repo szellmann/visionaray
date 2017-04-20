@@ -4,6 +4,8 @@
 #include <array>
 #include <type_traits>
 
+#include "../simd/builtin.h"
+#include "../simd/neon.h"
 #include "../simd/sse.h"
 #include "../simd/type_traits.h"
 
@@ -482,8 +484,6 @@ inline auto unpack(vector<4, FloatT> const& v)
     return result;
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
 // Transpose to get from SoA to AoS (and vice versa)
 // Similar to mat4 transpose
 inline vector<4, float4> transpose(vector<4, float4> const& v)
@@ -500,8 +500,6 @@ inline vector<4, float4> transpose(vector<4, float4> const& v)
             move_hi(tmp3, tmp2)
             );
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // TODO: transpose for AVX?
 

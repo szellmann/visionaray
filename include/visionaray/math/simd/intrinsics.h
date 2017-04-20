@@ -78,7 +78,7 @@
 #endif
 
 // Undef VSNRAY_SIMD_ISA__ when compiling device code with hcc
-#if defined(__KALMAR_ACCELERATOR__)
+#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ > 0 || defined(__KALMAR_ACCELERATOR__)
 #ifdef VSNRAY_SIMD_ISA__
 #undef VSNRAY_SIMD_ISA__
 #endif

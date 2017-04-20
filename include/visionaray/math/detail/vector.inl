@@ -999,8 +999,6 @@ inline auto pack(std::array<vector<Dim, T>, N> const& vecs)
     return result;
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
 // pack four vectors
 
 template <size_t Dim, typename T>
@@ -1016,8 +1014,6 @@ inline auto pack(
             v1, v2, v3, v4
             }} );
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 

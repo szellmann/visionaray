@@ -79,7 +79,6 @@ private:
 
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 template <>
 class random_sampler<simd::float4>
 {
@@ -116,7 +115,6 @@ private:
 
     sampler_type sampler_;
 };
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 template <>

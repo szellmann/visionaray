@@ -395,10 +395,8 @@ inline void store(
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
 //-------------------------------------------------------------------------------------------------
-// Store SSE rgba color to RGBA32F color buffer, no conversion necessary
+// Store SoA rgba color to RGBA32F color buffer, no conversion necessary
 // Special treatment, can convert from SoA to AoS using transpose
 //
 
@@ -421,8 +419,6 @@ inline void store(
     if ( x      < width && (y + 1) < height) store( buffer[(y + 1) * width +  x     ].data(), c.z);
     if ((x + 1) < width && (y + 1) < height) store( buffer[(y + 1) * width + (x + 1)].data(), c.w);
 }
-
-#endif
 
 //-------------------------------------------------------------------------------------------------
 // Store single SIMD channel to 32-bit FP buffer, no conversion
@@ -674,10 +670,8 @@ inline void get(
         );
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
 //-------------------------------------------------------------------------------------------------
-// Get SSE rgba color from RGB32F color buffer, let alpha = 1.0
+// Get SoA rgba color from RGB32F color buffer, let alpha = 1.0
 //
 
 template <typename T>
@@ -706,7 +700,7 @@ inline void get(
 }
 
 //-------------------------------------------------------------------------------------------------
-// Get SSE rgba color from RGBA32F color buffer, no conversion necessary
+// Get SoA rgba color from RGBA32F color buffer, no conversion necessary
 //
 
 template <typename OutputColor>
@@ -733,7 +727,7 @@ inline void get(
 }
 
 //-------------------------------------------------------------------------------------------------
-// Get SSE simd vector from scalar buffer
+// Get SoA simd vector from scalar buffer
 //
 
 template <typename T>
@@ -808,8 +802,6 @@ inline void get(
 
     result = simd::int4(out);
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
