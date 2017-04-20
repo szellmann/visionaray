@@ -12,7 +12,7 @@
 #include "forward.h"
 #include "intrinsics.h"
 
-#if VSNRAY_SIMD_ISA__ == 0
+#if VSNRAY_NO_SIMD_ISA
 
 namespace MATH_NAMESPACE
 {
@@ -82,6 +82,6 @@ public:
 #include "detail/builtin/float4.inl"
 #include "detail/builtin/int4.inl"
 
-#endif // VSNRAY_SIMD_ISA__ == 0
+#endif // VSNRAY_NO_SIMD_ISA
 
 #endif // VSNRAY_SIMD_BUILTIN_H
