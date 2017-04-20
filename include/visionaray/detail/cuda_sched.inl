@@ -244,6 +244,8 @@ inline void cuda_sched_impl_frame(
         unsigned        frame_num
         )
 {
+    using T = typename R::scalar_type;
+
     using cuda_dim_t = decltype(block_size.x);
 
     auto w = static_cast<cuda_dim_t>(sparams.rt.width());
@@ -260,10 +262,10 @@ inline void cuda_sched_impl_frame(
     auto s = normalize( cross(sparams.cam.up(), f) );
     auto u =            cross(f, s);
 
-    auto eye   = sparams.cam.eye();
-    auto cam_u = s * tan(sparams.cam.fovy() / 2.0f) * sparams.cam.aspect();
-    auto cam_v = u * tan(sparams.cam.fovy() / 2.0f);
-    auto cam_w = -f;
+    vec3 eye   = sparams.cam.eye();
+    vec3 cam_u = s * tan(sparams.cam.fovy() / 2.0f) * sparams.cam.aspect();
+    vec3 cam_v = u * tan(sparams.cam.fovy() / 2.0f);
+    vec3 cam_w = -f;
 
     cuda_sched_impl_call_render<R>(
             typename detail::sched_params_has_intersector<SP>::type(),
@@ -276,10 +278,10 @@ inline void cuda_sched_impl_frame(
             frame_num,
             sparams.rt.width(),
             sparams.rt.height(),
-            eye,
-            cam_u,
-            cam_v,
-            cam_w
+            vector<3, T>(eye),
+            vector<3, T>(cam_u),
+            vector<3, T>(cam_v),
+            vector<3, T>(cam_w)
             );
 }
 
