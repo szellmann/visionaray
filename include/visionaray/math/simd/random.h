@@ -30,10 +30,10 @@ public:
 
     using result_type = T;
 
-    constexpr static UI multiplier   = a;
-    constexpr static UI increment    = c;
-    constexpr static UI modulus      = m;
-    constexpr static UI default_seed = 1u;
+    const static UI multiplier   = a;
+    const static UI increment    = c;
+    const static UI modulus      = m;
+    const static UI default_seed = 1u;
 
 public:
 
