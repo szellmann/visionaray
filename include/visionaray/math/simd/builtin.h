@@ -31,10 +31,10 @@ public:
     typedef float value_type[4];
     float value[4];
 
-    basic_float() = default;
-    basic_float(float x, float y, float z, float w);
-    basic_float(float const v[4]);
-    basic_float(float s);
+    MATH_FUNC basic_float() = default;
+    MATH_FUNC basic_float(float x, float y, float z, float w);
+    MATH_FUNC basic_float(float const v[4]);
+    MATH_FUNC basic_float(float s);
 };
 
 
@@ -50,11 +50,11 @@ public:
     typedef int value_type[4];
     int value[4];
 
-    basic_int() = default;
-    basic_int(int x, int y, int z, int w);
-    basic_int(int const v[4]);
-    basic_int(int s);
-    basic_int(unsigned s);
+    MATH_FUNC basic_int() = default;
+    MATH_FUNC basic_int(int x, int y, int z, int w);
+    MATH_FUNC basic_int(int const v[4]);
+    MATH_FUNC basic_int(int s);
+    MATH_FUNC basic_int(unsigned s);
 };
 
 
@@ -69,10 +69,10 @@ public:
 
     bool value[4];
 
-    basic_mask() = default;
-    basic_mask(bool x, bool y, bool z, bool w);
-    basic_mask(bool const v[4]);
-    basic_mask(bool b);
+    MATH_FUNC basic_mask() = default;
+    MATH_FUNC basic_mask(bool x, bool y, bool z, bool w);
+    MATH_FUNC basic_mask(bool const v[4]);
+    MATH_FUNC basic_mask(bool b);
 };
 
 } // simd

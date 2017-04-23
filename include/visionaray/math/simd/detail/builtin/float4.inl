@@ -13,16 +13,19 @@ namespace simd
 // float4 members
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4::basic_float(float x, float y, float z, float w)
     : value{x, y, z, w}
 {
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4::basic_float(float const v[4])
     : value{v[0], v[1], v[2], v[3]}
 {
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4::basic_float(float s)
     : value{s, s, s, s}
 {
@@ -33,6 +36,7 @@ VSNRAY_FORCE_INLINE float4::basic_float(float s)
 // Bitwise cast
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 reinterpret_as_int(float4 const& a)
 {
     return *reinterpret_cast<int4 const*>(&a);
@@ -43,6 +47,7 @@ VSNRAY_FORCE_INLINE int4 reinterpret_as_int(float4 const& a)
 // Static cast
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 convert_to_int(float4 const& a)
 {
     return int4(
@@ -58,6 +63,7 @@ VSNRAY_FORCE_INLINE int4 convert_to_int(float4 const& a)
 // select intrinsic
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 select(mask4 const& m, float4 const& a, float4 const& b)
 {
     return float4(
@@ -73,11 +79,13 @@ VSNRAY_FORCE_INLINE float4 select(mask4 const& m, float4 const& a, float4 const&
 // Load / store / get
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 load(float const src[4])
 {
     return float4(src[0], src[1], src[2], src[3]);
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE void store(float dst[4], float4 const& v)
 {
     dst[0] = v.value[0];
@@ -87,6 +95,7 @@ VSNRAY_FORCE_INLINE void store(float dst[4], float4 const& v)
 }
 
 template <size_t I>
+MATH_FUNC
 VSNRAY_FORCE_INLINE float& get(float4& v)
 {
     static_assert(I < 4, "Index out of range for SIMD vector access");
@@ -95,6 +104,7 @@ VSNRAY_FORCE_INLINE float& get(float4& v)
 }
 
 template <size_t I>
+MATH_FUNC
 VSNRAY_FORCE_INLINE float const& get(float4 const& v)
 {
     static_assert(I < 4, "Index out of range for SIMD vector access");
@@ -103,32 +113,38 @@ VSNRAY_FORCE_INLINE float const& get(float4 const& v)
 }
 
 template <int U0, int U1, int V2, int V3>
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 shuffle(float4 const& u, float4 const& v)
 {
     return float4(u.value[U0], u.value[U1], v.value[V2], v.value[V3]);
 }
 
 template <int V0, int V1, int V2, int V3>
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 shuffle(float4 const& v)
 {
     return float4(v.value[V0], v.value[V1], v.value[V2], v.value[V3]);
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 move_lo(float4 const& u, float4 const& v)
 {
     return float4(u.value[0], u.value[1], v.value[0], v.value[1]);
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 move_hi(float4 const& u, float4 const& v)
 {
     return float4(v.value[2], v.value[3], u.value[2], u.value[3]);
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 interleave_lo(float4 const& u, float4 const& v)
 {
     return float4(u.value[0], v.value[0], u.value[1], v.value[1]);
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 interleave_hi(float4 const& u, float4 const& v)
 {
     return float4(u.value[2], v.value[2], u.value[3], v.value[3]);
@@ -139,6 +155,7 @@ VSNRAY_FORCE_INLINE float4 interleave_hi(float4 const& u, float4 const& v)
 // Basic arithmetics
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator+(float4 const& v)
 {
     return float4(
@@ -149,6 +166,7 @@ VSNRAY_FORCE_INLINE float4 operator+(float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator-(float4 const& v)
 {
     return float4(
@@ -159,6 +177,7 @@ VSNRAY_FORCE_INLINE float4 operator-(float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator+(float4 const& u, float4 const& v)
 {
     return float4(
@@ -169,6 +188,7 @@ VSNRAY_FORCE_INLINE float4 operator+(float4 const& u, float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator-(float4 const& u, float4 const& v)
 {
     return float4(
@@ -179,6 +199,7 @@ VSNRAY_FORCE_INLINE float4 operator-(float4 const& u, float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator*(float4 const& u, float4 const& v)
 {
 
@@ -190,6 +211,7 @@ VSNRAY_FORCE_INLINE float4 operator*(float4 const& u, float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator/(float4 const& u, float4 const& v)
 {
     return float4(
@@ -205,6 +227,7 @@ VSNRAY_FORCE_INLINE float4 operator/(float4 const& u, float4 const& v)
 // Bitwise operations
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator&(float4 const& u, float4 const& v)
 {
     int const* ui = reinterpret_cast<int const*>(u.value);
@@ -215,6 +238,7 @@ VSNRAY_FORCE_INLINE float4 operator&(float4 const& u, float4 const& v)
     return float4(reinterpret_cast<float*>(ri));
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator|(float4 const& u, float4 const& v)
 {
     int const* ui = reinterpret_cast<int const*>(u.value);
@@ -225,6 +249,7 @@ VSNRAY_FORCE_INLINE float4 operator|(float4 const& u, float4 const& v)
     return float4(reinterpret_cast<float*>(ri));
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator^(float4 const& u, float4 const& v)
 {
     int const* ui = reinterpret_cast<int const*>(u.value);
@@ -240,6 +265,7 @@ VSNRAY_FORCE_INLINE float4 operator^(float4 const& u, float4 const& v)
 // Logical operations
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator&&(float4 const& u, float4 const& v)
 {
     return float4(
@@ -250,6 +276,7 @@ VSNRAY_FORCE_INLINE float4 operator&&(float4 const& u, float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 operator||(float4 const& u, float4 const& v)
 {
     return float4(
@@ -265,6 +292,7 @@ VSNRAY_FORCE_INLINE float4 operator||(float4 const& u, float4 const& v)
 // Comparisons
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator<(float4 const& u, float4 const& v)
 {
     return mask4(
@@ -275,6 +303,7 @@ VSNRAY_FORCE_INLINE mask4 operator<(float4 const& u, float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator>(float4 const& u, float4 const& v)
 {
     return mask4(
@@ -285,6 +314,7 @@ VSNRAY_FORCE_INLINE mask4 operator>(float4 const& u, float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator<=(float4 const& u, float4 const& v)
 {
     return mask4(
@@ -295,6 +325,7 @@ VSNRAY_FORCE_INLINE mask4 operator<=(float4 const& u, float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator>=(float4 const& u, float4 const& v)
 {
     return mask4(
@@ -303,8 +334,9 @@ VSNRAY_FORCE_INLINE mask4 operator>=(float4 const& u, float4 const& v)
             u.value[2] >= v.value[2],
             u.value[3] >= v.value[3]
             );
-}
+} 
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator==(float4 const& u, float4 const& v)
 {
     return mask4(
@@ -315,6 +347,7 @@ VSNRAY_FORCE_INLINE mask4 operator==(float4 const& u, float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator!=(float4 const& u, float4 const& v)
 {
     return mask4(
@@ -330,11 +363,13 @@ VSNRAY_FORCE_INLINE mask4 operator!=(float4 const& u, float4 const& v)
 // Math functions
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 dot(float4 const& u, float4 const& v)
 {
     return float4(u.value[0] * v.value[0] + u.value[1] * v.value[1] + u.value[2] * v.value[2] + u.value[3] * v.value[3]);
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 min(float4 const& u, float4 const& v)
 {
     return float4(
@@ -345,6 +380,7 @@ VSNRAY_FORCE_INLINE float4 min(float4 const& u, float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 max(float4 const& u, float4 const& v)
 {
     return float4(
@@ -355,11 +391,13 @@ VSNRAY_FORCE_INLINE float4 max(float4 const& u, float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 saturate(float4 const& u)
 {
     return max(float4(0.0f), min(u, float4(0.0f)));
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 abs(float4 const& u)
 {
     return float4(
@@ -370,6 +408,7 @@ VSNRAY_FORCE_INLINE float4 abs(float4 const& u)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 round(float4 const& v)
 {
     return float4(
@@ -380,6 +419,7 @@ VSNRAY_FORCE_INLINE float4 round(float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 ceil(float4 const& v)
 {
     return float4(
@@ -390,6 +430,7 @@ VSNRAY_FORCE_INLINE float4 ceil(float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 floor(float4 const& v)
 {
     return float4(
@@ -400,6 +441,7 @@ VSNRAY_FORCE_INLINE float4 floor(float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 sqrt(float4 const& v)
 {
     return float4(
@@ -410,6 +452,7 @@ VSNRAY_FORCE_INLINE float4 sqrt(float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 isinf(float4 const& v)
 {
     return mask4(
@@ -420,6 +463,7 @@ VSNRAY_FORCE_INLINE mask4 isinf(float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 isnan(float4 const& v)
 {
     return mask4(
@@ -430,6 +474,7 @@ VSNRAY_FORCE_INLINE mask4 isnan(float4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 isfinite(float4 const& v)
 {
     return mask4(
@@ -445,11 +490,13 @@ VSNRAY_FORCE_INLINE mask4 isfinite(float4 const& v)
 //
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 rcp(float4 const& v)
 {
     return float4(1.0f) / v;
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 rsqrt(float4 const& v)
 {
     return float4(1.0f) / sqrt(v);

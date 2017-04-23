@@ -12,21 +12,25 @@ namespace simd
 // int4 members
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4::basic_int(int x, int y, int z, int w)
     : value{x, y, z, w}
 {
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4::basic_int(int const v[4])
     : value{v[0], v[1], v[2], v[3]}
 {
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4::basic_int(int s)
     : value{s, s, s, s}
 {
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4::basic_int(unsigned s)
     : value{static_cast<int>(s), static_cast<int>(s), static_cast<int>(s), static_cast<int>(s)}
 {
@@ -37,6 +41,7 @@ VSNRAY_FORCE_INLINE int4::basic_int(unsigned s)
 // Bitwise cast
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 reinterpret_as_float(int4 const& a)
 {
     return *reinterpret_cast<float4 const*>(&a);
@@ -47,6 +52,7 @@ VSNRAY_FORCE_INLINE float4 reinterpret_as_float(int4 const& a)
 // Static cast
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 convert_to_float(int4 const& a)
 {
     return float4(
@@ -62,6 +68,7 @@ VSNRAY_FORCE_INLINE float4 convert_to_float(int4 const& a)
 // select intrinsic
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 select(mask4 const& m, int4 const& a, int4 const& b)
 {
     return int4(
@@ -77,6 +84,7 @@ VSNRAY_FORCE_INLINE int4 select(mask4 const& m, int4 const& a, int4 const& b)
 // Load / store / get
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE void store(int dst[4], int4 const& v)
 {
     dst[0] = v.value[0];
@@ -85,6 +93,7 @@ VSNRAY_FORCE_INLINE void store(int dst[4], int4 const& v)
     dst[3] = v.value[3];
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE void store(unsigned dst[4], int4 const& v)
 {
     dst[0] = static_cast<unsigned>(v.value[0]);
@@ -94,12 +103,14 @@ VSNRAY_FORCE_INLINE void store(unsigned dst[4], int4 const& v)
 }
 
 template <int A0, int A1, int A2, int A3>
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 shuffle(int4 const& a)
 {
     return int4(a.value[A0], a.value[A1], a.value[A2], a.value[A3]);
 }
 
 template <size_t I>
+MATH_FUNC
 VSNRAY_FORCE_INLINE int& get(int4& v)
 {
     static_assert(I >= 0 && I < 4, "Index out of range for SIMD vector access");
@@ -108,6 +119,7 @@ VSNRAY_FORCE_INLINE int& get(int4& v)
 }
 
 template <size_t I>
+MATH_FUNC
 VSNRAY_FORCE_INLINE int const& get(int4 const& v)
 {
     static_assert(I >= 0 && I < 4, "Index out of range for SIMD vector access");
@@ -120,6 +132,7 @@ VSNRAY_FORCE_INLINE int const& get(int4 const& v)
 // Basic arithmethic
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator+(int4 const& v)
 {
     return int4(
@@ -130,6 +143,7 @@ VSNRAY_FORCE_INLINE int4 operator+(int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator-(int4 const& v)
 {
     return int4(
@@ -140,6 +154,7 @@ VSNRAY_FORCE_INLINE int4 operator-(int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator+(int4 const& u, int4 const& v)
 {
     return int4(
@@ -150,6 +165,7 @@ VSNRAY_FORCE_INLINE int4 operator+(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator-(int4 const& u, int4 const& v)
 {
     return int4(
@@ -160,6 +176,7 @@ VSNRAY_FORCE_INLINE int4 operator-(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator*(int4 const& u, int4 const& v)
 {
     return int4(
@@ -170,6 +187,7 @@ VSNRAY_FORCE_INLINE int4 operator*(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator/(int4 const& u, int4 const& v)
 {
     return int4(
@@ -180,6 +198,7 @@ VSNRAY_FORCE_INLINE int4 operator/(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator%(int4 const& u, int4 const& v)
 {
     return int4(
@@ -195,6 +214,7 @@ VSNRAY_FORCE_INLINE int4 operator%(int4 const& u, int4 const& v)
 // Bitwise operations
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator&(int4 const& u, int4 const& v)
 {
     return int4(
@@ -205,6 +225,7 @@ VSNRAY_FORCE_INLINE int4 operator&(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator|(int4 const& u, int4 const& v)
 {
     return int4(
@@ -215,6 +236,7 @@ VSNRAY_FORCE_INLINE int4 operator|(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator^(int4 const& u, int4 const& v)
 {
     return int4(
@@ -225,6 +247,7 @@ VSNRAY_FORCE_INLINE int4 operator^(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator<<(int4 const& a, int count)
 {
     return int4(
@@ -235,6 +258,7 @@ VSNRAY_FORCE_INLINE int4 operator<<(int4 const& a, int count)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator>>(int4 const& a, int count)
 {
     return int4(
@@ -250,6 +274,7 @@ VSNRAY_FORCE_INLINE int4 operator>>(int4 const& a, int count)
 // Logical operations
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator&&(int4 const& u, int4 const& v)
 {
     return mask4(
@@ -260,6 +285,7 @@ VSNRAY_FORCE_INLINE mask4 operator&&(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator||(int4 const& u, int4 const& v)
 {
     return mask4(
@@ -275,6 +301,7 @@ VSNRAY_FORCE_INLINE mask4 operator||(int4 const& u, int4 const& v)
 // Comparisons
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator<(int4 const& u, int4 const& v)
 {
     return mask4(
@@ -285,6 +312,7 @@ VSNRAY_FORCE_INLINE mask4 operator<(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator>(int4 const& u, int4 const& v)
 {
     return mask4(
@@ -295,6 +323,7 @@ VSNRAY_FORCE_INLINE mask4 operator>(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator==(int4 const& u, int4 const& v)
 {
     return mask4(
@@ -305,6 +334,7 @@ VSNRAY_FORCE_INLINE mask4 operator==(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator<=(int4 const& u, int4 const& v)
 {
     return mask4(
@@ -315,6 +345,7 @@ VSNRAY_FORCE_INLINE mask4 operator<=(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator>=(int4 const& u, int4 const& v)
 {
     return mask4(
@@ -325,6 +356,7 @@ VSNRAY_FORCE_INLINE mask4 operator>=(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator!=(int4 const& u, int4 const& v)
 {
     return mask4(
@@ -340,6 +372,7 @@ VSNRAY_FORCE_INLINE mask4 operator!=(int4 const& u, int4 const& v)
 // Math functions
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 min(int4 const& u, int4 const& v)
 {
     return int4(
@@ -350,6 +383,7 @@ VSNRAY_FORCE_INLINE int4 min(int4 const& u, int4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE int4 max(int4 const& u, int4 const& v)
 {
     return int4(

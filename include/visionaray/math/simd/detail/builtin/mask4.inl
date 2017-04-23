@@ -10,16 +10,19 @@ namespace simd
 // mask4 members
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4::basic_mask(bool x, bool y, bool z, bool w)
     : value{x, y, z, w}
 {
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4::basic_mask(bool const v[4])
     : value{v[0], v[1], v[2], v[3]}
 {
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4::basic_mask(bool b)
     : value{b, b, b, b}
 {
@@ -30,11 +33,13 @@ VSNRAY_FORCE_INLINE mask4::basic_mask(bool b)
 // any / all intrinsics
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE bool any(mask4 const& m)
 {
     return m.value[0] || m.value[1] || m.value[2] || m.value[3];
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE bool all(mask4 const& m)
 {
     return m.value[0] && m.value[1] && m.value[2] && m.value[3];
@@ -45,6 +50,7 @@ VSNRAY_FORCE_INLINE bool all(mask4 const& m)
 // select intrinsic
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 select(mask4 const& m, mask4 const& a, mask4 const& b)
 {
     return mask4(
@@ -61,6 +67,7 @@ VSNRAY_FORCE_INLINE mask4 select(mask4 const& m, mask4 const& a, mask4 const& b)
 //
 
 template <typename S>
+MATH_FUNC
 VSNRAY_FORCE_INLINE void store(S dst[4], mask4 const& m)
 {
     dst[0] = S(m.value[0]);
@@ -70,6 +77,7 @@ VSNRAY_FORCE_INLINE void store(S dst[4], mask4 const& m)
 }
 
 template <typename S, typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE void store(S dst[4], T const& v, mask4 const& mask)
 {
     dst[0] = mask.value[0] ? S(v.value[0]) : dst[0];
@@ -79,6 +87,7 @@ VSNRAY_FORCE_INLINE void store(S dst[4], T const& v, mask4 const& mask)
 }
 
 template <typename S, typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE void store(S dst[4], T const& v, mask4 const& mask, T const& old)
 {
     dst[0] = mask.value[0] ? S(v.value[0]) : S(old.value[0]);
@@ -92,6 +101,7 @@ VSNRAY_FORCE_INLINE void store(S dst[4], T const& v, mask4 const& mask, T const&
 // Bitwise operations
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator!(mask4 const& a)
 {
     return mask4(
@@ -102,6 +112,7 @@ VSNRAY_FORCE_INLINE mask4 operator!(mask4 const& a)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator&(mask4 const& a, mask4 const& b)
 {
     return mask4(
@@ -112,6 +123,7 @@ VSNRAY_FORCE_INLINE mask4 operator&(mask4 const& a, mask4 const& b)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator|(mask4 const& a, mask4 const& b)
 {
     return mask4(
@@ -122,6 +134,7 @@ VSNRAY_FORCE_INLINE mask4 operator|(mask4 const& a, mask4 const& b)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator^(mask4 const& a, mask4 const& b)
 {
     return mask4(
@@ -137,6 +150,7 @@ VSNRAY_FORCE_INLINE mask4 operator^(mask4 const& a, mask4 const& b)
 // Logical operations
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator&&(mask4 const& a, mask4 const& b)
 {
     return mask4(
@@ -147,6 +161,7 @@ VSNRAY_FORCE_INLINE mask4 operator&&(mask4 const& a, mask4 const& b)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator||(mask4 const& a, mask4 const& b)
 {
     return mask4(
@@ -162,6 +177,7 @@ VSNRAY_FORCE_INLINE mask4 operator||(mask4 const& a, mask4 const& b)
 // Comparisons
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator==(mask4 const& u, mask4 const& v)
 {
     return mask4(
@@ -172,6 +188,7 @@ VSNRAY_FORCE_INLINE mask4 operator==(mask4 const& u, mask4 const& v)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 operator!=(mask4 const& u, mask4 const& v)
 {
     return mask4(
