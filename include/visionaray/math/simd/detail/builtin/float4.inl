@@ -373,10 +373,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 min(float4 const& u, float4 const& v)
 {
     return float4(
-            std::min(u.value[0], v.value[0]),
-            std::min(u.value[1], v.value[1]),
-            std::min(u.value[2], v.value[2]),
-            std::min(u.value[3], v.value[3])
+            ::min(u.value[0], v.value[0]),
+            ::min(u.value[1], v.value[1]),
+            ::min(u.value[2], v.value[2]),
+            ::min(u.value[3], v.value[3])
             );
 }
 
@@ -384,10 +384,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 max(float4 const& u, float4 const& v)
 {
     return float4(
-            std::max(u.value[0], v.value[0]),
-            std::max(u.value[1], v.value[1]),
-            std::max(u.value[2], v.value[2]),
-            std::max(u.value[3], v.value[3])
+            ::max(u.value[0], v.value[0]),
+            ::max(u.value[1], v.value[1]),
+            ::max(u.value[2], v.value[2]),
+            ::max(u.value[3], v.value[3])
             );
 }
 
@@ -401,10 +401,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 abs(float4 const& u)
 {
     return float4(
-            std::abs(u.value[0]),
-            std::abs(u.value[1]),
-            std::abs(u.value[2]),
-            std::abs(u.value[3])
+            ::abs(u.value[0]),
+            ::abs(u.value[1]),
+            ::abs(u.value[2]),
+            ::abs(u.value[3])
             );
 }
 
@@ -412,10 +412,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 round(float4 const& v)
 {
     return float4(
-            std::round(v.value[0]),
-            std::round(v.value[1]),
-            std::round(v.value[2]),
-            std::round(v.value[3])
+            ::round(v.value[0]),
+            ::round(v.value[1]),
+            ::round(v.value[2]),
+            ::round(v.value[3])
             );
 }
 
@@ -423,10 +423,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 ceil(float4 const& v)
 {
     return float4(
-            std::ceil(v.value[0]),
-            std::ceil(v.value[1]),
-            std::ceil(v.value[2]),
-            std::ceil(v.value[3])
+            ::ceil(v.value[0]),
+            ::ceil(v.value[1]),
+            ::ceil(v.value[2]),
+            ::ceil(v.value[3])
             );
 }
 
@@ -434,10 +434,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 floor(float4 const& v)
 {
     return float4(
-            std::floor(v.value[0]),
-            std::floor(v.value[1]),
-            std::floor(v.value[2]),
-            std::floor(v.value[3])
+            ::floor(v.value[0]),
+            ::floor(v.value[1]),
+            ::floor(v.value[2]),
+            ::floor(v.value[3])
             );
 }
 
@@ -445,10 +445,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 sqrt(float4 const& v)
 {
     return float4(
-            std::sqrt(v.value[0]),
-            std::sqrt(v.value[1]),
-            std::sqrt(v.value[2]),
-            std::sqrt(v.value[3])
+            ::sqrt(v.value[0]),
+            ::sqrt(v.value[1]),
+            ::sqrt(v.value[2]),
+            ::sqrt(v.value[3])
             );
 }
 
