@@ -20,16 +20,34 @@ namespace MATH_NAMESPACE
 // Enable ADL!
 //
 
+#ifdef __CUDA_ARCH__
+using ::abs;
+using ::acos;
+using ::asin;
+using ::atan;
+using ::ceil;
+using ::copysign;
+using ::cos;
+using ::exp;
+using ::floor;
+using ::isfinite;
+using ::isinf;
+using ::isnan;
+using ::log;
+using ::log2;
+using ::log10;
+using ::log1p;
+using ::pow;
+using ::sin;
+using ::sqrt;
+using ::tan;
+#else
 using std::abs;
 using std::acos;
 using std::asin;
 using std::atan;
 using std::ceil;
-#ifdef __CUDA_ARCH__
-using ::copysign;
-#else
 using std::copysign;
-#endif
 using std::cos;
 using std::exp;
 using std::floor;
@@ -44,6 +62,7 @@ using std::pow;
 using std::sin;
 using std::sqrt;
 using std::tan;
+#endif
 
 template <typename T>
 MATH_FUNC
