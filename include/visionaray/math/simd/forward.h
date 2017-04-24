@@ -56,13 +56,7 @@ typedef basic_float<__m512>                     float16;
 typedef basic_mask<__mmask16>                   mask16;
 #endif
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 typedef basic_ray<float4>                       ray4;
-#elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-typedef basic_ray<float4>                       ray4;
-#else
-typedef basic_ray<float4>                       ray4;
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 typedef basic_ray<float8>                       ray8;
