@@ -6,9 +6,9 @@
 #ifndef VSNRAY_RANDOM_SAMPLER_H
 #define VSNRAY_RANDOM_SAMPLER_H 1
 
-#if defined(__CUDA_ARCH__)
+#if defined(__CUDACC__)
 #include <thrust/random.h>
-#elif defined(__KALMAR_ACCELERATOR__)
+#elif defined(__HCC__)
 #include "hcc/random.h"
 #else
 #include <random>
@@ -32,10 +32,10 @@ public:
 
 public:
 
-#if defined(__CUDA_ARCH__)
+#if defined(__CUDACC__)
     typedef thrust::default_random_engine rand_engine;
     typedef thrust::uniform_real_distribution<T> uniform_dist;
-#elif defined(__KALMAR_ACCELERATOR__)
+#elif defined(__HCC__)
     typedef hcc::default_random_engine rand_engine;
     typedef hcc::uniform_real_distribution<T> uniform_dist;
 #else
