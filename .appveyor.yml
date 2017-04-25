@@ -6,15 +6,15 @@ platform: x64
 
 environment:
     BOOST_ROOT: C:\Libraries\boost_1_59_0
-    BOOST_LIBRARYDIR_WIN32: C:\Libraries\boost_1_59_0\lib32-msvc-14.0
-    BOOST_LIBRARYDIR_WIN64: C:\Libraries\boost_1_59_0\lib64-msvc-14.0
+    BOOST_LIBRARYDIR_WIN32: C:/Libraries/boost_1_59_0/lib32-msvc-14.0
+    BOOST_LIBRARYDIR_WIN64: C:/Libraries/boost_1_59_0/lib64-msvc-14.0
 
 clone_folder:
     C:\projects\visionaray
 
 configuration:
     - Debug
-    - Release
+№    - Release
 
 install:
     - git submodule update --init --recursive
