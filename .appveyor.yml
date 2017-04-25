@@ -14,7 +14,7 @@ clone_folder:
 
 configuration:
     - Debug
-№    - Release
+#    - Release
 
 install:
     - git submodule update --init --recursive
