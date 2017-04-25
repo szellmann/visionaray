@@ -3,7 +3,6 @@
 
 #include <cassert>
 #include <algorithm>
-#include <array>
 #include <limits>
 
 #include <visionaray/bvh.h>
