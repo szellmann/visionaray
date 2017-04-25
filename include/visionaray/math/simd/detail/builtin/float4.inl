@@ -456,10 +456,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 isinf(float4 const& v)
 {
     return mask4(
-            std::isinf(v.value[0]),
-            std::isinf(v.value[1]),
-            std::isinf(v.value[2]),
-            std::isinf(v.value[3])
+            ::isinf(v.value[0]),
+            ::isinf(v.value[1]),
+            ::isinf(v.value[2]),
+            ::isinf(v.value[3])
             );
 }
 
@@ -467,10 +467,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 isnan(float4 const& v)
 {
     return mask4(
-            std::isnan(v.value[0]),
-            std::isnan(v.value[1]),
-            std::isnan(v.value[2]),
-            std::isnan(v.value[3])
+            ::isnan(v.value[0]),
+            ::isnan(v.value[1]),
+            ::isnan(v.value[2]),
+            ::isnan(v.value[3])
             );
 }
 
@@ -478,10 +478,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 isfinite(float4 const& v)
 {
     return mask4(
-            std::isfinite(v.value[0]),
-            std::isfinite(v.value[1]),
-            std::isfinite(v.value[2]),
-            std::isfinite(v.value[3])
+            ::isfinite(v.value[0]),
+            ::isfinite(v.value[1]),
+            ::isfinite(v.value[2]),
+            ::isfinite(v.value[3])
             );
 }
 
