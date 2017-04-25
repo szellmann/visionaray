@@ -2,7 +2,8 @@
 // See the LICENSE file for details.
 
 #include <algorithm>
-#include <cmath>
+
+#include <visionaray/math/detail/math.h>
 
 namespace MATH_NAMESPACE
 {
@@ -373,10 +374,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 min(float4 const& u, float4 const& v)
 {
     return float4(
-            ::min(u.value[0], v.value[0]),
-            ::min(u.value[1], v.value[1]),
-            ::min(u.value[2], v.value[2]),
-            ::min(u.value[3], v.value[3])
+            MATH_NAMESPACE::min(u.value[0], v.value[0]),
+            MATH_NAMESPACE::min(u.value[1], v.value[1]),
+            MATH_NAMESPACE::min(u.value[2], v.value[2]),
+            MATH_NAMESPACE::min(u.value[3], v.value[3])
             );
 }
 
@@ -384,10 +385,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 max(float4 const& u, float4 const& v)
 {
     return float4(
-            ::max(u.value[0], v.value[0]),
-            ::max(u.value[1], v.value[1]),
-            ::max(u.value[2], v.value[2]),
-            ::max(u.value[3], v.value[3])
+            MATH_NAMESPACE::max(u.value[0], v.value[0]),
+            MATH_NAMESPACE::max(u.value[1], v.value[1]),
+            MATH_NAMESPACE::max(u.value[2], v.value[2]),
+            MATH_NAMESPACE::max(u.value[3], v.value[3])
             );
 }
 
@@ -401,10 +402,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 abs(float4 const& u)
 {
     return float4(
-            ::abs(u.value[0]),
-            ::abs(u.value[1]),
-            ::abs(u.value[2]),
-            ::abs(u.value[3])
+            MATH_NAMESPACE::abs(u.value[0]),
+            MATH_NAMESPACE::abs(u.value[1]),
+            MATH_NAMESPACE::abs(u.value[2]),
+            MATH_NAMESPACE::abs(u.value[3])
             );
 }
 
@@ -412,10 +413,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 round(float4 const& v)
 {
     return float4(
-            ::round(v.value[0]),
-            ::round(v.value[1]),
-            ::round(v.value[2]),
-            ::round(v.value[3])
+            MATH_NAMESPACE::round(v.value[0]),
+            MATH_NAMESPACE::round(v.value[1]),
+            MATH_NAMESPACE::round(v.value[2]),
+            MATH_NAMESPACE::round(v.value[3])
             );
 }
 
@@ -423,10 +424,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 ceil(float4 const& v)
 {
     return float4(
-            ::ceil(v.value[0]),
-            ::ceil(v.value[1]),
-            ::ceil(v.value[2]),
-            ::ceil(v.value[3])
+            MATH_NAMESPACE::ceil(v.value[0]),
+            MATH_NAMESPACE::ceil(v.value[1]),
+            MATH_NAMESPACE::ceil(v.value[2]),
+            MATH_NAMESPACE::ceil(v.value[3])
             );
 }
 
@@ -434,10 +435,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 floor(float4 const& v)
 {
     return float4(
-            ::floor(v.value[0]),
-            ::floor(v.value[1]),
-            ::floor(v.value[2]),
-            ::floor(v.value[3])
+            MATH_NAMESPACE::floor(v.value[0]),
+            MATH_NAMESPACE::floor(v.value[1]),
+            MATH_NAMESPACE::floor(v.value[2]),
+            MATH_NAMESPACE::floor(v.value[3])
             );
 }
 
@@ -445,10 +446,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 sqrt(float4 const& v)
 {
     return float4(
-            ::sqrt(v.value[0]),
-            ::sqrt(v.value[1]),
-            ::sqrt(v.value[2]),
-            ::sqrt(v.value[3])
+            MATH_NAMESPACE::sqrt(v.value[0]),
+            MATH_NAMESPACE::sqrt(v.value[1]),
+            MATH_NAMESPACE::sqrt(v.value[2]),
+            MATH_NAMESPACE::sqrt(v.value[3])
             );
 }
 
@@ -456,10 +457,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 isinf(float4 const& v)
 {
     return mask4(
-            ::isinf(v.value[0]),
-            ::isinf(v.value[1]),
-            ::isinf(v.value[2]),
-            ::isinf(v.value[3])
+            MATH_NAMESPACE::isinf(v.value[0]),
+            MATH_NAMESPACE::isinf(v.value[1]),
+            MATH_NAMESPACE::isinf(v.value[2]),
+            MATH_NAMESPACE::isinf(v.value[3])
             );
 }
 
@@ -467,10 +468,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 isnan(float4 const& v)
 {
     return mask4(
-            ::isnan(v.value[0]),
-            ::isnan(v.value[1]),
-            ::isnan(v.value[2]),
-            ::isnan(v.value[3])
+            MATH_NAMESPACE::isnan(v.value[0]),
+            MATH_NAMESPACE::isnan(v.value[1]),
+            MATH_NAMESPACE::isnan(v.value[2]),
+            MATH_NAMESPACE::isnan(v.value[3])
             );
 }
 
@@ -478,10 +479,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 isfinite(float4 const& v)
 {
     return mask4(
-            ::isfinite(v.value[0]),
-            ::isfinite(v.value[1]),
-            ::isfinite(v.value[2]),
-            ::isfinite(v.value[3])
+            MATH_NAMESPACE::isfinite(v.value[0]),
+            MATH_NAMESPACE::isfinite(v.value[1]),
+            MATH_NAMESPACE::isfinite(v.value[2]),
+            MATH_NAMESPACE::isfinite(v.value[3])
             );
 }
 

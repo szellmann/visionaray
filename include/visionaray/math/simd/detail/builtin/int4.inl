@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#include <visionaray/math/detail/math.h>
+
 namespace MATH_NAMESPACE
 {
 namespace simd
@@ -376,10 +378,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE int4 min(int4 const& u, int4 const& v)
 {
     return int4(
-            ::min(u.value[0], v.value[0]),
-            ::min(u.value[1], v.value[1]),
-            ::min(u.value[2], v.value[2]),
-            ::min(u.value[3], v.value[3])
+            MATH_NAMESPACE::min(u.value[0], v.value[0]),
+            MATH_NAMESPACE::min(u.value[1], v.value[1]),
+            MATH_NAMESPACE::min(u.value[2], v.value[2]),
+            MATH_NAMESPACE::min(u.value[3], v.value[3])
             );
 }
 
@@ -387,10 +389,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE int4 max(int4 const& u, int4 const& v)
 {
     return int4(
-            ::max(u.value[0], v.value[0]),
-            ::max(u.value[1], v.value[1]),
-            ::max(u.value[2], v.value[2]),
-            ::max(u.value[3], v.value[3])
+            MATH_NAMESPACE::max(u.value[0], v.value[0]),
+            MATH_NAMESPACE::max(u.value[1], v.value[1]),
+            MATH_NAMESPACE::max(u.value[2], v.value[2]),
+            MATH_NAMESPACE::max(u.value[3], v.value[3])
             );
 }
 
