@@ -1065,8 +1065,8 @@ inline void get(
         T const*                            buffer
         )
 {
-    const int w = packet_size<simd::float8>::w;
-    const int h = packet_size<simd::float8>::h;
+    const int w = packet_size<simd::float16>::w;
+    const int h = packet_size<simd::float16>::h;
 
     simd::aligned_array_t<simd::float16> out;
 
@@ -1099,8 +1099,8 @@ inline void get(
         T const*                                    buffer
         )
 {
-    const int w = packet_size<simd::float8>::w;
-    const int h = packet_size<simd::float8>::h;
+    const int w = packet_size<simd::float16>::w;
+    const int h = packet_size<simd::float16>::h;
 
     simd::aligned_array_t<simd::int16> out;
 
