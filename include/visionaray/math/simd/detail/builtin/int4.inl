@@ -376,10 +376,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE int4 min(int4 const& u, int4 const& v)
 {
     return int4(
-            std::min(u.value[0], v.value[0]),
-            std::min(u.value[1], v.value[1]),
-            std::min(u.value[2], v.value[2]),
-            std::min(u.value[3], v.value[3])
+            ::min(u.value[0], v.value[0]),
+            ::min(u.value[1], v.value[1]),
+            ::min(u.value[2], v.value[2]),
+            ::min(u.value[3], v.value[3])
             );
 }
 
@@ -387,10 +387,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE int4 max(int4 const& u, int4 const& v)
 {
     return int4(
-            std::max(u.value[0], v.value[0]),
-            std::max(u.value[1], v.value[1]),
-            std::max(u.value[2], v.value[2]),
-            std::max(u.value[3], v.value[3])
+            ::max(u.value[0], v.value[0]),
+            ::max(u.value[1], v.value[1]),
+            ::max(u.value[2], v.value[2]),
+            ::max(u.value[3], v.value[3])
             );
 }
 
