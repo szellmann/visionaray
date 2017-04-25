@@ -1,8 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <cstddef>
+
+#include "../array.h"
 
 namespace visionaray
 {
@@ -14,17 +15,16 @@ namespace simd
 //
 
 template <size_t N>
-inline emissive<float_from_simd_width_t<N>> pack(
-        std::array<emissive<float>, N> const& mats
-        )
+VSNRAY_FUNC
+inline emissive<float_from_simd_width_t<N>> pack(array<emissive<float>, N> const& mats)
 {
     using T = float_from_simd_width_t<N>;
     using float_array = aligned_array_t<T>;
 
     emissive<T> result;
 
-    std::array<spectrum<float>, N>  ce;
-    float_array                     ls;
+    array<spectrum<float>, N>   ce;
+    float_array                 ls;
 
     for (size_t i = 0; i < N; ++i)
     {
@@ -39,19 +39,18 @@ inline emissive<float_from_simd_width_t<N>> pack(
 }
 
 template <size_t N>
-inline matte<float_from_simd_width_t<N>> pack(
-        std::array<matte<float>, N> const& mats
-        )
+VSNRAY_FUNC
+inline matte<float_from_simd_width_t<N>> pack(array<matte<float>, N> const& mats)
 {
     using T = float_from_simd_width_t<N>;
     using float_array = aligned_array_t<T>;
 
     matte<T> result;
 
-    std::array<spectrum<float>, N>  ca;
-    std::array<spectrum<float>, N>  cd;
-    float_array                     ka;
-    float_array                     kd;
+    array<spectrum<float>, N>   ca;
+    array<spectrum<float>, N>   cd;
+    float_array                 ka;
+    float_array                 kd;
 
     for (size_t i = 0; i < N; ++i)
     {
@@ -70,17 +69,16 @@ inline matte<float_from_simd_width_t<N>> pack(
 }
 
 template <size_t N>
-inline mirror<float_from_simd_width_t<N>> pack(
-        std::array<mirror<float>, N> const& mats
-        )
+VSNRAY_FUNC
+inline mirror<float_from_simd_width_t<N>> pack(array<mirror<float>, N> const& mats)
 {
     using T = float_from_simd_width_t<N>;
     using float_array = aligned_array_t<T>;
 
     mirror<T> result;
 
-    std::array<spectrum<float>, N>  cr;
-    float_array                     kr;
+    array<spectrum<float>, N>   cr;
+    float_array                 kr;
 
     for (size_t i = 0; i < N; ++i)
     {
@@ -95,22 +93,21 @@ inline mirror<float_from_simd_width_t<N>> pack(
 }
 
 template <size_t N>
-inline plastic<float_from_simd_width_t<N>> pack(
-    std::array<plastic<float>, N> const& mats
-    )
+VSNRAY_FUNC
+inline plastic<float_from_simd_width_t<N>> pack(array<plastic<float>, N> const& mats)
 {
     using T = float_from_simd_width_t<N>;
     using float_array = aligned_array_t<T>;
 
     plastic<T> result;
 
-    std::array<spectrum<float>, N>  ca;
-    std::array<spectrum<float>, N>  cd;
-    std::array<spectrum<float>, N>  cs;
-    float_array                     ka;
-    float_array                     kd;
-    float_array                     ks;
-    float_array                     se;
+    array<spectrum<float>, N>   ca;
+    array<spectrum<float>, N>   cd;
+    array<spectrum<float>, N>   cs;
+    float_array                 ka;
+    float_array                 kd;
+    float_array                 ks;
+    float_array                 se;
 
     for (size_t i = 0; i < N; ++i)
     {

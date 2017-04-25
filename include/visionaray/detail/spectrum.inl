@@ -1,10 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <ostream>
 
 #include <visionaray/texture/texture.h>
+#include <visionaray/array.h>
 
 #include "color_conversion.h"
 
@@ -430,14 +430,13 @@ namespace simd
 //
 
 template <size_t N>
-inline spectrum<float_from_simd_width_t<N>> pack(
-        std::array<spectrum<float>, N> const& specs
-        )
+VSNRAY_FUNC
+inline spectrum<float_from_simd_width_t<N>> pack(array<spectrum<float>, N> const& specs)
 {
     using T = float_from_simd_width_t<N>;
     using V = vector<spectrum<T>::num_samples, float>;
 
-    std::array<V, N> arr;
+    array<V, N> arr;
 
     for (size_t i = 0; i < N; ++i)
     {

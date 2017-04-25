@@ -6,12 +6,12 @@
 #ifndef VSNRAY_GET_SURFACE_H
 #define VSNRAY_GET_SURFACE_H 1
 
-#include <array>
 #include <iterator>
 #include <type_traits>
 #include <utility>
 
 #include "texture/texture.h"
+#include "array.h"
 #include "bvh.h"
 #include "generic_primitive.h"
 #include "get_color.h"
@@ -49,11 +49,11 @@ private:
 
 public:
     using type = surface<
-        decltype(simd::pack(std::declval<std::array<N_, Size_>>())),
-        decltype(simd::pack(std::declval<std::array<M_, Size_>>()))
+        decltype(simd::pack(std::declval<array<N_, Size_>>())),
+        decltype(simd::pack(std::declval<array<M_, Size_>>()))
         >;
 
-    using array_type = std::array<surface<N_, M_>, Size_>;
+    using array_type = array<surface<N_, M_>, Size_>;
 };
 
 template <typename Params, typename T>
@@ -70,12 +70,12 @@ private:
 
 public:
     using type = surface<
-        decltype(simd::pack(std::declval<std::array<N_, Size_>>())),
-        decltype(simd::pack(std::declval<std::array<M_, Size_>>())),
-        decltype(simd::pack(std::declval<std::array<C_, Size_>>()))
+        decltype(simd::pack(std::declval<array<N_, Size_>>())),
+        decltype(simd::pack(std::declval<array<M_, Size_>>())),
+        decltype(simd::pack(std::declval<array<C_, Size_>>()))
         >;
 
-    using array_type = std::array<surface<N_, M_, C_>, Size_>;
+    using array_type = array<surface<N_, M_, C_>, Size_>;
 };
 
 

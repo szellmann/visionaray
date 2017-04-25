@@ -6,9 +6,10 @@
 #ifndef VSNRAY_MATH_SIMD_GATHER_H
 #define VSNRAY_MATH_SIMD_GATHER_H 1
 
-#include <array>
 #include <cstdint>
 #include <type_traits>
+
+#include <visionaray/array.h>
 
 #include "avx.h"
 #include "avx512.h"
@@ -396,7 +397,7 @@ VSNRAY_FORCE_INLINE vector<Dim, float4> gather(vector<Dim, float> const* base_ad
     VSNRAY_ALIGN(16) int indices[4];
     store(&indices[0], index);
 
-    std::array<vector<Dim, float>, 4> arr {{
+    array<vector<Dim, float>, 4> arr {{
             base_addr[indices[0]],
             base_addr[indices[1]],
             base_addr[indices[2]],
@@ -421,7 +422,7 @@ VSNRAY_FORCE_INLINE vector<Dim, float8> gather(vector<Dim, float> const* base_ad
     VSNRAY_ALIGN(32) int indices[8];
     store(&indices[0], index);
 
-    std::array<vector<Dim, float>, 8> arr {{
+    array<vector<Dim, float>, 8> arr {{
             base_addr[indices[0]],
             base_addr[indices[1]],
             base_addr[indices[2]],
@@ -450,7 +451,7 @@ VSNRAY_FORCE_INLINE vector<Dim, float16> gather(vector<Dim, float> const* base_a
     VSNRAY_ALIGN(64) int indices[16];
     store(&indices[0], index);
 
-    std::array<vector<Dim, float>, 16> arr {{
+    array<vector<Dim, float>, 16> arr {{
             base_addr[indices[ 0]],
             base_addr[indices[ 1]],
             base_addr[indices[ 2]],
@@ -530,7 +531,7 @@ VSNRAY_FORCE_INLINE vector<4, float8> gather(vector<4, float> const* base_addr, 
     VSNRAY_ALIGN(32) int indices[8];
     store(&indices[0], index);
 
-    std::array<vector<4, float>, 8> arr{{
+    array<vector<4, float>, 8> arr{{
             base_addr[indices[0]],
             base_addr[indices[1]],
             base_addr[indices[2]],
@@ -588,7 +589,7 @@ VSNRAY_FORCE_INLINE vector<Dim, int4> gather(vector<Dim, I> const* base_addr, in
     VSNRAY_ALIGN(16) int indices[4];
     store(&indices[0], index);
 
-    std::array<V, 4> arr{{
+    array<V, 4> arr{{
             V(base_addr[indices[0]]),
             V(base_addr[indices[1]]),
             V(base_addr[indices[2]]),
@@ -618,7 +619,7 @@ VSNRAY_FORCE_INLINE vector<Dim, int8> gather(vector<Dim, I> const* base_addr, in
     VSNRAY_ALIGN(32) int indices[8];
     store(&indices[0], index);
 
-    std::array<V, 8> arr{{
+    array<V, 8> arr{{
             V(base_addr[indices[0]]),
             V(base_addr[indices[1]]),
             V(base_addr[indices[2]]),
@@ -654,7 +655,7 @@ VSNRAY_FORCE_INLINE vector<Dim, int16> gather(vector<Dim, I> const* base_addr, i
     VSNRAY_ALIGN(64) int indices[16];
     store(&indices[0], index);
 
-    std::array<V, 16> arr{{
+    array<V, 16> arr{{
             V(base_addr[indices[ 0]]),
             V(base_addr[indices[ 1]]),
             V(base_addr[indices[ 2]]),
@@ -694,7 +695,7 @@ VSNRAY_FORCE_INLINE vector<Dim, float4> gather(vector<Dim, unorm<Bits>> const* b
     VSNRAY_ALIGN(16) int indices[4];
     store(&indices[0], index);
 
-    std::array<V, 4> arr{{
+    array<V, 4> arr{{
             V(base_addr[indices[0]]),
             V(base_addr[indices[1]]),
             V(base_addr[indices[2]]),
@@ -722,7 +723,7 @@ VSNRAY_FORCE_INLINE vector<Dim, float8> gather(vector<Dim, unorm<Bits>> const* b
     VSNRAY_ALIGN(32) int indices[8];
     store(&indices[0], index);
 
-    std::array<V, 8> arr{{
+    array<V, 8> arr{{
             V(base_addr[indices[0]]),
             V(base_addr[indices[1]]),
             V(base_addr[indices[2]]),
@@ -756,7 +757,7 @@ VSNRAY_FORCE_INLINE vector<Dim, float16> gather(vector<Dim, unorm<Bits>> const* 
     VSNRAY_ALIGN(64) int indices[16];
     store(&indices[0], index);
 
-    std::array<V, 16> arr{{
+    array<V, 16> arr{{
             V(base_addr[indices[ 0]]),
             V(base_addr[indices[ 1]]),
             V(base_addr[indices[ 2]]),

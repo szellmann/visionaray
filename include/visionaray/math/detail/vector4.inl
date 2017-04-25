@@ -1,8 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <type_traits>
+
+#include <visionaray/array.h>
 
 #include "../simd/builtin.h"
 #include "../simd/neon.h"
@@ -429,7 +430,8 @@ namespace simd
 // pack ---------------------------------------------------
 
 template <typename T, size_t N> // TODO: check that T is convertible to float
-inline auto pack(std::array<vector<4, T>, N> const& vecs)
+MATH_FUNC
+inline auto pack(array<vector<4, T>, N> const& vecs)
     -> vector<4, float_from_simd_width_t<N>>
 {
     using U = float_from_simd_width_t<N>;
@@ -456,8 +458,9 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
+MATH_FUNC
 inline auto unpack(vector<4, FloatT> const& v)
-    -> std::array<vector<4, float>, num_elements<FloatT>::value>
+    -> array<vector<4, float>, num_elements<FloatT>::value>
 {
     using float_array = aligned_array_t<FloatT>;
 
@@ -471,7 +474,7 @@ inline auto unpack(vector<4, FloatT> const& v)
     store(z, v.z);
     store(w, v.w);
 
-    std::array<vector<4, float>, num_elements<FloatT>::value> result;
+    array<vector<4, float>, num_elements<FloatT>::value> result;
 
     for (int i = 0; i < num_elements<FloatT>::value; ++i)
     {
@@ -486,6 +489,7 @@ inline auto unpack(vector<4, FloatT> const& v)
 
 // Transpose to get from SoA to AoS (and vice versa)
 // Similar to mat4 transpose
+MATH_FUNC
 inline vector<4, float4> transpose(vector<4, float4> const& v)
 {
     float4 tmp0 = interleave_lo(v.x, v.y);

@@ -1,8 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <type_traits>
+
+#include <visionaray/array.h>
 
 #include "math.h"
 
@@ -367,9 +368,8 @@ namespace simd
 // pack ---------------------------------------------------
 
 template <typename T, size_t N> // TODO: check that T is convertible to float
-inline vector<2, float_from_simd_width_t<N>> pack(
-        std::array<vector<2, T>, N> const& vecs
-        )
+MATH_FUNC
+inline vector<2, float_from_simd_width_t<N>> pack(array<vector<2, T>, N> const& vecs)
 {
     using U = float_from_simd_width_t<N>;
     using float_array = aligned_array_t<U>;
@@ -392,8 +392,9 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
+MATH_FUNC
 inline auto unpack(vector<2, FloatT> const& v)
-    -> std::array<vector<2, float>, num_elements<FloatT>::value>
+    -> array<vector<2, float>, num_elements<FloatT>::value>
 {
     using float_array = aligned_array_t<FloatT>;
 
@@ -403,7 +404,7 @@ inline auto unpack(vector<2, FloatT> const& v)
     store(x, v.x);
     store(y, v.y);
 
-    std::array<vector<2, float>, num_elements<FloatT>::value> result;
+    array<vector<2, float>, num_elements<FloatT>::value> result;
 
     for (int i = 0; i < num_elements<FloatT>::value; ++i)
     {

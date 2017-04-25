@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include <visionaray/math/math.h>
+#include <visionaray/array.h>
 #include <visionaray/bvh.h>
 #include <visionaray/update_if.h>
 
@@ -77,15 +78,15 @@ template <
     typename BVH,
     typename Base
     >
-inline hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(std::array<Base, N>{{}}))> pack(
-        std::array<hit_record_bvh<ray, BVH, Base>, N> const& hrs
+inline hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(array<Base, N>{{}}))> pack(
+        array<hit_record_bvh<ray, BVH, Base>, N> const& hrs
         )
 {
     using I = int_type_t<T>;
     using int_array = aligned_array_t<I>;
-    using RT = hit_record_bvh<basic_ray<T>, BVH, decltype(pack(std::array<Base, N>{{}}))>;
+    using RT = hit_record_bvh<basic_ray<T>, BVH, decltype(pack(array<Base, N>{{}}))>;
 
-    std::array<Base, N> bases;
+    array<Base, N> bases;
     int_array primitive_list_index;
 
     for (size_t i = 0; i < N; ++i)
@@ -113,7 +114,7 @@ template <
 inline auto unpack(
         hit_record_bvh<basic_ray<FloatT>, BVH, Base> const& hr
         )
-    -> std::array<
+    -> array<
             hit_record_bvh<ray, BVH, typename UnpackedBase::value_type>,
             num_elements<FloatT>::value
             >
@@ -126,7 +127,7 @@ inline auto unpack(
     int_array primitive_list_index;
     store(primitive_list_index, hr.primitive_list_index);
 
-    std::array<
+    array<
         hit_record_bvh<ray, BVH, scalar_base_type>,
         num_elements<FloatT>::value
         > result;

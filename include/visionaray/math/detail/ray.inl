@@ -1,8 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <type_traits>
+
+#include <visionaray/array.h>
 
 #include "../simd/type_traits.h"
 
@@ -28,7 +29,7 @@ namespace simd
 // pack ---------------------------------------------------
 
 template <typename T, size_t N>
-inline auto pack(std::array<basic_ray<T>, N> const& rays)
+inline auto pack(array<basic_ray<T>, N> const& rays)
     -> basic_ray<float_from_simd_width_t<N>>
 {
     using U = float_from_simd_width_t<N>;
@@ -70,7 +71,7 @@ inline auto pack(
         )
     -> basic_ray<float_from_simd_width_t<4>>
 {
-    return pack( std::array<basic_ray<T>, 4>{{
+    return pack( array<basic_ray<T>, 4>{{
             r1, r2, r3, r4
             }} );
 }
@@ -92,7 +93,7 @@ inline auto pack(
         )
     -> basic_ray<float_from_simd_width_t<8>>
 {
-    return pack( std::array<basic_ray<T>, 8>{{
+    return pack( array<basic_ray<T>, 8>{{
             r1, r2, r3, r4, r5, r6, r7, r8
             }} );
 }
@@ -106,7 +107,7 @@ template <
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
 inline auto unpack(basic_ray<FloatT> const& ray)
-    -> std::array<basic_ray<float>, num_elements<FloatT>::value>
+    -> array<basic_ray<float>, num_elements<FloatT>::value>
 {
     using float_array = aligned_array_t<FloatT>;
 
@@ -126,7 +127,7 @@ inline auto unpack(basic_ray<FloatT> const& ray)
     store(dir_y, ray.dir.y);
     store(dir_z, ray.dir.z);
 
-    std::array<basic_ray<float>, num_elements<FloatT>::value> result;
+    array<basic_ray<float>, num_elements<FloatT>::value> result;
 
     for (int i = 0; i < num_elements<FloatT>::value; ++i)
     {

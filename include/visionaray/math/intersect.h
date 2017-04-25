@@ -6,8 +6,9 @@
 #ifndef VSNRAY_MATH_INTERSECT_H
 #define VSNRAY_MATH_INTERSECT_H 1
 
-#include <array>
 #include <type_traits>
+
+#include <visionaray/array.h>
 
 #include "simd/type_traits.h"
 
@@ -330,8 +331,9 @@ template <
     size_t N,
     typename T = float_from_simd_width_t<N>
     >
+MATH_FUNC
 inline hit_record<basic_ray<T>, primitive<unsigned>> pack(
-        std::array<hit_record<ray, primitive<unsigned>>, N> const& hrs
+        array<hit_record<ray, primitive<unsigned>>, N> const& hrs
         )
 {
     using I = int_type_t<T>;
@@ -344,7 +346,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> pack(
     int_array prim_id;
     int_array geom_id;
     float_array t;
-    std::array<vec3, N> isect_pos;
+    array<vec3, N> isect_pos;
     float_array u;
     float_array v;
 
@@ -374,7 +376,8 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
-inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> unpack(
+MATH_FUNC
+inline array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> unpack(
         hit_record<basic_ray<FloatT>, primitive<unsigned>> const& hr
         )
 {
@@ -401,7 +404,7 @@ inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::va
     float_array v;
     store(v, hr.v);
 
-    std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
+    array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
     for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i].hit       = hit[i] != 0;
@@ -418,7 +421,7 @@ inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::va
 // TODO: consolidate!
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 template <>
-inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float16>::value> unpack(
+inline array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float16>::value> unpack(
         hit_record<basic_ray<simd::float16>, primitive<unsigned>> const& hr
         )
 {
@@ -447,7 +450,7 @@ inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float
     float_array v;
     store(v, hr.v);
 
-    std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
+    array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
     for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i].hit       = hit[i] != 0;
@@ -465,7 +468,8 @@ inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float
 // TODO: consolidate!
 #if VSNRAY_NO_SIMD_ISA
 template <>
-inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float4>::value> unpack(
+MATH_FUNC
+inline array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float4>::value> unpack(
         hit_record<basic_ray<simd::float4>, primitive<unsigned>> const& hr
         )
 {
@@ -494,7 +498,7 @@ inline std::array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float
     float_array v;
     store(v, hr.v);
 
-    std::array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
+    array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
     for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i].hit       = hit[i] != 0;

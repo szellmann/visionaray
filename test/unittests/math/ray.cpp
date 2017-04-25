@@ -1,9 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
-
 #include <visionaray/math/math.h>
+#include <visionaray/array.h>
 
 #include <gtest/gtest.h>
 
@@ -17,7 +16,7 @@ TEST(Ray, SIMDPack)
     // SSE ------------------------------------------------
 
     {
-        std::array<basic_ray<float>, 4> rays;
+        array<basic_ray<float>, 4> rays;
 
         for (size_t i = 0; i < 4; ++i)
         {
@@ -27,7 +26,7 @@ TEST(Ray, SIMDPack)
                     );
         }
 
-        // pack with std::array
+        // pack with visionaray::array
         auto ray4 = simd::pack(rays);
 
         EXPECT_FLOAT_EQ(simd::get<0>(ray4.ori.x), rays[0].ori.x);
@@ -98,7 +97,7 @@ TEST(Ray, SIMDPack)
     // AVX ------------------------------------------------
 
     {
-        std::array<basic_ray<float>, 8> rays;
+        array<basic_ray<float>, 8> rays;
 
         for (size_t i = 0; i < 8; ++i)
         {

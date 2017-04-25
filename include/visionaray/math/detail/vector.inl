@@ -1,11 +1,11 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <cstring> // memcpy
 #include <type_traits>
 
 #include <visionaray/detail/algorithm.h>
+#include <visionaray/array.h>
 
 #include "../simd/type_traits.h"
 #include "math.h"
@@ -978,7 +978,8 @@ namespace simd
 // pack ---------------------------------------------------
 
 template <size_t Dim, typename T, size_t N> // TODO: check that T is convertible to float
-inline auto pack(std::array<vector<Dim, T>, N> const& vecs)
+VSNRAY_FUNC
+inline auto pack(array<vector<Dim, T>, N> const& vecs)
     -> vector<Dim, float_from_simd_width_t<N>>
 {
     using U = float_from_simd_width_t<N>;
@@ -1002,6 +1003,7 @@ inline auto pack(std::array<vector<Dim, T>, N> const& vecs)
 // pack four vectors
 
 template <size_t Dim, typename T>
+VSNRAY_FUNC
 inline auto pack(
         vector<Dim, T> const& v1,
         vector<Dim, T> const& v2,
@@ -1010,7 +1012,7 @@ inline auto pack(
         )
     -> vector<Dim, float_from_simd_width_t<4>>
 {
-    return pack( std::array<vector<Dim, T>, 4>{{
+    return pack( array<vector<Dim, T>, 4>{{
             v1, v2, v3, v4
             }} );
 }
@@ -1032,7 +1034,7 @@ inline auto pack(
         )
     -> vector<Dim, float_from_simd_width_t<8>>
 {
-    return pack( std::array<vector<Dim, T>, 8>{{
+    return pack( array<vector<Dim, T>, 8>{{
             v1, v2, v3, v4, v5, v6, v7, v8
             }} );
 }
@@ -1047,11 +1049,11 @@ template <
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
 inline auto unpack(vector<Dim, FloatT> const& v)
-    -> std::array<vector<Dim, float>, num_elements<FloatT>::value>
+    -> array<vector<Dim, float>, num_elements<FloatT>::value>
 {
     using float_array = aligned_array_t<FloatT>;
 
-    std::array<vector<Dim, float>, num_elements<FloatT>::value> result;
+    array<vector<Dim, float>, num_elements<FloatT>::value> result;
 
     for (size_t d = 0; d < Dim; ++d)
     {

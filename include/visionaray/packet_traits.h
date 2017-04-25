@@ -78,8 +78,8 @@ struct expand_pixel
 template <>
 struct expand_pixel<simd::float4>
 {
-    VSNRAY_CPU_FUNC inline simd::float4 x(int x) { return simd::float4(x, x + 1, x, x + 1); }
-    VSNRAY_CPU_FUNC inline simd::float4 y(int y) { return simd::float4(y, y, y + 1, y + 1); }
+    VSNRAY_FUNC inline simd::float4 x(int x) { return simd::float4(x, x + 1, x, x + 1); }
+    VSNRAY_FUNC inline simd::float4 y(int y) { return simd::float4(y, y, y + 1, y + 1); }
 };
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)

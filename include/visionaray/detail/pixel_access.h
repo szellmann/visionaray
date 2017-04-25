@@ -6,9 +6,9 @@
 #ifndef VSNRAY_DETAIL_PIXEL_ACCESS_H
 #define VSNRAY_DETAIL_PIXEL_ACCESS_H 1
 
-#include <array>
 #include <type_traits>
 
+#include <visionaray/array.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/result_record.h>
@@ -70,7 +70,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void store(
         pixel_format_constant<PF_RGB8>      /* dst format */,
         pixel_format_constant<PF_RGB32F>    /* src format */,
@@ -123,7 +123,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void store(
         pixel_format_constant<PF_RGB32F>    /* dst format */,
         pixel_format_constant<PF_RGB32F>    /* src format */,
@@ -177,7 +177,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void store(
         pixel_format_constant<PF_RGB32F>    /* dst format */,
         pixel_format_constant<PF_RGBA32F>   /* src format */,
@@ -235,7 +235,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void store(
         pixel_format_constant<PF_RGBA8>     /* dst format */,
         pixel_format_constant<PF_RGBA32F>   /* src format */,
@@ -293,7 +293,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void store(
         pixel_format_constant<PF_RGB8>      /* dst format */,
         pixel_format_constant<PF_RGBA32F>   /* src format */,
@@ -349,7 +349,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void store(
         pixel_format_constant<PF_RGBA32F>   /* dst format */,
         pixel_format_constant<PF_RGBA32F>   /* src format */,
@@ -400,7 +400,7 @@ inline void store(
 // Special treatment, can convert from SoA to AoS using transpose
 //
 
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void store(
         pixel_format_constant<PF_RGBA32F>   /* dst format */,
         pixel_format_constant<PF_RGBA32F>   /* src format */,
@@ -429,7 +429,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void store(
         pixel_format_constant<PF_DEPTH32F>  /* dst format */,
         pixel_format_constant<PF_DEPTH32F>  /* src format */,
@@ -476,7 +476,7 @@ template <
     typename T,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void store(
         pixel_format_constant<PF_DEPTH24_STENCIL8>  /* dst format */,
         pixel_format_constant<PF_DEPTH32F>          /* src format */,
@@ -518,7 +518,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void store(
         pixel_format_constant<PF_R32F>  /* dst format */,
         pixel_format_constant<PF_R32F>  /* src format */,
@@ -675,7 +675,7 @@ inline void get(
 //
 
 template <typename T>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_RGBA32F>   /* dst format */,
         pixel_format_constant<PF_RGB32F>    /* src format */,
@@ -689,7 +689,7 @@ inline void get(
 {
     using OutputColor = vector<3, T>;
 
-    std::array<OutputColor, 4> out;
+    array<OutputColor, 4> out;
 
     out[0] = ( x      < width &&  y      < height) ? buffer[ y      * width +  x     ] : OutputColor();
     out[1] = ((x + 1) < width &&  y      < height) ? buffer[ y      * width + (x + 1)] : OutputColor();
@@ -704,7 +704,7 @@ inline void get(
 //
 
 template <typename OutputColor>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_RGBA32F>   /* dst format */,
         pixel_format_constant<PF_RGBA32F>   /* src format */,
@@ -716,7 +716,7 @@ inline void get(
         OutputColor const*                  buffer
         )
 {
-    std::array<OutputColor, 4> out;
+    array<OutputColor, 4> out;
 
     out[0] = ( x      < width &&  y      < height) ? buffer[ y      * width +  x     ] : OutputColor();
     out[1] = ((x + 1) < width &&  y      < height) ? buffer[ y      * width + (x + 1)] : OutputColor();
@@ -731,7 +731,7 @@ inline void get(
 //
 
 template <typename T>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_R32F>  /* dst format */,
         pixel_format_constant<PF_R32F>  /* src format */,
@@ -756,7 +756,7 @@ inline void get(
 // TODO: merge w/ overload(s) from above
 
 template <typename T>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_DEPTH32F>  /* dst format */,
         pixel_format_constant<PF_DEPTH32F>  /* src format */,
@@ -781,7 +781,7 @@ inline void get(
 // TODO: merge w/ overload(s) from above
 
 template <typename T>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_DEPTH24_STENCIL8>  /* dst format */,
         pixel_format_constant<PF_DEPTH24_STENCIL8>  /* src format */,

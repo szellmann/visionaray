@@ -1,10 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <cstddef>
 #include <utility>
 
+#include "../array.h"
 #include "../generic_material.h"
 
 namespace visionaray
@@ -74,16 +74,17 @@ namespace simd
 //
 
 template <typename N, typename M, typename ...Args, size_t Size>
-inline auto pack(std::array<surface<N, M, Args...>, Size> const& surfs)
+VSNRAY_FUNC
+inline auto pack(array<surface<N, M, Args...>, Size> const& surfs)
     -> decltype( make_surface(
-            pack(std::declval<std::array<N, Size>>()),
-            pack(std::declval<std::array<N, Size>>()),
-            pack(std::declval<std::array<M, Size>>())
+            pack(std::declval<array<N, Size>>()),
+            pack(std::declval<array<N, Size>>()),
+            pack(std::declval<array<M, Size>>())
             ) )
 {
-    std::array<N, Size> geometric_normals;
-    std::array<N, Size> shading_normals;
-    std::array<M, Size> materials;
+    array<N, Size> geometric_normals;
+    array<N, Size> shading_normals;
+    array<M, Size> materials;
 
     for (size_t i = 0; i < Size; ++i)
     {
@@ -100,18 +101,19 @@ inline auto pack(std::array<surface<N, M, Args...>, Size> const& surfs)
 }
 
 template <typename N, typename M, typename C, typename ...Args, size_t Size>
-inline auto pack(std::array<surface<N, M, C, Args...>, Size> const& surfs)
+VSNRAY_FUNC
+inline auto pack(array<surface<N, M, C, Args...>, Size> const& surfs)
     -> decltype( make_surface(
-            pack(std::declval<std::array<N, Size>>()),
-            pack(std::declval<std::array<N, Size>>()),
-            pack(std::declval<std::array<M, Size>>()),
-            pack(std::declval<std::array<C, Size>>())
+            pack(std::declval<array<N, Size>>()),
+            pack(std::declval<array<N, Size>>()),
+            pack(std::declval<array<M, Size>>()),
+            pack(std::declval<array<C, Size>>())
             ) )
 {
-    std::array<N, Size> geometric_normals;
-    std::array<N, Size> shading_normals;
-    std::array<M, Size> materials;
-    std::array<C, Size> tex_colors;
+    array<N, Size> geometric_normals;
+    array<N, Size> shading_normals;
+    array<M, Size> materials;
+    array<C, Size> tex_colors;
 
     for (size_t i = 0; i < Size; ++i)
     {

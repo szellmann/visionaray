@@ -90,12 +90,12 @@ public:
 
     typedef random_sampler<float> sampler_type;
 
-    VSNRAY_CPU_FUNC random_sampler(unsigned seed)
+    VSNRAY_FUNC random_sampler(unsigned seed)
         : sampler_(seed)
     {
     }
 
-    VSNRAY_CPU_FUNC simd::float4 next()
+    VSNRAY_FUNC simd::float4 next()
     {
         return simd::float4(
                 sampler_.next(),

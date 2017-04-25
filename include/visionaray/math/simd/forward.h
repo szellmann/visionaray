@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_MATH_SIMD_FORWARD_H
-#define VSNRAY_MATH_SIMD_FORWARD_H
+#define VSNRAY_MATH_SIMD_FORWARD_H 1
 
 #include "intrinsics.h"
 #include "../config.h"
@@ -71,5 +71,3 @@ typedef basic_ray<float16>                      ray16;
 } // MATH_NAMESPACE
 
 #endif // VSNRAY_MATH_SIMD_FORWARD_H
-
-

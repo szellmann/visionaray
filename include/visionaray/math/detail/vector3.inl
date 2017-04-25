@@ -1,8 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <type_traits>
+
+#include <visionaray/array.h>
 
 #include "../simd/type_traits.h"
 
@@ -435,7 +436,8 @@ namespace simd
 // pack ---------------------------------------------------
 
 template <typename T, size_t N> // TODO: check that T is convertible to float
-inline auto pack(std::array<vector<3, T>, N> const& vecs)
+MATH_FUNC
+inline auto pack(array<vector<3, T>, N> const& vecs)
     -> vector<3, float_from_simd_width_t<N>>
 {
     using U = float_from_simd_width_t<N>;
@@ -461,8 +463,9 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
+MATH_FUNC
 inline auto unpack(vector<3, FloatT> const& v)
-    -> std::array<vector<3, float>, num_elements<FloatT>::value>
+    -> array<vector<3, float>, num_elements<FloatT>::value>
 {
     using float_array = aligned_array_t<FloatT>;
 
@@ -474,7 +477,7 @@ inline auto unpack(vector<3, FloatT> const& v)
     store(y, v.y);
     store(z, v.z);
 
-    std::array<vector<3, float>, num_elements<FloatT>::value> result;
+    array<vector<3, float>, num_elements<FloatT>::value> result;
 
     for (int i = 0; i < num_elements<FloatT>::value; ++i)
     {

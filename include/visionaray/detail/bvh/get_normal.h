@@ -6,10 +6,10 @@
 #ifndef VSNRAY_DETAIL_BVH_GET_NORMAL_H
 #define VSNRAY_DETAIL_BVH_GET_NORMAL_H 1
 
-#include <array>
 #include <type_traits>
 #include <utility>
 
+#include <visionaray/array.h>
 #include <visionaray/get_normal.h>
 #include <visionaray/get_shading_normal.h>
 #include <visionaray/prim_traits.h>
@@ -71,13 +71,13 @@ auto get_normal_from_bvh(
         hit_record_bvh<R, BVH, Base> const& hr,
         Primitive                           prim
         )
-    -> decltype( simd::pack(std::declval<std::array<V, simd::num_elements<T>::value>>()) )
+    -> decltype( simd::pack(std::declval<array<V, simd::num_elements<T>::value>>()) )
 {
     NormalFunc func;
 
     auto hrs = simd::unpack(hr);
 
-    std::array<V, simd::num_elements<T>::value> arr;
+    array<V, simd::num_elements<T>::value> arr;
     for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
     {
         arr[i] = func(
