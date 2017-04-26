@@ -591,6 +591,7 @@ template <
     typename Params,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
+VSNRAY_FUNC
 inline auto get_surface_impl(
         NormalsTag                      /* */,
         ColorsTag                       /* */,
