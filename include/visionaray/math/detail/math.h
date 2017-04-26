@@ -6,6 +6,9 @@
 #ifndef VSNRAY_MATH_DETAIL_MATH_H
 #define VSNRAY_MATH_DETAIL_MATH_H 1
 
+#ifdef __HCC__
+#include <hcc/hc_math.hpp> // include before <cmath> !!
+#endif
 #include <cmath>
 #include <type_traits>
 

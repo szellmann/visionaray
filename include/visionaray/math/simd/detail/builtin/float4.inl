@@ -453,6 +453,7 @@ VSNRAY_FORCE_INLINE float4 sqrt(float4 const& v)
             );
 }
 
+#if !defined(__KALMAR_ACCELERATOR__)
 MATH_FUNC
 VSNRAY_FORCE_INLINE mask4 isinf(float4 const& v)
 {
@@ -485,6 +486,7 @@ VSNRAY_FORCE_INLINE mask4 isfinite(float4 const& v)
             MATH_NAMESPACE::isfinite(v.value[3])
             );
 }
+#endif
 
 
 //-------------------------------------------------------------------------------------------------
