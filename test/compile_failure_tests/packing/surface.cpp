@@ -1,9 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
-
 #include <visionaray/math/forward.h>
+#include <visionaray/array.h>
 #include <visionaray/material.h>
 #include <visionaray/get_surface.h>
 
@@ -17,12 +16,12 @@ using mat_type = matte<T>;
 
 #if defined WITHOUT_TEX_COLOR
     template <typename N, typename M, int SIZE>
-    using param_type = std::array<surface<N, M>, SIZE>;
+    using param_type = array<surface<N, M>, SIZE>;
     template <typename N, typename M>
     using result_type = surface<N, M>;
 #elif defined WITH_TEX_COLOR
     template <typename N, typename M, int SIZE>
-    using param_type = std::array<surface<N, M, vec3f>, SIZE>;
+    using param_type = array<surface<N, M, vec3f>, SIZE>;
     template <typename N, typename M>
     using result_type = surface<N, M, N>;
 #endif

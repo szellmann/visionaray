@@ -1,8 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
-
+#include <visionaray/array.h>
 #include <visionaray/material.h>
 
 using namespace visionaray;
@@ -29,29 +28,29 @@ int main()
 
 #if defined MATERIAL_PACK_FLOAT4
 
-    std::array<mat_type<float>, 4> mat_array;
+    array<mat_type<float>, 4> mat_array;
     mat_type<simd::float4> mat = simd::pack(mat_array);
 
 #elif defined MATERIAL_PACK_FLOAT8
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-    std::array<mat_type<float>, 8> mat_array;
+    array<mat_type<float>, 8> mat_array;
     mat_type<simd::float8> mat = simd::pack(mat_array);
 #endif
 
 #elif defined MATERIAL_PACK_ILLEGAL_LENGTH_1
 
-    std::array<mat_type<float>, 1> mat_array;
+    array<mat_type<float>, 1> mat_array;
     auto mat = simd::pack(mat_array);
 
 #elif defined MATERIAL_PACK_ILLEGAL_LENGTH_3
 
-    std::array<mat_type<float>, 3> mat_array;
+    array<mat_type<float>, 3> mat_array;
     auto mat = simd::pack(mat_array);
 
 #elif defined MATERIAL_PACK_ILLEGAL_INTEGRAL
 
-    std::array<mat_type<int>, 4> mat_array;
+    array<mat_type<int>, 4> mat_array;
     auto mat = simd::pack(mat_array);
 
 #endif
