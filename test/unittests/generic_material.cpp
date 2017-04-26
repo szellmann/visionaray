@@ -1,9 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <vector>
 
+#include <visionaray/array.h>
 #include <visionaray/generic_material.h>
 
 #include <gtest/gtest.h>
@@ -66,7 +66,7 @@ TEST(GenericMaterial, SIMD)
     em.set_ce( from_rgb(vec3(3.0f, 3.0f, 3.0f)) );
     em.set_ls( 5.0f );
 
-    std::array<material_type, 4> mats{{
+    array<material_type, 4> mats{{
             material_type(pl),
             material_type(mi),
             material_type(ma),
