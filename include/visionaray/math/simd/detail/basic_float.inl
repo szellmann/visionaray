@@ -11,6 +11,7 @@ namespace simd
 //
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_float<T>& operator+=(basic_float<T>& a, U const& b)
 {
     a = a + b;
@@ -18,6 +19,7 @@ VSNRAY_FORCE_INLINE basic_float<T>& operator+=(basic_float<T>& a, U const& b)
 }
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_float<T>& operator-=(basic_float<T>& a, U const& b)
 {
     a = a - b;
@@ -25,6 +27,7 @@ VSNRAY_FORCE_INLINE basic_float<T>& operator-=(basic_float<T>& a, U const& b)
 }
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_float<T>& operator*=(basic_float<T>& a, U const& b)
 {
     a = a * b;
@@ -32,6 +35,7 @@ VSNRAY_FORCE_INLINE basic_float<T>& operator*=(basic_float<T>& a, U const& b)
 }
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_float<T>& operator/=(basic_float<T>& a, U const& b)
 {
     a = a / b;
@@ -44,6 +48,7 @@ VSNRAY_FORCE_INLINE basic_float<T>& operator/=(basic_float<T>& a, U const& b)
 //
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_float<T>& operator&=(basic_float<T>& a, U const& b)
 {
     a = a & b;
@@ -51,6 +56,7 @@ VSNRAY_FORCE_INLINE basic_float<T>& operator&=(basic_float<T>& a, U const& b)
 }
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_float<T>& operator|=(basic_float<T>& a, U const& b)
 {
     a = a | b;
@@ -58,6 +64,7 @@ VSNRAY_FORCE_INLINE basic_float<T>& operator|=(basic_float<T>& a, U const& b)
 }
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_float<T>& operator^=(basic_float<T>& a, U const& b)
 {
     a = a ^ b;
@@ -70,6 +77,7 @@ VSNRAY_FORCE_INLINE basic_float<T>& operator^=(basic_float<T>& a, U const& b)
 //
 
 template <typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_float<T> copysign(basic_float<T> const& x, basic_float<T> const& y)
 {
     auto xi = reinterpret_as_int(x);
@@ -87,6 +95,7 @@ VSNRAY_FORCE_INLINE basic_float<T> copysign(basic_float<T> const& x, basic_float
 //
 
 template <unsigned N, typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_float<T> rcp_step(basic_float<T> const& v)
 {
     basic_float<T> t = v;
@@ -100,6 +109,7 @@ VSNRAY_FORCE_INLINE basic_float<T> rcp_step(basic_float<T> const& v)
 }
 
 template <unsigned N, typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_float<T> rsqrt_step(basic_float<T> const& v, basic_float<T> const& x0)
 {
     basic_float<T> threehalf(1.5f);

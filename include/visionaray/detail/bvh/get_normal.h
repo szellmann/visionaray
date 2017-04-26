@@ -66,7 +66,7 @@ template <
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 auto get_normal_from_bvh(
         hit_record_bvh<R, BVH, Base> const& hr,
         Primitive                           prim

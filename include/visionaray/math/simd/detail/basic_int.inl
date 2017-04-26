@@ -11,6 +11,7 @@ namespace simd
 //
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_int<T>& operator+=(basic_int<T>& a, U const& b)
 {
     a = a + b;
@@ -18,6 +19,7 @@ VSNRAY_FORCE_INLINE basic_int<T>& operator+=(basic_int<T>& a, U const& b)
 }
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_int<T>& operator-=(basic_int<T>& a, U const& b)
 {
     a = a - b;
@@ -25,6 +27,7 @@ VSNRAY_FORCE_INLINE basic_int<T>& operator-=(basic_int<T>& a, U const& b)
 }
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_int<T>& operator*=(basic_int<T>& a, U const& b)
 {
     a = a * b;
@@ -32,6 +35,7 @@ VSNRAY_FORCE_INLINE basic_int<T>& operator*=(basic_int<T>& a, U const& b)
 }
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_int<T>& operator/=(basic_int<T>& a, U const& b)
 {
     a = a / b;
@@ -44,6 +48,7 @@ VSNRAY_FORCE_INLINE basic_int<T>& operator/=(basic_int<T>& a, U const& b)
 //
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_int<T>& operator&=(basic_int<T>& a, U const& b)
 {
     a = a & b;
@@ -51,6 +56,7 @@ VSNRAY_FORCE_INLINE basic_int<T>& operator&=(basic_int<T>& a, U const& b)
 }
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_int<T>& operator|=(basic_int<T>& a, U const& b)
 {
     a = a | b;
@@ -58,6 +64,7 @@ VSNRAY_FORCE_INLINE basic_int<T>& operator|=(basic_int<T>& a, U const& b)
 }
 
 template <typename T, typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_int<T>& operator^=(basic_int<T>& a, U const& b)
 {
     a = a ^ b;
@@ -65,6 +72,7 @@ VSNRAY_FORCE_INLINE basic_int<T>& operator^=(basic_int<T>& a, U const& b)
 }
 
 template <typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_int<T>& operator<<=(basic_int<T>& a, int count)
 {
     a << count;
@@ -72,6 +80,7 @@ VSNRAY_FORCE_INLINE basic_int<T>& operator<<=(basic_int<T>& a, int count)
 }
 
 template <typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_int<T>& operator>>=(basic_int<T>& a, int count)
 {
     a >> count;

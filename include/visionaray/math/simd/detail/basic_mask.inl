@@ -11,6 +11,7 @@ namespace simd
 //
 
 template <typename ...Args, typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_mask<Args...>& operator&=(basic_mask<Args...>& a, T const& b)
 {
     a = a & b;
@@ -18,6 +19,7 @@ VSNRAY_FORCE_INLINE basic_mask<Args...>& operator&=(basic_mask<Args...>& a, T co
 }
 
 template <typename ...Args, typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_mask<Args...>& operator|=(basic_mask<Args...>& a, T const& b)
 {
     a = a | b;
@@ -25,6 +27,7 @@ VSNRAY_FORCE_INLINE basic_mask<Args...>& operator|=(basic_mask<Args...>& a, T co
 }
 
 template <typename ...Args, typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE basic_mask<Args...>& operator^=(basic_mask<Args...>& a, T const& b)
 {
     a = a ^ b;
