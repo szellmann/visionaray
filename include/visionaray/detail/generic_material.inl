@@ -159,21 +159,25 @@ public:
 
 public:
 
+    VSNRAY_FUNC
     generic_material(array<single_material, N> const& mats)
         : mats_(mats)
     {
     }
 
+    VSNRAY_FUNC
     single_material& get(int i)
     {
         return mats_[i];
     }
 
+    VSNRAY_FUNC
     single_material const& get(int i) const
     {
         return mats_[i];
     }
 
+    VSNRAY_FUNC
     mask_type_t<scalar_type> is_emissive() const
     {
         using mask_t = mask_type_t<scalar_type>;
@@ -189,6 +193,7 @@ public:
         return mask_t(arr);
     }
 
+    VSNRAY_FUNC
     spectrum<scalar_type> ambient() const
     {
         array<spectrum<float>, N> amb;
@@ -203,6 +208,7 @@ public:
 
 
     template <typename SR>
+    VSNRAY_FUNC
     spectrum<scalar_type> shade(SR const& sr) const
     {
         auto srs = unpack(sr);
@@ -218,6 +224,7 @@ public:
     }
 
     template <typename SR, typename S /* sampler */>
+    VSNRAY_FUNC
     spectrum<scalar_type> sample(
             SR const&               sr,
             vector<3, scalar_type>& refl_dir,
@@ -256,12 +263,14 @@ private:
 //
 
 template <typename ...Ts>
+VSNRAY_FUNC
 inline generic_material<4, Ts...> pack(array<visionaray::generic_material<Ts...>, 4> const& mats)
 {
     return generic_material<4, Ts...>(mats);
 }
 
 template <typename ...Ts>
+VSNRAY_FUNC
 inline array<visionaray::generic_material<Ts...>, 4> unpack(generic_material<4, Ts...> const& m4)
 {
     return array<visionaray::generic_material<Ts...>, 4>{{ m4.get(0), m4.get(1), m4.get(2), m4.get(3) }};
