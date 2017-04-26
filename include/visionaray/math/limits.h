@@ -112,10 +112,10 @@ class numeric_limits<simd::float4>
 {
 public:
 
-    MATH_CPU_FUNC static simd::float4 min();
-    MATH_CPU_FUNC static simd::float4 lowest();
-    MATH_CPU_FUNC static simd::float4 max();
-    MATH_CPU_FUNC static simd::float4 epsilon();
+    MATH_FUNC static simd::float4 min();
+    MATH_FUNC static simd::float4 lowest();
+    MATH_FUNC static simd::float4 max();
+    MATH_FUNC static simd::float4 epsilon();
 };
 
 template <>
@@ -123,9 +123,9 @@ class numeric_limits<simd::int4>
 {
 public:
 
-    MATH_CPU_FUNC static simd::int4 min();
-    MATH_CPU_FUNC static simd::int4 lowest();
-    MATH_CPU_FUNC static simd::int4 max();
+    MATH_FUNC static simd::int4 min();
+    MATH_FUNC static simd::int4 lowest();
+    MATH_FUNC static simd::int4 max();
 };
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
