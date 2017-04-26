@@ -6,12 +6,12 @@
 #ifndef VSNRAY_SHADE_RECORD_H
 #define VSNRAY_SHADE_RECORD_H 1
 
-#include <array>
 #include <type_traits>
 #include <utility>
 
 #include "detail/tags.h"
 #include "math/math.h"
+#include "array.h"
 
 namespace visionaray
 {
@@ -56,9 +56,7 @@ template <
         std::is_floating_point<element_type_t<T>>::value
         >::type
     >
-inline std::array<shade_record<L, float>, num_elements<T>::value> unpack(
-        shade_record<L, T> const& sr
-        )
+inline array<shade_record<L, float>, num_elements<T>::value> unpack(shade_record<L, T> const& sr)
 {
     using int_array = aligned_array_t<int_type_t<T>>;
 
@@ -70,7 +68,7 @@ inline std::array<shade_record<L, float>, num_elements<T>::value> unpack(
     int_array active;
     store(active, sr.active.i);
 
-    std::array<shade_record<L, float>, num_elements<T>::value> result;
+    array<shade_record<L, float>, num_elements<T>::value> result;
 
     for (unsigned i = 0; i < num_elements<T>::value; ++i)
     {
@@ -98,7 +96,7 @@ template <
         std::is_floating_point<element_type_t<T>>::value
         >::type
     >
-inline std::array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> unpack(
+inline array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> unpack(
         shade_record<L, vector<3, T>, T> const& sr
         )
 {
@@ -113,7 +111,7 @@ inline std::array<shade_record<L, vector<3, float>, float>, num_elements<T>::val
     int_array active;
     store(active, sr.active.i);
 
-    std::array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> result;
+    array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> result;
 
     for (unsigned i = 0; i < num_elements<T>::value; ++i)
     {
