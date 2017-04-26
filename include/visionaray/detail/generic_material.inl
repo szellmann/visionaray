@@ -1,9 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <cstddef>
 
+#include <visionaray/array.h>
 #include <visionaray/material.h>
 
 namespace visionaray
@@ -159,7 +159,7 @@ public:
 
 public:
 
-    generic_material(std::array<single_material, N> const& mats)
+    generic_material(array<single_material, N> const& mats)
         : mats_(mats)
     {
     }
@@ -191,7 +191,7 @@ public:
 
     spectrum<scalar_type> ambient() const
     {
-        std::array<spectrum<float>, N> amb;
+        array<spectrum<float>, N> amb;
 
         for (size_t i = 0; i < N; ++i)
         {
@@ -207,7 +207,7 @@ public:
     {
         auto srs = unpack(sr);
 
-        std::array<spectrum<float>, N> shaded;
+        array<spectrum<float>, N> shaded;
 
         for (size_t i = 0; i < N; ++i)
         {
@@ -230,9 +230,9 @@ public:
         auto srs = unpack(sr);
         auto& s = samp.get_sampler();
 
-        std::array<vector<3, float>, N> rds;
+        array<vector<3, float>, N> rds;
         float_array                     pdfs;
-        std::array<spectrum<float>, N>  sampled;
+        array<spectrum<float>, N>  sampled;
 
         for (size_t i = 0; i < N; ++i)
         {
@@ -246,7 +246,7 @@ public:
 
 private:
 
-    std::array<single_material, N> mats_;
+    array<single_material, N> mats_;
 
 };
 
@@ -256,29 +256,29 @@ private:
 //
 
 template <typename ...Ts>
-inline generic_material<4, Ts...> pack(std::array<visionaray::generic_material<Ts...>, 4> const& mats)
+inline generic_material<4, Ts...> pack(array<visionaray::generic_material<Ts...>, 4> const& mats)
 {
     return generic_material<4, Ts...>(mats);
 }
 
 template <typename ...Ts>
-inline std::array<visionaray::generic_material<Ts...>, 4> unpack(generic_material<4, Ts...> const& m4)
+inline array<visionaray::generic_material<Ts...>, 4> unpack(generic_material<4, Ts...> const& m4)
 {
-    return std::array<visionaray::generic_material<Ts...>, 4>{{ m4.get(0), m4.get(1), m4.get(2), m4.get(3) }};
+    return array<visionaray::generic_material<Ts...>, 4>{{ m4.get(0), m4.get(1), m4.get(2), m4.get(3) }};
 }
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 template <typename ...Ts>
-inline generic_material<8, Ts...> pack(std::array<visionaray::generic_material<Ts...>, 8> const& mats)
+inline generic_material<8, Ts...> pack(array<visionaray::generic_material<Ts...>, 8> const& mats)
 {
     return generic_material<8, Ts...>(mats);
 }
 
 template <typename ...Ts>
-inline std::array<visionaray::generic_material<Ts...>, 8> unpack(generic_material<8, Ts...> const& m8)
+inline array<visionaray::generic_material<Ts...>, 8> unpack(generic_material<8, Ts...> const& m8)
 {
-    return std::array<visionaray::generic_material<Ts...>, 8>{{
+    return array<visionaray::generic_material<Ts...>, 8>{{
             m8.get(0), m8.get(1), m8.get(2), m8.get(3),
             m8.get(4), m8.get(5), m8.get(6), m8.get(7)
             }};
@@ -289,15 +289,15 @@ inline std::array<visionaray::generic_material<Ts...>, 8> unpack(generic_materia
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 template <typename ...Ts>
-inline generic_material<16, Ts...> pack(std::array<visionaray::generic_material<Ts...>, 16> const& mats)
+inline generic_material<16, Ts...> pack(array<visionaray::generic_material<Ts...>, 16> const& mats)
 {
     return generic_material<16, Ts...>(mats);
 }
 
 template <typename ...Ts>
-inline std::array<visionaray::generic_material<Ts...>, 16> unpack(generic_material<16, Ts...> const& m16)
+inline array<visionaray::generic_material<Ts...>, 16> unpack(generic_material<16, Ts...> const& m16)
 {
-    return std::array<visionaray::generic_material<Ts...>, 8>{{
+    return array<visionaray::generic_material<Ts...>, 8>{{
             m16.get( 0), m16.get( 1), m16.get( 2), m16.get( 3),
             m16.get( 4), m16.get( 5), m16.get( 6), m16.get( 7),
             m16.get( 8), m16.get( 9), m16.get(10), m16.get(11),
