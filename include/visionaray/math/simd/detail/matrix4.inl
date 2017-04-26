@@ -10,6 +10,7 @@ namespace MATH_NAMESPACE
 // matrix4 members
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix(
         simd::float4 const& c0,
         simd::float4 const& c1,
@@ -23,6 +24,7 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix(
 {
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix(float const data[16])
     : col0(&data[ 0])
     , col1(&data[ 4])
@@ -32,6 +34,7 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix(float const data[16])
 }
 
 template <typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix(matrix<4, 4, U> const& rhs)
     : col0( simd::float4(rhs.col0.x, rhs.col0.y, rhs.col0.z, rhs.col0.w) )
     , col1( simd::float4(rhs.col1.x, rhs.col1.y, rhs.col1.z, rhs.col1.w) )
@@ -41,6 +44,7 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>::matrix(matrix<4, 4, U> const& rh
 }
 
 template <typename U>
+MATH_FUNC
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>& matrix<4, 4, simd::float4>::operator=(matrix<4, 4, U> const& rhs)
 {
     col0 = simd::float4(rhs.col0.x, rhs.col0.y, rhs.col0.z, rhs.col0.w);
@@ -50,16 +54,19 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4>& matrix<4, 4, simd::float4>::oper
     return *this;
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE simd::float4& matrix<4, 4, simd::float4>::operator()(size_t col)
 {
     return *(reinterpret_cast<simd::float4*>(this) + col);
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE simd::float4 const& matrix<4, 4, simd::float4>::operator()(size_t col) const
 {
     return *(reinterpret_cast<simd::float4 const*>(this) + col);
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> matrix<4, 4, simd::float4>::identity()
 {
     return matrix<4, 4, simd::float4>(
@@ -75,6 +82,7 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> matrix<4, 4, simd::float4>::ident
 // Basic arithmetic
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> operator*(
         matrix<4, 4, simd::float4> const& a,
         matrix<4, 4, simd::float4> const& b
@@ -97,6 +105,7 @@ VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> operator*(
 
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE vector<4, simd::float4> operator*(
         matrix<4, 4, simd::float4> const& m,
         vector<4, simd::float4> const& v
@@ -114,6 +123,7 @@ VSNRAY_FORCE_INLINE vector<4, simd::float4> operator*(
 // Geometric functions
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m)
 {
     simd::float4 tmp0 = interleave_lo( m(0), m(1) );

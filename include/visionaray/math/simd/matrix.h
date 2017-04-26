@@ -26,7 +26,10 @@ public:
     column_type col3;
 
 
+    MATH_FUNC
     matrix() = default;
+
+    MATH_FUNC
     matrix(
         column_type const& c0,
         column_type const& c1,
@@ -34,17 +37,24 @@ public:
         column_type const& c3
         );
 
+    MATH_FUNC
     explicit matrix(float const data[16]);
 
     template <typename U>
+    MATH_FUNC
     explicit matrix(matrix<4, 4, U> const& rhs);
 
     template <typename U>
+    MATH_FUNC
     matrix& operator=(matrix<4, 4, U> const& rhs);
 
+    MATH_FUNC
     column_type& operator()(size_t col);
+
+    MATH_FUNC
     column_type const& operator()(size_t col) const;
 
+    MATH_FUNC
     static matrix identity();
 
 };
@@ -54,16 +64,19 @@ public:
 // Free function declarations
 //
 
+MATH_FUNC
 matrix<4, 4, simd::float4> operator*(
         matrix<4, 4, simd::float4> const& a,
         matrix<4, 4, simd::float4> const& b
         );
 
+MATH_FUNC
 vector<4, simd::float4> operator*(
         matrix<4, 4, simd::float4> const& m,
         vector<4, simd::float4> const& v
         );
 
+MATH_FUNC
 matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m);
 
 
