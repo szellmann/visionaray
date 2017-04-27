@@ -590,7 +590,7 @@ VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
 
 VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
 {
-#if VSNRAY_SIMD_HAS_SVML
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) && VSNRAY_SIMD_HAS_SVML
     return _mm_pow_ps(x, y);
 #elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     return exp( y * log(x) );
