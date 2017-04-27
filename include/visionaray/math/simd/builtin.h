@@ -24,7 +24,7 @@ namespace simd
 //
 
 template <>
-class basic_float<float[4]>
+class VSNRAY_ALIGN(16) basic_float<float[4]>
 {
 public:
 
@@ -43,7 +43,7 @@ public:
 //
 
 template <>
-class basic_int<int[4]>
+class VSNRAY_ALIGN(16) basic_int<int[4]>
 {
 public:
 
@@ -63,7 +63,7 @@ public:
 //
 
 template <>
-union basic_mask<bool[4]>
+union VSNRAY_ALIGN(16) basic_mask<bool[4]>
 {
 public:
 
