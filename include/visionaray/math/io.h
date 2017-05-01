@@ -264,6 +264,22 @@ operator>>(std::basic_istream<CharT, Traits>& in, matrix<4, 4, T>& m)
 
 template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
+operator<<(std::basic_ostream<CharT, Traits>& out, matrix<3, 3, T> const& m)
+{
+
+    std::basic_ostringstream<CharT, Traits> s;
+    s.flags(out.flags());
+    s.imbue(out.getloc());
+    s.precision(out.precision());
+
+    s << '(' << m.col0 << ',' << m.col1 << ',' << m.col2 << ')';
+
+    return out << s.str();
+
+}
+
+template <typename T, typename CharT, typename Traits>
+std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, matrix<4, 4, T> const& m)
 {
 
