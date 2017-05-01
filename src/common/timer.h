@@ -156,11 +156,16 @@ private:
 #endif
 
 
-class frame_counter
+//-------------------------------------------------------------------------------------------------
+// basic_frame_counter
+//
+
+template <typename Timer>
+class basic_frame_counter
 {
 public:
 
-    frame_counter()
+    basic_frame_counter()
         : count_(0)
     {
     }
@@ -191,11 +196,32 @@ public:
 
 private:
 
-    timer timer_;
+    Timer timer_;
     unsigned count_;
     double fps_;
 
 };
+
+
+//-------------------------------------------------------------------------------------------------
+// frame counter platform typedefs
+//
+
+using frame_counter = basic_frame_counter<timer>;
+
+#ifdef __CUDACC__
+namespace cuda
+{
+using frame_counter = basic_frame_counter<cuda::timer>;
+}
+#endif
+
+#ifdef __HIPCC__
+namespace hip
+{
+using frame_counter = basic_frame_counter<hip::timer>;
+}
+#endif
 
 } // visionaray
 
