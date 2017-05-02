@@ -71,22 +71,54 @@ TEST(Matrix, Inverse)
 {
 
     //-------------------------------------------------------------------------
+    // mat3
+    //
+
+    {
+
+        mat3 I = mat3::identity();
+
+        // make some non-singular matrix
+        mat4 A4 = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
+        mat3 A = mat3(
+                A4(0, 0), A4(0, 1), A4(0, 2),
+                A4(1, 0), A4(1, 1), A4(1, 2),
+                A4(2, 0), A4(2, 1), A4(2, 2)
+                );
+        mat3 B = inverse(A);
+        mat3 C = A * B;
+
+        for_each_mat3_e(
+            [&](int i, int j)
+            {
+                EXPECT_FLOAT_EQ(C(i, j), I(i, j));
+            }
+            );
+
+    }
+
+
+    //-------------------------------------------------------------------------
     // mat4
     //
 
-    mat4 I = mat4::identity();
+    {
 
-    // make some non-singular matrix
-    mat4 A = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
-    mat4 B = inverse(A);
-    mat4 C = A * B;
+        mat4 I = mat4::identity();
 
-    for_each_mat4_e(
-        [&](int i, int j)
-        {
-            EXPECT_FLOAT_EQ(C(i, j), I(i, j));
-        }
-        );
+        // make some non-singular matrix
+        mat4 A = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
+        mat4 B = inverse(A);
+        mat4 C = A * B;
+
+        for_each_mat4_e(
+            [&](int i, int j)
+            {
+                EXPECT_FLOAT_EQ(C(i, j), I(i, j));
+            }
+            );
+
+    }
 }
 
 TEST(Matrix, Mult)
