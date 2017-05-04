@@ -441,11 +441,12 @@ inline auto pack(array<vector<3, T>, N> const& vecs)
     -> vector<3, float_from_simd_width_t<N>>
 {
     using U = float_from_simd_width_t<N>;
-    using float_array = aligned_array_t<U>;
 
-    float_array x = { 0.0f };
-    float_array y = { 0.0f };
-    float_array z = { 0.0f };
+    vector<3, U> result;
+
+    T* x = reinterpret_cast<T*>(&result.x);
+    T* y = reinterpret_cast<T*>(&result.y);
+    T* z = reinterpret_cast<T*>(&result.z);
 
     for (size_t i = 0; i < N; ++i)
     {
@@ -454,7 +455,7 @@ inline auto pack(array<vector<3, T>, N> const& vecs)
         z[i] = vecs[i].z;
     }
 
-    return vector<3, U>(x, y, z);
+    return result;
 }
 
 // unpack -------------------------------------------------

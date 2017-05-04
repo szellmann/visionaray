@@ -372,10 +372,11 @@ MATH_FUNC
 inline vector<2, float_from_simd_width_t<N>> pack(array<vector<2, T>, N> const& vecs)
 {
     using U = float_from_simd_width_t<N>;
-    using float_array = aligned_array_t<U>;
 
-    float_array x;
-    float_array y;
+    vector<2, U> result;
+
+    T* x = reinterpret_cast<T*>(&result.x);
+    T* y = reinterpret_cast<T*>(&result.y);
 
     for (size_t i = 0; i < N; ++i)
     {
@@ -383,7 +384,7 @@ inline vector<2, float_from_simd_width_t<N>> pack(array<vector<2, T>, N> const& 
         y[i] = vecs[i].y;
     }
 
-    return vector<2, U>(x, y);
+    return result;
 }
 
 // unpack -------------------------------------------------
