@@ -123,7 +123,6 @@ inline auto unpack(matte<FloatT> const& mat)
 }
 
 // mirror -------------------------------------------------
-// TODO: what about mirror::ior and mirror::absorption??
 
 template <size_t N>
 VSNRAY_FUNC
@@ -140,7 +139,11 @@ inline mirror<float_from_simd_width_t<N>> pack(array<mirror<float>, N> const& ma
         for (int j = 0; j < spectrum<float>::num_samples; ++j)
         {
             float* cr_j = reinterpret_cast<float*>(&result.cr()[j]);
+            float* ior_j = reinterpret_cast<float*>(&result.ior()[j]);
+            float* abs_j = reinterpret_cast<float*>(&result.absorption()[j]);
             cr_j[i] = mats[i].cr()[j];
+            ior_j[i] = mats[i].ior()[j];
+            abs_j[i] = mats[i].absorption()[j];
         }
         kr[i] = mats[i].kr();
     }
@@ -165,7 +168,11 @@ inline auto unpack(mirror<FloatT> const& mat)
         for (int j = 0; j < spectrum<float>::num_samples; ++j)
         {
             float const* cr_j = reinterpret_cast<float const*>(&mat.cr()[j]);
+            float const* ior_j = reinterpret_cast<float const*>(&mat.ior()[j]);
+            float const* abs_j = reinterpret_cast<float const*>(&mat.absorption()[j]);
             result[i].cr()[j] = cr_j[i];
+            result[i].ior()[j] = ior_j[i];
+            result[i].absorption()[j] = abs_j[i];
         }
         result[i].kr() = kr[i];
     }

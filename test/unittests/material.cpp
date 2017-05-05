@@ -155,14 +155,14 @@ TEST(Material, SIMD)
         EXPECT_FLOAT_EQ( mii[1].cr()[i], mi1.cr()[i] );
         EXPECT_FLOAT_EQ( mii[2].cr()[i], mi2.cr()[i] );
         EXPECT_FLOAT_EQ( mii[3].cr()[i], mi3.cr()[i] );
-//      EXPECT_FLOAT_EQ( mii[0].ior()[i], mi0.ior()[i] );
-//      EXPECT_FLOAT_EQ( mii[1].ior()[i], mi1.ior()[i] );
-//      EXPECT_FLOAT_EQ( mii[2].ior()[i], mi2.ior()[i] );
-//      EXPECT_FLOAT_EQ( mii[3].ior()[i], mi3.ior()[i] );
-//      EXPECT_FLOAT_EQ( mii[0].absorption()[i], mi0.absorption()[i] );
-//      EXPECT_FLOAT_EQ( mii[1].absorption()[i], mi1.absorption()[i] );
-//      EXPECT_FLOAT_EQ( mii[2].absorption()[i], mi2.absorption()[i] );
-//      EXPECT_FLOAT_EQ( mii[3].absorption()[i], mi3.absorption()[i] );
+        EXPECT_FLOAT_EQ( mii[0].ior()[i], mi0.ior()[i] );
+        EXPECT_FLOAT_EQ( mii[1].ior()[i], mi1.ior()[i] );
+        EXPECT_FLOAT_EQ( mii[2].ior()[i], mi2.ior()[i] );
+        EXPECT_FLOAT_EQ( mii[3].ior()[i], mi3.ior()[i] );
+        EXPECT_FLOAT_EQ( mii[0].absorption()[i], mi0.absorption()[i] );
+        EXPECT_FLOAT_EQ( mii[1].absorption()[i], mi1.absorption()[i] );
+        EXPECT_FLOAT_EQ( mii[2].absorption()[i], mi2.absorption()[i] );
+        EXPECT_FLOAT_EQ( mii[3].absorption()[i], mi3.absorption()[i] );
     }
     EXPECT_FLOAT_EQ( mii[0].kr(), mi0.kr() );
     EXPECT_FLOAT_EQ( mii[1].kr(), mi1.kr() );
