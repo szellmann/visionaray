@@ -101,6 +101,7 @@ set(UNITTESTS_SOURCES
     generic_material.cpp
     generic_primitive.cpp
     get_normal.cpp
+    material.cpp
     render_target.cpp
     sampling.cpp
     swizzle.cpp
