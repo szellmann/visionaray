@@ -6,10 +6,10 @@
 #ifndef VSNRAY_DETAIL_WHITTED_INL
 #define VSNRAY_DETAIL_WHITTED_INL 1
 
-#include <array>
 #include <cstddef>
 #include <type_traits>
 
+#include <visionaray/array.h>
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
 #include <visionaray/traverse.h>
@@ -188,10 +188,10 @@ inline auto specular_bounce(
     auto vds = unpack(view_dir);
     auto ns  = unpack(normal);
 
-    std::array<vector<3, float>, N> refl_dir;
-    std::array<vector<3, float>, N> refr_dir;
-    float_array                     kr;
-    float_array                     kt;
+    array<vector<3, float>, N> refl_dir;
+    array<vector<3, float>, N> refr_dir;
+    float_array                kr;
+    float_array                kt;
 
     for (size_t i = 0; i < N; ++i)
     {
