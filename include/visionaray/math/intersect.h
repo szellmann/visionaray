@@ -336,19 +336,15 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> pack(
         array<hit_record<ray, primitive<unsigned>>, N> const& hrs
         )
 {
-    using I = int_type_t<T>;
-    using float_array = aligned_array_t<T>;
-    using int_array = aligned_array_t<I>;
-
     hit_record<basic_ray<T>, primitive<unsigned>> result;
 
-    int_array hit;
-    int_array prim_id;
-    int_array geom_id;
-    float_array t;
+    int* hit = reinterpret_cast<int*>(&result.hit);
+    int* prim_id = reinterpret_cast<int*>(&result.prim_id);
+    int* geom_id = reinterpret_cast<int*>(&result.geom_id);
+    float* t = reinterpret_cast<float*>(&result.t);
     array<vec3, N> isect_pos;
-    float_array u;
-    float_array v;
+    float* u = reinterpret_cast<float*>(&result.u);
+    float* v = reinterpret_cast<float*>(&result.v);
 
     for (size_t i = 0; i < N; ++i)
     {
@@ -361,13 +357,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> pack(
         v[i]         = hrs[i].v;
     }
 
-    result.hit.i     = I(hit);
-    result.prim_id   = I(prim_id);
-    result.geom_id   = I(geom_id);
-    result.t         = T(t);
     result.isect_pos = pack(isect_pos);
-    result.u         = T(u);
-    result.v         = T(v);
 
     return result;
 }
