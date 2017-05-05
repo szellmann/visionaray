@@ -397,13 +397,8 @@ MATH_FUNC
 inline auto unpack(vector<2, FloatT> const& v)
     -> array<vector<2, float>, num_elements<FloatT>::value>
 {
-    using float_array = aligned_array_t<FloatT>;
-
-    float_array x;
-    float_array y;
-
-    store(x, v.x);
-    store(y, v.y);
+    float const* x = reinterpret_cast<float const*>(&v.x);
+    float const* y = reinterpret_cast<float const*>(&v.y);
 
     array<vector<2, float>, num_elements<FloatT>::value> result;
 

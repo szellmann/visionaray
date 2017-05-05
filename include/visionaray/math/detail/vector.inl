@@ -1051,14 +1051,11 @@ template <
 inline auto unpack(vector<Dim, FloatT> const& v)
     -> array<vector<Dim, float>, num_elements<FloatT>::value>
 {
-    using float_array = aligned_array_t<FloatT>;
-
     array<vector<Dim, float>, num_elements<FloatT>::value> result;
 
     for (size_t d = 0; d < Dim; ++d)
     {
-        float_array data;
-        store(data, v[d]);
+        float const* data = reinterpret_cast<float const*>(&v[d]);
 
         for (int i = 0; i < num_elements<FloatT>::value; ++i)
         {
