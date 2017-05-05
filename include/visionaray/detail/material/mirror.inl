@@ -36,6 +36,8 @@ inline spectrum<U> mirror<T>::sample(
     return specular_brdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, sampler);
 }
 
+//--- deprecated begin ------------------------------------
+
 template <typename T>
 VSNRAY_FUNC
 inline void mirror<T>::set_cr(spectrum<T> const& cr)
@@ -80,13 +82,6 @@ inline void mirror<T>::set_ior(T ior)
 
 template <typename T>
 VSNRAY_FUNC
-inline spectrum<T> mirror<T>::get_ior() const
-{
-    return specular_brdf_.ior;
-}
-
-template <typename T>
-VSNRAY_FUNC
 inline void mirror<T>::set_absorption(spectrum<T> const& absorption)
 {
     specular_brdf_.absorption = absorption;
@@ -102,6 +97,64 @@ inline void mirror<T>::set_absorption(T absorption)
 template <typename T>
 VSNRAY_FUNC
 inline spectrum<T> mirror<T>::get_absorption() const
+{
+    return specular_brdf_.absorption;
+}
+
+//--- deprecated end --------------------------------------
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T>& mirror<T>::cr()
+{
+    return specular_brdf_.cr;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T> const& mirror<T>::cr() const
+{
+    return specular_brdf_.cr;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T& mirror<T>::kr()
+{
+    return specular_brdf_.kr;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T const& mirror<T>::kr() const
+{
+    return specular_brdf_.kr;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T>& mirror<T>::ior()
+{
+    return specular_brdf_.ior;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T> const& mirror<T>::ior() const
+{
+    return specular_brdf_.ior;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T>& mirror<T>::absorption()
+{
+    return specular_brdf_.absorption;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T> const& mirror<T>::absorption() const
 {
     return specular_brdf_.absorption;
 }

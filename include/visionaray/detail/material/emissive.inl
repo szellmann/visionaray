@@ -20,7 +20,7 @@ template <typename SR>
 VSNRAY_FUNC
 inline spectrum<typename SR::scalar_type> emissive<T>::shade(SR const& sr) const
 {
-    return ce(sr);
+    return ce_impl(sr);
 }
 
 template <typename T>
@@ -38,6 +38,8 @@ inline spectrum<U> emissive<T>::sample(
     pdf = U(1.0);
     return shade(shade_rec);
 }
+
+// --- deprecated begin -----------------------------------
 
 template <typename T>
 VSNRAY_FUNC
@@ -67,6 +69,36 @@ inline T emissive<T>::get_ls() const
     return ls_;
 }
 
+// --- deprecated end -------------------------------------
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T>& emissive<T>::ce()
+{
+    return ce_;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T> const& emissive<T>::ce() const
+{
+    return ce_;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T& emissive<T>::ls()
+{
+    return ls_;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T const& emissive<T>::ls() const
+{
+    return ls_;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Private functions
@@ -75,7 +107,7 @@ inline T emissive<T>::get_ls() const
 template <typename T>
 template <typename SR>
 VSNRAY_FUNC
-inline spectrum<T> emissive<T>::ce(SR const& sr) const
+inline spectrum<T> emissive<T>::ce_impl(SR const& sr) const
 {
     VSNRAY_UNUSED(sr);
     return ce_ * ls_;
@@ -84,7 +116,7 @@ inline spectrum<T> emissive<T>::ce(SR const& sr) const
 template <typename T>
 template <typename L, typename C, typename S>
 VSNRAY_FUNC
-inline spectrum<T> emissive<T>::ce(shade_record<L, C, S> const& sr) const
+inline spectrum<T> emissive<T>::ce_impl(shade_record<L, C, S> const& sr) const
 {
     return spectrum<T>(from_rgb(sr.tex_color)) * ce_ * ls_;
 }

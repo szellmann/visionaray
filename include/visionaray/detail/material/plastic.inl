@@ -30,7 +30,7 @@ inline spectrum<typename SR::scalar_type> plastic<T>::shade(SR const& sr) const
 
     return spectrum<U>(
             constants::pi<U>()
-          * ( cd(sr, n, wo, wi) + specular_brdf_.f(n, wo, wi) )
+          * ( cd_impl(sr, n, wo, wi) + specular_brdf_.f(n, wo, wi) )
           * spectrum<U>(from_rgb(l.intensity(sr.isect_pos)))
           * ndotl
             );
@@ -61,6 +61,8 @@ inline spectrum<U> plastic<T>::sample(
 {
     return spectrum<U>(from_rgb(sr.tex_color)) * sample_impl(sr, refl_dir, pdf, sampler);
 }
+
+//--- deprecated begin ------------------------------------
 
 template <typename T>
 VSNRAY_FUNC
@@ -160,6 +162,106 @@ inline T plastic<T>::get_specular_exp() const
     return specular_brdf_.exp;
 }
 
+//--- deprecated end --------------------------------------
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T>& plastic<T>::ca()
+{
+    return ca_;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T> const& plastic<T>::ca() const
+{
+    return ca_;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T& plastic<T>::ka()
+{
+    return ka_;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T const& plastic<T>::ka() const
+{
+    return ka_;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T>& plastic<T>::cd()
+{
+    return diffuse_brdf_.cd;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T> const& plastic<T>::cd() const
+{
+    return diffuse_brdf_.cd;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T& plastic<T>::kd()
+{
+    return diffuse_brdf_.kd;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T const& plastic<T>::kd() const
+{
+    return diffuse_brdf_.kd;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T>& plastic<T>::cs()
+{
+    return specular_brdf_.cs;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline spectrum<T> const& plastic<T>::cs() const
+{
+    return specular_brdf_.cs;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T& plastic<T>::ks()
+{
+    return specular_brdf_.ks;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T const& plastic<T>::ks() const
+{
+    return specular_brdf_.ks;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T& plastic<T>::specular_exp()
+{
+    return specular_brdf_.exp;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T const& plastic<T>::specular_exp() const
+{
+    return specular_brdf_.exp;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Private functions
@@ -168,7 +270,7 @@ inline T plastic<T>::get_specular_exp() const
 template <typename T>
 template <typename SR, typename V>
 VSNRAY_FUNC
-inline spectrum<T> plastic<T>::cd(SR const& sr, V const& n, V const& wo, V const& wi) const
+inline spectrum<T> plastic<T>::cd_impl(SR const& sr, V const& n, V const& wo, V const& wi) const
 {
     VSNRAY_UNUSED(sr);
     return diffuse_brdf_.f(n, wo, wi);
@@ -177,7 +279,7 @@ inline spectrum<T> plastic<T>::cd(SR const& sr, V const& n, V const& wo, V const
 template <typename T>
 template <typename L, typename C, typename S, typename V>
 VSNRAY_FUNC
-inline spectrum<T> plastic<T>::cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const
+inline spectrum<T> plastic<T>::cd_impl(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const
 {
     return spectrum<T>(from_rgb(sr.tex_color)) * diffuse_brdf_.f(n, wo, wi);
 }

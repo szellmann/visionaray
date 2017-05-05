@@ -47,24 +47,24 @@ TEST(GenericMaterial, SIMD)
         >;
 
     plastic<float> pl;
-    pl.set_cd( from_rgb(vec3(0.0f, 0.1f, 0.2f)) );
-    pl.set_cs( from_rgb(vec3(0.0f, 0.2f, 0.4f)) );
-    pl.set_kd( 1.0f );
-    pl.set_ks( 0.5f );
+    pl.cd() = from_rgb(vec3(0.0f, 0.1f, 0.2f));
+    pl.cs() = from_rgb(vec3(0.0f, 0.2f, 0.4f));
+    pl.kd() = 1.0f;
+    pl.ks() = 0.5f;
 
     mirror<float> mi;
-    mi.set_cr( from_rgb(vec3(1.0f, 1.0f, 1.0f)) );
-    mi.set_kr( 1.0f );
-    mi.set_ior( 1.34f );
-    mi.set_absorption( 0.0f );
+    mi.cr() = from_rgb(vec3(1.0f, 1.0f, 1.0f));
+    mi.kr() = 1.0f;
+    mi.ior() = spectrum<float>(1.34f);
+    mi.absorption() = spectrum<float>(0.0f);
 
     matte<float> ma;
-    ma.set_cd( from_rgb(vec3(1.0f, 0.0f, 0.0f)) );
-    ma.set_kd( 1.0f );
+    ma.cd() = from_rgb(vec3(1.0f, 0.0f, 0.0f));
+    ma.kd() = 1.0f;
 
     emissive<float> em;
-    em.set_ce( from_rgb(vec3(3.0f, 3.0f, 3.0f)) );
-    em.set_ls( 5.0f );
+    em.ce() = from_rgb(vec3(3.0f, 3.0f, 3.0f));
+    em.ls() = 5.0f;
 
     array<material_type, 4> mats{{
             material_type(pl),
@@ -86,37 +86,37 @@ TEST(GenericMaterial, SIMD)
 
     for (int i = 0; i < 3; ++i)
     {
-        EXPECT_FLOAT_EQ( m1.get_cd()[i], pl.get_cd()[i] );
-        EXPECT_FLOAT_EQ( m1.get_cs()[i], pl.get_cs()[i] );
+        EXPECT_FLOAT_EQ( m1.cd()[i], pl.cd()[i] );
+        EXPECT_FLOAT_EQ( m1.cs()[i], pl.cs()[i] );
     }
-    EXPECT_FLOAT_EQ( m1.get_kd(), pl.get_kd() );
+    EXPECT_FLOAT_EQ( m1.kd(), pl.kd() );
 
 
     // mirror
 
     for (int i = 0; i < 3; ++i)
     {
-        EXPECT_FLOAT_EQ( m2.get_cr()[i], mi.get_cr()[i] );
-        EXPECT_FLOAT_EQ( m2.get_ior()[i], mi.get_ior()[i] );
-        EXPECT_FLOAT_EQ( m2.get_absorption()[i], mi.get_absorption()[i] );
+        EXPECT_FLOAT_EQ( m2.cr()[i], mi.cr()[i] );
+        EXPECT_FLOAT_EQ( m2.ior()[i], mi.ior()[i] );
+        EXPECT_FLOAT_EQ( m2.absorption()[i], mi.absorption()[i] );
     }
-    EXPECT_FLOAT_EQ( m2.get_kr(), mi.get_kr() );
+    EXPECT_FLOAT_EQ( m2.kr(), mi.kr() );
 
 
     // matte
 
     for (int i = 0; i < 3; ++i)
     {
-        EXPECT_FLOAT_EQ( m3.get_cd()[i], ma.get_cd()[i] );
+        EXPECT_FLOAT_EQ( m3.cd()[i], ma.cd()[i] );
     }
-    EXPECT_FLOAT_EQ( m3.get_kd(), ma.get_kd() );
+    EXPECT_FLOAT_EQ( m3.kd(), ma.kd() );
 
 
     // emissive
 
     for (int i = 0; i < 3; ++i)
     {
-        EXPECT_FLOAT_EQ( m4.get_ce()[i], em.get_ce()[i] );
+        EXPECT_FLOAT_EQ( m4.ce()[i], em.ce()[i] );
     }
-    EXPECT_FLOAT_EQ( m4.get_ls(), em.get_ls() );
+    EXPECT_FLOAT_EQ( m4.ls(), em.ls() );
 }

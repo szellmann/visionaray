@@ -102,11 +102,19 @@ public:
             U&              pdf,
             Sampler&        sampler) const;
 
+    // deprecated!
     VSNRAY_FUNC void set_ce(spectrum<T> const& ce);
     VSNRAY_FUNC spectrum<T> get_ce() const;
 
     VSNRAY_FUNC void set_ls(T ls);
     VSNRAY_FUNC T get_ls() const;
+    //
+
+    VSNRAY_FUNC spectrum<T>& ce();
+    VSNRAY_FUNC spectrum<T> const& ce() const;
+
+    VSNRAY_FUNC T& ls();
+    VSNRAY_FUNC T const& ls() const;
 
 private:
 
@@ -114,10 +122,10 @@ private:
     T           ls_;
 
     template <typename SR>
-    VSNRAY_FUNC spectrum<T> ce(SR const& sr) const;
+    VSNRAY_FUNC spectrum<T> ce_impl(SR const& sr) const;
 
     template <typename L, typename C, typename S>
-    VSNRAY_FUNC spectrum<T> ce(shade_record<L, C, S> const& sr) const;
+    VSNRAY_FUNC spectrum<T> ce_impl(shade_record<L, C, S> const& sr) const;
 
 };
 
@@ -162,6 +170,7 @@ public:
             ) const;
 
 
+    // deprecated!
     VSNRAY_FUNC void set_ca(spectrum<T> const& ca);
     VSNRAY_FUNC spectrum<T> get_ca() const;
 
@@ -173,6 +182,19 @@ public:
 
     VSNRAY_FUNC void set_kd(T kd);
     VSNRAY_FUNC T get_kd() const;
+    //
+
+    VSNRAY_FUNC spectrum<T>& ca();
+    VSNRAY_FUNC spectrum<T> const& ca() const;
+
+    VSNRAY_FUNC T& ka();
+    VSNRAY_FUNC T const& ka() const;
+
+    VSNRAY_FUNC spectrum<T>& cd();
+    VSNRAY_FUNC spectrum<T> const& cd() const;
+
+    VSNRAY_FUNC T& kd();
+    VSNRAY_FUNC T const& kd() const;
 
 private:
 
@@ -181,10 +203,10 @@ private:
     lambertian<T>   diffuse_brdf_;
 
     template <typename SR, typename V>
-    VSNRAY_FUNC spectrum<T> cd(SR const& sr, V const& n, V const& wo, V const& wi) const;
+    VSNRAY_FUNC spectrum<T> cd_impl(SR const& sr, V const& n, V const& wo, V const& wi) const;
 
     template <typename L, typename C, typename S, typename V>
-    VSNRAY_FUNC spectrum<T> cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const;
+    VSNRAY_FUNC spectrum<T> cd_impl(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const;
 
     template <typename SR, typename U, typename Sampler>
     VSNRAY_FUNC
@@ -231,6 +253,8 @@ public:
             Sampler&        sampler
             ) const;
 
+
+    // deprecated!
     VSNRAY_FUNC void set_cr(spectrum<T> const& cr);
     VSNRAY_FUNC spectrum<T> get_cr() const;
 
@@ -244,6 +268,19 @@ public:
     VSNRAY_FUNC void set_absorption(spectrum<T> const& absorption);
     VSNRAY_FUNC void set_absorption(T absorption);
     VSNRAY_FUNC spectrum<T> get_absorption() const;
+    //
+
+    VSNRAY_FUNC spectrum<T>& cr();
+    VSNRAY_FUNC spectrum<T> const& cr() const;
+
+    VSNRAY_FUNC T& kr();
+    VSNRAY_FUNC T const& kr() const;
+
+    VSNRAY_FUNC spectrum<T>& ior();
+    VSNRAY_FUNC spectrum<T> const& ior() const;
+
+    VSNRAY_FUNC spectrum<T>& absorption();
+    VSNRAY_FUNC spectrum<T> const& absorption() const;
 
 private:
 
@@ -294,6 +331,8 @@ public:
             Sampler&                        sampler
             ) const;
 
+
+    // deprecated!
     VSNRAY_FUNC void set_ca(spectrum<T> const& ca);
     VSNRAY_FUNC spectrum<T> get_ca() const;
 
@@ -314,6 +353,28 @@ public:
 
     VSNRAY_FUNC void set_specular_exp(T exp);
     VSNRAY_FUNC T get_specular_exp() const;
+    //
+
+    VSNRAY_FUNC spectrum<T>& ca();
+    VSNRAY_FUNC spectrum<T> const& ca() const;
+
+    VSNRAY_FUNC T& ka();
+    VSNRAY_FUNC T const& ka() const;
+
+    VSNRAY_FUNC spectrum<T>& cd();
+    VSNRAY_FUNC spectrum<T> const& cd() const;
+
+    VSNRAY_FUNC T& kd();
+    VSNRAY_FUNC T const& kd() const;
+
+    VSNRAY_FUNC spectrum<T>& cs();
+    VSNRAY_FUNC spectrum<T> const& cs() const;
+
+    VSNRAY_FUNC T& ks();
+    VSNRAY_FUNC T const& ks() const;
+
+    VSNRAY_FUNC T& specular_exp();
+    VSNRAY_FUNC T const& specular_exp() const;
 
 private:
 
@@ -323,10 +384,10 @@ private:
     blinn<T>        specular_brdf_;
 
     template <typename SR, typename V>
-    VSNRAY_FUNC spectrum<T> cd(SR const& sr, V const& n, V const& wo, V const& wi) const;
+    VSNRAY_FUNC spectrum<T> cd_impl(SR const& sr, V const& n, V const& wo, V const& wi) const;
 
     template <typename L, typename C, typename S, typename V>
-    VSNRAY_FUNC spectrum<T> cd(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const;
+    VSNRAY_FUNC spectrum<T> cd_impl(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const;
 
     template <typename SR, typename U, typename Sampler>
     VSNRAY_FUNC spectrum<U> sample_impl(

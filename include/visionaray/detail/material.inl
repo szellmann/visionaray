@@ -28,12 +28,12 @@ inline emissive<float_from_simd_width_t<N>> pack(array<emissive<float>, N> const
 
     for (size_t i = 0; i < N; ++i)
     {
-        ce[i] = mats[i].get_ce();
-        ls[i] = mats[i].get_ls();
+        ce[i] = mats[i].ce();
+        ls[i] = mats[i].ls();
     }
 
-    result.set_ce( pack(ce) );
-    result.set_ls( T(ls) );
+    result.ce() = pack(ce);
+    result.ls() = T(ls);
 
     return result;
 }
@@ -54,16 +54,16 @@ inline matte<float_from_simd_width_t<N>> pack(array<matte<float>, N> const& mats
 
     for (size_t i = 0; i < N; ++i)
     {
-        ca[i] = mats[i].get_ca();
-        cd[i] = mats[i].get_cd();
-        ka[i] = mats[i].get_ka();
-        kd[i] = mats[i].get_kd();
+        ca[i] = mats[i].ca();
+        cd[i] = mats[i].cd();
+        ka[i] = mats[i].ka();
+        kd[i] = mats[i].kd();
     }
 
-    result.set_ca( pack(ca) );
-    result.set_cd( pack(cd) );
-    result.set_ka( T(ka) );
-    result.set_kd( T(kd) );
+    result.ca() = pack(ca);
+    result.cd() = pack(cd);
+    result.ka() = T(ka);
+    result.kd() = T(kd);
 
     return result;
 }
