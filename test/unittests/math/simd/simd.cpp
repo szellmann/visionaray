@@ -16,8 +16,7 @@ using namespace visionaray;
 //
 //
 
-template <typename T>
-inline T const* first_of(std::initializer_list<T> il)
+inline bool const* make_bools(std::initializer_list<bool> il)
 {
     return il.begin();
 }
@@ -118,9 +117,9 @@ void test_representability()
 template <typename F, typename I, typename M>
 static void test_pred()
 {
-    M z(first_of<bool>({0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}));
-    M a(first_of<bool>({1,1,0,0, 1,1,0,0, 1,1,0,0, 1,1,0,0}));
-    M i(first_of<bool>({1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}));
+    M z(make_bools({0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}));
+    M a(make_bools({1,1,0,0, 1,1,0,0, 1,1,0,0, 1,1,0,0}));
+    M i(make_bools({1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}));
 
     EXPECT_TRUE(!any(z) );
     EXPECT_TRUE(!all(z) );
@@ -136,18 +135,21 @@ static void test_cmp()
     // float
 
     {
-        F a(first_of<float>({
+        VSNRAY_ALIGN(64) float a_arr[] = {
              1.0f,  2.0f,  3.0f,  4.0f,   5.0f,  6.0f,  7.0f,  8.0f,
              9.0f, 10.0f, 11.0f, 12.0f,  13.0f, 14.0f, 15.0f, 16.0f
-            }));
-        F b(first_of<float>({
+            };
+        VSNRAY_ALIGN(64) float b_arr[] = {
             17.0f, 18.0f, 19.0f, 20.0f,  21.0f, 22.0f, 23.0f, 24.0f,
             25.0f, 26.0f, 27.0f, 28.0f,  29.0f, 30.0f, 31.0f, 32.0f
-            }));
-        F c(first_of<float>({
+            };
+        VSNRAY_ALIGN(64) float c_arr[] = {
              1.0f,  0.0f,  3.0f,  0.0f,   5.0f,  0.0f,  7.0f,  0.0f,
              9.0f,  0.0f, 11.0f,  0.0f,  13.0f,  0.0f, 15.0f,  0.0f
-            }));
+            };
+        F a(a_arr);
+        F b(b_arr);
+        F c(c_arr);
         F x(std::numeric_limits<float>::max());
         F y(std::numeric_limits<float>::min());
         F z(std::numeric_limits<float>::lowest());
@@ -161,8 +163,8 @@ static void test_cmp()
         EXPECT_TRUE( all(c <= a) );
         EXPECT_TRUE( all(a >= c) );
 
-        EXPECT_TRUE( all((a > c) == M(first_of<bool>({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
-        EXPECT_TRUE( all((c < a) == M(first_of<bool>({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
+        EXPECT_TRUE( all((a > c) == M(make_bools({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
+        EXPECT_TRUE( all((c < a) == M(make_bools({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
 
         EXPECT_TRUE( all(x >  F(0.0f)) );
         EXPECT_TRUE( all(y >  F(0.0f)) );
@@ -183,9 +185,12 @@ static void test_cmp()
     // int
 
     {
-        I a(first_of<int>({ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16}));
-        I b(first_of<int>({17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32}));
-        I c(first_of<int>({ 1,  0,  3,  0,  5,  0,  7,  0,  9,  0, 11,  0, 13,  0, 15,  0}));
+        VSNRAY_ALIGN(64) int a_arr[] = { 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16};
+        VSNRAY_ALIGN(64) int b_arr[] = {17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32};
+        VSNRAY_ALIGN(64) int c_arr[] = { 1,  0,  3,  0,  5,  0,  7,  0,  9,  0, 11,  0, 13,  0, 15,  0};
+        I a(a_arr);
+        I b(b_arr);
+        I c(c_arr);
         I x(std::numeric_limits<int>::max());
         I y(std::numeric_limits<int>::min());
 
@@ -198,8 +203,8 @@ static void test_cmp()
         EXPECT_TRUE( all(c <= a) );
         EXPECT_TRUE( all(a >= c) );
 
-        EXPECT_TRUE( all((a > c) == M(first_of<bool>({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
-        EXPECT_TRUE( all((c < a) == M(first_of<bool>({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
+        EXPECT_TRUE( all((a > c) == M(make_bools({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
+        EXPECT_TRUE( all((c < a) == M(make_bools({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
 
         EXPECT_TRUE( all(x >  I(0)) );
         EXPECT_TRUE( all(y <  I(0)) );
@@ -214,15 +219,15 @@ static void test_cmp()
     // mask
 
     {
-        M a(first_of<bool>({0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}));
-        M b(first_of<bool>({1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}));
-        M c(first_of<bool>({1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0}));
+        M a(make_bools({0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}));
+        M b(make_bools({1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}));
+        M c(make_bools({1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0}));
 
         EXPECT_TRUE( all(a == a) );
         EXPECT_TRUE( all(a != b) );
 
-        EXPECT_TRUE( all((a == c) == M(first_of<bool>({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
-        EXPECT_TRUE( all((a != c) == M(first_of<bool>({1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0}))) );
+        EXPECT_TRUE( all((a == c) == M(make_bools({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
+        EXPECT_TRUE( all((a != c) == M(make_bools({1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0}))) );
     }
 }
 
@@ -232,14 +237,14 @@ static void test_logical()
     // mask
 
     {
-        M a(first_of<bool>({1,1,0,0, 1,1,0,0, 1,1,0,0, 1,1,0,0}));
-        M b(first_of<bool>({1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0}));
-        M c(first_of<bool>({0,0,1,1, 0,0,1,1, 0,0,1,1, 0,0,1,1}));
+        M a(make_bools({1,1,0,0, 1,1,0,0, 1,1,0,0, 1,1,0,0}));
+        M b(make_bools({1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0}));
+        M c(make_bools({0,0,1,1, 0,0,1,1, 0,0,1,1, 0,0,1,1}));
 
-        EXPECT_TRUE( all((a && b) == M(first_of<bool>({1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0}))) );
-        EXPECT_TRUE( all((a && c) == M(first_of<bool>({0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}))) );
-        EXPECT_TRUE( all((a || b) == M(first_of<bool>({1,1,1,0, 1,1,1,0, 1,1,1,0, 1,1,1,0}))) );
-        EXPECT_TRUE( all((a || c) == M(first_of<bool>({1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}))) );
+        EXPECT_TRUE( all((a && b) == M(make_bools({1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0}))) );
+        EXPECT_TRUE( all((a && c) == M(make_bools({0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}))) );
+        EXPECT_TRUE( all((a || b) == M(make_bools({1,1,1,0, 1,1,1,0, 1,1,1,0, 1,1,1,0}))) );
+        EXPECT_TRUE( all((a || c) == M(make_bools({1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}))) );
 
         EXPECT_TRUE( any(a && b) );
         EXPECT_TRUE(!any(a && c) );
