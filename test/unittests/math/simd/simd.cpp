@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <cfloat>
+#include <initializer_list>
 #include <limits>
 
 #include <visionaray/math/math.h>
@@ -9,6 +10,17 @@
 #include <gtest/gtest.h>
 
 using namespace visionaray;
+
+
+//-------------------------------------------------------------------------------------------------
+//
+//
+
+template <typename T>
+inline T const* first_of(std::initializer_list<T> il)
+{
+    return il.begin();
+}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -103,14 +115,12 @@ void test_representability()
     EXPECT_TRUE ( all(isfinite(T(DBL_MIN / 2.0))) );
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-static void test_pred_4()
+template <typename F, typename I, typename M>
+static void test_pred()
 {
-    using M = simd::mask4;
-
-    M z(0,0,0,0);
-    M a(1,1,0,0);
-    M i(1,1,1,1);
+    M z(first_of<bool>({0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}));
+    M a(first_of<bool>({1,1,0,0, 1,1,0,0, 1,1,0,0, 1,1,0,0}));
+    M i(first_of<bool>({1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}));
 
     EXPECT_TRUE(!any(z) );
     EXPECT_TRUE(!all(z) );
@@ -119,250 +129,25 @@ static void test_pred_4()
     EXPECT_TRUE( any(i) );
     EXPECT_TRUE( all(i) );
 }
-#endif
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-static void test_pred_8()
+template <typename F, typename I, typename M>
+static void test_cmp()
 {
-    using M = simd::mask8;
-
-    M z(0,0,0,0, 0,0,0,0);
-    M a(1,1,0,0, 1,1,0,0);
-    M i(1,1,1,1, 1,1,1,1);
-
-    EXPECT_TRUE(!any(z) );
-    EXPECT_TRUE(!all(z) );
-    EXPECT_TRUE( any(a) );
-    EXPECT_TRUE(!all(a) );
-    EXPECT_TRUE( any(i) );
-    EXPECT_TRUE( all(i) );
-}
-#endif
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-static void test_pred_16()
-{
-    using M = simd::mask16;
-
-    M z(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0);
-    M a(1,1,0,0, 1,1,0,0, 1,1,0,0, 1,1,0,0);
-    M i(1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1);
-
-    EXPECT_TRUE(!any(z) );
-    EXPECT_TRUE(!all(z) );
-    EXPECT_TRUE( any(a) );
-    EXPECT_TRUE(!all(a) );
-    EXPECT_TRUE( any(i) );
-    EXPECT_TRUE( all(i) );
-}
-#endif
-
-static void test_cmp_4()
-{
-    using F = simd::float4;
-    using I = simd::int4;
-    using M = simd::mask4;
-
     // float
 
     {
-        F a(1.0f, 2.0f, 3.0f, 4.0f);
-        F b(5.0f, 6.0f, 7.0f, 8.0f);
-        F c(1.0f, 0.0f, 3.0f, 0.0f);
-        F x(std::numeric_limits<float>::max());
-        F y(std::numeric_limits<float>::min());
-        F z(std::numeric_limits<float>::lowest());
-
-        EXPECT_TRUE( all(a == a) );
-        EXPECT_TRUE( all(a != b) );
-        EXPECT_TRUE( all(a <  b) );
-        EXPECT_TRUE( all(a <= b) );
-        EXPECT_TRUE( all(b >  a) );
-        EXPECT_TRUE( all(b >= a) );
-        EXPECT_TRUE( all(c <= a) );
-        EXPECT_TRUE( all(a >= c) );
-
-        EXPECT_TRUE( all((a > c) == M(0,1,0,1)) );
-        EXPECT_TRUE( all((c < a) == M(0,1,0,1)) );
-
-        EXPECT_TRUE( all(x >  F(0.0f)) );
-        EXPECT_TRUE( all(y >  F(0.0f)) );
-        EXPECT_TRUE( all(z <  F(0.0f)) );
-        EXPECT_TRUE( all(x >= F(0.0f)) );
-        EXPECT_TRUE( all(y >= F(0.0f)) );
-        EXPECT_TRUE( all(z <= F(0.0f)) );
-
-
-        EXPECT_TRUE( all(y  < x) );
-        EXPECT_TRUE( all(z  < y) );
-        EXPECT_TRUE( all(z  < x) );
-        EXPECT_TRUE( all(y <= x) );
-        EXPECT_TRUE( all(z <= y) );
-        EXPECT_TRUE( all(z <= x) );
-
-    }
-
-
-    // int
-
-    {
-        I a(1, 2, 3, 4);
-        I b(5, 6, 7, 8);
-        I c(1, 0, 3, 0);
-        I x(std::numeric_limits<int>::max());
-        I y(std::numeric_limits<int>::min());
-
-        EXPECT_TRUE( all(a == a) );
-        EXPECT_TRUE( all(a != b) );
-        EXPECT_TRUE( all(a <  b) );
-        EXPECT_TRUE( all(a <= b) );
-        EXPECT_TRUE( all(b >  a) );
-        EXPECT_TRUE( all(b >= a) );
-        EXPECT_TRUE( all(c <= a) );
-        EXPECT_TRUE( all(a >= c) );
-
-        EXPECT_TRUE( all((a > c) == M(0,1,0,1)) );
-        EXPECT_TRUE( all((c < a) == M(0,1,0,1)) );
-
-        EXPECT_TRUE( all(x >  I(0)) );
-        EXPECT_TRUE( all(y <  I(0)) );
-        EXPECT_TRUE( all(x >= I(0)) );
-        EXPECT_TRUE( all(y <= I(0)) );
-
-        EXPECT_TRUE( all(y <  x) );
-        EXPECT_TRUE( all(y <= x) );
-    }
-
-
-    // mask
-
-    {
-        M a(0,0,0,0);
-        M b(1,1,1,1);
-        M c(1,0,1,0);
-
-        EXPECT_TRUE( all(a == a) );
-        EXPECT_TRUE( all(a != b) );
-
-        EXPECT_TRUE( all((a == c) == M(0,1,0,1)) );
-        EXPECT_TRUE( all((a != c) == M(1,0,1,0)) );
-    }
-}
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-static void test_cmp_8()
-{
-    using F = simd::float8;
-    using I = simd::int8;
-    using M = simd::mask8;
-
-    // float
-
-    {
-        F a( 1.0f,  2.0f,  3.0f,  4.0f,   5.0f,  6.0f,  7.0f,  8.0f);
-        F b( 9.0f, 10.0f, 11.0f, 12.0f,  13.0f, 14.0f, 15.0f, 16.0f);
-        F c( 1.0f,  0.0f,  3.0f,  0.0f,   5.0f,  0.0f,  7.0f,  0.0f);
-        F x(std::numeric_limits<float>::max());
-        F y(std::numeric_limits<float>::min());
-        F z(std::numeric_limits<float>::lowest());
-
-        EXPECT_TRUE( all(a == a) );
-        EXPECT_TRUE( all(a != b) );
-        EXPECT_TRUE( all(a <  b) );
-        EXPECT_TRUE( all(a <= b) );
-        EXPECT_TRUE( all(b >  a) );
-        EXPECT_TRUE( all(b >= a) );
-        EXPECT_TRUE( all(c <= a) );
-        EXPECT_TRUE( all(a >= c) );
-
-        EXPECT_TRUE( all((a > c) == M(0,1,0,1, 0,1,0,1)) );
-        EXPECT_TRUE( all((c < a) == M(0,1,0,1, 0,1,0,1)) );
-
-        EXPECT_TRUE( all(x >  F(0.0f)) );
-        EXPECT_TRUE( all(y >  F(0.0f)) );
-        EXPECT_TRUE( all(z <  F(0.0f)) );
-        EXPECT_TRUE( all(x >= F(0.0f)) );
-        EXPECT_TRUE( all(y >= F(0.0f)) );
-        EXPECT_TRUE( all(z <= F(0.0f)) );
-
-        EXPECT_TRUE( all(y  < x) );
-        EXPECT_TRUE( all(z  < y) );
-        EXPECT_TRUE( all(z  < x) );
-        EXPECT_TRUE( all(y <= x) );
-        EXPECT_TRUE( all(z <= y) );
-        EXPECT_TRUE( all(z <= x) );
-    }
-
-
-    // int
-
-    {
-        I a( 1,  2,  3,   4,  5,  6,  7,  8);
-        I b( 9, 10, 11,  12, 13, 14, 15, 16);
-        I c( 1,  0,  3,  0,   5,  0,  7,  0);
-        I x(std::numeric_limits<int>::max());
-        I y(std::numeric_limits<int>::min());
-
-        EXPECT_TRUE( all(a == a) );
-        EXPECT_TRUE( all(a != b) );
-        EXPECT_TRUE( all(a <  b) );
-        EXPECT_TRUE( all(a <= b) );
-        EXPECT_TRUE( all(b >  a) );
-        EXPECT_TRUE( all(b >= a) );
-        EXPECT_TRUE( all(c <= a) );
-        EXPECT_TRUE( all(a >= c) );
-
-        EXPECT_TRUE( all((a > c) == M(0,1,0,1, 0,1,0,1)) );
-        EXPECT_TRUE( all((c < a) == M(0,1,0,1, 0,1,0,1)) );
-
-        EXPECT_TRUE( all(x >  I(0)) );
-        EXPECT_TRUE( all(y <  I(0)) );
-        EXPECT_TRUE( all(x >= I(0)) );
-        EXPECT_TRUE( all(y <= I(0)) );
-
-        EXPECT_TRUE( all(y <  x) );
-        EXPECT_TRUE( all(y <= x) );
-    }
-
-
-    // mask
-
-    {
-        M a(0,0,0,0, 0,0,0,0);
-        M b(1,1,1,1, 1,1,1,1);
-        M c(1,0,1,0, 1,0,1,0);
-
-        EXPECT_TRUE( all(a == a) );
-        EXPECT_TRUE( all(a != b) );
-
-        EXPECT_TRUE( all((a == c) == M(0,1,0,1, 0,1,0,1)) );
-        EXPECT_TRUE( all((a != c) == M(1,0,1,0, 1,0,1,0)) );
-    }
-}
-#endif
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-static void test_cmp_16()
-{
-    using F = simd::float16;
-    using I = simd::int16;
-    using M = simd::mask16;
-
-    // float
-
-    {
-        F a(
+        F a(first_of({
              1.0f,  2.0f,  3.0f,  4.0f,   5.0f,  6.0f,  7.0f,  8.0f,
              9.0f, 10.0f, 11.0f, 12.0f,  13.0f, 14.0f, 15.0f, 16.0f
-            );
-        F b(
+            }));
+        F b(first_of({
             17.0f, 18.0f, 19.0f, 20.0f,  21.0f, 22.0f, 23.0f, 24.0f,
             25.0f, 26.0f, 27.0f, 28.0f,  29.0f, 30.0f, 31.0f, 32.0f
-            );
-        F c(
+            }));
+        F c(first_of({
              1.0f,  0.0f,  3.0f,  0.0f,   5.0f,  0.0f,  7.0f,  0.0f,
              9.0f,  0.0f, 11.0f,  0.0f,  13.0f,  0.0f, 15.0f,  0.0f
-            );
+            }));
         F x(std::numeric_limits<float>::max());
         F y(std::numeric_limits<float>::min());
         F z(std::numeric_limits<float>::lowest());
@@ -376,8 +161,8 @@ static void test_cmp_16()
         EXPECT_TRUE( all(c <= a) );
         EXPECT_TRUE( all(a >= c) );
 
-        EXPECT_TRUE( all((a > c) == M(0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1)) );
-        EXPECT_TRUE( all((c < a) == M(0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1)) );
+        EXPECT_TRUE( all((a > c) == M(first_of<bool>({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
+        EXPECT_TRUE( all((c < a) == M(first_of<bool>({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
 
         EXPECT_TRUE( all(x >  F(0.0f)) );
         EXPECT_TRUE( all(y >  F(0.0f)) );
@@ -398,9 +183,9 @@ static void test_cmp_16()
     // int
 
     {
-        I a( 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16);
-        I b(17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32);
-        I c( 1,  0,  3,  0,  5,  0,  7,  0,  9,  0, 11,  0, 13,  0, 15,  0);
+        I a(first_of({ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16}));
+        I b(first_of({17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32}));
+        I c(first_of({ 1,  0,  3,  0,  5,  0,  7,  0,  9,  0, 11,  0, 13,  0, 15,  0}));
         I x(std::numeric_limits<int>::max());
         I y(std::numeric_limits<int>::min());
 
@@ -413,8 +198,8 @@ static void test_cmp_16()
         EXPECT_TRUE( all(c <= a) );
         EXPECT_TRUE( all(a >= c) );
 
-        EXPECT_TRUE( all((a > c) == M(0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1)) );
-        EXPECT_TRUE( all((c < a) == M(0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1)) );
+        EXPECT_TRUE( all((a > c) == M(first_of<bool>({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
+        EXPECT_TRUE( all((c < a) == M(first_of<bool>({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
 
         EXPECT_TRUE( all(x >  I(0)) );
         EXPECT_TRUE( all(y <  I(0)) );
@@ -429,95 +214,44 @@ static void test_cmp_16()
     // mask
 
     {
-        M a(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0);
-        M b(1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1);
-        M c(1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0);
+        M a(first_of<bool>({0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}));
+        M b(first_of<bool>({1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}));
+        M c(first_of<bool>({1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0}));
 
         EXPECT_TRUE( all(a == a) );
         EXPECT_TRUE( all(a != b) );
 
-        EXPECT_TRUE( all((a == c) == M(0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1)) );
-        EXPECT_TRUE( all((a != c) == M(1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0)) );
+        EXPECT_TRUE( all((a == c) == M(first_of<bool>({0,1,0,1, 0,1,0,1, 0,1,0,1, 0,1,0,1}))) );
+        EXPECT_TRUE( all((a != c) == M(first_of<bool>({1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0}))) );
     }
 }
-#endif
 
-static void test_logical_4()
+template <typename F, typename I, typename M>
+static void test_logical()
 {
-    using M = simd::mask4;
+    // mask
 
-    M a(1,1,0,0);
-    M b(1,0,1,0);
-    M c(0,0,1,1);
+    {
+        M a(first_of<bool>({1,1,0,0, 1,1,0,0, 1,1,0,0, 1,1,0,0}));
+        M b(first_of<bool>({1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0}));
+        M c(first_of<bool>({0,0,1,1, 0,0,1,1, 0,0,1,1, 0,0,1,1}));
 
-    EXPECT_TRUE( all((a && b) == M(1,0,0,0)) );
-    EXPECT_TRUE( all((a && c) == M(0,0,0,0)) );
-    EXPECT_TRUE( all((a || b) == M(1,1,1,0)) );
-    EXPECT_TRUE( all((a || c) == M(1,1,1,1)) );
+        EXPECT_TRUE( all((a && b) == M(first_of<bool>({1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0}))) );
+        EXPECT_TRUE( all((a && c) == M(first_of<bool>({0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}))) );
+        EXPECT_TRUE( all((a || b) == M(first_of<bool>({1,1,1,0, 1,1,1,0, 1,1,1,0, 1,1,1,0}))) );
+        EXPECT_TRUE( all((a || c) == M(first_of<bool>({1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}))) );
 
-    EXPECT_TRUE( any(a && b) );
-    EXPECT_TRUE(!any(a && c) );
-    EXPECT_TRUE( any(a || b) );
-    EXPECT_TRUE( all(a || c) );
+        EXPECT_TRUE( any(a && b) );
+        EXPECT_TRUE(!any(a && c) );
+        EXPECT_TRUE( any(a || b) );
+        EXPECT_TRUE( all(a || c) );
 
-    EXPECT_TRUE( any(!(a && b)) );
-    EXPECT_TRUE( all(!(a && c)) );
-    EXPECT_TRUE( any(!(a || b)) );
-    EXPECT_TRUE(!any(!(a || c)) );
+        EXPECT_TRUE( any(!(a && b)) );
+        EXPECT_TRUE( all(!(a && c)) );
+        EXPECT_TRUE( any(!(a || b)) );
+        EXPECT_TRUE(!any(!(a || c)) );
+    }
 }
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-static void test_logical_8()
-{
-    using M = simd::mask8;
-
-    M a(1,1,0,0, 1,1,0,0);
-    M b(1,0,1,0, 1,0,1,0);
-    M c(0,0,1,1, 0,0,1,1);
-
-    EXPECT_TRUE( all((a && b) == M(1,0,0,0, 1,0,0,0)) );
-    EXPECT_TRUE( all((a && c) == M(0,0,0,0, 0,0,0,0)) );
-    EXPECT_TRUE( all((a || b) == M(1,1,1,0, 1,1,1,0)) );
-    EXPECT_TRUE( all((a || c) == M(1,1,1,1, 1,1,1,1)) );
-
-    EXPECT_TRUE( any(a && b) );
-    EXPECT_TRUE(!any(a && c) );
-    EXPECT_TRUE( any(a || b) );
-    EXPECT_TRUE( all(a || c) );
-
-    EXPECT_TRUE( any(!(a && b)) );
-    EXPECT_TRUE( all(!(a && c)) );
-    EXPECT_TRUE( any(!(a || b)) );
-    EXPECT_TRUE(!any(!(a || c)) );
-}
-#endif
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-static void test_logical_16()
-{
-    using M = simd::mask16;
-
-    M a(1,1,0,0, 1,1,0,0, 1,1,0,0, 1,1,0,0);
-    M b(1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0);
-    M c(0,0,1,1, 0,0,1,1, 0,0,1,1, 0,0,1,1);
-
-    EXPECT_TRUE( all((a && b) == M(1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0)) );
-    EXPECT_TRUE( all((a && c) == M(0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0)) );
-    EXPECT_TRUE( all((a || b) == M(1,1,1,0, 1,1,1,0, 1,1,1,0, 1,1,1,0)) );
-    EXPECT_TRUE( all((a || c) == M(1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1)) );
-
-    EXPECT_TRUE( any(a && b) );
-    EXPECT_TRUE(!any(a && c) );
-    EXPECT_TRUE( any(a || b) );
-    EXPECT_TRUE( all(a || c) );
-
-    EXPECT_TRUE( any(!(a && b)) );
-    EXPECT_TRUE( all(!(a && c)) );
-    EXPECT_TRUE( any(!(a || b)) );
-    EXPECT_TRUE(!any(!(a || c)) );
-}
-#endif
-
 
 template <typename F>
 static void test_math()
@@ -812,14 +546,14 @@ TEST(SIMD, Representability)
 
 TEST(SIMD, Pred)
 {
-    test_pred_4();
+    test_pred<simd::float4, simd::int4, simd::mask4>();
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-    test_pred_8();
+    test_pred<simd::float8, simd::int8, simd::mask8>();
 #endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-    test_pred_16();
+    test_pred<simd::float16, simd::int16, simd::mask16>();
 #endif
 }
 
@@ -830,14 +564,14 @@ TEST(SIMD, Pred)
 
 TEST(SIMD, Comparison)
 {
-    test_cmp_4();
+    test_cmp<simd::float4, simd::int4, simd::mask4>();
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-    test_cmp_8();
+    test_cmp<simd::float8, simd::int8, simd::mask8>();
 #endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-    test_cmp_16();
+    test_cmp<simd::float16, simd::int16, simd::mask16>();
 #endif
 }
 
@@ -848,14 +582,14 @@ TEST(SIMD, Comparison)
 
 TEST(SIMD, Logical)
 {
-    test_logical_4();
+    test_logical<simd::float4, simd::int4, simd::mask4>();
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-    test_logical_8();
+    test_logical<simd::float8, simd::int8, simd::mask8>();
 #endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-    test_logical_16();
+    test_logical<simd::float16, simd::int16, simd::mask16>();
 #endif
 }
 
