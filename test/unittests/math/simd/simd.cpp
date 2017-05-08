@@ -157,7 +157,6 @@ static void test_pred_16()
 }
 #endif
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 static void test_cmp_4()
 {
     using F = simd::float4;
@@ -249,7 +248,6 @@ static void test_cmp_4()
         EXPECT_TRUE( all((a != c) == M(1,0,1,0)) );
     }
 }
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 static void test_cmp_8()
@@ -444,7 +442,6 @@ static void test_cmp_16()
 }
 #endif
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 static void test_logical_4()
 {
     using M = simd::mask4;
@@ -468,7 +465,6 @@ static void test_logical_4()
     EXPECT_TRUE( any(!(a || b)) );
     EXPECT_TRUE(!any(!(a || c)) );
 }
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 static void test_logical_8()
@@ -667,7 +663,6 @@ static void test_math()
     }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     // dot() (horizontal)
 
     {
@@ -678,7 +673,6 @@ static void test_math()
         xf *= simd::float4(-1.0f);
         EXPECT_TRUE( all(dot(xf, yf) == simd::float4(-70.0f)) );
     }
-#endif
 }
 
 
@@ -688,8 +682,6 @@ static void test_math()
 
 TEST(SIMD, Get)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
     // int4 -----------------------------------------------
 
     simd::int4 i4;
@@ -711,7 +703,6 @@ TEST(SIMD, Get)
     EXPECT_FLOAT_EQ( simd::get<2>(f4), 2.0f );
     EXPECT_FLOAT_EQ( simd::get<3>(f4), 3.0f );
 
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
@@ -803,9 +794,7 @@ TEST(SIMD, Get)
 
 TEST(SIMD, Representability)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     test_representability<simd::float4>();
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_representability<simd::float8>();
@@ -823,9 +812,7 @@ TEST(SIMD, Representability)
 
 TEST(SIMD, Pred)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     test_pred_4();
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_pred_8();
@@ -843,9 +830,7 @@ TEST(SIMD, Pred)
 
 TEST(SIMD, Comparison)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     test_cmp_4();
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_cmp_8();
@@ -863,9 +848,7 @@ TEST(SIMD, Comparison)
 
 TEST(SIMD, Logical)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     test_logical_4();
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_logical_8();
@@ -883,8 +866,6 @@ TEST(SIMD, Logical)
 
 TEST(SIMD, Transposition)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
     // shuffle
 
     simd::float4 u(1.0f, 2.0f, 3.0f, 4.0f);
@@ -910,8 +891,6 @@ TEST(SIMD, Transposition)
 
     EXPECT_TRUE( all(interleave_lo(u, v)             == simd::float4(1.0f, 5.0f, 2.0f, 6.0f)) );
     EXPECT_TRUE( all(interleave_hi(u, v)             == simd::float4(3.0f, 7.0f, 4.0f, 8.0f)) );
-
-#endif
 }
 
 
@@ -921,9 +900,7 @@ TEST(SIMD, Transposition)
 
 TEST(SIMD, Math)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     test_math<simd::float4>();
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_math<simd::float8>();
@@ -938,8 +915,6 @@ TEST(SIMD, Math)
 //-------------------------------------------------------------------------------------------------
 // Transpose vector<4, float4> (SoA to AoS and vice versa)
 //
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 TEST(SIMD, TransposeVec4)
 {
@@ -956,5 +931,3 @@ TEST(SIMD, TransposeVec4)
     EXPECT_TRUE( all(vt.z == simd::float4( 2.0f,  6.0f, 10.0f, 14.0f)) );
     EXPECT_TRUE( all(vt.w == simd::float4( 3.0f,  7.0f, 11.0f, 15.0f)) );
 }
-
-#endif
