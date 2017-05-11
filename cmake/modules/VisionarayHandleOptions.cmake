@@ -35,7 +35,7 @@ else() # GNU, Clang, etc.
     if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0)
             # Disable warnings like:
-            # warning: ignoring attributes on template argument ‘__m128i
+            # warning: ignoring attributes on template argument __m128i
             add_definitions(-Wno-ignored-attributes)
         endif()
     endif()
