@@ -21,7 +21,7 @@ namespace visionaray
 // array_ref
 //
 
-template <class T>
+template <typename T>
 class array_ref
 {
 public:
@@ -60,10 +60,10 @@ public:
     }
 
     // Construct from two iterators
-    VSNRAY_FUNC array_ref(iterator Begin, iterator End)
-        : array_ref(Begin, static_cast<size_t>(End - Begin))
+    VSNRAY_FUNC array_ref(iterator begin, iterator end)
+        : array_ref(begin, static_cast<size_t>(end - begin))
     {
-        assert((Begin ? Begin <= End : !End) && "invalid iterators");
+        assert((begin ? begin <= end : !end) && "invalid iterators");
     }
 
     // Returns a pointer to the start of the array.
@@ -97,10 +97,10 @@ public:
     }
 
     // Array access.
-    VSNRAY_FUNC reference operator[](size_t Index) const
+    VSNRAY_FUNC reference operator[](size_t index) const
     {
-        assert(Index < size() && "index out of range");
-        return data()[Index];
+        assert(index < size() && "index out of range");
+        return data()[index];
     }
 
     // Returns the first element of the array.
@@ -145,10 +145,10 @@ public:
         return { data(), size() - N };
     }
 
-    // Returns the subarray [First, Last).
-    VSNRAY_FUNC array_ref slice(size_t First, size_t Last = npos) const
+    // Returns the subarray [first, last).
+    VSNRAY_FUNC array_ref slice(size_t first, size_t last = npos) const
     {
-        return front(Last).drop_front(First);
+        return front(last).drop_front(first);
     }
 
     // Returns whether this array is equal to another.
@@ -164,21 +164,21 @@ public:
     }
 
     // Convert to a std::vector
-    template <class A = std::allocator<value_type>>
+    template <typename A = std::allocator<value_type>>
     std::vector<value_type, A> vec() const
     {
         return std::vector<value_type, A>(begin(), end());
     }
 
     // Explicitly convert to a std::vector
-    template <class A = std::allocator<value_type>>
+    template <typename A = std::allocator<value_type>>
     explicit operator std::vector<value_type, A>() const
     {
         return vec<A>();
     }
 };
 
-template <class T>
+template <typename T>
 using const_array_ref = array_ref<typename std::add_const<T>::type>;
 
 
@@ -186,42 +186,42 @@ using const_array_ref = array_ref<typename std::add_const<T>::type>;
 // Comparisons
 //
 
-template <class T>
+template <typename T>
 VSNRAY_FUNC
 inline bool operator==(array_ref<T> lhs, array_ref<T> rhs)
 {
     return lhs.equals(rhs);
 }
 
-template <class T>
+template <typename T>
 VSNRAY_FUNC
 inline bool operator!=(array_ref<T> lhs, array_ref<T> rhs)
 {
     return !(lhs == rhs);
 }
 
-template <class T>
+template <typename T>
 VSNRAY_FUNC
 inline bool operator<(array_ref<T> lhs, array_ref<T> rhs)
 {
     return lhs.less(rhs);
 }
 
-template <class T>
+template <typename T>
 VSNRAY_FUNC
 inline bool operator<=(array_ref<T> lhs, array_ref<T> rhs)
 {
     return !(rhs < lhs);
 }
 
-template <class T>
+template <typename T>
 VSNRAY_FUNC
 inline bool operator>(array_ref<T> lhs, array_ref<T> rhs)
 {
     return rhs < lhs;
 }
 
-template <class T>
+template <typename T>
 VSNRAY_FUNC
 inline bool operator>=(array_ref<T> lhs, array_ref<T> rhs)
 {
