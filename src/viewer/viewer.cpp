@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <cassert>
+#include <cmath>
 #include <exception>
 #include <fstream>
 #include <iomanip>
@@ -455,7 +456,7 @@ void renderer::render_hud()
     hud.print_buffer(300, h * 2 - 68);
     hud.clear_buffer();
 
-    hud.buffer() << "SPP: " << max(1U, frame_num);
+    hud.buffer() << "SPP: " << std::max(1U, frame_num);
     hud.print_buffer(300, h * 2 - 102);
     hud.clear_buffer();
 
@@ -491,7 +492,7 @@ void renderer::on_display()
     auto bounds     = mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
     auto bounces    = algo == Pathtracing ? 10U : 4U;
-    auto epsilon    = max( 1E-3f, length(diagonal) * 1E-5f );
+    auto epsilon    = std::max( 1E-3f, length(diagonal) * 1E-5f );
     auto amb        = ambient.x >= 0.0f // if set via cmdline
                             ? vec4(ambient, 1.0f)
                             : algo == Pathtracing ? vec4(1.0) : vec4(0.0)
