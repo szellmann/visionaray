@@ -167,7 +167,7 @@ VSNRAY_FORCE_INLINE int8 operator*(int8 const& u, int8 const& v)
 
 VSNRAY_FORCE_INLINE int8 operator/(int8 const& u, int8 const& v)
 {
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX2 && VSNRAY_SIMD_HAS_SVML)
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX2) && VSNRAY_SIMD_HAS_SVML
     return _mm256_div_epi32(u, v);
 #else
     return int8(float8(u) / float8(v));
