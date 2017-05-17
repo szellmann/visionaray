@@ -203,7 +203,7 @@ void renderer::on_display()
             auto n = get_normal(
                 mod.geometric_normals.data(),
                 hit_rec,
-                index_bvh<model::triangle_type>{},
+                bvh_ref{},
                 normals_per_face_binding{}
                 );
 
