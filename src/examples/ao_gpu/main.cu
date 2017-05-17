@@ -191,7 +191,7 @@ struct ao_kernel
             auto n = get_normal(
                 geometric_normals,
                 hit_rec,
-                cuda_index_bvh<model::triangle_type>{},
+                typename cuda_index_bvh<model::triangle_type>::bvh_ref{},
                 normals_per_face_binding{}
                 );
 
