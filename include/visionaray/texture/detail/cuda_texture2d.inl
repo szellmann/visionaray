@@ -22,6 +22,7 @@ public:
 
     using value_type  = T;
     using ref_type    = cuda_texture_ref<T, 2>;
+    enum { dimensions = 2 };
 
 private:
 
@@ -330,6 +331,7 @@ class cuda_texture_ref<T, 2>
 public:
 
     using cuda_type   = typename cuda::map_texel_type<T, cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)>::cuda_type;
+    enum { dimensions = 2 };
 
 public:
 
