@@ -334,7 +334,7 @@ visionaray_add_library(visionaray
 
 # MSVC + CUDA: link with legacy stdio library
 
-if (MSVC_VERSION GREATER_EQUAL 1900 AND VSNRAY_ENABLE_CUDA AND CUDA_FOUND)
+if (MSVC_VERSION GREATER 1800 AND VSNRAY_ENABLE_CUDA AND CUDA_FOUND)
     target_link_libraries(visionaray legacy_stdio_definitions.lib)
 endif()
 
