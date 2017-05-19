@@ -269,6 +269,11 @@ struct depth_compositor::impl
         : vertex_buffer(create_buffer())
         , tex_coord_buffer(create_buffer())
     {
+        // Store OpenGL state
+        GLint array_buffer_binding = 0;
+        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer_binding);
+
+
         GLfloat verts[8] = {
                 -1.0f, -1.0f,
                  1.0f, -1.0f,
@@ -288,6 +293,10 @@ struct depth_compositor::impl
 
         glBindBuffer(GL_ARRAY_BUFFER, tex_coord_buffer.get());
         glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), tex_coords, GL_STATIC_DRAW);
+
+
+        // Restore OpenGL state
+        glBindBuffer(GL_ARRAY_BUFFER, array_buffer_binding);
     }
 
     // Shader program to only display color texture w/o depth compositing
@@ -357,12 +366,14 @@ void depth_compositor::composite_textures() const
     GLenum dfactor_rgb = GL_ONE_MINUS_SRC_ALPHA;
     GLenum sfactor_alpha = GL_ONE;
     GLenum dfactor_alpha = GL_ONE_MINUS_SRC_ALPHA;
+    GLint array_buffer_binding = 0;
     glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
     glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
     glGetIntegerv(GL_BLEND_SRC_RGB, reinterpret_cast<GLint*>(&sfactor_rgb));
     glGetIntegerv(GL_BLEND_DST_RGB, reinterpret_cast<GLint*>(&dfactor_rgb));
     glGetIntegerv(GL_BLEND_SRC_ALPHA, reinterpret_cast<GLint*>(&sfactor_alpha));
     glGetIntegerv(GL_BLEND_DST_ALPHA, reinterpret_cast<GLint*>(&dfactor_alpha));
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer_binding);
 
 
     glEnable(GL_BLEND);
@@ -398,6 +409,7 @@ void depth_compositor::composite_textures() const
     {
         glDisable(GL_BLEND);
     }
+    glBindBuffer(GL_ARRAY_BUFFER, array_buffer_binding);
 #else
     glPushAttrib( GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_ENABLE_BIT );
 
