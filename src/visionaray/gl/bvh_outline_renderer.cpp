@@ -50,6 +50,11 @@ bvh_outline_renderer::~bvh_outline_renderer()
 
 void bvh_outline_renderer::frame(mat4 const& view, mat4 const& proj) const
 {
+    // Store OpenGL state
+    GLint array_buffer_binding = 0;
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer_binding);
+
+
     impl_->prog.enable();
 
     glUniformMatrix4fv(impl_->view_loc, 1, GL_FALSE, view.data());
@@ -64,6 +69,10 @@ void bvh_outline_renderer::frame(mat4 const& view, mat4 const& proj) const
     glDisableVertexAttribArray(impl_->vertex_loc);
 
     impl_->prog.disable();
+
+
+    // Restore OpenGL state
+    glBindBuffer(GL_ARRAY_BUFFER, array_buffer_binding);
 }
 
 void bvh_outline_renderer::destroy()
@@ -83,6 +92,12 @@ void bvh_outline_renderer::destroy()
 
 bool bvh_outline_renderer::init_gl(float const* data, size_t size)
 {
+    // Store OpenGL state
+    GLint array_buffer_binding = 0;
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer_binding);
+
+
+
     // Setup shaders
 
     impl_->vert.reset(glCreateShader(GL_VERTEX_SHADER));
@@ -138,6 +153,10 @@ bool bvh_outline_renderer::init_gl(float const* data, size_t size)
 
     glBindBuffer(GL_ARRAY_BUFFER, impl_->vertex_buffer.get());
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+
+
+    // Restore OpenGL state
+    glBindBuffer(GL_ARRAY_BUFFER, array_buffer_binding);
 
     return true;
 }
