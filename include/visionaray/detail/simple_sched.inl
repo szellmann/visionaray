@@ -37,10 +37,10 @@ void simple_sched<R>::impl::frame(K kernel, SP sched_params, unsigned frame_num,
     typedef typename R::scalar_type     scalar_type;
     typedef matrix<4, 4, scalar_type>   matrix_type;
 
-    auto view_matrix            = matrix_type( sched_params.view_matrix );
-    auto proj_matrix            = matrix_type( sched_params.proj_matrix );
-    auto inv_view_matrix        = matrix_type( inverse(sched_params.view_matrix) );
-    auto inv_proj_matrix        = matrix_type( inverse(sched_params.proj_matrix) );
+    matrix_type view_matrix( sched_params.view_matrix );
+    matrix_type proj_matrix( sched_params.proj_matrix );
+    matrix_type inv_view_matrix( inverse(sched_params.view_matrix) );
+    matrix_type inv_proj_matrix( inverse(sched_params.proj_matrix) );
 
     // Iterate over all pixels
     sample_pixels(
@@ -112,7 +112,7 @@ void simple_sched<R>::impl::sample_pixels(K kernel, SP sched_params, unsigned fr
 
             sample_pixel(
                     kernel,
-                    typename SP::pixel_sampler_type(),
+                    typename SP::pixel_sampler_type{},
                     r,
                     samp,
                     frame_num,
@@ -146,7 +146,7 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             kernel,
             sched_params,
             frame_num,
-            typename detail::sched_params_has_view_matrix<SP>::type()
+            typename detail::sched_params_has_view_matrix<SP>::type{}
             );
 }
 
