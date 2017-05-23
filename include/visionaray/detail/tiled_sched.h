@@ -22,8 +22,7 @@ public:
     template <typename K, typename SP>
     void frame(K kernel, SP sched_params, unsigned frame_num = 0);
 
-    void set_num_threads(unsigned num_threads);
-    unsigned get_num_threads() const;
+    void reset(unsigned num_threads);
 
 private:
 

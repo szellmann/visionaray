@@ -388,21 +388,15 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 }
 
 template <typename R>
-void tiled_sched<R>::set_num_threads(unsigned num_threads)
+void tiled_sched<R>::reset(unsigned num_threads)
 {
-    if ( get_num_threads()  == num_threads )
+    if (static_cast<unsigned>(impl_->threads.size()) == num_threads)
     {
         return;
     }
 
     impl_->destroy_threads();
     impl_->init_threads(num_threads);
-}
-
-template <typename R>
-unsigned tiled_sched<R>::get_num_threads() const
-{
-    return static_cast<unsigned>( impl_->threads.size() );
 }
 
 } // visionaray
