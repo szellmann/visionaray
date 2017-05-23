@@ -11,88 +11,18 @@
 namespace visionaray
 {
 
+namespace detail
+{
+namespace simple
+{
+
 //-------------------------------------------------------------------------------------------------
-// Private implementation
+// Private functions
 //
 
-template <typename R>
-struct simple_sched<R>::impl
-{
-    template <typename K, typename SP>
-    void frame(K kernel, SP sched_params, unsigned frame_num, std::true_type /* has matrix */);
-
-    template <typename K, typename SP>
-    void frame(K kernel, SP sched_params, unsigned frame_num, std::false_type /* has matrix */);
-
-    template <typename K, typename SP, typename ...Args>
-    void sample_pixels(K kernel, SP sched_params, unsigned frame_num, Args&&... args);
-};
-
-
-// Implementation using matrices
-template <typename R>
-template <typename K, typename SP>
-void simple_sched<R>::impl::frame(K kernel, SP sched_params, unsigned frame_num, std::true_type)
-{
-    typedef typename R::scalar_type     scalar_type;
-    typedef matrix<4, 4, scalar_type>   matrix_type;
-
-    matrix_type view_matrix( sched_params.view_matrix );
-    matrix_type proj_matrix( sched_params.proj_matrix );
-    matrix_type inv_view_matrix( inverse(sched_params.view_matrix) );
-    matrix_type inv_proj_matrix( inverse(sched_params.proj_matrix) );
-
-    // Iterate over all pixels
-    sample_pixels(
-            kernel,
-            sched_params,
-            frame_num,
-            sched_params.rt.width(),
-            sched_params.rt.height(),
-            view_matrix,
-            inv_view_matrix,
-            proj_matrix,
-            inv_proj_matrix
-            );
-}
-
-
-// Implementation using a pinhole camera
-template <typename R>
-template <typename K, typename SP>
-void simple_sched<R>::impl::frame(K kernel, SP sched_params, unsigned frame_num, std::false_type)
-{
-    typedef typename R::scalar_type scalar_type;
-
-    //  front, side, and up vectors form an orthonormal basis
-    auto f = normalize( sched_params.cam.eye() - sched_params.cam.center() );
-    auto s = normalize( cross(sched_params.cam.up(), f) );
-    auto u =            cross(f, s);
-
-    auto eye   = vector<3, scalar_type>(sched_params.cam.eye());
-    auto cam_u = vector<3, scalar_type>(s) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) * sched_params.cam.aspect() );
-    auto cam_v = vector<3, scalar_type>(u) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) );
-    auto cam_w = vector<3, scalar_type>(-f);
-
-    // Iterate over all pixels
-    sample_pixels(
-            kernel,
-            sched_params,
-            frame_num,
-            sched_params.rt.width(),
-            sched_params.rt.height(),
-            eye,
-            cam_u,
-            cam_v,
-            cam_w
-            );
-}
-
-
 // Iterate over all pixels in a loop
-template <typename R>
-template <typename K, typename SP, typename ...Args>
-void simple_sched<R>::impl::sample_pixels(K kernel, SP sched_params, unsigned frame_num, Args&&... args)
+template <typename R, typename K, typename SP, typename ...Args>
+void sample_pixels_impl(R /* */, K kernel, SP sched_params, unsigned frame_num, Args&&... args)
 {
     // TODO: support any sampler
     random_sampler<typename R::scalar_type> samp(detail::tic());
@@ -126,15 +56,72 @@ void simple_sched<R>::impl::sample_pixels(K kernel, SP sched_params, unsigned fr
 }
 
 
+// Implementation using matrices
+template <typename R, typename K, typename SP>
+void frame_impl(R /* */, K kernel, SP sched_params, unsigned frame_num, std::true_type)
+{
+    typedef typename R::scalar_type     scalar_type;
+    typedef matrix<4, 4, scalar_type>   matrix_type;
+
+    matrix_type view_matrix( sched_params.view_matrix );
+    matrix_type proj_matrix( sched_params.proj_matrix );
+    matrix_type inv_view_matrix( inverse(sched_params.view_matrix) );
+    matrix_type inv_proj_matrix( inverse(sched_params.proj_matrix) );
+
+    // Iterate over all pixels
+    sample_pixels_impl(
+            R{},
+            kernel,
+            sched_params,
+            frame_num,
+            sched_params.rt.width(),
+            sched_params.rt.height(),
+            view_matrix,
+            inv_view_matrix,
+            proj_matrix,
+            inv_proj_matrix
+            );
+}
+
+
+// Implementation using a pinhole camera
+template <typename R, typename K, typename SP>
+void frame_impl(R /* */, K kernel, SP sched_params, unsigned frame_num, std::false_type)
+{
+    typedef typename R::scalar_type scalar_type;
+
+    //  front, side, and up vectors form an orthonormal basis
+    auto f = normalize( sched_params.cam.eye() - sched_params.cam.center() );
+    auto s = normalize( cross(sched_params.cam.up(), f) );
+    auto u =            cross(f, s);
+
+    auto eye   = vector<3, scalar_type>(sched_params.cam.eye());
+    auto cam_u = vector<3, scalar_type>(s) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) * sched_params.cam.aspect() );
+    auto cam_v = vector<3, scalar_type>(u) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) );
+    auto cam_w = vector<3, scalar_type>(-f);
+
+    // Iterate over all pixels
+    sample_pixels_impl(
+            R{},
+            kernel,
+            sched_params,
+            frame_num,
+            sched_params.rt.width(),
+            sched_params.rt.height(),
+            eye,
+            cam_u,
+            cam_v,
+            cam_w
+            );
+}
+
+} // simple
+} // detail
+
+
 //-------------------------------------------------------------------------------------------------
 // Simple sched
 //
-
-template <typename R>
-simple_sched<R>::simple_sched()
-    : impl_(new impl)
-{
-}
 
 template <typename R>
 template <typename K, typename SP>
@@ -142,7 +129,8 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     sched_params.rt.begin_frame();
 
-    impl_->frame(
+    detail::simple::frame_impl(
+            R{},
             kernel,
             sched_params,
             frame_num,
