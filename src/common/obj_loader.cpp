@@ -36,13 +36,13 @@ namespace visionaray
 plastic<float> make_default_material()
 {
     plastic<float> m;
-    m.set_ca( from_rgb(0.2f, 0.2f, 0.2f) );
-    m.set_cd( from_rgb(0.8f, 0.8f, 0.8f) );
-    m.set_cs( from_rgb(0.1f, 0.1f, 0.1f) );
-    m.set_ka( 1.0f );
-    m.set_kd( 1.0f );
-    m.set_ks( 1.0f );
-    m.set_specular_exp( 32.0f );
+    m.ca() = from_rgb(0.2f, 0.2f, 0.2f);
+    m.cd() = from_rgb(0.8f, 0.8f, 0.8f);
+    m.cs() = from_rgb(0.1f, 0.1f, 0.1f);
+    m.ka() = 1.0f;
+    m.kd() = 1.0f;
+    m.ks() = 1.0f;
+    m.specular_exp() = 32.0f;
     return m;
 }
 
@@ -261,13 +261,13 @@ void add_material(
         )
 {
     plastic<float> mat;
-    mat.set_ca( from_rgb(m.ka) );
-    mat.set_cd( from_rgb(m.kd) );
-    mat.set_cs( from_rgb(m.ks) );
-    mat.set_ka( 1.0f );
-    mat.set_kd( 1.0f );
-    mat.set_ks( 1.0f );
-    mat.set_specular_exp( m.ns );
+    mat.ca() = from_rgb(m.ka);
+    mat.cd() = from_rgb(m.kd);
+    mat.cs() = from_rgb(m.ks);
+    mat.ka() = 1.0f;
+    mat.kd() = 1.0f;
+    mat.ks() = 1.0f;
+    mat.specular_exp() = m.ns;
     cont.emplace_back(mat);
 }
 
