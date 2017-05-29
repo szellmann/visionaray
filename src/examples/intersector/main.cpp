@@ -208,13 +208,13 @@ struct renderer : viewer_type
 
         // set a default material
         plastic<float> mat;
-        mat.set_ca( from_rgb(0.0f, 0.0f, 0.0f) );
-        mat.set_cd( from_rgb(0.8f, 0.2f, 0.1f) );
-        mat.set_cs( from_rgb(1.0f, 0.9f, 0.7f) );
-        mat.set_ka( 1.0f );
-        mat.set_kd( 1.0f );
-        mat.set_ks( 1.0f );
-        mat.set_specular_exp( 10.0f );
+        mat.ca() = from_rgb(0.0f, 0.0f, 0.0f);
+        mat.cd() = from_rgb(0.8f, 0.2f, 0.1f);
+        mat.cs() = from_rgb(1.0f, 0.9f, 0.7f);
+        mat.ka() = 1.0f;
+        mat.kd() = 1.0f;
+        mat.ks() = 1.0f;
+        mat.specular_exp() = 10.0f;
         materials.push_back(mat);
 
 

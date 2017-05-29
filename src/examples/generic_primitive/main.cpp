@@ -195,31 +195,31 @@ void renderer::generate_frame()
 
     // materials
 
-    materials[0].set_ca( from_rgb(0.0f, 0.0f, 0.0f) );
-    materials[0].set_cd( from_rgb(0.0f, 1.0f, 1.0f) );
-    materials[0].set_cs( from_rgb(0.2f, 0.4f, 0.4f) );
-    materials[0].set_specular_exp( 16.0f );
+    materials[0].ca() = from_rgb(0.0f, 0.0f, 0.0f);
+    materials[0].cd() = from_rgb(0.0f, 1.0f, 1.0f);
+    materials[0].cs() = from_rgb(0.2f, 0.4f, 0.4f);
+    materials[0].specular_exp() = 16.0f;
 
-    materials[1].set_ca( from_rgb(0.0f, 0.0f, 0.0f) );
-    materials[1].set_cd( from_rgb(1.0f, 0.0f, 0.0f) );
-    materials[1].set_cs( from_rgb(0.5f, 0.2f, 0.2f) );
-    materials[1].set_specular_exp( 128.0f );
+    materials[1].ca() = from_rgb(0.0f, 0.0f, 0.0f);
+    materials[1].cd() = from_rgb(1.0f, 0.0f, 0.0f);
+    materials[1].cs() = from_rgb(0.5f, 0.2f, 0.2f);
+    materials[1].specular_exp() = 128.0f;
 
-    materials[2].set_ca( from_rgb(0.0f, 0.0f, 0.0f) );
-    materials[2].set_cd( from_rgb(0.0f, 0.0f, 1.0f) );
-    materials[2].set_cs( from_rgb(1.0f, 1.0f, 1.0f) );
-    materials[2].set_specular_exp( 128.0f );
+    materials[2].ca() = from_rgb(0.0f, 0.0f, 0.0f);
+    materials[2].cd() = from_rgb(0.0f, 0.0f, 1.0f);
+    materials[2].cs() = from_rgb(1.0f, 1.0f, 1.0f);
+    materials[2].specular_exp() = 128.0f;
 
-    materials[3].set_ca( from_rgb(0.0f, 0.0f, 0.0f) );
-    materials[3].set_cd( from_rgb(1.0f, 1.0f, 1.0f) );
-    materials[3].set_cs( from_rgb(1.0f, 1.0f, 1.0f) );
-    materials[3].set_specular_exp( 32.0f );
+    materials[3].ca() = from_rgb(0.0f, 0.0f, 0.0f);
+    materials[3].cd() = from_rgb(1.0f, 1.0f, 1.0f);
+    materials[3].cs() = from_rgb(1.0f, 1.0f, 1.0f);
+    materials[3].specular_exp() = 32.0f;
 
     for (auto& m : materials)
     {
-        m.set_ka( 1.0f );
-        m.set_kd( 1.0f );
-        m.set_ks( 1.0f );
+        m.ka() = 1.0f;
+        m.kd() = 1.0f;
+        m.ks() = 1.0f;
     }
 }
 

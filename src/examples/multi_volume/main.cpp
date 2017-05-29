@@ -630,13 +630,13 @@ void renderer::on_display()
     for (size_t i = 0; i < transforms.size(); ++i)
     {
         plastic<S> mat;
-        mat.set_ca( from_rgb(C(0.2f, 0.2f, 0.2f)) );
-        mat.set_cd( from_rgb(C(0.8f, 0.8f, 0.8f)) );
-        mat.set_cs( from_rgb(C(0.8f, 0.8f, 0.8f)) );
-        mat.set_ka( 1.0f );
-        mat.set_kd( 1.0f );
-        mat.set_ks( 1.0f );
-        mat.set_specular_exp( 128.0f );
+        mat.ca() = from_rgb(C(0.2f, 0.2f, 0.2f));
+        mat.cd() = from_rgb(C(0.8f, 0.8f, 0.8f));
+        mat.cs() = from_rgb(C(0.8f, 0.8f, 0.8f));
+        mat.ka() = 1.0f;
+        mat.kd() = 1.0f;
+        mat.ks() = 1.0f;
+        mat.specular_exp() = 128.0f;
         param_materials[i] = mat;
     }
 
