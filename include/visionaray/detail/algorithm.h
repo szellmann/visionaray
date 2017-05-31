@@ -91,6 +91,11 @@ template <
     >
 void counting_sort(InputIt first, InputIt last, OutputIt out, Key key = Key())
 {
+    static_assert(
+            std::is_integral<decltype(key(*first))>::value,
+            "counting_sort requires integral key type"
+            );
+
     unsigned cnt[K] = { 0 };
 
     for (auto it = first; it != last; ++it)
