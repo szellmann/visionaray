@@ -83,6 +83,8 @@ add_dependencies(${GTEST_LIBRARYMAIN} googletest)
 include_directories(${PROJECT_SOURCE_DIR}/include)
 # Also add this so we can include common headers
 include_directories(${PROJECT_SOURCE_DIR}/src)
+# Find config headers
+include_directories(${__VSNRAY_CONFIG_DIR})
 
 
 # Unittests executable
