@@ -27,6 +27,13 @@ if (VSNRAY_ENABLE_CUDA)
     visionaray_use_package(CUDA)
 endif()
 
+# TBB
+
+if (VSNRAY_ENABLE_TBB)
+    find_package(TBB)
+    visionaray_use_package(TBB)
+endif()
+
 
 #--------------------------------------------------------------------------------------------------
 #
