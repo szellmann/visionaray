@@ -4,6 +4,7 @@
 find_package(Boost COMPONENTS chrono filesystem iostreams system thread REQUIRED)
 find_package(CUDA)
 find_package(Git)
+find_package(TBB)
 find_package(Threads)
 
 if (NOT GIT_FOUND)
@@ -18,6 +19,7 @@ endif()
 
 visionaray_use_package(Boost)
 visionaray_use_package(CUDA)
+visionaray_use_package(TBB)
 
 
 #--------------------------------------------------------------------------------------------------
