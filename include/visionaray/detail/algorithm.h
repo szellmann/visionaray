@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <type_traits>
 
 #include "macros.h"
 
@@ -37,6 +38,76 @@ U copy(T first, T last, U d_first)
 #else
     return std::copy(first, last, d_first);
 #endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// counting_sort trivial key
+//
+
+namespace detail
+{
+
+struct trivial_key
+{
+    template <
+        typename T,
+        typename = typename std::enable_if<std::is_integral<T>::value>::type
+        >
+    T operator()(T val)
+    {
+        return val;
+    }
+};
+
+} // detail
+
+
+//-------------------------------------------------------------------------------------------------
+// counting_sort
+//
+// Sorts items based on integer keys.
+//
+// [in] FIRST
+//      Start of the input sequence.
+//
+// [in] LAST
+//      End of the input sequence.
+//
+// [out] OUT
+//      Start of the output sequence.
+//
+// [in] KEY
+//      Sort key function object.
+//
+// Complexity: O(n + k)
+//
+
+template <
+    size_t K,
+    typename InputIt,
+    typename OutputIt,
+    typename Key = detail::trivial_key
+    >
+void counting_sort(InputIt first, InputIt last, OutputIt out, Key key = Key())
+{
+    unsigned cnt[K] = { 0 };
+
+    for (auto it = first; it != last; ++it)
+    {
+        ++cnt[key(*it)];
+    }
+
+    for (size_t m = 1; m < K; ++m)
+    {
+        cnt[m] += cnt[m - 1];
+    }
+
+    for (ptrdiff_t i = last - first - 1; i >= 0; --i)
+    {
+        out[cnt[key(first[i])] - 1] = first[i];
+        --cnt[key(first[i])];
+    }
 }
 
 
