@@ -79,8 +79,10 @@ add_dependencies(${GTEST_LIBRARYMAIN} googletest)
 # Add unittests target
 #
 
-# Visionaray include dirs
+# Visionaray include dir
 include_directories(${PROJECT_SOURCE_DIR}/include)
+# Also add this so we can include common headers
+include_directories(${PROJECT_SOURCE_DIR}/src)
 
 
 # Unittests executable
@@ -117,6 +119,9 @@ if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
         texture.cu
     )
 endif()
+
+visionaray_link_libraries(visionaray)
+visionaray_link_libraries(visionaray_common)
 
 # Define executable
 visionaray_add_executable(unittests
