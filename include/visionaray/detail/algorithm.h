@@ -9,7 +9,7 @@
 #include <visionaray/config.h>
 
 #include <algorithm>
-#include <array>
+#include <atomic>
 #include <functional>
 #include <iterator>
 #include <type_traits>
@@ -117,10 +117,10 @@ void counting_sort(InputIt first, InputIt last, OutputIt out, Key key = Key())
         cnt[m] += cnt[m - 1];
     }
 
-    for (ptrdiff_t i = last - first - 1; i >= 0; --i)
+    for (auto it = first; it != last; ++it)
     {
-        out[cnt[key(first[i])] - 1] = first[i];
-        --cnt[key(first[i])];
+        out[cnt[key(*it)] - 1] = *it;
+        --cnt[key(*it)];
     }
 }
 
@@ -193,10 +193,10 @@ void parallel_counting_sort(InputIt first, InputIt last, OutputIt out, Key key =
         cnt[m] += cnt[m - 1];
     }
 
-    for (ptrdiff_t i = last - first - 1; i >= 0; --i)
+    for (auto it = first; it != last; ++it)
     {
-        out[cnt[key(first[i])] - 1] = first[i];
-        cnt[key(first[i])] -= 1;
+        out[cnt[key(*it)] - 1] = *it;
+        cnt[key(*it)] -= 1;
     }
 }
 
