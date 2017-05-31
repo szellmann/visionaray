@@ -9,7 +9,6 @@
 #include <visionaray/config.h>
 
 #include <algorithm>
-#include <atomic>
 #include <functional>
 #include <iterator>
 #include <type_traits>
