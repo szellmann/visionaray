@@ -1,32 +1,34 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/config.h>
+
 #include <algorithm>
 #include <array>
-#include <climits>
 #include <cstdlib>
-#include <functional>
 #include <vector>
 
-#include <visionaray/detail/algorithm.h>
+#include <visionaray/detail/parallel_algorithm.h>
 
 #include <gtest/gtest.h>
 
 using namespace visionaray;
 
 
+#if VSNRAY_HAVE_TBB
+
 //-------------------------------------------------------------------------------------------------
 // Test counting_sort()
 //
 
-TEST(Algorithm, CountingSort)
+TEST(ParallelAlgorithm, CountingSort)
 {
     // Array of ints
     {
         std::vector<int> a{3, 1, 4, 3, 2, 1, 8, 7, 7, 7};
         std::vector<int> b(a.size());
 
-        algo::counting_sort<9>(a.begin(), a.end(), b.begin());
+        paralgo::counting_sort<9>(a.begin(), a.end(), b.begin());
         EXPECT_TRUE(std::is_sorted(b.begin(), b.end()));
 
         std::sort(a.begin(), a.end());
@@ -46,7 +48,7 @@ TEST(Algorithm, CountingSort)
             a[i] = rand() % K;
         }
 
-        algo::counting_sort<K>(a.begin(), a.end(), b.begin());
+        paralgo::counting_sort<K>(a.begin(), a.end(), b.begin());
         EXPECT_TRUE(std::is_sorted(b.begin(), b.end()));
 
         std::sort(a.begin(), a.end());
@@ -86,7 +88,7 @@ TEST(Algorithm, CountingSort)
             a[i].key = rand() % K;
         }
 
-        algo::counting_sort<K>(
+        paralgo::counting_sort<K>(
                 a.begin(),
                 a.end(),
                 b.begin(),
@@ -107,63 +109,4 @@ TEST(Algorithm, CountingSort)
     }
 }
 
-
-//-------------------------------------------------------------------------------------------------
-// Test insert_sorted()
-//
-
-TEST(Algorithm, InsertSorted)
-{
-    // Array of ints
-
-    std::array<int, 4> arr = {{ INT_MAX, INT_MAX, INT_MAX, INT_MAX }};
-
-    algo::insert_sorted(0, arr.begin(), arr.end(), std::less<int>());
-    // 0, inf, inf, inf
-    EXPECT_EQ(arr[0], 0);
-    EXPECT_EQ(arr[1], INT_MAX);
-    EXPECT_EQ(arr[2], INT_MAX);
-    EXPECT_EQ(arr[3], INT_MAX);
-
-    algo::insert_sorted(10, arr.begin(), arr.end(), std::less<int>());
-    // 0, 10, inf, inf
-    EXPECT_EQ(arr[0], 0);
-    EXPECT_EQ(arr[1], 10);
-    EXPECT_EQ(arr[2], INT_MAX);
-    EXPECT_EQ(arr[3], INT_MAX);
-
-    algo::insert_sorted(4, arr.begin(), arr.end(), std::less<int>());
-    // 0, 4, 10, inf
-    EXPECT_EQ(arr[0], 0);
-    EXPECT_EQ(arr[1], 4);
-    EXPECT_EQ(arr[2], 10);
-    EXPECT_EQ(arr[3], INT_MAX);
-
-    algo::insert_sorted(4, arr.begin(), arr.end(), std::less<int>());
-    // 0, 4, 4, 10
-    EXPECT_EQ(arr[0], 0);
-    EXPECT_EQ(arr[1], 4);
-    EXPECT_EQ(arr[2], 4);
-    EXPECT_EQ(arr[3], 10);
-
-    algo::insert_sorted(4, arr.begin(), arr.end(), std::less<int>());
-    // 0, 4, 4, 4
-    EXPECT_EQ(arr[0], 0);
-    EXPECT_EQ(arr[1], 4);
-    EXPECT_EQ(arr[2], 4);
-    EXPECT_EQ(arr[3], 4);
-
-    algo::insert_sorted(10, arr.begin(), arr.end(), std::less<int>());
-    // 0, 4, 4, 4 (10 is not inserted!)
-    EXPECT_EQ(arr[0], 0);
-    EXPECT_EQ(arr[1], 4);
-    EXPECT_EQ(arr[2], 4);
-    EXPECT_EQ(arr[3], 4);
-
-    algo::insert_sorted(-INT_MAX, arr.begin(), arr.end(), std::less<int>());
-    // -inf, 0, 4, 4
-    EXPECT_EQ(arr[0], -INT_MAX);
-    EXPECT_EQ(arr[1], 0);
-    EXPECT_EQ(arr[2], 4);
-    EXPECT_EQ(arr[3], 4);
-}
+#endif // VSNRAY_HAVE_TBB
