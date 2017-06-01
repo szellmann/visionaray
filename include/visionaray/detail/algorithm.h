@@ -118,8 +118,7 @@ void counting_sort(InputIt first, InputIt last, OutputIt out, Key key = Key())
 
     for (auto it = first; it != last; ++it)
     {
-        out[cnt[key(*it)] - 1] = *it;
-        --cnt[key(*it)];
+        out[--cnt[key(*it)]] = *it;
     }
 }
 
@@ -194,8 +193,7 @@ void parallel_counting_sort(InputIt first, InputIt last, OutputIt out, Key key =
 
     for (auto it = first; it != last; ++it)
     {
-        out[cnt[key(*it)] - 1] = *it;
-        cnt[key(*it)] -= 1;
+        out[--cnt[key(*it)]] = *it;
     }
 }
 
