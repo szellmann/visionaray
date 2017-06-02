@@ -56,6 +56,7 @@ template <
         std::is_floating_point<element_type_t<T>>::value
         >::type
     >
+VSNRAY_FUNC
 inline array<shade_record<L, float>, num_elements<T>::value> unpack(shade_record<L, T> const& sr)
 {
     using int_array = aligned_array_t<int_type_t<T>>;
@@ -96,6 +97,7 @@ template <
         std::is_floating_point<element_type_t<T>>::value
         >::type
     >
+VSNRAY_FUNC
 inline array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> unpack(
         shade_record<L, vector<3, T>, T> const& sr
         )
