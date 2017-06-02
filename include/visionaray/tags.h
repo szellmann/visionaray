@@ -6,6 +6,7 @@
 #ifndef VSNRAY_TAGS_H
 #define VSNRAY_TAGS_H 1
 
+#include <cstddef>
 #include <type_traits>
 
 //-------------------------------------------------------------------------------------------------
@@ -66,6 +67,36 @@ using is_color_binding   = std::is_base_of<color_binding, T>;
 
 template <typename T>
 using is_normal_binding  = std::is_base_of<normal_binding, T>;
+
+
+//-------------------------------------------------------------------------------------------------
+// Pixel sampler tags for use in scheduler params
+//
+
+namespace pixel_sampler
+{
+
+// Pixel sampler tag base ---------------------------------
+
+struct base_type {};
+
+
+// Built-in pixel sampler types ---------------------------
+
+// Supersampling anti-aliasing
+template <size_t NumSamples>
+struct ssaa_type : base_type {};
+
+// 1x SSAA (no supersampling)
+using uniform_type = ssaa_type<1>;
+
+// Jittered pixel positions
+struct jittered_type : base_type {};
+
+// Jittered and successive blending
+struct jittered_blend_type : jittered_type {};
+
+} // pixel_sampler
 
 } // visionaray
 
