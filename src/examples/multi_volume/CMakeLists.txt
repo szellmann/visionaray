@@ -1,15 +1,16 @@
 # This file is distributed under the MIT license.
 # See the LICENSE file for details.
 
-if(VSNRAY_ENABLE_CUDA)
-find_package(CUDA)
-endif()
 find_package(GLUT REQUIRED)
 
-if(VSNRAY_ENABLE_CUDA)
-visionaray_use_package(CUDA)
-endif()
 visionaray_use_package(GLUT)
+
+# CUDA
+
+if (VSNRAY_ENABLE_CUDA)
+    find_package(CUDA)
+    visionaray_use_package(CUDA)
+endif()
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     visionaray_cuda_compile(EX_MULTI_VOLUME_CUDA_SOURCES
