@@ -34,7 +34,7 @@ namespace detail
 {
 
 template <typename Container>
-auto get_pointer(Container const& vec)
+inline auto get_pointer(Container const& vec)
     -> decltype(vec.data())
 {
     return vec.data();
@@ -42,7 +42,7 @@ auto get_pointer(Container const& vec)
 
 #ifdef __CUDACC__
 template <typename T>
-T const* get_pointer(thrust::device_vector<T> const& vec)
+inline T const* get_pointer(thrust::device_vector<T> const& vec)
 {
     return thrust::raw_pointer_cast(vec.data());
 }
