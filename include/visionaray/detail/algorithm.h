@@ -67,7 +67,7 @@ struct trivial_key
 //-------------------------------------------------------------------------------------------------
 // counting_sort
 //
-// Sorts items based on integer keys.
+// Sorts items based on integer keys in [0..k).
 //
 // [in] FIRST
 //      Start of the input sequence.
@@ -78,6 +78,9 @@ struct trivial_key
 // [out] OUT
 //      Start of the output sequence.
 //
+// [in,out] COUNTS
+//      Modifiable counts sequence.
+//
 // [in] KEY
 //      Sort key function object.
 //
@@ -85,33 +88,33 @@ struct trivial_key
 //
 
 template <
-    size_t K,
     typename InputIt,
     typename OutputIt,
+    typename Counts,
     typename Key = detail::trivial_key
     >
-void counting_sort(InputIt first, InputIt last, OutputIt out, Key key = Key())
+void counting_sort(InputIt first, InputIt last, OutputIt out, Counts counts, Key key = Key())
 {
     static_assert(
             std::is_integral<decltype(key(*first))>::value,
             "counting_sort requires integral key type"
             );
 
-    unsigned cnt[K] = { 0 };
+    std::fill(std::begin(counts), std::end(counts), 0);
 
     for (auto it = first; it != last; ++it)
     {
-        ++cnt[key(*it)];
+        ++counts[key(*it)];
     }
 
-    for (size_t m = 1; m < K; ++m)
+    for (size_t m = 1; m < counts.size(); ++m)
     {
-        cnt[m] += cnt[m - 1];
+        counts[m] += counts[m - 1];
     }
 
     for (auto it = first; it != last; ++it)
     {
-        out[--cnt[key(*it)]] = *it;
+        out[--counts[key(*it)]] = *it;
     }
 }
 
