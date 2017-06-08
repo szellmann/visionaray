@@ -38,6 +38,23 @@ inline aligned_vector<plastic<float>> make_materials(
     return result;
 }
 
+template <typename ...Ts, typename UpdateFunc>
+inline aligned_vector<generic_material<Ts...>> make_materials(
+        generic_material<Ts...> /* */,
+        model::mat_list const&  materials,
+        UpdateFunc              update_func
+        )
+{
+    aligned_vector<generic_material<Ts...>> result;
+
+    for (auto mat : materials)
+    {
+        update_func(result, mat);
+    }
+
+    return result;
+}
+
 } // visionaray
 
 #endif // VSNRAY_COMMON_MAKE_MATERIALS_H
