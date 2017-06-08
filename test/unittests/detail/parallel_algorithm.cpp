@@ -27,8 +27,9 @@ TEST(ParallelAlgorithm, CountingSort)
     {
         std::vector<int> a{3, 1, 4, 3, 2, 1, 8, 7, 7, 7};
         std::vector<int> b(a.size());
+        std::vector<int> counts(9);
 
-        paralgo::counting_sort<9>(a.begin(), a.end(), b.begin());
+        paralgo::counting_sort(a.begin(), a.end(), b.begin(), counts);
         EXPECT_TRUE(std::is_sorted(b.begin(), b.end()));
 
         std::sort(a.begin(), a.end());
@@ -42,13 +43,14 @@ TEST(ParallelAlgorithm, CountingSort)
 
         std::vector<int> a(N);
         std::vector<int> b(N);
+        std::array<int, K> counts;
 
         for (size_t i = 0; i < N; ++i)
         {
             a[i] = rand() % K;
         }
 
-        paralgo::counting_sort<K>(a.begin(), a.end(), b.begin());
+        paralgo::counting_sort(a.begin(), a.end(), b.begin(), counts);
         EXPECT_TRUE(std::is_sorted(b.begin(), b.end()));
 
         std::sort(a.begin(), a.end());
@@ -82,16 +84,18 @@ TEST(ParallelAlgorithm, CountingSort)
 
         std::vector<my_struct> a(N);
         std::vector<my_struct> b(N);
+        std::vector<unsigned> counts(K);
 
         for (size_t i = 0; i < N; ++i)
         {
             a[i].key = rand() % K;
         }
 
-        paralgo::counting_sort<K>(
+        paralgo::counting_sort(
                 a.begin(),
                 a.end(),
                 b.begin(),
+                counts,
                 [](my_struct const& val) { return val.key; }
                 );
         EXPECT_TRUE( std::is_sorted(

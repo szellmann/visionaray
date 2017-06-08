@@ -51,7 +51,7 @@ struct trivial_key
 //-------------------------------------------------------------------------------------------------
 // counting_sort
 //
-// Sorts items based on integer keys.
+// Sorts items based on integer keys in [0..k).
 //
 // [in] FIRST
 //      Start of the input sequence.
@@ -62,30 +62,72 @@ struct trivial_key
 // [out] OUT
 //      Start of the output sequence.
 //
+// [in,out] COUNTS
+//      Modifiable counts sequence.
+//
 // [in] KEY
 //      Sort key function object.
 //
-// Complexity: O(n + k)
+// Complexity: TODO: parallel complexity
 //
 
 namespace detail
 {
 
-template <size_t K, typename InputIt, typename Key>
+template <typename T>
+struct test_resizable
+{
+    template <typename U, U>
+    struct test_ {};
+
+    template <typename U>
+    static std::true_type test(test_<void (U::*)(size_t), &U::resize>*);
+
+    template <typename U>
+    static std::false_type test(...);
+
+    using type = decltype( test<typename std::decay<T>::type>(nullptr) );
+};
+
+struct init_values
+{
+    template <
+        typename Cont
+        >
+    typename std::enable_if<std::is_same<typename test_resizable<Cont>::type, std::true_type>::value>::type*
+    operator()(Cont& cont, size_t k)
+    {
+        cont.resize(k);
+        std::fill(std::begin(cont), std::end(cont), 0);
+        return nullptr;
+    }
+
+    template <
+        typename Cont
+        >
+    typename std::enable_if<std::is_same<typename test_resizable<Cont>::type, std::false_type>::value>::type*
+    operator()(Cont& cont, size_t)
+    {
+        std::fill(std::begin(cont), std::end(cont), 0);
+        return nullptr;
+    }
+};
+
+template <typename InputIt, typename Values, typename Key>
 struct concurrent_histogram
 {
-    concurrent_histogram(InputIt first, Key key)
-        : values_{0}
-        , first_(first)
+    concurrent_histogram(InputIt first, size_t k, Key key)
+        : first_(first)
         , key_(key)
     {
+        init_values()(values_, k);
     }
 
     concurrent_histogram(concurrent_histogram& rhs, tbb::split)
-        : values_{0}
-        , first_(rhs.first_)
+        : first_(rhs.first_)
         , key_(rhs.key_)
     {
+        init_values()(values_, rhs.values_.size());
     }
 
     void operator()(tbb::blocked_range<int> const& r)
@@ -98,39 +140,40 @@ struct concurrent_histogram
 
     void join(concurrent_histogram const& rhs)
     {
-        for (size_t m = 0; m < K; ++m)
+        for (size_t m = 0; m < values_.size(); ++m)
         {
             values_[m] += rhs.values_[m];
         }
     }
 
-    unsigned values_[K];
     InputIt first_;
+    Values values_;
     Key key_;
 };
 
 } // detail
 
 template <
-    size_t K,
     typename InputIt,
     typename OutputIt,
+    typename Counts,
     typename Key = detail::trivial_key
     >
-void counting_sort(InputIt first, InputIt last, OutputIt out, Key key = Key())
+void counting_sort(InputIt first, InputIt last, OutputIt out, Counts counts, Key key = Key())
 {
     static_assert(
             std::is_integral<decltype(key(*first))>::value,
             "parallel_counting_sort requires integral key type"
             );
 
-    detail::concurrent_histogram<K, InputIt, Key> h(first, key);
+    detail::concurrent_histogram<InputIt, Counts, Key> h(first, counts.size(), key);
+    // ignore counts from now on!
 
     tbb::parallel_reduce(tbb::blocked_range<int>(0, last - first), h);
 
     auto& cnt = h.values_;
 
-    for (size_t m = 1; m < K; ++m)
+    for (size_t m = 1; m < cnt.size(); ++m)
     {
         cnt[m] += cnt[m - 1];
     }
