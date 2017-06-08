@@ -22,9 +22,9 @@ inline bool has_emissive_material(surface<Args...> const& surf)
     return false;
 }
 
-template <typename N, typename T>
+template <typename N, typename T, typename ...Args>
 VSNRAY_FUNC
-inline bool has_emissive_material(surface<N, emissive<T>> const& surf)
+inline bool has_emissive_material(surface<N, emissive<T>, Args...> const& surf)
 {
     VSNRAY_UNUSED(surf);
     return true;
