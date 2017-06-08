@@ -47,6 +47,7 @@
 #include <visionaray/bvh.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h>
+#include <visionaray/material.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 
@@ -63,6 +64,7 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 #include <common/call_kernel.h>
+#include <common/make_materials.h>
 #include <common/model.h>
 #include <common/obj_loader.h>
 #include <common/timer.h>
@@ -92,7 +94,7 @@ struct renderer : viewer_type
     using primitive_type            = model::triangle_type;
     using normal_type               = model::normal_type;
     using tex_coord_type            = model::tex_coord_type;
-    using material_type             = model::material_type;
+    using material_type             = plastic<float>;
 
     using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
     using host_bvh_type             = index_bvh<primitive_type>;
@@ -239,6 +241,7 @@ struct renderer : viewer_type
     vec3                                        ambient         = vec3(-1.0f);
 
     host_bvh_type                               host_bvh;
+    aligned_vector<material_type>               host_materials;
 #ifdef __CUDACC__
     device_bvh_type                             device_bvh;
     thrust::device_vector<normal_type>          device_normals;
@@ -539,7 +542,7 @@ void renderer::on_display()
                 host_primitives.data() + host_primitives.size(),
                 mod.geometric_normals.data(),
 //              mod.tex_coords.data(),
-                mod.materials.data(),
+                host_materials.data(),
 //              mod.textures.data(),
                 host_lights.data(),
                 host_lights.data() + host_lights.size(),
@@ -769,6 +772,12 @@ int main(int argc, char** argv)
             rend.builder == renderer::Split
             );
 
+    // Convert generic materials to viewer's material type
+    rend.host_materials = make_materials(
+            renderer::material_type{},
+            rend.mod.materials
+            );
+
     std::cout << "Ready\n";
 
 #ifdef __CUDACC__
@@ -778,7 +787,7 @@ int main(int argc, char** argv)
         rend.device_bvh = renderer::device_bvh_type(rend.host_bvh);
         rend.device_normals = rend.mod.geometric_normals;
         rend.device_tex_coords = rend.mod.tex_coords;
-        rend.device_materials = rend.mod.materials;
+        rend.device_materials = rend.host_materials;
 
 
         // Copy textures and texture references to the GPU

@@ -20,6 +20,7 @@
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/get_surface.h>
 #include <visionaray/kernels.h>
+#include <visionaray/material.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/traverse.h>
@@ -32,6 +33,7 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 
+#include <common/make_materials.h>
 #include <common/model.h>
 #include <common/obj_loader.h>
 #include <common/viewer_glut.h>
@@ -53,6 +55,8 @@ struct renderer : viewer_type
 #else
     using ray_type = basic_ray<simd::float4>;
 #endif
+
+    using material_type = plastic<float>;
 
     renderer()
         : viewer_type(512, 512, "Visionaray Multi-Hit Example")
@@ -76,13 +80,14 @@ struct renderer : viewer_type
 
     model mod;
     index_bvh<model::triangle_type>                         host_bvh;
+    aligned_vector<material_type>                           host_materials;
 
 #ifdef __CUDACC__
     cuda_sched<ray_type>                                    device_sched;
     pixel_unpack_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>        device_rt;
     device_bvh_type                                         device_bvh;
     thrust::device_vector<model::normal_list::value_type>   device_normals;
-    thrust::device_vector<model::mat_list::value_type>      device_materials;
+    thrust::device_vector<material_type>                    device_materials;
 
 #endif
 
@@ -308,7 +313,7 @@ void renderer::on_display()
             bvhs.data() + bvhs.size(),
             mod.shading_normals.data(),
 //          mod.tex_coords.data(),
-            mod.materials.data(),
+            host_materials.data(),
 //          mod.textures.data(),
             host_lights.data(),
             host_lights.data() + host_lights.size()
@@ -391,9 +396,16 @@ int main(int argc, char** argv)
 
     std::cout << "Creating BVH...\n";
 
+    // Create the BVH on the host
     rend.host_bvh = build<index_bvh<model::triangle_type>>(
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
+            );
+
+    // Convert generic materials to viewer's material type
+    rend.host_materials = make_materials(
+            renderer::material_type{},
+            rend.mod.materials
             );
 
     std::cout << "Ready\n";
@@ -404,7 +416,7 @@ int main(int argc, char** argv)
     {
         rend.device_bvh = renderer::device_bvh_type(rend.host_bvh);
         rend.device_normals = rend.mod.shading_normals;
-        rend.device_materials = rend.mod.materials;
+        rend.device_materials = rend.host_materials;
     }
     catch (std::bad_alloc&)
     {

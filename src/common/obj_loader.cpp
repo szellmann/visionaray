@@ -30,24 +30,6 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
-// Default gray material
-//
-
-plastic<float> make_default_material()
-{
-    plastic<float> m;
-    m.ca() = from_rgb(0.2f, 0.2f, 0.2f);
-    m.cd() = from_rgb(0.8f, 0.8f, 0.8f);
-    m.cs() = from_rgb(0.1f, 0.1f, 0.1f);
-    m.ka() = 1.0f;
-    m.kd() = 1.0f;
-    m.ks() = 1.0f;
-    m.specular_exp() = 32.0f;
-    return m;
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // Map obj indices to unsigned base-0 indices
 //
 
@@ -176,13 +158,12 @@ aabb bounds(model::triangle_list const& tris)
 
 struct mtl
 {
-    mtl() = default;
-    mtl(plastic<float> m)
-        : ka( to_rgb(m.get_ca() * m.get_ka()) )
-        , kd( to_rgb(m.get_cd() * m.get_kd()) )
-        , ke( vec3(0.0f, 0.0f, 0.0f) )
-        , ks( to_rgb(m.get_cs() * m.get_ks()) )
-        , ns(m.get_specular_exp())
+    mtl()
+        : ka(vec3(0.2f, 0.2f, 0.2f))
+        , kd(vec3(0.8f, 0.8f, 0.8f))
+        , ke(vec3(0.0f, 0.0f, 0.0f))
+        , ks(vec3(0.1f, 0.1f, 0.1f))
+        , ns(32.0f)
     {
     }
 
@@ -214,10 +195,7 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib, 
     {
         if ( qi::phrase_parse(it, text.cend(), grammar.r_newmtl, qi::blank, mtl_name) )
         {
-            auto r = matlib.insert({
-                    std::string(mtl_name.begin(), mtl_name.length()),
-                    mtl(make_default_material())}
-                    );
+            auto r = matlib.insert({ std::string(mtl_name.begin(), mtl_name.length()), mtl() });
             if (!r.second)
             {
                 // Material already exists...
@@ -249,52 +227,27 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib, 
     }
 }
 
+
 //-------------------------------------------------------------------------------------------------
 // Add material to container
 //
 
 template <typename Container>
-void add_material(
-        plastic<float>  /* */,
-        Container&      cont,
-        mtl             m
-        )
+void add_material(Container& cont, mtl m)
 {
-    plastic<float> mat;
-    mat.ca() = from_rgb(m.ka);
-    mat.cd() = from_rgb(m.kd);
-    mat.cs() = from_rgb(m.ks);
-    mat.ka() = 1.0f;
-    mat.kd() = 1.0f;
-    mat.ks() = 1.0f;
-    mat.specular_exp() = m.ns;
+    model::material_type mat;
+    mat.ca = m.ka;
+    mat.cd = m.kd;
+    mat.cs = m.ks;
+    mat.ce = m.ke;
+    mat.specular_exp = m.ns;
     cont.emplace_back(mat);
 }
 
-template <typename ...Ts, typename Container>
-void add_material(
-        generic_material<Ts...> /* */,
-        Container&              cont,
-        mtl                     m
-        )
-{
-    if (length(m.ke) > 0.0f)
-    {
-        // TODO: it is not guaranteed that generic_material
-        // was intantiated with a parameter pack that
-        // contains emissive<float> (but it is quite likely..)
 
-        emissive<float> mat;
-        mat.set_ce( from_rgb(m.ke) );
-        mat.set_ls( 1.0f );
-        cont.emplace_back(mat);
-    }
-    else
-    {
-        add_material(plastic<float>{}, cont, m);
-    }
-}
-
+//-------------------------------------------------------------------------------------------------
+// Load obj file
+//
 
 void load_obj(std::string const& filename, model& mod)
 {
@@ -351,11 +304,7 @@ void load_obj(std::string const& filename, model& mod)
             {
                 typedef model::texture_type tex_type;
 
-                add_material(
-                        model::material_type{},
-                        mod.materials,
-                        mat_it->second
-                        );
+                add_material(mod.materials, mat_it->second);
 
                 if (!mat_it->second.map_kd.empty()) // File path specified in mtl file
                 {
@@ -512,7 +461,7 @@ void load_obj(std::string const& filename, model& mod)
     // See that there is a material for each geometry
     for (size_t i = mod.materials.size(); i <= geom_id; ++i)
     {
-        mod.materials.emplace_back(make_default_material());
+        mod.materials.emplace_back(model::material_type());
     }
 
     // See that there is a (at least dummy) texture for each geometry

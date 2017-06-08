@@ -18,12 +18,14 @@
 #include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h>
+#include <visionaray/material.h>
 #include <visionaray/scheduler.h>
 
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 
+#include <common/make_materials.h>
 #include <common/model.h>
 #include <common/obj_loader.h>
 #include <common/viewer_glut.h>
@@ -40,6 +42,7 @@ using viewer_type = viewer_glut;
 struct renderer : viewer_type
 {
     using host_ray_type = basic_ray<simd::float4>;
+    using material_type = plastic<float>;
 
     renderer()
         : viewer_type(512, 512, "Visionaray 3D Texture Example")
@@ -158,6 +161,7 @@ struct renderer : viewer_type
 
     texture<vec4, 3>                            tex;
     aligned_vector<vec3>                        tex_coords;
+    aligned_vector<material_type>               materials;
     vec3i                                       texsize         = vec3i(8, 8, 8);
     vec3                                        color1          = vec3(1.0f, 1.0f, 0.7f);
     vec3                                        color2          = vec3(0.4f, 0.0f, 0.0f);
@@ -245,7 +249,7 @@ void renderer::on_display()
     // allocator. Use it in conjunction w/ SIMD traversal
     // where there are restrictions on alignment properties.
     aligned_vector<tex_ref> textures;
-    for (size_t i = 0; i < mod.materials.size(); ++i)
+    for (size_t i = 0; i < materials.size(); ++i)
     {
         textures.emplace_back(tex_ref(tex));
     }
@@ -263,7 +267,7 @@ void renderer::on_display()
             primitives.data() + primitives.size(),
             mod.geometric_normals.data(),
             tex_coords.data(),
-            mod.materials.data(),
+            materials.data(),
             textures.data(),
             ignore,
             ignore,
@@ -362,9 +366,16 @@ int main(int argc, char** argv)
 
     std::cout << "Creating BVH...\n";
 
+    // Create the BVH on the host
     rend.host_bvh = build<bvh<model::triangle_type>>(
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
+            );
+
+    // Convert generic materials to viewer's material type
+    rend.materials = make_materials(
+            renderer::material_type{},
+            rend.mod.materials
             );
 
     std::cout << "Creating 3D texture and texture coordinates...\n";

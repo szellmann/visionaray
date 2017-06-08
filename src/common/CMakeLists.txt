@@ -129,6 +129,7 @@ set(COMMON_HEADERS
     image_base.h
     jpeg_image.h
     make_unique.h
+    make_materials.h
     model.h
     obj_grammar.h
     obj_loader.h
