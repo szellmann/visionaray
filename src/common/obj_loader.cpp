@@ -233,9 +233,10 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib, 
 //
 
 template <typename Container>
-void add_material(Container& cont, mtl m)
+void add_material(Container& cont, mtl m, string_ref name)
 {
     model::material_type mat;
+    mat.name = std::string(name.data(), name.length());
     mat.ca = m.ka;
     mat.cd = m.kd;
     mat.cs = m.ks;
@@ -304,7 +305,7 @@ void load_obj(std::string const& filename, model& mod)
             {
                 typedef model::texture_type tex_type;
 
-                add_material(mod.materials, mat_it->second);
+                add_material(mod.materials, mat_it->second, mtl_name);
 
                 if (!mat_it->second.map_kd.empty()) // File path specified in mtl file
                 {
