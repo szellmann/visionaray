@@ -29,9 +29,9 @@ public:
             , cs(0.1f, 0.1f, 0.1f)
             , ce(0.0f, 0.0f, 0.0f)
             , cr(0.0f, 0.0f, 0.0f)
+            , ior(1.0f, 1.0f, 1.0f)
             , absorption(0.0f, 0.0f, 0.0f)
             , specular_exp(32.0f)
-            , ior(1.0f)
             , glossiness(0.0f)
         {
         }
@@ -54,14 +54,14 @@ public:
         // Reflective color.
         vec3 cr;
 
+        // Index of refraction.
+        vec3 ior;
+
         // Absorption.
         vec3 absorption;
 
         // Specular exponent.
         float specular_exp;
-
-        // Index of refraction.
-        float ior;
 
         // Glossiness term.
         float glossiness;
