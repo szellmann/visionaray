@@ -159,7 +159,7 @@ template <
     typename Counts,
     typename Key = detail::trivial_key
     >
-void counting_sort(InputIt first, InputIt last, OutputIt out, Counts counts, Key key = Key())
+void counting_sort(InputIt first, InputIt last, OutputIt out, Counts& counts, Key key = Key())
 {
     static_assert(
             std::is_integral<decltype(key(*first))>::value,
@@ -167,7 +167,6 @@ void counting_sort(InputIt first, InputIt last, OutputIt out, Counts counts, Key
             );
 
     detail::concurrent_histogram<InputIt, Counts, Key> h(first, counts.size(), key);
-    // ignore counts from now on!
 
     tbb::parallel_reduce(tbb::blocked_range<int>(0, last - first), h);
 
@@ -177,6 +176,8 @@ void counting_sort(InputIt first, InputIt last, OutputIt out, Counts counts, Key
     {
         cnt[m] += cnt[m - 1];
     }
+
+    std::copy(cnt.begin(), cnt.end(), counts.begin());
 
     for (auto it = first; it != last; ++it)
     {
