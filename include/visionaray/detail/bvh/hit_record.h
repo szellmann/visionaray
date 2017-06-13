@@ -22,15 +22,9 @@ namespace visionaray
 // primitive stored by the BVH
 //
 
-template <
-    typename R,
-    typename BVH,
-    typename Base,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type
-    >
+template <typename R, typename Base>
 struct hit_record_bvh : Base
 {
-    using bvh_type    = BVH;
     using scalar_type = typename R::scalar_type;
     using int_type    = simd::int_type_t<scalar_type>;
 
@@ -52,12 +46,12 @@ struct hit_record_bvh : Base
 // to store BVH hit information
 //
 
-template <typename R, typename BVH, typename Base, typename Cond>
+template <typename R, typename Base, typename Cond>
 VSNRAY_FUNC
 void update_if(
-    hit_record_bvh<R, BVH, Base>&       dst,
-    hit_record_bvh<R, BVH, Base> const& src,
-    Cond const&                         cond
+    hit_record_bvh<R, Base>&       dst,
+    hit_record_bvh<R, Base> const& src,
+    Cond const&                    cond
     )
 {
     update_if(static_cast<Base&>(dst), static_cast<Base const&>(src), cond);
@@ -75,16 +69,15 @@ namespace simd
 template <
     size_t N,
     typename T = simd::float_from_simd_width_t<N>,
-    typename BVH,
     typename Base
     >
-inline hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(array<Base, N>{{}}))> pack(
-        array<hit_record_bvh<ray, BVH, Base>, N> const& hrs
+inline hit_record_bvh<basic_ray<T>, decltype(simd::pack(array<Base, N>{{}}))> pack(
+        array<hit_record_bvh<ray, Base>, N> const& hrs
         )
 {
     using I = int_type_t<T>;
     using int_array = aligned_array_t<I>;
-    using RT = hit_record_bvh<basic_ray<T>, BVH, decltype(pack(array<Base, N>{{}}))>;
+    using RT = hit_record_bvh<basic_ray<T>, decltype(pack(array<Base, N>{{}}))>;
 
     array<Base, N> bases;
     int_array primitive_list_index;
@@ -106,16 +99,15 @@ inline hit_record_bvh<basic_ray<T>, BVH, decltype(simd::pack(array<Base, N>{{}})
 
 template <
     typename FloatT,
-    typename BVH,
     typename Base,
     typename UnpackedBase = decltype(unpack(Base{})),
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
 inline auto unpack(
-        hit_record_bvh<basic_ray<FloatT>, BVH, Base> const& hr
+        hit_record_bvh<basic_ray<FloatT>, Base> const& hr
         )
     -> array<
-            hit_record_bvh<ray, BVH, typename UnpackedBase::value_type>,
+            hit_record_bvh<ray, typename UnpackedBase::value_type>,
             num_elements<FloatT>::value
             >
 {
@@ -128,13 +120,13 @@ inline auto unpack(
     store(primitive_list_index, hr.primitive_list_index);
 
     array<
-        hit_record_bvh<ray, BVH, scalar_base_type>,
+        hit_record_bvh<ray, scalar_base_type>,
         num_elements<FloatT>::value
         > result;
 
     for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
     {
-        result[i] = hit_record_bvh<ray, BVH, scalar_base_type>(
+        result[i] = hit_record_bvh<ray, scalar_base_type>(
                 scalar_base_type(base[i]),
                 primitive_list_index[i]
                 );

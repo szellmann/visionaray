@@ -41,7 +41,6 @@ inline auto intersect(
         )
     -> typename detail::traversal_result< hit_record_bvh<
             basic_ray<T>,
-            BVH,
             decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
             >, Traversal, MultiHitMax>::type
 {
@@ -49,7 +48,6 @@ inline auto intersect(
     using namespace detail;
     using HR = hit_record_bvh<
         basic_ray<T>,
-        BVH,
         decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
         >;
 
@@ -156,7 +154,6 @@ inline auto intersect(
         )
     -> hit_record_bvh<
         basic_ray<T>,
-        BVH,
         decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
         >
 {
@@ -179,7 +176,6 @@ inline auto intersect(
         )
     -> hit_record_bvh<
         basic_ray<T>,
-        BVH,
         decltype( intersect(ray, std::declval<typename BVH::primitive_type>()) )
         >
 {

@@ -300,18 +300,16 @@ template <
     typename Params,
     typename Normals,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive = typename Params::primitive_type,
     typename NormalBinding = typename Params::normal_binding,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 inline auto get_normal_dispatch(
-        Params const&                       params,
-        Normals                             normals,
-        hit_record_bvh<R, BVH, Base> const& hr,
+        Params const&                  params,
+        Normals                        normals,
+        hit_record_bvh<R, Base> const& hr,
         typename std::enable_if<
             num_normals<typename Primitive::primitive_type, NormalBinding>::value == 1
             >::type* = 0
@@ -337,18 +335,16 @@ template <
     typename Params,
     typename Normals,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive = typename Params::primitive_type,
     typename NormalBinding = typename Params::normal_binding,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 inline auto get_normal_dispatch(
-        Params const&                       params,
-        Normals                             normals,
-        hit_record_bvh<R, BVH, Base> const& hr,
+        Params const&                  params,
+        Normals                        normals,
+        hit_record_bvh<R, Base> const& hr,
         typename std::enable_if<
             num_normals<typename Primitive::primitive_type, NormalBinding>::value != 1
             >::type* = 0

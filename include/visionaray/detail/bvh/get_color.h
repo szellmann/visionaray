@@ -18,16 +18,14 @@ namespace visionaray
 
 template <
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_color(
-        hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           prim
+        hit_record_bvh<R, Base> const& hr,
+        Primitive                      prim
         )
     -> decltype( get_color(
             static_cast<Base const&>(hr),
@@ -53,16 +51,14 @@ auto get_color(
 template <
     typename Colors,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_color(
-        Colors                              colors,
-        hit_record_bvh<R, BVH, Base> const& hr,
+        Colors                         colors,
+        hit_record_bvh<R, Base> const& hr,
         Primitive                           /* */,
         colors_per_face_binding             /* */
         )
@@ -86,16 +82,14 @@ auto get_color(
 template <
     typename Colors,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_color(
-        Colors                              colors,
-        hit_record_bvh<R, BVH, Base> const& hr,
+        Colors                         colors,
+        hit_record_bvh<R, Base> const& hr,
         Primitive                           /* */,
         colors_per_vertex_binding           /* */
         )
@@ -119,16 +113,14 @@ auto get_color(
 template <
     typename Colors,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_color(
-        Colors                              colors,
-        hit_record_bvh<R, BVH, Base> const& hr,
+        Colors                         colors,
+        hit_record_bvh<R, Base> const& hr,
         Primitive                           /* */,
         colors_per_geometry_binding         /* */
         )

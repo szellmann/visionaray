@@ -17,16 +17,14 @@ namespace visionaray
 
 template <
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_tex_coord(
-        hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           prim
+        hit_record_bvh<R, Base> const& hr,
+        Primitive                      prim
         )
     -> decltype( get_tex_coord(
             static_cast<Base const&>(hr),
@@ -42,17 +40,15 @@ auto get_tex_coord(
 template <
     typename TexCoords,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_tex_coord(
-        TexCoords                           tex_coords,
-        hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           /* */
+        TexCoords                      tex_coords,
+        hit_record_bvh<R, Base> const& hr,
+        Primitive                      /* */
         )
     -> decltype( get_tex_coord(
             tex_coords,

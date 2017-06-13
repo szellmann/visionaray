@@ -25,18 +25,16 @@ namespace detail
 template <
     typename NormalFunc,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
     typename = typename std::enable_if<!simd::is_simd_vector<
-        typename hit_record_bvh<R, BVH, Base>::scalar_type>::value>::type,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+        typename hit_record_bvh<R, Base>::scalar_type>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_normal_from_bvh(
-        hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           prim
+        hit_record_bvh<R, Base> const& hr,
+        Primitive                      prim
         )
     -> decltype( std::declval<NormalFunc>()(
             static_cast<Base const&>(hr),
@@ -53,7 +51,6 @@ auto get_normal_from_bvh(
 template <
     typename NormalFunc,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
     typename BaseS = typename decltype( simd::unpack(std::declval<Base const&>()) )::value_type,
@@ -61,15 +58,14 @@ template <
             std::declval<BaseS const&>(),
             std::declval<typename Primitive::primitive_type>()
             ) ),
-    typename T = typename hit_record_bvh<R, BVH, Base>::scalar_type,
+    typename T = typename hit_record_bvh<R, Base>::scalar_type,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_normal_from_bvh(
-        hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           prim
+        hit_record_bvh<R, Base> const& hr,
+        Primitive                      prim
         )
     -> decltype( simd::pack(std::declval<array<V, simd::num_elements<T>::value>>()) )
 {
@@ -92,19 +88,17 @@ template <
     typename NormalFunc,
     typename Normals,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
     typename NormalBinding,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_normal_from_bvh(
-        Normals                             normals,
-        hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           /* */,
-        NormalBinding                       /* */,
+        Normals                        normals,
+        hit_record_bvh<R, Base> const& hr,
+        Primitive                      /* */,
+        NormalBinding                  /* */,
         typename std::enable_if<num_normals<typename Primitive::primitive_type, NormalBinding>::value == 1>::type* = 0
         )
     -> decltype( std::declval<NormalFunc>()(
@@ -127,19 +121,17 @@ template <
     typename NormalFunc,
     typename Normals,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
     typename NormalBinding,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_normal_from_bvh(
-        Normals                             normals,
-        hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           prim,
-        NormalBinding                       /* */,
+        Normals                        normals,
+        hit_record_bvh<R, Base> const& hr,
+        Primitive                      prim,
+        NormalBinding                  /* */,
         typename std::enable_if<num_normals<typename Primitive::primitive_type, NormalBinding>::value >= 2>::type* = 0
         )
     -> decltype( std::declval<NormalFunc>()(
@@ -168,19 +160,17 @@ auto get_normal_from_bvh(
 template <
     typename Normals,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
     typename NormalBinding,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_normal(
-        Normals                             normals,
-        hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           prim,
-        NormalBinding                       /* */
+        Normals                        normals,
+        hit_record_bvh<R, Base> const& hr,
+        Primitive                      prim,
+        NormalBinding                  /* */
         )
     -> decltype( detail::get_normal_from_bvh<detail::get_normal_t>(normals, hr, prim, NormalBinding{}) )
 {
@@ -189,16 +179,14 @@ auto get_normal(
 
 template <
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_normal(
-        hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           prim
+        hit_record_bvh<R, Base> const& hr,
+        Primitive                      prim
         )
     -> decltype( detail::get_normal_from_bvh<detail::get_normal_t>(hr, prim) )
 {
@@ -209,19 +197,17 @@ auto get_normal(
 template <
     typename Normals,
     typename R,
-    typename BVH,
     typename Base,
     typename Primitive,
     typename NormalBinding,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_shading_normal(
-        Normals                             normals,
-        hit_record_bvh<R, BVH, Base> const& hr,
-        Primitive                           prim,
-        NormalBinding                       /* */
+        Normals                        normals,
+        hit_record_bvh<R, Base> const& hr,
+        Primitive                      prim,
+        NormalBinding                  /* */
         )
     -> decltype( detail::get_normal_from_bvh<detail::get_shading_normal_t>(normals, hr, prim, NormalBinding{}) )
 {
