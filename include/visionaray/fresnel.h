@@ -34,6 +34,27 @@ inline spectrum<T> fresnel_reflectance(
 
 }
 
+template <typename T>
+VSNRAY_FUNC
+spectrum<T> fresnel_reflectance(
+        dielectric_tag      /* */,
+        spectrum<T> const&  etai,
+        spectrum<T> const&  etat,
+        T                   cosi,
+        T                   cost
+        )
+{
+    // approximation for s-polarized light (perpendicular)
+    auto rs = ( etai * cosi - etat * cost )
+            / ( etai * cosi + etat * cost );
+
+    // approximation for p-polarized light (parallel)
+    auto rp = ( etat * cosi - etai * cost )
+            / ( etat * cosi + etai * cost );
+
+    return (rs * rs + rp * rp) / T(2.0);
+}
+
 } // visionaray
 
 #endif // VSNRAY_FRESNEL_H
