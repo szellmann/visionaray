@@ -8,6 +8,7 @@
 #include <map>
 #include <utility>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
@@ -195,7 +196,9 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib, 
     {
         if ( qi::phrase_parse(it, text.cend(), grammar.r_newmtl, qi::blank, mtl_name) )
         {
-            auto r = matlib.insert({ std::string(mtl_name.begin(), mtl_name.length()), mtl() });
+            std::string name(mtl_name.begin(), mtl_name.length());
+            boost::trim(name);
+            auto r = matlib.insert({ name, mtl() });
             if (!r.second)
             {
                 // Material already exists...
@@ -300,12 +303,14 @@ void load_obj(std::string const& filename, model& mod)
         }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
         {
-            auto mat_it = matlib.find(std::string(mtl_name.begin(), mtl_name.length()));
+            std::string name(mtl_name.begin(), mtl_name.length());
+            boost::trim(name);
+            auto mat_it = matlib.find(name);
             if (mat_it != matlib.end())
             {
                 typedef model::texture_type tex_type;
 
-                add_material(mod.materials, mat_it->second, mtl_name);
+                add_material(mod.materials, mat_it->second, name);
 
                 if (!mat_it->second.map_kd.empty()) // File path specified in mtl file
                 {
@@ -330,6 +335,11 @@ void load_obj(std::string const& filename, model& mod)
                         boost::filesystem::path p(filename);
                         tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
                         std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
+                    }
+
+                    if (!boost::filesystem::exists(tex_filename))
+                    {
+                        boost::trim(tex_filename);
                     }
 
                     if (boost::filesystem::exists(tex_filename))
@@ -416,7 +426,7 @@ void load_obj(std::string const& filename, model& mod)
             }
             else
             {
-                std::cerr << "Warning: material not present in mtllib: " << mtl_name << '\n';
+                std::cerr << "Warning: material not present in mtllib: " << name << "FFFF" << '\n';
             }
 
             geom_id = mod.materials.size() == 0 ? 0 : mod.materials.size() - 1;
