@@ -216,7 +216,28 @@ bool image::load(std::string const& filename)
 
 bool image::save(std::string const& filename, image_base::save_options const& options)
 {
-    return image_base::save(filename, options); // TODO: oups, this will throw
+    std::string fn(filename);
+    std::replace(fn.begin(), fn.end(), '\\', '/');
+    image_type it = get_type(fn);
+
+    switch (it)
+    {
+    case PNM:
+    {
+        pnm_image pnm;
+        return pnm.save(fn, options);
+    }
+
+
+    // not supported
+
+    case Unknown:
+        // fall-through
+    default:
+        break;
+    }
+
+    return false;
 }
 
 } // visionaray
