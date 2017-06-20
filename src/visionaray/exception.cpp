@@ -1,12 +1,12 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include "exception.h"
+#include <visionaray/exception.h>
+
 #include "util.h"
 
-
-using visionaray::exception;
-
+namespace visionaray
+{
 
 exception::exception(std::string const& what)
     : what_(what)
@@ -26,4 +26,4 @@ char const* exception::where() const VSNRAY_NOEXCEPT
     return where_.c_str();
 }
 
-
+} // visionaray

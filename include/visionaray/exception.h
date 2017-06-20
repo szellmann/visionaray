@@ -4,7 +4,7 @@
 #pragma once
 
 #ifndef VSNRAY_EXCEPTION_H
-#define VSNRAY_EXCEPTION_H
+#define VSNRAY_EXCEPTION_H 1
 
 #include <exception>
 #include <string>
@@ -49,5 +49,3 @@ public:
 } // visionaray
 
 #endif // VSNRAY_EXCEPTION_H
-
-
