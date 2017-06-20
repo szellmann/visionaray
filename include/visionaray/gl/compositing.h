@@ -16,6 +16,7 @@
 
 #include <memory>
 
+#include <visionaray/export.h>
 #include <visionaray/pixel_format.h>
 
 namespace visionaray
@@ -31,25 +32,25 @@ class depth_compositor
 {
 public:
 
-    depth_compositor();
-   ~depth_compositor();
+    VSNRAY_EXPORT depth_compositor();
+    VSNRAY_EXPORT ~depth_compositor();
 
-    void composite_textures() const;
+    VSNRAY_EXPORT void composite_textures() const;
 
-    void display_color_texture() const;
+    VSNRAY_EXPORT void display_color_texture() const;
 
-    void setup_color_texture(pixel_format_info info, GLsizei w, GLsizei h);
+    VSNRAY_EXPORT void setup_color_texture(pixel_format_info info, GLsizei w, GLsizei h);
 
-    void setup_depth_texture(pixel_format_info info, GLsizei w, GLsizei h);
+    VSNRAY_EXPORT void setup_depth_texture(pixel_format_info info, GLsizei w, GLsizei h);
 
-    void update_color_texture(
+    VSNRAY_EXPORT void update_color_texture(
             pixel_format_info   info,
             GLsizei             w,
             GLsizei             h,
             GLvoid const*       data
             ) const;
 
-    void update_depth_texture(
+    VSNRAY_EXPORT void update_depth_texture(
             pixel_format_info   info,
             GLsizei             w,
             GLsizei             h,

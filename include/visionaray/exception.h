@@ -10,13 +10,12 @@
 #include <string>
 
 #include <visionaray/detail/macros.h>
-
+#include <visionaray/export.h>
 
 namespace visionaray
 {
 
-
-class exception : public std::exception
+class VSNRAY_EXPORT exception : public std::exception
 {
 public:
 
@@ -34,7 +33,7 @@ protected:
 };
 
 
-class not_implemented_yet : public exception
+class VSNRAY_EXPORT not_implemented_yet : public exception
 {
 public:
 
@@ -44,7 +43,6 @@ public:
     }
 
 };
-
 
 } // visionaray
 

@@ -11,6 +11,7 @@
 
 #include <visionaray/math/matrix.h>
 #include <visionaray/bvh.h>
+#include <visionaray/export.h>
 
 namespace visionaray
 {
@@ -51,11 +52,11 @@ public:
 
 public:
 
-    bvh_outline_renderer();
-   ~bvh_outline_renderer();
+    VSNRAY_EXPORT bvh_outline_renderer();
+    VSNRAY_EXPORT ~bvh_outline_renderer();
 
     // Render BVH outlines
-    void frame(mat4 const& view, mat4 const& proj) const;
+    VSNRAY_EXPORT void frame(mat4 const& view, mat4 const& proj) const;
 
     // Call init() with a valid OpenGL context!
     template <typename BVH>
@@ -124,7 +125,7 @@ public:
 
 
     // Call destroy() while OpenGL context is still valid!
-    void destroy();
+    VSNRAY_EXPORT void destroy();
 
 private:
 
@@ -134,7 +135,7 @@ private:
     size_t num_vertices_ = 0;
 
     // Init shaders and vbo from pointer to vertices. Buffer size in bytes!
-    bool init_gl(float const* data, size_t size);
+    VSNRAY_EXPORT bool init_gl(float const* data, size_t size);
 
 };
 

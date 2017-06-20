@@ -8,6 +8,8 @@
 
 #include <type_traits>
 
+#include "export.h"
+
 namespace visionaray
 {
 
@@ -89,8 +91,8 @@ template <pixel_format PF>
 using pixel_format_constant = std::integral_constant<pixel_format, PF>;
 
 
-pixel_format      map_gl_format(unsigned format, unsigned type, unsigned size);
-pixel_format_info map_pixel_format(pixel_format format);
+VSNRAY_EXPORT pixel_format      map_gl_format(unsigned format, unsigned type, unsigned size);
+VSNRAY_EXPORT pixel_format_info map_pixel_format(pixel_format format);
 
 } // visionaray
 
