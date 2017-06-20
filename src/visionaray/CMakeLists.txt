@@ -74,11 +74,12 @@ set(VSNRAY_HEADERS
 
     ${CONFIG_DIR}/config.h
 
-    # Cuda
+    # CUDA
 
     ${HEADER_DIR}/cuda/detail/pixel_pack_buffer.inl
     ${HEADER_DIR}/cuda/array.h
     ${HEADER_DIR}/cuda/cast.h
+    ${HEADER_DIR}/cuda/counting_sort.h
     ${HEADER_DIR}/cuda/graphics_resource.h
     ${HEADER_DIR}/cuda/pitch2d.h
     ${HEADER_DIR}/cuda/pixel_pack_buffer.h
