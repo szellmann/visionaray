@@ -16,6 +16,7 @@
 
 #include <visionaray/detail/macros.h>
 #include <visionaray/detail/platform.h>
+#include <visionaray/export.h>
 
 namespace visionaray
 {
@@ -56,7 +57,7 @@ public:
 
     explicit buffer(GLuint name = 0) : handle<buffer>(name) {}
 
-    void destroy();
+    VSNRAY_EXPORT void destroy();
 
 private:
 
@@ -71,7 +72,7 @@ public:
 
     explicit framebuffer(GLuint name = 0) : handle<framebuffer>(name) {}
 
-    void destroy();
+    VSNRAY_EXPORT void destroy();
 
 private:
 
@@ -86,7 +87,7 @@ public:
 
     explicit renderbuffer(GLuint name = 0) : handle<renderbuffer>(name) {}
 
-    void destroy();
+    VSNRAY_EXPORT void destroy();
 
 private:
 
@@ -101,7 +102,7 @@ public:
 
     explicit texture(GLuint name = 0) : handle<texture>(name) {}
 
-    void destroy();
+    VSNRAY_EXPORT void destroy();
 
 private:
 
@@ -116,7 +117,7 @@ public:
 
     explicit vertex_array(GLuint name = 0) : handle<vertex_array>(name) {}
 
-    void destroy();
+    VSNRAY_EXPORT void destroy();
 
 private:
 
@@ -129,11 +130,11 @@ private:
 // factory functions
 //
 
-GLuint create_buffer();
-GLuint create_framebuffer();
-GLuint create_renderbuffer();
-GLuint create_texture();
-GLuint create_vertex_array();
+VSNRAY_EXPORT GLuint create_buffer();
+VSNRAY_EXPORT GLuint create_framebuffer();
+VSNRAY_EXPORT GLuint create_renderbuffer();
+VSNRAY_EXPORT GLuint create_texture();
+VSNRAY_EXPORT GLuint create_vertex_array();
 
 } // gl
 } // visionaray

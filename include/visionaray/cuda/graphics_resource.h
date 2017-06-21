@@ -9,6 +9,7 @@
 #include <cuda_runtime_api.h>
 
 #include <visionaray/detail/macros.h>
+#include <visionaray/export.h>
 
 namespace visionaray
 {
@@ -19,20 +20,20 @@ class graphics_resource
 {
 public:
 
-    graphics_resource();
-   ~graphics_resource();
+    VSNRAY_EXPORT graphics_resource();
+    VSNRAY_EXPORT ~graphics_resource();
 
-    cudaGraphicsResource_t get() const;
+    VSNRAY_EXPORT cudaGraphicsResource_t get() const;
 
-    cudaError_t register_buffer(unsigned buffer, cudaGraphicsRegisterFlags flags = cudaGraphicsRegisterFlagsNone);
-    cudaError_t register_image(unsigned image, unsigned target, cudaGraphicsRegisterFlags flags = cudaGraphicsRegisterFlagsNone);
-    cudaError_t unregister();
+    VSNRAY_EXPORT cudaError_t register_buffer(unsigned buffer, cudaGraphicsRegisterFlags flags = cudaGraphicsRegisterFlagsNone);
+    VSNRAY_EXPORT cudaError_t register_image(unsigned image, unsigned target, cudaGraphicsRegisterFlags flags = cudaGraphicsRegisterFlagsNone);
+    VSNRAY_EXPORT cudaError_t unregister();
 
-    void* map(size_t* size);
-    void* map();
-    void unmap();
+    VSNRAY_EXPORT void* map(size_t* size);
+    VSNRAY_EXPORT void* map();
+    VSNRAY_EXPORT void unmap();
 
-    void* dev_ptr() const;
+    VSNRAY_EXPORT void* dev_ptr() const;
 
 private:
 
