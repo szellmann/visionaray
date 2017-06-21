@@ -426,7 +426,7 @@ void load_obj(std::string const& filename, model& mod)
             }
             else
             {
-                std::cerr << "Warning: material not present in mtllib: " << name << "FFFF" << '\n';
+                std::cerr << "Warning: material not present in mtllib: " << name << '\n';
             }
 
             geom_id = mod.materials.size() == 0 ? 0 : mod.materials.size() - 1;
