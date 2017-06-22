@@ -74,6 +74,43 @@ namespace visionaray
 
 
 //-------------------------------------------------------------------------------------------------
+// Disney material, based on Disney's principled BRDF
+//
+
+template <typename T>
+class disney
+{
+public:
+
+    using scalar_type = T;
+
+public:
+
+    template <typename SR>
+    VSNRAY_FUNC
+    spectrum<typename SR::scalar_type> shade(SR const& sr) const;
+
+    template <typename SR, typename U, typename Sampler>
+    VSNRAY_FUNC spectrum<U> sample(
+            SR const&       shade_rec,
+            vector<3, U>&   refl_dir,
+            U&              pdf,
+            Sampler&        sampler) const;
+
+    VSNRAY_FUNC spectrum<T>& base_color();
+    VSNRAY_FUNC spectrum<T> const& base_color() const;
+
+    VSNRAY_FUNC T& roughness();
+    VSNRAY_FUNC T const& roughness() const;
+
+private:
+
+    disney_brdf<T> brdf_;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Emissive material, no BRDFs
 //
 // Parameters:
@@ -401,6 +438,7 @@ private:
 
 } // visionaray
 
+#include "detail/material/disney.inl"
 #include "detail/material/emissive.inl"
 #include "detail/material/matte.inl"
 #include "detail/material/mirror.inl"
