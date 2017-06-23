@@ -151,6 +151,8 @@ struct renderer : viewer_type
 
     frame_counter                               counter;
 
+    int                                         disney_mat      = -1;
+
 protected:
 
     void on_display();
@@ -294,7 +296,7 @@ void renderer::on_display()
 //                            ? vec4(ambient, 1.0f)
 //                            : vec4(1.0)
 //                            ;
-    auto amb        = vec4(1.0);
+    auto amb        = vec4(0.0);
 
 #ifdef __CUDACC__
 
@@ -397,6 +399,32 @@ void renderer::on_key_press(key_event const& event)
         }
         break;
 
+    case '+':
+        {
+            if (disney_mat > -1)
+            {
+                host_materials[disney_mat].as<disney<float>>()->roughness() = min(
+                    host_materials[disney_mat].as<disney<float>>()->roughness() + 0.01f, 1.0f
+                    );
+                clear_frame();
+                std::cout << "Roughness: " << host_materials[disney_mat].as<disney<float>>()->roughness() << '\n';
+            }
+        }
+        break;
+
+    case '-':
+        {
+            if (disney_mat > -1)
+            {
+                host_materials[disney_mat].as<disney<float>>()->roughness() = max(
+                    host_materials[disney_mat].as<disney<float>>()->roughness() - 0.01f, 0.0f
+                    );
+                clear_frame();
+                std::cout << "Roughness: " << host_materials[disney_mat].as<disney<float>>()->roughness() << '\n';
+            }
+        }
+        break;
+
     default:
         break;
     }
@@ -461,7 +489,7 @@ int main(int argc, char** argv)
     rend.host_materials = make_materials(
             renderer::material_type{},
             rend.mod.materials,
-            [](aligned_vector<renderer::material_type>& cont, model::material_type mat)
+            [&rend](aligned_vector<renderer::material_type>& cont, model::material_type mat)
             {
                 // Add emissive material if emissive component > 0
                 if (length(mat.ce) > 0.0f)
@@ -492,6 +520,7 @@ int main(int argc, char** argv)
                     di.base_color() = from_rgb(mat.cd);
                     di.roughness() = 1.0f;
                     cont.push_back(di);
+                    rend.disney_mat = (int)cont.size() - 1;
                 }
                 else
                 {
