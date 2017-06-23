@@ -4,10 +4,12 @@
 #pragma once
 
 #ifndef VSNRAY_SPECTRUM_H
-#define VSNRAY_SPECTRUM_H
+#define VSNRAY_SPECTRUM_H 1
 
-#include <visionaray/detail/macros.h>
-#include <visionaray/math/vector.h>
+#include <cstddef>
+
+#include "detail/macros.h"
+#include "math/vector.h"
 
 
 //-------------------------------------------------------------------------------------------------
