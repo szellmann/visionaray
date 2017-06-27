@@ -31,6 +31,13 @@ basic_triangle<Dim, T, P>::basic_triangle(
 
 template <size_t Dim, typename T, typename P>
 MATH_FUNC
+inline T area(basic_triangle<Dim, T, P> const& t)
+{
+    return T(0.5) * length(cross(t.e1, t.e2));
+}
+
+template <size_t Dim, typename T, typename P>
+MATH_FUNC
 basic_aabb<T> get_bounds(basic_triangle<Dim, T, P> const& t)
 {
     basic_aabb<T> bounds;
@@ -45,8 +52,9 @@ basic_aabb<T> get_bounds(basic_triangle<Dim, T, P> const& t)
 
 template <size_t Dim, typename T, typename P, typename Sampler>
 MATH_FUNC
-inline vector<3, T> sample(basic_triangle<Dim, T, P> const& t, Sampler& samp)
+inline vector<3, T> sample(basic_triangle<Dim, T, P> const& t, T& pdf, Sampler& samp)
 {
+    // TODO: support T != U
     using U = typename Sampler::value_type;
 
     U u1 = samp.next();
@@ -55,6 +63,8 @@ inline vector<3, T> sample(basic_triangle<Dim, T, P> const& t, Sampler& samp)
     vector<3, U> v1(t.v1);
     vector<3, U> v2(t.v1 + t.e1);
     vector<3, U> v3(t.v1 + t.e2);
+
+    pdf = U(1.0) / U(area(t));
 
     return v1 * (U(1.0) - sqrt(u1)) + v2 * sqrt(u1) * (U(1.0) - u2) + v3 * sqrt(u1) * u2;
 }
