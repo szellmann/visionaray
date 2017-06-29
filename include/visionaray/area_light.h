@@ -27,12 +27,13 @@ public:
     template <typename T>
     VSNRAY_FUNC vector<3, T> intensity(vector<3, T> const& pos) const;
 
-    template <typename Sampler>
-    VSNRAY_FUNC vector<3, typename Sampler::value_type> sample(Sampler& samp) const;
+    template <typename T, typename Sampler>
+    VSNRAY_FUNC vector<3, typename Sampler::value_type> sample(T& pdf, Sampler& samp) const;
 
     // Get N sampled positions.
     template <size_t N, typename Sampler>
     VSNRAY_FUNC void sample(
+            array<T, N>& pdfs,
             array<vector<3, typename Sampler::value_type>, N>& result,
             Sampler& samp
             ) const;

@@ -52,7 +52,7 @@ basic_aabb<T> get_bounds(basic_triangle<Dim, T, P> const& t)
 
 template <size_t Dim, typename T, typename P, typename Sampler>
 MATH_FUNC
-inline vector<3, T> sample(basic_triangle<Dim, T, P> const& t, T& pdf, Sampler& samp)
+inline vector<3, T> sample_surface(basic_triangle<Dim, T, P> const& t, T& pdf, Sampler& samp)
 {
     // TODO: support T != U
     using U = typename Sampler::value_type;
