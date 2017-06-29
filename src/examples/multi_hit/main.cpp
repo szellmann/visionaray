@@ -388,6 +388,12 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+    // Convert generic materials to viewer's material type
+    rend.host_materials = make_materials(
+            renderer::material_type{},
+            rend.mod.materials
+            );
+
     if (rend.mod.shading_normals.size() == 0)
     {
         std::cout << "Creating shading normals...\n";
@@ -400,12 +406,6 @@ int main(int argc, char** argv)
     rend.host_bvh = build<index_bvh<model::triangle_type>>(
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
-            );
-
-    // Convert generic materials to viewer's material type
-    rend.host_materials = make_materials(
-            renderer::material_type{},
-            rend.mod.materials
             );
 
     std::cout << "Ready\n";

@@ -364,18 +364,18 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+    // Convert generic materials to viewer's material type
+    rend.materials = make_materials(
+            renderer::material_type{},
+            rend.mod.materials
+            );
+
     std::cout << "Creating BVH...\n";
 
     // Create the BVH on the host
     rend.host_bvh = build<bvh<model::triangle_type>>(
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
-            );
-
-    // Convert generic materials to viewer's material type
-    rend.materials = make_materials(
-            renderer::material_type{},
-            rend.mod.materials
             );
 
     std::cout << "Creating 3D texture and texture coordinates...\n";

@@ -761,6 +761,12 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+    // Convert generic materials to viewer's material type
+    rend.host_materials = make_materials(
+            renderer::material_type{},
+            rend.mod.materials
+            );
+
 //  timer t;
 
     std::cout << "Creating BVH...\n";
@@ -770,12 +776,6 @@ int main(int argc, char** argv)
             rend.mod.primitives.data(),
             rend.mod.primitives.size(),
             rend.builder == renderer::Split
-            );
-
-    // Convert generic materials to viewer's material type
-    rend.host_materials = make_materials(
-            renderer::material_type{},
-            rend.mod.materials
             );
 
     std::cout << "Ready\n";
