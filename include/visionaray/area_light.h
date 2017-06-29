@@ -31,7 +31,7 @@ public:
     VSNRAY_FUNC vector<3, typename Sampler::value_type> sample(T& pdf, Sampler& samp) const;
 
     // Get N sampled positions.
-    template <size_t N, typename Sampler>
+    template <typename T, size_t N, typename Sampler>
     VSNRAY_FUNC void sample(
             array<T, N>& pdfs,
             array<vector<3, typename Sampler::value_type>, N>& result,

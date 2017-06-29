@@ -29,10 +29,10 @@ inline vector<3, typename Sampler::value_type> area_light<Geometry>::sample(T& p
     return sample_surface(geometry_, pdf, samp);
 }
 
-template <typename T>
-template <size_t N, typename Sampler>
+template <typename Geometry>
+template <typename T, size_t N, typename Sampler>
 VSNRAY_FUNC
-inline void area_light<T>::sample(
+inline void area_light<Geometry>::sample(
         array<T, N>& pdfs,
         array<vector<3, typename Sampler::value_type>, N>& result,
         Sampler& samp
