@@ -356,52 +356,88 @@ VSNRAY_FORCE_INLINE T log2(T const& x)
 // TODO: implement w/o context switch
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 cos(float4 const& x)
 {
     VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    return float4( std::cos(tmp[0]), std::cos(tmp[1]), std::cos(tmp[2]), std::cos(tmp[3]) );
+    return float4(
+            ::cos(tmp[0]),
+            ::cos(tmp[1]),
+            ::cos(tmp[2]),
+            ::cos(tmp[3])
+            );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 sin(float4 const& x)
 {
     VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    return float4( std::sin(tmp[0]), std::sin(tmp[1]), std::sin(tmp[2]), std::sin(tmp[3]) );
+    return float4(
+            ::sin(tmp[0]),
+            ::sin(tmp[1]),
+            ::sin(tmp[2]),
+            ::sin(tmp[3])
+            );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 tan(float4 const& x)
 {
     VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    return float4( std::tan(tmp[0]), std::tan(tmp[1]), std::tan(tmp[2]), std::sin(tmp[3]) );
+    return float4(
+            ::tan(tmp[0]),
+            ::tan(tmp[1]),
+            ::tan(tmp[2]),
+            ::sin(tmp[3])
+            );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 acos(float4 const& x)
 {
     VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    return float4( std::acos(tmp[0]), std::acos(tmp[1]), std::acos(tmp[2]), std::acos(tmp[3]) );
+    return float4(
+            ::acos(tmp[0]),
+            ::acos(tmp[1]),
+            ::acos(tmp[2]),
+            ::acos(tmp[3])
+            );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 asin(float4 const& x)
 {
     VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    return float4( std::asin(tmp[0]), std::asin(tmp[1]), std::asin(tmp[2]), std::asin(tmp[3]) );
+    return float4(
+            ::asin(tmp[0]),
+            ::asin(tmp[1]),
+            ::asin(tmp[2]),
+            ::asin(tmp[3])
+            );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 atan(float4 const& x)
 {
     VSNRAY_ALIGN(16) float tmp[4];
     store(tmp, x);
 
-    return float4( std::atan(tmp[0]), std::atan(tmp[1]), std::atan(tmp[2]), std::asin(tmp[3]) );
+    return float4(
+            ::atan(tmp[0]),
+            ::atan(tmp[1]),
+            ::atan(tmp[2]),
+            ::asin(tmp[3])
+            );
 }
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
