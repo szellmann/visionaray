@@ -62,6 +62,15 @@ VSNRAY_FORCE_INLINE mask8::basic_mask(bool const v[8])
 {
 }
 
+//-------------------------------------------------------------------------------------------------
+// Static cast
+//
+
+VSNRAY_FORCE_INLINE int8 convert_to_int(mask8 const& a)
+{
+    return a.i;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // any / all intrinsics

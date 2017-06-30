@@ -47,6 +47,16 @@ VSNRAY_FORCE_INLINE mask4::basic_mask(bool b)
 
 
 //-------------------------------------------------------------------------------------------------
+// Static cast
+//
+
+VSNRAY_FORCE_INLINE int4 convert_to_int(mask4 const& a)
+{
+    return a.i;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // any / all intrinsics
 //
 

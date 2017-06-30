@@ -375,7 +375,7 @@ inline array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> 
     using int_array = aligned_array_t<int_type_t<FloatT>>;
 
     int_array hit;
-    store(hit, hr.hit.i);
+    store(hit, convert_to_int(hr.hit));
 
     int_array prim_id;
     store(prim_id, hr.prim_id);
@@ -416,54 +416,6 @@ inline array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float16>::
         )
 {
     using FloatT = simd::float16;
-    using float_array = aligned_array_t<FloatT>;
-    using int_array = aligned_array_t<int_type_t<FloatT>>;
-    using mask_array = aligned_array_t<mask_type_t<FloatT>>;
-
-    mask_array hit;
-    store(hit, hr.hit);
-
-    int_array prim_id;
-    store(prim_id, hr.prim_id);
-
-    int_array geom_id;
-    store(geom_id, hr.geom_id);
-
-    float_array t;
-    store(t, hr.t);
-
-    auto isect_pos = unpack(hr.isect_pos);
-
-    float_array u;
-    store(u, hr.u);
-
-    float_array v;
-    store(v, hr.v);
-
-    array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
-    {
-        result[i].hit       = hit[i] != 0;
-        result[i].prim_id   = prim_id[i];
-        result[i].geom_id   = geom_id[i];
-        result[i].t         = t[i];
-        result[i].isect_pos = isect_pos[i];
-        result[i].u         = u[i];
-        result[i].v         = v[i];
-    }
-    return result;
-}
-#endif
-
-// TODO: consolidate!
-#if VSNRAY_NO_SIMD_ISA
-template <>
-MATH_FUNC
-inline array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float4>::value> unpack(
-        hit_record<basic_ray<simd::float4>, primitive<unsigned>> const& hr
-        )
-{
-    using FloatT = simd::float4;
     using float_array = aligned_array_t<FloatT>;
     using int_array = aligned_array_t<int_type_t<FloatT>>;
     using mask_array = aligned_array_t<mask_type_t<FloatT>>;
