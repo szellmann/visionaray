@@ -39,6 +39,7 @@ template <
     typename = typename std::enable_if<is_simd_vector<F>::value>::type,
     typename = typename std::enable_if<is_simd_vector<I>::value>::type
     >
+MATH_FUNC
 VSNRAY_FORCE_INLINE F frexp(F const& x, I* exp)
 {
     using M = mask_type_t<F>;
@@ -62,6 +63,7 @@ template <
     typename = typename std::enable_if<is_simd_vector<F>::value>::type,
     typename = typename std::enable_if<is_simd_vector<I>::value>::type
     >
+MATH_FUNC
 VSNRAY_FORCE_INLINE F scalbn(F const& x, I const& exp)
 {
     using M = mask_type_t<F>;
@@ -94,6 +96,7 @@ struct poly_t
 {
 
     template <typename T>
+    MATH_FUNC
     static T eval(T const& x, T const* p)
     {
 
@@ -118,6 +121,7 @@ template <>
 struct pow2_t<1> : public poly_t<1>
 {
     template <typename T>
+    MATH_FUNC
     static T value(T const& x)
     {
         static const T p[] =
@@ -133,6 +137,7 @@ template <>
 struct pow2_t<2> : public poly_t<2>
 {
     template <typename T>
+    MATH_FUNC
     static T value(T const& x)
     {
         static const T p[] =
@@ -150,6 +155,7 @@ template <>
 struct pow2_t<3> : public poly_t<3>
 {
     template <typename T>
+    MATH_FUNC
     static T value(T const& x)
     {
         static const T p[] =
@@ -168,6 +174,7 @@ template <>
 struct pow2_t<4> : public poly_t<4>
 {
     template <typename T>
+    MATH_FUNC
     static T value(T const& x)
     {
         static const T p[] =
@@ -187,6 +194,7 @@ template <>
 struct pow2_t<5> : public poly_t<5>
 {
     template <typename T>
+    MATH_FUNC
     static T value(T const& x)
     {
         static const T p[] =
@@ -207,6 +215,7 @@ template <>
 struct pow2_t<6> : public poly_t<6>
 {
     template <typename T>
+    MATH_FUNC
     static T value(T const& x)
     {
         static const T p[] =
@@ -228,6 +237,7 @@ template <>
 struct pow2_t<7> : public poly_t<7>
 {
     template <typename T>
+    MATH_FUNC
     static T value(T const& x)
     {
         static const T p[] =
@@ -251,6 +261,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
+MATH_FUNC
 VSNRAY_FORCE_INLINE FloatT pow2(FloatT const& x)
 {
     FloatT xi = floor(x);
@@ -270,6 +281,7 @@ template <>
 struct log2_t<1> : public poly_t<1>
 {
     template <typename T>
+    MATH_FUNC
     static T value(T const& x)
     {
         static const T p[] =
@@ -285,6 +297,7 @@ template <>
 struct log2_t<7> : public poly_t<7>
 {
     template <typename T>
+    MATH_FUNC
     static T value(T const& x)
     {
         static const T p[] =
@@ -307,6 +320,7 @@ template <>
 struct log2_t<8> : public poly_t<8>
 {
     template <typename T>
+    MATH_FUNC
     static T value(T const& x)
     {
         static const T p[] =
@@ -328,6 +342,7 @@ struct log2_t<8> : public poly_t<8>
 
 
 template <typename T>
+MATH_FUNC
 VSNRAY_FORCE_INLINE T log2(T const& x)
 {
     return log2_t<8>::value(x);
@@ -554,6 +569,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
+MATH_FUNC
 VSNRAY_FORCE_INLINE FloatT exp(FloatT const& x)
 {
     FloatT y = x * constants::log2_e<FloatT>();
@@ -564,6 +580,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
+MATH_FUNC
 VSNRAY_FORCE_INLINE FloatT log(FloatT const& x)
 {
     return log2(x) / constants::log2_e<FloatT>();
@@ -573,6 +590,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
+MATH_FUNC
 VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
 {
     using IntT = int_type_t<FloatT>;
@@ -588,6 +606,7 @@ VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
 // pow()
 //
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
 {
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) && VSNRAY_SIMD_HAS_SVML
