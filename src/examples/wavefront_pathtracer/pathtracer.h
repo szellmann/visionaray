@@ -337,6 +337,11 @@ public:
                     *it = ~(*it);
                     return;
                 }
+                else if (zero_pdf)
+                {
+                    *it = ~(*it);
+                    return;
+                }
                 else
                 {
                     // Direct light sampling
