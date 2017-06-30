@@ -24,7 +24,7 @@ inline vector<3, T> area_light<Geometry>::intensity(vector<3, T> const& pos) con
 template <typename Geometry>
 template <typename T, typename Sampler>
 VSNRAY_FUNC
-inline vector<3, typename Sampler::value_type> area_light<Geometry>::sample(T& pdf, Sampler& samp) const
+inline vector<3, T> area_light<Geometry>::sample(T& pdf, Sampler& samp) const
 {
     return sample_surface(geometry_, pdf, samp);
 }
@@ -34,7 +34,7 @@ template <typename T, size_t N, typename Sampler>
 VSNRAY_FUNC
 inline void area_light<Geometry>::sample(
         array<T, N>& pdfs,
-        array<vector<3, typename Sampler::value_type>, N>& result,
+        array<vector<3, T>, N>& result,
         Sampler& samp
         ) const
 {
