@@ -71,6 +71,7 @@ template <
     typename T = simd::float_from_simd_width_t<N>,
     typename Base
     >
+VSNRAY_FUNC
 inline hit_record_bvh<basic_ray<T>, decltype(simd::pack(array<Base, N>{{}}))> pack(
         array<hit_record_bvh<ray, Base>, N> const& hrs
         )
@@ -103,6 +104,7 @@ template <
     typename UnpackedBase = decltype(unpack(Base{})),
     typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
     >
+VSNRAY_FUNC
 inline auto unpack(
         hit_record_bvh<basic_ray<FloatT>, Base> const& hr
         )
