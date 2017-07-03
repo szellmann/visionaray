@@ -6,7 +6,8 @@
 #ifndef VSNRAY_RESULT_RECORD_H
 #define VSNRAY_RESULT_RECORD_H 1
 
-#include "math/math.h"
+#include "math/simd/type_traits.h"
+#include "math/vector.h"
 
 namespace visionaray
 {
