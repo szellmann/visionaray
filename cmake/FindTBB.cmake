@@ -3,7 +3,8 @@
 # Written by Hannes Hofmann <hannes.hofmann _at_ informatik.uni-erlangen.de>
 # Improvements by Gino van den Bergen <gino _at_ dtecta.com>,
 #   Florian Uhlig <F.Uhlig _at_ gsi.de>,
-#   Jiri Marsik <jiri.marsik89 _at_ gmail.com>
+#   Jiri Marsik <jiri.marsik89 _at_ gmail.com>,
+#   Stefan Zellmann <info _at_ szellmann.de>,
 
 # The MIT License
 #
@@ -156,7 +157,7 @@ if (NOT _TBB_INSTALL_DIR)
 endif (NOT _TBB_INSTALL_DIR)
 # sanity check
 if (NOT _TBB_INSTALL_DIR)
-    message ("ERROR: Unable to find Intel TBB install directory. ${_TBB_INSTALL_DIR}")
+    message (STATUS "Unable to find Intel TBB install directory. ${_TBB_INSTALL_DIR}")
 else (NOT _TBB_INSTALL_DIR)
 # finally: set the cached CMake variable TBB_INSTALL_DIR
 if (NOT TBB_INSTALL_DIR)
@@ -265,7 +266,7 @@ if (TBB_INCLUDE_DIR)
 endif (TBB_INCLUDE_DIR)
 
 if (NOT TBB_FOUND)
-    message("ERROR: Intel TBB NOT found!")
+    message(STATUS "Intel TBB NOT found")
     message(STATUS "Looked for Threading Building Blocks in ${_TBB_INSTALL_DIR}")
     # do only throw fatal, if this pkg is REQUIRED
     if (TBB_FIND_REQUIRED)
