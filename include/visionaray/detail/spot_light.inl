@@ -40,26 +40,28 @@ inline vector<3, U> spot_light<T>::intensity(vector<3, U> const& pos) const
 }
 
 template <typename T>
-template <typename Sampler>
+template <typename U, typename Sampler>
 VSNRAY_FUNC
-inline vector<3, typename Sampler::value_type> spot_light<T>::sample(Sampler& samp) const
+inline vector<3, U> spot_light<T>::sample(U& pdf, Sampler& samp) const
 {
     VSNRAY_UNUSED(samp);
 
-    return vector<3, typename Sampler::value_type>(position());
+    pdf = U(1.0);
+    return vector<3, U>(position());
 }
 
 template <typename T>
-template <size_t N, typename Sampler>
+template <typename U, size_t N, typename Sampler>
 VSNRAY_FUNC
 inline void spot_light<T>::sample(
-        array<vector<3, typename Sampler::value_type>, N>& result,
+        array<U, N>& pdfs,
+        array<vector<3, U>, N>& result,
         Sampler& samp
         ) const
 {
     for (size_t i = 0; i < N; ++i)
     {
-        result[i] = sample(samp);
+        result[i] = sample(pdfs[i], samp);
     }
 }
 
