@@ -168,18 +168,13 @@ TEST(Serialization, Vector)
     float f6[] = { 3.14f, 3.15f, 3.16f, 3.17f, 3.18f, 3.19f };
     float f7[] = { 3.14f, 3.15f, 3.16f, 3.17f, 3.18f, 3.19f, 3.20f };
 
-    std::stringstream sstream;
-    boost::archive::text_oarchive oa(sstream);
-
-    oa << vector<1, float>(f1);
-    oa << vector<2, float>(f2);
-    oa << vector<3, float>(f3);
-    oa << vector<4, float>(f4);
-    oa << vector<5, float>(f5);
-    oa << vector<6, float>(f6);
-    oa << vector<7, float>(f7);
-
-    boost::archive::text_iarchive ia(sstream);
+    vector<1, float> src1f(f1);
+    vector<2, float> src2f(f2);
+    vector<3, float> src3f(f3);
+    vector<4, float> src4f(f4);
+    vector<5, float> src5f(f5);
+    vector<6, float> src6f(f6);
+    vector<7, float> src7f(f7);
 
     vector<1, float> dst1f;
     vector<2, float> dst2f;
@@ -189,6 +184,19 @@ TEST(Serialization, Vector)
     vector<6, float> dst6f;
     vector<7, float> dst7f;
 
+    std::stringstream sstream;
+    boost::archive::text_oarchive oa(sstream);
+
+    oa << src1f;
+    oa << src2f;
+    oa << src3f;
+    oa << src4f;
+    oa << src5f;
+    oa << src6f;
+    oa << src7f;
+
+    boost::archive::text_iarchive ia(sstream);
+
     ia >> dst1f;
     ia >> dst2f;
     ia >> dst3f;
@@ -197,38 +205,38 @@ TEST(Serialization, Vector)
     ia >> dst6f;
     ia >> dst7f;
 
-    EXPECT_FLOAT_EQ(dst1f[0], f1[0]);
+    EXPECT_FLOAT_EQ(dst1f[0], src1f[0]);
 
-    EXPECT_FLOAT_EQ(dst2f[0], f2[0]);
-    EXPECT_FLOAT_EQ(dst2f[1], f2[1]);
+    EXPECT_FLOAT_EQ(dst2f[0], src2f[0]);
+    EXPECT_FLOAT_EQ(dst2f[1], src2f[1]);
 
-    EXPECT_FLOAT_EQ(dst3f[0], f3[0]);
-    EXPECT_FLOAT_EQ(dst3f[1], f3[1]);
-    EXPECT_FLOAT_EQ(dst3f[2], f3[2]);
+    EXPECT_FLOAT_EQ(dst3f[0], src3f[0]);
+    EXPECT_FLOAT_EQ(dst3f[1], src3f[1]);
+    EXPECT_FLOAT_EQ(dst3f[2], src3f[2]);
 
-    EXPECT_FLOAT_EQ(dst4f[0], f4[0]);
-    EXPECT_FLOAT_EQ(dst4f[1], f4[1]);
-    EXPECT_FLOAT_EQ(dst4f[2], f4[2]);
-    EXPECT_FLOAT_EQ(dst4f[3], f4[3]);
+    EXPECT_FLOAT_EQ(dst4f[0], src4f[0]);
+    EXPECT_FLOAT_EQ(dst4f[1], src4f[1]);
+    EXPECT_FLOAT_EQ(dst4f[2], src4f[2]);
+    EXPECT_FLOAT_EQ(dst4f[3], src4f[3]);
 
-    EXPECT_FLOAT_EQ(dst5f[0], f5[0]);
-    EXPECT_FLOAT_EQ(dst5f[1], f5[1]);
-    EXPECT_FLOAT_EQ(dst5f[2], f5[2]);
-    EXPECT_FLOAT_EQ(dst5f[3], f5[3]);
-    EXPECT_FLOAT_EQ(dst5f[4], f5[4]);
+    EXPECT_FLOAT_EQ(dst5f[0], src5f[0]);
+    EXPECT_FLOAT_EQ(dst5f[1], src5f[1]);
+    EXPECT_FLOAT_EQ(dst5f[2], src5f[2]);
+    EXPECT_FLOAT_EQ(dst5f[3], src5f[3]);
+    EXPECT_FLOAT_EQ(dst5f[4], src5f[4]);
 
-    EXPECT_FLOAT_EQ(dst6f[0], f6[0]);
-    EXPECT_FLOAT_EQ(dst6f[1], f6[1]);
-    EXPECT_FLOAT_EQ(dst6f[2], f6[2]);
-    EXPECT_FLOAT_EQ(dst6f[3], f6[3]);
-    EXPECT_FLOAT_EQ(dst6f[4], f6[4]);
-    EXPECT_FLOAT_EQ(dst6f[5], f6[5]);
+    EXPECT_FLOAT_EQ(dst6f[0], src6f[0]);
+    EXPECT_FLOAT_EQ(dst6f[1], src6f[1]);
+    EXPECT_FLOAT_EQ(dst6f[2], src6f[2]);
+    EXPECT_FLOAT_EQ(dst6f[3], src6f[3]);
+    EXPECT_FLOAT_EQ(dst6f[4], src6f[4]);
+    EXPECT_FLOAT_EQ(dst6f[5], src6f[5]);
 
-    EXPECT_FLOAT_EQ(dst7f[0], f7[0]);
-    EXPECT_FLOAT_EQ(dst7f[1], f7[1]);
-    EXPECT_FLOAT_EQ(dst7f[2], f7[2]);
-    EXPECT_FLOAT_EQ(dst7f[3], f7[3]);
-    EXPECT_FLOAT_EQ(dst7f[4], f7[4]);
-    EXPECT_FLOAT_EQ(dst7f[5], f7[5]);
-    EXPECT_FLOAT_EQ(dst7f[6], f7[6]);
+    EXPECT_FLOAT_EQ(dst7f[0], src7f[0]);
+    EXPECT_FLOAT_EQ(dst7f[1], src7f[1]);
+    EXPECT_FLOAT_EQ(dst7f[2], src7f[2]);
+    EXPECT_FLOAT_EQ(dst7f[3], src7f[3]);
+    EXPECT_FLOAT_EQ(dst7f[4], src7f[4]);
+    EXPECT_FLOAT_EQ(dst7f[5], src7f[5]);
+    EXPECT_FLOAT_EQ(dst7f[6], src7f[6]);
 }
