@@ -64,7 +64,7 @@ inline void serialize(A& a, MATH_NAMESPACE::matrix<4, 4, T>& m, unsigned /* vers
 
 
 template <typename A, typename T>
-inline void serialize(A& a, MATH_NAMESPACE::base_aabb<T>& b, unsigned /* version */ )
+inline void serialize(A& a, MATH_NAMESPACE::basic_aabb<T>& b, unsigned /* version */ )
 {
     a & b.min;
     a & b.max;
