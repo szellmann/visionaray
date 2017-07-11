@@ -2,19 +2,19 @@
 // See the LICENSE file for details.
 
 #ifndef VISIONARAY_MATH_SERIALIZATION_H
-#define VISIONARAY_MATH_SERIALIZATION_H
+#define VISIONARAY_MATH_SERIALIZATION_H 1
 
+#include <cstddef>
 
-#include "math.h"
-
+#include "aabb.h"
+#include "matrix.h"
+#include "rectangle.h"
+#include "vector.h"
 
 namespace boost
 {
-
-
 namespace serialization
 {
-
 
 template <typename A, size_t D, typename T>
 inline void serialize(A& a, MATH_NAMESPACE::vector<D, T>& v, unsigned /* version */ )
@@ -80,13 +80,7 @@ inline void serialize(A& a, MATH_NAMESPACE::rectangle<MATH_NAMESPACE::xywh_layou
     a & r.h;
 }
 
-
 } // serialization
-
-
 } // boost
 
-
 #endif // VISIONARAY_MATH_SERIALIZATION_H
-
-
