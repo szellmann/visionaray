@@ -12,11 +12,6 @@ namespace MATH_NAMESPACE
 //
 
 template <typename T>
-inline quaternion<T>::quaternion()
-{
-}
-
-template <typename T>
 inline quaternion<T>::quaternion(T const& w, T const& x, T const& y, T const& z)
     : w(w)
     , x(x)

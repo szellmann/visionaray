@@ -21,7 +21,7 @@ public:
     T y;
     T z;
 
-    quaternion();
+    quaternion() = default;
     quaternion(T const& w, T const& x, T const& y, T const& z);
     quaternion(T const& w, vector<3, T> const& v);
 
