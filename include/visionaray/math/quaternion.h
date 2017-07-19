@@ -21,12 +21,12 @@ public:
     T y;
     T z;
 
-    quaternion() = default;
-    quaternion(T const& w, T const& x, T const& y, T const& z);
-    quaternion(T const& w, vector<3, T> const& v);
+    MATH_FUNC quaternion() = default;
+    MATH_FUNC quaternion(T const& w, T const& x, T const& y, T const& z);
+    MATH_FUNC quaternion(T const& w, vector<3, T> const& v);
 
-    static quaternion identity();
-    static quaternion rotation(vector<3, T> const& from, vector<3, T> const& to);
+    MATH_FUNC static quaternion identity();
+    MATH_FUNC static quaternion rotation(vector<3, T> const& from, vector<3, T> const& to);
 
 };
 

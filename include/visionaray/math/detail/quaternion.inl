@@ -12,6 +12,7 @@ namespace MATH_NAMESPACE
 //
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T>::quaternion(T const& w, T const& x, T const& y, T const& z)
     : w(w)
     , x(x)
@@ -22,6 +23,7 @@ inline quaternion<T>::quaternion(T const& w, T const& x, T const& y, T const& z)
 
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T>::quaternion(T const& w, vector<3, T> const& v)
     : w(w)
     , x(v.x)
@@ -31,12 +33,14 @@ inline quaternion<T>::quaternion(T const& w, vector<3, T> const& v)
 }
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T> quaternion<T>::identity()
 {
     return quaternion<T>(T(1.0), T(0.0), T(0.0), T(0.0));
 }
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T> quaternion<T>::rotation(vector<3, T> const& from, vector<3, T> const& to)
 {
     vector<3, T> nfrom = normalize(from);
@@ -51,12 +55,14 @@ inline quaternion<T> quaternion<T>::rotation(vector<3, T> const& from, vector<3,
 //
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T> operator+(quaternion<T> const& p, quaternion<T> const& q)
 {
     return quaternion<T>(p.w + q.w, p.x + q.x, p.y + q.y, p.z + q.z);
 }
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T> operator*(quaternion<T> const& p, quaternion<T> const& q)
 {
     return quaternion<T>(
@@ -73,42 +79,49 @@ inline quaternion<T> operator*(quaternion<T> const& p, quaternion<T> const& q)
 //
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T> operator*(quaternion<T> const& p, T const& s)
 {
     return quaternion<T>(p.w * s, p.x * s, p.y * s, p.z * s);
 }
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T> conjugate(quaternion<T> const& q)
 {
     return quat(q.w, -q.x, -q.y, -q.z);
 }
 
 template <typename T>
+MATH_FUNC
 inline T dot(quaternion<T> const& p, quaternion<T> const& q)
 {
     return p.w * q.w + p.x * q.x + p.y * q.y + p.z * q.z;
 }
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T> inverse(quaternion<T> const& q)
 {
     return conjugate(q) * (T(1.0) / dot(q, q));
 }
 
 template <typename T>
+MATH_FUNC
 inline T length(quaternion<T> const& q)
 {
     return sqrt(dot(q, q));
 }
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T> normalize(quaternion<T> const& q)
 {
     return q * (T(1.0) / length(q));
 }
 
 template <typename T>
+MATH_FUNC
 inline quaternion<T> rotation(vector<3, T> const& axis, T const& angle)
 {
     T s = sin(T(0.5) * angle) / length(axis);
@@ -118,6 +131,7 @@ inline quaternion<T> rotation(vector<3, T> const& axis, T const& angle)
 }
 
 template <typename T>
+MATH_FUNC
 inline matrix<4, 4, T> rotation(quaternion<T> const& q)
 {
     T xx = q.x * q.x;
@@ -154,12 +168,14 @@ inline matrix<4, 4, T> rotation(quaternion<T> const& q)
 }
 
 template <typename T>
+MATH_FUNC
 inline T rotation_angle(quaternion<T> const& q)
 {
     return T(2.0) * acos(q.w);
 }
 
 template <typename T>
+MATH_FUNC
 inline vector<3, T> rotation_axis(quaternion<T> const& q)
 {
     return normalize(vector<3, T>(q.x, q.y, q.z));
