@@ -66,7 +66,13 @@ public:
     }
 
     template <typename U>
-    MATH_FUNC vector& operator=(vector<3, U> const& rhs);
+    MATH_FUNC vector& operator=(vector<3, U> const& rhs)
+    {
+        x = rhs.x;
+        y = rhs.y;
+        z = rhs.z;
+        return *this;
+    }
 
     MATH_FUNC float* data()
     {
