@@ -186,6 +186,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/vector2.inl
     ${HEADER_DIR}/math/detail/vector3.inl
     ${HEADER_DIR}/math/detail/vector4.inl
+    ${HEADER_DIR}/math/detail/vector4f.inl
     ${HEADER_DIR}/math/simd/detail/avx/int8.inl
     ${HEADER_DIR}/math/simd/detail/avx/float8.inl
     ${HEADER_DIR}/math/simd/detail/avx/mask8.inl

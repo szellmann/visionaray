@@ -201,5 +201,7 @@ private:
 // vector<3, float> with 16-byte alignment
 #include "detail/vector3f.inl"
 #include "detail/vector4.inl"
+// vector<4, float> with 16-byte alignment
+#include "detail/vector4f.inl"
 
 #endif // VSNRAY_MATH_VECTOR_H
