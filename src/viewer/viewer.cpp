@@ -82,7 +82,7 @@ using viewer_type = viewer_glut;
 // support for emissive objects
 //
 
-#define USE_PLASTIC_MATERIAL 0
+#define USE_PLASTIC_MATERIAL 1
 
 
 //-------------------------------------------------------------------------------------------------
