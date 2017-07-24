@@ -267,7 +267,7 @@ public:
         using HR = typename std::iterator_traits<HitRecords>::value_type;
         using C  = typename std::iterator_traits<Is>::value_type;
 
-        auto num_lights = params.lights.end - params.lights.end;
+        auto num_lights = params.lights.end - params.lights.begin;
 
         parallel_for(
             random_sampler<S>{},
@@ -326,12 +326,13 @@ public:
                 }
                 else if (zero_pdf)
                 {
+                    accum = C(0.0);
                     *it = ~(*it);
                     return;
                 }
                 else
                 {
-                    // Direct light sampling
+                    // Next event estimation
 
                     S lpdf(0.0);
                     int light_num = static_cast<int>(samp.next() * num_lights);
