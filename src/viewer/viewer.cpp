@@ -46,6 +46,7 @@
 #include <visionaray/aligned_vector.h>
 #include <visionaray/bvh.h>
 #include <visionaray/cpu_buffer_rt.h>
+#include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
 #include <visionaray/point_light.h>
@@ -77,6 +78,14 @@ using viewer_type = viewer_glut;
 
 
 //-------------------------------------------------------------------------------------------------
+// Switch to use simple but fast plastic material, or a generic material container with
+// support for emissive objects
+//
+
+#define USE_PLASTIC_MATERIAL 0
+
+
+//-------------------------------------------------------------------------------------------------
 // Renderer, stores state, geometry, normals, ...
 //
 
@@ -94,7 +103,11 @@ struct renderer : viewer_type
     using primitive_type            = model::triangle_type;
     using normal_type               = model::normal_type;
     using tex_coord_type            = model::tex_coord_type;
+#if USE_PLASTIC_MATERIAL
     using material_type             = plastic<float>;
+#else
+    using material_type             = generic_material<emissive<float>, plastic<float>>;
+#endif
 
     using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
     using host_bvh_type             = index_bvh<primitive_type>;
@@ -762,10 +775,40 @@ int main(int argc, char** argv)
     }
 
     // Convert generic materials to viewer's material type
+#if USE_PLASTIC_MATERIAL
     rend.host_materials = make_materials(
             renderer::material_type{},
             rend.mod.materials
             );
+#else
+    rend.host_materials = make_materials(
+            renderer::material_type{},
+            rend.mod.materials,
+            [&rend](aligned_vector<renderer::material_type>& cont, model::material_type mat)
+            {
+                // Add emissive material if emissive component > 0
+                if (length(mat.ce) > 0.0f)
+                {
+                    emissive<float> em;
+                    em.ce() = from_rgb(mat.ce);
+                    em.ls() = 1.0f;
+                    cont.emplace_back(em);
+                }
+                else
+                {
+                    plastic<float> pl;
+                    pl.ca() = from_rgb(mat.ca);
+                    pl.cd() = from_rgb(mat.cd);
+                    pl.cs() = from_rgb(mat.cs);
+                    pl.ka() = 1.0f;
+                    pl.kd() = 1.0f;
+                    pl.ks() = 1.0f;
+                    pl.specular_exp() = mat.specular_exp;
+                    cont.emplace_back(pl);
+                }
+            }
+            );
+#endif
 
 //  timer t;
 
