@@ -101,10 +101,26 @@ static inline key map_sdl2_key(SDL_Keycode code, Uint16 modifiers = KMOD_NONE)
     case SDLK_8:        return Eight;
     case SDLK_9:        return Nine;
 
+    case SDLK_PLUS:     return Plus;
+    case SDLK_COMMA:    return Comma;
+    case SDLK_MINUS:    return Minus;
+    case SDLK_PERIOD:   return Period;
+
     case SDLK_SPACE:    return Space;
     case SDLK_ESCAPE:   return Escape;
     case SDLK_RETURN:   return Enter;
     case SDLK_TAB:      return Tab;
+
+    case SDLK_LEFT:     return ArrowLeft;
+    case SDLK_RIGHT:    return ArrowRight;
+    case SDLK_UP:       return ArrowUp;
+    case SDLK_DOWN:     return ArrowDown;
+
+    case SDLK_PAGEUP:   return PageUp;
+    case SDLK_PAGEDOWN: return PageDown;
+    case SDLK_HOME:     return Home;
+    case SDLK_END:      return End;
+    case SDLK_INSERT:   return Insert;
 
     case SDLK_F1:       return F1;
     case SDLK_F2:       return F2;
