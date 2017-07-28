@@ -27,7 +27,7 @@ namespace mouse
 // Mouse buttons
 //
 
-static inline buttons map_qt_button(Qt::MouseButton but)
+inline buttons map_qt_button(Qt::MouseButton but)
 {
     // TODO: multiple buttons
     switch (but)
@@ -57,7 +57,7 @@ namespace keyboard
 // Keys
 //
 
-static inline key map_qt_key(int code, Qt::KeyboardModifiers modifiers = Qt::NoModifier)
+inline key map_qt_key(int code, Qt::KeyboardModifiers modifiers = Qt::NoModifier)
 {
     bool shift = modifiers & Qt::ShiftModifier;
 
@@ -148,7 +148,7 @@ static inline key map_qt_key(int code, Qt::KeyboardModifiers modifiers = Qt::NoM
 // Modifiers
 //
 
-static inline key_modifiers map_qt_modifiers(Qt::KeyboardModifiers code)
+inline key_modifiers map_qt_modifiers(Qt::KeyboardModifiers code)
 {
     key_modifiers result = NoKey;
 

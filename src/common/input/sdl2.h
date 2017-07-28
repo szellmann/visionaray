@@ -26,7 +26,7 @@ namespace mouse
 // Mouse buttons
 //
 
-static inline buttons map_sdl2_button(Uint8 but)
+inline buttons map_sdl2_button(Uint8 but)
 {
     // TODO: multiple buttons
     switch (but)
@@ -56,7 +56,7 @@ namespace keyboard
 // Keys
 //
 
-static inline key map_sdl2_key(SDL_Keycode code, Uint16 modifiers = KMOD_NONE)
+inline key map_sdl2_key(SDL_Keycode code, Uint16 modifiers = KMOD_NONE)
 {
     bool shift = (modifiers & KMOD_LSHIFT) || (modifiers & KMOD_RSHIFT);
 
@@ -147,7 +147,7 @@ static inline key map_sdl2_key(SDL_Keycode code, Uint16 modifiers = KMOD_NONE)
 // Modifiers
 //
 
-static inline key_modifiers map_sdl2_modifiers(Uint16 code)
+inline key_modifiers map_sdl2_modifiers(Uint16 code)
 {
     key_modifiers result = NoKey;
 

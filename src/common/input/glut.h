@@ -32,7 +32,7 @@ namespace mouse
 // Mouse buttons
 //
 
-static inline buttons map_glut_button(int but)
+inline buttons map_glut_button(int but)
 {
     // GLUT callbacks don't handle multiple buttons pressed at once
     switch (but)
@@ -60,7 +60,7 @@ namespace keyboard
 // Keys
 //
 
-static inline key map_glut_key(unsigned char code)
+inline key map_glut_key(unsigned char code)
 {
 
     switch (code)
@@ -147,7 +147,7 @@ static inline key map_glut_key(unsigned char code)
     return NoKey;
 }
 
-static inline key map_glut_special(int code)
+inline key map_glut_special(int code)
 {
     switch (code)
     {
@@ -187,7 +187,7 @@ static inline key map_glut_special(int code)
 // Modifiers
 //
 
-static inline key_modifiers map_glut_modifiers(unsigned char code)
+inline key_modifiers map_glut_modifiers(unsigned char code)
 {
     key_modifiers result = NoKey;
 
