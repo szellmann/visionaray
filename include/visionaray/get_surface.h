@@ -581,22 +581,22 @@ template <
     typename NormalsTag,
     typename ColorsTag,
     typename TexturesTag,
-    template <typename, typename...> class HR,
-    typename T,
-    typename ...HRP,
+    typename HR,
     typename Params,
-    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type
     >
 VSNRAY_FUNC
 inline auto get_surface_impl(
-        NormalsTag                      /* */,
-        ColorsTag                       /* */,
-        TexturesTag                     /* */,
-        HR<basic_ray<T>, HRP...> const& hr,
-        Params const&                   params
+        NormalsTag    /* */,
+        ColorsTag     /* */,
+        TexturesTag   /* */,
+        HR const&     hr,
+        Params const& params
         )
-    -> typename simd_decl_surface<Params, T>::type
+    -> typename simd_decl_surface<Params, typename HR::scalar_type>::type
 {
+    using T = typename HR::scalar_type;
+
     auto hrs = unpack(hr);
 
     typename simd_decl_surface<Params, T>::array_type surfs;
