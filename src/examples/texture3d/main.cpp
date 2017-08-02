@@ -59,6 +59,19 @@ struct renderer : viewer_type
             cl::init(this->filename)
             ) );
 
+        add_cmdline_option( cl::makeOption<vec3&, cl::ScalarType>(
+            [&](StringRef name, StringRef /*arg*/, vec3& value)
+            {
+                cl::Parser<>()(name + "-r", cmd_line_inst().bump(), value.x);
+                cl::Parser<>()(name + "-g", cmd_line_inst().bump(), value.y);
+                cl::Parser<>()(name + "-b", cmd_line_inst().bump(), value.z);
+            },
+            "ambient",
+            cl::Desc("Ambient color"),
+            cl::ArgDisallowed,
+            cl::init(this->ambient)
+            ) );
+
         add_cmdline_option( cl::makeOption<vec3i&, cl::ScalarType>(
             [&](StringRef name, StringRef /*arg*/, vec3i& value)
             {
@@ -158,6 +171,7 @@ struct renderer : viewer_type
     model mod;
     bvh<model::triangle_type>                   host_bvh;
     unsigned                                    frame_num       = 0;
+    vec3                                        ambient         = vec3(1.0f, 1.0f, 1.0f);
 
     texture<vec4, 3>                            tex;
     aligned_vector<vec3>                        tex_coords;
@@ -273,7 +287,8 @@ void renderer::on_display()
             ignore,
             bounces,
             epsilon,
-            vec4(background_color(), 1.0f)
+            vec4(background_color(), 1.0f),
+            vec4(ambient, 1.0f)
             );
 
     //-----------------------------------------------------

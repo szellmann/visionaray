@@ -11,6 +11,7 @@ Positional options:
    filename               Input file in wavefront obj format
 
 Options:
+   -ambient               Ambient color
    -bgcolor               Background color
    -color1                First color
    -color2                Second color
