@@ -76,16 +76,16 @@ namespace algo
 //
 
 template <
-    template <typename, typename...> class HR,
-    typename S,
+    template <typename...> class HR, // TODO: what if HR isn't a template ?!
     typename ...Args,
     typename RandIt,
-    typename std::enable_if<simd::is_simd_vector<S>::value>::type* = nullptr,
+    typename std::enable_if<simd::is_simd_vector<typename HR<Args...>::scalar_type>::value>::type* = nullptr,
     typename Cond
     >
 VSNRAY_FUNC
-void insert_sorted(HR<basic_ray<S>, Args...> const& item, RandIt first, RandIt last, Cond cond)
+void insert_sorted(HR<Args...> const& item, RandIt first, RandIt last, Cond cond)
 {
+    using S = typename HR<Args...>::scalar_type;
     using I = simd::int_type_t<S>;
     using M = simd::mask_type_t<S>;
     using int_array = simd::aligned_array_t<I>;
@@ -117,7 +117,7 @@ void insert_sorted(HR<basic_ray<S>, Args...> const& item, RandIt first, RandIt l
         M must_shift = I(i) > pos;
         M must_insert = I(i) == pos;
 
-        auto update = [&](M const& condition, HR<basic_ray<S>, Args...> const& item)
+        auto update = [&](M const& condition, HR<Args...> const& item)
         {
             if (all(condition))
             {
