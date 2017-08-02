@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <exception>
+#include <cassert>
 #include <cstring> // memset
 #include <iostream>
 #include <memory>
