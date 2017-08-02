@@ -1,8 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#ifndef VISIONARAY_MATH_SERIALIZATION_H
-#define VISIONARAY_MATH_SERIALIZATION_H 1
+#pragma once
+
+#ifndef VSNRAY_MATH_SERIALIZATION_H
+#define VSNRAY_MATH_SERIALIZATION_H 1
 
 #include <cstddef>
 
@@ -92,4 +94,4 @@ inline void serialize(A& a, MATH_NAMESPACE::rectangle<MATH_NAMESPACE::xywh_layou
 } // serialization
 } // boost
 
-#endif // VISIONARAY_MATH_SERIALIZATION_H
+#endif // VSNRAY_MATH_SERIALIZATION_H

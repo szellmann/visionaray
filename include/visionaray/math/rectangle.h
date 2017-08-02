@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VISIONARAY_MATH_RECTANGLE_H
-#define VISIONARAY_MATH_RECTANGLE_H 1
+#ifndef VSNRAY_MATH_RECTANGLE_H
+#define VSNRAY_MATH_RECTANGLE_H 1
 
 #include <cstddef>
 
@@ -92,4 +92,4 @@ public:
 
 #include "detail/rectangle.inl"
 
-#endif // VISIONARAY_MATH_RECTANGLE
+#endif // VSNRAY_MATH_RECTANGLE

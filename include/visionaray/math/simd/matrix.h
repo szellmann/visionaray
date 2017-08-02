@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VISIONARAY_MATH_SIMD_MATRIX_H
-#define VISIONARAY_MATH_SIMD_MATRIX_H 1
+#ifndef VSNRAY_MATH_SIMD_MATRIX_H
+#define VSNRAY_MATH_SIMD_MATRIX_H 1
 
 #include "intrinsics.h"
 #include "neon.h"
@@ -84,4 +84,4 @@ matrix<4, 4, simd::float4> transpose(matrix<4, 4, simd::float4> const& m);
 
 #include "detail/matrix4.inl"
 
-#endif // VISIONARAY_MATH_SIMD_MATRIX_H
+#endif // VSNRAY_MATH_SIMD_MATRIX_H
