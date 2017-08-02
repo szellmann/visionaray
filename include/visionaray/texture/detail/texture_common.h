@@ -23,18 +23,6 @@
 
 namespace visionaray
 {
-namespace detail
-{
-
-// TODO: lambda
-template <typename S, typename T>
-struct cast
-{
-    float operator()(T val) { return static_cast<S>(val); }
-};
-
-} // detail
-
 
 template <size_t Dim>
 class texture_params_base
@@ -228,7 +216,12 @@ public:
 
             prefiltered_.resize( d->size() );
             prefiltered_data = &prefiltered_[0];
-            std::transform( &(d->data)[0], &(d->data)[d->size()], prefiltered_.begin(), detail::cast<element_type, value_type>() );
+            std::transform(
+                    &(d->data)[0],
+                    &(d->data)[d->size()],
+                    prefiltered_.begin(),
+                    [](value_type val) { return static_cast<element_type>(val); }
+                    );
             convert_for_bspline_interpol( d );
         }
 
