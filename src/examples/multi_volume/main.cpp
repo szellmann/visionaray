@@ -15,9 +15,9 @@
 
 #include <visionaray/texture/texture.h>
 
-#include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/material.h>
+#include <visionaray/pinhole_camera.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 
@@ -360,7 +360,7 @@ struct renderer : viewer_type
     }
 #endif
 
-    camera                                                      cam;
+    pinhole_camera                                              cam;
     manipulators                                                manips;
     tiled_sched<ray_type>                                       host_sched;
     cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>                     host_rt;

@@ -108,7 +108,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/allocator.h
     ${HEADER_DIR}/detail/area_light.inl
     ${HEADER_DIR}/detail/array.inl
-    ${HEADER_DIR}/detail/camera.inl
     ${HEADER_DIR}/detail/color_conversion.h
     ${HEADER_DIR}/detail/compiler.h
     ${HEADER_DIR}/detail/cpu_buffer_rt.inl
@@ -125,6 +124,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/multi_hit.h
     ${HEADER_DIR}/detail/parallel_algorithm.h
     ${HEADER_DIR}/detail/pathtracing.inl
+    ${HEADER_DIR}/detail/pinhole_camera.inl
     ${HEADER_DIR}/detail/pixel_access.h
     ${HEADER_DIR}/detail/pixel_unpack_buffer_rt.inl
     ${HEADER_DIR}/detail/platform.h
@@ -266,7 +266,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/array_ref.h
     ${HEADER_DIR}/brdf.h
     ${HEADER_DIR}/bvh.h
-    ${HEADER_DIR}/camera.h
     ${HEADER_DIR}/cpu_buffer_rt.h
     ${HEADER_DIR}/exception.h
     ${HEADER_DIR}/export.h
@@ -283,6 +282,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/kernels.h
     ${HEADER_DIR}/material.h
     ${HEADER_DIR}/packet_traits.h
+    ${HEADER_DIR}/pinhole_camera.h
     ${HEADER_DIR}/pixel_format.h
     ${HEADER_DIR}/pixel_traits.h
     ${HEADER_DIR}/pixel_unpack_buffer_rt.h

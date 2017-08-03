@@ -16,11 +16,11 @@
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/bvh.h>
-#include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/get_surface.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
+#include <visionaray/pinhole_camera.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/traverse.h>
@@ -74,7 +74,7 @@ struct renderer : viewer_type
             ) );
     }
 
-    camera                                                  cam;
+    pinhole_camera                                          cam;
     cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>                 host_rt;
     tiled_sched<ray_type>                                   host_sched;
 

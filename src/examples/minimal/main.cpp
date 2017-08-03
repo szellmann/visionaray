@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/camera.h>
+#include <visionaray/pinhole_camera.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/simple_buffer_rt.h>
 
@@ -22,7 +22,7 @@ int main()
     int h = 100;
 
     // A simple pinhole camera.
-    camera cam;
+    pinhole_camera cam;
     cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
 

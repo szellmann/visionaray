@@ -16,7 +16,7 @@
 namespace visionaray
 {
 
-class camera;
+class pinhole_camera;
 class mouse_event;
 
 class zoom_manipulator : public camera_manipulator
@@ -24,7 +24,7 @@ class zoom_manipulator : public camera_manipulator
 public:
 
     zoom_manipulator(
-            camera& cam,
+            pinhole_camera& cam,
             mouse::buttons buttons,
             keyboard::key_modifiers modifiers = keyboard::NoKey
             );

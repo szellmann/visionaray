@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/camera.h>
+#include <visionaray/pinhole_camera.h>
 
 #include "camera_manipulator.h"
 #include "../input/mouse.h"
@@ -11,7 +11,7 @@
 using namespace visionaray;
 
 
-fp_manipulator::fp_manipulator(camera& cam)
+fp_manipulator::fp_manipulator(pinhole_camera& cam)
     : camera_manipulator(cam)
 {
 }

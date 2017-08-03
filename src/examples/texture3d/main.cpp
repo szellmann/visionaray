@@ -15,10 +15,10 @@
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/bvh.h>
-#include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
+#include <visionaray/pinhole_camera.h>
 #include <visionaray/scheduler.h>
 
 #include <common/manip/arcball_manipulator.h>
@@ -162,7 +162,7 @@ struct renderer : viewer_type
         }
     }
 
-    camera                                      cam;
+    pinhole_camera                              cam;
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
     tiled_sched<host_ray_type>                  host_sched;
 

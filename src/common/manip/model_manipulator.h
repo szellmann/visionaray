@@ -11,7 +11,7 @@
 namespace visionaray
 {
 
-class camera;
+class pinhole_camera;
 class key_event;
 class mouse_event;
 
@@ -20,7 +20,7 @@ class model_manipulator
 public:
 
     model_manipulator(
-            camera const& cam,
+            pinhole_camera const& cam,
             mat4& model_matrix_,
             vec3 size
             );
@@ -41,7 +41,7 @@ public:
 
 protected:
 
-    camera const& camera_;
+    pinhole_camera const& camera_;
     mat4& model_matrix_;
     vec3 size_;
 

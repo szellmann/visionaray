@@ -13,10 +13,10 @@
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/aligned_vector.h>
-#include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h> // for make_kernel_params(...)
 #include <visionaray/material.h>
+#include <visionaray/pinhole_camera.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 
@@ -66,7 +66,7 @@ struct renderer : viewer_type
     }
 
     aabb                                        bbox;
-    camera                                      cam;
+    pinhole_camera                              cam;
     cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>     host_rt;
     tiled_sched<host_ray_type>                  host_sched;
 

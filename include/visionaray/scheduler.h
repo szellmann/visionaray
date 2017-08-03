@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "detail/sched_common.h"
-#include "camera.h"
+#include "pinhole_camera.h"
 
 namespace visionaray
 {
@@ -56,20 +56,20 @@ struct sched_params;
 template <typename Base, typename RT, typename PxSamplerT>
 struct sched_params<Base, RT, PxSamplerT> : Base
 {
-    using has_camera = void;
+    using has_pinhole_camera = void;
 
     using rt_type               = RT;
     using pixel_sampler_type    = PxSamplerT;
 
     template <typename ...Args>
-    sched_params(camera const& c, RT& r, Args&&... args)
+    sched_params(pinhole_camera const& c, RT& r, Args&&... args)
         : Base( std::forward<Args>(args)... )
         , cam(c)
         , rt(r)
     {
     }
 
-    camera cam;
+    pinhole_camera cam;
     RT& rt;
 };
 
@@ -163,9 +163,9 @@ public:
 
 template <typename PxSamplerT, typename RT>
 auto make_sched_params(
-        PxSamplerT      /* */,
-        camera const&   cam,
-        RT&             rt
+        PxSamplerT              /* */,
+        pinhole_camera const&   cam,
+        RT&                     rt
         )
     -> sched_params<sched_params_base<recti>, RT, PxSamplerT>
 {
@@ -178,10 +178,10 @@ auto make_sched_params(
 
 template <typename PxSamplerT, typename Intersector, typename RT>
 auto make_sched_params(
-        PxSamplerT      /* */,
-        camera const&   cam,
-        RT&             rt,
-        Intersector&    isect
+        PxSamplerT              /* */,
+        pinhole_camera const&   cam,
+        RT&                     rt,
+        Intersector&            isect
         )
     -> sched_params<sched_params_intersector_base<recti, Intersector>, RT, PxSamplerT>
 {

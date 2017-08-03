@@ -12,8 +12,8 @@
 
 #include <visionaray/texture/texture.h>
 
-#include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
+#include <visionaray/pinhole_camera.h>
 #include <visionaray/scheduler.h>
 
 #include <common/manip/arcball_manipulator.h>
@@ -81,7 +81,7 @@ struct renderer : viewer_type
     }
 
     aabb                                        bbox;
-    camera                                      cam;
+    pinhole_camera                              cam;
     manipulators                                manips;
     cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>     host_rt;
     tiled_sched<host_ray_type>                  host_sched;
