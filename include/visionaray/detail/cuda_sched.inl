@@ -6,8 +6,6 @@
 
 #include <cuda_runtime_api.h>
 
-#include <visionaray/matrix_camera.h>
-#include <visionaray/pinhole_camera.h>
 #include <visionaray/random_sampler.h>
 
 #include "sched_common.h"
@@ -205,13 +203,10 @@ inline void cuda_sched_impl_frame(
         K           kernel,
         SP          sparams,
         dim3 const& block_size,
-        unsigned    frame_num,
-        typename std::enable_if<std::is_same<typename SP::camera_type, matrix_camera>::value>::type* = nullptr
+        unsigned    frame_num
         )
 {
     using cuda_dim_t = decltype(block_size.x);
-
-    using matrix_type = matrix<4, 4, typename R::scalar_type>;
 
     auto w = static_cast<cuda_dim_t>(sparams.rt.width());
     auto h = static_cast<cuda_dim_t>(sparams.rt.height());
@@ -232,60 +227,7 @@ inline void cuda_sched_impl_frame(
             frame_num,
             sparams.rt.width(),
             sparams.rt.height(),
-            matrix_type(sparams.cam.get_view_matrix()),
-            matrix_type(sparams.cam.get_view_matrix_inv()),
-            matrix_type(sparams.cam.get_proj_matrix()),
-            matrix_type(sparams.cam.get_proj_matrix_inv())
-            );
-}
-
-template <typename R, typename K, typename SP>
-inline void cuda_sched_impl_frame(
-        K           kernel,
-        SP          sparams,
-        dim3 const& block_size,
-        unsigned    frame_num,
-        typename std::enable_if<std::is_same<typename SP::camera_type, pinhole_camera>::value>::type* = nullptr
-        )
-{
-    using T = typename R::scalar_type;
-
-    using cuda_dim_t = decltype(block_size.x);
-
-    auto w = static_cast<cuda_dim_t>(sparams.rt.width());
-    auto h = static_cast<cuda_dim_t>(sparams.rt.height());
-
-    dim3 grid_size(
-            div_up(w, block_size.x),
-            div_up(h, block_size.y)
-            );
-
-
-    //  front, side, and up vectors form an orthonormal basis
-    auto f = normalize( sparams.cam.eye() - sparams.cam.center() );
-    auto s = normalize( cross(sparams.cam.up(), f) );
-    auto u =            cross(f, s);
-
-    vec3 eye   = sparams.cam.eye();
-    vec3 cam_u = s * tan(sparams.cam.fovy() / 2.0f) * sparams.cam.aspect();
-    vec3 cam_v = u * tan(sparams.cam.fovy() / 2.0f);
-    vec3 cam_w = -f;
-
-    cuda_sched_impl_call_render<R>(
-            typename detail::sched_params_has_intersector<SP>::type(),
-            sparams,
-            grid_size,
-            block_size,
-            sparams.scissor_box,
-            sparams.rt.ref(),
-            kernel,
-            frame_num,
-            sparams.rt.width(),
-            sparams.rt.height(),
-            vector<3, T>(eye),
-            vector<3, T>(cam_u),
-            vector<3, T>(cam_v),
-            vector<3, T>(cam_w)
+            sparams.cam
             );
 }
 
@@ -312,6 +254,8 @@ template <typename R>
 template <typename K, typename SP>
 void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
+    sched_params.cam.begin_frame();
+
     sched_params.rt.begin_frame();
 
     detail::cuda_sched_impl_frame<R>(
@@ -322,6 +266,8 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             );
 
     sched_params.rt.end_frame();
+
+    sched_params.cam.end_frame();
 }
 
 } // visionaray

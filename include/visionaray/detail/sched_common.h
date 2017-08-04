@@ -10,6 +10,7 @@
 #include <utility>
 
 #include <visionaray/array.h>
+#include <visionaray/matrix_camera.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/render_target.h>
@@ -100,54 +101,23 @@ inline auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
 // for a pixel position
 //
 
-template <typename R, typename T>
+template <typename R, typename T, typename Camera>
 VSNRAY_FUNC
 inline R make_primary_ray_impl(
-        T                   x,
-        T                   y,
-        size_t              width,
-        size_t              height,
-        vector<3, T> const& eye,
-        vector<3, T> const& cam_u,
-        vector<3, T> const& cam_v,
-        vector<3, T> const& cam_w
+        T             x,
+        T             y,
+        size_t        width,
+        size_t        height,
+        Camera const& cam
         )
 {
-    auto u = T(2.0) * (x + T(0.5)) / T(width)  - T(1.0);
-    auto v = T(2.0) * (y + T(0.5)) / T(height) - T(1.0);
-
-    R r;
-    r.ori = eye;
-    r.dir = normalize(cam_u * u + cam_v * v + cam_w);
-    return r;
-}
-
-template <typename R, typename T>
-VSNRAY_FUNC
-inline R make_primary_ray_impl(
-        T                       x,
-        T                       y,
-        size_t                  width,
-        size_t                  height,
-        matrix<4, 4, T> const&  view_matrix,
-        matrix<4, 4, T> const&  inv_view_matrix,
-        matrix<4, 4, T> const&  proj_matrix,
-        matrix<4, 4, T> const&  inv_proj_matrix
-        )
-{
-    VSNRAY_UNUSED(view_matrix);
-    VSNRAY_UNUSED(proj_matrix);
-
-    auto u = T(2.0) * (x + T(0.5)) / T(width)  - T(1.0);
-    auto v = T(2.0) * (y + T(0.5)) / T(height) - T(1.0);
-
-    auto o = inv_view_matrix * ( inv_proj_matrix * vector<4, T>(u, v, -1,  1) );
-    auto d = inv_view_matrix * ( inv_proj_matrix * vector<4, T>(u, v,  1,  1) );
-
-    R r;
-    r.ori =            o.xyz() / o.w;
-    r.dir = normalize( d.xyz() / d.w - r.ori );
-    return r;
+    return cam.primary_ray(
+            R{},
+            x,
+            y,
+            T(width),
+            T(height)
+            );
 }
 
 template <typename R, typename Sampler, typename ...Args>
@@ -309,16 +279,10 @@ inline array<R, Num> make_primary_rays(
 
 template <typename T>
 VSNRAY_FUNC
-inline T depth_transform(
-        vector<3, T> const&     isect_pos,
-        matrix<4, 4, T> const&  view_matrix,
-        matrix<4, 4, T> const&  inv_view_matrix,
-        matrix<4, 4, T> const&  proj_matrix,
-        matrix<4, 4, T> const&  inv_proj_matrix
-        )
+inline T depth_transform(vector<3, T> const& isect_pos, matrix_camera const& cam)
 {
-    VSNRAY_UNUSED(inv_view_matrix);
-    VSNRAY_UNUSED(inv_proj_matrix);
+    matrix<4, 4, T> view_matrix(cam.get_view_matrix());
+    matrix<4, 4, T> proj_matrix(cam.get_proj_matrix());
 
     auto pos4 = proj_matrix * (view_matrix * vector<4, T>(isect_pos, T(1.0)));
     auto pos3 = pos4.xyz() / pos4.w;
@@ -336,7 +300,7 @@ template <
     typename R,
     typename Sampler,
     pixel_format CF,
-    typename ...Args
+    typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
@@ -350,11 +314,11 @@ inline void sample_pixel_impl(
         int                             y,
         int                             width,
         int                             height,
-        Args&&...                       args
+        Camera const&                   cam
         )
 {
     VSNRAY_UNUSED(frame_num);
-    VSNRAY_UNUSED(args...);
+    VSNRAY_UNUSED(cam);
 
     auto result = invoke_kernel(kernel, r, samp, x, y);
     pixel_access::store(
@@ -375,7 +339,7 @@ template <
     typename Sampler,
     pixel_format CF,
     pixel_format DF,
-    typename ...Args
+    typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
@@ -389,13 +353,13 @@ inline void sample_pixel_impl(
         int                             y,
         int                             width,
         int                             height,
-        Args&&...                       args
+        Camera const&                   cam
         )
 {
     VSNRAY_UNUSED(frame_num);
 
     auto result = invoke_kernel(kernel, r, samp, x, y);
-    result.depth = select( result.hit, depth_transform(result.isect_pos, std::forward<Args>(args)...), typename R::scalar_type(1.0) );
+    result.depth = select( result.hit, depth_transform(result.isect_pos, cam), typename R::scalar_type(1.0) );
     pixel_access::store(
             pixel_format_constant<CF>{},
             pixel_format_constant<PF_RGBA32F>{},
@@ -421,7 +385,7 @@ template <
     typename R,
     typename Sampler,
     pixel_format CF,
-    typename ...Args
+    typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
@@ -435,11 +399,11 @@ inline void sample_pixel_impl(
         int                             y,
         int                             width,
         int                             height,
-        Args&&...                       args
+        Camera const&                   cam
         )
 {
     VSNRAY_UNUSED(frame_num);
-    VSNRAY_UNUSED(args...);
+    VSNRAY_UNUSED(cam);
 
     auto result = invoke_kernel(kernel, r, samp, x, y);
     pixel_access::store(
@@ -464,7 +428,7 @@ template <
     typename R,
     typename Sampler,
     pixel_format CF,
-    typename ...Args
+    typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
@@ -478,10 +442,10 @@ inline void sample_pixel_impl(
         int                                 y,
         int                                 width,
         int                                 height,
-        Args&&...                           args
+        Camera const&                       cam
         )
 {
-    VSNRAY_UNUSED(args...);
+    VSNRAY_UNUSED(cam);
 
     using S = typename R::scalar_type;
 
@@ -507,7 +471,7 @@ template <
     typename Sampler,
     pixel_format CF,
     pixel_format DF,
-    typename ...Args
+    typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
@@ -521,7 +485,7 @@ inline void sample_pixel_impl(
         int                                 y,
         int                                 width,
         int                                 height,
-        Args&&...                           args
+        Camera const&                       cam
         )
 {
     using S = typename R::scalar_type;
@@ -529,7 +493,7 @@ inline void sample_pixel_impl(
     auto result = invoke_kernel(kernel, r, samp, x, y);
     auto alpha  = S(1.0) / S(frame_num);
 
-    result.depth = select( result.hit, depth_transform(result.isect_pos, std::forward<Args>(args)...), S(1.0) );
+    result.depth = select( result.hit, depth_transform(result.isect_pos, cam), S(1.0) );
 
     pixel_access::blend(
             pixel_format_constant<CF>{},
@@ -558,7 +522,7 @@ template <
     size_t Num,
     typename Sampler,
     pixel_format CF,
-    typename ...Args
+    typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
@@ -572,10 +536,10 @@ inline void sample_pixel_impl(
         int                                 y,
         int                                 width,
         int                                 height,
-        Args&&...                           args
+        Camera const&                       cam
         )
 {
-    VSNRAY_UNUSED(args...);
+    VSNRAY_UNUSED(cam);
 
     using S = typename R::scalar_type;
 
@@ -613,7 +577,7 @@ template <
     size_t Num,
     typename Sampler,
     pixel_format CF,
-    typename ...Args
+    typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
@@ -627,11 +591,11 @@ inline void sample_pixel_impl(
         int                             y,
         int                             width,
         int                             height,
-        Args&&...                       args
+        Camera const&                   cam
         )
 {
     VSNRAY_UNUSED(frame_num);
-    VSNRAY_UNUSED(args...);
+    VSNRAY_UNUSED(cam);
 
     using S     = typename R::scalar_type;
     using Color = typename decltype(invoke_kernel(kernel, R{}, samp, x, y))::color_type;
@@ -678,7 +642,7 @@ template <
     typename Sampler,
     pixel_format CF,
     pixel_format DF,
-    typename ...Args
+    typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
@@ -692,7 +656,7 @@ inline void sample_pixel_impl(
         int                             y,
         int                             width,
         int                             height,
-        Args&&...                       args
+        Camera const&                   cam
         )
 {
     using S      = typename R::scalar_type;
@@ -720,7 +684,7 @@ inline void sample_pixel_impl(
     for (size_t frame = frame_begin; frame < frame_end; ++frame)
     {
         auto result = invoke_kernel(kernel, *ray_ptr++, samp, x, y);
-        result.depth = select( result.hit, depth_transform(result.isect_pos, std::forward<Args>(args)...), S(1.0) );
+        result.depth = select( result.hit, depth_transform(result.isect_pos, cam), S(1.0) );
         auto alpha = S(1.0) / S(Num);
         pixel_access::blend(
                 pixel_format_constant<CF>{},

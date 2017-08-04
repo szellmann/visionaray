@@ -74,6 +74,17 @@ public:
 
     float distance() const { return distance_; }
 
+    // Call before rendering.
+    void begin_frame();
+
+    // Call after rendering.
+    void end_frame();
+
+    // Generate primary ray at (x,y) (may be a subpixel position).
+    template <typename R, typename T = typename R::scalar_type>
+    VSNRAY_FUNC
+    R primary_ray(R /* */, T const& x, T const& y, T const& width, T const& height) const;
+
 private:
 
     mat4 view_;
@@ -92,6 +103,11 @@ private:
     float z_far_;
 
     recti viewport_;
+
+    // Precalculated for rendering
+    vec3 U;
+    vec3 V;
+    vec3 W;
 };
 
 } // visionaray

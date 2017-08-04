@@ -6,6 +6,7 @@
 #ifndef VSNRAY_MATRIX_CAMERA
 #define VSNRAY_MATRIX_CAMERA 1
 
+#include "detail/macros.h"
 #include "math/matrix.h"
 
 namespace visionaray
@@ -24,8 +25,16 @@ public:
     mat4 const& get_view_matrix() const;
     mat4 const& get_proj_matrix() const;
 
-    mat4 const& get_view_matrix_inv() const;
-    mat4 const& get_proj_matrix_inv() const;
+    // Call before rendering.
+    void begin_frame();
+
+    // Call after rendering.
+    void end_frame();
+
+    // Generate primary ray at (x,y) (may be a subpixel position).
+    template <typename R, typename T = typename R::scalar_type>
+    VSNRAY_FUNC
+    R primary_ray(R /* */, T const& x, T const& y, T const& width, T const& height) const;
 
 private:
 
