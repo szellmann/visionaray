@@ -121,6 +121,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/gpu_buffer_rt.inl
     ${HEADER_DIR}/detail/macros.h
     ${HEADER_DIR}/detail/material.inl
+    ${HEADER_DIR}/detail/matrix_camera.inl
     ${HEADER_DIR}/detail/multi_hit.h
     ${HEADER_DIR}/detail/parallel_algorithm.h
     ${HEADER_DIR}/detail/pathtracing.inl
@@ -281,6 +282,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/intersector.h
     ${HEADER_DIR}/kernels.h
     ${HEADER_DIR}/material.h
+    ${HEADER_DIR}/matrix_camera.h
     ${HEADER_DIR}/packet_traits.h
     ${HEADER_DIR}/pinhole_camera.h
     ${HEADER_DIR}/pixel_format.h
