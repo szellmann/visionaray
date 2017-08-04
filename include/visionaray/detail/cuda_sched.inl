@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <type_traits>
+#include <utility>
 
 #include <cuda_runtime_api.h>
 
