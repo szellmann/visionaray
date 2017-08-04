@@ -63,7 +63,7 @@ template <typename R, typename K, typename SP>
 void frame_impl(
         R /* */,
         K kernel,
-        SP sched_params,
+        SP sparams,
         unsigned frame_num,
         typename std::enable_if<std::is_same<typename SP::camera_type, matrix_camera>::value>::type* = nullptr
         )
@@ -74,14 +74,14 @@ void frame_impl(
     sample_pixels_impl(
             R{},
             kernel,
-            sched_params,
+            sparams,
             frame_num,
-            sched_params.rt.width(),
-            sched_params.rt.height(),
-            matrix_type(sched_params.cam.get_view_matrix()),
-            matrix_type(sched_params.cam.get_view_matrix_inv()),
-            matrix_type(sched_params.cam.get_proj_matrix()),
-            matrix_type(sched_params.cam.get_proj_matrix_inv())
+            sparams.rt.width(),
+            sparams.rt.height(),
+            matrix_type(sparams.cam.get_view_matrix()),
+            matrix_type(sparams.cam.get_view_matrix_inv()),
+            matrix_type(sparams.cam.get_proj_matrix()),
+            matrix_type(sparams.cam.get_proj_matrix_inv())
             );
 }
 
