@@ -254,11 +254,6 @@ void tiled_sched<R>::impl::init_render_func(
     height      = sparams.rt.height();
     scissor_box = sparams.scissor_box;
 
-    matrix_type view_matrix( sparams.cam.get_view_matrix() );
-    matrix_type proj_matrix( sparams.cam.get_proj_matrix() );
-    matrix_type inv_view_matrix( inverse(sparams.cam.get_view_matrix()) );
-    matrix_type inv_proj_matrix( inverse(sparams.get_proj_matrix()) );
-
     recti clip_rect(scissor_box.x, scissor_box.y, scissor_box.w - 1, scissor_box.h - 1);
 
     render_tile = [=](recti const& tile, random_sampler<T>& samp)
@@ -287,10 +282,10 @@ void tiled_sched<R>::impl::init_render_func(
                     y,
                     sparams.rt.width(),
                     sparams.rt.height(),
-                    view_matrix,
-                    inv_view_matrix,
-                    proj_matrix,
-                    inv_proj_matrix
+                    matrix_type(sparams.cam.get_view_matrix()),
+                    matrix_type(sparams.cam.get_view_matrix_inv()),
+                    matrix_type(sparams.cam.get_proj_matrix()),
+                    matrix_type(sparams.cam.get_proj_matrix_inv())
                     );
         }
     };

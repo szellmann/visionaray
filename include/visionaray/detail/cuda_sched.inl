@@ -211,6 +211,8 @@ inline void cuda_sched_impl_frame(
 {
     using cuda_dim_t = decltype(block_size.x);
 
+    using matrix_type = matrix<4, 4, typename R::scalar_type>;
+
     auto w = static_cast<cuda_dim_t>(sparams.rt.width());
     auto h = static_cast<cuda_dim_t>(sparams.rt.height());
 
@@ -230,10 +232,10 @@ inline void cuda_sched_impl_frame(
             frame_num,
             sparams.rt.width(),
             sparams.rt.height(),
-            sparams.cam.get_view_matrix(),
-            inverse(sparams.cam.get_view_matrix()),
-            sparams.cam.get_proj_matrix(),
-            inverse(sparams.cam.get_proj_matrix())
+            matrix_type(sparams.cam.get_view_matrix()),
+            matrix_type(sparams.cam.get_view_matrix_inv()),
+            matrix_type(sparams.cam.get_proj_matrix()),
+            matrix_type(sparams.cam.get_proj_matrix_inv())
             );
 }
 

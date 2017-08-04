@@ -24,10 +24,15 @@ public:
     mat4 const& get_view_matrix() const;
     mat4 const& get_proj_matrix() const;
 
+    mat4 const& get_view_matrix_inv() const;
+    mat4 const& get_proj_matrix_inv() const;
+
 private:
 
     mat4 view_;
     mat4 proj_;
+    mat4 view_inv_;
+    mat4 proj_inv_;
 
 };
 

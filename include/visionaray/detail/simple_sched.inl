@@ -68,13 +68,7 @@ void frame_impl(
         typename std::enable_if<std::is_same<typename SP::camera_type, matrix_camera>::value>::type* = nullptr
         )
 {
-    typedef typename R::scalar_type     scalar_type;
-    typedef matrix<4, 4, scalar_type>   matrix_type;
-
-    matrix_type view_matrix( sched_params.cam.get_view_matrix() );
-    matrix_type proj_matrix( sched_params.cam.get_proj_matrix() );
-    matrix_type inv_view_matrix( inverse(sched_params.cam.get_view_matrix()) );
-    matrix_type inv_proj_matrix( inverse(sched_params.cam.get_proj_matrix()) );
+    using matrix_type = matrix<4, 4, typename R::scalar_type>;
 
     // Iterate over all pixels
     sample_pixels_impl(
@@ -84,10 +78,10 @@ void frame_impl(
             frame_num,
             sched_params.rt.width(),
             sched_params.rt.height(),
-            view_matrix,
-            inv_view_matrix,
-            proj_matrix,
-            inv_proj_matrix
+            matrix_type(sched_params.cam.get_view_matrix()),
+            matrix_type(sched_params.cam.get_view_matrix_inv()),
+            matrix_type(sched_params.cam.get_proj_matrix()),
+            matrix_type(sched_params.cam.get_proj_matrix_inv())
             );
 }
 
