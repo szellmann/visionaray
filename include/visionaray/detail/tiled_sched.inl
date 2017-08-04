@@ -245,7 +245,7 @@ void tiled_sched<R>::impl::init_render_func(
         typename std::enable_if<std::is_same<typename SP::camera_type, matrix_camera>::value>::type*
         )
 {
-    // overload for two matrices
+    // overload for matrix cam
 
     using T = typename R::scalar_type;
     using matrix_type = matrix<4, 4, T>;
