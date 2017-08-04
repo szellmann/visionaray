@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <utility>
 
+#include <visionaray/matrix_camera.h>
+#include <visionaray/pinhole_camera.h>
 #include <visionaray/random_sampler.h>
 
 #include "sched_common.h"
@@ -58,15 +60,21 @@ void sample_pixels_impl(R /* */, K kernel, SP sched_params, unsigned frame_num, 
 
 // Implementation using matrices
 template <typename R, typename K, typename SP>
-void frame_impl(R /* */, K kernel, SP sched_params, unsigned frame_num, std::true_type)
+void frame_impl(
+        R /* */,
+        K kernel,
+        SP sched_params,
+        unsigned frame_num,
+        typename std::enable_if<std::is_same<typename SP::camera_type, matrix_camera>::value>::type* = nullptr
+        )
 {
     typedef typename R::scalar_type     scalar_type;
     typedef matrix<4, 4, scalar_type>   matrix_type;
 
-    matrix_type view_matrix( sched_params.view_matrix );
-    matrix_type proj_matrix( sched_params.proj_matrix );
-    matrix_type inv_view_matrix( inverse(sched_params.view_matrix) );
-    matrix_type inv_proj_matrix( inverse(sched_params.proj_matrix) );
+    matrix_type view_matrix( sched_params.cam.get_view_matrix() );
+    matrix_type proj_matrix( sched_params.cam.get_proj_matrix() );
+    matrix_type inv_view_matrix( inverse(sched_params.cam.get_view_matrix()) );
+    matrix_type inv_proj_matrix( inverse(sched_params.cam.get_proj_matrix()) );
 
     // Iterate over all pixels
     sample_pixels_impl(
@@ -86,7 +94,13 @@ void frame_impl(R /* */, K kernel, SP sched_params, unsigned frame_num, std::tru
 
 // Implementation using a pinhole camera
 template <typename R, typename K, typename SP>
-void frame_impl(R /* */, K kernel, SP sched_params, unsigned frame_num, std::false_type)
+void frame_impl(
+        R /* */,
+        K kernel,
+        SP sched_params,
+        unsigned frame_num,
+        typename std::enable_if<std::is_same<typename SP::camera_type, pinhole_camera>::value>::type* = nullptr
+        )
 {
     typedef typename R::scalar_type scalar_type;
 
@@ -133,8 +147,7 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             R{},
             kernel,
             sched_params,
-            frame_num,
-            typename detail::sched_params_has_view_matrix<SP>::type{}
+            frame_num
             );
 }
 

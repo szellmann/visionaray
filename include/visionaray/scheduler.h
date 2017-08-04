@@ -11,7 +11,8 @@
 #include <utility>
 
 #include "detail/sched_common.h"
-#include "pinhole_camera.h"
+#include "math/matrix.h"
+#include "matrix_camera.h"
 
 namespace visionaray
 {
@@ -53,45 +54,22 @@ struct sched_params_intersector_base : sched_params_base<Rect>
 template <typename... Args>
 struct sched_params;
 
-template <typename Base, typename RT, typename PxSamplerT>
-struct sched_params<Base, RT, PxSamplerT> : Base
+template <typename Base, typename Camera, typename RT, typename PxSamplerT>
+struct sched_params<Base, Camera, RT, PxSamplerT> : Base
 {
-    using has_pinhole_camera = void;
-
+    using camera_type           = Camera;
     using rt_type               = RT;
     using pixel_sampler_type    = PxSamplerT;
 
     template <typename ...Args>
-    sched_params(pinhole_camera const& c, RT& r, Args&&... args)
+    sched_params(Camera const& c, RT& r, Args&&... args)
         : Base( std::forward<Args>(args)... )
         , cam(c)
         , rt(r)
     {
     }
 
-    pinhole_camera cam;
-    RT& rt;
-};
-
-template <typename Base, typename MT, typename RT, typename PxSamplerT>
-struct sched_params<Base, MT, RT, PxSamplerT> : Base
-{
-    using has_camera_matrices = void;
-
-    using rt_type               = RT;
-    using pixel_sampler_type    = PxSamplerT;
-
-    template <typename ...Args>
-    sched_params(MT const& vm, MT const& pm, RT& r, Args&&... args)
-        : Base( std::forward<Args>(args)... )
-        , view_matrix(vm)
-        , proj_matrix(pm)
-        , rt(r)
-    {
-    }
-
-    MT view_matrix;
-    MT proj_matrix;
+    Camera cam;
     RT& rt;
 };
 
@@ -102,23 +80,6 @@ struct sched_params<Base, MT, RT, PxSamplerT> : Base
 
 namespace detail
 {
-
-template <typename SP>
-class sched_params_has_cam
-{
-private:
-
-    template <typename U>
-    static std::true_type  test(typename U::has_camera*);
-
-    template <typename U>
-    static std::false_type test(...);
-
-public:
-
-    using type = decltype( test<typename std::decay<SP>::type>(nullptr) );
-
-};
 
 template <typename SP>
 class sched_params_has_intersector
@@ -137,23 +98,6 @@ public:
 
 };
 
-template <typename SP>
-class sched_params_has_view_matrix
-{
-private:
-
-    template <typename U>
-    static std::true_type  test(typename U::has_camera_matrices*);
-
-    template <typename U>
-    static std::false_type test(...);
-
-public:
-
-    using type = decltype( test<typename std::decay<SP>::type>(nullptr) );
-
-};
-
 } // detail
 
 
@@ -161,31 +105,42 @@ public:
 // Sched params factory
 //
 
-template <typename PxSamplerT, typename RT>
+template <
+    typename PxSamplerT,
+    typename = typename std::enable_if<std::is_base_of<pixel_sampler::base_type, PxSamplerT>::value>::type,
+    typename Camera,
+    typename RT
+    >
 auto make_sched_params(
-        PxSamplerT              /* */,
-        pinhole_camera const&   cam,
-        RT&                     rt
+        PxSamplerT    /* */,
+        Camera const& cam,
+        RT&           rt
         )
-    -> sched_params<sched_params_base<recti>, RT, PxSamplerT>
+    -> sched_params<sched_params_base<recti>, Camera, RT, PxSamplerT>
 {
-    return sched_params<sched_params_base<recti>, RT, PxSamplerT>(
+    return sched_params<sched_params_base<recti>, Camera, RT, PxSamplerT>(
             cam,
             rt,
             recti(0, 0, rt.width(), rt.height())
             );
 }
 
-template <typename PxSamplerT, typename Intersector, typename RT>
+template <
+    typename PxSamplerT,
+    typename = typename std::enable_if<std::is_base_of<pixel_sampler::base_type, PxSamplerT>::value>::type,
+    typename Camera,
+    typename RT,
+    typename Intersector
+    >
 auto make_sched_params(
-        PxSamplerT              /* */,
-        pinhole_camera const&   cam,
-        RT&                     rt,
-        Intersector&            isect
+        PxSamplerT    /* */,
+        Camera const& cam,
+        RT&           rt,
+        Intersector&  isect
         )
-    -> sched_params<sched_params_intersector_base<recti, Intersector>, RT, PxSamplerT>
+    -> sched_params<sched_params_intersector_base<recti, Intersector>, Camera, RT, PxSamplerT>
 {
-    return sched_params<sched_params_intersector_base<recti, Intersector>, RT, PxSamplerT>{
+    return sched_params<sched_params_intersector_base<recti, Intersector>, Camera, RT, PxSamplerT>{
             cam,
             rt,
             recti(0, 0, rt.width(), rt.height()),
@@ -193,42 +148,53 @@ auto make_sched_params(
             };
 }
 
-
-template <typename PxSamplerT, typename MT, typename RT>
+template <
+    typename PxSamplerT,
+    typename = typename std::enable_if<std::is_base_of<pixel_sampler::base_type, PxSamplerT>::value>::type,
+    typename RT
+    >
 auto make_sched_params(
-        PxSamplerT      /* */,
-        MT const&       view_matrix,
-        MT const&       proj_matrix,
-        RT&             rt
+        PxSamplerT /* */,
+        mat4       view_matrix,
+        mat4       proj_matrix,
+        RT&        rt
         )
-    -> sched_params<sched_params_base<recti>, MT, RT, PxSamplerT>
+    -> sched_params<sched_params_base<recti>, matrix_camera, RT, PxSamplerT>
 {
-    return sched_params<sched_params_base<recti>, MT, RT, PxSamplerT>(
-            view_matrix,
-            proj_matrix,
+    return sched_params<sched_params_base<recti>, matrix_camera, RT, PxSamplerT>(
+            matrix_camera(view_matrix, proj_matrix),
             rt,
             recti(0, 0, rt.width(), rt.height())
             );
 }
 
-template <typename PxSamplerT, typename MT, typename RT, typename Intersector>
+template <
+    typename PxSamplerT,
+    typename = typename std::enable_if<std::is_base_of<pixel_sampler::base_type, PxSamplerT>::value>::type,
+    typename RT,
+    typename Intersector
+    >
 auto make_sched_params(
-        PxSamplerT      /* */,
-        MT const&       view_matrix,
-        MT const&       proj_matrix,
-        RT&             rt,
-        Intersector&    isect
+        PxSamplerT   /* */,
+        mat4         view_matrix,
+        mat4         proj_matrix,
+        RT&          rt,
+        Intersector& isect
         )
-    -> sched_params<sched_params_intersector_base<recti, Intersector>, MT, RT, PxSamplerT>
+    -> sched_params<sched_params_intersector_base<recti, Intersector>, matrix_camera, RT, PxSamplerT>
 {
-    return sched_params<sched_params_intersector_base<recti, Intersector>, MT, RT, PxSamplerT>{
-            view_matrix,
-            proj_matrix,
+    return sched_params<sched_params_intersector_base<recti, Intersector>, matrix_camera, RT, PxSamplerT>{
+            matrix_camera(view_matrix, proj_matrix),
             rt,
             recti(0, 0, rt.width(), rt.height()),
             isect
             };
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Convenience overload with default pixel sampler being uniform_type
+//
 
 template <
     typename First,

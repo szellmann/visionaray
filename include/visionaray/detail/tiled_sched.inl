@@ -11,6 +11,8 @@
 #include <utility>
 
 #include <visionaray/math/math.h>
+#include <visionaray/matrix_camera.h>
+#include <visionaray/pinhole_camera.h>
 #include <visionaray/random_sampler.h>
 
 #include "macros.h"
@@ -61,10 +63,20 @@ struct tiled_sched<R>::impl
     void render_loop();
 
     template <typename K, typename SP>
-    void init_render_func(K kernel, SP sparams, unsigned frame_num, std::true_type /* has matrix */);
+    void init_render_func(
+            K kernel,
+            SP sparams,
+            unsigned frame_num,
+            typename std::enable_if<std::is_same<typename SP::camera_type, matrix_camera>::value>::type* = nullptr
+            );
 
     template <typename K, typename SP>
-    void init_render_func(K kernel, SP sparams, unsigned frame_num, std::false_type /* has matrix */);
+    void init_render_func(
+            K kernel,
+            SP sparams,
+            unsigned frame_num,
+            typename std::enable_if<std::is_same<typename SP::camera_type, pinhole_camera>::value>::type* = nullptr
+            );
 
     template <typename K, typename SP, typename Sampler, typename ...Args>
     void call_sample_pixel(
@@ -226,7 +238,12 @@ void tiled_sched<R>::impl::render_loop()
 
 template <typename R>
 template <typename K, typename SP>
-void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame_num, std::true_type)
+void tiled_sched<R>::impl::init_render_func(
+        K kernel,
+        SP sparams,
+        unsigned frame_num,
+        typename std::enable_if<std::is_same<typename SP::camera_type, matrix_camera>::value>::type*
+        )
 {
     // overload for two matrices
 
@@ -237,10 +254,10 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
     height      = sparams.rt.height();
     scissor_box = sparams.scissor_box;
 
-    matrix_type view_matrix( sparams.view_matrix );
-    matrix_type proj_matrix( sparams.proj_matrix );
-    matrix_type inv_view_matrix( inverse(sparams.view_matrix) );
-    matrix_type inv_proj_matrix( inverse(sparams.proj_matrix) );
+    matrix_type view_matrix( sparams.cam.get_view_matrix() );
+    matrix_type proj_matrix( sparams.cam.get_proj_matrix() );
+    matrix_type inv_view_matrix( inverse(sparams.cam.get_view_matrix()) );
+    matrix_type inv_proj_matrix( inverse(sparams.get_proj_matrix()) );
 
     recti clip_rect(scissor_box.x, scissor_box.y, scissor_box.w - 1, scissor_box.h - 1);
 
@@ -281,7 +298,12 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 
 template <typename R>
 template <typename K, typename SP>
-void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame_num, std::false_type)
+void tiled_sched<R>::impl::init_render_func(
+        K kernel,
+        SP sparams,
+        unsigned frame_num,
+        typename std::enable_if<std::is_same<typename SP::camera_type, pinhole_camera>::value>::type*
+        )
 {
     // overload for pinhole cam
 
@@ -363,12 +385,7 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     sched_params.rt.begin_frame();
 
-    impl_->init_render_func(
-            kernel,
-            sched_params,
-            frame_num,
-            typename detail::sched_params_has_view_matrix<SP>::type()
-            );
+    impl_->init_render_func(kernel, sched_params, frame_num);
 
     auto numtilesx = div_up(impl_->width,  impl_->tile_width);
     auto numtilesy = div_up(impl_->height, impl_->tile_height);

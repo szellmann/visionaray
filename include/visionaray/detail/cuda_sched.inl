@@ -6,6 +6,8 @@
 
 #include <cuda_runtime_api.h>
 
+#include <visionaray/matrix_camera.h>
+#include <visionaray/pinhole_camera.h>
 #include <visionaray/random_sampler.h>
 
 #include "sched_common.h"
@@ -200,11 +202,11 @@ inline void cuda_sched_impl_call_render(
 
 template <typename R, typename K, typename SP>
 inline void cuda_sched_impl_frame(
-        std::true_type  /* has matrix */,
-        K               kernel,
-        SP              sparams,
-        dim3 const&     block_size,
-        unsigned        frame_num
+        K           kernel,
+        SP          sparams,
+        dim3 const& block_size,
+        unsigned    frame_num,
+        typename std::enable_if<std::is_same<typename SP::camera_type, matrix_camera>::value>::type* = nullptr
         )
 {
     using cuda_dim_t = decltype(block_size.x);
@@ -228,20 +230,20 @@ inline void cuda_sched_impl_frame(
             frame_num,
             sparams.rt.width(),
             sparams.rt.height(),
-            sparams.view_matrix,
-            inverse(sparams.view_matrix),
-            sparams.proj_matrix,
-            inverse(sparams.proj_matrix)
+            sparams.cam.get_view_matrix(),
+            inverse(sparams.cam.get_view_matrix()),
+            sparams.cam.get_proj_matrix(),
+            inverse(sparams.cam.get_proj_matrix())
             );
 }
 
 template <typename R, typename K, typename SP>
 inline void cuda_sched_impl_frame(
-        std::false_type /* has matrix */,
-        K               kernel,
-        SP              sparams,
-        dim3 const&     block_size,
-        unsigned        frame_num
+        K           kernel,
+        SP          sparams,
+        dim3 const& block_size,
+        unsigned    frame_num,
+        typename std::enable_if<std::is_same<typename SP::camera_type, pinhole_camera>::value>::type* = nullptr
         )
 {
     using T = typename R::scalar_type;
@@ -311,7 +313,6 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     sched_params.rt.begin_frame();
 
     detail::cuda_sched_impl_frame<R>(
-            typename detail::sched_params_has_view_matrix<SP>::type(),
             kernel,
             sched_params,
             dim3(block_size_.x, block_size_.y),
