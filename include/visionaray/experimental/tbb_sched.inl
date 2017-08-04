@@ -61,16 +61,6 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     using scalar_type   = typename R::scalar_type;
 
-    //  front, side, and up vectors form an orthonormal basis
-    auto f = normalize( sched_params.cam.eye() - sched_params.cam.center() );
-    auto s = normalize( cross(sched_params.cam.up(), f) );
-    auto u =            cross(f, s);
-
-    auto eye   = vector<3, scalar_type>(sched_params.cam.eye());
-    auto cam_u = vector<3, scalar_type>(s) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) * sched_params.cam.aspect() );
-    auto cam_v = vector<3, scalar_type>(u) * scalar_type( tan(sched_params.cam.fovy() / 2.0f) );
-    auto cam_w = vector<3, scalar_type>(-f);
-
     int pw = packet_size<scalar_type>::w;
     int ph = packet_size<scalar_type>::h;
 
@@ -85,6 +75,8 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 
     int nx = round_up(static_cast<int>(sched_params.rt.width()), dx);
     int ny = round_up(static_cast<int>(sched_params.rt.height()), dy);
+
+    sched_params.cam.begin_frame();
 
     sched_params.rt.begin_frame();
 
@@ -111,10 +103,7 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                         j0,
                         sched_params.rt.width(),
                         sched_params.rt.height(),
-                        eye,
-                        cam_u,
-                        cam_v,
-                        cam_w
+                        sched_params.cam
                         );
 
                     sample_pixel(
@@ -128,10 +117,7 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                         j0,
                         sched_params.rt.width(),
                         sched_params.rt.height(),
-                        eye,
-                        cam_u,
-                        cam_v,
-                        cam_w
+                        sched_params.cam
                         );
                 }
             );
@@ -139,6 +125,8 @@ void tbb_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     );
 
     sched_params.rt.end_frame();
+
+    sched_params.cam.end_frame();
 }
 
 } // visionaray
