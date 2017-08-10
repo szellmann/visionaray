@@ -23,9 +23,6 @@
 #include <visionaray/detail/parallel_algorithm.h>
 #include <visionaray/detail/platform.h>
 
-#include <visionaray/math/triangle.h>
-
-#include <visionaray/area_light.h>
 #include <visionaray/bvh.h>
 #include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
@@ -75,7 +72,6 @@ struct renderer : viewer_type
     using normal_type               = model::normal_type;
     using tex_coord_type            = model::tex_coord_type;
     using material_type             = generic_material<material0, material1, material2, material3, material4>;
-    using light_type                = area_light<model::triangle_type>;
 
     using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
     using host_bvh_type             = index_bvh<primitive_type>;
@@ -141,7 +137,6 @@ struct renderer : viewer_type
     model mod;
     index_bvh<primitive_type>                   host_bvh;
     aligned_vector<material_type>               host_materials;
-    aligned_vector<light_type>                  host_lights;
 
 #ifdef __CUDACC__
     cuda_index_bvh<primitive_type>              device_bvh;
@@ -150,7 +145,6 @@ struct renderer : viewer_type
     thrust::device_vector<material_type>        device_materials;
     std::map<std::string, device_tex_type>      device_texture_map;
     thrust::device_vector<device_tex_ref_type>  device_textures;
-    thrust::device_vector<light_type>           device_lights;
 #endif
 
     unsigned                                    frame_num       = 0;
@@ -177,7 +171,7 @@ private:
 // Struct with parameters
 //
 
-template <typename Primitives, typename Lights, typename Materials, typename Textures>
+template <typename Primitives, typename Materials, typename Textures>
 struct pathtracer_parameters
 {
     using has_normals       = void;
@@ -192,19 +186,13 @@ struct pathtracer_parameters
     using color_type        = vector<3, float>;
 
     using color_binding     = unspecified_binding;
-    using light_type        = area_light<model::triangle_type>;
+    using light_type        = struct {};
 
     struct
     {
         Primitives begin;
         Primitives end;
     } prims;
-
-    struct
-    {
-        Lights begin;
-        Lights end;
-    } lights;
 
     normal_type const* normals;
     tex_coords_type const* tex_coords;
@@ -218,12 +206,10 @@ struct pathtracer_parameters
     vec4 ambient_color;
 };
 
-template <typename Primitives, typename Lights, typename Materials, typename Textures>
+template <typename Primitives, typename Materials, typename Textures>
 auto make_parameters(
         Primitives const&               begin,
         Primitives const&               end,
-        Lights const&                   lbegin,
-        Lights const&                   lend,
         renderer::normal_type const*    normals,
         renderer::tex_coord_type const* tex_coords,
         Materials                       materials,
@@ -233,11 +219,10 @@ auto make_parameters(
         vec4 const&                     bg_color,
         vec4 const&                     ambient_color
         )
-    -> pathtracer_parameters<Primitives, Lights, Materials, Textures>
+    -> pathtracer_parameters<Primitives, Materials, Textures>
 {
-    return pathtracer_parameters<Primitives, Lights, Materials, Textures>{
+    return pathtracer_parameters<Primitives, Materials, Textures>{
             { begin, end },
-            { lbegin, lend },
             normals,
             tex_coords,
             materials,
@@ -322,8 +307,6 @@ void renderer::on_display()
     auto params = make_parameters(
             thrust::raw_pointer_cast(device_primitives.data()),
             thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
-            thrust::raw_pointer_cast(device_lights.data()),
-            thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
             thrust::raw_pointer_cast(device_normals.data()),
             thrust::raw_pointer_cast(device_tex_coords.data()),
             thrust::raw_pointer_cast(device_materials.data()),
@@ -338,8 +321,6 @@ void renderer::on_display()
     auto params = make_parameters(
             prims_begin,
             prims_end,
-            host_lights.data(),
-            host_lights.data() + host_lights.size(),
             mod.geometric_normals.data(),
             mod.tex_coords.data(),
             host_materials.data(),
@@ -504,13 +485,11 @@ int main(int argc, char** argv)
         primitives.push_back(renderer::primitive_type(p));
     }
 
-    std::vector<unsigned> light_ids;
-
     // Convert generic materials to viewer's material type
     rend.host_materials = make_materials(
             renderer::material_type{},
             rend.mod.materials,
-            [&rend, &light_ids](aligned_vector<renderer::material_type>& cont, model::material_type mat)
+            [&rend](aligned_vector<renderer::material_type>& cont, model::material_type mat)
             {
                 // Add emissive material if emissive component > 0
                 if (length(mat.ce) > 0.0f)
@@ -519,11 +498,6 @@ int main(int argc, char** argv)
                     em.ce() = from_rgb(mat.ce);
                     em.ls() = 1.0f;
                     cont.emplace_back(em);
-
-                    // Store the emissive material ids so we can
-                    // later identify them to assemble the list
-                    // of light sources
-                    light_ids.push_back(static_cast<unsigned>(cont.size() - 1));
                 }
                 else if (mat.specular_exp < 0.001f)
                 {
@@ -563,19 +537,6 @@ int main(int argc, char** argv)
             }
             );
 
-    // Fill light source list with emissive triangles
-    // TODO: complex light sources could go in a separate BVH!
-    for (auto i : light_ids)
-    {
-        for (auto p : primitives)
-        {
-            if (p.geom_id == i)
-            {
-                rend.host_lights.emplace_back(renderer::light_type(p));
-            }
-        }
-    }
-
     std::cout << "Creating BVH...\n";
 
     // Create the BVH on the host
@@ -594,7 +555,6 @@ int main(int argc, char** argv)
     TRY_ALLOC(rend.device_normals = rend.mod.geometric_normals);
     TRY_ALLOC(rend.device_tex_coords = rend.mod.tex_coords);
     TRY_ALLOC(rend.device_materials = rend.host_materials);
-    TRY_ALLOC(rend.device_lights = rend.host_lights);
 
     // Copy textures and texture references to the GPU
 

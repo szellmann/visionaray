@@ -68,9 +68,7 @@ private:
     thrust::device_vector<HR> hit_recs;
     thrust::device_vector<int> indices;
     thrust::device_vector<int> indices_back;
-    thrust::device_vector<spectrum<float>> accums;
     thrust::device_vector<spectrum<float>> throughputs;
-    thrust::device_vector<int> light_found;
 
     template <typename T>
     inline auto pointer_cast(T pointer)
@@ -83,9 +81,7 @@ private:
     aligned_vector<HR> hit_recs;
     aligned_vector<int> indices;
     aligned_vector<int> indices_back;
-    aligned_vector<spectrum<float>> accums;
     aligned_vector<spectrum<float>> throughputs;
-    aligned_vector<int> light_found;
 
     template <typename T>
     inline T* pointer_cast(T* pointer)
@@ -107,15 +103,11 @@ public:
 #ifdef __CUDACC__
         thrust::sequence(thrust::device, indices.begin(), indices.end(), 0, 1);
         thrust::fill(thrust::device, hit_recs.begin(), hit_recs.end(), HR());
-        thrust::fill(thrust::device, accums.begin(), accums.end(), spectrum<float>(0.0));
         thrust::fill(thrust::device, throughputs.begin(), throughputs.end(), spectrum<float>(1.0));
-        thrust::fill(thrust::device, light_found.begin(), light_found.end(), false);
 #else
         std::iota(indices.begin(), indices.end(), 0);
         std::fill(hit_recs.begin(), hit_recs.end(), HR());
-        std::fill(accums.begin(), accums.end(), spectrum<float>(0.0));
         std::fill(throughputs.begin(), throughputs.end(), spectrum<float>(1.0));
-        std::fill(light_found.begin(), light_found.end(), false);
 #endif
 
         size_t compact = indices.size();
@@ -141,9 +133,7 @@ public:
                     pointer_cast(indices.data()),
                     pointer_cast(indices.data()) + compact,
                     params,
-                    pointer_cast(accums.data()),
-                    pointer_cast(throughputs.data()),
-                    pointer_cast(light_found.data())
+                    pointer_cast(throughputs.data())
                     );
 
 
@@ -158,16 +148,16 @@ public:
             swap_index_buffers();
         }
 
-        //pathtracer::terminate_active(
-        //        pointer_cast(indices.data()),
-        //        pointer_cast(indices.data()) + compact,
-        //        pointer_cast(accums.data())
-        //        );
+        pathtracer::terminate_active(
+                pointer_cast(indices.data()),
+                pointer_cast(indices.data()) + compact,
+                pointer_cast(throughputs.data())
+                );
 
         pathtracer::blend(
                 pointer_cast(indices.data()),
                 pointer_cast(indices.data()) + indices.size(),
-                pointer_cast(accums.data()),
+                pointer_cast(throughputs.data()),
                 rt.ref(),
                 ++frame_num
                 );
@@ -181,9 +171,7 @@ public:
         TRY_ALLOC(hit_recs.resize(w * h));
         TRY_ALLOC(indices.resize(w * h));
         TRY_ALLOC(indices_back.resize(w * h));
-        TRY_ALLOC(accums.resize(w * h));
         TRY_ALLOC(throughputs.resize(w * h));
-        TRY_ALLOC(light_found.resize(w * h));
     }
 
     template <typename Rays>
@@ -262,16 +250,14 @@ public:
             );
     }
 
-    template <typename Rays, typename HitRecords, typename IndexIt, typename Params, typename Is, typename Bools>
+    template <typename Rays, typename HitRecords, typename IndexIt, typename Params, typename Is>
     inline void shade(
             Rays        rays,
             HitRecords  hit_recs,
             IndexIt     indices_first,
             IndexIt     indices_last,
             Params      params,
-            Is          accums,
-            Is          throughputs,
-            Bools       light_found
+            Is          throughputs
             )
     {
         using R  = typename std::iterator_traits<Rays>::value_type;
@@ -279,8 +265,6 @@ public:
         using V  = vector<3, S>;
         using HR = typename std::iterator_traits<HitRecords>::value_type;
         using C  = typename std::iterator_traits<Is>::value_type;
-
-        auto num_lights = params.lights.end - params.lights.end;
 
         parallel_for(
             random_sampler<S>{},
@@ -296,13 +280,12 @@ public:
 
                 R& ray = rays[*it];
                 HR hit_rec = hit_recs[*it];
-                auto& accum = accums[*it];
-                auto& throughput = throughputs[*it];
+                auto& dst = throughputs[*it];
 
                 // Handle rays that just exited (TODO: SIMD)
                 if (!hit_rec.hit)
                 {
-                    accum += C(from_rgba(params.ambient_color));
+                    dst *= C(from_rgba(params.ambient_color));
                     *it = ~(*it);
                     return;
                 }
@@ -331,57 +314,18 @@ public:
                 auto zero_pdf = pdf <= S(0.0);
                 auto emissive = has_emissive_material(surf);
 
-                if (emissive && !light_found[*it])
+                src = mul( src, dot(n, refl_dir) / pdf, !emissive, src ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
+                dst = mul( dst, src, !zero_pdf, dst );
+                dst = select( zero_pdf, C(0.0), dst );
+
+                if (emissive)
                 {
-                    accum += src * throughput;
                     *it = ~(*it);
                     return;
                 }
-                else
-                {
-                    // Direct light sampling
 
-                    S lpdf(0.0);
-                    int light_num = static_cast<int>(samp.next() * num_lights);
-                    vec3 light_pos = params.lights.begin[light_num].sample(lpdf, samp);
-                    vec3 light_dir = normalize(light_pos - hit_rec.isect_pos);
-
-                    auto max_t = length(light_pos - hit_rec.isect_pos) - params.epsilon;
-                    //C light_col(from_rgb(2.0, 2.0, 3.0));
-                    //C light_col(from_rgb(17.0, 12.0, 4.0));
-                    C light_col(from_rgb(10.0, 8.0, 3.0));
-                    R shadow_ray(
-                        hit_rec.isect_pos + light_dir * S(params.epsilon),
-                        light_dir
-                        );
-
-                    if (dot(n, light_dir) >= S(0.0))
-                    {
-                        auto shadow_rec = any_hit(shadow_ray, params.prims.begin, params.prims.end, max_t);
-                        if (!shadow_rec.hit)
-                        {
-
-                            S ignore_pdf(0.0);
-                            auto lsrc = surf.sample(sr, light_dir, ignore_pdf, samp);
-
-                            accum += light_col * throughput * (lsrc * (dot(n, refl_dir) / lpdf));
-                        }
-                    }
-
-                    light_found[*it] = true;
-
-
-                    // Diffuse bounce
-
-                    if (1) // roullette?
-                    {
-                        src *= dot(n, refl_dir) / pdf;
-                        throughput *= src;
-
-                        ray.ori = hit_rec.isect_pos + refl_dir * S(params.epsilon);
-                        ray.dir = refl_dir;
-                    }
-                }
+                ray.ori = hit_rec.isect_pos + refl_dir * S(params.epsilon);
+                ray.dir = refl_dir;
             }
             );
     }
@@ -456,7 +400,7 @@ public:
     inline void terminate_active(
             IndexIt     indices_first,
             IndexIt     indices_last,
-            Is          accums
+            Is          throughputs
             )
     {
         parallel_for(0, indices_last - indices_first,
@@ -466,7 +410,7 @@ public:
 
                 if (*it >= 0)
                 {
-                    accums[*it] = typename std::iterator_traits<Is>::value_type(0.0f);
+                    throughputs[*it] = typename std::iterator_traits<Is>::value_type(0.0f);
                 }
             }
             );
@@ -476,7 +420,7 @@ public:
     inline void blend(
             IndexIt     indices_first,
             IndexIt     indices_last,
-            Is          accums,
+            Is          throughputs,
             RT          rt,
             unsigned    frame_num
             )
@@ -498,7 +442,7 @@ public:
                 }
 
                 auto& dst = colors[*it];
-                auto color = to_rgba(accums[*it]);
+                auto color = to_rgba(throughputs[*it]);
      
                 dst = color * sfactor + dst * dfactor;
             }
