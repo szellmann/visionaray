@@ -158,11 +158,11 @@ public:
             swap_index_buffers();
         }
 
-        pathtracer::terminate_active(
-                pointer_cast(indices.data()),
-                pointer_cast(indices.data()) + compact,
-                pointer_cast(accums.data())
-                );
+        //pathtracer::terminate_active(
+        //        pointer_cast(indices.data()),
+        //        pointer_cast(indices.data()) + compact,
+        //        pointer_cast(accums.data())
+        //        );
 
         pathtracer::blend(
                 pointer_cast(indices.data()),
@@ -348,9 +348,8 @@ public:
 
                     auto max_t = length(light_pos - hit_rec.isect_pos) - params.epsilon;
                     //C light_col(from_rgb(2.0, 2.0, 3.0));
-                    C light_col(from_rgb(17.0, 12.0, 4.0));
-                    //C light_col(from_rgb(10.0, 8.0, 3.0));
-                    //C light_col(from_rgb(10.0, 10.0, 10.0));
+                    //C light_col(from_rgb(17.0, 12.0, 4.0));
+                    C light_col(from_rgb(10.0, 8.0, 3.0));
                     R shadow_ray(
                         hit_rec.isect_pos + light_dir * S(params.epsilon),
                         light_dir
@@ -364,9 +363,8 @@ public:
 
                             S ignore_pdf(0.0);
                             auto lsrc = surf.sample(sr, light_dir, ignore_pdf, samp);
-                            throughput *= lsrc * (dot(n, refl_dir) / lpdf);
 
-                            accum += light_col * throughput;
+                            accum += light_col * throughput * (lsrc * (dot(n, refl_dir) / lpdf));
                         }
                     }
 

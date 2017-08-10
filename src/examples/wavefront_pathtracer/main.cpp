@@ -525,7 +525,7 @@ int main(int argc, char** argv)
                     // of light sources
                     light_ids.push_back(static_cast<unsigned>(cont.size() - 1));
                 }
-                else //if (mat.specular_exp < 0.001f)
+                else if (mat.specular_exp < 0.001f)
                 {
                     matte<float> ma;
                     ma.ca() = from_rgb(mat.ca);
@@ -534,7 +534,7 @@ int main(int argc, char** argv)
                     ma.kd() = 1.0f;
                     cont.push_back(ma);
                 }
-                /*else if (mat.specular_exp > 100.0f)
+                else if (mat.specular_exp > 100.0f)
                 {
 //                    mirror<float> mi;
 //                    mi.cr() = from_rgb(mat.cs);
@@ -559,7 +559,7 @@ int main(int argc, char** argv)
                     pl.ks() = 1.0f;
                     pl.specular_exp() = mat.specular_exp;
                     cont.emplace_back(pl);
-                }*/
+                }
             }
             );
 
