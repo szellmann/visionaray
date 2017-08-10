@@ -107,10 +107,10 @@ inline R make_primary_rays(
         R                           /* */,
         pixel_sampler::uniform_type /* */,
         Sampler&                    samp,
-        unsigned                    x,
-        unsigned                    y,
-        size_t                      width,
-        size_t                      height,
+        int                         x,
+        int                         y,
+        int                         width,
+        int                         height,
         Camera const&               cam
         )
 {
@@ -133,10 +133,10 @@ inline R make_primary_rays(
         R                               /* */,
         pixel_sampler::jittered_type    /* */,
         Sampler&                        samp,
-        unsigned                        x,
-        unsigned                        y,
-        size_t                          width,
-        size_t                          height,
+        int                             x,
+        int                             y,
+        int                             width,
+        int                             height,
         Camera const&                   cam
         )
 {
@@ -162,10 +162,10 @@ inline array<R, 2> make_primary_rays(
         R                           /* */,
         pixel_sampler::ssaa_type<2> /* */,
         Sampler&                    samp,
-        unsigned                    x,
-        unsigned                    y,
-        size_t                      width,
-        size_t                      height,
+        int                         x,
+        int                         y,
+        int                         width,
+        int                         height,
         Camera const&               cam
         )
 {
@@ -187,10 +187,10 @@ inline array<R, 4> make_primary_rays(
         R                           /* */,
         pixel_sampler::ssaa_type<4> /* */,
         Sampler&                    samp,
-        unsigned                    x,
-        unsigned                    y,
-        size_t                      width,
-        size_t                      height,
+        int                         x,
+        int                         y,
+        int                         width,
+        int                         height,
         Camera const&               cam
         )
 {
@@ -214,10 +214,10 @@ inline array<R, 8> make_primary_rays(
         R                           /* */,
         pixel_sampler::ssaa_type<8> /* */,
         Sampler&                    samp,
-        unsigned                    x,
-        unsigned                    y,
-        size_t                      width,
-        size_t                      height,
+        int                         x,
+        int                         y,
+        int                         width,
+        int                         height,
         Camera const&               cam
         )
 {
@@ -250,10 +250,10 @@ inline array<R, Num> make_primary_rays(
         R               /* */,
         PxSamplerT      /* */,
         Sampler&        samp,
-        unsigned        x,
-        unsigned        y,
-        size_t          width,
-        size_t          height,
+        int             x,
+        int             y,
+        int             width,
+        int             height,
         Camera const&   cam
         )
 {
