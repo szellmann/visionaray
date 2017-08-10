@@ -101,26 +101,7 @@ inline auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
 // for a pixel position
 //
 
-template <typename R, typename T, typename Camera>
-VSNRAY_FUNC
-inline R make_primary_ray_impl(
-        T             x,
-        T             y,
-        size_t        width,
-        size_t        height,
-        Camera const& cam
-        )
-{
-    return cam.primary_ray(
-            R{},
-            x,
-            y,
-            T(width),
-            T(height)
-            );
-}
-
-template <typename R, typename Sampler, typename ...Args>
+template <typename R, typename Sampler, typename Camera>
 VSNRAY_FUNC
 inline R make_primary_rays(
         R                           /* */,
@@ -128,16 +109,25 @@ inline R make_primary_rays(
         Sampler&                    samp,
         unsigned                    x,
         unsigned                    y,
-        Args&&...                   args
+        size_t                      width,
+        size_t                      height,
+        Camera const&               cam
         )
 {
     VSNRAY_UNUSED(samp);
 
-    using S = typename R::scalar_type;
-    return make_primary_ray_impl<R>(expand_pixel<S>().x(x), expand_pixel<S>().y(y), std::forward<Args>(args)...);
+    using T = typename R::scalar_type;
+
+    return cam.primary_ray(
+            R{},
+            expand_pixel<T>().x(x),
+            expand_pixel<T>().y(y),
+            T(width),
+            T(height)
+            );
 }
 
-template <typename R, typename Sampler, typename ...Args>
+template <typename R, typename Sampler, typename Camera>
 VSNRAY_FUNC
 inline R make_primary_rays(
         R                               /* */,
@@ -145,24 +135,28 @@ inline R make_primary_rays(
         Sampler&                        samp,
         unsigned                        x,
         unsigned                        y,
-        Args&&...                       args
+        size_t                          width,
+        size_t                          height,
+        Camera const&                   cam
         )
 {
-    using S = typename R::scalar_type;
+    using T = typename R::scalar_type;
 
-    vector<2, S> jitter( samp.next() - S(0.5), samp.next() - S(0.5) );
+    vector<2, T> jitter(samp.next() - T(0.5), samp.next() - T(0.5));
 
-    return make_primary_ray_impl<R>(
-            expand_pixel<S>().x(x) + jitter.x,
-            expand_pixel<S>().y(y) + jitter.y,
-            std::forward<Args>(args)...
+    return cam.primary_ray(
+            R{},
+            expand_pixel<T>().x(x) + jitter.x,
+            expand_pixel<T>().y(y) + jitter.y,
+            T(width),
+            T(height)
             );
 }
 
 
 // 2x SSAA ------------------------------------------------
 
-template <typename R, typename Sampler, typename ...Args>
+template <typename R, typename Sampler, typename Camera>
 VSNRAY_FUNC
 inline array<R, 2> make_primary_rays(
         R                           /* */,
@@ -170,22 +164,24 @@ inline array<R, 2> make_primary_rays(
         Sampler&                    samp,
         unsigned                    x,
         unsigned                    y,
-        Args&&...                   args
+        size_t                      width,
+        size_t                      height,
+        Camera const&               cam
         )
 {
     VSNRAY_UNUSED(samp);
 
-    using S = typename R::scalar_type;
+    using T = typename R::scalar_type;
 
     return {{
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.25), expand_pixel<S>().y(y) - S(0.25), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.25), expand_pixel<S>().y(y) + S(0.25), std::forward<Args>(args)...),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) - T(0.25), expand_pixel<T>().y(y) - T(0.25), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) + T(0.25), expand_pixel<T>().y(y) + T(0.25), T(width), T(height))
         }};
 }
 
 // 4x SSAA ------------------------------------------------
 
-template <typename R, typename Sampler, typename ...Args>
+template <typename R, typename Sampler, typename Camera>
 VSNRAY_FUNC
 inline array<R, 4> make_primary_rays(
         R                           /* */,
@@ -193,24 +189,26 @@ inline array<R, 4> make_primary_rays(
         Sampler&                    samp,
         unsigned                    x,
         unsigned                    y,
-        Args&&...                   args
+        size_t                      width,
+        size_t                      height,
+        Camera const&               cam
         )
 {
     VSNRAY_UNUSED(samp);
 
-    using S = typename R::scalar_type;
+    using T = typename R::scalar_type;
 
     return {{
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.125), expand_pixel<S>().y(y) - S(0.375), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.375), expand_pixel<S>().y(y) - S(0.125), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.125), expand_pixel<S>().y(y) + S(0.375), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.375), expand_pixel<S>().y(y) + S(0.125), std::forward<Args>(args)...)
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) - T(0.125), expand_pixel<T>().y(y) - T(0.375), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) + T(0.375), expand_pixel<T>().y(y) - T(0.125), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) + T(0.125), expand_pixel<T>().y(y) + T(0.375), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) - T(0.375), expand_pixel<T>().y(y) + T(0.125), T(width), T(height))
         }};
 }
 
 // 8x SSAA ------------------------------------------------
 
-template <typename R, typename Sampler, typename ...Args>
+template <typename R, typename Sampler, typename Camera>
 VSNRAY_FUNC
 inline array<R, 8> make_primary_rays(
         R                           /* */,
@@ -218,22 +216,24 @@ inline array<R, 8> make_primary_rays(
         Sampler&                    samp,
         unsigned                    x,
         unsigned                    y,
-        Args&&...                   args
+        size_t                      width,
+        size_t                      height,
+        Camera const&               cam
         )
 {
     VSNRAY_UNUSED(samp);
 
-    using S = typename R::scalar_type;
+    using T = typename R::scalar_type;
 
     return {{
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.125), expand_pixel<S>().y(y) - S(0.4375), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.375), expand_pixel<S>().y(y) - S(0.3125), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.375), expand_pixel<S>().y(y) - S(0.1875), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.125), expand_pixel<S>().y(y) - S(0.0625), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.125), expand_pixel<S>().y(y) + S(0.0625), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.375), expand_pixel<S>().y(y) + S(0.1825), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) - S(0.375), expand_pixel<S>().y(y) + S(0.3125), std::forward<Args>(args)...),
-        make_primary_ray_impl<R>(expand_pixel<S>().x(x) + S(0.125), expand_pixel<S>().y(y) + S(0.4375), std::forward<Args>(args)...)
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) - T(0.125), expand_pixel<T>().y(y) - T(0.4375), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) + T(0.375), expand_pixel<T>().y(y) - T(0.3125), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) - T(0.375), expand_pixel<T>().y(y) - T(0.1875), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) + T(0.125), expand_pixel<T>().y(y) - T(0.0625), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) - T(0.125), expand_pixel<T>().y(y) + T(0.0625), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) + T(0.375), expand_pixel<T>().y(y) + T(0.1825), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) - T(0.375), expand_pixel<T>().y(y) + T(0.3125), T(width), T(height)),
+        cam.primary_ray(R{}, expand_pixel<T>().x(x) + T(0.125), expand_pixel<T>().y(y) + T(0.4375), T(width), T(height))
         }};
 }
 
@@ -243,7 +243,7 @@ template <
     typename R,
     typename PxSamplerT,
     typename Sampler,
-    typename ...Args
+    typename Camera
     >
 VSNRAY_FUNC
 inline array<R, Num> make_primary_rays(
@@ -252,7 +252,9 @@ inline array<R, Num> make_primary_rays(
         Sampler&        samp,
         unsigned        x,
         unsigned        y,
-        Args&&...       args
+        size_t          width,
+        size_t          height,
+        Camera const&   cam
         )
 {
     array<R, Num> result;
@@ -265,7 +267,9 @@ inline array<R, Num> make_primary_rays(
                 samp,
                 x,
                 y,
-                std::forward<Args>(args)...
+                width,
+                height,
+                cam
                 );
     }
 
