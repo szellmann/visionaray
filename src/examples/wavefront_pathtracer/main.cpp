@@ -311,7 +311,7 @@ void renderer::on_display()
 //                            ? vec4(ambient, 1.0f)
 //                            : vec4(1.0)
 //                            ;
-    auto amb        = vec4(0.0);
+    auto amb        = vec4(1.0);
 
 #ifdef __CUDACC__
 
