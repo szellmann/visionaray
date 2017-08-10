@@ -210,64 +210,6 @@ public:
 
 };
 
-
-//-------------------------------------------------------------------------------------------------
-// Disney's principled BRDF
-//
-
-template <typename T>
-class disney_brdf
-{
-public:
-
-    using scalar_type = T;
-
-public:
-
-    spectrum<T> base_color;
-    T roughness;
-
-    template <typename U>
-    spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
-    {
-        auto h = normalize(wo + wi);
-        //auto hdotn = max( U(0.0), dot(h, n) );
-        auto ldotn = max( U(0.0), dot(wi, n) );
-        auto vdotn = max( U(0.0), dot(wo, n) );
-        auto ldoth = max( U(0.0), dot(wi, h) );
-
-        // diffuse component
-        auto f_d90 = U(0.5) + U(2.0) * ldoth * ldoth * roughness;
-        auto schlick = (U(1.0) + (f_d90 - U(1.0)) * pow(U(1.0) - ldotn, U(5.0)))
-                     * (U(1.0) + (f_d90 - U(1.0)) * pow(U(1.0) - vdotn, U(5.0)));
-
-        auto f_d = base_color * constants::inv_pi<T>() * schlick;
-
-        return f_d;
-    }
-
-    template <typename U, typename S /* sampler */>
-    VSNRAY_FUNC
-    spectrum<U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler) const
-    {
-        auto w = n;
-        auto v = select(
-                abs(w.x) > abs(w.y),
-                normalize( vector<3, U>(-w.z, U(0.0), w.x) ),
-                normalize( vector<3, U>(U(0.0), w.z, -w.y) )
-                );
-        auto u = cross(v, w);
-
-        auto sp = cosine_sample_hemisphere(sampler.next(), sampler.next());
-        wi      = normalize( sp.x * u + sp.y * v + sp.z * w );
-
-        pdf     = dot(n, wi) * constants::inv_pi<U>();
-
-        return f(n, wo, wi);
-    }
-
-};
-
 } // visionaray
 
 #endif // VSNRAY_BRDF_H
