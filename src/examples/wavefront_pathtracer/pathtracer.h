@@ -24,8 +24,8 @@
 
 #include <visionaray/aligned_vector.h>
 #include <visionaray/bvh.h>
+#include <visionaray/camera.h>
 #include <visionaray/get_surface.h>
-#include <visionaray/pinhole_camera.h>
 #include <visionaray/random_sampler.h>
 #include <visionaray/tags.h>
 #include <visionaray/traverse.h>
@@ -97,7 +97,7 @@ private:
 public:
 
     template <typename Params, typename RT>
-    void frame(Params params_pack, RT& rt, pinhole_camera const& cam, unsigned& frame_num)
+    void frame(Params params_pack, RT& rt, camera const& cam, unsigned& frame_num)
     {
         rt.begin_frame();
 
@@ -187,9 +187,19 @@ public:
     }
 
     template <typename Rays>
-    inline void make_primary_rays(Rays rays, pinhole_camera const& cam, int width, int height)
+    inline void make_primary_rays(Rays rays, camera const& cam, int width, int height)
     {
         using S = typename R::scalar_type;
+
+        //  front, side, and up vectors form an orthonormal basis
+        auto f = normalize( cam.eye() - cam.center() );
+        auto s = normalize( cross(cam.up(), f) );
+        auto u =            cross(f, s);
+
+        vec3 eye   = cam.eye();
+        vec3 cam_u = s * tan(cam.fovy() / 2.0f) * cam.aspect();
+        vec3 cam_v = u * tan(cam.fovy() / 2.0f);
+        vec3 cam_w = -f;
 
         parallel_for(
             random_sampler<S>{},
@@ -206,7 +216,10 @@ public:
                         y,
                         width,
                         height,
-                        cam
+                        eye,
+                        cam_u,
+                        cam_v,
+                        cam_w
                         );
             }
             );
@@ -289,7 +302,7 @@ public:
                 // Handle rays that just exited (TODO: SIMD)
                 if (!hit_rec.hit)
                 {
-                    accum += C(from_rgba(params.ambient_color)) * throughput;
+                    accum += C(from_rgba(params.ambient_color));
                     *it = ~(*it);
                     return;
                 }

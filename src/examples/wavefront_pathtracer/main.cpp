@@ -27,12 +27,12 @@
 
 #include <visionaray/area_light.h>
 #include <visionaray/bvh.h>
+#include <visionaray/camera.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/generic_primitive.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
-#include <visionaray/pinhole_camera.h>
 #include <visionaray/random_sampler.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/spectrum.h>
@@ -125,7 +125,7 @@ struct renderer : viewer_type
         Split        // Split BVH, also binned and with SAH
     };
 
-    pinhole_camera                              cam;
+    camera                                      cam;
 #ifdef __CUDACC__
     device_render_target_type                   rendertarget;
 #else
@@ -254,7 +254,7 @@ auto make_parameters(
 // I/O utility for camera lookat only - not fit for the general case!
 //
 
-std::istream& operator>>(std::istream& in, pinhole_camera& cam)
+std::istream& operator>>(std::istream& in, camera& cam)
 {
     vec3 eye;
     vec3 center;
@@ -266,7 +266,7 @@ std::istream& operator>>(std::istream& in, pinhole_camera& cam)
     return in;
 }
 
-std::ostream& operator<<(std::ostream& out, pinhole_camera const& cam)
+std::ostream& operator<<(std::ostream& out, camera const& cam)
 {
     out << cam.eye() << '\n';
     out << cam.center() << '\n';
@@ -311,7 +311,7 @@ void renderer::on_display()
 //                            ? vec4(ambient, 1.0f)
 //                            : vec4(1.0)
 //                            ;
-    auto amb        = vec4(1.0);
+    auto amb        = vec4(0.0);
 
 #ifdef __CUDACC__
 
