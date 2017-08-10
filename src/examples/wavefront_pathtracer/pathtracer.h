@@ -76,6 +76,8 @@ private:
     {
         return thrust::raw_pointer_cast(pointer);
     }
+
+
 #else
     aligned_vector<R> rays;
     aligned_vector<HR> hit_recs;
