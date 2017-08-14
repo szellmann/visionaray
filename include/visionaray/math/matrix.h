@@ -11,10 +11,8 @@
 #include "forward.h"
 #include "vector.h"
 
-
 namespace MATH_NAMESPACE
 {
-
 
 template <typename T>
 class matrix<3, 3, T>
@@ -67,7 +65,17 @@ public:
     MATH_FUNC T& operator()(size_t row, size_t col);
     MATH_FUNC T const& operator()(size_t row, size_t col) const;
 
+    // Construct identity matrix
     MATH_FUNC static matrix identity();
+
+    // Construct rotation matrix from axis and angle
+    MATH_FUNC static matrix rotation(vector<3, T> const& axis, T const& angle);
+
+    // Construct scaling matrix from vector
+    MATH_FUNC static matrix scaling(vector<3, T> const& v);
+
+    // Construct scaling matrix from x,y,z
+    MATH_FUNC static matrix scaling(T const& x, T const& y, T const& z);
 
 };
 
@@ -125,10 +133,25 @@ public:
     MATH_FUNC T& operator()(size_t row, size_t col);
     MATH_FUNC T const& operator()(size_t row, size_t col) const;
 
+    // Construct identity matrix
     MATH_FUNC static matrix identity();
 
-};
+    // Construct rotation matrix from axis and angle
+    MATH_FUNC static matrix rotation(vector<3, T> const& axis, T const& angle);
 
+    // Construct scaling matrix from vector
+    MATH_FUNC static matrix scaling(vector<3, T> const& v);
+
+    // Construct scaling matrix x,y,z
+    MATH_FUNC static matrix scaling(T const& x, T const& y, T const& z);
+
+    // Construct translation matrix from vector
+    MATH_FUNC static matrix translation(vector<3, T> const& v);
+
+    // Construct translation matrix from x,y,z
+    MATH_FUNC static matrix translation(T const& x, T const& y, T const& z);
+
+};
 
 } // MATH_NAMESPACE
 

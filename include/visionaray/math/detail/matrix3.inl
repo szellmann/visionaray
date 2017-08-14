@@ -126,6 +126,47 @@ inline matrix<3, 3, T> matrix<3, 3, T>::identity()
             );
 }
 
+template <typename T>
+MATH_FUNC
+inline matrix<3, 3, T> matrix<3, 3, T>::rotation(vector<3, T> const& axis, T const& angle)
+{
+    auto v = normalize(axis);
+    auto s = sin(angle);
+    auto c = cos(angle);
+
+    return matrix<3, 3, T>(
+            v.x * v.x * (T(1.0) - c) + c,
+            v.x * v.y * (T(1.0) - c) + s * v.z,
+            v.x * v.z * (T(1.0) - c) - s * v.y,
+
+            v.y * v.x * (T(1.0) - c) - s * v.z,
+            v.y * v.y * (T(1.0) - c) + c,
+            v.y * v.z * (T(1.0) - c) + s * v.x,
+
+            v.z * v.x * (T(1.0) - c) + s * v.y,
+            v.z * v.y * (T(1.0) - c) - s * v.x,
+            v.z * v.z * (T(1.0) - c) + c
+            );
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<3, 3, T> matrix<3, 3, T>::scaling(vector<3, T> const& v)
+{
+    matrix<3, 3, T> s = identity();
+    s(0, 0) = v.x;
+    s(1, 1) = v.y;
+    s(2, 2) = v.z;
+    return s;
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<3, 3, T> matrix<3, 3, T>::scaling(T const& x, T const& y, T const& z)
+{
+    return scaling(x, y, z);
+}
+
 
 //--------------------------------------------------------------------------------------------------
 // Basic arithmetic

@@ -185,7 +185,7 @@ bool translate_manipulator::handle_mouse_move(visionaray::mouse_event const& eve
         auto X = cross(Y, Z);
         vec3 d  =  (dx * s) * X + (dy * s) * Y;
 
-        model_matrix_ = make_translation(d) * model_matrix_;
+        model_matrix_ = mat4::translation(d) * model_matrix_;
 
         down_pos_ = event.get_pos();
 

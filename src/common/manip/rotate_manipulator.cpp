@@ -115,7 +115,7 @@ void rotate_manipulator::render()
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glLoadMatrixf((camera_.get_view_matrix() * make_translation(vec3(center))).data());
+    glLoadMatrixf((camera_.get_view_matrix() * mat4::translation(vec3(center))).data());
 
 
     // parallel to screen
@@ -363,7 +363,7 @@ disci rotate_manipulator::bounding_disc()
     project(
             win_right,
             vec3(0.0f),
-            make_translation(radius * ball_.radius, 0.0f, 0.0f) * camera_.get_view_matrix() * model_matrix_,
+            mat4::translation(radius * ball_.radius, 0.0f, 0.0f) * camera_.get_view_matrix() * model_matrix_,
             camera_.get_proj_matrix(),
             camera_.get_viewport()
             );
