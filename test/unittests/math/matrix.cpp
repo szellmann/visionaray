@@ -79,12 +79,7 @@ TEST(Matrix, Inverse)
         mat3 I = mat3::identity();
 
         // make some non-singular matrix
-        mat4 A4 = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
-        mat3 A = mat3(
-                A4(0, 0), A4(0, 1), A4(0, 2),
-                A4(1, 0), A4(1, 1), A4(1, 2),
-                A4(2, 0), A4(2, 1), A4(2, 2)
-                );
+        mat3 A = mat3::rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
         mat3 B = inverse(A);
         mat3 C = A * B;
 
@@ -107,7 +102,7 @@ TEST(Matrix, Inverse)
         mat4 I = mat4::identity();
 
         // make some non-singular matrix
-        mat4 A = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
+        mat4 A = mat4::rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
         mat4 B = inverse(A);
         mat4 C = A * B;
 
@@ -152,8 +147,8 @@ TEST(Matrix, Mult)
     {
 
         // make some matrices
-        mat4 A = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
-        mat4 B = make_translation(vec3(3, 4, 5));
+        mat4 A = mat4::rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
+        mat4 B = mat4::translation(vec3(3, 4, 5));
         mat4 C = A * B;
 
         for_each_mat4_e(
@@ -197,7 +192,7 @@ TEST(Matrix, Transpose)
     {
 
         // make some non-singular matrix
-        mat4 A = make_rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
+        mat4 A = mat4::rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
         mat4 B = transpose(A);
 
         for_each_mat4_e(
