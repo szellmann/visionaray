@@ -178,7 +178,7 @@ template <typename T>
 MATH_FUNC
 inline matrix<4, 4, T> matrix<4, 4, T>::scaling(T const& x, T const& y, T const& z)
 {
-    return scaling(x, y, z);
+    return scaling(vector<3, T>(x, y, z));
 }
 
 template <typename T>
@@ -196,7 +196,7 @@ template <typename T>
 MATH_FUNC
 inline matrix<4, 4, T> matrix<4, 4, T>::translation(T const& x, T const& y, T const& z)
 {
-    return translation(x, y, z);
+    return translation(vector<3, T>(x, y, z));
 }
 
 

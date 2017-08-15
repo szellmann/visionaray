@@ -164,7 +164,7 @@ template <typename T>
 MATH_FUNC
 inline matrix<3, 3, T> matrix<3, 3, T>::scaling(T const& x, T const& y, T const& z)
 {
-    return scaling(x, y, z);
+    return scaling(vector<3, T>(x, y, z));
 }
 
 
