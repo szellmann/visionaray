@@ -1,7 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <cstring> // memcpy
 #include <type_traits>
 
 #include <visionaray/detail/algorithm.h>
