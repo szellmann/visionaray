@@ -32,6 +32,130 @@ TEST(Vector, Ctor)
 }
 
 
+TEST(Vector, BasicArithmetic)
+{
+    // Test basic arithmetic operators
+
+    // vec2
+    {
+        vector<2, float> u2(1.0f, 2.0f);
+        vector<2, float> v2(2.0f, 3.0f);
+        vector<2, float> v;
+
+        v = u2 + v2;
+        EXPECT_FLOAT_EQ(v.x, u2.x + v2.x);
+        EXPECT_FLOAT_EQ(v.y, u2.y + v2.y);
+
+        v = u2 - v2;
+        EXPECT_FLOAT_EQ(v.x, u2.x - v2.x);
+        EXPECT_FLOAT_EQ(v.y, u2.y - v2.y);
+
+        v = u2 * v2;
+        EXPECT_FLOAT_EQ(v.x, u2.x * v2.x);
+        EXPECT_FLOAT_EQ(v.y, u2.y * v2.y);
+
+        v = u2 / v2;
+        EXPECT_FLOAT_EQ(v.x, u2.x / v2.x);
+        EXPECT_FLOAT_EQ(v.y, u2.y / v2.y);
+    }
+
+    // vec3
+    {
+        vector<3, float> u3(1.0f, 2.0f, 3.0f);
+        vector<3, float> v3(2.0f, 3.0f, 4.0f);
+        vector<3, float> v;
+
+        v = u3 + v3;
+        EXPECT_FLOAT_EQ(v.x, u3.x + v3.x);
+        EXPECT_FLOAT_EQ(v.y, u3.y + v3.y);
+        EXPECT_FLOAT_EQ(v.z, u3.z + v3.z);
+
+        v = u3 - v3;
+        EXPECT_FLOAT_EQ(v.x, u3.x - v3.x);
+        EXPECT_FLOAT_EQ(v.y, u3.y - v3.y);
+        EXPECT_FLOAT_EQ(v.z, u3.z - v3.z);
+
+        v = u3 * v3;
+        EXPECT_FLOAT_EQ(v.x, u3.x * v3.x);
+        EXPECT_FLOAT_EQ(v.y, u3.y * v3.y);
+        EXPECT_FLOAT_EQ(v.z, u3.z * v3.z);
+
+        v = u3 / v3;
+        EXPECT_FLOAT_EQ(v.x, u3.x / v3.x);
+        EXPECT_FLOAT_EQ(v.y, u3.y / v3.y);
+        EXPECT_FLOAT_EQ(v.z, u3.z / v3.z);
+    }
+
+    // vec4
+    {
+        vector<4, float> u4(1.0f, 2.0f, 3.0f, 4.0f);
+        vector<4, float> v4(2.0f, 3.0f, 4.0f, 5.0f);
+        vector<4, float> v;
+
+        v = u4 + v4;
+        EXPECT_FLOAT_EQ(v.x, u4.x + v4.x);
+        EXPECT_FLOAT_EQ(v.y, u4.y + v4.y);
+        EXPECT_FLOAT_EQ(v.z, u4.z + v4.z);
+        EXPECT_FLOAT_EQ(v.w, u4.w + v4.w);
+
+        v = u4 - v4;
+        EXPECT_FLOAT_EQ(v.x, u4.x - v4.x);
+        EXPECT_FLOAT_EQ(v.y, u4.y - v4.y);
+        EXPECT_FLOAT_EQ(v.z, u4.z - v4.z);
+        EXPECT_FLOAT_EQ(v.w, u4.w - v4.w);
+
+        v = u4 * v4;
+        EXPECT_FLOAT_EQ(v.x, u4.x * v4.x);
+        EXPECT_FLOAT_EQ(v.y, u4.y * v4.y);
+        EXPECT_FLOAT_EQ(v.z, u4.z * v4.z);
+        EXPECT_FLOAT_EQ(v.w, u4.w * v4.w);
+
+        v = u4 / v4;
+        EXPECT_FLOAT_EQ(v.x, u4.x / v4.x);
+        EXPECT_FLOAT_EQ(v.y, u4.y / v4.y);
+        EXPECT_FLOAT_EQ(v.z, u4.z / v4.z);
+        EXPECT_FLOAT_EQ(v.w, u4.w / v4.w);
+    }
+
+    // vec5
+    {
+        float f5_1[5] = { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f };
+        float f5_2[5] = { 2.0f, 3.0f, 4.0f, 5.0f, 6.0f };
+        vector<5, float> u5(f5_1);
+        vector<5, float> v5(f5_2);
+        vector<5, float> v;
+
+        v = u5 + v5;
+        EXPECT_FLOAT_EQ(v[0], u5[0] + v5[0]);
+        EXPECT_FLOAT_EQ(v[1], u5[1] + v5[1]);
+        EXPECT_FLOAT_EQ(v[2], u5[2] + v5[2]);
+        EXPECT_FLOAT_EQ(v[3], u5[3] + v5[3]);
+        EXPECT_FLOAT_EQ(v[4], u5[4] + v5[4]);
+
+        v = u5 - v5;
+        EXPECT_FLOAT_EQ(v[0], u5[0] - v5[0]);
+        EXPECT_FLOAT_EQ(v[1], u5[1] - v5[1]);
+        EXPECT_FLOAT_EQ(v[2], u5[2] - v5[2]);
+        EXPECT_FLOAT_EQ(v[3], u5[3] - v5[3]);
+        EXPECT_FLOAT_EQ(v[4], u5[4] - v5[4]);
+
+        v = u5 * v5;
+        EXPECT_FLOAT_EQ(v[0], u5[0] * v5[0]);
+        EXPECT_FLOAT_EQ(v[1], u5[1] * v5[1]);
+        EXPECT_FLOAT_EQ(v[2], u5[2] * v5[2]);
+        EXPECT_FLOAT_EQ(v[3], u5[3] * v5[3]);
+        EXPECT_FLOAT_EQ(v[4], u5[4] * v5[4]);
+
+        v = u5 / v5;
+        EXPECT_FLOAT_EQ(v[0], u5[0] / v5[0]);
+        EXPECT_FLOAT_EQ(v[1], u5[1] / v5[1]);
+        EXPECT_FLOAT_EQ(v[2], u5[2] / v5[2]);
+        EXPECT_FLOAT_EQ(v[3], u5[3] / v5[3]);
+        EXPECT_FLOAT_EQ(v[4], u5[4] / v5[4]);
+    }
+}
+
+
 TEST(Vector, Dot)
 {
     // Test dot product for different vector sizes
