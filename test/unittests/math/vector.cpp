@@ -32,6 +32,47 @@ TEST(Vector, Ctor)
 }
 
 
+TEST(Vector, XYZ)
+{
+    // vec3
+    {
+        vector<3, float> v3(1.0f, 2.0f, 3.0f);
+        EXPECT_FLOAT_EQ(v3.xy().x, 1.0f);
+        EXPECT_FLOAT_EQ(v3.xy().y, 2.0f);
+
+        vector<2, float>& v2_ref = v3.xy();
+        v2_ref.x = 2.0f;
+        v2_ref.y = 3.0f;
+        EXPECT_FLOAT_EQ(v3.x, 2.0f);
+        EXPECT_FLOAT_EQ(v3.y, 3.0f);
+    }
+
+    // vec4
+    {
+        vector<4, float> v4(1.0f, 2.0f, 3.0f, 4.0f);
+        EXPECT_FLOAT_EQ(v4.xy().x, 1.0f);
+        EXPECT_FLOAT_EQ(v4.xy().y, 2.0f);
+        EXPECT_FLOAT_EQ(v4.xyz().x, 1.0f);
+        EXPECT_FLOAT_EQ(v4.xyz().y, 2.0f);
+        EXPECT_FLOAT_EQ(v4.xyz().z, 3.0f);
+
+        vector<2, float>& v2_ref = v4.xy();
+        v2_ref.x = 2.0f;
+        v2_ref.y = 3.0f;
+        EXPECT_FLOAT_EQ(v4.x, 2.0f);
+        EXPECT_FLOAT_EQ(v4.y, 3.0f);
+
+        vector<3, float>& v3_ref = v4.xyz();
+        v3_ref.x = 4.0f;
+        v3_ref.y = 5.0f;
+        v3_ref.z = 6.0f;
+        EXPECT_FLOAT_EQ(v4.x, 4.0f);
+        EXPECT_FLOAT_EQ(v4.y, 5.0f);
+        EXPECT_FLOAT_EQ(v4.z, 6.0f);
+    }
+}
+
+
 TEST(Vector, BasicArithmetic)
 {
     // Test basic arithmetic operators
