@@ -142,8 +142,9 @@ target_link_libraries(unittests libgtest libgtest_main ${CMAKE_THREAD_LIBS_INIT}
 # at first invocation
 if(MSVC)
     # MSVC does not have -isystem or an equivalent
-    set_target_properties(unittests PROPERTIES APPEND_STRING PROPERTY
-        INCLUDE_DIRECTORIES " ${GTEST_INCLUDE_DIR}"
+    get_property(ORIGINAL_INCLUDE_DIRS TARGET unittests PROPERTY INCLUDE_DIRECTORIES)
+    set_target_properties(unittests PROPERTIES
+        INCLUDE_DIRECTORIES "${ORIGINAL_INCLUDE_DIRS};;${GTEST_INCLUDE_DIR}"
     )
 else()
     # Unix: include with -isystem to suppress warnings from gtest.h
