@@ -18,6 +18,7 @@ else() # GNU, Clang, etc.
     add_definitions(-Wsign-compare)
     add_definitions(-Wwrite-strings)
     add_definitions(-Woverloaded-virtual)
+    add_definitions(-Wundef)
 
     if(VSNRAY_ENABLE_WARNINGS)
         add_definitions(-Wall -Wextra)
