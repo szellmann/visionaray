@@ -5,7 +5,8 @@
 #include <cstring> // memcpy
 #include <type_traits>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/limits.h>
+#include <visionaray/math/snorm.h>
 
 #include <gtest/gtest.h>
 
