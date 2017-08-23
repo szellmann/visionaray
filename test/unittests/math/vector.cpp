@@ -1,12 +1,38 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <type_traits>
+
 #include <visionaray/math/math.h>
 
 #include <gtest/gtest.h>
 
 using namespace visionaray;
 
+
+//-------------------------------------------------------------------------------------------------
+// vector is POD!
+//
+
+static_assert(std::is_pod<vector<2, int>>::value, "Nod POD!");
+static_assert(std::is_pod<vector<3, int>>::value, "Not POD!");
+static_assert(std::is_pod<vector<4, int>>::value, "Not POD!");
+static_assert(std::is_pod<vector<5, int>>::value, "Not POD!");
+
+static_assert(std::is_pod<vector<2, double>>::value, "Nod POD!");
+static_assert(std::is_pod<vector<3, double>>::value, "Not POD!");
+static_assert(std::is_pod<vector<4, double>>::value, "Not POD!");
+static_assert(std::is_pod<vector<5, double>>::value, "Not POD!");
+
+static_assert(std::is_pod<vector<2, float>>::value, "Nod POD!");
+static_assert(std::is_pod<vector<3, float>>::value, "Not POD!");
+static_assert(std::is_pod<vector<4, float>>::value, "Not POD!");
+static_assert(std::is_pod<vector<5, float>>::value, "Not POD!");
+
+
+//-------------------------------------------------------------------------------------------------
+// Unit tests
+//
 
 TEST(Vector, Ctor)
 {
