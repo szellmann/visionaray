@@ -3,12 +3,22 @@
 
 #include <cstdint>
 #include <cstring> // memcpy
+#include <type_traits>
 
 #include <visionaray/math/math.h>
 
 #include <gtest/gtest.h>
 
 using namespace visionaray;
+
+
+//-------------------------------------------------------------------------------------------------
+// snorm is POD!
+//
+
+static_assert(std::is_pod<snorm< 8>>::value, "Not POD!");
+static_assert(std::is_pod<snorm<16>>::value, "Not POD!");
+static_assert(std::is_pod<snorm<32>>::value, "Not POD!");
 
 
 //-------------------------------------------------------------------------------------------------
