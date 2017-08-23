@@ -21,11 +21,8 @@ function(visionaray_test_compile_failure FILENAME TESTNAME)
                           EXCLUDE_FROM_ALL TRUE
                           EXCLUDE_FROM_DEFAULT_BUILD TRUE)
 
-    # Get old compile definitions, concatenate with given arguments
-    get_property(ORIGINAL_COMPILE_DEFINITIONS TARGET cft_${TESTNAME} PROPERTY COMPILE_DEFINITIONS)
-    set(NEW_COMPILE_DEFINITIONS ${ORIGINAL_COMPILE_DEFINITIONS} ${ARGN})
-    set_target_properties(cft_${TESTNAME} PROPERTIES
-        "COMPILE_DEFINITIONS" "${NEW_COMPILE_DEFINITIONS}"
+    set_target_properties(cft_${TESTNAME} PROPERTIES APPEND_STRING PROPERTY
+        COMPILE_DEFINITIONS " ${ARGN}"
     )
 
     add_test(NAME ${TESTNAME}
@@ -40,11 +37,8 @@ function(visionaray_test_compile_success FILENAME TESTNAME)
                           EXCLUDE_FROM_ALL TRUE
                           EXCLUDE_FROM_DEFAULT_BUILD TRUE)
 
-    # Get old compile definitions, concatenate with given arguments
-    get_property(ORIGINAL_COMPILE_DEFINITIONS TARGET cft_${TESTNAME} PROPERTY COMPILE_DEFINITIONS)
-    set(NEW_COMPILE_DEFINITIONS ${ORIGINAL_COMPILE_DEFINITIONS} ${ARGN})
-    set_target_properties(cft_${TESTNAME} PROPERTIES
-        "COMPILE_DEFINITIONS" "${NEW_COMPILE_DEFINITIONS}"
+    set_target_properties(cft_${TESTNAME} PROPERTIES APPEND_STRING PROPERTY
+        COMPILE_DEFINITIONS " ${ARGN}"
     )
 
     add_test(NAME ${TESTNAME}

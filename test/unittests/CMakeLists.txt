@@ -146,9 +146,8 @@ set_target_properties(unittests PROPERTIES APPEND_STRING PROPERTY
 
 # Allow multi-line comments, some unit tests have verbose documentation with extra '/'s and '\'s
 if(CMAKE_COMPILER_IS_GNUCXX)
-    get_property(ORIGINAL_COMPILE_FLAGS TARGET unittests PROPERTY COMPILE_FLAGS)
-    set_target_properties(unittests PROPERTIES
-        "COMPILE_FLAGS" "${ORIGINAL_COMPILE_FLAGS} -Wno-comment"
+    set_target_properties(unittests PROPERTIES APPEND_STRING PROPERTY
+        COMPILE_FLAGS " -Wno-comment"
     )
 endif()
 
