@@ -89,6 +89,8 @@
 #ifndef VSNRAY_SIMD_HAS_SVML
 #if defined(__INTEL_COMPILER)
 #define VSNRAY_SIMD_HAS_SVML 1
+#else
+#define VSNRAY_SIMD_HAS_SVML 0
 #endif
 #endif
 
