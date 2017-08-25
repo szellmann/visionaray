@@ -37,7 +37,7 @@ inline F map_tex_coord(F const& coord, I const& texsize, tex_address_mode mode)
     case Mirror:
         return select(
             (convert_to_int(floor(coord)) & I(1)) == 1, // if is odd
-            F(texsize - 1) / F(texsize) - (coord - floor(coord)),
+            convert_to_float(texsize - 1) / convert_to_float(texsize) - (coord - floor(coord)),
             coord - floor(coord)
             );
 
