@@ -12,7 +12,7 @@
 #define VSNRAY_DETAIL_SEMAPHORE_USE_STD 1
 #endif
 
-#if VSNRAY_DETAIL_SEMAPHORE_USE_STD
+#ifdef VSNRAY_DETAIL_SEMAPHORE_USE_STD
 #include <condition_variable>
 #include <mutex>
 #else
