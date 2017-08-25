@@ -26,7 +26,6 @@
 #endif
 #endif
 
-#include <visionaray/math/forward.h>
 #include <visionaray/pixel_format.h>
 
 
@@ -72,8 +71,6 @@ void blend_pixels(
         GLenum          sfactor     = GL_ONE,
         GLenum          dfactor     = GL_ONE_MINUS_SRC_ALPHA
         );
-
-recti viewport();
 
 } // gl
 } // visionaray

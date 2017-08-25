@@ -2,7 +2,6 @@
 // See the LICENSE file for details.
 
 #include <visionaray/gl/util.h>
-#include <visionaray/math/math.h>
 
 #include "../util.h"
 
@@ -142,7 +141,9 @@ void gl::blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid c
 #if defined(GL_VERSION_1_1) && GL_VERSION_1_1
     glPushAttrib(GL_ALL_ATTRIB_BITS);
 
-    recti vp = gl::viewport();
+    GLint vp[4];
+    glGetIntegerv(GL_VIEWPORT, &vp[0]);
+
     glWindowPos2i(vp[0], vp[1]);
 
     GLfloat scalex = vp[2] / static_cast<GLfloat>(w);
@@ -159,13 +160,6 @@ void gl::blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid c
 #else
     VSNRAY_UNUSED(w, h, format, type, pixels, sfactor, dfactor);
 #endif
-}
-
-recti gl::viewport()
-{
-    GLint vp[4];
-    glGetIntegerv(GL_VIEWPORT, &vp[0]);
-    return recti(vp[0], vp[1], vp[2], vp[3]);
 }
 
 } // visionaray
