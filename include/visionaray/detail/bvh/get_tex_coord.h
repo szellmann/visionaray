@@ -8,8 +8,6 @@
 
 #include <type_traits>
 
-#include <visionaray/bvh.h>
-
 #include "hit_record.h"
 
 namespace visionaray

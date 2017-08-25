@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <limits>
 
-#include <visionaray/bvh.h>
 #include <visionaray/math/aabb.h>
 
 #include "sah.h"
