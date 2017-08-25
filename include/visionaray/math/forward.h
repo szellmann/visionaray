@@ -26,6 +26,9 @@ template <size_t Dim>
 class cartesian_axis;
 
 template <unsigned Bits>
+class snorm;
+
+template <unsigned Bits>
 class unorm;
 
 template <size_t Dim, typename T>
