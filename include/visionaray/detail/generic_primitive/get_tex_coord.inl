@@ -1,11 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#pragma once
-
-#ifndef VSNRAY_DETAIL_GENERIC_PRIMITIVE_GET_TEX_COORD_H
-#define VSNRAY_DETAIL_GENERIC_PRIMITIVE_GET_TEX_COORD_H 1
-
 #include <visionaray/get_tex_coord.h>
 #include <visionaray/prim_traits.h>
 
@@ -95,5 +90,3 @@ inline auto get_tex_coord(
 }
 
 } // visionaray
-
-#endif // VSNRAY_DETAIL_GENERIC_PRIMITIVE_GET_TEX_COORD_H

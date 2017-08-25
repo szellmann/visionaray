@@ -1,11 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#pragma once
-
-#ifndef VSNRAY_DETAIL_GENERIC_PRIMITIVE_GET_COLOR_H
-#define VSNRAY_DETAIL_GENERIC_PRIMITIVE_GET_COLOR_H 1
-
 #include <visionaray/get_color.h>
 
 namespace visionaray
@@ -82,5 +77,3 @@ inline auto get_color(
 }
 
 } // visionaray
-
-#endif // VSNRAY_DETAIL_GENERIC_PRIMITIVE_GET_COLOR_H

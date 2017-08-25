@@ -98,6 +98,8 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/bvh/sah.h
     ${HEADER_DIR}/detail/bvh/statistics.h
     ${HEADER_DIR}/detail/bvh/traverse.h
+    ${HEADER_DIR}/detail/generic_primitive/get_normal.inl
+    ${HEADER_DIR}/detail/generic_primitive/get_tex_coord.inl
     ${HEADER_DIR}/detail/material/emissive.inl
     ${HEADER_DIR}/detail/material/matte.inl
     ${HEADER_DIR}/detail/material/mirror.inl
@@ -116,8 +118,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/exit_traversal.h
     ${HEADER_DIR}/detail/generic_material.inl
     ${HEADER_DIR}/detail/generic_primitive.inl
-    ${HEADER_DIR}/detail/generic_primitive_get_normal.h
-    ${HEADER_DIR}/detail/generic_primitive_get_tex_coord.h
     ${HEADER_DIR}/detail/gpu_buffer_rt.inl
     ${HEADER_DIR}/detail/macros.h
     ${HEADER_DIR}/detail/material.inl

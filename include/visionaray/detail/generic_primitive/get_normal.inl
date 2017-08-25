@@ -1,11 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#pragma once
-
-#ifndef VSNRAY_DETAIL_GENERIC_PRIMITIVE_GET_NORMAL_H
-#define VSNRAY_DETAIL_GENERIC_PRIMITIVE_GET_NORMAL_H 1
-
 #include <type_traits>
 
 #include <visionaray/get_normal.h>
@@ -151,5 +146,3 @@ inline auto get_shading_normal(
 }
 
 } // visionaray
-
-#endif // VSNRAY_DETAIL_GENERIC_PRIMITIVE_GET_NORMAL_H
