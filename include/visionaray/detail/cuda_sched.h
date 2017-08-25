@@ -6,7 +6,8 @@
 #ifndef VSNRAY_DETAIL_CUDA_SCHED_H
 #define VSNRAY_DETAIL_CUDA_SCHED_H 1
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/forward.h>
+#include <visionaray/math/vector.h>
 
 namespace visionaray
 {

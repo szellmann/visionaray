@@ -7,7 +7,6 @@
 #define VSNRAY_GENERIC_PRIMITIVE_H 1
 
 #include "detail/macros.h"
-#include "math/math.h"
 #include "prim_traits.h"
 #include "variant.h"
 

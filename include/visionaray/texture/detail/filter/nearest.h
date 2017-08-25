@@ -8,7 +8,8 @@
 
 #include <array>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/detail/math.h>
+#include <visionaray/math/vector.h>
 
 #include "common.h"
 

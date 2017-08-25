@@ -6,8 +6,9 @@
 #ifndef VSNRAY_PIXEL_TRAITS_H
 #define VSNRAY_PIXEL_TRAITS_H 1
 
-#include <visionaray/math/math.h>
-#include <visionaray/pixel_format.h>
+#include "math/unorm.h"
+#include "math/vector.h"
+#include "pixel_format.h"
 
 namespace visionaray
 {

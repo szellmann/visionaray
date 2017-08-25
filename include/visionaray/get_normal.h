@@ -10,7 +10,14 @@
 #include <iterator>
 #include <type_traits>
 
-#include "math/math.h"
+#include "math/simd/type_traits.h"
+#include "math/intersect.h"
+#include "math/plane.h"
+#include "math/primitive.h"
+#include "math/ray.h"
+#include "math/sphere.h"
+#include "math/triangle.h"
+#include "math/vector.h"
 #include "prim_traits.h"
 #include "tags.h"
 

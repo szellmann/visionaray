@@ -6,7 +6,10 @@
 #ifndef VSNRAY_DETAIL_COLOR_CONVERSION_H
 #define VSNRAY_DETAIL_COLOR_CONVERSION_H 1
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/detail/math.h>
+#include <visionaray/math/matrix.h>
+#include <visionaray/math/unorm.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/spectrum.h>
 

@@ -11,6 +11,11 @@
 #include <type_traits>
 #include <utility>
 
+#include <visionaray/math/detail/math.h>
+#include <visionaray/math/simd/type_traits.h>
+#include <visionaray/math/vector.h>
+#include <visionaray/math/unorm.h>
+
 #include "filter.h"
 #include "texture_common.h"
 

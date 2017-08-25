@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/math/math.h>
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/simple_buffer_rt.h>

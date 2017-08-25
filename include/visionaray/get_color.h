@@ -10,7 +10,12 @@
 #include <iterator>
 #include <type_traits>
 
-#include "math/math.h"
+#include "math/simd/type_traits.h"
+#include "math/intersect.h"
+#include "math/primitive.h"
+#include "math/ray.h"
+#include "math/triangle.h"
+#include "math/vector.h"
 #include "tags.h"
 
 namespace visionaray

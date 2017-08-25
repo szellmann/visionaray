@@ -9,7 +9,8 @@
 #include <cuda_runtime_api.h>
 
 #include <visionaray/detail/macros.h>
-#include <visionaray/math/math.h>
+#include <visionaray/math/unorm.h>
+#include <visionaray/math/vector.h>
 
 #include "cast.h"
 

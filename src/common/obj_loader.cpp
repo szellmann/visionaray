@@ -14,6 +14,7 @@
 #include <boost/utility/string_ref.hpp>
 #include <boost/filesystem.hpp>
 
+#include <visionaray/math/io.h>
 #include <visionaray/math/vector.h>
 #include <visionaray/texture/texture.h>
 

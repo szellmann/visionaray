@@ -10,7 +10,9 @@
 #include <type_traits>
 
 #include <visionaray/detail/macros.h>
-#include <visionaray/math/math.h>
+#include <visionaray/math/detail/math.h>
+#include <visionaray/math/simd/gather.h>
+#include <visionaray/math/vector.h>
 
 #include "../../forward.h"
 

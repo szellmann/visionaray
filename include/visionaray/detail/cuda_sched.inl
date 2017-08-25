@@ -7,6 +7,7 @@
 
 #include <cuda_runtime_api.h>
 
+#include <visionaray/math/detail/math.h> // div_up
 #include <visionaray/random_sampler.h>
 
 #include "sched_common.h"

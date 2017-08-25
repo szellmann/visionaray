@@ -10,7 +10,8 @@
 #include <utility>
 
 #include "detail/tags.h"
-#include "math/math.h"
+#include "math/simd/type_traits.h"
+#include "math/vector.h"
 #include "array.h"
 
 namespace visionaray

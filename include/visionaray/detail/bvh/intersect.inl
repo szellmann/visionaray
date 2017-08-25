@@ -5,7 +5,8 @@
 #include <type_traits>
 #include <utility>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/limits.h>
+#include <visionaray/math/ray.h>
 #include <visionaray/intersector.h>
 #include <visionaray/update_if.h>
 

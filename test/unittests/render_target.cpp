@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details
 
+#include <visionaray/math/math.h>
 #include <visionaray/result_record.h>
 #include <visionaray/simple_buffer_rt.h>
 #include <visionaray/scheduler.h>

@@ -10,7 +10,12 @@
 #include <cstddef>
 #include <type_traits>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/simd/avx.h>
+#include <visionaray/math/simd/builtin.h>
+#include <visionaray/math/simd/neon.h>
+#include <visionaray/math/simd/sse.h>
+#include <visionaray/math/simd/type_traits.h>
+#include <visionaray/math/vector.h>
 
 #include "filter.h"
 #include "texture_common.h"

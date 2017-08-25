@@ -8,7 +8,8 @@
 
 #include <memory>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/forward.h>
+#include <visionaray/math/rectangle.h>
 #include <visionaray/pixel_format.h>
 
 namespace visionaray

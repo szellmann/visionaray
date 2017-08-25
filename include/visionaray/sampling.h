@@ -6,7 +6,10 @@
 #ifndef VSNRAY_SAMPLING_H
 #define VSNRAY_SAMPLING_H 1
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/detail/math.h>
+#include <visionaray/math/simd/type_traits.h>
+#include <visionaray/math/constants.h>
+#include <visionaray/math/vector.h>
 
 namespace visionaray
 {

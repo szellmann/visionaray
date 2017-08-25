@@ -14,6 +14,8 @@
 #include <visionaray/cuda/texture_object.h>
 #include <visionaray/cuda/util.h>
 #include <visionaray/detail/macros.h>
+#include <visionaray/math/unorm.h>
+#include <visionaray/math/vector.h>
 
 #include "texture_common.h"
 

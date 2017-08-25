@@ -9,7 +9,7 @@
 #include <limits>
 #include <stdexcept>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/detail/math.h>
 
 #include "texture1d.h"
 #include "texture2d.h"

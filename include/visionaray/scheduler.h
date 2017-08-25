@@ -11,7 +11,9 @@
 #include <utility>
 
 #include "detail/sched_common.h"
+#include "math/forward.h"
 #include "math/matrix.h"
+#include "math/rectangle.h"
 #include "matrix_camera.h"
 
 namespace visionaray

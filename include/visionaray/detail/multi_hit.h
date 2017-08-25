@@ -10,7 +10,7 @@
 #include <iterator>
 #include <type_traits>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/simd/type_traits.h>
 #include <visionaray/array.h>
 
 #include "tags.h"

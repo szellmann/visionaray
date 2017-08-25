@@ -8,7 +8,9 @@
 
 #include <type_traits>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/simd/type_traits.h>
+#include <visionaray/math/intersect.h> // TODO: check why we need this!!
+#include <visionaray/math/ray.h>
 #include <visionaray/array.h>
 #include <visionaray/bvh.h>
 #include <visionaray/update_if.h>
