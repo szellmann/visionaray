@@ -6,7 +6,8 @@
 #ifndef VSNRAY_BRDF_H
 #define VSNRAY_BRDF_H 1
 
-#include "math/math.h"
+#include "math/constants.h"
+#include "math/vector.h"
 #include "fresnel.h"
 #include "sampling.h"
 #include "spectrum.h"

@@ -13,13 +13,13 @@
 
 #include <type_traits>
 
+#include "../constants.h"
 #include "avx.h"
 #include "avx512.h"
 #include "builtin.h"
 #include "neon.h"
 #include "sse.h"
 #include "type_traits.h"
-#include "../detail/math.h"
 
 
 namespace MATH_NAMESPACE

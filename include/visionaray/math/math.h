@@ -11,6 +11,7 @@
 
 #include "aabb.h"
 #include "axis.h"
+#include "constants.h"
 #include "intersect.h"
 #include "io.h"
 #include "limits.h"

@@ -216,6 +216,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/aabb.h
     ${HEADER_DIR}/math/axis.h
     ${HEADER_DIR}/math/config.h
+    ${HEADER_DIR}/math/constants.h
     ${HEADER_DIR}/math/forward.h
     ${HEADER_DIR}/math/intersect.h
     ${HEADER_DIR}/math/io.h
