@@ -1,10 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#pragma once
+
 #ifndef VSNRAY_DETAIL_BVH_PRIM_TRAITS_H
 #define VSNRAY_DETAIL_BVH_PRIM_TRAITS_H 1
-
-#pragma once
 
 namespace visionaray
 {
