@@ -8,6 +8,7 @@
 
 #include "detail/macros.h"
 #include "math/aabb.h"
+#include "math/intersect.h"
 #include "math/ray.h"
 
 namespace visionaray
