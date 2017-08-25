@@ -1,6 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <iterator>
+#include <type_traits>
+
 #include <visionaray/get_tex_coord.h>
 #include <visionaray/prim_traits.h>
 
