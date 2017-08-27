@@ -45,7 +45,7 @@ public:
 
     GLuint get() const { return name_; }
 
-    void set_source(char const* source);
+    void set_source(char const* source) const;
     void compile() const;
     bool check_compiled() const;
 

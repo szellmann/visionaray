@@ -15,7 +15,7 @@ namespace visionaray
 namespace gl
 {
 
-void shader::set_source(char const* source)
+void shader::set_source(char const* source) const
 {
   GLint len = static_cast<GLint>(std::strlen(source));
 
