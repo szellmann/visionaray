@@ -51,7 +51,6 @@ struct kernel
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
                 auto sr         = make_shade_record<Params, S>();
-                sr.active       = hit_rec.hit;
                 sr.isect_pos    = hit_rec.isect_pos;
                 sr.normal       = n;
                 sr.view_dir     = -ray.dir;

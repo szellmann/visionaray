@@ -317,12 +317,12 @@ inline spectrum<U> plastic<T>::sample_impl(
 
     auto u         = sampler.next();
 
-    if ( any(sr.active && u < U(prob_diff)) )
+    if (any(u < U(prob_diff)))
     {
         diff       = diffuse_brdf_.sample_f(sr.normal, sr.view_dir, refl1, pdf1, sampler);
     }
 
-    if ( any(sr.active && u >= U(prob_diff)) )
+    if (any(u >= U(prob_diff)))
     {
         spec       = specular_brdf_.sample_f(sr.normal, sr.view_dir, refl2, pdf2, sampler);
     }

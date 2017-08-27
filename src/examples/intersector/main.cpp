@@ -399,7 +399,6 @@ void renderer::on_display()
             auto surf = get_surface(hit_rec, kparams);
 
             auto sr = make_shade_record<decltype(kparams), S>();
-            sr.active = hit_rec.hit;
             sr.isect_pos = hit_rec.isect_pos;
             // two-sided shading: if necessary, flip the normal
             sr.normal = faceforward( surf.shading_normal, -ray.dir, surf.geometric_normal );

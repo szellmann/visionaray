@@ -21,9 +21,7 @@ template <typename L, typename T, typename ...Args>
 struct shade_record_base
 {
     using scalar_type = T;
-    using mask_type = simd::mask_type_t<T>;
 
-    mask_type active;
     vector<3, T> isect_pos;
     vector<3, T> normal;
     vector<3, T> view_dir;
@@ -60,15 +58,10 @@ template <
 VSNRAY_FUNC
 inline array<shade_record<L, float>, num_elements<T>::value> unpack(shade_record<L, T> const& sr)
 {
-    using int_array = aligned_array_t<int_type_t<T>>;
-
     auto isect_pos  = unpack(sr.isect_pos);
     auto normal     = unpack(sr.normal);
     auto view_dir   = unpack(sr.view_dir);
     auto light_dir  = unpack(sr.light_dir);
-
-    int_array active;
-    store(active, sr.active.i);
 
     array<shade_record<L, float>, num_elements<T>::value> result;
 
@@ -79,7 +72,6 @@ inline array<shade_record<L, float>, num_elements<T>::value> unpack(shade_record
         result[i].view_dir  = view_dir[i];
         result[i].light_dir = light_dir[i];
         result[i].light     = sr.light;
-        result[i].active    = active[i] != 0;
     }
 
     return result;
@@ -103,16 +95,11 @@ inline array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> u
         shade_record<L, vector<3, T>, T> const& sr
         )
 {
-    using int_array = aligned_array_t<int_type_t<T>>;
-
     auto isect_pos  = unpack(sr.isect_pos);
     auto normal     = unpack(sr.normal);
     auto view_dir   = unpack(sr.view_dir);
     auto light_dir  = unpack(sr.light_dir);
     auto tex_color  = unpack(sr.tex_color);
-
-    int_array active;
-    store(active, sr.active.i);
 
     array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> result;
 
@@ -124,7 +111,6 @@ inline array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> u
         result[i].light_dir = light_dir[i];
         result[i].light     = sr.light;
         result[i].tex_color = tex_color[i];
-        result[i].active    = active[i] != 0;
     }
 
     return result;

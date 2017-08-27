@@ -285,10 +285,7 @@ struct kernel
                         isect
                         );
 
-                auto active_rays = hit_rec.hit & !shadow_rec.hit;
-
                 auto sr         = make_shade_record<Params, S>();
-                sr.active       = active_rays;
                 sr.isect_pos    = hit_rec.isect_pos;
                 sr.normal       = n;
                 sr.view_dir     = view_dir;
@@ -296,7 +293,11 @@ struct kernel
                 sr.light        = *it;
                 auto clr        = surf.shade(sr);
 
-                shaded_clr += select( active_rays, clr, C(0.0) );
+                shaded_clr += select(
+                        hit_rec.hit & !shadow_rec.hit,
+                        clr,
+                        C(0.0)
+                        );
             }
 
             color += select( hit_rec.hit, shaded_clr, no_hit_color ) * throughput;

@@ -84,7 +84,6 @@ struct kernel
 
             S pdf(0.0);
             auto sr     = make_shade_record<Params, S>();
-            sr.active   = active_rays;
             sr.normal   = n;
             sr.view_dir = view_dir;
 
