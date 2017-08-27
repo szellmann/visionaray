@@ -223,7 +223,6 @@ struct kernel
 
             auto it = params.lights.begin;
             auto sr         = make_shade_record<decltype(params), S>();
-            sr.active       = hit_rec[i].hit;
             sr.isect_pos    = hit_rec[i].isect_pos;
             sr.normal       = n;
             sr.view_dir     = view_dir;
