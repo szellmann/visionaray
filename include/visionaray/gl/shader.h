@@ -15,7 +15,6 @@
 #endif
 
 #include <visionaray/detail/macros.h>
-#include <visionaray/detail/platform.h>
 
 namespace visionaray
 {

@@ -17,9 +17,9 @@ namespace gl
 
 void shader::set_source(char const* source) const
 {
-  GLint len = static_cast<GLint>(std::strlen(source));
+    GLint len = static_cast<GLint>(std::strlen(source));
 
-  glShaderSource(name_, 1, &source, &len);
+    glShaderSource(name_, 1, &source, &len);
 }
 
 void shader::compile() const
