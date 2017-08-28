@@ -140,6 +140,18 @@ inline vector<3, T> spd_to_rgb(spectrum<T> const& spe)
 
 
 //-------------------------------------------------------------------------------------------------
+// Convert RGB to luminance (cd/m^2)
+//
+
+template <typename T>
+VSNRAY_FUNC
+inline T rgb_to_luminance(vector<3, T> const& rgb)
+{
+    return T(0.3) * rgb.x + T(0.59) * rgb.y + T(0.11) * rgb.z;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Convert spectrum to luminance (cd/m^2)
 //
 
