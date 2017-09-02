@@ -38,6 +38,25 @@ inline spectrum<typename SR::scalar_type> plastic<T>::shade(SR const& sr) const
             );
 }
 
+namespace detail
+{
+
+template <typename T, typename SR>
+VSNRAY_FUNC
+spectrum<T> tex_color_from_shade_record(SR)
+{
+    return spectrum<T>(1.0f);
+}
+
+template <typename T, typename L, typename C, typename U>
+VSNRAY_FUNC
+spectrum<T> tex_color_from_shade_record(shade_record<L, C, U> const& sr)
+{
+    return spectrum<T>(from_rgb(sr.tex_color));
+}
+
+} // detail
+
 template <typename T>
 template <typename SR, typename U, typename Sampler>
 VSNRAY_FUNC
@@ -48,20 +67,42 @@ inline spectrum<U> plastic<T>::sample(
         Sampler&        sampler
         ) const
 {
-    return sample_impl(shade_rec, refl_dir, pdf, sampler);
-}
+    U pdf1(0.0);
+    U pdf2(0.0);
 
-template <typename T>
-template <typename L, typename C, typename U, typename Sampler>
-VSNRAY_FUNC
-inline spectrum<U> plastic<T>::sample(
-        shade_record<L, C, U> const&    sr,
-        vector<3, U>&                   refl_dir,
-        U&                              pdf,
-        Sampler&                        sampler
-        ) const
-{
-    return spectrum<U>(from_rgb(sr.tex_color)) * sample_impl(sr, refl_dir, pdf, sampler);
+    vector<3, U> refl1(0.0);
+    vector<3, U> refl2(0.0);
+
+    spectrum<U>  diff(0.0);
+    spectrum<U>  spec(0.0);
+
+    auto prob_diff = mean_value( diffuse_brdf_.cd ) * diffuse_brdf_.kd;
+    auto prob_spec = mean_value( specular_brdf_.cs ) * specular_brdf_.ks;
+
+    auto all_zero  = prob_diff == U(0.0) && prob_spec == U(0.0);
+
+    prob_diff      = select( all_zero, U(0.5), prob_diff );
+    prob_spec      = select( all_zero, U(0.5), prob_spec );
+
+    prob_diff      = prob_diff / (prob_diff + prob_spec);
+
+
+    auto u         = sampler.next();
+
+    if (any(u < U(prob_diff)))
+    {
+        diff       = detail::tex_color_from_shade_record<U>(shade_rec) * diffuse_brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl1, pdf1, sampler);
+    }
+
+    if (any(u >= U(prob_diff)))
+    {
+        spec       = specular_brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl2, pdf2, sampler);
+    }
+
+    pdf            = select( u < U(prob_diff), pdf1,  pdf2  );
+    refl_dir       = select( u < U(prob_diff), refl1, refl2 );
+
+    return           select( u < U(prob_diff), diff,  spec  );
 }
 
 //--- deprecated begin ------------------------------------
@@ -284,53 +325,6 @@ VSNRAY_FUNC
 inline spectrum<T> plastic<T>::cd_impl(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const
 {
     return spectrum<T>(from_rgb(sr.tex_color)) * diffuse_brdf_.f(n, wo, wi);
-}
-
-template <typename T>
-template <typename SR, typename U, typename Sampler>
-VSNRAY_FUNC
-inline spectrum<U> plastic<T>::sample_impl(
-        SR const&       sr,
-        vector<3, U>&   refl_dir,
-        U&              pdf,
-        Sampler&        sampler) const
-{
-    U pdf1(0.0);
-    U pdf2(0.0);
-
-    vector<3, U> refl1(0.0);
-    vector<3, U> refl2(0.0);
-
-    spectrum<U>  diff(0.0);
-    spectrum<U>  spec(0.0);
-
-    auto prob_diff = mean_value( diffuse_brdf_.cd ) * diffuse_brdf_.kd;
-    auto prob_spec = mean_value( specular_brdf_.cs ) * specular_brdf_.ks;
-
-    auto all_zero  = prob_diff == U(0.0) && prob_spec == U(0.0);
-
-    prob_diff      = select( all_zero, U(0.5), prob_diff );
-    prob_spec      = select( all_zero, U(0.5), prob_spec );
-
-    prob_diff      = prob_diff / (prob_diff + prob_spec);
-
-
-    auto u         = sampler.next();
-
-    if (any(u < U(prob_diff)))
-    {
-        diff       = diffuse_brdf_.sample_f(sr.normal, sr.view_dir, refl1, pdf1, sampler);
-    }
-
-    if (any(u >= U(prob_diff)))
-    {
-        spec       = specular_brdf_.sample_f(sr.normal, sr.view_dir, refl2, pdf2, sampler);
-    }
-
-    pdf            = select( u < U(prob_diff), pdf1,  pdf2  );
-    refl_dir       = select( u < U(prob_diff), refl1, refl2 );
-
-    return           select( u < U(prob_diff), diff,  spec  );
 }
 
 } // visionaray

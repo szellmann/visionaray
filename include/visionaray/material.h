@@ -323,14 +323,6 @@ public:
             Sampler&        sampler
             ) const;
 
-    template <typename L, typename C, typename U, typename Sampler>
-    VSNRAY_FUNC spectrum<U> sample(
-            shade_record<L, C, U> const&    sr,
-            vector<3, U>&                   refl_dir,
-            U&                              pdf,
-            Sampler&                        sampler
-            ) const;
-
 
     // deprecated!
     VSNRAY_FUNC void set_ca(spectrum<T> const& ca);
