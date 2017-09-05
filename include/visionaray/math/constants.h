@@ -24,8 +24,8 @@ template <typename T> MATH_FUNC T log2_e()              { return T(1.44269504088
 template <typename T> MATH_FUNC T pi()                  { return T(3.14159265358979323846264338328e+00); }
 template <typename T> MATH_FUNC T two_pi()              { return T(6.28318530717958623199592693709e+00); }
 template <typename T> MATH_FUNC T inv_pi()              { return T(3.18309886183790691216444201928e-01); }
-template <typename T> MATH_FUNC T pi_over_two           { return T(1.57079632679489655799898173427e+00); }
-template <typename T> MATH_FUNC T pi_over_four          { return T(7.85398163397448278999490867136e-01); }
+template <typename T> MATH_FUNC T pi_over_two()         { return T(1.57079632679489655799898173427e+00); }
+template <typename T> MATH_FUNC T pi_over_four()        { return T(7.85398163397448278999490867136e-01); }
 
 } // constants
 } // MATH_NAMESPACE
