@@ -6,7 +6,7 @@
 
 #include <GL/glew.h>
 
-#include <visionaray/pinhole_camera.h>
+#include <visionaray/detail/perspective_camera_base.h>
 
 #include "../input/mouse.h"
 #include "rotate_manipulator.h"
@@ -84,7 +84,7 @@ static recti flip(recti const& r, recti const& viewport)
 //
 
 rotate_manipulator::rotate_manipulator(
-        pinhole_camera const& cam,
+        detail::perspective_camera_base const& cam,
         mat4& model_matrix,
         vec3 size,
         mouse::buttons buttons

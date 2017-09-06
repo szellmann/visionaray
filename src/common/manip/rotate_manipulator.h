@@ -31,7 +31,7 @@ class rotate_manipulator : public model_manipulator
 public:
 
     rotate_manipulator(
-            pinhole_camera const& cam,
+            detail::perspective_camera_base const& cam,
             mat4& model_matrix,
             vec3 size,
             mouse::buttons buttons

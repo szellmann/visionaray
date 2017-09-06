@@ -6,7 +6,7 @@
 #include <iostream>
 #endif
 
-#include <visionaray/pinhole_camera.h>
+#include <visionaray/detail/perspective_camera_base.h>
 
 #include "arcball_manipulator.h"
 #include "../input/mouse.h"
@@ -18,7 +18,7 @@ namespace mouse = visionaray::mouse;
 
 
 arcball_manipulator::arcball_manipulator(
-        pinhole_camera& cam,
+        detail::perspective_camera_base& cam,
         mouse::buttons buttons,
         keyboard::key_modifiers modifiers
         )

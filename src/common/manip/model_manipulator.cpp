@@ -1,14 +1,14 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/pinhole_camera.h>
+#include <visionaray/detail/perspective_camera_base.h>
 
 #include "model_manipulator.h"
 
 using namespace visionaray;
 
 model_manipulator::model_manipulator(
-        pinhole_camera const& cam,
+        detail::perspective_camera_base const& cam,
         mat4& model_matrix,
         vec3 size
         )

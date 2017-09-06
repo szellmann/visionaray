@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/pinhole_camera.h>
+#include <visionaray/detail/perspective_camera_base.h>
 
 #include "pan_manipulator.h"
 
@@ -10,7 +10,7 @@ using namespace visionaray;
 
 
 pan_manipulator::pan_manipulator(
-        pinhole_camera& cam,
+        detail::perspective_camera_base& cam,
         mouse::buttons buttons,
         keyboard::key_modifiers modifiers
         )

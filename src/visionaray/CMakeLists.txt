@@ -126,6 +126,8 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/multi_hit.h
     ${HEADER_DIR}/detail/parallel_algorithm.h
     ${HEADER_DIR}/detail/pathtracing.inl
+    ${HEADER_DIR}/detail/perspective_camera_base.h
+    ${HEADER_DIR}/detail/perspective_camera_base.inl
     ${HEADER_DIR}/detail/pinhole_camera.inl
     ${HEADER_DIR}/detail/pixel_access.h
     ${HEADER_DIR}/detail/pixel_unpack_buffer_rt.inl

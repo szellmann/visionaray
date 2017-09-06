@@ -15,7 +15,10 @@
 namespace visionaray
 {
 
-class pinhole_camera;
+namespace detail
+{
+class perspective_camera_base;
+} // detail
 class key_event;
 class mouse_event;
 
@@ -23,7 +26,7 @@ class camera_manipulator
 {
 public:
 
-    camera_manipulator(pinhole_camera& cam) : camera_(cam) {}
+    camera_manipulator(detail::perspective_camera_base& cam) : camera_(cam) {}
     virtual ~camera_manipulator() {}
 
     virtual void handle_key_press(key_event const& event)     { VSNRAY_UNUSED(event); }
@@ -36,7 +39,7 @@ public:
 
 protected:
 
-    pinhole_camera& camera_;
+    detail::perspective_camera_base& camera_;
 
 };
 
@@ -45,7 +48,7 @@ class fp_manipulator : public camera_manipulator
 {
 public:
 
-    fp_manipulator(pinhole_camera& cam);
+    fp_manipulator(detail::perspective_camera_base& cam);
    ~fp_manipulator();
 
     void handle_key_press(key_event const& event);
