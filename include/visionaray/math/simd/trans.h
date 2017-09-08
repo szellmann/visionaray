@@ -363,10 +363,10 @@ VSNRAY_FORCE_INLINE float4 cos(float4 const& x)
     store(tmp, x);
 
     return float4(
-            ::cos(tmp[0]),
-            ::cos(tmp[1]),
-            ::cos(tmp[2]),
-            ::cos(tmp[3])
+            MATH_NAMESPACE::cos(tmp[0]),
+            MATH_NAMESPACE::cos(tmp[1]),
+            MATH_NAMESPACE::cos(tmp[2]),
+            MATH_NAMESPACE::cos(tmp[3])
             );
 }
 
@@ -377,10 +377,10 @@ VSNRAY_FORCE_INLINE float4 sin(float4 const& x)
     store(tmp, x);
 
     return float4(
-            ::sin(tmp[0]),
-            ::sin(tmp[1]),
-            ::sin(tmp[2]),
-            ::sin(tmp[3])
+            MATH_NAMESPACE::sin(tmp[0]),
+            MATH_NAMESPACE::sin(tmp[1]),
+            MATH_NAMESPACE::sin(tmp[2]),
+            MATH_NAMESPACE::sin(tmp[3])
             );
 }
 
@@ -391,10 +391,10 @@ VSNRAY_FORCE_INLINE float4 tan(float4 const& x)
     store(tmp, x);
 
     return float4(
-            ::tan(tmp[0]),
-            ::tan(tmp[1]),
-            ::tan(tmp[2]),
-            ::sin(tmp[3])
+            MATH_NAMESPACE::tan(tmp[0]),
+            MATH_NAMESPACE::tan(tmp[1]),
+            MATH_NAMESPACE::tan(tmp[2]),
+            MATH_NAMESPACE::sin(tmp[3])
             );
 }
 
@@ -405,10 +405,10 @@ VSNRAY_FORCE_INLINE float4 acos(float4 const& x)
     store(tmp, x);
 
     return float4(
-            ::acos(tmp[0]),
-            ::acos(tmp[1]),
-            ::acos(tmp[2]),
-            ::acos(tmp[3])
+            MATH_NAMESPACE::acos(tmp[0]),
+            MATH_NAMESPACE::acos(tmp[1]),
+            MATH_NAMESPACE::acos(tmp[2]),
+            MATH_NAMESPACE::acos(tmp[3])
             );
 }
 
@@ -419,10 +419,10 @@ VSNRAY_FORCE_INLINE float4 asin(float4 const& x)
     store(tmp, x);
 
     return float4(
-            ::asin(tmp[0]),
-            ::asin(tmp[1]),
-            ::asin(tmp[2]),
-            ::asin(tmp[3])
+            MATH_NAMESPACE::asin(tmp[0]),
+            MATH_NAMESPACE::asin(tmp[1]),
+            MATH_NAMESPACE::asin(tmp[2]),
+            MATH_NAMESPACE::asin(tmp[3])
             );
 }
 
@@ -433,10 +433,10 @@ VSNRAY_FORCE_INLINE float4 atan(float4 const& x)
     store(tmp, x);
 
     return float4(
-            ::atan(tmp[0]),
-            ::atan(tmp[1]),
-            ::atan(tmp[2]),
-            ::asin(tmp[3])
+            MATH_NAMESPACE::atan(tmp[0]),
+            MATH_NAMESPACE::atan(tmp[1]),
+            MATH_NAMESPACE::atan(tmp[2]),
+            MATH_NAMESPACE::asin(tmp[3])
             );
 }
 
