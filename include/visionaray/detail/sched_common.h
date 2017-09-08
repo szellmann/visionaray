@@ -102,6 +102,7 @@ inline auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
 //
 
 template <typename R, typename Camera, typename Sampler, typename T>
+VSNRAY_FUNC
 inline auto invoke_cam_primary_ray(
         R             /* */,
         Camera const& cam,
@@ -119,6 +120,7 @@ inline auto invoke_cam_primary_ray(
 }
 
 template <typename R, typename Camera, typename Sampler, typename T, typename = void>
+VSNRAY_FUNC
 inline auto invoke_cam_primary_ray(
         R             /* */,
         Camera const& cam,
