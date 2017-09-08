@@ -235,6 +235,10 @@ public:
     VSNRAY_CPU_FUNC
     allocator_type get_allocator() const;
 
+    // Wait for completion of all commands submitted to the vector's accelerator view.
+    VSNRAY_CPU_FUNC
+    void synchronize();
+
 private:
 
     Alloc alloc_;

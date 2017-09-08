@@ -360,5 +360,13 @@ typename device_vector<T, Alloc>::allocator_type device_vector<T, Alloc>::get_al
     return alloc_;
 }
 
+template <typename T, typename Alloc>
+VSNRAY_CPU_FUNC
+void device_vector<T, Alloc>::synchronize()
+{
+    hc::accelerator_view av = alloc_.accelerator().get_default_view();
+    av.wait();
+}
+
 } // hcc
 } // visionaray
