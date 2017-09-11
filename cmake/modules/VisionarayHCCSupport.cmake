@@ -39,7 +39,7 @@ if(UNIX)
             OUTPUT_VARIABLE ldflags
             )
 
-        set(__VSNRAY_HCC_LINK_FLAGS "${ldflags} -lm")
+        set(__VSNRAY_HCC_LINK_FLAGS "${ldflags} -lhc_am -lm")
     endif()
 
 endif()
