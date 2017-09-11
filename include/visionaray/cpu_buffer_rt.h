@@ -41,7 +41,7 @@ public:
     void clear_depth_buffer(float depth = 1.0f);
     void begin_frame();
     void end_frame();
-    void resize(size_t w, size_t h);
+    void resize(int w, int h);
     void display_color_buffer() const;
 
 private:

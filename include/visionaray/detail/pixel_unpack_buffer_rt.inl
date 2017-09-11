@@ -171,7 +171,7 @@ void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::end_frame()
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::resize(size_t w, size_t h)
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::resize(int w, int h)
 {
     render_target::resize(w, h);
 

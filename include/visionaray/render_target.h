@@ -6,8 +6,6 @@
 #ifndef VSNRAY_RENDER_TARGET_H
 #define VSNRAY_RENDER_TARGET_H 1
 
-#include <cstddef>
-
 #include "pixel_traits.h"
 
 namespace visionaray
@@ -21,19 +19,19 @@ class render_target
 {
 public:
 
-    void resize(size_t w, size_t h)
+    void resize(int w, int h)
     {
         width_  = w;
         height_ = h;
     }
 
-    size_t width() const { return width_; }
-    size_t height() const { return height_; }
+    int width() const { return width_; }
+    int height() const { return height_; }
 
 private:
 
-    size_t width_;
-    size_t height_;
+    int width_;
+    int height_;
 
 };
 
@@ -68,12 +66,12 @@ struct render_target_ref
         return depth_;
     }
 
-    VSNRAY_FUNC size_t width() const
+    VSNRAY_FUNC int width() const
     {
         return width_;
     }
 
-    VSNRAY_FUNC size_t height() const
+    VSNRAY_FUNC int height() const
     {
         return height_;
     }
@@ -82,8 +80,8 @@ struct render_target_ref
     color_type* color_;
     depth_type* depth_;
 
-    size_t width_;
-    size_t height_;
+    int width_;
+    int height_;
 
 };
 
