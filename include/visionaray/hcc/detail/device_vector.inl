@@ -161,8 +161,8 @@ typename device_vector<T, Alloc>::size_type device_vector<T, Alloc>::capacity() 
 }
 
 template <typename T, typename Alloc>
-VSNRAY_FUNC
-void device_vector<T, Alloc>::shrink_to_fit() const
+VSNRAY_CPU_FUNC
+void device_vector<T, Alloc>::shrink_to_fit()
 {
     if (capacity_ > size_)
     {
