@@ -29,19 +29,6 @@ enum algorithm { Simple, Whitted, Pathtracing };
 
 
 //-------------------------------------------------------------------------------------------------
-// Call custom kernels
-//
-
-template <template <typename> class Kernel, typename Sched, typename SParams, typename KParams>
-void call_kernel(Sched& sched, SParams const& sparams, KParams const& kparams, unsigned frame_num = 0)
-{
-    Kernel<KParams> kernel;
-    kernel.params = kparams;
-    sched.frame(kernel, sparams, frame_num);
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // Call one of the built-in kernels
 //
 // Simple, Whitted: mind ssaa_samples
@@ -64,34 +51,34 @@ void call_kernel(
     case Simple:
         if (ssaa_samples == 1)
         {
-            call_kernel<simple::kernel>(
-                sched,
+            sched.frame(
+                simple::kernel<KParams>({kparams}),
                 make_sched_params(pixel_sampler::ssaa_type<1>{}, std::forward<Args>(args)...),
-                kparams
+                frame_num
                 );
         }
         else if (ssaa_samples == 2)
         {
-            call_kernel<simple::kernel>(
-                sched,
+            sched.frame(
+                simple::kernel<KParams>({kparams}),
                 make_sched_params(pixel_sampler::ssaa_type<2>{}, std::forward<Args>(args)...),
-                kparams
+                frame_num
                 );
         }
         else if (ssaa_samples == 4)
         {
-            call_kernel<simple::kernel>(
-                sched,
+            sched.frame(
+                simple::kernel<KParams>({kparams}),
                 make_sched_params(pixel_sampler::ssaa_type<4>{}, std::forward<Args>(args)...),
-                kparams
+                frame_num
                 );
         }
         else if (ssaa_samples == 8)
         {
-            call_kernel<simple::kernel>(
-                sched,
+            sched.frame(
+                simple::kernel<KParams>({kparams}),
                 make_sched_params(pixel_sampler::ssaa_type<8>{}, std::forward<Args>(args)...),
-                kparams
+                frame_num
                 );
         }
         break;
@@ -99,43 +86,42 @@ void call_kernel(
     case Whitted:
         if (ssaa_samples == 1)
         {
-            call_kernel<whitted::kernel>(
-                sched,
+            sched.frame(
+                whitted::kernel<KParams>({kparams}),
                 make_sched_params(pixel_sampler::ssaa_type<1>{}, std::forward<Args>(args)...),
-                kparams
+                frame_num
                 );
         }
         else if (ssaa_samples == 2)
         {
-            call_kernel<whitted::kernel>(
-                sched,
+            sched.frame(
+                whitted::kernel<KParams>({kparams}),
                 make_sched_params(pixel_sampler::ssaa_type<2>{}, std::forward<Args>(args)...),
-                kparams
+                frame_num
                 );
         }
         else if (ssaa_samples == 4)
         {
-            call_kernel<whitted::kernel>(
-                sched,
+            sched.frame(
+                whitted::kernel<KParams>({kparams}),
                 make_sched_params(pixel_sampler::ssaa_type<4>{}, std::forward<Args>(args)...),
-                kparams
+                frame_num
                 );
         }
         else if (ssaa_samples == 8)
         {
-            call_kernel<whitted::kernel>(
-                sched,
+            sched.frame(
+                whitted::kernel<KParams>({kparams}),
                 make_sched_params(pixel_sampler::ssaa_type<8>{}, std::forward<Args>(args)...),
-                kparams
+                frame_num
                 );
         }
         break;
 
     case Pathtracing:
-        call_kernel<pathtracing::kernel>(
-            sched,
+        sched.frame(
+            pathtracing::kernel<KParams>({kparams}),
             make_sched_params(pixel_sampler::jittered_blend_type{}, std::forward<Args>(args)...),
-            kparams,
             ++frame_num
             );
         break;
@@ -164,26 +150,25 @@ void call_kernel(
     {
 
     case Simple:
-        call_kernel<simple::kernel>(
-            sched,
+        sched.frame(
+            simple::kernel<KParams>({kparams}),
             make_sched_params(pixel_sampler::uniform_type{}, std::forward<Args>(args)...),
-            kparams
+            frame_num
             );
         break;
 
     case Whitted:
-        call_kernel<whitted::kernel>(
-            sched,
+        sched.frame(
+            whitted::kernel<KParams>({kparams}),
             make_sched_params(pixel_sampler::uniform_type{}, std::forward<Args>(args)...),
-            kparams
+            frame_num
             );
         break;
 
     case Pathtracing:
-        call_kernel<pathtracing::kernel>(
-            sched,
+        sched.frame(
+            pathtracing::kernel<KParams>({kparams}),
             make_sched_params(pixel_sampler::jittered_blend_type{}, std::forward<Args>(args)...),
-            kparams,
             ++frame_num
             );
         break;
