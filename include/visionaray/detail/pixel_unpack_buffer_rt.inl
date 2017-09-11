@@ -100,7 +100,7 @@ typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::depth_type const* pix
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::ref_type pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::ref()
 {
-    return ref_type( color(), depth(), width(), height() );
+    return { color(), depth(), width(), height() };
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>

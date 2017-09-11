@@ -71,12 +71,7 @@ typename cpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* cpu_buffer_r
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename cpu_buffer_rt<ColorFormat, DepthFormat>::ref_type cpu_buffer_rt<ColorFormat, DepthFormat>::ref()
 {
-    return typename cpu_buffer_rt<ColorFormat, DepthFormat>::ref_type(
-            color(),
-            depth(),
-            width(),
-            height()
-            );
+    return { color(), depth(), width(), height() };
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>

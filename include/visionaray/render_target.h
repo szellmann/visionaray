@@ -43,22 +43,10 @@ private:
 //
 
 template <pixel_format ColorFormat, pixel_format DepthFormat = PF_UNSPECIFIED>
-class render_target_ref
+struct render_target_ref
 {
-public:
-
     using color_type = typename pixel_traits<ColorFormat>::type;
     using depth_type = typename pixel_traits<DepthFormat>::type;
-
-public:
-
-    render_target_ref(color_type* color, depth_type* depth, size_t width, size_t height)
-        : color_(color)
-        , depth_(depth)
-        , width_(width)
-        , height_(height)
-    {
-    }
 
     VSNRAY_FUNC color_type* color()
     {
@@ -90,10 +78,9 @@ public:
         return height_;
     }
 
-private:
-
-    color_type* color_ = nullptr;
-    depth_type* depth_ = nullptr;
+    // Public, to allow for aggregate initialization!
+    color_type* color_;
+    depth_type* depth_;
 
     size_t width_;
     size_t height_;
