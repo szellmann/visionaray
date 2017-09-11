@@ -60,7 +60,7 @@ public:
 
     // Move constructor.
     VSNRAY_CPU_FUNC
-    device_vector(device_vector&& rhs);
+    device_vector(device_vector&& rhs) = default;
 
     // TODO: device-ctor
     //
@@ -86,7 +86,7 @@ public:
 
     // Move assignment.
     VSNRAY_CPU_FUNC
-    device_vector& operator=(device_vector&& rhs);
+    device_vector& operator=(device_vector&& rhs) = default;
 
     // TODO: device-assignment
     //

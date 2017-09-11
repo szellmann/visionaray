@@ -50,16 +50,6 @@ device_vector<T, Alloc>::device_vector(device_vector const& rhs)
 }
 
 template <typename T, typename Alloc>
-VSNRAY_CPU_FUNC
-device_vector<T, Alloc>::device_vector(device_vector&& rhs)
-    : alloc_(std::move(rhs.data_))
-    , data_(std::move(rhs.data_))
-    , size_(rhs.size_)
-    , capacity_(rhs.capacity_)
-{
-}
-
-template <typename T, typename Alloc>
 template <typename T2, typename Alloc2>
 VSNRAY_CPU_FUNC
 device_vector<T, Alloc>::device_vector(std::vector<T2, Alloc2> const& rhs)
@@ -99,20 +89,6 @@ device_vector<T, Alloc>& device_vector<T, Alloc>::operator=(device_vector<T, All
 
         hc::accelerator_view av = alloc_.accelerator().get_default_view();
         av.copy(rhs.data(), data_, size_ * sizeof(T));
-    }
-    return *this;
-}
-
-template <typename T, typename Alloc>
-VSNRAY_CPU_FUNC
-device_vector<T, Alloc>& device_vector<T, Alloc>::operator=(device_vector<T, Alloc>&& rhs)
-{
-    if (&rhs != this)
-    {
-        alloc_    = std::move(rhs.alloc_);
-        data_     = std::move(rhs.data_);
-        size_     = rhs.size_;
-        capacity_ = rhs.capacity_;
     }
     return *this;
 }
