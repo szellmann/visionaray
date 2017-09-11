@@ -136,7 +136,7 @@ template <typename T, typename Alloc>
 VSNRAY_CPU_FUNC
 void device_vector<T, Alloc>::resize(
         typename device_vector<T, Alloc>::size_type n,
-        typename device_vector<T, Alloc>::value_type x
+        typename device_vector<T, Alloc>::value_type const& x
         )
 {
     reserve(n);
