@@ -13,10 +13,7 @@
 namespace visionaray
 {
 
-namespace detail
-{
-class perspective_camera_base;
-} // detail
+class pinhole_camera;
 class mouse_event;
 
 class pan_manipulator : public camera_manipulator
@@ -24,7 +21,7 @@ class pan_manipulator : public camera_manipulator
 public:
 
     pan_manipulator(
-            detail::perspective_camera_base& cam,
+            pinhole_camera& cam,
             mouse::buttons buttons,
             keyboard::key_modifiers modifiers = keyboard::NoKey
             );

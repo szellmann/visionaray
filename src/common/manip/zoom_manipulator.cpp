@@ -6,7 +6,7 @@
 #include <iostream>
 #endif
 
-#include <visionaray/detail/perspective_camera_base.h>
+#include <visionaray/pinhole_camera.h>
 
 #include "zoom_manipulator.h"
 
@@ -15,7 +15,7 @@ using namespace visionaray;
 
 
 zoom_manipulator::zoom_manipulator(
-        detail::perspective_camera_base& cam,
+        pinhole_camera& cam,
         mouse::buttons buttons,
         keyboard::key_modifiers modifiers
         )

@@ -11,10 +11,7 @@
 namespace visionaray
 {
 
-namespace detail
-{
-class perspective_camera_base;
-} // detail
+class pinhole_camera;
 class key_event;
 class mouse_event;
 
@@ -23,7 +20,7 @@ class model_manipulator
 public:
 
     model_manipulator(
-            detail::perspective_camera_base const& cam,
+            pinhole_camera const& cam,
             mat4& model_matrix_,
             vec3 size
             );
@@ -44,7 +41,7 @@ public:
 
 protected:
 
-    detail::perspective_camera_base const& camera_;
+    pinhole_camera const& camera_;
     mat4& model_matrix_;
     vec3 size_;
 

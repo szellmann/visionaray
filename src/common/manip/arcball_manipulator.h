@@ -17,10 +17,7 @@
 namespace visionaray
 {
 
-namespace detail
-{
-class perspective_camera_base;
-} // detail
+class pinhole_camera;
 class mouse_event;
 
 class arcball_manipulator : public camera_manipulator
@@ -28,7 +25,7 @@ class arcball_manipulator : public camera_manipulator
 public:
 
     arcball_manipulator(
-            detail::perspective_camera_base& cam,
+            pinhole_camera& cam,
             mouse::buttons buttons,
             keyboard::key_modifiers modifiers = keyboard::NoKey
             );

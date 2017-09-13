@@ -16,7 +16,7 @@ class translate_manipulator : public model_manipulator
 public:
 
     translate_manipulator(
-            detail::perspective_camera_base const& cam,
+            pinhole_camera const& cam,
             mat4& model_matrix,
             vec3 size,
             mouse::buttons buttons

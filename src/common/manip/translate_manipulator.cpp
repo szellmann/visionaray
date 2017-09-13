@@ -8,8 +8,8 @@
 
 #include <GL/glew.h>
 
-#include <visionaray/detail/perspective_camera_base.h>
 #include <visionaray/math/math.h>
+#include <visionaray/pinhole_camera.h>
 
 #include "../input/mouse.h"
 #include "translate_manipulator.h"
@@ -21,7 +21,7 @@ using namespace visionaray;
 // Projection
 //
 
-static vec2i get_projected_center(detail::perspective_camera_base const& cam, mat4 const& model_matrix)
+static vec2i get_projected_center(pinhole_camera const& cam, mat4 const& model_matrix)
 {
     vec3 win;
     vec3 obj(0.0f);
@@ -37,7 +37,7 @@ static vec2i get_projected_center(detail::perspective_camera_base const& cam, ma
     return vec2i(win.xy());
 }
 
-static recti get_projected_center_rect(detail::perspective_camera_base const& cam, mat4 const& model_matrix)
+static recti get_projected_center_rect(pinhole_camera const& cam, mat4 const& model_matrix)
 {
     vec2i c = get_projected_center(cam, model_matrix);
     return recti(c.x - 10, c.y - 10, 20, 20);
@@ -84,7 +84,7 @@ void draw_line(vec2i offset, int len, vec4 color, cartesian_axis<2> axis, int th
 //
 
 translate_manipulator::translate_manipulator(
-        detail::perspective_camera_base const& cam,
+        pinhole_camera const& cam,
         mat4& model_matrix,
         vec3 size,
         mouse::buttons buttons
