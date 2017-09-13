@@ -24,9 +24,9 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     // TODO: support any sampler
     random_sampler<typename R::scalar_type> samp(detail::tic());
 
-    for (size_t y = 0; y < sched_params.rt.height(); ++y)
+    for (int y = 0; y < sched_params.rt.height(); ++y)
     {
-        for (size_t x = 0; x < sched_params.rt.width(); ++x)
+        for (int x = 0; x < sched_params.rt.width(); ++x)
         {
             auto r = detail::make_primary_rays(
                     R{},
