@@ -171,10 +171,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE int4 operator-(int4 const& u, int4 const& v)
 {
     return int4(
-            u.value[0] + v.value[0],
-            u.value[1] + v.value[1],
-            u.value[2] + v.value[2],
-            u.value[3] + v.value[3]
+            u.value[0] - v.value[0],
+            u.value[1] - v.value[1],
+            u.value[2] - v.value[2],
+            u.value[3] - v.value[3]
             );
 }
 
