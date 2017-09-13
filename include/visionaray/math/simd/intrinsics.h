@@ -101,15 +101,17 @@
 #define VSNRAY_NO_SIMD_ISA                                                      \
     VSNRAY_SIMD_ISA__ == 0
 
-#define VSNRAY_SIMD_ISA_EQ(ISA)                                                 \
+#define VSNRAY_SIMD_ISA_EQ(ISA) (                                               \
     ISA - VSNRAY_BASE_ARCH >= 0 &&                                              \
     ISA - VSNRAY_BASE_ARCH < 1000 &&                                            \
-    VSNRAY_SIMD_ISA__ == ISA
+    VSNRAY_SIMD_ISA__ == ISA                                                    \
+    )
 
-#define VSNRAY_SIMD_ISA_GE(ISA)                                                 \
+#define VSNRAY_SIMD_ISA_GE(ISA) (                                               \
     ISA - VSNRAY_BASE_ARCH >= 0 &&                                              \
     ISA - VSNRAY_BASE_ARCH < 1000 &&                                            \
-    VSNRAY_SIMD_ISA__ >= ISA
+    VSNRAY_SIMD_ISA__ >= ISA                                                    \
+    )
 
 //--------------------------------------------------------------------------------------------------
 // SIMD intrinsic #include's
