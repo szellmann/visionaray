@@ -122,8 +122,6 @@ struct alignment_of<simd::mask4>
     enum { value = 16 };
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -143,8 +141,6 @@ struct alignment_of<simd::mask8>
 {
     enum { value = 32 };
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -201,8 +197,6 @@ struct aligned_array<simd::mask4>
     typedef VSNRAY_ALIGN(16) bool type[4];
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -222,8 +216,6 @@ struct aligned_array<simd::mask8>
 {
     typedef VSNRAY_ALIGN(32) bool type[8];
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -287,8 +279,6 @@ struct float_type<simd::mask4>
     using type = simd::float4;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -308,8 +298,6 @@ struct float_type<simd::mask8>
 {
     using type = simd::float8;
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -373,8 +361,6 @@ struct int_type<simd::mask4>
     using type = simd::int4;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -394,8 +380,6 @@ struct int_type<simd::mask8>
 {
     using type = simd::int8;
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -459,8 +443,6 @@ struct mask_type<simd::mask4>
     using type = simd::mask4;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -480,8 +462,6 @@ struct mask_type<simd::mask8>
 {
     using type = simd::mask8;
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -587,6 +567,7 @@ struct native_type<simd::mask4>
 {
     using type = bool[4];
 };
+
 #endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
@@ -609,6 +590,28 @@ template <>
 struct native_type<simd::mask8>
 {
     using type = __m256i;
+};
+
+#else
+
+// builtin ------------------------------------------------
+
+template <>
+struct native_type<simd::float8>
+{
+    using type = float[8];
+};
+
+template <>
+struct native_type<simd::int8>
+{
+    using type = int[8];
+};
+
+template <>
+struct native_type<simd::mask8>
+{
+    using type = bool[8];
 };
 
 #endif
@@ -660,8 +663,6 @@ struct float_from_simd_width<4>
     using type = simd::float4;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -669,8 +670,6 @@ struct float_from_simd_width<8>
 {
     using type = simd::float8;
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -707,8 +706,6 @@ struct int_from_simd_width<4>
     using type = simd::int4;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -716,8 +713,6 @@ struct int_from_simd_width<8>
 {
     using type = simd::int8;
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -754,8 +749,6 @@ struct mask_from_simd_width<4>
     using type = simd::mask4;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -763,8 +756,6 @@ struct mask_from_simd_width<8>
 {
     using type = simd::mask8;
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -816,8 +807,6 @@ struct is_simd_vector<simd::mask4>
     enum { value = true };
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -837,8 +826,6 @@ struct is_simd_vector<simd::mask8>
 {
     enum { value = true };
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -897,8 +884,6 @@ struct element_type<simd::mask4>
     using type = bool;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -918,8 +903,6 @@ struct element_type<simd::mask8>
 {
     using type = bool;
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -983,8 +966,6 @@ struct num_elements<simd::mask4>
     enum { value = 4 };
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // AVX ----------------------------------------------------
 
 template <>
@@ -1004,8 +985,6 @@ struct num_elements<simd::mask8>
 {
     enum { value = 8 };
 };
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 

@@ -116,7 +116,6 @@ private:
     sampler_type sampler_;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 template <>
 class random_sampler<simd::float8>
 {
@@ -157,7 +156,6 @@ private:
 
     sampler_type sampler_;
 };
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 template <>

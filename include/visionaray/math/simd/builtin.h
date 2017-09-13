@@ -84,4 +84,103 @@ public:
 
 #endif // VSNRAY_NO_SIMD_ISA
 
+#if !VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
+
+namespace MATH_NAMESPACE
+{
+namespace simd
+{
+
+//-------------------------------------------------------------------------------------------------
+// float8
+//
+
+template <>
+class VSNRAY_ALIGN(32) basic_float<float[8]>
+{
+public:
+
+    typedef float value_type[8];
+    float value[8];
+
+    MATH_FUNC basic_float() = default;
+    MATH_FUNC basic_float(
+            float x1,
+            float x2,
+            float x3,
+            float x4,
+            float x5,
+            float x6,
+            float x7,
+            float x8
+            );
+    MATH_FUNC basic_float(float const v[8]);
+    MATH_FUNC basic_float(float s);
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// int8
+//
+
+template <>
+class VSNRAY_ALIGN(32) basic_int<int[8]>
+{
+public:
+
+    typedef int value_type[8];
+    int value[8];
+
+    MATH_FUNC basic_int() = default;
+    MATH_FUNC basic_int(
+            int x1,
+            int x2,
+            int x3,
+            int x4,
+            int x5,
+            int x6,
+            int x7,
+            int x8
+            );
+    MATH_FUNC basic_int(int const v[8]);
+    MATH_FUNC basic_int(int s);
+    MATH_FUNC basic_int(unsigned s);
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// mask8
+//
+
+template <>
+union VSNRAY_ALIGN(32) basic_mask<bool[8]>
+{
+public:
+
+    bool value[8];
+
+    MATH_FUNC basic_mask() = default;
+    MATH_FUNC basic_mask(
+            bool x1,
+            bool x2,
+            bool x3,
+            bool x4,
+            bool x5,
+            bool x6,
+            bool x7,
+            bool x8
+            );
+    MATH_FUNC basic_mask(bool const v[8]);
+    MATH_FUNC basic_mask(bool b);
+};
+
+} // simd
+} // MATH_NAMESPACE
+
+#include "detail/builtin/mask8.inl"
+#include "detail/builtin/float8.inl"
+#include "detail/builtin/int8.inl"
+
+#endif // !VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
+
 #endif // VSNRAY_SIMD_BUILTIN_H

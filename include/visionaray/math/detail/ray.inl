@@ -76,8 +76,6 @@ inline auto pack(
             }} );
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // pack eight rays
 
 template <typename T>
@@ -97,8 +95,6 @@ inline auto pack(
             r1, r2, r3, r4, r5, r6, r7, r8
             }} );
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // unpack -------------------------------------------------
 

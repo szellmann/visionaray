@@ -440,8 +440,6 @@ VSNRAY_FORCE_INLINE float4 atan(float4 const& x)
             );
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // TODO: consolidate stuff with float4 (template)
 
 VSNRAY_FORCE_INLINE float8 cos(float8 const& x)
@@ -509,8 +507,6 @@ VSNRAY_FORCE_INLINE float8 atan(float8 const& x)
         std::atan(tmp[4]), std::atan(tmp[5]), std::atan(tmp[6]), std::atan(tmp[7])
         );
 }
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -660,18 +656,26 @@ VSNRAY_FORCE_INLINE float4 pow(float4 const& x, float4 const& y)
 #endif
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 VSNRAY_FORCE_INLINE float8 pow(float8 const& x, float8 const& y)
 {
 #if VSNRAY_SIMD_HAS_SVML
     return _mm256_pow_ps(x, y);
-#else
+#elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     return exp( y * log(x) );
+#else
+    // No dedicated simd instructions
+    return float8(
+            powf(x.value[0], y.value[0]),
+            powf(x.value[1], y.value[1]),
+            powf(x.value[2], y.value[2]),
+            powf(x.value[3], y.value[3]),
+            powf(x.value[4], y.value[4]),
+            powf(x.value[5], y.value[5]),
+            powf(x.value[6], y.value[6]),
+            powf(x.value[7], y.value[7])
+            );
 #endif
 }
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 

@@ -295,8 +295,6 @@ TEST(Vector, MinMaxElement)
     EXPECT_TRUE( all(minmaxe4.y == maxe4) );
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
     // AVX
 
     vector<3, simd::float8> v8(1.0f, 2.0f, 3.0f);
@@ -307,6 +305,4 @@ TEST(Vector, MinMaxElement)
     EXPECT_TRUE( all(maxe8 == simd::float8(3.0f)) );
     EXPECT_TRUE( all(minmaxe8.x == mine8) );
     EXPECT_TRUE( all(minmaxe8.y == maxe8) );
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 }

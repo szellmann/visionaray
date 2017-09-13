@@ -80,11 +80,11 @@ VSNRAY_FORCE_INLINE float4 select(mask4 const& m, float4 const& a, float4 const&
 // Load / store / get
 //
 
-MATH_FUNC
-VSNRAY_FORCE_INLINE float4 load(float const src[4])
-{
-    return float4(src[0], src[1], src[2], src[3]);
-}
+//MATH_FUNC
+//VSNRAY_FORCE_INLINE float4 load(float const src[4])
+//{
+//    return float4(src[0], src[1], src[2], src[3]);
+//}
 
 MATH_FUNC
 VSNRAY_FORCE_INLINE void store(float dst[4], float4 const& v)

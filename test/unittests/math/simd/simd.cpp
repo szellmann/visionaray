@@ -443,8 +443,6 @@ TEST(SIMD, Get)
     EXPECT_FLOAT_EQ( simd::get<3>(f4), 3.0f );
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
     // int8 -----------------------------------------------
 
     simd::int8 i8;
@@ -473,8 +471,6 @@ TEST(SIMD, Get)
     EXPECT_FLOAT_EQ( simd::get<5>(f8), 5.0f );
     EXPECT_FLOAT_EQ( simd::get<6>(f8), 6.0f );
     EXPECT_FLOAT_EQ( simd::get<7>(f8), 7.0f );
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -534,11 +530,7 @@ TEST(SIMD, Get)
 TEST(SIMD, Representability)
 {
     test_representability<simd::float4>();
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_representability<simd::float8>();
-#endif
-
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
     test_representability<simd::float16>();
 #endif
@@ -552,11 +544,7 @@ TEST(SIMD, Representability)
 TEST(SIMD, Pred)
 {
     test_pred<simd::float4, simd::int4, simd::mask4>();
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_pred<simd::float8, simd::int8, simd::mask8>();
-#endif
-
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
     test_pred<simd::float16, simd::int16, simd::mask16>();
 #endif
@@ -570,11 +558,7 @@ TEST(SIMD, Pred)
 TEST(SIMD, Comparison)
 {
     test_cmp<simd::float4, simd::int4, simd::mask4>();
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_cmp<simd::float8, simd::int8, simd::mask8>();
-#endif
-
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
     test_cmp<simd::float16, simd::int16, simd::mask16>();
 #endif
@@ -588,11 +572,7 @@ TEST(SIMD, Comparison)
 TEST(SIMD, Logical)
 {
     test_logical<simd::float4, simd::int4, simd::mask4>();
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_logical<simd::float8, simd::int8, simd::mask8>();
-#endif
-
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
     test_logical<simd::float16, simd::int16, simd::mask16>();
 #endif
@@ -640,11 +620,7 @@ TEST(SIMD, Transposition)
 TEST(SIMD, Math)
 {
     test_math<simd::float4>();
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     test_math<simd::float8>();
-#endif
-
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
     test_math<simd::float16>();
 #endif

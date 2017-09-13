@@ -31,9 +31,7 @@ TEST(Sampling, ConcentricSampleDisk)
 
     random_sampler<float> rs1(0U);
     random_sampler<simd::float4> rs4(0U);
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     random_sampler<simd::float8> rs8(0U);
-#endif
 
     // Check that all samples are inside the disk
     for (int i = 0; i < NumSamples; ++i)
@@ -56,7 +54,6 @@ TEST(Sampling, ConcentricSampleDisk)
         EXPECT_TRUE(all(length(sample) <= simd::float4(1.0f)));
     }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     for (int i = 0; i < NumSamples / 8; ++i)
     {
         simd::float8 u1 = rs8.next();
@@ -66,5 +63,4 @@ TEST(Sampling, ConcentricSampleDisk)
         EXPECT_TRUE(all(length(sample) >= simd::float8(0.0f)));
         EXPECT_TRUE(all(length(sample) <= simd::float8(1.0f)));
     }
-#endif
 }

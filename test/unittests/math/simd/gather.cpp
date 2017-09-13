@@ -46,8 +46,6 @@ static void test_gather_unorm()
     EXPECT_FLOAT_EQ( simd::get<2>(res4), static_cast<float>(unorm<Bits>( 4 / 16.0f)) );
     EXPECT_FLOAT_EQ( simd::get<3>(res4), static_cast<float>(unorm<Bits>( 6 / 16.0f)) );
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
     // test float8
 
     simd::int8 index8(0, 2, 4, 6, 8, 10, 12, 14);
@@ -61,8 +59,6 @@ static void test_gather_unorm()
     EXPECT_FLOAT_EQ( simd::get<5>(res8), static_cast<float>(unorm<Bits>(10 / 16.0f)) );
     EXPECT_FLOAT_EQ( simd::get<6>(res8), static_cast<float>(unorm<Bits>(12 / 16.0f)) );
     EXPECT_FLOAT_EQ( simd::get<7>(res8), static_cast<float>(unorm<Bits>(14 / 16.0f)) );
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -135,8 +131,6 @@ static void test_gather_vector_unorm()
         EXPECT_FLOAT_EQ( simd::get<3>(f), static_cast<float>(u3) );
     }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
     // test vector<Dim, float8>
 
     simd::int8 index8(0, 2, 4, 6, 8, 10, 12, 14);
@@ -164,8 +158,6 @@ static void test_gather_vector_unorm()
         EXPECT_FLOAT_EQ( simd::get<6>(f), static_cast<float>(u6) );
         EXPECT_FLOAT_EQ( simd::get<7>(f), static_cast<float>(u7) );
     }
-
-#endif
 
 #if 0 && VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -262,8 +254,6 @@ TEST(SIMD, GatherFloat)
     EXPECT_FLOAT_EQ(simd::get<2>(res4),  4.0f);
     EXPECT_FLOAT_EQ(simd::get<3>(res4),  6.0f);
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
     // test float8
 
     simd::int8 index8(0, 2, 4, 6, 8, 10, 12, 14);
@@ -277,8 +267,6 @@ TEST(SIMD, GatherFloat)
     EXPECT_FLOAT_EQ(simd::get<5>(res8), 10.0f);
     EXPECT_FLOAT_EQ(simd::get<6>(res8), 12.0f);
     EXPECT_FLOAT_EQ(simd::get<7>(res8), 14.0f);
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -341,8 +329,6 @@ TEST(SIMD, GatherInt)
     EXPECT_TRUE(simd::get<2>(res4) ==  4);
     EXPECT_TRUE(simd::get<3>(res4) ==  6);
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
     // test int8
 
     simd::int8 index8(0, 2, 4, 6, 8, 10, 12, 14);
@@ -356,8 +342,6 @@ TEST(SIMD, GatherInt)
     EXPECT_TRUE(simd::get<5>(res8) == 10);
     EXPECT_TRUE(simd::get<6>(res8) == 12);
     EXPECT_TRUE(simd::get<7>(res8) == 14);
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
@@ -461,8 +445,6 @@ TEST(SIMD, GatherVec4)
     EXPECT_FLOAT_EQ(simd::get<3>(res4.z), 26.0f);
     EXPECT_FLOAT_EQ(simd::get<3>(res4.w), 27.0f);
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
     // test vector<4, float8>
 
     simd::int8 index8(0, 2, 4, 6, 8, 10, 12, 14);
@@ -507,8 +489,6 @@ TEST(SIMD, GatherVec4)
     EXPECT_FLOAT_EQ(simd::get<7>(res8.y), 57.0f);
     EXPECT_FLOAT_EQ(simd::get<7>(res8.z), 58.0f);
     EXPECT_FLOAT_EQ(simd::get<7>(res8.w), 59.0f);
-
-#endif
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 

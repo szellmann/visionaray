@@ -276,8 +276,6 @@ inline array<visionaray::generic_material<Ts...>, 4> unpack(generic_material<4, 
     return array<visionaray::generic_material<Ts...>, 4>{{ m4.get(0), m4.get(1), m4.get(2), m4.get(3) }};
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 template <typename ...Ts>
 inline generic_material<8, Ts...> pack(array<visionaray::generic_material<Ts...>, 8> const& mats)
 {
@@ -292,8 +290,6 @@ inline array<visionaray::generic_material<Ts...>, 8> unpack(generic_material<8, 
             m8.get(4), m8.get(5), m8.get(6), m8.get(7)
             }};
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
