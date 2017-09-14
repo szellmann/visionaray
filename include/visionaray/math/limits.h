@@ -149,8 +149,6 @@ public:
     MATH_CPU_FUNC static simd::int8 max();
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 template <>
 class numeric_limits<simd::float16>
 {
@@ -171,8 +169,6 @@ public:
     MATH_CPU_FUNC static simd::int16 lowest();
     MATH_CPU_FUNC static simd::int16 max();
 };
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 } // MATH_NAMESPACE
 

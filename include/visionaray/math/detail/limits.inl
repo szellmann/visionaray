@@ -261,8 +261,6 @@ MATH_CPU_FUNC inline simd::int8 numeric_limits<simd::int8>::max()
     return simd::int8(INT_MAX);
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 //-------------------------------------------------------------------------------------------------
 // simd::float16
 //
@@ -306,7 +304,5 @@ MATH_CPU_FUNC inline simd::int16 numeric_limits<simd::int16>::max()
 {
     return simd::int16(INT_MAX);
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 } // MATH_NAMESPACE

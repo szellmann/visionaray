@@ -60,8 +60,6 @@ static void test_gather_unorm()
     EXPECT_FLOAT_EQ( simd::get<6>(res8), static_cast<float>(unorm<Bits>(12 / 16.0f)) );
     EXPECT_FLOAT_EQ( simd::get<7>(res8), static_cast<float>(unorm<Bits>(14 / 16.0f)) );
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
     // test float16
 
     simd::int16 index16(
@@ -88,8 +86,6 @@ static void test_gather_unorm()
     EXPECT_FLOAT_EQ( simd::get<13>(res16), static_cast<float>(unorm<Bits>(13 / 16.0f)) );
     EXPECT_FLOAT_EQ( simd::get<14>(res16), static_cast<float>(unorm<Bits>(14 / 16.0f)) );
     EXPECT_FLOAT_EQ( simd::get<15>(res16), static_cast<float>(unorm<Bits>(15 / 16.0f)) );
-
-#endif
 
 }
 
@@ -268,8 +264,6 @@ TEST(SIMD, GatherFloat)
     EXPECT_FLOAT_EQ(simd::get<6>(res8), 12.0f);
     EXPECT_FLOAT_EQ(simd::get<7>(res8), 14.0f);
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
     // test float16
 
     simd::int16 index16(
@@ -296,8 +290,6 @@ TEST(SIMD, GatherFloat)
     EXPECT_FLOAT_EQ(simd::get<13>(res16), 13.0f);
     EXPECT_FLOAT_EQ(simd::get<14>(res16), 14.0f);
     EXPECT_FLOAT_EQ(simd::get<15>(res16), 15.0f);
-
-#endif
 
 }
 
@@ -343,9 +335,7 @@ TEST(SIMD, GatherInt)
     EXPECT_TRUE(simd::get<6>(res8) == 12);
     EXPECT_TRUE(simd::get<7>(res8) == 14);
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
-    // test int8
+    // test int16
 
     simd::int16 index16(
              0,  2,  4,  6,
@@ -371,8 +361,6 @@ TEST(SIMD, GatherInt)
     EXPECT_TRUE(simd::get<13>(res16) == 26);
     EXPECT_TRUE(simd::get<14>(res16) == 28);
     EXPECT_TRUE(simd::get<15>(res16) == 30);
-
-#endif
 
 }
 
@@ -490,8 +478,6 @@ TEST(SIMD, GatherVec4)
     EXPECT_FLOAT_EQ(simd::get<7>(res8.z), 58.0f);
     EXPECT_FLOAT_EQ(simd::get<7>(res8.w), 59.0f);
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
     // test vector<4, float16>
 
     simd::int16 index16(
@@ -581,7 +567,5 @@ TEST(SIMD, GatherVec4)
     EXPECT_FLOAT_EQ(simd::get<15>(res16.y), 121.0f);
     EXPECT_FLOAT_EQ(simd::get<15>(res16.z), 122.0f);
     EXPECT_FLOAT_EQ(simd::get<15>(res16.w), 123.0f);
-
-#endif
 
 }

@@ -200,10 +200,13 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/simd/detail/avx512/mask16.inl
     ${HEADER_DIR}/math/simd/detail/builtin/int4.inl
     ${HEADER_DIR}/math/simd/detail/builtin/int8.inl
+    ${HEADER_DIR}/math/simd/detail/builtin/int16.inl
     ${HEADER_DIR}/math/simd/detail/builtin/float4.inl
     ${HEADER_DIR}/math/simd/detail/builtin/float8.inl
+    ${HEADER_DIR}/math/simd/detail/builtin/float16.inl
     ${HEADER_DIR}/math/simd/detail/builtin/mask4.inl
     ${HEADER_DIR}/math/simd/detail/builtin/mask8.inl
+    ${HEADER_DIR}/math/simd/detail/builtin/mask16.inl
     ${HEADER_DIR}/math/simd/detail/neon/int4.inl
     ${HEADER_DIR}/math/simd/detail/neon/float4.inl
     ${HEADER_DIR}/math/simd/detail/neon/mask4.inl

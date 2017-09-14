@@ -112,8 +112,6 @@ VSNRAY_FORCE_INLINE float8 gather(unorm<Bits> const* base_addr, int8 const& inde
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 //-------------------------------------------------------------------------------------------------
 // Gather float16 from N-bit unorm array, N <= 32
 // No dedicated AVX-512 instruction!
@@ -146,8 +144,6 @@ VSNRAY_FORCE_INLINE float16 gather(unorm<Bits> const* base_addr, int16 const& in
         static_cast<float>(base_addr[indices[15]])
         );
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
 //-------------------------------------------------------------------------------------------------
@@ -202,18 +198,41 @@ VSNRAY_FORCE_INLINE float8 gather(float const* base_addr, int8 const& index)
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 //-------------------------------------------------------------------------------------------------
 // Gather float8 from 32-bit float array
 //
 
 VSNRAY_FORCE_INLINE float16 gather(float const* base_addr, int16 const& index)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
     return _mm512_i32gather_ps(index, base_addr, 4);
+#else
+
+    VSNRAY_ALIGN(64) int indices[16];
+    store(&indices[0], index);
+
+    return float16(
+        base_addr[indices[ 0]],
+        base_addr[indices[ 1]],
+        base_addr[indices[ 2]],
+        base_addr[indices[ 3]],
+        base_addr[indices[ 4]],
+        base_addr[indices[ 5]],
+        base_addr[indices[ 6]],
+        base_addr[indices[ 7]],
+        base_addr[indices[ 8]],
+        base_addr[indices[ 9]],
+        base_addr[indices[10]],
+        base_addr[indices[11]],
+        base_addr[indices[12]],
+        base_addr[indices[13]],
+        base_addr[indices[14]],
+        base_addr[indices[15]]
+        );
+
+#endif
 }
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
 //-------------------------------------------------------------------------------------------------
@@ -266,8 +285,6 @@ VSNRAY_FORCE_INLINE int8 gather(I const* base_addr, int8 const& index)
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 //-------------------------------------------------------------------------------------------------
 // Gather int16 from any integer array
 // No dedicated AVX-512 instruction (see special case for 32-bit integer arrays)!
@@ -301,8 +318,6 @@ VSNRAY_FORCE_INLINE int16 gather(I const* base_addr, int16 const& index)
         static_cast<int32_t>(base_addr[indices[15]])
         );
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
 //-------------------------------------------------------------------------------------------------
@@ -357,18 +372,41 @@ VSNRAY_FORCE_INLINE int8 gather(int const* base_addr, int8 const& index)
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 //-------------------------------------------------------------------------------------------------
 // Gather int16 from 32-bit integer array
 //
 
 VSNRAY_FORCE_INLINE int16 gather(int const* base_addr, int16 const& index)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
     return _mm512_i32gather_epi32(index, base_addr, 4);
-}
+#else
 
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+
+    VSNRAY_ALIGN(64) int indices[16];
+    store(&indices[0], index);
+
+    return int16(
+        base_addr[indices[ 0]],
+        base_addr[indices[ 1]],
+        base_addr[indices[ 2]],
+        base_addr[indices[ 3]],
+        base_addr[indices[ 4]],
+        base_addr[indices[ 5]],
+        base_addr[indices[ 6]],
+        base_addr[indices[ 7]],
+        base_addr[indices[ 8]],
+        base_addr[indices[ 9]],
+        base_addr[indices[10]],
+        base_addr[indices[11]],
+        base_addr[indices[12]],
+        base_addr[indices[13]],
+        base_addr[indices[14]],
+        base_addr[indices[15]]
+        );
+
+#endif
+}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -421,12 +459,12 @@ VSNRAY_FORCE_INLINE vector<Dim, float8> gather(vector<Dim, float> const* base_ad
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 template <size_t Dim>
 VSNRAY_FORCE_INLINE vector<Dim, float16> gather(vector<Dim, float> const* base_addr, int16 const& index)
 {
-    // TODO: check if gather intrinsic can be used here!
+//#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
+//  TODO: check if gather intrinsic can be used here!
+//#endif
 
     VSNRAY_ALIGN(64) int indices[16];
     store(&indices[0], index);
@@ -452,8 +490,6 @@ VSNRAY_FORCE_INLINE vector<Dim, float16> gather(vector<Dim, float> const* base_a
 
     return simd::pack(arr);
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
 //-------------------------------------------------------------------------------------------------
@@ -527,14 +563,13 @@ VSNRAY_FORCE_INLINE vector<4, float8> gather(vector<4, float> const* base_addr, 
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 //-------------------------------------------------------------------------------------------------
 // Gather vector<4, float16> from vector<4, float> array
 //
 
 VSNRAY_FORCE_INLINE vector<4, float16> gather(vector<4, float> const* base_addr, int16 const& index)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
     float const* tmp = reinterpret_cast<float const*>(base_addr);
 
     return vector<4, simd::float16>(
@@ -543,9 +578,13 @@ VSNRAY_FORCE_INLINE vector<4, float16> gather(vector<4, float> const* base_addr,
             _mm512_i32gather_ps(index * 4 + 2, tmp, 4),
             _mm512_i32gather_ps(index * 4 + 3, tmp, 4)
             );
+#else
+    // TODO: implement w/o intrinsics
+    (void)base_addr;
+    (void)index;
+    return {};
+#endif
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
 //-------------------------------------------------------------------------------------------------
@@ -608,8 +647,6 @@ VSNRAY_FORCE_INLINE vector<Dim, int8> gather(vector<Dim, I> const* base_addr, in
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 //-------------------------------------------------------------------------------------------------
 // Gather vector<Dim, int16> from vector<Dim, Int> array
 // No dedicated AVX-512 instruction!
@@ -648,8 +685,6 @@ VSNRAY_FORCE_INLINE vector<Dim, int16> gather(vector<Dim, I> const* base_addr, i
 
     return simd::pack(arr);
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 
 //-------------------------------------------------------------------------------------------------
@@ -708,8 +743,6 @@ VSNRAY_FORCE_INLINE vector<Dim, float8> gather(vector<Dim, unorm<Bits>> const* b
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 //-------------------------------------------------------------------------------------------------
 // Gather vector<Dim, float16> from vector<Dim, unorm<Bits>> array, Bits <= 32
 // No dedicated AVX-512F instruction!
@@ -746,8 +779,6 @@ VSNRAY_FORCE_INLINE vector<Dim, float16> gather(vector<Dim, unorm<Bits>> const* 
 
     return simd::pack(arr);
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 } // simd
 } // MATH_NAMESPACE

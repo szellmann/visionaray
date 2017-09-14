@@ -953,8 +953,6 @@ inline void get(
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-
 //-------------------------------------------------------------------------------------------------
 // Get AVX-512 rgba color from output color buffer, apply conversion
 // OutputColor must be rgba (TODO: ensure through source pixel format!)
@@ -1114,8 +1112,6 @@ inline void get(
 
     result = simd::int16(out);
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
 // Blend ------------------------------------------------------------------
 

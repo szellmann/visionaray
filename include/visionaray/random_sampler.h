@@ -157,7 +157,6 @@ private:
     sampler_type sampler_;
 };
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 template <>
 class random_sampler<simd::float16>
 {
@@ -206,7 +205,6 @@ private:
 
     sampler_type sampler_;
 };
-#endif
 
 } // visionaray
 
