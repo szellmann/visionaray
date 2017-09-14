@@ -143,4 +143,16 @@ VSNRAY_FORCE_INLINE mask4 operator!=(mask4 const& u, mask4 const& v)
 }
 
 } // simd
+
+
+//-------------------------------------------------------------------------------------------------
+// Import SIMD intrinsics into namespace visionaray.
+// Enable ADL!
+//
+
+using simd::select;
+using simd::store;
+using simd::any;
+using simd::all;
+
 } // MATH_NAMESPACE
