@@ -6,11 +6,8 @@
 #ifndef VSNRAY_SIMD_TYPE_TRAITS_H
 #define VSNRAY_SIMD_TYPE_TRAITS_H 1
 
-#include "avx.h"
-#include "avx512.h"
-#include "builtin.h"
-#include "neon.h"
-#include "sse.h"
+#include "forward.h"
+#include "intrinsics.h"
 
 namespace MATH_NAMESPACE
 {
