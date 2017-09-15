@@ -3,7 +3,7 @@
 
 #include <type_traits>
 
-#include <visionaray/math/simd/intrinsics.h>
+#include <visionaray/math/simd/simd.h>
 #include <visionaray/math/vector.h>
 
 #include <gtest/gtest.h>
