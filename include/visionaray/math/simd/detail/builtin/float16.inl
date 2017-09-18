@@ -1,8 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <algorithm>
-
 #include <visionaray/math/detail/math.h>
 
 namespace MATH_NAMESPACE
