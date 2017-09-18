@@ -374,10 +374,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 min(float4 const& u, float4 const& v)
 {
     return float4(
-            MATH_NAMESPACE::min(u.value[0], v.value[0]),
-            MATH_NAMESPACE::min(u.value[1], v.value[1]),
-            MATH_NAMESPACE::min(u.value[2], v.value[2]),
-            MATH_NAMESPACE::min(u.value[3], v.value[3])
+            u.value[0] < v.value[0] ? u.value[0] : v.value[0],
+            u.value[1] < v.value[1] ? u.value[1] : v.value[1],
+            u.value[2] < v.value[2] ? u.value[2] : v.value[2],
+            u.value[3] < v.value[3] ? u.value[3] : v.value[3]
             );
 }
 
@@ -385,10 +385,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 max(float4 const& u, float4 const& v)
 {
     return float4(
-            MATH_NAMESPACE::max(u.value[0], v.value[0]),
-            MATH_NAMESPACE::max(u.value[1], v.value[1]),
-            MATH_NAMESPACE::max(u.value[2], v.value[2]),
-            MATH_NAMESPACE::max(u.value[3], v.value[3])
+            u.value[0] < v.value[0] ? v.value[0] : u.value[0],
+            u.value[1] < v.value[1] ? v.value[1] : u.value[1],
+            u.value[2] < v.value[2] ? v.value[2] : u.value[2],
+            u.value[3] < v.value[3] ? v.value[3] : u.value[3]
             );
 }
 
@@ -402,10 +402,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 abs(float4 const& u)
 {
     return float4(
-            MATH_NAMESPACE::abs(u.value[0]),
-            MATH_NAMESPACE::abs(u.value[1]),
-            MATH_NAMESPACE::abs(u.value[2]),
-            MATH_NAMESPACE::abs(u.value[3])
+            fabsf(u.value[0]),
+            fabsf(u.value[1]),
+            fabsf(u.value[2]),
+            fabsf(u.value[3])
             );
 }
 
@@ -413,10 +413,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 round(float4 const& v)
 {
     return float4(
-            MATH_NAMESPACE::round(v.value[0]),
-            MATH_NAMESPACE::round(v.value[1]),
-            MATH_NAMESPACE::round(v.value[2]),
-            MATH_NAMESPACE::round(v.value[3])
+            roundf(v.value[0]),
+            roundf(v.value[1]),
+            roundf(v.value[2]),
+            roundf(v.value[3])
             );
 }
 
@@ -424,10 +424,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 ceil(float4 const& v)
 {
     return float4(
-            MATH_NAMESPACE::ceil(v.value[0]),
-            MATH_NAMESPACE::ceil(v.value[1]),
-            MATH_NAMESPACE::ceil(v.value[2]),
-            MATH_NAMESPACE::ceil(v.value[3])
+            ceilf(v.value[0]),
+            ceilf(v.value[1]),
+            ceilf(v.value[2]),
+            ceilf(v.value[3])
             );
 }
 
@@ -435,10 +435,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 floor(float4 const& v)
 {
     return float4(
-            MATH_NAMESPACE::floor(v.value[0]),
-            MATH_NAMESPACE::floor(v.value[1]),
-            MATH_NAMESPACE::floor(v.value[2]),
-            MATH_NAMESPACE::floor(v.value[3])
+            floorf(v.value[0]),
+            floorf(v.value[1]),
+            floorf(v.value[2]),
+            floorf(v.value[3])
             );
 }
 
@@ -446,10 +446,10 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float4 sqrt(float4 const& v)
 {
     return float4(
-            MATH_NAMESPACE::sqrt(v.value[0]),
-            MATH_NAMESPACE::sqrt(v.value[1]),
-            MATH_NAMESPACE::sqrt(v.value[2]),
-            MATH_NAMESPACE::sqrt(v.value[3])
+            sqrtf(v.value[0]),
+            sqrtf(v.value[1]),
+            sqrtf(v.value[2]),
+            sqrtf(v.value[3])
             );
 }
 

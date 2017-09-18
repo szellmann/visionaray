@@ -509,14 +509,14 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float8 min(float8 const& u, float8 const& v)
 {
     return float8(
-            MATH_NAMESPACE::min(u.value[0], v.value[0]),
-            MATH_NAMESPACE::min(u.value[1], v.value[1]),
-            MATH_NAMESPACE::min(u.value[2], v.value[2]),
-            MATH_NAMESPACE::min(u.value[3], v.value[3]),
-            MATH_NAMESPACE::min(u.value[4], v.value[4]),
-            MATH_NAMESPACE::min(u.value[5], v.value[5]),
-            MATH_NAMESPACE::min(u.value[6], v.value[6]),
-            MATH_NAMESPACE::min(u.value[7], v.value[7])
+            u.value[0] < v.value[0] ? u.value[0] : v.value[0],
+            u.value[1] < v.value[1] ? u.value[1] : v.value[1],
+            u.value[2] < v.value[2] ? u.value[2] : v.value[2],
+            u.value[3] < v.value[3] ? u.value[3] : v.value[3],
+            u.value[4] < v.value[4] ? u.value[4] : v.value[4],
+            u.value[5] < v.value[5] ? u.value[5] : v.value[5],
+            u.value[6] < v.value[6] ? u.value[6] : v.value[6],
+            u.value[7] < v.value[7] ? u.value[7] : v.value[7]
             );
 }
 
@@ -524,14 +524,14 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float8 max(float8 const& u, float8 const& v)
 {
     return float8(
-            MATH_NAMESPACE::max(u.value[0], v.value[0]),
-            MATH_NAMESPACE::max(u.value[1], v.value[1]),
-            MATH_NAMESPACE::max(u.value[2], v.value[2]),
-            MATH_NAMESPACE::max(u.value[3], v.value[3]),
-            MATH_NAMESPACE::max(u.value[4], v.value[4]),
-            MATH_NAMESPACE::max(u.value[5], v.value[5]),
-            MATH_NAMESPACE::max(u.value[6], v.value[6]),
-            MATH_NAMESPACE::max(u.value[7], v.value[7])
+            u.value[0] < v.value[0] ? v.value[0] : u.value[0],
+            u.value[1] < v.value[1] ? v.value[1] : u.value[1],
+            u.value[2] < v.value[2] ? v.value[2] : u.value[2],
+            u.value[3] < v.value[3] ? v.value[3] : u.value[3],
+            u.value[4] < v.value[4] ? v.value[4] : u.value[4],
+            u.value[5] < v.value[5] ? v.value[5] : u.value[5],
+            u.value[6] < v.value[6] ? v.value[6] : u.value[6],
+            u.value[7] < v.value[7] ? v.value[7] : u.value[7]
             );
 }
 
@@ -545,14 +545,14 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float8 abs(float8 const& u)
 {
     return float8(
-            MATH_NAMESPACE::abs(u.value[0]),
-            MATH_NAMESPACE::abs(u.value[1]),
-            MATH_NAMESPACE::abs(u.value[2]),
-            MATH_NAMESPACE::abs(u.value[3]),
-            MATH_NAMESPACE::abs(u.value[4]),
-            MATH_NAMESPACE::abs(u.value[5]),
-            MATH_NAMESPACE::abs(u.value[6]),
-            MATH_NAMESPACE::abs(u.value[7])
+            fabsf(u.value[0]),
+            fabsf(u.value[1]),
+            fabsf(u.value[2]),
+            fabsf(u.value[3]),
+            fabsf(u.value[4]),
+            fabsf(u.value[5]),
+            fabsf(u.value[6]),
+            fabsf(u.value[7])
             );
 }
 
@@ -560,14 +560,14 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float8 round(float8 const& v)
 {
     return float8(
-            MATH_NAMESPACE::round(v.value[0]),
-            MATH_NAMESPACE::round(v.value[1]),
-            MATH_NAMESPACE::round(v.value[2]),
-            MATH_NAMESPACE::round(v.value[3]),
-            MATH_NAMESPACE::round(v.value[4]),
-            MATH_NAMESPACE::round(v.value[5]),
-            MATH_NAMESPACE::round(v.value[6]),
-            MATH_NAMESPACE::round(v.value[7])
+            roundf(v.value[0]),
+            roundf(v.value[1]),
+            roundf(v.value[2]),
+            roundf(v.value[3]),
+            roundf(v.value[4]),
+            roundf(v.value[5]),
+            roundf(v.value[6]),
+            roundf(v.value[7])
             );
 }
 
@@ -575,14 +575,14 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float8 ceil(float8 const& v)
 {
     return float8(
-            MATH_NAMESPACE::ceil(v.value[0]),
-            MATH_NAMESPACE::ceil(v.value[1]),
-            MATH_NAMESPACE::ceil(v.value[2]),
-            MATH_NAMESPACE::ceil(v.value[3]),
-            MATH_NAMESPACE::ceil(v.value[4]),
-            MATH_NAMESPACE::ceil(v.value[5]),
-            MATH_NAMESPACE::ceil(v.value[6]),
-            MATH_NAMESPACE::ceil(v.value[7])
+            ceilf(v.value[0]),
+            ceilf(v.value[1]),
+            ceilf(v.value[2]),
+            ceilf(v.value[3]),
+            ceilf(v.value[4]),
+            ceilf(v.value[5]),
+            ceilf(v.value[6]),
+            ceilf(v.value[7])
             );
 }
 
@@ -590,14 +590,14 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float8 floor(float8 const& v)
 {
     return float8(
-            MATH_NAMESPACE::floor(v.value[0]),
-            MATH_NAMESPACE::floor(v.value[1]),
-            MATH_NAMESPACE::floor(v.value[2]),
-            MATH_NAMESPACE::floor(v.value[3]),
-            MATH_NAMESPACE::floor(v.value[4]),
-            MATH_NAMESPACE::floor(v.value[5]),
-            MATH_NAMESPACE::floor(v.value[6]),
-            MATH_NAMESPACE::floor(v.value[7])
+            floorf(v.value[0]),
+            floorf(v.value[1]),
+            floorf(v.value[2]),
+            floorf(v.value[3]),
+            floorf(v.value[4]),
+            floorf(v.value[5]),
+            floorf(v.value[6]),
+            floorf(v.value[7])
             );
 }
 
@@ -605,14 +605,14 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE float8 sqrt(float8 const& v)
 {
     return float8(
-            MATH_NAMESPACE::sqrt(v.value[0]),
-            MATH_NAMESPACE::sqrt(v.value[1]),
-            MATH_NAMESPACE::sqrt(v.value[2]),
-            MATH_NAMESPACE::sqrt(v.value[3]),
-            MATH_NAMESPACE::sqrt(v.value[4]),
-            MATH_NAMESPACE::sqrt(v.value[5]),
-            MATH_NAMESPACE::sqrt(v.value[6]),
-            MATH_NAMESPACE::sqrt(v.value[7])
+            sqrtf(v.value[0]),
+            sqrtf(v.value[1]),
+            sqrtf(v.value[2]),
+            sqrtf(v.value[3]),
+            sqrtf(v.value[4]),
+            sqrtf(v.value[5]),
+            sqrtf(v.value[6]),
+            sqrtf(v.value[7])
             );
 }
 
