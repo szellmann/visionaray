@@ -43,34 +43,18 @@ public:
     typedef std::uniform_real_distribution<T> uniform_dist;
 #endif
 
-// TODO: avoid code duplication here (somehow)
-#if VSNRAY_GPU_MODE
-    VSNRAY_GPU_FUNC random_sampler() = default;
+    VSNRAY_FUNC random_sampler() = default;
 
-    VSNRAY_GPU_FUNC random_sampler(unsigned seed)
+    VSNRAY_FUNC random_sampler(unsigned seed)
         : rng_(rand_engine(seed))
         , dist_(uniform_dist(0, 1))
     {
     }
 
-    VSNRAY_GPU_FUNC T next()
+    VSNRAY_FUNC T next()
     {
         return dist_(rng_);
     }
-#else
-    random_sampler() = default;
-
-    random_sampler(unsigned seed)
-        : rng_(rand_engine(seed))
-        , dist_(uniform_dist(0, 1))
-    {
-    }
-
-    T next()
-    {
-        return dist_(rng_);
-    }
-#endif
 
 private:
 
