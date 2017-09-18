@@ -32,6 +32,8 @@ if(UNIX)
             OUTPUT_VARIABLE cxxflags
             )
 
+        string(REPLACE "-I" "-isystem " cxxflags "${cxxflags}")
+
         set(__VSNRAY_HCC_COMPILE_FLAGS "${cxxflags}")
 
         execute_process(
