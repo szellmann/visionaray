@@ -394,7 +394,7 @@ VSNRAY_FORCE_INLINE float4 tan(float4 const& x)
             MATH_NAMESPACE::tan(tmp[0]),
             MATH_NAMESPACE::tan(tmp[1]),
             MATH_NAMESPACE::tan(tmp[2]),
-            MATH_NAMESPACE::sin(tmp[3])
+            MATH_NAMESPACE::tan(tmp[3])
             );
 }
 
