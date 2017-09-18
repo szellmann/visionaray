@@ -579,10 +579,31 @@ VSNRAY_FORCE_INLINE vector<4, float16> gather(vector<4, float> const* base_addr,
             _mm512_i32gather_ps(index * 4 + 3, tmp, 4)
             );
 #else
-    // TODO: implement w/o intrinsics
-    (void)base_addr;
-    (void)index;
-    return {};
+
+    VSNRAY_ALIGN(64) int indices[16];
+    store(&indices[0], index);
+
+    array<vector<4, float>, 16> arr{{
+            base_addr[indices[ 0]],
+            base_addr[indices[ 1]],
+            base_addr[indices[ 2]],
+            base_addr[indices[ 3]],
+            base_addr[indices[ 4]],
+            base_addr[indices[ 5]],
+            base_addr[indices[ 6]],
+            base_addr[indices[ 7]],
+            base_addr[indices[ 8]],
+            base_addr[indices[ 9]],
+            base_addr[indices[10]],
+            base_addr[indices[11]],
+            base_addr[indices[12]],
+            base_addr[indices[13]],
+            base_addr[indices[14]],
+            base_addr[indices[15]]
+            }};
+
+    return simd::pack(arr);
+
 #endif
 }
 
