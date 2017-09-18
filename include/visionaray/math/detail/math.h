@@ -9,8 +9,6 @@
 #ifdef __HCC__
 #include <hcc/hc_math.hpp> // include before <cmath> !!
 #endif
-
-#include <algorithm>
 #include <cmath>
 #include <type_traits>
 
@@ -42,8 +40,6 @@ using ::log;
 using ::log2;
 using ::log10;
 using ::log1p;
-using ::max;
-using ::min;
 using ::pow;
 using ::round;
 using ::sin;
@@ -66,14 +62,26 @@ using std::log;
 using std::log2;
 using std::log10;
 using std::log1p;
-using std::max;
-using std::min;
 using std::pow;
 using std::round;
 using std::sin;
 using std::sqrt;
 using std::tan;
 #endif
+
+template <typename T>
+MATH_FUNC
+inline T min(T const& x, T const& y)
+{
+    return x < y ? x : y;
+}
+
+template <typename T>
+MATH_FUNC
+inline T max(T const& x, T const& y)
+{
+    return x < y ? y : x;
+}
 
 
 //-------------------------------------------------------------------------------------------------
