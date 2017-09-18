@@ -395,7 +395,7 @@ VSNRAY_FORCE_INLINE float4 max(float4 const& u, float4 const& v)
 MATH_FUNC
 VSNRAY_FORCE_INLINE float4 saturate(float4 const& u)
 {
-    return max(float4(0.0f), min(u, float4(0.0f)));
+    return max(float4(0.0f), min(u, float4(1.0f)));
 }
 
 MATH_FUNC
