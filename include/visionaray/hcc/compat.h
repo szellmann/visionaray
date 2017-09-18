@@ -14,7 +14,7 @@
 // compiler errors
 //
 
-#if __KALMAR_ACCELERATOR__
+#if defined(__KALMAR_ACCELERATOR__) && __KALMAR_ACCELERATOR__ != 0
 namespace visionaray
 {
 
