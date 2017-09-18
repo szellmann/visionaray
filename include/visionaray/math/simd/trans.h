@@ -13,6 +13,7 @@
 
 #include <type_traits>
 
+#include "../detail/math.h"
 #include "../constants.h"
 #include "avx.h"
 #include "avx512.h"
@@ -363,10 +364,10 @@ VSNRAY_FORCE_INLINE float4 cos(float4 const& x)
     store(tmp, x);
 
     return float4(
-            MATH_NAMESPACE::cos(tmp[0]),
-            MATH_NAMESPACE::cos(tmp[1]),
-            MATH_NAMESPACE::cos(tmp[2]),
-            MATH_NAMESPACE::cos(tmp[3])
+            cosf(tmp[0]),
+            cosf(tmp[1]),
+            cosf(tmp[2]),
+            cosf(tmp[3])
             );
 }
 
@@ -377,10 +378,10 @@ VSNRAY_FORCE_INLINE float4 sin(float4 const& x)
     store(tmp, x);
 
     return float4(
-            MATH_NAMESPACE::sin(tmp[0]),
-            MATH_NAMESPACE::sin(tmp[1]),
-            MATH_NAMESPACE::sin(tmp[2]),
-            MATH_NAMESPACE::sin(tmp[3])
+            sinf(tmp[0]),
+            sinf(tmp[1]),
+            sinf(tmp[2]),
+            sinf(tmp[3])
             );
 }
 
@@ -391,10 +392,10 @@ VSNRAY_FORCE_INLINE float4 tan(float4 const& x)
     store(tmp, x);
 
     return float4(
-            MATH_NAMESPACE::tan(tmp[0]),
-            MATH_NAMESPACE::tan(tmp[1]),
-            MATH_NAMESPACE::tan(tmp[2]),
-            MATH_NAMESPACE::tan(tmp[3])
+            tanf(tmp[0]),
+            tanf(tmp[1]),
+            tanf(tmp[2]),
+            tanf(tmp[3])
             );
 }
 
@@ -405,10 +406,10 @@ VSNRAY_FORCE_INLINE float4 acos(float4 const& x)
     store(tmp, x);
 
     return float4(
-            MATH_NAMESPACE::acos(tmp[0]),
-            MATH_NAMESPACE::acos(tmp[1]),
-            MATH_NAMESPACE::acos(tmp[2]),
-            MATH_NAMESPACE::acos(tmp[3])
+            acosf(tmp[0]),
+            acosf(tmp[1]),
+            acosf(tmp[2]),
+            acosf(tmp[3])
             );
 }
 
@@ -419,10 +420,10 @@ VSNRAY_FORCE_INLINE float4 asin(float4 const& x)
     store(tmp, x);
 
     return float4(
-            MATH_NAMESPACE::asin(tmp[0]),
-            MATH_NAMESPACE::asin(tmp[1]),
-            MATH_NAMESPACE::asin(tmp[2]),
-            MATH_NAMESPACE::asin(tmp[3])
+            asinf(tmp[0]),
+            asinf(tmp[1]),
+            asinf(tmp[2]),
+            asinf(tmp[3])
             );
 }
 
@@ -433,10 +434,10 @@ VSNRAY_FORCE_INLINE float4 atan(float4 const& x)
     store(tmp, x);
 
     return float4(
-            MATH_NAMESPACE::atan(tmp[0]),
-            MATH_NAMESPACE::atan(tmp[1]),
-            MATH_NAMESPACE::atan(tmp[2]),
-            MATH_NAMESPACE::asin(tmp[3])
+            atanf(tmp[0]),
+            atanf(tmp[1]),
+            atanf(tmp[2]),
+            asinf(tmp[3])
             );
 }
 
@@ -448,9 +449,15 @@ VSNRAY_FORCE_INLINE float8 cos(float8 const& x)
     store(tmp, x);
 
     return float8(
-        std::cos(tmp[0]), std::cos(tmp[1]), std::cos(tmp[2]), std::cos(tmp[3]),
-        std::cos(tmp[4]), std::cos(tmp[5]), std::cos(tmp[6]), std::cos(tmp[7])
-        );
+            cosf(tmp[0]),
+            cosf(tmp[1]),
+            cosf(tmp[2]),
+            cosf(tmp[3]),
+            cosf(tmp[4]),
+            cosf(tmp[5]),
+            cosf(tmp[6]),
+            cosf(tmp[7])
+            );
 }
 
 VSNRAY_FORCE_INLINE float8 sin(float8 const& x)
@@ -459,9 +466,15 @@ VSNRAY_FORCE_INLINE float8 sin(float8 const& x)
     store(tmp, x);
 
     return float8(
-        std::sin(tmp[0]), std::sin(tmp[1]), std::sin(tmp[2]), std::sin(tmp[3]),
-        std::sin(tmp[4]), std::sin(tmp[5]), std::sin(tmp[6]), std::sin(tmp[7])
-        );
+            sinf(tmp[0]),
+            sinf(tmp[1]),
+            sinf(tmp[2]),
+            sinf(tmp[3]),
+            sinf(tmp[4]),
+            sinf(tmp[5]),
+            sinf(tmp[6]),
+            sinf(tmp[7])
+            );
 }
 
 VSNRAY_FORCE_INLINE float8 tan(float8 const& x)
@@ -470,9 +483,15 @@ VSNRAY_FORCE_INLINE float8 tan(float8 const& x)
     store(tmp, x);
 
     return float8(
-        std::tan(tmp[0]), std::tan(tmp[1]), std::tan(tmp[2]), std::tan(tmp[3]),
-        std::tan(tmp[4]), std::tan(tmp[5]), std::tan(tmp[6]), std::tan(tmp[7])
-        );
+            tanf(tmp[0]),
+            tanf(tmp[1]),
+            tanf(tmp[2]),
+            tanf(tmp[3]),
+            tanf(tmp[4]),
+            tanf(tmp[5]),
+            tanf(tmp[6]),
+            tanf(tmp[7])
+            );
 }
 
 VSNRAY_FORCE_INLINE float8 acos(float8 const& x)
@@ -481,9 +500,15 @@ VSNRAY_FORCE_INLINE float8 acos(float8 const& x)
     store(tmp, x);
 
     return float8(
-        std::acos(tmp[0]), std::acos(tmp[1]), std::acos(tmp[2]), std::acos(tmp[3]),
-        std::acos(tmp[4]), std::acos(tmp[5]), std::acos(tmp[6]), std::acos(tmp[7])
-        );
+            acosf(tmp[0]),
+            acosf(tmp[1]),
+            acosf(tmp[2]),
+            acosf(tmp[3]),
+            acosf(tmp[4]),
+            acosf(tmp[5]),
+            acosf(tmp[6]),
+            acosf(tmp[7])
+            );
 }
 
 VSNRAY_FORCE_INLINE float8 asin(float8 const& x)
@@ -492,9 +517,15 @@ VSNRAY_FORCE_INLINE float8 asin(float8 const& x)
     store(tmp, x);
 
     return float8(
-        std::asin(tmp[0]), std::asin(tmp[1]), std::asin(tmp[2]), std::asin(tmp[3]),
-        std::asin(tmp[4]), std::asin(tmp[5]), std::asin(tmp[6]), std::asin(tmp[7])
-        );
+            asinf(tmp[0]),
+            asinf(tmp[1]),
+            asinf(tmp[2]),
+            asinf(tmp[3]),
+            asinf(tmp[4]),
+            asinf(tmp[5]),
+            asinf(tmp[6]),
+            asinf(tmp[7])
+            );
 }
 
 VSNRAY_FORCE_INLINE float8 atan(float8 const& x)
@@ -503,9 +534,15 @@ VSNRAY_FORCE_INLINE float8 atan(float8 const& x)
     store(tmp, x);
 
     return float8(
-        std::atan(tmp[0]), std::atan(tmp[1]), std::atan(tmp[2]), std::atan(tmp[3]),
-        std::atan(tmp[4]), std::atan(tmp[5]), std::atan(tmp[6]), std::atan(tmp[7])
-        );
+            atanf(tmp[0]),
+            atanf(tmp[1]),
+            atanf(tmp[2]),
+            atanf(tmp[3]),
+            atanf(tmp[4]),
+            atanf(tmp[5]),
+            atanf(tmp[6]),
+            atanf(tmp[7])
+            );
 }
 
 // TODO: consolidate stuff with float4 (template)
@@ -516,11 +553,23 @@ VSNRAY_FORCE_INLINE float16 cos(float16 const& x)
     store(tmp, x);
 
     return float16(
-        std::cos(tmp[ 0]), std::cos(tmp[ 1]), std::cos(tmp[ 2]), std::cos(tmp[ 3]),
-        std::cos(tmp[ 4]), std::cos(tmp[ 5]), std::cos(tmp[ 6]), std::cos(tmp[ 7]),
-        std::cos(tmp[ 8]), std::cos(tmp[ 9]), std::cos(tmp[10]), std::cos(tmp[11]),
-        std::cos(tmp[12]), std::cos(tmp[13]), std::cos(tmp[14]), std::cos(tmp[15])
-        );
+            cosf(tmp[ 0]),
+            cosf(tmp[ 1]),
+            cosf(tmp[ 2]),
+            cosf(tmp[ 3]),
+            cosf(tmp[ 4]),
+            cosf(tmp[ 5]),
+            cosf(tmp[ 6]),
+            cosf(tmp[ 7]),
+            cosf(tmp[ 8]),
+            cosf(tmp[ 9]),
+            cosf(tmp[10]),
+            cosf(tmp[11]),
+            cosf(tmp[12]),
+            cosf(tmp[13]),
+            cosf(tmp[14]),
+            cosf(tmp[15])
+            );
 }
 
 VSNRAY_FORCE_INLINE float16 sin(float16 const& x)
@@ -529,11 +578,23 @@ VSNRAY_FORCE_INLINE float16 sin(float16 const& x)
     store(tmp, x);
 
     return float16(
-        std::sin(tmp[ 0]), std::sin(tmp[ 1]), std::sin(tmp[ 2]), std::sin(tmp[ 3]),
-        std::sin(tmp[ 4]), std::sin(tmp[ 5]), std::sin(tmp[ 6]), std::sin(tmp[ 7]),
-        std::sin(tmp[ 8]), std::sin(tmp[ 9]), std::sin(tmp[10]), std::sin(tmp[11]),
-        std::sin(tmp[12]), std::sin(tmp[13]), std::sin(tmp[14]), std::sin(tmp[15])
-        );
+            sinf(tmp[ 0]),
+            sinf(tmp[ 1]),
+            sinf(tmp[ 2]),
+            sinf(tmp[ 3]),
+            sinf(tmp[ 4]),
+            sinf(tmp[ 5]),
+            sinf(tmp[ 6]),
+            sinf(tmp[ 7]),
+            sinf(tmp[ 8]),
+            sinf(tmp[ 9]),
+            sinf(tmp[10]),
+            sinf(tmp[11]),
+            sinf(tmp[12]),
+            sinf(tmp[13]),
+            sinf(tmp[14]),
+            sinf(tmp[15])
+            );
 }
 
 VSNRAY_FORCE_INLINE float16 tan(float16 const& x)
@@ -542,11 +603,23 @@ VSNRAY_FORCE_INLINE float16 tan(float16 const& x)
     store(tmp, x);
 
     return float16(
-        std::tan(tmp[ 0]), std::tan(tmp[ 1]), std::tan(tmp[ 2]), std::tan(tmp[ 3]),
-        std::tan(tmp[ 4]), std::tan(tmp[ 5]), std::tan(tmp[ 6]), std::tan(tmp[ 7]),
-        std::tan(tmp[ 8]), std::tan(tmp[ 9]), std::tan(tmp[10]), std::tan(tmp[11]),
-        std::tan(tmp[12]), std::tan(tmp[13]), std::tan(tmp[14]), std::tan(tmp[15])
-        );
+            tanf(tmp[ 0]),
+            tanf(tmp[ 1]),
+            tanf(tmp[ 2]),
+            tanf(tmp[ 3]),
+            tanf(tmp[ 4]),
+            tanf(tmp[ 5]),
+            tanf(tmp[ 6]),
+            tanf(tmp[ 7]),
+            tanf(tmp[ 8]),
+            tanf(tmp[ 9]),
+            tanf(tmp[10]),
+            tanf(tmp[11]),
+            tanf(tmp[12]),
+            tanf(tmp[13]),
+            tanf(tmp[14]),
+            tanf(tmp[15])
+            );
 }
 
 VSNRAY_FORCE_INLINE float16 acos(float16 const& x)
@@ -555,11 +628,23 @@ VSNRAY_FORCE_INLINE float16 acos(float16 const& x)
     store(tmp, x);
 
     return float16(
-        std::acos(tmp[ 0]), std::acos(tmp[ 1]), std::acos(tmp[ 2]), std::acos(tmp[ 3]),
-        std::acos(tmp[ 4]), std::acos(tmp[ 5]), std::acos(tmp[ 6]), std::acos(tmp[ 7]),
-        std::acos(tmp[ 8]), std::acos(tmp[ 9]), std::acos(tmp[10]), std::acos(tmp[11]),
-        std::acos(tmp[12]), std::acos(tmp[13]), std::acos(tmp[14]), std::acos(tmp[15])
-        );
+            acosf(tmp[ 0]),
+            acosf(tmp[ 1]),
+            acosf(tmp[ 2]),
+            acosf(tmp[ 3]),
+            acosf(tmp[ 4]),
+            acosf(tmp[ 5]),
+            acosf(tmp[ 6]),
+            acosf(tmp[ 7]),
+            acosf(tmp[ 8]),
+            acosf(tmp[ 9]),
+            acosf(tmp[10]),
+            acosf(tmp[11]),
+            acosf(tmp[12]),
+            acosf(tmp[13]),
+            acosf(tmp[14]),
+            acosf(tmp[15])
+            );
 }
 
 VSNRAY_FORCE_INLINE float16 asin(float16 const& x)
@@ -568,11 +653,23 @@ VSNRAY_FORCE_INLINE float16 asin(float16 const& x)
     store(tmp, x);
 
     return float16(
-        std::asin(tmp[ 0]), std::asin(tmp[ 1]), std::asin(tmp[ 2]), std::asin(tmp[ 3]),
-        std::asin(tmp[ 4]), std::asin(tmp[ 5]), std::asin(tmp[ 6]), std::asin(tmp[ 7]),
-        std::asin(tmp[ 8]), std::asin(tmp[ 9]), std::asin(tmp[10]), std::asin(tmp[11]),
-        std::asin(tmp[12]), std::asin(tmp[13]), std::asin(tmp[14]), std::asin(tmp[15])
-        );
+            asinf(tmp[ 0]),
+            asinf(tmp[ 1]),
+            asinf(tmp[ 2]),
+            asinf(tmp[ 3]),
+            asinf(tmp[ 4]),
+            asinf(tmp[ 5]),
+            asinf(tmp[ 6]),
+            asinf(tmp[ 7]),
+            asinf(tmp[ 8]),
+            asinf(tmp[ 9]),
+            asinf(tmp[10]),
+            asinf(tmp[11]),
+            asinf(tmp[12]),
+            asinf(tmp[13]),
+            asinf(tmp[14]),
+            asinf(tmp[15])
+            );
 }
 
 VSNRAY_FORCE_INLINE float16 atan(float16 const& x)
@@ -581,11 +678,23 @@ VSNRAY_FORCE_INLINE float16 atan(float16 const& x)
     store(tmp, x);
 
     return float16(
-        std::atan(tmp[ 0]), std::atan(tmp[ 1]), std::atan(tmp[ 2]), std::atan(tmp[ 3]),
-        std::atan(tmp[ 4]), std::atan(tmp[ 5]), std::atan(tmp[ 6]), std::atan(tmp[ 7]),
-        std::atan(tmp[ 8]), std::atan(tmp[ 9]), std::atan(tmp[10]), std::atan(tmp[11]),
-        std::atan(tmp[12]), std::atan(tmp[13]), std::atan(tmp[14]), std::atan(tmp[15])
-        );
+            atanf(tmp[ 0]),
+            atanf(tmp[ 1]),
+            atanf(tmp[ 2]),
+            atanf(tmp[ 3]),
+            atanf(tmp[ 4]),
+            atanf(tmp[ 5]),
+            atanf(tmp[ 6]),
+            atanf(tmp[ 7]),
+            atanf(tmp[ 8]),
+            atanf(tmp[ 9]),
+            atanf(tmp[10]),
+            atanf(tmp[11]),
+            atanf(tmp[12]),
+            atanf(tmp[13]),
+            atanf(tmp[14]),
+            atanf(tmp[15])
+            );
 }
 
 
