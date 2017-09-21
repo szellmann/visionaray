@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <vector>
 
-#include "detail/allocator.h"
+#include "detail/aligned_allocator.h"
 
 namespace visionaray
 {

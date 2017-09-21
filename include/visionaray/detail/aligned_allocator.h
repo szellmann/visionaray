@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_DETAIL_ALLOCATOR_H
-#define VSNRAY_DETAIL_ALLOCATOR_H 1
+#ifndef VSNRAY_DETAIL_ALIGNED_ALLOCATOR_H
+#define VSNRAY_DETAIL_ALIGNED_ALLOCATOR_H 1
 
 #include <cstddef>
 #include <new>
@@ -124,4 +124,4 @@ public:
 
 } // visionaray
 
-#endif // VSNRAY_DETAIL_ALLOCATOR_H
+#endif // VSNRAY_DETAIL_ALIGNED_ALLOCATOR_H
