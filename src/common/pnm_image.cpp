@@ -97,6 +97,41 @@ static void load_binary(
     }
 }
 
+static void save_ascii(
+        std::ofstream&  file,
+        uint8_t const*  src,
+        size_t          pitch,
+        size_t          height
+        )
+{
+    for (size_t y = 0; y < height; ++y)
+    {
+        for (size_t x = 0; x < pitch; ++x)
+        {
+            auto c = std::to_string(src[y * pitch + x]);
+
+            // padding
+            for (size_t i = 0; i < 3 - c.length(); ++i)
+            {
+                file << ' ';
+            }
+
+            // write color component
+            file << c;
+
+            // whitespace
+            if (x + 1 < pitch)
+            {
+                file << ' ';
+            }
+            else
+            {
+                file << '\n';
+            }
+        }
+    }
+}
+
 static void save_binary(
         std::ofstream&  file,
         uint8_t const*  src,
@@ -319,7 +354,48 @@ bool pnm_image::save(std::string const& filename, image_base::save_options const
 
     std::ofstream file(filename);
 
-    if (binary && format_ == PF_RGB8)
+    // TODO:                                   P1
+    if (!binary && format_ == PF_R8)        // P2
+    {
+        file << "P2\n";
+        file << width_ << ' ' << height_ << '\n';
+        file << 255 << '\n';
+        save_ascii(
+                file,
+                data_.data(),
+                width_,
+                height_
+                );
+        return true;
+    }
+    else if (!binary && format_ == PF_RGB8) // P3
+    {
+        file << "P3\n";
+        file << width_ << ' ' << height_ << '\n';
+        file << 255 << '\n';
+        save_ascii(
+                file,
+                data_.data(),
+                width_ * 3,
+                height_
+                );
+        return true;
+    }
+    // TODO:                                   P4
+    else if (binary && format_ == PF_R8)    // P5
+    {
+        file << "P5\n";
+        file << width_ << ' ' << height_ << '\n';
+        file << 255 << '\n';
+        save_binary(
+                file,
+                data_.data(),
+                width_,
+                height_
+                );
+        return true;
+    }
+    else if (binary && format_ == PF_RGB8)  // P6
     {
         file << "P6\n";
         file << width_ << ' ' << height_ << '\n';
@@ -337,4 +413,4 @@ bool pnm_image::save(std::string const& filename, image_base::save_options const
     return false;
 }
 
-}
+} // visionaray
