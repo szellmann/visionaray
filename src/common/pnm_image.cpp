@@ -366,7 +366,6 @@ bool pnm_image::save(std::string const& filename, image_base::save_options const
                 width_,
                 height_
                 );
-        return true;
     }
     else if (!binary && format_ == PF_RGB8) // P3
     {
@@ -379,7 +378,6 @@ bool pnm_image::save(std::string const& filename, image_base::save_options const
                 width_ * 3,
                 height_
                 );
-        return true;
     }
     // TODO:                                   P4
     else if (binary && format_ == PF_R8)    // P5
@@ -393,7 +391,6 @@ bool pnm_image::save(std::string const& filename, image_base::save_options const
                 width_,
                 height_
                 );
-        return true;
     }
     else if (binary && format_ == PF_RGB8)  // P6
     {
@@ -406,11 +403,23 @@ bool pnm_image::save(std::string const& filename, image_base::save_options const
                 width_ * 3,
                 height_
                 );
-        return true;
+    }
+    else
+    {
+        std::cerr << "Unsupported image format\n";
+        return false;
     }
 
-    std::cerr << "Unsupported image format\n";
-    return false;
+
+    file.close();
+
+    if (!file)
+    {
+        std::cerr << "Error writing to file\n";
+        return false;
+    }
+
+    return true;
 }
 
 } // visionaray
