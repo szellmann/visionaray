@@ -103,12 +103,13 @@ int main(int argc, char** argv)
 
     bool unified_memory_mode = true;
 
+    // Don't measure runtime API initialization overhead
+    cudaDeviceSynchronize();
+
+    std::cout << "\n*** CUDA unified memory example ***\n\n";
+
     if (unified_memory_mode)
     {
-        // Don't measure runtime API initialization overhead
-        cudaDeviceSynchronize();
-
-        std::cout << "\n*** CUDA unified memory example ***\n\n";
         std::cout << "Using memory mode: CUDA unified memory\n\n";
 
 
@@ -160,5 +161,64 @@ int main(int argc, char** argv)
         sched.frame(kern, sparams);
         cudaDeviceSynchronize();
         std::cout << "Time eplased: " << t.elapsed() << "s\n\n";
+    }
+    else
+    {
+        std::cout << "Using memory mode: explicit memory transfers\n\n";
+
+
+        // Create data in host memory ---------------------
+
+        timer t;
+        thrust::host_vector<basic_sphere<float>> spheres(num_spheres);
+
+        std::cout << "Creating " << num_spheres << " random spheres...\n";
+        create_random_spheres(spheres, bbox, min_radius, max_radius);
+        std::cout << "Time elapsed: " << t.elapsed() << "s\n\n";
+
+
+        // Create BVH -------------------------------------
+
+        std::cout << "Creating BVH...\n";
+        t.reset();
+        auto h_bvh = build<index_bvh<basic_sphere<float>>>(spheres.data(), spheres.size(), true /* spatial splits */);
+        std::cout << "Time elapsed: " << t.elapsed() << "s\n\n";
+
+
+        // Upload data to GPU -----------------------------
+
+        cuda_index_bvh<basic_sphere<float>> d_bvh(h_bvh);
+
+
+        // Prepare for ray tracing ------------------------
+
+        using bvh_ref_t = typename cuda_index_bvh<basic_sphere<float>>::bvh_ref;
+        thrust::device_vector<bvh_ref_t> bvh_refs;
+        bvh_refs.push_back(d_bvh.ref());
+
+        pinhole_camera cam;
+        cam.set_viewport(0, 0, width, height);
+        cam.perspective(45.0f * constants::degrees_to_radians<float>(), 1.0f, 0.001f, 1000.0f);
+        cam.view_all(bbox);
+
+        gpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED> rendertarget;
+        rendertarget.resize(width, height);
+
+        auto sparams = make_sched_params(cam, rendertarget);
+
+        raytracing_kernel<bvh_ref_t const*> kern = {
+                thrust::raw_pointer_cast(bvh_refs.data()),
+                thrust::raw_pointer_cast(bvh_refs.data()) + 1
+                };
+
+        cuda_sched<ray> sched;
+
+
+        // Ray tracing on the GPU -------------------------
+
+        std::cout << "Calculating primary visibility with " << width << " x " << height << " rays...\n";
+        cuda::timer ct;
+        sched.frame(kern, sparams);
+        std::cout << "Time eplased: " << ct.elapsed() << "s\n\n";
     }
 }
