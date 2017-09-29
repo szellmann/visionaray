@@ -2,10 +2,14 @@
 // See the LICENSE file for details.
 
 #include <cstddef>
+#include <cstdlib>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <ostream>
 #include <random>
+#include <string>
+#include <vector>
 
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
@@ -22,7 +26,10 @@
 
 #include <common/timer.h>
 
+using namespace support;
 using namespace visionaray;
+
+using cmdline_options = std::vector<std::shared_ptr<cl::OptionBase>>;
 
 
 namespace visionaray
@@ -91,8 +98,7 @@ struct raytracing_kernel
 
 int main(int argc, char** argv)
 {
-    std::cout << std::fixed;
-    std::cout << std::setprecision(4);
+    // Application state ----------------------------------
 
     size_t num_spheres = 300000;
     aabb bbox({ -1.0f, -1.0f, -1.0f}, { 1.0f, 1.0f, 1.0f });
@@ -101,14 +107,77 @@ int main(int argc, char** argv)
     int width = 512;
     int height = 512;
 
-    bool unified_memory_mode = true;
+    bool explicit_copy_mode = false;
+
+
+    // Setup ----------------------------------------------
+
+    std::cout << std::fixed;
+    std::cout << std::setprecision(4);
+
+
+    // Read command line options
+    cl::CmdLine cmd;
+    cmdline_options options;
+
+    options.emplace_back( cl::makeOption<size_t&>(
+            cl::Parser<>(),
+            "num_spheres",
+            cl::Desc("Number of random spheres to traverse"),
+            cl::ArgRequired,
+            cl::init(num_spheres)
+            ) );
+
+    options.emplace_back( cl::makeOption<bool&>(
+            cl::Parser<>(),
+            "explicit_copy",
+            cl::Desc("Use explicit memory transfers instead of unified memory"),
+            cl::ArgDisallowed,
+            cl::init(explicit_copy_mode)
+            ) );
+
+    options.emplace_back( cl::makeOption<int&>(
+            cl::Parser<>(),
+            "width",
+            cl::Desc("Image width"),
+            cl::ArgRequired,
+            cl::init(width)
+            ) );
+
+    options.emplace_back( cl::makeOption<int&>(
+            cl::Parser<>(),
+            "height",
+            cl::Desc("Image height"),
+            cl::ArgRequired,
+            cl::init(height)
+            ) );
+
+    for (auto& opt : options)
+    {
+        cmd.add(*opt);
+    }
+
+    auto args = std::vector<std::string>(argv + 1, argv + argc);
+    cl::expandWildcards(args);
+    cl::expandResponseFiles(args, cl::TokenizeUnix());
+
+    try
+    {
+        cmd.parse(args);
+    }
+    catch (...)
+    {
+        std::cout << cmd.help(argv[0]) << '\n';
+        exit(EXIT_FAILURE);
+    }
+
 
     // Don't measure runtime API initialization overhead
     cudaDeviceSynchronize();
 
     std::cout << "\n*** CUDA unified memory example ***\n\n";
 
-    if (unified_memory_mode)
+    if (!explicit_copy_mode)
     {
         std::cout << "Using memory mode: CUDA unified memory\n\n";
 
