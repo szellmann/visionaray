@@ -4,7 +4,7 @@
 #include <cfloat>
 #include <limits>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/simd/simd.h>
 
 #include <gtest/gtest.h>
 
@@ -29,6 +29,12 @@ TEST(SIMD, SelectFloat)
         EXPECT_FLOAT_EQ( simd::get<1>(c), 1.0f );
         EXPECT_FLOAT_EQ( simd::get<2>(c), 1.0f );
         EXPECT_FLOAT_EQ( simd::get<3>(c), 0.0f );
+
+        c = select(!m, a, b);
+        EXPECT_FLOAT_EQ( simd::get<0>(c), 3.0f );
+        EXPECT_FLOAT_EQ( simd::get<1>(c), 2.0f );
+        EXPECT_FLOAT_EQ( simd::get<2>(c), 2.0f );
+        EXPECT_FLOAT_EQ( simd::get<3>(c), 3.0f );
     }
 
 
@@ -48,6 +54,16 @@ TEST(SIMD, SelectFloat)
         EXPECT_FLOAT_EQ( simd::get<5>(c), 2.0f );
         EXPECT_FLOAT_EQ( simd::get<6>(c), 1.0f );
         EXPECT_FLOAT_EQ( simd::get<7>(c), 0.0f );
+
+        c = select(!m, a, b);
+        EXPECT_FLOAT_EQ( simd::get<0>(c), 7.0f );
+        EXPECT_FLOAT_EQ( simd::get<1>(c), 6.0f );
+        EXPECT_FLOAT_EQ( simd::get<2>(c), 5.0f );
+        EXPECT_FLOAT_EQ( simd::get<3>(c), 4.0f );
+        EXPECT_FLOAT_EQ( simd::get<4>(c), 4.0f );
+        EXPECT_FLOAT_EQ( simd::get<5>(c), 5.0f );
+        EXPECT_FLOAT_EQ( simd::get<6>(c), 6.0f );
+        EXPECT_FLOAT_EQ( simd::get<7>(c), 7.0f );
     }
 
 
@@ -69,22 +85,40 @@ TEST(SIMD, SelectFloat)
                 );
 
         simd::float16 c = select(m, a, b);
-        EXPECT_FLOAT_EQ( simd::get< 0>(c), 0.0f );
-        EXPECT_FLOAT_EQ( simd::get< 1>(c), 1.0f );
-        EXPECT_FLOAT_EQ( simd::get< 2>(c), 2.0f );
-        EXPECT_FLOAT_EQ( simd::get< 3>(c), 3.0f );
-        EXPECT_FLOAT_EQ( simd::get< 4>(c), 4.0f );
-        EXPECT_FLOAT_EQ( simd::get< 5>(c), 5.0f );
-        EXPECT_FLOAT_EQ( simd::get< 6>(c), 6.0f );
-        EXPECT_FLOAT_EQ( simd::get< 7>(c), 7.0f );
-        EXPECT_FLOAT_EQ( simd::get< 8>(c), 7.0f );
-        EXPECT_FLOAT_EQ( simd::get< 9>(c), 6.0f );
-        EXPECT_FLOAT_EQ( simd::get<10>(c), 5.0f );
-        EXPECT_FLOAT_EQ( simd::get<11>(c), 4.0f );
-        EXPECT_FLOAT_EQ( simd::get<12>(c), 3.0f );
-        EXPECT_FLOAT_EQ( simd::get<13>(c), 2.0f );
-        EXPECT_FLOAT_EQ( simd::get<14>(c), 1.0f );
-        EXPECT_FLOAT_EQ( simd::get<15>(c), 0.0f );
+        EXPECT_FLOAT_EQ( simd::get< 0>(c),  0.0f );
+        EXPECT_FLOAT_EQ( simd::get< 1>(c),  1.0f );
+        EXPECT_FLOAT_EQ( simd::get< 2>(c),  2.0f );
+        EXPECT_FLOAT_EQ( simd::get< 3>(c),  3.0f );
+        EXPECT_FLOAT_EQ( simd::get< 4>(c),  4.0f );
+        EXPECT_FLOAT_EQ( simd::get< 5>(c),  5.0f );
+        EXPECT_FLOAT_EQ( simd::get< 6>(c),  6.0f );
+        EXPECT_FLOAT_EQ( simd::get< 7>(c),  7.0f );
+        EXPECT_FLOAT_EQ( simd::get< 8>(c),  7.0f );
+        EXPECT_FLOAT_EQ( simd::get< 9>(c),  6.0f );
+        EXPECT_FLOAT_EQ( simd::get<10>(c),  5.0f );
+        EXPECT_FLOAT_EQ( simd::get<11>(c),  4.0f );
+        EXPECT_FLOAT_EQ( simd::get<12>(c),  3.0f );
+        EXPECT_FLOAT_EQ( simd::get<13>(c),  2.0f );
+        EXPECT_FLOAT_EQ( simd::get<14>(c),  1.0f );
+        EXPECT_FLOAT_EQ( simd::get<15>(c),  0.0f );
+
+        c = select(!m, a, b);
+        EXPECT_FLOAT_EQ( simd::get< 0>(c), 15.0f );
+        EXPECT_FLOAT_EQ( simd::get< 1>(c), 14.0f );
+        EXPECT_FLOAT_EQ( simd::get< 2>(c), 13.0f );
+        EXPECT_FLOAT_EQ( simd::get< 3>(c), 12.0f );
+        EXPECT_FLOAT_EQ( simd::get< 4>(c), 11.0f );
+        EXPECT_FLOAT_EQ( simd::get< 5>(c), 10.0f );
+        EXPECT_FLOAT_EQ( simd::get< 6>(c),  9.0f );
+        EXPECT_FLOAT_EQ( simd::get< 7>(c),  8.0f );
+        EXPECT_FLOAT_EQ( simd::get< 8>(c),  8.0f );
+        EXPECT_FLOAT_EQ( simd::get< 9>(c),  9.0f );
+        EXPECT_FLOAT_EQ( simd::get<10>(c), 10.0f );
+        EXPECT_FLOAT_EQ( simd::get<11>(c), 11.0f );
+        EXPECT_FLOAT_EQ( simd::get<12>(c), 12.0f );
+        EXPECT_FLOAT_EQ( simd::get<13>(c), 13.0f );
+        EXPECT_FLOAT_EQ( simd::get<14>(c), 14.0f );
+        EXPECT_FLOAT_EQ( simd::get<15>(c), 15.0f );
     }
 }
 
@@ -104,6 +138,9 @@ TEST(SIMD, SelectInt)
 
         simd::int4 c = select(m, a, b);
         EXPECT_TRUE( all(c == simd::int4(0, 1, 1, 0)) );
+
+        c = select(!m, a, b);
+        EXPECT_TRUE( all(c == simd::int4(3, 2, 2, 3)) );
     }
 
 
@@ -116,6 +153,9 @@ TEST(SIMD, SelectInt)
 
         simd::int8 c = select(m, a, b);
         EXPECT_TRUE( all(c == simd::int8(0, 1, 2, 3, 3, 2, 1, 0)) );
+
+        c = select(!m, a, b);
+        EXPECT_TRUE( all(c == simd::int8(7, 6, 5, 4, 4, 5, 6, 7)) );
     }
 
 
@@ -138,6 +178,9 @@ TEST(SIMD, SelectInt)
 
         simd::int16 c = select(m, a, b);
         EXPECT_TRUE( all(c == simd::int16(0, 1, 2, 3, 4, 5, 6, 7, 7, 6, 5, 4, 3, 2, 1, 0)) );
+
+        c = select(!m, a, b);
+        EXPECT_TRUE( all(c == simd::int16(15, 14, 13, 12, 11, 10, 9, 8, 8, 9, 10, 11, 12, 13, 14, 15)) );
     }
 }
 
@@ -157,6 +200,9 @@ TEST(SIMD, SelectMask)
 
         simd::mask4 c = select(m, a, b);
         EXPECT_TRUE( all(c == simd::mask4(0,1,1,0)) );
+
+        c = select(!m, a, b);
+        EXPECT_TRUE( all(c == simd::mask4(1,0,0,1)) );
     }
 
 
@@ -169,6 +215,9 @@ TEST(SIMD, SelectMask)
 
         simd::mask8 c = select(m, a, b);
         EXPECT_TRUE( all(c == simd::mask8(0,1,0,1, 1,0,1,0)) );
+
+        c = select(!m, a, b);
+        EXPECT_TRUE( all(c == simd::mask8(1,0,1,0, 0,1,0,1)) );
     }
 
 
@@ -177,9 +226,12 @@ TEST(SIMD, SelectMask)
     {
         simd::mask16 m(1,1,1,1,1,1,1,1, 0,0,0,0,0,0,0,0);
         simd::mask16 a(0,1,0,1,0,1,0,1, 0,1,0,1,0,1,0,1);
-        simd::mask16 b(1,0,0,0,1,0,1,0, 1,0,1,0,1,0,1,0);
+        simd::mask16 b(1,0,1,0,1,0,1,0, 1,0,1,0,1,0,1,0);
 
         simd::mask16 c = select(m, a, b);
         EXPECT_TRUE( all(c == simd::mask16(0,1,0,1,0,1,0,1, 1,0,1,0,1,0,1,0)) );
+
+        c = select(!m, a, b);
+        EXPECT_TRUE( all(c == simd::mask16(1,0,1,0,1,0,1,0, 0,1,0,1,0,1,0,1)) );
     }
 }
