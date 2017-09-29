@@ -1,8 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <algorithm>
-
 #include <visionaray/math/detail/math.h>
 
 namespace MATH_NAMESPACE
@@ -691,22 +689,22 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE int16 min(int16 const& u, int16 const& v)
 {
     return int16(
-            MATH_NAMESPACE::min(u.value[ 0], v.value[ 0]),
-            MATH_NAMESPACE::min(u.value[ 1], v.value[ 1]),
-            MATH_NAMESPACE::min(u.value[ 2], v.value[ 2]),
-            MATH_NAMESPACE::min(u.value[ 3], v.value[ 3]),
-            MATH_NAMESPACE::min(u.value[ 4], v.value[ 4]),
-            MATH_NAMESPACE::min(u.value[ 5], v.value[ 5]),
-            MATH_NAMESPACE::min(u.value[ 6], v.value[ 6]),
-            MATH_NAMESPACE::min(u.value[ 7], v.value[ 7]),
-            MATH_NAMESPACE::min(u.value[ 8], v.value[ 8]),
-            MATH_NAMESPACE::min(u.value[ 9], v.value[ 9]),
-            MATH_NAMESPACE::min(u.value[10], v.value[10]),
-            MATH_NAMESPACE::min(u.value[11], v.value[11]),
-            MATH_NAMESPACE::min(u.value[12], v.value[12]),
-            MATH_NAMESPACE::min(u.value[13], v.value[13]),
-            MATH_NAMESPACE::min(u.value[14], v.value[14]),
-            MATH_NAMESPACE::min(u.value[15], v.value[15])
+            u.value[ 0] < v.value[ 0] ? u.value[ 0] : v.value[ 0],
+            u.value[ 1] < v.value[ 1] ? u.value[ 1] : v.value[ 1],
+            u.value[ 2] < v.value[ 2] ? u.value[ 2] : v.value[ 2],
+            u.value[ 3] < v.value[ 3] ? u.value[ 3] : v.value[ 3],
+            u.value[ 4] < v.value[ 4] ? u.value[ 4] : v.value[ 4],
+            u.value[ 5] < v.value[ 5] ? u.value[ 5] : v.value[ 5],
+            u.value[ 6] < v.value[ 6] ? u.value[ 6] : v.value[ 6],
+            u.value[ 7] < v.value[ 7] ? u.value[ 7] : v.value[ 7],
+            u.value[ 8] < v.value[ 8] ? u.value[ 8] : v.value[ 8],
+            u.value[ 9] < v.value[ 9] ? u.value[ 9] : v.value[ 9],
+            u.value[10] < v.value[10] ? u.value[10] : v.value[10],
+            u.value[11] < v.value[11] ? u.value[11] : v.value[11],
+            u.value[12] < v.value[12] ? u.value[12] : v.value[12],
+            u.value[13] < v.value[13] ? u.value[13] : v.value[13],
+            u.value[14] < v.value[14] ? u.value[14] : v.value[14],
+            u.value[15] < v.value[15] ? u.value[15] : v.value[15]
             );
 }
 
@@ -714,22 +712,22 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE int16 max(int16 const& u, int16 const& v)
 {
     return int16(
-            MATH_NAMESPACE::max(u.value[ 0], v.value[ 0]),
-            MATH_NAMESPACE::max(u.value[ 1], v.value[ 1]),
-            MATH_NAMESPACE::max(u.value[ 2], v.value[ 2]),
-            MATH_NAMESPACE::max(u.value[ 3], v.value[ 3]),
-            MATH_NAMESPACE::max(u.value[ 4], v.value[ 4]),
-            MATH_NAMESPACE::max(u.value[ 5], v.value[ 5]),
-            MATH_NAMESPACE::max(u.value[ 6], v.value[ 6]),
-            MATH_NAMESPACE::max(u.value[ 7], v.value[ 7]),
-            MATH_NAMESPACE::max(u.value[ 8], v.value[ 8]),
-            MATH_NAMESPACE::max(u.value[ 9], v.value[ 9]),
-            MATH_NAMESPACE::max(u.value[10], v.value[10]),
-            MATH_NAMESPACE::max(u.value[11], v.value[11]),
-            MATH_NAMESPACE::max(u.value[12], v.value[12]),
-            MATH_NAMESPACE::max(u.value[13], v.value[13]),
-            MATH_NAMESPACE::max(u.value[14], v.value[14]),
-            MATH_NAMESPACE::max(u.value[15], v.value[15])
+            u.value[ 0] < v.value[ 0] ? v.value[ 0] : u.value[ 0],
+            u.value[ 1] < v.value[ 1] ? v.value[ 1] : u.value[ 1],
+            u.value[ 2] < v.value[ 2] ? v.value[ 2] : u.value[ 2],
+            u.value[ 3] < v.value[ 3] ? v.value[ 3] : u.value[ 3],
+            u.value[ 4] < v.value[ 4] ? v.value[ 4] : u.value[ 4],
+            u.value[ 5] < v.value[ 5] ? v.value[ 5] : u.value[ 5],
+            u.value[ 6] < v.value[ 6] ? v.value[ 6] : u.value[ 6],
+            u.value[ 7] < v.value[ 7] ? v.value[ 7] : u.value[ 7],
+            u.value[ 8] < v.value[ 8] ? v.value[ 8] : u.value[ 8],
+            u.value[ 9] < v.value[ 9] ? v.value[ 9] : u.value[ 9],
+            u.value[10] < v.value[10] ? v.value[10] : u.value[10],
+            u.value[11] < v.value[11] ? v.value[11] : u.value[11],
+            u.value[12] < v.value[12] ? v.value[12] : u.value[12],
+            u.value[13] < v.value[13] ? v.value[13] : u.value[13],
+            u.value[14] < v.value[14] ? v.value[14] : u.value[14],
+            u.value[15] < v.value[15] ? v.value[15] : u.value[15]
             );
 }
 
