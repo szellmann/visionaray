@@ -17,9 +17,6 @@ using namespace visionaray;
 
 TEST(SIMD, SelectFloat)
 {
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
     // float4
 
     {
@@ -34,9 +31,6 @@ TEST(SIMD, SelectFloat)
         EXPECT_FLOAT_EQ( simd::get<3>(c), 0.0f );
     }
 
-#endif
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
     // float8
 
@@ -56,9 +50,6 @@ TEST(SIMD, SelectFloat)
         EXPECT_FLOAT_EQ( simd::get<7>(c), 0.0f );
     }
 
-#endif
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
     // float16
 
@@ -95,9 +86,6 @@ TEST(SIMD, SelectFloat)
         EXPECT_FLOAT_EQ( simd::get<14>(c), 1.0f );
         EXPECT_FLOAT_EQ( simd::get<15>(c), 0.0f );
     }
-
-#endif
-
 }
 
 
@@ -107,9 +95,6 @@ TEST(SIMD, SelectFloat)
 
 TEST(SIMD, SelectInt)
 {
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
     // int4
 
     {
@@ -121,9 +106,6 @@ TEST(SIMD, SelectInt)
         EXPECT_TRUE( all(c == simd::int4(0, 1, 1, 0)) );
     }
 
-#endif
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
     // int8
 
@@ -136,9 +118,6 @@ TEST(SIMD, SelectInt)
         EXPECT_TRUE( all(c == simd::int8(0, 1, 2, 3, 3, 2, 1, 0)) );
     }
 
-#endif
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
     // int16
 
@@ -160,9 +139,6 @@ TEST(SIMD, SelectInt)
         simd::int16 c = select(m, a, b);
         EXPECT_TRUE( all(c == simd::int16(0, 1, 2, 3, 4, 5, 6, 7, 7, 6, 5, 4, 3, 2, 1, 0)) );
     }
-
-#endif
-
 }
 
 
@@ -172,9 +148,6 @@ TEST(SIMD, SelectInt)
 
 TEST(SIMD, SelectMask)
 {
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
     // mask4
 
     {
@@ -186,10 +159,6 @@ TEST(SIMD, SelectMask)
         EXPECT_TRUE( all(c == simd::mask4(0,1,1,0)) );
     }
 
-#endif
-
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
     // mask8
 
@@ -202,9 +171,6 @@ TEST(SIMD, SelectMask)
         EXPECT_TRUE( all(c == simd::mask8(0,1,0,1, 1,0,1,0)) );
     }
 
-#endif
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
 
     // mask16
 
@@ -216,7 +182,4 @@ TEST(SIMD, SelectMask)
         simd::mask16 c = select(m, a, b);
         EXPECT_TRUE( all(c == simd::mask16(0,1,0,1,0,1,0,1, 1,0,1,0,1,0,1,0)) );
     }
-
-#endif
-
 }
