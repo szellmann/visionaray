@@ -101,7 +101,7 @@ VSNRAY_FORCE_INLINE float16 select(mask16 const& m, float16 const& a, float16 co
             m.value[ 5] ? a.value[ 5] : b.value[ 5],
             m.value[ 6] ? a.value[ 6] : b.value[ 6],
             m.value[ 7] ? a.value[ 7] : b.value[ 7],
-            m.value[ 8] ? a.value[ 0] : b.value[ 8],
+            m.value[ 8] ? a.value[ 8] : b.value[ 8],
             m.value[ 9] ? a.value[ 9] : b.value[ 9],
             m.value[10] ? a.value[10] : b.value[10],
             m.value[11] ? a.value[11] : b.value[11],
