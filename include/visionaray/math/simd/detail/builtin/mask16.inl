@@ -39,7 +39,7 @@ VSNRAY_FORCE_INLINE mask16::basic_mask(bool const v[16])
 
 MATH_FUNC
 VSNRAY_FORCE_INLINE mask16::basic_mask(bool b)
-    : value{b, b, b, b, b, b, b, b, b, b, b, b, b, b, b}
+    : value{b, b, b, b, b, b, b, b, b, b, b, b, b, b, b, b}
 {
 }
 
