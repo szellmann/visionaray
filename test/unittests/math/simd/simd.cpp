@@ -416,6 +416,352 @@ static void test_math()
 
 
 //-------------------------------------------------------------------------------------------------
+// Test ctors
+//
+
+TEST(SIMD, Ctor)
+{
+    // int4 -----------------------------------------------
+
+    simd::int4 i4;
+
+    i4 = simd::int4(1, 2, 3, 4);
+
+    EXPECT_TRUE( simd::get<0>(i4) == 1 );
+    EXPECT_TRUE( simd::get<1>(i4) == 2 );
+    EXPECT_TRUE( simd::get<2>(i4) == 3 );
+    EXPECT_TRUE( simd::get<3>(i4) == 4 );
+
+    int arr_i4[] = { 1, 2, 3, 4 };
+    i4 = simd::int4(arr_i4);
+
+    EXPECT_TRUE( simd::get<0>(i4) == 1 );
+    EXPECT_TRUE( simd::get<1>(i4) == 2 );
+    EXPECT_TRUE( simd::get<2>(i4) == 3 );
+    EXPECT_TRUE( simd::get<3>(i4) == 4 );
+
+    i4 = simd::int4(23);
+
+    EXPECT_TRUE( simd::get<0>(i4) == 23 );
+    EXPECT_TRUE( simd::get<1>(i4) == 23 );
+    EXPECT_TRUE( simd::get<2>(i4) == 23 );
+    EXPECT_TRUE( simd::get<3>(i4) == 23 );
+
+
+    // float4 ---------------------------------------------
+
+    simd::float4 f4;
+
+    f4 = simd::float4(0.314f, 3.14f, 31.4f, 314.0f);
+
+    EXPECT_FLOAT_EQ( simd::get<0>(f4), 0.314f );
+    EXPECT_FLOAT_EQ( simd::get<1>(f4), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<2>(f4), 31.4f );
+    EXPECT_FLOAT_EQ( simd::get<3>(f4), 314.0f );
+
+    float arr_f4[] = { 0.314f, 3.14f, 31.4f, 314.0f };
+    f4 = simd::float4(arr_f4);
+
+    EXPECT_FLOAT_EQ( simd::get<0>(f4), 0.314f );
+    EXPECT_FLOAT_EQ( simd::get<1>(f4), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<2>(f4), 31.4f );
+    EXPECT_FLOAT_EQ( simd::get<3>(f4), 314.0f );
+
+    f4 = simd::float4(3.14f);
+
+    EXPECT_FLOAT_EQ( simd::get<0>(f4), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<1>(f4), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<2>(f4), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<3>(f4), 3.14f );
+
+
+    // mask4 ----------------------------------------------
+
+    simd::mask4 m4;
+
+    m4 = simd::mask4(0,1,0,1);
+
+    EXPECT_TRUE( all(m4 == simd::mask4(make_bools({0,1,0,1}))) );
+
+    bool arr_m4[] = { false, true, false, true };
+    m4 = simd::mask4(arr_m4);
+
+    EXPECT_TRUE( all(m4 == simd::mask4(make_bools({0,1,0,1}))) );
+
+    m4 = simd::mask4(true);
+
+    EXPECT_TRUE( all(m4 == simd::mask4(make_bools({1,1,1,1}))) );
+
+    m4 = simd::mask4(false);
+
+    EXPECT_TRUE( all(m4 == simd::mask4(make_bools({0,0,0,0}))) );
+
+
+    // int8 -----------------------------------------------
+
+    simd::int8 i8;
+
+    i8 = simd::int8(1, 2, 3, 4, 5, 6, 7, 8);
+
+    EXPECT_TRUE( simd::get<0>(i8) == 1 );
+    EXPECT_TRUE( simd::get<1>(i8) == 2 );
+    EXPECT_TRUE( simd::get<2>(i8) == 3 );
+    EXPECT_TRUE( simd::get<3>(i8) == 4 );
+    EXPECT_TRUE( simd::get<4>(i8) == 5 );
+    EXPECT_TRUE( simd::get<5>(i8) == 6 );
+    EXPECT_TRUE( simd::get<6>(i8) == 7 );
+    EXPECT_TRUE( simd::get<7>(i8) == 8 );
+
+    int arr_i8[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    i8 = simd::int8(arr_i8);
+
+    EXPECT_TRUE( simd::get<0>(i8) == 1 );
+    EXPECT_TRUE( simd::get<1>(i8) == 2 );
+    EXPECT_TRUE( simd::get<2>(i8) == 3 );
+    EXPECT_TRUE( simd::get<3>(i8) == 4 );
+    EXPECT_TRUE( simd::get<4>(i8) == 5 );
+    EXPECT_TRUE( simd::get<5>(i8) == 6 );
+    EXPECT_TRUE( simd::get<6>(i8) == 7 );
+    EXPECT_TRUE( simd::get<7>(i8) == 8 );
+
+    i8 = simd::int8(23);
+
+    EXPECT_TRUE( simd::get<0>(i8) == 23 );
+    EXPECT_TRUE( simd::get<1>(i8) == 23 );
+    EXPECT_TRUE( simd::get<2>(i8) == 23 );
+    EXPECT_TRUE( simd::get<3>(i8) == 23 );
+    EXPECT_TRUE( simd::get<4>(i8) == 23 );
+    EXPECT_TRUE( simd::get<5>(i8) == 23 );
+    EXPECT_TRUE( simd::get<6>(i8) == 23 );
+    EXPECT_TRUE( simd::get<7>(i8) == 23 );
+
+
+    // float8 ---------------------------------------------
+
+    simd::float8 f8;
+
+    f8 = simd::float8(0.314f, 3.14f, 31.4f, 314.0f, 1.0f, 2.0f, 3.0f, 4.0f);
+
+    EXPECT_FLOAT_EQ( simd::get<0>(f8), 0.314f );
+    EXPECT_FLOAT_EQ( simd::get<1>(f8), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<2>(f8), 31.4f );
+    EXPECT_FLOAT_EQ( simd::get<3>(f8), 314.0f );
+    EXPECT_FLOAT_EQ( simd::get<4>(f8), 1.0f );
+    EXPECT_FLOAT_EQ( simd::get<5>(f8), 2.0f );
+    EXPECT_FLOAT_EQ( simd::get<6>(f8), 3.0f );
+    EXPECT_FLOAT_EQ( simd::get<7>(f8), 4.0f );
+
+    float arr_f8[] = { 0.314f, 3.14f, 31.4f, 314.0f, 1.0f, 2.0f, 3.0f, 4.0f };
+    f8 = simd::float8(arr_f8);
+
+    EXPECT_FLOAT_EQ( simd::get<0>(f8), 0.314f );
+    EXPECT_FLOAT_EQ( simd::get<1>(f8), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<2>(f8), 31.4f );
+    EXPECT_FLOAT_EQ( simd::get<3>(f8), 314.0f );
+    EXPECT_FLOAT_EQ( simd::get<4>(f8), 1.0f );
+    EXPECT_FLOAT_EQ( simd::get<5>(f8), 2.0f );
+    EXPECT_FLOAT_EQ( simd::get<6>(f8), 3.0f );
+    EXPECT_FLOAT_EQ( simd::get<7>(f8), 4.0f );
+
+    f8 = simd::float8(3.14f);
+
+    EXPECT_FLOAT_EQ( simd::get<0>(f8), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<1>(f8), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<2>(f8), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<3>(f8), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<4>(f8), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<5>(f8), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<6>(f8), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<7>(f8), 3.14f );
+
+
+    // mask8 ----------------------------------------------
+
+    simd::mask8 m8;
+
+    m8 = simd::mask8(0,1,0,1, 1,0,1,0);
+
+    EXPECT_TRUE( all(m8 == simd::mask8(make_bools({0,1,0,1, 1,0,1,0}))) );
+
+    bool arr_m8[] = { false, true, false, true, true, false, true, false };
+    m8 = simd::mask8(arr_m8);
+
+    EXPECT_TRUE( all(m8 == simd::mask8(make_bools({0,1,0,1, 1,0,1,0}))) );
+
+    m8 = simd::mask8(true);
+
+    EXPECT_TRUE( all(m8 == simd::mask8(make_bools({1,1,1,1, 1,1,1,1}))) );
+
+    m8 = simd::mask8(false);
+
+    EXPECT_TRUE( all(m8 == simd::mask8(make_bools({0,0,0,0, 0,0,0,0}))) );
+
+
+    // int16 ----------------------------------------------
+
+    simd::int16 i16;
+
+    i16 = simd::int16(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+
+    EXPECT_TRUE( simd::get< 0>(i16) ==  1 );
+    EXPECT_TRUE( simd::get< 1>(i16) ==  2 );
+    EXPECT_TRUE( simd::get< 2>(i16) ==  3 );
+    EXPECT_TRUE( simd::get< 3>(i16) ==  4 );
+    EXPECT_TRUE( simd::get< 4>(i16) ==  5 );
+    EXPECT_TRUE( simd::get< 5>(i16) ==  6 );
+    EXPECT_TRUE( simd::get< 6>(i16) ==  7 );
+    EXPECT_TRUE( simd::get< 7>(i16) ==  8 );
+    EXPECT_TRUE( simd::get< 8>(i16) ==  9 );
+    EXPECT_TRUE( simd::get< 9>(i16) == 10 );
+    EXPECT_TRUE( simd::get<10>(i16) == 11 );
+    EXPECT_TRUE( simd::get<11>(i16) == 12 );
+    EXPECT_TRUE( simd::get<12>(i16) == 13 );
+    EXPECT_TRUE( simd::get<13>(i16) == 14 );
+    EXPECT_TRUE( simd::get<14>(i16) == 15 );
+    EXPECT_TRUE( simd::get<15>(i16) == 16 );
+
+    int arr_i16[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+    i16 = simd::int16(arr_i16);
+
+    EXPECT_TRUE( simd::get< 0>(i16) ==  1 );
+    EXPECT_TRUE( simd::get< 1>(i16) ==  2 );
+    EXPECT_TRUE( simd::get< 2>(i16) ==  3 );
+    EXPECT_TRUE( simd::get< 3>(i16) ==  4 );
+    EXPECT_TRUE( simd::get< 4>(i16) ==  5 );
+    EXPECT_TRUE( simd::get< 5>(i16) ==  6 );
+    EXPECT_TRUE( simd::get< 6>(i16) ==  7 );
+    EXPECT_TRUE( simd::get< 7>(i16) ==  8 );
+    EXPECT_TRUE( simd::get< 8>(i16) ==  9 );
+    EXPECT_TRUE( simd::get< 9>(i16) == 10 );
+    EXPECT_TRUE( simd::get<10>(i16) == 11 );
+    EXPECT_TRUE( simd::get<11>(i16) == 12 );
+    EXPECT_TRUE( simd::get<12>(i16) == 13 );
+    EXPECT_TRUE( simd::get<13>(i16) == 14 );
+    EXPECT_TRUE( simd::get<14>(i16) == 15 );
+    EXPECT_TRUE( simd::get<15>(i16) == 16 );
+
+    i16 = simd::int16(23);
+
+    EXPECT_TRUE( simd::get< 0>(i16) == 23 );
+    EXPECT_TRUE( simd::get< 1>(i16) == 23 );
+    EXPECT_TRUE( simd::get< 2>(i16) == 23 );
+    EXPECT_TRUE( simd::get< 3>(i16) == 23 );
+    EXPECT_TRUE( simd::get< 4>(i16) == 23 );
+    EXPECT_TRUE( simd::get< 5>(i16) == 23 );
+    EXPECT_TRUE( simd::get< 6>(i16) == 23 );
+    EXPECT_TRUE( simd::get< 7>(i16) == 23 );
+    EXPECT_TRUE( simd::get< 8>(i16) == 23 );
+    EXPECT_TRUE( simd::get< 9>(i16) == 23 );
+    EXPECT_TRUE( simd::get<10>(i16) == 23 );
+    EXPECT_TRUE( simd::get<11>(i16) == 23 );
+    EXPECT_TRUE( simd::get<12>(i16) == 23 );
+    EXPECT_TRUE( simd::get<13>(i16) == 23 );
+    EXPECT_TRUE( simd::get<14>(i16) == 23 );
+    EXPECT_TRUE( simd::get<15>(i16) == 23 );
+
+
+    // float16 --------------------------------------------
+
+    simd::float16 f16;
+
+    f16 = simd::float16(
+            0.314f, 3.14f, 31.4f, 314.0f,
+            1.0f, 2.0f, 3.0f, 4.0f,
+            23.0f, 23.0f, 23.0f, 23.0f,
+            -1.0f, -2.0f, -3.0f, -4.0f
+            );
+
+    EXPECT_FLOAT_EQ( simd::get< 0>(f16), 0.314f );
+    EXPECT_FLOAT_EQ( simd::get< 1>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 2>(f16), 31.4f );
+    EXPECT_FLOAT_EQ( simd::get< 3>(f16), 314.0f );
+    EXPECT_FLOAT_EQ( simd::get< 4>(f16), 1.0f );
+    EXPECT_FLOAT_EQ( simd::get< 5>(f16), 2.0f );
+    EXPECT_FLOAT_EQ( simd::get< 6>(f16), 3.0f );
+    EXPECT_FLOAT_EQ( simd::get< 7>(f16), 4.0f );
+    EXPECT_FLOAT_EQ( simd::get< 8>(f16), 23.0f );
+    EXPECT_FLOAT_EQ( simd::get< 9>(f16), 23.0f );
+    EXPECT_FLOAT_EQ( simd::get<10>(f16), 23.0f );
+    EXPECT_FLOAT_EQ( simd::get<11>(f16), 23.0f );
+    EXPECT_FLOAT_EQ( simd::get<12>(f16), -1.0f );
+    EXPECT_FLOAT_EQ( simd::get<13>(f16), -2.0f );
+    EXPECT_FLOAT_EQ( simd::get<14>(f16), -3.0f );
+    EXPECT_FLOAT_EQ( simd::get<15>(f16), -4.0f );
+
+    float arr_f16[] = {
+            0.314f, 3.14f, 31.4f, 314.0f,
+            1.0f, 2.0f, 3.0f, 4.0f,
+            23.0f, 23.0f, 23.0f, 23.0f,
+            -1.0f, -2.0f, -3.0f, -4.0f
+            };
+    f16 = simd::float16(arr_f16);
+
+    EXPECT_FLOAT_EQ( simd::get< 0>(f16), 0.314f );
+    EXPECT_FLOAT_EQ( simd::get< 1>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 2>(f16), 31.4f );
+    EXPECT_FLOAT_EQ( simd::get< 3>(f16), 314.0f );
+    EXPECT_FLOAT_EQ( simd::get< 4>(f16), 1.0f );
+    EXPECT_FLOAT_EQ( simd::get< 5>(f16), 2.0f );
+    EXPECT_FLOAT_EQ( simd::get< 6>(f16), 3.0f );
+    EXPECT_FLOAT_EQ( simd::get< 7>(f16), 4.0f );
+    EXPECT_FLOAT_EQ( simd::get< 8>(f16), 23.0f );
+    EXPECT_FLOAT_EQ( simd::get< 9>(f16), 23.0f );
+    EXPECT_FLOAT_EQ( simd::get<10>(f16), 23.0f );
+    EXPECT_FLOAT_EQ( simd::get<11>(f16), 23.0f );
+    EXPECT_FLOAT_EQ( simd::get<12>(f16), -1.0f );
+    EXPECT_FLOAT_EQ( simd::get<13>(f16), -2.0f );
+    EXPECT_FLOAT_EQ( simd::get<14>(f16), -3.0f );
+    EXPECT_FLOAT_EQ( simd::get<15>(f16), -4.0f );
+
+    f16 = simd::float16(3.14f);
+
+    EXPECT_FLOAT_EQ( simd::get< 0>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 1>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 2>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 3>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 4>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 5>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 6>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 7>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 8>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get< 9>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<10>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<11>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<12>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<13>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<14>(f16), 3.14f );
+    EXPECT_FLOAT_EQ( simd::get<15>(f16), 3.14f );
+
+
+    // mask16 ---------------------------------------------
+
+    simd::mask16 m16;
+
+    m16 = simd::mask16(0,1,0,1, 1,0,1,0, 0,1,0,1, 1,0,1,0);
+
+    EXPECT_TRUE( all(m16 == simd::mask16(make_bools({0,1,0,1, 1,0,1,0, 0,1,0,1, 1,0,1,0}))) );
+
+    bool arr_m16[] = {
+            false, true, false, true,
+            true, false, true, false,
+            false, true, false, true,
+            true, false, true, false
+            };
+    m16 = simd::mask16(arr_m16);
+
+    EXPECT_TRUE( all(m16 == simd::mask16(make_bools({0,1,0,1, 1,0,1,0, 0,1,0,1, 1,0,1,0}))) );
+
+    m16 = simd::mask16(true);
+
+    EXPECT_TRUE( all(m16 == simd::mask16(make_bools({1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1}))) );
+
+    m16 = simd::mask16(false);
+
+    EXPECT_TRUE( all(m16 == simd::mask16(make_bools({0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}))) );
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Test simd::get()
 //
 
