@@ -52,22 +52,22 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE int16 convert_to_int(mask16 const& a)
 {
     return int16(
-            a.value[ 0],
-            a.value[ 1],
-            a.value[ 2],
-            a.value[ 3],
-            a.value[ 4],
-            a.value[ 5],
-            a.value[ 6],
-            a.value[ 7],
-            a.value[ 8],
-            a.value[ 9],
-            a.value[10],
-            a.value[11],
-            a.value[12],
-            a.value[13],
-            a.value[14],
-            a.value[15]
+            a.value[ 0] ? 0xFFFFFFFF : 0x0,
+            a.value[ 1] ? 0xFFFFFFFF : 0x0,
+            a.value[ 2] ? 0xFFFFFFFF : 0x0,
+            a.value[ 3] ? 0xFFFFFFFF : 0x0,
+            a.value[ 4] ? 0xFFFFFFFF : 0x0,
+            a.value[ 5] ? 0xFFFFFFFF : 0x0,
+            a.value[ 6] ? 0xFFFFFFFF : 0x0,
+            a.value[ 7] ? 0xFFFFFFFF : 0x0,
+            a.value[ 8] ? 0xFFFFFFFF : 0x0,
+            a.value[ 9] ? 0xFFFFFFFF : 0x0,
+            a.value[10] ? 0xFFFFFFFF : 0x0,
+            a.value[11] ? 0xFFFFFFFF : 0x0,
+            a.value[12] ? 0xFFFFFFFF : 0x0,
+            a.value[13] ? 0xFFFFFFFF : 0x0,
+            a.value[14] ? 0xFFFFFFFF : 0x0,
+            a.value[15] ? 0xFFFFFFFF : 0x0
             );
 }
 

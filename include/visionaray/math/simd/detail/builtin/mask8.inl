@@ -46,14 +46,14 @@ MATH_FUNC
 VSNRAY_FORCE_INLINE int8 convert_to_int(mask8 const& a)
 {
     return int8(
-            a.value[0],
-            a.value[1],
-            a.value[2],
-            a.value[3],
-            a.value[4],
-            a.value[5],
-            a.value[6],
-            a.value[7]
+            a.value[0] ? 0xFFFFFFFF : 0x0,
+            a.value[1] ? 0xFFFFFFFF : 0x0,
+            a.value[2] ? 0xFFFFFFFF : 0x0,
+            a.value[3] ? 0xFFFFFFFF : 0x0,
+            a.value[4] ? 0xFFFFFFFF : 0x0,
+            a.value[5] ? 0xFFFFFFFF : 0x0,
+            a.value[6] ? 0xFFFFFFFF : 0x0,
+            a.value[7] ? 0xFFFFFFFF : 0x0
             );
 }
 
