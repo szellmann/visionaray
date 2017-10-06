@@ -435,12 +435,11 @@ namespace simd
 
 // pack ---------------------------------------------------
 
-template <typename T, size_t N> // TODO: check that T is convertible to float
+template <typename T, size_t N>
 MATH_FUNC
-inline auto pack(array<vector<3, T>, N> const& vecs)
-    -> vector<3, float_from_simd_width_t<N>>
+inline vector<3, float_from_simd_width_t<N>> pack(array<vector<3, T>, N> const& vecs)
 {
-    using U = float_from_simd_width_t<N>;
+    using U = float_from_simd_width_t<N>; // TODO: generalize, not just float!
 
     vector<3, U> result;
 
@@ -461,20 +460,21 @@ inline auto pack(array<vector<3, T>, N> const& vecs)
 // unpack -------------------------------------------------
 
 template <
-    typename FloatT,
-    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    typename T,
+    typename = typename std::enable_if<is_simd_vector<T>::value>::type
     >
 MATH_FUNC
-inline auto unpack(vector<3, FloatT> const& v)
-    -> array<vector<3, float>, num_elements<FloatT>::value>
+inline array<vector<3, element_type_t<T>>, num_elements<T>::value> unpack(vector<3, T> const& v)
 {
-    float const* x = reinterpret_cast<float const*>(&v.x);
-    float const* y = reinterpret_cast<float const*>(&v.y);
-    float const* z = reinterpret_cast<float const*>(&v.z);
+    using U = element_type_t<T>;
 
-    array<vector<3, float>, num_elements<FloatT>::value> result;
+    U const* x = reinterpret_cast<U const*>(&v.x);
+    U const* y = reinterpret_cast<U const*>(&v.y);
+    U const* z = reinterpret_cast<U const*>(&v.z);
 
-    for (int i = 0; i < num_elements<FloatT>::value; ++i)
+    array<vector<3, U>, num_elements<T>::value> result;
+
+    for (int i = 0; i < num_elements<T>::value; ++i)
     {
         result[i].x = x[i];
         result[i].y = y[i];

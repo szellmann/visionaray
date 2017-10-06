@@ -976,12 +976,12 @@ namespace simd
 
 // pack ---------------------------------------------------
 
-template <size_t Dim, typename T, size_t N> // TODO: check that T is convertible to float
+template <size_t Dim, typename T, size_t N>
 VSNRAY_FUNC
 inline auto pack(array<vector<Dim, T>, N> const& vecs)
     -> vector<Dim, float_from_simd_width_t<N>>
 {
-    using U = float_from_simd_width_t<N>;
+    using U = float_from_simd_width_t<N>; // TODO: generalize, not just float!
     using float_array = aligned_array_t<U>;
 
     vector<Dim, U> result;
@@ -1044,19 +1044,20 @@ inline auto pack(
 
 template <
     size_t Dim,
-    typename FloatT,
-    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    typename T,
+    typename = typename std::enable_if<is_simd_vector<T>::value>::type
     >
-inline auto unpack(vector<Dim, FloatT> const& v)
-    -> array<vector<Dim, float>, num_elements<FloatT>::value>
+inline array<vector<Dim, element_type_t<T>>, num_elements<T>::value> unpack(vector<Dim, T> const& v)
 {
-    array<vector<Dim, float>, num_elements<FloatT>::value> result;
+    using U = element_type_t<T>;
+
+    array<vector<Dim, U>, num_elements<T>::value> result;
 
     for (size_t d = 0; d < Dim; ++d)
     {
-        float const* data = reinterpret_cast<float const*>(&v[d]);
+        U const* data = reinterpret_cast<U const*>(&v[d]);
 
-        for (int i = 0; i < num_elements<FloatT>::value; ++i)
+        for (int i = 0; i < num_elements<T>::value; ++i)
         {
             result[i][d] = data[i];
         }
