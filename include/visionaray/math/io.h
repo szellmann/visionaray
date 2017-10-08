@@ -12,6 +12,7 @@
 #include <sstream>
 
 #include "simd/type_traits.h"
+#include "fixed.h"
 #include "matrix.h"
 #include "norm.h"
 #include "quaternion.h"
@@ -93,6 +94,25 @@ operator<<(std::basic_ostream<CharT, Traits>& out, VecT const& v)
 }
 
 } // simd
+
+
+//-------------------------------------------------------------------------------------------------
+// fixed point
+//
+
+template <typename CharT, typename Traits, unsigned I, unsigned F>
+std::basic_ostream<CharT, Traits>&
+operator<<(std::basic_ostream<CharT, Traits>& out, fixed<I, F> f)
+{
+    std::basic_ostringstream<CharT, Traits> s;
+    s.flags(out.flags());
+    s.imbue(out.getloc());
+    s.precision(out.precision());
+
+    s << static_cast<float>(f);
+
+    return out << s.str();
+}
 
 
 //-------------------------------------------------------------------------------------------------

@@ -175,6 +175,7 @@ set(VSNRAY_HEADERS
     # Math
 
     ${HEADER_DIR}/math/detail/aabb.inl
+    ${HEADER_DIR}/math/detail/fixed.inl
     ${HEADER_DIR}/math/detail/limits.inl
     ${HEADER_DIR}/math/detail/math.h
     ${HEADER_DIR}/math/detail/matrix4.inl
@@ -232,6 +233,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/axis.h
     ${HEADER_DIR}/math/config.h
     ${HEADER_DIR}/math/constants.h
+    ${HEADER_DIR}/math/fixed.h
     ${HEADER_DIR}/math/forward.h
     ${HEADER_DIR}/math/intersect.h
     ${HEADER_DIR}/math/io.h
