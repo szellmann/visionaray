@@ -143,11 +143,17 @@ target_link_libraries(unittests libgtest libgtest_main ${CMAKE_THREAD_LIBS_INIT}
 
 # Extend already present include dirs list, to retain standard cmake behavior
 # (inheritance, etc.)
+if(MSVC)
+# MSVC has no -isystem equivalent
 get_property(ORIGINAL_INCLUDE_DIRS TARGET unittests PROPERTY INCLUDE_DIRECTORIES)
-
 set_target_properties(unittests PROPERTIES
     "INCLUDE_DIRECTORIES" "${ORIGINAL_INCLUDE_DIRS};${GTEST_INCLUDE_DIR}"
 )
+else()
+# Set gtest includes with -isystem
+set_target_properties(unittests PROPERTIES
+    APPEND_STRING PROPERTY COMPILE_FLAGS " ${CMAKE_INCLUDE_SYSTEM_FLAG_CXX} ${GTEST_INCLUDE_DIR}")
+endif()
 
 # Allow multi-line comments, some unit tests have verbose documentation with extra '/'s and '\'s
 if(CMAKE_COMPILER_IS_GNUCXX)
