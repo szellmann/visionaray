@@ -428,25 +428,25 @@ TEST(SIMD, Ctor)
 
     i4 = simd::int4(1, 2, 3, 4);
 
-    EXPECT_TRUE( simd::get<0>(i4) == 1 );
-    EXPECT_TRUE( simd::get<1>(i4) == 2 );
-    EXPECT_TRUE( simd::get<2>(i4) == 3 );
-    EXPECT_TRUE( simd::get<3>(i4) == 4 );
+    ASSERT_EQ( simd::get<0>(i4), 1 );
+    ASSERT_EQ( simd::get<1>(i4), 2 );
+    ASSERT_EQ( simd::get<2>(i4), 3 );
+    ASSERT_EQ( simd::get<3>(i4), 4 );
 
     int arr_i4[] = { 1, 2, 3, 4 };
     i4 = simd::int4(arr_i4);
 
-    EXPECT_TRUE( simd::get<0>(i4) == 1 );
-    EXPECT_TRUE( simd::get<1>(i4) == 2 );
-    EXPECT_TRUE( simd::get<2>(i4) == 3 );
-    EXPECT_TRUE( simd::get<3>(i4) == 4 );
+    ASSERT_EQ( simd::get<0>(i4), 1 );
+    ASSERT_EQ( simd::get<1>(i4), 2 );
+    ASSERT_EQ( simd::get<2>(i4), 3 );
+    ASSERT_EQ( simd::get<3>(i4), 4 );
 
     i4 = simd::int4(23);
 
-    EXPECT_TRUE( simd::get<0>(i4) == 23 );
-    EXPECT_TRUE( simd::get<1>(i4) == 23 );
-    EXPECT_TRUE( simd::get<2>(i4) == 23 );
-    EXPECT_TRUE( simd::get<3>(i4) == 23 );
+    ASSERT_EQ( simd::get<0>(i4), 23 );
+    ASSERT_EQ( simd::get<1>(i4), 23 );
+    ASSERT_EQ( simd::get<2>(i4), 23 );
+    ASSERT_EQ( simd::get<3>(i4), 23 );
 
 
     // float4 ---------------------------------------------
@@ -504,37 +504,37 @@ TEST(SIMD, Ctor)
 
     i8 = simd::int8(1, 2, 3, 4, 5, 6, 7, 8);
 
-    EXPECT_TRUE( simd::get<0>(i8) == 1 );
-    EXPECT_TRUE( simd::get<1>(i8) == 2 );
-    EXPECT_TRUE( simd::get<2>(i8) == 3 );
-    EXPECT_TRUE( simd::get<3>(i8) == 4 );
-    EXPECT_TRUE( simd::get<4>(i8) == 5 );
-    EXPECT_TRUE( simd::get<5>(i8) == 6 );
-    EXPECT_TRUE( simd::get<6>(i8) == 7 );
-    EXPECT_TRUE( simd::get<7>(i8) == 8 );
+    ASSERT_EQ( simd::get<0>(i8), 1 );
+    ASSERT_EQ( simd::get<1>(i8), 2 );
+    ASSERT_EQ( simd::get<2>(i8), 3 );
+    ASSERT_EQ( simd::get<3>(i8), 4 );
+    ASSERT_EQ( simd::get<4>(i8), 5 );
+    ASSERT_EQ( simd::get<5>(i8), 6 );
+    ASSERT_EQ( simd::get<6>(i8), 7 );
+    ASSERT_EQ( simd::get<7>(i8), 8 );
 
     int arr_i8[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     i8 = simd::int8(arr_i8);
 
-    EXPECT_TRUE( simd::get<0>(i8) == 1 );
-    EXPECT_TRUE( simd::get<1>(i8) == 2 );
-    EXPECT_TRUE( simd::get<2>(i8) == 3 );
-    EXPECT_TRUE( simd::get<3>(i8) == 4 );
-    EXPECT_TRUE( simd::get<4>(i8) == 5 );
-    EXPECT_TRUE( simd::get<5>(i8) == 6 );
-    EXPECT_TRUE( simd::get<6>(i8) == 7 );
-    EXPECT_TRUE( simd::get<7>(i8) == 8 );
+    ASSERT_EQ( simd::get<0>(i8), 1 );
+    ASSERT_EQ( simd::get<1>(i8), 2 );
+    ASSERT_EQ( simd::get<2>(i8), 3 );
+    ASSERT_EQ( simd::get<3>(i8), 4 );
+    ASSERT_EQ( simd::get<4>(i8), 5 );
+    ASSERT_EQ( simd::get<5>(i8), 6 );
+    ASSERT_EQ( simd::get<6>(i8), 7 );
+    ASSERT_EQ( simd::get<7>(i8), 8 );
 
     i8 = simd::int8(23);
 
-    EXPECT_TRUE( simd::get<0>(i8) == 23 );
-    EXPECT_TRUE( simd::get<1>(i8) == 23 );
-    EXPECT_TRUE( simd::get<2>(i8) == 23 );
-    EXPECT_TRUE( simd::get<3>(i8) == 23 );
-    EXPECT_TRUE( simd::get<4>(i8) == 23 );
-    EXPECT_TRUE( simd::get<5>(i8) == 23 );
-    EXPECT_TRUE( simd::get<6>(i8) == 23 );
-    EXPECT_TRUE( simd::get<7>(i8) == 23 );
+    ASSERT_EQ( simd::get<0>(i8), 23 );
+    ASSERT_EQ( simd::get<1>(i8), 23 );
+    ASSERT_EQ( simd::get<2>(i8), 23 );
+    ASSERT_EQ( simd::get<3>(i8), 23 );
+    ASSERT_EQ( simd::get<4>(i8), 23 );
+    ASSERT_EQ( simd::get<5>(i8), 23 );
+    ASSERT_EQ( simd::get<6>(i8), 23 );
+    ASSERT_EQ( simd::get<7>(i8), 23 );
 
 
     // float8 ---------------------------------------------
@@ -604,61 +604,61 @@ TEST(SIMD, Ctor)
 
     i16 = simd::int16(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 
-    EXPECT_TRUE( simd::get< 0>(i16) ==  1 );
-    EXPECT_TRUE( simd::get< 1>(i16) ==  2 );
-    EXPECT_TRUE( simd::get< 2>(i16) ==  3 );
-    EXPECT_TRUE( simd::get< 3>(i16) ==  4 );
-    EXPECT_TRUE( simd::get< 4>(i16) ==  5 );
-    EXPECT_TRUE( simd::get< 5>(i16) ==  6 );
-    EXPECT_TRUE( simd::get< 6>(i16) ==  7 );
-    EXPECT_TRUE( simd::get< 7>(i16) ==  8 );
-    EXPECT_TRUE( simd::get< 8>(i16) ==  9 );
-    EXPECT_TRUE( simd::get< 9>(i16) == 10 );
-    EXPECT_TRUE( simd::get<10>(i16) == 11 );
-    EXPECT_TRUE( simd::get<11>(i16) == 12 );
-    EXPECT_TRUE( simd::get<12>(i16) == 13 );
-    EXPECT_TRUE( simd::get<13>(i16) == 14 );
-    EXPECT_TRUE( simd::get<14>(i16) == 15 );
-    EXPECT_TRUE( simd::get<15>(i16) == 16 );
+    ASSERT_EQ( simd::get< 0>(i16),  1 );
+    ASSERT_EQ( simd::get< 1>(i16),  2 );
+    ASSERT_EQ( simd::get< 2>(i16),  3 );
+    ASSERT_EQ( simd::get< 3>(i16),  4 );
+    ASSERT_EQ( simd::get< 4>(i16),  5 );
+    ASSERT_EQ( simd::get< 5>(i16),  6 );
+    ASSERT_EQ( simd::get< 6>(i16),  7 );
+    ASSERT_EQ( simd::get< 7>(i16),  8 );
+    ASSERT_EQ( simd::get< 8>(i16),  9 );
+    ASSERT_EQ( simd::get< 9>(i16), 10 );
+    ASSERT_EQ( simd::get<10>(i16), 11 );
+    ASSERT_EQ( simd::get<11>(i16), 12 );
+    ASSERT_EQ( simd::get<12>(i16), 13 );
+    ASSERT_EQ( simd::get<13>(i16), 14 );
+    ASSERT_EQ( simd::get<14>(i16), 15 );
+    ASSERT_EQ( simd::get<15>(i16), 16 );
 
     int arr_i16[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
     i16 = simd::int16(arr_i16);
 
-    EXPECT_TRUE( simd::get< 0>(i16) ==  1 );
-    EXPECT_TRUE( simd::get< 1>(i16) ==  2 );
-    EXPECT_TRUE( simd::get< 2>(i16) ==  3 );
-    EXPECT_TRUE( simd::get< 3>(i16) ==  4 );
-    EXPECT_TRUE( simd::get< 4>(i16) ==  5 );
-    EXPECT_TRUE( simd::get< 5>(i16) ==  6 );
-    EXPECT_TRUE( simd::get< 6>(i16) ==  7 );
-    EXPECT_TRUE( simd::get< 7>(i16) ==  8 );
-    EXPECT_TRUE( simd::get< 8>(i16) ==  9 );
-    EXPECT_TRUE( simd::get< 9>(i16) == 10 );
-    EXPECT_TRUE( simd::get<10>(i16) == 11 );
-    EXPECT_TRUE( simd::get<11>(i16) == 12 );
-    EXPECT_TRUE( simd::get<12>(i16) == 13 );
-    EXPECT_TRUE( simd::get<13>(i16) == 14 );
-    EXPECT_TRUE( simd::get<14>(i16) == 15 );
-    EXPECT_TRUE( simd::get<15>(i16) == 16 );
+    ASSERT_EQ( simd::get< 0>(i16),  1 );
+    ASSERT_EQ( simd::get< 1>(i16),  2 );
+    ASSERT_EQ( simd::get< 2>(i16),  3 );
+    ASSERT_EQ( simd::get< 3>(i16),  4 );
+    ASSERT_EQ( simd::get< 4>(i16),  5 );
+    ASSERT_EQ( simd::get< 5>(i16),  6 );
+    ASSERT_EQ( simd::get< 6>(i16),  7 );
+    ASSERT_EQ( simd::get< 7>(i16),  8 );
+    ASSERT_EQ( simd::get< 8>(i16),  9 );
+    ASSERT_EQ( simd::get< 9>(i16), 10 );
+    ASSERT_EQ( simd::get<10>(i16), 11 );
+    ASSERT_EQ( simd::get<11>(i16), 12 );
+    ASSERT_EQ( simd::get<12>(i16), 13 );
+    ASSERT_EQ( simd::get<13>(i16), 14 );
+    ASSERT_EQ( simd::get<14>(i16), 15 );
+    ASSERT_EQ( simd::get<15>(i16), 16 );
 
     i16 = simd::int16(23);
 
-    EXPECT_TRUE( simd::get< 0>(i16) == 23 );
-    EXPECT_TRUE( simd::get< 1>(i16) == 23 );
-    EXPECT_TRUE( simd::get< 2>(i16) == 23 );
-    EXPECT_TRUE( simd::get< 3>(i16) == 23 );
-    EXPECT_TRUE( simd::get< 4>(i16) == 23 );
-    EXPECT_TRUE( simd::get< 5>(i16) == 23 );
-    EXPECT_TRUE( simd::get< 6>(i16) == 23 );
-    EXPECT_TRUE( simd::get< 7>(i16) == 23 );
-    EXPECT_TRUE( simd::get< 8>(i16) == 23 );
-    EXPECT_TRUE( simd::get< 9>(i16) == 23 );
-    EXPECT_TRUE( simd::get<10>(i16) == 23 );
-    EXPECT_TRUE( simd::get<11>(i16) == 23 );
-    EXPECT_TRUE( simd::get<12>(i16) == 23 );
-    EXPECT_TRUE( simd::get<13>(i16) == 23 );
-    EXPECT_TRUE( simd::get<14>(i16) == 23 );
-    EXPECT_TRUE( simd::get<15>(i16) == 23 );
+    ASSERT_EQ( simd::get< 0>(i16), 23 );
+    ASSERT_EQ( simd::get< 1>(i16), 23 );
+    ASSERT_EQ( simd::get< 2>(i16), 23 );
+    ASSERT_EQ( simd::get< 3>(i16), 23 );
+    ASSERT_EQ( simd::get< 4>(i16), 23 );
+    ASSERT_EQ( simd::get< 5>(i16), 23 );
+    ASSERT_EQ( simd::get< 6>(i16), 23 );
+    ASSERT_EQ( simd::get< 7>(i16), 23 );
+    ASSERT_EQ( simd::get< 8>(i16), 23 );
+    ASSERT_EQ( simd::get< 9>(i16), 23 );
+    ASSERT_EQ( simd::get<10>(i16), 23 );
+    ASSERT_EQ( simd::get<11>(i16), 23 );
+    ASSERT_EQ( simd::get<12>(i16), 23 );
+    ASSERT_EQ( simd::get<13>(i16), 23 );
+    ASSERT_EQ( simd::get<14>(i16), 23 );
+    ASSERT_EQ( simd::get<15>(i16), 23 );
 
 
     // float16 --------------------------------------------
@@ -773,10 +773,10 @@ TEST(SIMD, Get)
     simd::int4 i4;
     iota4(i4);
 
-    EXPECT_TRUE( simd::get<0>(i4) == 0 );
-    EXPECT_TRUE( simd::get<1>(i4) == 1 );
-    EXPECT_TRUE( simd::get<2>(i4) == 2 );
-    EXPECT_TRUE( simd::get<3>(i4) == 3 );
+    ASSERT_EQ( simd::get<0>(i4), 0 );
+    ASSERT_EQ( simd::get<1>(i4), 1 );
+    ASSERT_EQ( simd::get<2>(i4), 2 );
+    ASSERT_EQ( simd::get<3>(i4), 3 );
 
 
     // float4 ---------------------------------------------
@@ -795,14 +795,14 @@ TEST(SIMD, Get)
     simd::int8 i8;
     iota8(i8);
 
-    EXPECT_TRUE( simd::get<0>(i8) == 0 );
-    EXPECT_TRUE( simd::get<1>(i8) == 1 );
-    EXPECT_TRUE( simd::get<2>(i8) == 2 );
-    EXPECT_TRUE( simd::get<3>(i8) == 3 );
-    EXPECT_TRUE( simd::get<4>(i8) == 4 );
-    EXPECT_TRUE( simd::get<5>(i8) == 5 );
-    EXPECT_TRUE( simd::get<6>(i8) == 6 );
-    EXPECT_TRUE( simd::get<7>(i8) == 7 );
+    ASSERT_EQ( simd::get<0>(i8), 0 );
+    ASSERT_EQ( simd::get<1>(i8), 1 );
+    ASSERT_EQ( simd::get<2>(i8), 2 );
+    ASSERT_EQ( simd::get<3>(i8), 3 );
+    ASSERT_EQ( simd::get<4>(i8), 4 );
+    ASSERT_EQ( simd::get<5>(i8), 5 );
+    ASSERT_EQ( simd::get<6>(i8), 6 );
+    ASSERT_EQ( simd::get<7>(i8), 7 );
 
 
     // float8 ---------------------------------------------
@@ -824,22 +824,22 @@ TEST(SIMD, Get)
     simd::int16 i16;
     iota16(i16);
 
-    EXPECT_TRUE( simd::get< 0>(i16) ==  0 );
-    EXPECT_TRUE( simd::get< 1>(i16) ==  1 );
-    EXPECT_TRUE( simd::get< 2>(i16) ==  2 );
-    EXPECT_TRUE( simd::get< 3>(i16) ==  3 );
-    EXPECT_TRUE( simd::get< 4>(i16) ==  4 );
-    EXPECT_TRUE( simd::get< 5>(i16) ==  5 );
-    EXPECT_TRUE( simd::get< 6>(i16) ==  6 );
-    EXPECT_TRUE( simd::get< 7>(i16) ==  7 );
-    EXPECT_TRUE( simd::get< 8>(i16) ==  8 );
-    EXPECT_TRUE( simd::get< 9>(i16) ==  9 );
-    EXPECT_TRUE( simd::get<10>(i16) == 10 );
-    EXPECT_TRUE( simd::get<11>(i16) == 11 );
-    EXPECT_TRUE( simd::get<12>(i16) == 12 );
-    EXPECT_TRUE( simd::get<13>(i16) == 13 );
-    EXPECT_TRUE( simd::get<14>(i16) == 14 );
-    EXPECT_TRUE( simd::get<15>(i16) == 15 );
+    ASSERT_EQ( simd::get< 0>(i16),  0 );
+    ASSERT_EQ( simd::get< 1>(i16),  1 );
+    ASSERT_EQ( simd::get< 2>(i16),  2 );
+    ASSERT_EQ( simd::get< 3>(i16),  3 );
+    ASSERT_EQ( simd::get< 4>(i16),  4 );
+    ASSERT_EQ( simd::get< 5>(i16),  5 );
+    ASSERT_EQ( simd::get< 6>(i16),  6 );
+    ASSERT_EQ( simd::get< 7>(i16),  7 );
+    ASSERT_EQ( simd::get< 8>(i16),  8 );
+    ASSERT_EQ( simd::get< 9>(i16),  9 );
+    ASSERT_EQ( simd::get<10>(i16), 10 );
+    ASSERT_EQ( simd::get<11>(i16), 11 );
+    ASSERT_EQ( simd::get<12>(i16), 12 );
+    ASSERT_EQ( simd::get<13>(i16), 13 );
+    ASSERT_EQ( simd::get<14>(i16), 14 );
+    ASSERT_EQ( simd::get<15>(i16), 15 );
 
 
     // float16 --------------------------------------------
