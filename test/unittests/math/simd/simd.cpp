@@ -889,10 +889,10 @@ TEST(SIMD, Conversion)
         simd::float4 f(0.0f, 1.0f, 2.0f, 3.0f);
         simd::int4 i = convert_to_int(f);
 
-        EXPECT_TRUE( simd::get<0>(i) == 0 );
-        EXPECT_TRUE( simd::get<1>(i) == 1 );
-        EXPECT_TRUE( simd::get<2>(i) == 2 );
-        EXPECT_TRUE( simd::get<3>(i) == 3 );
+        ASSERT_EQ( simd::get<0>(i), 0 );
+        ASSERT_EQ( simd::get<1>(i), 1 );
+        ASSERT_EQ( simd::get<2>(i), 2 );
+        ASSERT_EQ( simd::get<3>(i), 3 );
     }
 
     // mask4 ----------------------------------------------
@@ -900,10 +900,10 @@ TEST(SIMD, Conversion)
         simd::mask4 m(0,0,1,1);
         simd::int4 i = convert_to_int(m);
 
-        EXPECT_TRUE( simd::get<0>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get<1>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get<2>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get<3>(i) == static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<0>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get<1>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get<2>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<3>(i), static_cast<int>(0xFFFFFFFF) );
     }
 
 
@@ -927,14 +927,14 @@ TEST(SIMD, Conversion)
         simd::float8 f(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f);
         simd::int8 i = convert_to_int(f);
 
-        EXPECT_TRUE( simd::get<0>(i) == 0 );
-        EXPECT_TRUE( simd::get<1>(i) == 1 );
-        EXPECT_TRUE( simd::get<2>(i) == 2 );
-        EXPECT_TRUE( simd::get<3>(i) == 3 );
-        EXPECT_TRUE( simd::get<4>(i) == 4 );
-        EXPECT_TRUE( simd::get<5>(i) == 5 );
-        EXPECT_TRUE( simd::get<6>(i) == 6 );
-        EXPECT_TRUE( simd::get<7>(i) == 7 );
+        ASSERT_EQ( simd::get<0>(i), 0 );
+        ASSERT_EQ( simd::get<1>(i), 1 );
+        ASSERT_EQ( simd::get<2>(i), 2 );
+        ASSERT_EQ( simd::get<3>(i), 3 );
+        ASSERT_EQ( simd::get<4>(i), 4 );
+        ASSERT_EQ( simd::get<5>(i), 5 );
+        ASSERT_EQ( simd::get<6>(i), 6 );
+        ASSERT_EQ( simd::get<7>(i), 7 );
     }
 
     // mask8 ----------------------------------------------
@@ -942,14 +942,14 @@ TEST(SIMD, Conversion)
         simd::mask8 m(0,0,0,0, 1,1,1,1);
         simd::int8 i = convert_to_int(m);
 
-        EXPECT_TRUE( simd::get<0>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get<1>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get<2>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get<3>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get<4>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get<5>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get<6>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get<7>(i) == static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<0>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get<1>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get<2>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get<3>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get<4>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<5>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<6>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<7>(i), static_cast<int>(0xFFFFFFFF) );
     }
 
 
@@ -991,22 +991,22 @@ TEST(SIMD, Conversion)
                 );
         simd::int16 i = convert_to_int(f);
 
-        EXPECT_TRUE( simd::get< 0>(i) ==  0 );
-        EXPECT_TRUE( simd::get< 1>(i) ==  1 );
-        EXPECT_TRUE( simd::get< 2>(i) ==  2 );
-        EXPECT_TRUE( simd::get< 3>(i) ==  3 );
-        EXPECT_TRUE( simd::get< 4>(i) ==  4 );
-        EXPECT_TRUE( simd::get< 5>(i) ==  5 );
-        EXPECT_TRUE( simd::get< 6>(i) ==  6 );
-        EXPECT_TRUE( simd::get< 7>(i) ==  7 );
-        EXPECT_TRUE( simd::get< 8>(i) ==  8 );
-        EXPECT_TRUE( simd::get< 9>(i) ==  9 );
-        EXPECT_TRUE( simd::get<10>(i) == 10 );
-        EXPECT_TRUE( simd::get<11>(i) == 11 );
-        EXPECT_TRUE( simd::get<12>(i) == 12 );
-        EXPECT_TRUE( simd::get<13>(i) == 13 );
-        EXPECT_TRUE( simd::get<14>(i) == 14 );
-        EXPECT_TRUE( simd::get<15>(i) == 15 );
+        ASSERT_EQ( simd::get< 0>(i),  0 );
+        ASSERT_EQ( simd::get< 1>(i),  1 );
+        ASSERT_EQ( simd::get< 2>(i),  2 );
+        ASSERT_EQ( simd::get< 3>(i),  3 );
+        ASSERT_EQ( simd::get< 4>(i),  4 );
+        ASSERT_EQ( simd::get< 5>(i),  5 );
+        ASSERT_EQ( simd::get< 6>(i),  6 );
+        ASSERT_EQ( simd::get< 7>(i),  7 );
+        ASSERT_EQ( simd::get< 8>(i),  8 );
+        ASSERT_EQ( simd::get< 9>(i),  9 );
+        ASSERT_EQ( simd::get<10>(i), 10 );
+        ASSERT_EQ( simd::get<11>(i), 11 );
+        ASSERT_EQ( simd::get<12>(i), 12 );
+        ASSERT_EQ( simd::get<13>(i), 13 );
+        ASSERT_EQ( simd::get<14>(i), 14 );
+        ASSERT_EQ( simd::get<15>(i), 15 );
     }
 
     // mask16 ---------------------------------------------
@@ -1014,22 +1014,22 @@ TEST(SIMD, Conversion)
         simd::mask16 m(0,0,0,0, 0,0,0,0, 1,1,1,1, 1,1,1,1);
         simd::int16 i = convert_to_int(m);
 
-        EXPECT_TRUE( simd::get< 0>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get< 1>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get< 2>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get< 3>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get< 4>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get< 5>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get< 6>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get< 7>(i) == static_cast<int>(0x0) );
-        EXPECT_TRUE( simd::get< 8>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get< 9>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get<10>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get<11>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get<12>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get<13>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get<14>(i) == static_cast<int>(0xFFFFFFFF) );
-        EXPECT_TRUE( simd::get<15>(i) == static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get< 0>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get< 1>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get< 2>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get< 3>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get< 4>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get< 5>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get< 6>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get< 7>(i), static_cast<int>(0x0) );
+        ASSERT_EQ( simd::get< 8>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get< 9>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<10>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<11>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<12>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<13>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<14>(i), static_cast<int>(0xFFFFFFFF) );
+        ASSERT_EQ( simd::get<15>(i), static_cast<int>(0xFFFFFFFF) );
     }
 }
 
@@ -1062,10 +1062,10 @@ TEST(SIMD, Reinterpretation)
         simd::float4 f(0.0f, 1.0f, 2.0f, 3.0f);
         simd::int4 i = reinterpret_as_int(f);
 
-        EXPECT_TRUE( simd::get<0>(i) == reinterpret_cast<int&>(series_f[0]) );
-        EXPECT_TRUE( simd::get<1>(i) == reinterpret_cast<int&>(series_f[1]) );
-        EXPECT_TRUE( simd::get<2>(i) == reinterpret_cast<int&>(series_f[2]) );
-        EXPECT_TRUE( simd::get<3>(i) == reinterpret_cast<int&>(series_f[3]) );
+        ASSERT_EQ( simd::get<0>(i), reinterpret_cast<int&>(series_f[0]) );
+        ASSERT_EQ( simd::get<1>(i), reinterpret_cast<int&>(series_f[1]) );
+        ASSERT_EQ( simd::get<2>(i), reinterpret_cast<int&>(series_f[2]) );
+        ASSERT_EQ( simd::get<3>(i), reinterpret_cast<int&>(series_f[3]) );
     }
 
 
@@ -1089,14 +1089,14 @@ TEST(SIMD, Reinterpretation)
         simd::float8 f(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f);
         simd::int8 i = reinterpret_as_int(f);
 
-        EXPECT_TRUE( simd::get<0>(i) == reinterpret_cast<int&>(series_f[0]) );
-        EXPECT_TRUE( simd::get<1>(i) == reinterpret_cast<int&>(series_f[1]) );
-        EXPECT_TRUE( simd::get<2>(i) == reinterpret_cast<int&>(series_f[2]) );
-        EXPECT_TRUE( simd::get<3>(i) == reinterpret_cast<int&>(series_f[3]) );
-        EXPECT_TRUE( simd::get<4>(i) == reinterpret_cast<int&>(series_f[4]) );
-        EXPECT_TRUE( simd::get<5>(i) == reinterpret_cast<int&>(series_f[5]) );
-        EXPECT_TRUE( simd::get<6>(i) == reinterpret_cast<int&>(series_f[6]) );
-        EXPECT_TRUE( simd::get<7>(i) == reinterpret_cast<int&>(series_f[7]) );
+        ASSERT_EQ( simd::get<0>(i), reinterpret_cast<int&>(series_f[0]) );
+        ASSERT_EQ( simd::get<1>(i), reinterpret_cast<int&>(series_f[1]) );
+        ASSERT_EQ( simd::get<2>(i), reinterpret_cast<int&>(series_f[2]) );
+        ASSERT_EQ( simd::get<3>(i), reinterpret_cast<int&>(series_f[3]) );
+        ASSERT_EQ( simd::get<4>(i), reinterpret_cast<int&>(series_f[4]) );
+        ASSERT_EQ( simd::get<5>(i), reinterpret_cast<int&>(series_f[5]) );
+        ASSERT_EQ( simd::get<6>(i), reinterpret_cast<int&>(series_f[6]) );
+        ASSERT_EQ( simd::get<7>(i), reinterpret_cast<int&>(series_f[7]) );
     }
 
 
@@ -1138,22 +1138,22 @@ TEST(SIMD, Reinterpretation)
                 );
         simd::int16 i = reinterpret_as_int(f);
 
-        EXPECT_TRUE( simd::get< 0>(i) == reinterpret_cast<int&>(series_f[ 0]) );
-        EXPECT_TRUE( simd::get< 1>(i) == reinterpret_cast<int&>(series_f[ 1]) );
-        EXPECT_TRUE( simd::get< 2>(i) == reinterpret_cast<int&>(series_f[ 2]) );
-        EXPECT_TRUE( simd::get< 3>(i) == reinterpret_cast<int&>(series_f[ 3]) );
-        EXPECT_TRUE( simd::get< 4>(i) == reinterpret_cast<int&>(series_f[ 4]) );
-        EXPECT_TRUE( simd::get< 5>(i) == reinterpret_cast<int&>(series_f[ 5]) );
-        EXPECT_TRUE( simd::get< 6>(i) == reinterpret_cast<int&>(series_f[ 6]) );
-        EXPECT_TRUE( simd::get< 7>(i) == reinterpret_cast<int&>(series_f[ 7]) );
-        EXPECT_TRUE( simd::get< 8>(i) == reinterpret_cast<int&>(series_f[ 8]) );
-        EXPECT_TRUE( simd::get< 9>(i) == reinterpret_cast<int&>(series_f[ 9]) );
-        EXPECT_TRUE( simd::get<10>(i) == reinterpret_cast<int&>(series_f[10]) );
-        EXPECT_TRUE( simd::get<11>(i) == reinterpret_cast<int&>(series_f[11]) );
-        EXPECT_TRUE( simd::get<12>(i) == reinterpret_cast<int&>(series_f[12]) );
-        EXPECT_TRUE( simd::get<13>(i) == reinterpret_cast<int&>(series_f[13]) );
-        EXPECT_TRUE( simd::get<14>(i) == reinterpret_cast<int&>(series_f[14]) );
-        EXPECT_TRUE( simd::get<15>(i) == reinterpret_cast<int&>(series_f[15]) );
+        ASSERT_EQ( simd::get< 0>(i), reinterpret_cast<int&>(series_f[ 0]) );
+        ASSERT_EQ( simd::get< 1>(i), reinterpret_cast<int&>(series_f[ 1]) );
+        ASSERT_EQ( simd::get< 2>(i), reinterpret_cast<int&>(series_f[ 2]) );
+        ASSERT_EQ( simd::get< 3>(i), reinterpret_cast<int&>(series_f[ 3]) );
+        ASSERT_EQ( simd::get< 4>(i), reinterpret_cast<int&>(series_f[ 4]) );
+        ASSERT_EQ( simd::get< 5>(i), reinterpret_cast<int&>(series_f[ 5]) );
+        ASSERT_EQ( simd::get< 6>(i), reinterpret_cast<int&>(series_f[ 6]) );
+        ASSERT_EQ( simd::get< 7>(i), reinterpret_cast<int&>(series_f[ 7]) );
+        ASSERT_EQ( simd::get< 8>(i), reinterpret_cast<int&>(series_f[ 8]) );
+        ASSERT_EQ( simd::get< 9>(i), reinterpret_cast<int&>(series_f[ 9]) );
+        ASSERT_EQ( simd::get<10>(i), reinterpret_cast<int&>(series_f[10]) );
+        ASSERT_EQ( simd::get<11>(i), reinterpret_cast<int&>(series_f[11]) );
+        ASSERT_EQ( simd::get<12>(i), reinterpret_cast<int&>(series_f[12]) );
+        ASSERT_EQ( simd::get<13>(i), reinterpret_cast<int&>(series_f[13]) );
+        ASSERT_EQ( simd::get<14>(i), reinterpret_cast<int&>(series_f[14]) );
+        ASSERT_EQ( simd::get<15>(i), reinterpret_cast<int&>(series_f[15]) );
     }
 }
 
