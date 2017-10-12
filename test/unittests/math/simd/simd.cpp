@@ -4,6 +4,7 @@
 #include <cfloat>
 #include <initializer_list>
 #include <limits>
+#include <numeric>
 
 #include <visionaray/math/math.h>
 
@@ -866,6 +867,10 @@ TEST(SIMD, Get)
 }
 
 
+//-------------------------------------------------------------------------------------------------
+// Test conversion ("static_cast")
+//
+
 TEST(SIMD, Conversion)
 {
     // int4 -----------------------------------------------
@@ -1025,6 +1030,130 @@ TEST(SIMD, Conversion)
         EXPECT_TRUE( simd::get<13>(i) == static_cast<int>(0xFFFFFFFF) );
         EXPECT_TRUE( simd::get<14>(i) == static_cast<int>(0xFFFFFFFF) );
         EXPECT_TRUE( simd::get<15>(i) == static_cast<int>(0xFFFFFFFF) );
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Test reinterpretation ("reinterpret_cast")
+//
+
+TEST(SIMD, Reinterpretation)
+{
+    std::vector<int> series_i(16);
+    std::vector<float> series_f(16);
+
+    std::iota(series_i.begin(), series_i.end(), 0);
+    std::iota(series_f.begin(), series_f.end(), 0.0f);
+
+    // int4 -----------------------------------------------
+    {
+        simd::int4 i(0, 1, 2, 3);
+        simd::float4 f = reinterpret_as_float(i);
+
+        EXPECT_FLOAT_EQ( simd::get<0>(f), reinterpret_cast<float&>(series_i[0]) );
+        EXPECT_FLOAT_EQ( simd::get<1>(f), reinterpret_cast<float&>(series_i[1]) );
+        EXPECT_FLOAT_EQ( simd::get<2>(f), reinterpret_cast<float&>(series_i[2]) );
+        EXPECT_FLOAT_EQ( simd::get<3>(f), reinterpret_cast<float&>(series_i[3]) );
+    }
+
+    // float4 ---------------------------------------------
+    {
+        simd::float4 f(0.0f, 1.0f, 2.0f, 3.0f);
+        simd::int4 i = reinterpret_as_int(f);
+
+        EXPECT_TRUE( simd::get<0>(i) == reinterpret_cast<int&>(series_f[0]) );
+        EXPECT_TRUE( simd::get<1>(i) == reinterpret_cast<int&>(series_f[1]) );
+        EXPECT_TRUE( simd::get<2>(i) == reinterpret_cast<int&>(series_f[2]) );
+        EXPECT_TRUE( simd::get<3>(i) == reinterpret_cast<int&>(series_f[3]) );
+    }
+
+
+    // int8 -----------------------------------------------
+    {
+        simd::int8 i(0, 1, 2, 3, 4, 5, 6, 7);
+        simd::float8 f = reinterpret_as_float(i);
+
+        EXPECT_FLOAT_EQ( simd::get<0>(f), reinterpret_cast<float&>(series_i[0]) );
+        EXPECT_FLOAT_EQ( simd::get<1>(f), reinterpret_cast<float&>(series_i[1]) );
+        EXPECT_FLOAT_EQ( simd::get<2>(f), reinterpret_cast<float&>(series_i[2]) );
+        EXPECT_FLOAT_EQ( simd::get<3>(f), reinterpret_cast<float&>(series_i[3]) );
+        EXPECT_FLOAT_EQ( simd::get<4>(f), reinterpret_cast<float&>(series_i[4]) );
+        EXPECT_FLOAT_EQ( simd::get<5>(f), reinterpret_cast<float&>(series_i[5]) );
+        EXPECT_FLOAT_EQ( simd::get<6>(f), reinterpret_cast<float&>(series_i[6]) );
+        EXPECT_FLOAT_EQ( simd::get<7>(f), reinterpret_cast<float&>(series_i[7]) );
+    }
+
+    // float8 ---------------------------------------------
+    {
+        simd::float8 f(0.0f, 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f);
+        simd::int8 i = reinterpret_as_int(f);
+
+        EXPECT_TRUE( simd::get<0>(i) == reinterpret_cast<int&>(series_f[0]) );
+        EXPECT_TRUE( simd::get<1>(i) == reinterpret_cast<int&>(series_f[1]) );
+        EXPECT_TRUE( simd::get<2>(i) == reinterpret_cast<int&>(series_f[2]) );
+        EXPECT_TRUE( simd::get<3>(i) == reinterpret_cast<int&>(series_f[3]) );
+        EXPECT_TRUE( simd::get<4>(i) == reinterpret_cast<int&>(series_f[4]) );
+        EXPECT_TRUE( simd::get<5>(i) == reinterpret_cast<int&>(series_f[5]) );
+        EXPECT_TRUE( simd::get<6>(i) == reinterpret_cast<int&>(series_f[6]) );
+        EXPECT_TRUE( simd::get<7>(i) == reinterpret_cast<int&>(series_f[7]) );
+    }
+
+
+    // int16 ----------------------------------------------
+    {
+        simd::int16 i(
+                 0,  1,  2,  3,
+                 4,  5,  6,  7,
+                 8,  9, 10, 11,
+                12, 13, 14, 15
+                );
+        simd::float16 f = reinterpret_as_float(i);
+
+        EXPECT_FLOAT_EQ( simd::get< 0>(f), reinterpret_cast<float&>(series_i[ 0]) );
+        EXPECT_FLOAT_EQ( simd::get< 1>(f), reinterpret_cast<float&>(series_i[ 1]) );
+        EXPECT_FLOAT_EQ( simd::get< 2>(f), reinterpret_cast<float&>(series_i[ 2]) );
+        EXPECT_FLOAT_EQ( simd::get< 3>(f), reinterpret_cast<float&>(series_i[ 3]) );
+        EXPECT_FLOAT_EQ( simd::get< 4>(f), reinterpret_cast<float&>(series_i[ 4]) );
+        EXPECT_FLOAT_EQ( simd::get< 5>(f), reinterpret_cast<float&>(series_i[ 5]) );
+        EXPECT_FLOAT_EQ( simd::get< 6>(f), reinterpret_cast<float&>(series_i[ 6]) );
+        EXPECT_FLOAT_EQ( simd::get< 7>(f), reinterpret_cast<float&>(series_i[ 7]) );
+        EXPECT_FLOAT_EQ( simd::get< 8>(f), reinterpret_cast<float&>(series_i[ 8]) );
+        EXPECT_FLOAT_EQ( simd::get< 9>(f), reinterpret_cast<float&>(series_i[ 9]) );
+        EXPECT_FLOAT_EQ( simd::get<10>(f), reinterpret_cast<float&>(series_i[10]) );
+        EXPECT_FLOAT_EQ( simd::get<11>(f), reinterpret_cast<float&>(series_i[11]) );
+        EXPECT_FLOAT_EQ( simd::get<12>(f), reinterpret_cast<float&>(series_i[12]) );
+        EXPECT_FLOAT_EQ( simd::get<13>(f), reinterpret_cast<float&>(series_i[13]) );
+        EXPECT_FLOAT_EQ( simd::get<14>(f), reinterpret_cast<float&>(series_i[14]) );
+        EXPECT_FLOAT_EQ( simd::get<15>(f), reinterpret_cast<float&>(series_i[15]) );
+    }
+
+    // float16 --------------------------------------------
+    {
+        simd::float16 f(
+                 0.0f,  1.0f,  2.0f,  3.0f,
+                 4.0f,  5.0f,  6.0f,  7.0f,
+                 8.0f,  9.0f, 10.0f, 11.0f,
+                12.0f, 13.0f, 14.0f, 15.0f
+                );
+        simd::int16 i = reinterpret_as_int(f);
+
+        EXPECT_TRUE( simd::get< 0>(i) == reinterpret_cast<int&>(series_f[ 0]) );
+        EXPECT_TRUE( simd::get< 1>(i) == reinterpret_cast<int&>(series_f[ 1]) );
+        EXPECT_TRUE( simd::get< 2>(i) == reinterpret_cast<int&>(series_f[ 2]) );
+        EXPECT_TRUE( simd::get< 3>(i) == reinterpret_cast<int&>(series_f[ 3]) );
+        EXPECT_TRUE( simd::get< 4>(i) == reinterpret_cast<int&>(series_f[ 4]) );
+        EXPECT_TRUE( simd::get< 5>(i) == reinterpret_cast<int&>(series_f[ 5]) );
+        EXPECT_TRUE( simd::get< 6>(i) == reinterpret_cast<int&>(series_f[ 6]) );
+        EXPECT_TRUE( simd::get< 7>(i) == reinterpret_cast<int&>(series_f[ 7]) );
+        EXPECT_TRUE( simd::get< 8>(i) == reinterpret_cast<int&>(series_f[ 8]) );
+        EXPECT_TRUE( simd::get< 9>(i) == reinterpret_cast<int&>(series_f[ 9]) );
+        EXPECT_TRUE( simd::get<10>(i) == reinterpret_cast<int&>(series_f[10]) );
+        EXPECT_TRUE( simd::get<11>(i) == reinterpret_cast<int&>(series_f[11]) );
+        EXPECT_TRUE( simd::get<12>(i) == reinterpret_cast<int&>(series_f[12]) );
+        EXPECT_TRUE( simd::get<13>(i) == reinterpret_cast<int&>(series_f[13]) );
+        EXPECT_TRUE( simd::get<14>(i) == reinterpret_cast<int&>(series_f[14]) );
+        EXPECT_TRUE( simd::get<15>(i) == reinterpret_cast<int&>(series_f[15]) );
     }
 }
 
