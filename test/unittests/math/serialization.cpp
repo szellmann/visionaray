@@ -43,8 +43,8 @@ TEST(Serialization, AABB)
     ia >> dstf;
     ia >> dstd;
 
-    EXPECT_TRUE(dsti.min == srci.min);
-    EXPECT_TRUE(dsti.max == srci.max);
+    ASSERT_EQ(dsti.min, srci.min);
+    ASSERT_EQ(dsti.max, srci.max);
     EXPECT_FLOAT_EQ(dstf.min.x, srcf.min.x);
     EXPECT_FLOAT_EQ(dstf.min.y, srcf.min.y);
     EXPECT_FLOAT_EQ(dstf.min.z, srcf.min.z);
@@ -142,10 +142,10 @@ TEST(Serialization, RectangleXYWH)
     ia >> dstf;
     ia >> dstd;
 
-    EXPECT_TRUE(dsti.x == srci.x);
-    EXPECT_TRUE(dsti.y == srci.y);
-    EXPECT_TRUE(dsti.w == srci.w);
-    EXPECT_TRUE(dsti.h == srci.h);
+    ASSERT_EQ(dsti.x, srci.x);
+    ASSERT_EQ(dsti.y, srci.y);
+    ASSERT_EQ(dsti.w, srci.w);
+    ASSERT_EQ(dsti.h, srci.h);
 
     EXPECT_FLOAT_EQ(dstf.x, srcf.x);
     EXPECT_FLOAT_EQ(dstf.y, srcf.y);
