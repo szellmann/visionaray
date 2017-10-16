@@ -6,6 +6,7 @@
 #ifndef VSNRAY_RENDER_TARGET_H
 #define VSNRAY_RENDER_TARGET_H 1
 
+#include "detail/macros.h"
 #include "pixel_traits.h"
 
 namespace visionaray
