@@ -13,6 +13,7 @@
 #include "exit_traversal.h"
 #include "macros.h"
 #include "multi_hit.h"
+#include "traversal_result.h"
 
 namespace visionaray
 {

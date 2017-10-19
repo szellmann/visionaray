@@ -14,6 +14,7 @@
 #include "../multi_hit.h"
 #include "../stack.h"
 #include "../tags.h"
+#include "../traversal_result.h"
 #include "hit_record.h"
 
 namespace visionaray

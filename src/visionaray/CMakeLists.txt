@@ -144,6 +144,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/tags.h
     ${HEADER_DIR}/detail/tiled_sched.h
     ${HEADER_DIR}/detail/tiled_sched.inl
+    ${HEADER_DIR}/detail/traversal_result.h
     ${HEADER_DIR}/detail/traverse_linear.inl
     ${HEADER_DIR}/detail/whitted.inl
 

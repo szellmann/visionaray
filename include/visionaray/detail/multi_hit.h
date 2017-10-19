@@ -21,27 +21,6 @@ namespace detail
 {
 
 //-------------------------------------------------------------------------------------------------
-// traversal_result
-//
-// Trait class to determine the result type of traversal functions.
-// In the general case, this is simply a hit_record.
-// In the case of multi_hit, the traversal result is an array of hit records.
-//
-
-template <typename HR, traversal_type Traversal, size_t MaxHits>
-struct traversal_result
-{
-    using type = HR;
-};
-
-template <typename HR, size_t MaxHits>
-struct traversal_result<HR, MultiHit, MaxHits>
-{
-    using type = array<HR, MaxHits>;
-};
-
-
-//-------------------------------------------------------------------------------------------------
 // is_multi_hit_record
 //
 // Trait class to check if a hit record template parameter is a multi-hit record.
