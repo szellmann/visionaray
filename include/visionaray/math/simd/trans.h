@@ -443,6 +443,7 @@ VSNRAY_FORCE_INLINE float4 atan(float4 const& x)
 
 // TODO: consolidate stuff with float4 (template)
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float8 cos(float8 const& x)
 {
     VSNRAY_ALIGN(32) float tmp[8];
@@ -460,6 +461,7 @@ VSNRAY_FORCE_INLINE float8 cos(float8 const& x)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float8 sin(float8 const& x)
 {
     VSNRAY_ALIGN(32) float tmp[8];
@@ -477,6 +479,7 @@ VSNRAY_FORCE_INLINE float8 sin(float8 const& x)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float8 tan(float8 const& x)
 {
     VSNRAY_ALIGN(32) float tmp[8];
@@ -494,6 +497,7 @@ VSNRAY_FORCE_INLINE float8 tan(float8 const& x)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float8 acos(float8 const& x)
 {
     VSNRAY_ALIGN(32) float tmp[8];
@@ -511,6 +515,7 @@ VSNRAY_FORCE_INLINE float8 acos(float8 const& x)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float8 asin(float8 const& x)
 {
     VSNRAY_ALIGN(32) float tmp[8];
@@ -528,6 +533,7 @@ VSNRAY_FORCE_INLINE float8 asin(float8 const& x)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float8 atan(float8 const& x)
 {
     VSNRAY_ALIGN(32) float tmp[8];
@@ -547,6 +553,7 @@ VSNRAY_FORCE_INLINE float8 atan(float8 const& x)
 
 // TODO: consolidate stuff with float4 (template)
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float16 cos(float16 const& x)
 {
     VSNRAY_ALIGN(64) float tmp[16];
@@ -572,6 +579,7 @@ VSNRAY_FORCE_INLINE float16 cos(float16 const& x)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float16 sin(float16 const& x)
 {
     VSNRAY_ALIGN(64) float tmp[16];
@@ -597,6 +605,7 @@ VSNRAY_FORCE_INLINE float16 sin(float16 const& x)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float16 tan(float16 const& x)
 {
     VSNRAY_ALIGN(64) float tmp[16];
@@ -622,6 +631,7 @@ VSNRAY_FORCE_INLINE float16 tan(float16 const& x)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float16 acos(float16 const& x)
 {
     VSNRAY_ALIGN(64) float tmp[16];
@@ -647,6 +657,7 @@ VSNRAY_FORCE_INLINE float16 acos(float16 const& x)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float16 asin(float16 const& x)
 {
     VSNRAY_ALIGN(64) float tmp[16];
@@ -672,6 +683,7 @@ VSNRAY_FORCE_INLINE float16 asin(float16 const& x)
             );
 }
 
+MATH_FUNC
 VSNRAY_FORCE_INLINE float16 atan(float16 const& x)
 {
     VSNRAY_ALIGN(64) float tmp[16];
