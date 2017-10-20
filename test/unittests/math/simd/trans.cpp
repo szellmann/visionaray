@@ -2,7 +2,6 @@
 // See the LICENSE file for details.
 
 #include <cfloat>
-#include <cmath>
 
 #include <visionaray/math/math.h>
 
@@ -13,6 +12,10 @@ using namespace visionaray;
 TEST(SIMD, Trans)
 {
     // TODO: valid range for aXXX functions
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846264338327950288
+#endif
 
     VSNRAY_ALIGN(64) float arr[] = {
             0.0f, M_PI/8, M_PI/4, M_PI/2,
