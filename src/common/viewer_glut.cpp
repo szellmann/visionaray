@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <stdexcept>
+#include <string>
 
 #include <GL/glew.h>
 
@@ -137,9 +138,12 @@ void viewer_glut::impl::init(
     atexit(close_func);
 #endif
 
-    if (glewInit() != GLEW_OK)
+    GLenum error = glewInit();
+    if (error != GLEW_OK)
     {
-        throw std::runtime_error("glewInit() failed");
+        std::string error_string("glewInit() failed: ");
+        error_string.append(reinterpret_cast<char const*>(glewGetErrorString(error)));
+        throw std::runtime_error(error_string);
     }
 }
 
