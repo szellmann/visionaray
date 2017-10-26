@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cstdio>
 #include <stdexcept>
 #include <string>
 
@@ -128,7 +129,8 @@ void viewer_sdl2::init(int argc, char** argv)
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
-        printf("Oups\n");
+        printf("Could not initialize initialize SDL: %s\n", SDL_GetError());
+        return;
     }
 
     impl_->window = SDL_CreateWindow(
@@ -142,7 +144,8 @@ void viewer_sdl2::init(int argc, char** argv)
 
     if (impl_->window == nullptr)
     {
-        printf("Oups\n");
+        printf("Could not create SDL window: %s\n", SDL_GetError());
+        return;
     }
 
 
