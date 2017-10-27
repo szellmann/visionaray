@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cstddef>
+
 #include "obj_grammar.h"
 
 namespace qi = boost::spirit::qi;
