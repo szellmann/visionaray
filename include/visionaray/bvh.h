@@ -11,7 +11,6 @@
 #include <cstring>
 #include <stdexcept>
 #include <type_traits>
-#include <vector>
 
 #ifdef __CUDACC__
 #include <cuda.h>
