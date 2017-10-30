@@ -81,12 +81,12 @@ struct expand_pixel<simd::float4>
 template <>
 struct expand_pixel<simd::float8>
 {
-    VSNRAY_CPU_FUNC inline simd::float8 x(int x)
+    VSNRAY_FUNC inline simd::float8 x(int x)
     {
         return simd::float8(x, x + 1, x + 2, x + 3, x, x + 1, x + 2, x + 3);
     }
 
-    VSNRAY_CPU_FUNC inline simd::float8 y(int y)
+    VSNRAY_FUNC inline simd::float8 y(int y)
     {
         return simd::float8(y, y, y, y, y + 1, y + 1, y + 1, y + 1);
     }
@@ -95,7 +95,7 @@ struct expand_pixel<simd::float8>
 template <>
 struct expand_pixel<simd::float16>
 {
-    VSNRAY_CPU_FUNC inline simd::float16 x(int x)
+    VSNRAY_FUNC inline simd::float16 x(int x)
     {
         return simd::float16(
                 x, x + 1, x + 2, x + 3,
@@ -105,7 +105,7 @@ struct expand_pixel<simd::float16>
                 );
     }
 
-    VSNRAY_CPU_FUNC inline simd::float16 y(int y)
+    VSNRAY_FUNC inline simd::float16 y(int y)
     {
         return simd::float16(
                 y,     y,     y,     y,
