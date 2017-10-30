@@ -101,4 +101,4 @@ struct array
 
 #include "detail/array.inl"
 
-#endif
+#endif // VSNRAY_ARRAY_H
