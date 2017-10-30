@@ -21,8 +21,8 @@ class cfile
 public:
 
     cfile(std::string const& filename, std::string const& mode)
+        : file_(fopen(filename.c_str(), mode.c_str()))
     {
-        file_ = fopen(filename.c_str(), mode.c_str());
     }
 
    ~cfile()
