@@ -31,7 +31,7 @@ public:
     }
 
     FILE* get() const { return file_; }
-    bool good() const { return file_ != 0; }
+    bool good() const { return file_ != nullptr; }
 
 private:
 
