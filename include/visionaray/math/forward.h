@@ -92,6 +92,11 @@ typedef quaternion<double>                  quatd;
 typedef quaternion<float>                   quat;
 
 
+typedef matrix<2, 2, float>                 mat2f;
+typedef matrix<2, 2, double>                mat2d;
+typedef matrix<2, 2, float>                 mat2;
+
+
 typedef matrix<3, 3, float>                 mat3f;
 typedef matrix<3, 3, double>                mat3d;
 typedef matrix<3, 3, float>                 mat3;

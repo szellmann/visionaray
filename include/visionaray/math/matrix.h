@@ -15,6 +15,63 @@ namespace MATH_NAMESPACE
 {
 
 template <typename T>
+class matrix<2, 2, T>
+{
+public:
+
+    using column_type = vector<2, T>;
+
+public:
+
+    column_type col0;
+    column_type col1;
+
+public:
+
+    MATH_FUNC matrix() = default;
+
+    MATH_FUNC matrix(column_type const& c0, column_type const& c1);
+
+    MATH_FUNC matrix(T const& m00, T const& m10, T const& m01, T const& m11);
+
+    MATH_FUNC matrix(T const& m00, T const& m11);
+
+    MATH_FUNC
+    explicit matrix(T const data[4]);
+
+    template <typename U>
+    MATH_FUNC
+    explicit matrix(matrix<2, 2, U> const& rhs);
+
+    template <typename U>
+    MATH_FUNC
+    matrix& operator=(matrix<2, 2, U> const& rhs);
+
+    MATH_FUNC T* data();
+    MATH_FUNC T const* data() const;
+
+    MATH_FUNC column_type& operator()(size_t col);
+    MATH_FUNC column_type const& operator()(size_t col) const;
+
+    MATH_FUNC T& operator()(size_t row, size_t col);
+    MATH_FUNC T const& operator()(size_t row, size_t col) const;
+
+    // Construct identity matrix
+    MATH_FUNC static matrix identity();
+
+    // TODO:
+    // Construct rotation matrix from axis and angle
+    //MATH_FUNC static matrix rotation(vector<2, T> const& axis, T const& angle);
+
+    // Construct scaling matrix from vector
+    MATH_FUNC static matrix scaling(vector<2, T> const& v);
+
+    // Construct scaling matrix from x,y,z
+    MATH_FUNC static matrix scaling(T const& x, T const& y);
+
+};
+
+template <typename T>
 class matrix<3, 3, T>
 {
 public:
@@ -155,6 +212,7 @@ public:
 
 } // MATH_NAMESPACE
 
+#include "detail/matrix2.inl"
 #include "detail/matrix3.inl"
 #include "detail/matrix4.inl"
 
