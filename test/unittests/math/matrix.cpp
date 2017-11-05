@@ -17,6 +17,18 @@ using namespace visionaray;
 // nested for loop over matrices --------------------------
 
 template <typename Func>
+void for_each_mat2_e(Func f)
+{
+    for (int i = 0; i < 2; ++i)
+    {
+        for (int j = 0; j < 2; ++j)
+        {
+            f(i, j);
+        }
+    }
+}
+
+template <typename Func>
 void for_each_mat3_e(Func f)
 {
     for (int i = 0; i < 3; ++i)
@@ -71,6 +83,29 @@ TEST(Matrix, Inverse)
 {
 
     //-------------------------------------------------------------------------
+    // mat2
+    //
+
+    {
+
+        mat2 I = mat2::identity();
+
+        // make some non-singular matrix
+        mat2 A(1, 2, 3, 4);
+        mat2 B = inverse(A);std::cout << B << '\n';
+        mat2 C = A * B;std::cout << C << '\n';
+
+        for_each_mat2_e(
+            [&](int i, int j)
+            {
+                EXPECT_FLOAT_EQ(C(i, j), I(i, j));
+            }
+            );
+
+    }
+
+
+    //-------------------------------------------------------------------------
     // mat3
     //
 
@@ -120,6 +155,27 @@ TEST(Matrix, Mult)
 {
 
     //-------------------------------------------------------------------------
+    // mat2
+    //
+
+    {
+
+        // make some matrices
+        mat2 A = mat2::identity(); A(0, 0) = 2.0f;  A(1, 0) = 3.14f; A(1, 1) = 3.0f;
+        mat2 B = mat2::identity(); B(0, 0) = 11.0f; B(1, 0) = 6.28f; B(1, 1) = 3.0f;
+        mat2 C = A * B;
+
+        for_each_mat2_e(
+            [&](int i, int j)
+            {
+                float d = dot(get_row(A, i), get_col(B, j));
+                EXPECT_FLOAT_EQ(C(i, j), d);
+            }
+            );
+    }
+
+
+    //-------------------------------------------------------------------------
     // mat3
     //
 
@@ -164,6 +220,26 @@ TEST(Matrix, Mult)
 
 TEST(Matrix, Transpose)
 {
+
+    //-------------------------------------------------------------------------
+    // mat2
+    //
+
+    {
+
+        // make some non-singular matrix
+        mat2 A = mat2::identity(); A(0, 0) = 2.0f;  A(1, 0) = 3.14f; A(1, 1) = 3.0f;
+        mat2 B = transpose(A);
+
+        for_each_mat2_e(
+            [&](int i, int j)
+            {
+                EXPECT_FLOAT_EQ(A(i, j), B(j, i));
+            }
+            );
+
+    }
+
 
     //-------------------------------------------------------------------------
     // mat3
