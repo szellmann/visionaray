@@ -179,6 +179,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/fixed.inl
     ${HEADER_DIR}/math/detail/limits.inl
     ${HEADER_DIR}/math/detail/math.h
+    ${HEADER_DIR}/math/detail/matrix3.inl
     ${HEADER_DIR}/math/detail/matrix4.inl
     ${HEADER_DIR}/math/detail/plane.inl
     ${HEADER_DIR}/math/detail/quaternion.inl
