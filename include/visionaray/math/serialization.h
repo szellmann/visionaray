@@ -56,6 +56,14 @@ inline void serialize(A& a, MATH_NAMESPACE::vector<4, T>& v, unsigned /* version
 
 
 template <typename A, typename T>
+inline void serialize(A& a, MATH_NAMESPACE::matrix<2, 2, T>& m, unsigned /* version */ )
+{
+    a & m.col0;
+    a & m.col1;
+}
+
+
+template <typename A, typename T>
 inline void serialize(A& a, MATH_NAMESPACE::matrix<3, 3, T>& m, unsigned /* version */ )
 {
     a & m.col0;
