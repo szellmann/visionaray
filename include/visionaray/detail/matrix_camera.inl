@@ -20,11 +20,13 @@ inline void matrix_camera::set_proj_matrix(mat4 const& proj)
     proj_ = proj;
 }
 
+VSNRAY_FUNC
 inline mat4 const& matrix_camera::get_view_matrix() const
 {
     return view_;
 }
 
+VSNRAY_FUNC
 inline mat4 const& matrix_camera::get_proj_matrix() const
 {
     return proj_;

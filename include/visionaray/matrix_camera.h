@@ -22,7 +22,10 @@ public:
     void set_view_matrix(mat4 const& view);
     void set_proj_matrix(mat4 const& proj);
 
-    mat4 const& get_view_matrix() const;
+    VSNRAY_FUNC
+    mat4 const& get_view_matrix() const
+
+    VSNRAY_FUNC;
     mat4 const& get_proj_matrix() const;
 
     // Call before rendering.
