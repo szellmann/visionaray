@@ -6,8 +6,11 @@
 #ifndef VSNRAY_COMMON_CFILE_H
 #define VSNRAY_COMMON_CFILE_H 1
 
+#include <cassert>
 #include <cstdio>
 #include <string>
+
+#include <visionaray/detail/macros.h>
 
 namespace visionaray
 {
@@ -32,6 +35,16 @@ public:
 
     FILE* get() const { return file_; }
     bool good() const { return file_ != nullptr; }
+    void close()
+    {
+        assert(file_);
+
+        int err = fclose(file_);
+
+        assert(err == 0);
+
+        VSNRAY_UNUSED(err);
+    }
 
 private:
 
