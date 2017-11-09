@@ -23,9 +23,9 @@ public:
     void set_proj_matrix(mat4 const& proj);
 
     VSNRAY_FUNC
-    mat4 const& get_view_matrix() const
+    mat4 const& get_view_matrix() const;
 
-    VSNRAY_FUNC;
+    VSNRAY_FUNC
     mat4 const& get_proj_matrix() const;
 
     // Call before rendering.
