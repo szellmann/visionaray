@@ -101,6 +101,11 @@ VSNRAY_FORCE_INLINE void store_unaligned(float dst[4], float4 const& v)
     _mm_storeu_ps(dst, v);
 }
 
+VSNRAY_FORCE_INLINE void store_non_temporal(float dst[4], float4 const& v)
+{
+    _mm_stream_ps(dst, v);
+}
+
 template <size_t I>
 VSNRAY_FORCE_INLINE float& get(float4& v)
 {

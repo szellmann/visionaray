@@ -99,6 +99,16 @@ VSNRAY_FORCE_INLINE void store(unsigned dst[8], int8 const& v)
     _mm256_store_si256(reinterpret_cast<__m256i*>(dst), v);
 }
 
+VSNRAY_FORCE_INLINE void store_non_temporal(int dst[8], int8 const& v)
+{
+    _mm256_stream_si256(reinterpret_cast<__m256i*>(dst), v);
+}
+
+VSNRAY_FORCE_INLINE void store_non_temporal(unsigned dst[8], int8 const& v)
+{
+    _mm256_stream_si256(reinterpret_cast<__m256i*>(dst), v);
+}
+
 template <size_t I>
 VSNRAY_FORCE_INLINE int& get(int8& v)
 {

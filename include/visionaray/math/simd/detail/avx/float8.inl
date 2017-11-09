@@ -91,6 +91,11 @@ VSNRAY_FORCE_INLINE void store(float dst[8], float8 const& v)
     _mm256_store_ps(dst, v);
 }
 
+VSNRAY_FORCE_INLINE void store_non_temporal(float dst[8], float8 const& v)
+{
+    _mm256_stream_ps(dst, v);
+}
+
 template <size_t I>
 VSNRAY_FORCE_INLINE float& get(float8& v)
 {
