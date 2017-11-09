@@ -122,6 +122,8 @@ struct VSNRAY_ALIGN(32) bvh_node
     }
 };
 
+static_assert( sizeof(bvh_node) == 32, "Size mismatch" );
+
 VSNRAY_FUNC
 inline bool is_inner(bvh_node const& node)
 {
