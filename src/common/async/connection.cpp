@@ -1,6 +1,11 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details
 
+#ifndef NDEBUG
+#include <iostream>
+#include <ostream>
+#endif
+
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/placeholders.hpp>
