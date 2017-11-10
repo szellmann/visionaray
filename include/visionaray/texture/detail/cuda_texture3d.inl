@@ -86,7 +86,10 @@ public:
             return;
         }
 
-        init_texture_object();
+        if ( init_texture_object() != cudaSuccess )
+        {
+            return;
+        }
     }
 
     // Construct from pointer to host data, same address mode for all dimensions
@@ -123,7 +126,10 @@ public:
             return;
         }
 
-        init_texture_object();
+        if ( init_texture_object() != cudaSuccess )
+        {
+            return;
+        }
     }
 
     // Construct from host texture
@@ -153,7 +159,10 @@ public:
             return;
         }
 
-        init_texture_object();
+        if ( init_texture_object() != cudaSuccess )
+        {
+            return;
+        }
     }
 
     // Construct from host texture ref (TODO: combine with previous)
@@ -183,7 +192,10 @@ public:
             return;
         }
 
-        init_texture_object();
+        if ( init_texture_object() != cudaSuccess )
+        {
+            return;
+        }
     }
 
 #if !VSNRAY_CXX_MSVC
@@ -326,7 +338,7 @@ private:
         return upload_data( dst.data() );
     }
 
-    void init_texture_object()
+    cudaError_t init_texture_object()
     {
         cudaResourceDesc resource_desc;
         memset(&resource_desc, 0, sizeof(resource_desc));
@@ -343,8 +355,14 @@ private:
         texture_desc.normalizedCoords           = true;
 
         cudaTextureObject_t obj = 0;
-        cudaCreateTextureObject( &obj, &resource_desc, &texture_desc, 0 );
-        texture_obj_.reset(obj);
+        cudaError_t err = cudaCreateTextureObject( &obj, &resource_desc, &texture_desc, 0 );
+
+        if (err == cudaSuccess)
+        {
+            texture_obj_.reset(obj);
+        }
+
+        return err;
     }
 
 };
