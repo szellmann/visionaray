@@ -276,6 +276,7 @@ inline array<R, 8> make_primary_rays(
     result[4] = invoke_cam_primary_ray(R{}, cam, samp, expand_pixel<T>().x(x) - T(0.125), expand_pixel<T>().y(y) + T(0.0625), T(width), T(height));
     result[5] = invoke_cam_primary_ray(R{}, cam, samp, expand_pixel<T>().x(x) + T(0.375), expand_pixel<T>().y(y) + T(0.1825), T(width), T(height));
     result[6] = invoke_cam_primary_ray(R{}, cam, samp, expand_pixel<T>().x(x) - T(0.375), expand_pixel<T>().y(y) + T(0.3125), T(width), T(height));
+    result[7] = invoke_cam_primary_ray(R{}, cam, samp, expand_pixel<T>().x(x) + T(0.125), expand_pixel<T>().y(y) + T(0.4375), T(width), T(height));
 
     return result;
 }
