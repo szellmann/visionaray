@@ -7,7 +7,6 @@
 #define VSNRAY_DETAIL_MULTI_HIT_H 1
 
 #include <cstddef>
-#include <iterator>
 #include <type_traits>
 
 #include <visionaray/math/simd/type_traits.h>
@@ -150,7 +149,7 @@ inline void update_if(HR1& dst, HR2 const& src, Cond const& cond)
 {
     VSNRAY_UNUSED(cond);
 
-    algo::insert_sorted(src, std::begin(dst), std::end(dst), is_closer_t());
+    algo::insert_sorted(src, dst.begin(), dst.end(), is_closer_t());
 }
 
 // TODO: find a way to enable_if this function w/o having to
@@ -175,7 +174,7 @@ inline void update_if(array<HR, N>& dst, array<HR, N> const& src, Cond const& co
                 break;
             }
 
-            algo::insert_sorted(hr, std::begin(dst), std::end(dst), is_closer_t());
+            algo::insert_sorted(hr, dst.begin(), dst.end(), is_closer_t());
         }
     }
 }
