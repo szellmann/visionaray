@@ -221,22 +221,22 @@ MATH_FUNC inline simd::int4 numeric_limits<simd::int4>::max()
 // simd::float8
 //
 
-MATH_CPU_FUNC inline simd::float8 numeric_limits<simd::float8>::min()
+MATH_FUNC inline simd::float8 numeric_limits<simd::float8>::min()
 {
     return simd::float8(FLT_MIN);
 }
 
-MATH_CPU_FUNC inline simd::float8 numeric_limits<simd::float8>::lowest()
+MATH_FUNC inline simd::float8 numeric_limits<simd::float8>::lowest()
 {
     return simd::float8(-FLT_MAX);
 }
 
-MATH_CPU_FUNC inline simd::float8 numeric_limits<simd::float8>::max()
+MATH_FUNC inline simd::float8 numeric_limits<simd::float8>::max()
 {
     return simd::float8(FLT_MAX);
 }
 
-MATH_CPU_FUNC inline simd::float8 numeric_limits<simd::float8>::epsilon()
+MATH_FUNC inline simd::float8 numeric_limits<simd::float8>::epsilon()
 {
     return simd::float8(FLT_EPSILON);
 }
@@ -246,17 +246,17 @@ MATH_CPU_FUNC inline simd::float8 numeric_limits<simd::float8>::epsilon()
 // simd::int8
 //
 
-MATH_CPU_FUNC inline simd::int8 numeric_limits<simd::int8>::min()
+MATH_FUNC inline simd::int8 numeric_limits<simd::int8>::min()
 {
     return simd::int8(INT_MIN);
 }
 
-MATH_CPU_FUNC inline simd::int8 numeric_limits<simd::int8>::lowest()
+MATH_FUNC inline simd::int8 numeric_limits<simd::int8>::lowest()
 {
     return simd::int8(INT_MIN);
 }
 
-MATH_CPU_FUNC inline simd::int8 numeric_limits<simd::int8>::max()
+MATH_FUNC inline simd::int8 numeric_limits<simd::int8>::max()
 {
     return simd::int8(INT_MAX);
 }
@@ -265,22 +265,22 @@ MATH_CPU_FUNC inline simd::int8 numeric_limits<simd::int8>::max()
 // simd::float16
 //
 
-MATH_CPU_FUNC inline simd::float16 numeric_limits<simd::float16>::min()
+MATH_FUNC inline simd::float16 numeric_limits<simd::float16>::min()
 {
     return simd::float16(FLT_MIN);
 }
 
-MATH_CPU_FUNC inline simd::float16 numeric_limits<simd::float16>::lowest()
+MATH_FUNC inline simd::float16 numeric_limits<simd::float16>::lowest()
 {
     return simd::float16(-FLT_MAX);
 }
 
-MATH_CPU_FUNC inline simd::float16 numeric_limits<simd::float16>::max()
+MATH_FUNC inline simd::float16 numeric_limits<simd::float16>::max()
 {
     return simd::float16(FLT_MAX);
 }
 
-MATH_CPU_FUNC inline simd::float16 numeric_limits<simd::float16>::epsilon()
+MATH_FUNC inline simd::float16 numeric_limits<simd::float16>::epsilon()
 {
     return simd::float16(FLT_EPSILON);
 }
@@ -290,17 +290,17 @@ MATH_CPU_FUNC inline simd::float16 numeric_limits<simd::float16>::epsilon()
 // simd::int16
 //
 
-MATH_CPU_FUNC inline simd::int16 numeric_limits<simd::int16>::min()
+MATH_FUNC inline simd::int16 numeric_limits<simd::int16>::min()
 {
     return simd::int16(INT_MIN);
 }
 
-MATH_CPU_FUNC inline simd::int16 numeric_limits<simd::int16>::lowest()
+MATH_FUNC inline simd::int16 numeric_limits<simd::int16>::lowest()
 {
     return simd::int16(INT_MIN);
 }
 
-MATH_CPU_FUNC inline simd::int16 numeric_limits<simd::int16>::max()
+MATH_FUNC inline simd::int16 numeric_limits<simd::int16>::max()
 {
     return simd::int16(INT_MAX);
 }

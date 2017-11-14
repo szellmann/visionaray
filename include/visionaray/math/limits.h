@@ -133,10 +133,10 @@ class numeric_limits<simd::float8>
 {
 public:
 
-    MATH_CPU_FUNC static simd::float8 min();
-    MATH_CPU_FUNC static simd::float8 lowest();
-    MATH_CPU_FUNC static simd::float8 max();
-    MATH_CPU_FUNC static simd::float8 epsilon();
+    MATH_FUNC static simd::float8 min();
+    MATH_FUNC static simd::float8 lowest();
+    MATH_FUNC static simd::float8 max();
+    MATH_FUNC static simd::float8 epsilon();
 };
 
 template <>
@@ -144,9 +144,9 @@ class numeric_limits<simd::int8>
 {
 public:
 
-    MATH_CPU_FUNC static simd::int8 min();
-    MATH_CPU_FUNC static simd::int8 lowest();
-    MATH_CPU_FUNC static simd::int8 max();
+    MATH_FUNC static simd::int8 min();
+    MATH_FUNC static simd::int8 lowest();
+    MATH_FUNC static simd::int8 max();
 };
 
 template <>
@@ -154,10 +154,10 @@ class numeric_limits<simd::float16>
 {
 public:
 
-    MATH_CPU_FUNC static simd::float16 min();
-    MATH_CPU_FUNC static simd::float16 lowest();
-    MATH_CPU_FUNC static simd::float16 max();
-    MATH_CPU_FUNC static simd::float16 epsilon();
+    MATH_FUNC static simd::float16 min();
+    MATH_FUNC static simd::float16 lowest();
+    MATH_FUNC static simd::float16 max();
+    MATH_FUNC static simd::float16 epsilon();
 };
 
 template <>
@@ -165,9 +165,9 @@ class numeric_limits<simd::int16>
 {
 public:
 
-    MATH_CPU_FUNC static simd::int16 min();
-    MATH_CPU_FUNC static simd::int16 lowest();
-    MATH_CPU_FUNC static simd::int16 max();
+    MATH_FUNC static simd::int16 min();
+    MATH_FUNC static simd::int16 lowest();
+    MATH_FUNC static simd::int16 max();
 };
 
 } // MATH_NAMESPACE
