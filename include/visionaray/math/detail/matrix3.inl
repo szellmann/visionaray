@@ -230,6 +230,13 @@ inline matrix<3, 3, T> inverse(matrix<3, 3, T> const& m)
 
 template <typename T>
 MATH_FUNC
+inline T trace(matrix<3, 3, T> const& m)
+{
+    return m(0, 0) + m(1, 1) + m(2, 2);
+}
+
+template <typename T>
+MATH_FUNC
 inline matrix<3, 3, T> transpose(matrix<3, 3, T> const& m)
 {
 
