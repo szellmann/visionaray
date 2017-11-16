@@ -6,6 +6,8 @@
 #ifndef VSNRAY_MATH_SIMD_MATRIX_H
 #define VSNRAY_MATH_SIMD_MATRIX_H 1
 
+#include <cstddef>
+
 #include "intrinsics.h"
 #include "neon.h"
 #include "sse.h"
