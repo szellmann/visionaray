@@ -90,13 +90,6 @@ struct normal_pair
     V shading_normal;
 };
 
-template <typename V>
-VSNRAY_FUNC
-inline normal_pair<V> make_normal_pair(V const& gn, V const& sn)
-{
-    return normal_pair<V>{ gn, sn };
-}
-
 
 // TODO: consolidate the following with get_normal()?
 // TODO: consolidate interface with get_color() and get_tex_coord()?
@@ -114,15 +107,12 @@ inline auto get_normal_pair(
         NormalBinding               /* */,
         typename std::enable_if<num_normals<Primitive, NormalBinding>::value >= 2>::type* = 0
         )
-    -> decltype( make_normal_pair(
-            get_normal(normals, hr, prim, NormalBinding{}),
-            get_shading_normal(normals, hr, prim, NormalBinding{})
-            ) )
+    -> normal_pair<decltype(get_normal(normals, hr, prim, NormalBinding{}))>
 {
-    return make_normal_pair(
-            get_normal(normals, hr, prim, NormalBinding{}),
-            get_shading_normal(normals, hr, prim, NormalBinding{})
-        );
+    return {
+        get_normal(normals, hr, prim, NormalBinding{}),
+        get_shading_normal(normals, hr, prim, NormalBinding{})
+        };
 }
 
 template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
@@ -134,15 +124,12 @@ inline auto get_normal_pair(
         NormalBinding               /* */,
         typename std::enable_if<num_normals<Primitive, NormalBinding>::value == 1>::type* = 0
         )
-    -> decltype( make_normal_pair(
-            get_normal(normals, hr, Primitive{}, NormalBinding{}),
-            get_shading_normal(normals, hr, Primitive{}, NormalBinding{})
-            ) )
+    -> normal_pair<decltype(get_normal(normals, hr, Primitive{}, NormalBinding{}))>
 {
-    return make_normal_pair(
-            get_normal(normals, hr, Primitive{}, NormalBinding{}),
-            get_shading_normal(normals, hr, Primitive{}, NormalBinding{})
-            );
+    return {
+        get_normal(normals, hr, Primitive{}, NormalBinding{}),
+        get_shading_normal(normals, hr, Primitive{}, NormalBinding{})
+        };
 }
 
 template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
@@ -154,17 +141,14 @@ inline auto get_normal_pair(
         NormalBinding               /* */,
         typename std::enable_if<num_normals<Primitive, NormalBinding>::value == 0>::type* = 0
         )
-    -> decltype( make_normal_pair(
-            get_normal(hr, prim),
-            get_shading_normal(hr, prim)
-            ) )
+    -> normal_pair<decltype(get_normal(hr, prim))>
 {
     VSNRAY_UNUSED(normals);
 
-    return make_normal_pair(
-            get_normal(hr, prim),
-            get_shading_normal(hr, prim)
-            );
+    return {
+        get_normal(hr, prim),
+        get_shading_normal(hr, prim)
+        };
 }
 
 template <typename HR, typename Primitive>
@@ -173,15 +157,12 @@ inline auto get_normal_pair(
         HR const&                   hr,
         Primitive                   prim
         )
-    -> decltype( make_normal_pair(
-            get_normal(hr, prim),
-            get_shading_normal(hr, prim)
-            ) )
+    -> normal_pair<decltype(get_normal(hr, prim))>
 {
-    return make_normal_pair(
-            get_normal(hr, prim),
-            get_shading_normal(hr, prim)
-            );
+    return {
+        get_normal(hr, prim),
+        get_shading_normal(hr, prim)
+        };
 }
 
 
