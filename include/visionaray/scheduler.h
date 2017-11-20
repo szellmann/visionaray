@@ -120,11 +120,7 @@ auto make_sched_params(
         )
     -> sched_params<sched_params_base<recti>, Camera, RT, PxSamplerT>
 {
-    return sched_params<sched_params_base<recti>, Camera, RT, PxSamplerT>(
-            cam,
-            rt,
-            recti(0, 0, rt.width(), rt.height())
-            );
+    return { cam, rt, recti(0, 0, rt.width(), rt.height()) };
 }
 
 template <
@@ -142,12 +138,7 @@ auto make_sched_params(
         )
     -> sched_params<sched_params_intersector_base<recti, Intersector>, Camera, RT, PxSamplerT>
 {
-    return sched_params<sched_params_intersector_base<recti, Intersector>, Camera, RT, PxSamplerT>{
-            cam,
-            rt,
-            recti(0, 0, rt.width(), rt.height()),
-            isect
-            };
+    return { cam, rt, recti(0, 0, rt.width(), rt.height()), isect };
 }
 
 template <
@@ -163,11 +154,11 @@ auto make_sched_params(
         )
     -> sched_params<sched_params_base<recti>, matrix_camera, RT, PxSamplerT>
 {
-    return sched_params<sched_params_base<recti>, matrix_camera, RT, PxSamplerT>(
-            matrix_camera(view_matrix, proj_matrix),
-            rt,
-            recti(0, 0, rt.width(), rt.height())
-            );
+    return {
+        matrix_camera(view_matrix, proj_matrix),
+        rt,
+        recti(0, 0, rt.width(), rt.height())
+        };
 }
 
 template <
@@ -185,12 +176,12 @@ auto make_sched_params(
         )
     -> sched_params<sched_params_intersector_base<recti, Intersector>, matrix_camera, RT, PxSamplerT>
 {
-    return sched_params<sched_params_intersector_base<recti, Intersector>, matrix_camera, RT, PxSamplerT>{
-            matrix_camera(view_matrix, proj_matrix),
-            rt,
-            recti(0, 0, rt.width(), rt.height()),
-            isect
-            };
+    return {
+        matrix_camera(view_matrix, proj_matrix),
+        rt,
+        recti(0, 0, rt.width(), rt.height()),
+        isect
+        };
 }
 
 
