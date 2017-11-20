@@ -431,11 +431,11 @@ inline auto get_surface_impl(
     -> surface<typename Params::normal_type, typename Params::material_type>
 {
     auto ns = get_normal_dispatch(params, nullptr, hr);
-    return make_surface(
-            ns.geometric_normal,
-            ns.shading_normal,
-            params.materials[hr.geom_id]
-            );
+    return {
+        ns.geometric_normal,
+        ns.shading_normal,
+        params.materials[hr.geom_id]
+        };
 }
 
 template <typename HR, typename Params>
@@ -450,11 +450,11 @@ inline auto get_surface_impl(
     -> surface<typename Params::normal_type, typename Params::material_type>
 {
     auto ns = get_normal_dispatch(params, params.normals, hr);
-    return make_surface(
-            ns.geometric_normal,
-            ns.shading_normal,
-            params.materials[hr.geom_id]
-            );
+    return {
+        ns.geometric_normal,
+        ns.shading_normal,
+        params.materials[hr.geom_id]
+        };
 }
 
 template <typename HR, typename Params>
@@ -479,12 +479,12 @@ inline auto get_surface_impl(
                     std::integral_constant<int, Params::texture_type::dimensions>{}
                     );
 
-    return make_surface(
-            ns.geometric_normal,
-            ns.shading_normal,
-            params.materials[hr.geom_id],
-            tc
-            );
+    return {
+        ns.geometric_normal,
+        ns.shading_normal,
+        params.materials[hr.geom_id],
+        tc
+        };
 }
 
 template <typename HR, typename Params>
@@ -512,12 +512,12 @@ inline auto get_surface_impl(
                         std::integral_constant<int, Params::texture_type::dimensions>{}
                         );
 
-    return make_surface(
-            ns.geometric_normal,
-            ns.shading_normal,
-            params.materials[hr.geom_id],
-            color * tc
-            );
+    return {
+        ns.geometric_normal,
+        ns.shading_normal,
+        params.materials[hr.geom_id],
+        color * tc
+        };
 }
 
 template <typename HR, typename Params>
@@ -545,12 +545,12 @@ inline auto get_surface_impl(
                         std::integral_constant<int, Params::texture_type::dimensions>{}
                         );
 
-    return make_surface(
-            ns.geometric_normal,
-            ns.shading_normal,
-            params.materials[hr.geom_id],
-            color * tc
-            );
+    return {
+        ns.geometric_normal,
+        ns.shading_normal,
+        params.materials[hr.geom_id],
+        color * tc
+        };
 }
 
 

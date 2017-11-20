@@ -55,14 +55,14 @@ template <typename N, typename M>
 VSNRAY_FUNC
 inline surface<N, M> make_surface(N const& gn, N const& sn, M const& m)
 {
-    return surface<N, M>(gn, sn, m);
+    return { gn, sn, m };
 }
 
 template <typename N, typename M, typename C>
 VSNRAY_FUNC
 inline surface<N, M, C> make_surface(N const& gn, N const& sn, M const m, C const& tex_color)
 {
-    return surface<N, M, C>(gn, sn, m, tex_color);
+    return { gn, sn, m, tex_color };
 }
 
 
@@ -93,11 +93,11 @@ inline auto pack(array<surface<N, M, Args...>, Size> const& surfs)
         materials[i]         = surfs[i].material;
     }
 
-    return make_surface(
-            pack(geometric_normals),
-            pack(shading_normals),
-            pack(materials)
-            );
+    return {
+        pack(geometric_normals),
+        pack(shading_normals),
+        pack(materials)
+        };
 }
 
 template <typename N, typename M, typename C, typename ...Args, size_t Size>
@@ -120,15 +120,15 @@ inline auto pack(array<surface<N, M, C, Args...>, Size> const& surfs)
         geometric_normals[i] = surfs[i].geometric_normal;
         shading_normals[i]   = surfs[i].shading_normal;
         materials[i]         = surfs[i].material;
-        tex_colors[i]        = surfs[i].tex_color_;
+        tex_colors[i]        = surfs[i].tex_color;
     }
 
-    return make_surface(
-            pack(geometric_normals),
-            pack(shading_normals),
-            pack(materials),
-            pack(tex_colors)
-            );
+    return {
+        pack(geometric_normals),
+        pack(shading_normals),
+        pack(materials),
+        pack(tex_colors)
+        };
 }
 
 } // simd
