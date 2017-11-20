@@ -18,4 +18,4 @@
 #   define VSNRAY_EXPORT
 #endif
 
-#endif
+#endif // VSNRAY_EXPORT_H
