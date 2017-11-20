@@ -36,7 +36,7 @@ inline spectrum<T> fresnel_reflectance(
 
 template <typename T>
 VSNRAY_FUNC
-spectrum<T> fresnel_reflectance(
+inline spectrum<T> fresnel_reflectance(
         dielectric_tag      /* */,
         spectrum<T> const&  etai,
         spectrum<T> const&  etat,
