@@ -343,15 +343,15 @@ auto make_kernel_params(
         )
     -> kernel_params<Primitives, Materials, Lights, vec4>
 {
-    return kernel_params<Primitives, Materials, Lights, vec4>{
-            { begin, end },
-            materials,
-            { lbegin, lend },
-            num_bounces,
-            epsilon,
-            bg_color,
-            ambient_color
-            };
+    return {
+        { begin, end },
+        materials,
+        { lbegin, lend },
+        num_bounces,
+        epsilon,
+        bg_color,
+        ambient_color
+        };
 }
 
 
@@ -380,16 +380,16 @@ auto make_kernel_params(
         )
     -> kernel_params<NormalBinding, Primitives, Normals, Materials, Lights, vec4>
 {
-    return kernel_params<NormalBinding, Primitives, Normals, Materials, Lights, vec4>{
-            { begin, end },
-            normals,
-            materials,
-            { lbegin, lend },
-            num_bounces,
-            epsilon,
-            bg_color,
-            ambient_color
-            };
+    return {
+        { begin, end },
+        normals,
+        materials,
+        { lbegin, lend },
+        num_bounces,
+        epsilon,
+        bg_color,
+        ambient_color
+        };
 }
 
 
@@ -422,18 +422,18 @@ auto make_kernel_params(
         )
     -> kernel_params<NormalBinding, Primitives, Normals, TexCoords, Materials, Textures, Lights, vec4>
 {
-    return kernel_params<NormalBinding, Primitives, Normals, TexCoords, Materials, Textures, Lights, vec4>{
-            { begin, end },
-            normals,
-            tex_coords,
-            materials,
-            textures,
-            { lbegin, lend },
-            num_bounces,
-            epsilon,
-            bg_color,
-            ambient_color
-            };
+    return {
+        { begin, end },
+        normals,
+        tex_coords,
+        materials,
+        textures,
+        { lbegin, lend },
+        num_bounces,
+        epsilon,
+        bg_color,
+        ambient_color
+        };
 }
 
 
@@ -482,30 +482,19 @@ auto make_kernel_params(
         vec4
         >
 {
-    return kernel_params<
-        NormalBinding,
-        ColorBinding,
-        Primitives,
-        Normals,
-        TexCoords,
-        Materials,
-        Colors,
-        Textures,
-        Lights,
-        vec4
-        >{
-            { begin, end },
-            normals,
-            tex_coords,
-            materials,
-            colors,
-            textures,
-            { lbegin, lend },
-            num_bounces,
-            epsilon,
-            bg_color,
-            ambient_color
-            };
+    return {
+        { begin, end },
+        normals,
+        tex_coords,
+        materials,
+        colors,
+        textures,
+        { lbegin, lend },
+        num_bounces,
+        epsilon,
+        bg_color,
+        ambient_color
+        };
 }
 
 } // visionaray
