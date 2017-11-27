@@ -6,7 +6,6 @@
 #ifndef VSNRAY_DETAIL_SCHED_COMMON_H
 #define VSNRAY_DETAIL_SCHED_COMMON_H 1
 
-#include <chrono>
 #include <utility>
 
 #include <visionaray/array.h>
@@ -25,25 +24,6 @@ namespace visionaray
 {
 namespace detail
 {
-
-//-------------------------------------------------------------------------------------------------
-// TODO: move to a better place
-//
-
-#if defined(__CUDA_ARCH__)
-VSNRAY_GPU_FUNC
-inline unsigned tic()
-{
-    return clock64();
-}
-#else
-inline unsigned tic()
-{
-    auto t = std::chrono::high_resolution_clock::now();
-    return t.time_since_epoch().count();
-}
-#endif
-
 
 //-------------------------------------------------------------------------------------------------
 // Invoke kernel

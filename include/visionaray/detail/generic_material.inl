@@ -235,7 +235,6 @@ public:
         using float_array = aligned_array_t<scalar_type>;
 
         auto srs = unpack(sr);
-        auto& s = samp.get_sampler();
 
         array<vector<3, float>, N> rds;
         float_array                     pdfs;
@@ -243,7 +242,7 @@ public:
 
         for (size_t i = 0; i < N; ++i)
         {
-            sampled[i] = mats_[i].sample(srs[i], rds[i], pdfs[i], s);
+            sampled[i] = mats_[i].sample(srs[i], rds[i], pdfs[i], samp.get_sampler(i));
         }
 
         refl_dir = pack(rds);

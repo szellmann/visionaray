@@ -43,7 +43,7 @@ inline unsigned cuda_seed()
     unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
     unsigned w = blockDim.x * gridDim.x;
 
-    return cuda_hash(tic() + y * w + x);
+    return cuda_hash(tic(float{} /*TODO*/) + y * w + x);
 }
 
 

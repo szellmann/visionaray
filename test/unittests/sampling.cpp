@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <visionaray/math/simd/simd.h>
+#include <visionaray/array.h>
 #include <visionaray/random_sampler.h>
 #include <visionaray/sampling.h>
 
@@ -30,8 +31,9 @@ TEST(Sampling, ConcentricSampleDisk)
     static const int NumSamples = 10000;
 
     random_sampler<float> rs1(0U);
-    random_sampler<simd::float4> rs4(0U);
-    random_sampler<simd::float8> rs8(0U);
+    random_sampler<simd::float4> rs4(array<unsigned, 4>({{0U, 0U, 0U, 0U}}));
+    random_sampler<simd::float8> rs8(array<unsigned, 8>({{0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U}}));
+    // TODO: test float16
 
     // Check that all samples are inside the disk
     for (int i = 0; i < NumSamples; ++i)

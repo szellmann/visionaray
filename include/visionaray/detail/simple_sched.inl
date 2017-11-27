@@ -22,7 +22,7 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 
 
     // TODO: support any sampler
-    random_sampler<typename R::scalar_type> samp(detail::tic());
+    random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
 
     for (int y = 0; y < sched_params.rt.height(); ++y)
     {

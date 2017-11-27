@@ -186,7 +186,7 @@ void tiled_sched<R>::impl::render_loop()
         }
 
     // case event.render:
-        random_sampler<typename R::scalar_type> samp(detail::tic());
+        random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
         for (;;)
         {
             auto tile_idx = sync_params.tile_idx_counter.fetch_add(1);
