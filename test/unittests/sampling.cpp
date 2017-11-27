@@ -33,7 +33,7 @@ TEST(Sampling, ConcentricSampleDisk)
     random_sampler<float> rs1(0U);
     random_sampler<simd::float4> rs4(array<unsigned, 4>({{0U, 0U, 0U, 0U}}));
     random_sampler<simd::float8> rs8(array<unsigned, 8>({{0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U}}));
-    // TODO: test float16
+    random_sampler<simd::float16> rs16(array<unsigned, 16>({{0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U, 0U}}));
 
     // Check that all samples are inside the disk
     for (int i = 0; i < NumSamples; ++i)
@@ -64,5 +64,15 @@ TEST(Sampling, ConcentricSampleDisk)
         auto sample = concentric_sample_disk(u1, u2);
         EXPECT_TRUE(all(length(sample) >= simd::float8(0.0f)));
         EXPECT_TRUE(all(length(sample) <= simd::float8(1.0f)));
+    }
+
+    for (int i = 0; i < NumSamples / 16; ++i)
+    {
+        simd::float16 u1 = rs16.next();
+        simd::float16 u2 = rs16.next();
+
+        auto sample = concentric_sample_disk(u1, u2);
+        EXPECT_TRUE(all(length(sample) >= simd::float16(0.0f)));
+        EXPECT_TRUE(all(length(sample) <= simd::float16(1.0f)));
     }
 }
