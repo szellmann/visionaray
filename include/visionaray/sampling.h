@@ -54,7 +54,7 @@ inline F radical_inverse(I n)
 
 template <typename T>
 VSNRAY_FUNC
-inline vector<2, T> concentric_sample_disk(T u1, T u2)
+inline vector<2, T> concentric_sample_disk(T const& u1, T const& u2)
 {
     // http://psgraphics.blogspot.de/2011/01/improved-code-for-concentric-map.html
 
@@ -76,7 +76,7 @@ inline vector<2, T> concentric_sample_disk(T u1, T u2)
 
 template <typename T>
 VSNRAY_FUNC
-inline vector<3, T> uniform_sample_hemisphere(T u1, T u2)
+inline vector<3, T> uniform_sample_hemisphere(T const& u1, T const& u2)
 {
     auto r   = sqrt( max(T(0.0), T(1.0) - u1 * u1) );
     auto phi = constants::two_pi<T>() * u2;
@@ -85,7 +85,7 @@ inline vector<3, T> uniform_sample_hemisphere(T u1, T u2)
 
 template <typename T>
 VSNRAY_FUNC
-inline vector<3, T> cosine_sample_hemisphere(T u1, T u2)
+inline vector<3, T> cosine_sample_hemisphere(T const& u1, T const& u2)
 {
     auto r     = sqrt(u1);
     auto theta = constants::two_pi<T>() * u2;
