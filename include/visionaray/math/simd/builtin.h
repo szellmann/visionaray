@@ -31,7 +31,7 @@ public:
     typedef float value_type[4];
     float value[4];
 
-    MATH_FUNC basic_float() = default;
+    basic_float() = default;
     MATH_FUNC basic_float(float x, float y, float z, float w);
     MATH_FUNC basic_float(float const v[4]);
     MATH_FUNC basic_float(float s);
@@ -50,7 +50,7 @@ public:
     typedef int value_type[4];
     int value[4];
 
-    MATH_FUNC basic_int() = default;
+    basic_int() = default;
     MATH_FUNC basic_int(int x, int y, int z, int w);
     MATH_FUNC basic_int(int const v[4]);
     MATH_FUNC basic_int(int s);
@@ -69,7 +69,7 @@ public:
 
     bool value[4];
 
-    MATH_FUNC basic_mask() = default;
+    basic_mask() = default;
     MATH_FUNC basic_mask(bool x, bool y, bool z, bool w);
     MATH_FUNC basic_mask(bool const v[4]);
     MATH_FUNC basic_mask(bool b);
@@ -103,7 +103,7 @@ public:
     typedef float value_type[8];
     float value[8];
 
-    MATH_FUNC basic_float() = default;
+    basic_float() = default;
     MATH_FUNC basic_float(
             float x1,
             float x2,
@@ -131,7 +131,7 @@ public:
     typedef int value_type[8];
     int value[8];
 
-    MATH_FUNC basic_int() = default;
+    basic_int() = default;
     MATH_FUNC basic_int(
             int x1,
             int x2,
@@ -159,7 +159,7 @@ public:
 
     bool value[8];
 
-    MATH_FUNC basic_mask() = default;
+    basic_mask() = default;
     MATH_FUNC basic_mask(
             bool x1,
             bool x2,
@@ -202,7 +202,7 @@ public:
     typedef float value_type[16];
     float value[16];
 
-    MATH_FUNC basic_float() = default;
+    basic_float() = default;
     MATH_FUNC basic_float(
             float  x1, float  x2, float  x3, float  x4,
             float  x5, float  x6, float  x7, float  x8,
@@ -226,7 +226,7 @@ public:
     typedef int value_type[16];
     int value[16];
 
-    MATH_FUNC basic_int() = default;
+    basic_int() = default;
     MATH_FUNC basic_int(
             int  x1, int  x2, int  x3, int  x4,
             int  x5, int  x6, int  x7, int  x8,
@@ -250,7 +250,7 @@ public:
 
     bool value[16];
 
-    MATH_FUNC basic_mask() = default;
+    basic_mask() = default;
     MATH_FUNC basic_mask(
             bool  x1, bool  x2, bool  x3, bool  x4,
             bool  x5, bool  x6, bool  x7, bool  x8,

@@ -28,7 +28,6 @@ public:
     column_type col3;
 
 
-    MATH_FUNC
     matrix() = default;
 
     MATH_FUNC

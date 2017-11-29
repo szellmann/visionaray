@@ -95,7 +95,7 @@ public:
     typedef std::uniform_real_distribution<T> uniform_dist;
 #endif
 
-    VSNRAY_FUNC random_sampler() = default;
+    random_sampler() = default;
 
     VSNRAY_FUNC random_sampler(unsigned seed)
         : rng_(rand_engine(seed))

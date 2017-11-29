@@ -26,7 +26,7 @@ public:
     vec_type normal;
     value_type offset;
 
-    MATH_FUNC basic_plane() = default;
+    basic_plane() = default;
 
     // NOTE: n must be normalized!
     MATH_FUNC basic_plane(vec_type const& n, value_type o);

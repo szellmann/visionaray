@@ -19,7 +19,7 @@ public:
     float y;
     float z;
 
-    MATH_FUNC vector() = default;
+    vector() = default;
     MATH_FUNC vector(float x, float y, float z)
         : x(x)
         , y(y)

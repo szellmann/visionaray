@@ -21,7 +21,7 @@ public:
     T y;
     T z;
 
-    MATH_FUNC quaternion() = default;
+    quaternion() = default;
     MATH_FUNC quaternion(T const& w, T const& x, T const& y, T const& z);
     MATH_FUNC quaternion(T const& w, vector<3, T> const& v);
 

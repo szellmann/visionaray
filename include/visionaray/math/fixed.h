@@ -56,7 +56,7 @@ public:
 
 public:
 
-    MATH_FUNC fixed() = default;
+    fixed() = default;
 
     MATH_FUNC /* implicit */ fixed(char c);
     MATH_FUNC /* implicit */ fixed(short s);

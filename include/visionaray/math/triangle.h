@@ -24,7 +24,7 @@ public:
 
 public:
 
-    MATH_FUNC basic_triangle() = default;
+    basic_triangle() = default;
     MATH_FUNC basic_triangle(
             vector<Dim, T> const& v1,
             vector<Dim, T> const& e1,

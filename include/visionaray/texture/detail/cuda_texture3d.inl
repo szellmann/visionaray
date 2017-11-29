@@ -384,12 +384,12 @@ public:
 
     // Default ctor, dtor and assignment
 
-    VSNRAY_FUNC cuda_texture_ref()                                          = default;
-    VSNRAY_FUNC cuda_texture_ref(cuda_texture_ref<T, 3> const&)             = default;
-    VSNRAY_FUNC cuda_texture_ref(cuda_texture_ref<T, 3>&&)                  = default;
-    VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture_ref<T, 3> const&)  = default;
-    VSNRAY_FUNC cuda_texture_ref& operator=(cuda_texture_ref<T, 3>&&)       = default;
-    VSNRAY_FUNC ~cuda_texture_ref()                                         = default;
+    cuda_texture_ref()                                         = default;
+    cuda_texture_ref(cuda_texture_ref<T, 3> const&)            = default;
+    cuda_texture_ref(cuda_texture_ref<T, 3>&&)                 = default;
+    cuda_texture_ref& operator=(cuda_texture_ref<T, 3> const&) = default;
+    cuda_texture_ref& operator=(cuda_texture_ref<T, 3>&&)      = default;
+   ~cuda_texture_ref()                                         = default;
 
 
     // Construct / assign from cuda_texture

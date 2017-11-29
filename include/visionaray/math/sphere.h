@@ -23,7 +23,7 @@ public:
 
 public:
 
-    MATH_FUNC basic_sphere() = default;
+    basic_sphere() = default;
     MATH_FUNC basic_sphere(vector<3, T> const& c, T r);
 
     vec_type center;

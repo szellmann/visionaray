@@ -42,7 +42,7 @@ public:
 
     value_type value;
 
-    MATH_FUNC unorm() = default;
+    unorm() = default;
 
     MATH_FUNC /* implicit */ unorm(float f);
 

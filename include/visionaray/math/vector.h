@@ -28,7 +28,7 @@ public:
     T x;
     T y;
 
-    MATH_FUNC vector() = default;
+    vector() = default;
     MATH_FUNC vector(T const& x, T const& y);
 
     MATH_FUNC explicit vector(T const& s);
@@ -70,7 +70,7 @@ public:
     T y;
     T z;
 
-    MATH_FUNC vector() = default;
+    vector() = default;
     MATH_FUNC vector(T const& x, T const& y, T const& z);
 
     MATH_FUNC explicit vector(T const& s);
@@ -116,7 +116,7 @@ public:
     T z;
     T w;
 
-    MATH_FUNC vector() = default;
+    vector() = default;
     MATH_FUNC vector(T const& x, T const& y, T const& z, T const& w);
 
     MATH_FUNC explicit vector(T const& s);
@@ -165,7 +165,7 @@ public:
 
 public:
 
-    MATH_FUNC vector() = default;
+    vector() = default;
 
     MATH_FUNC explicit vector(T const& s);
     MATH_FUNC explicit vector(T const* data/*[Dim]*/);

@@ -42,7 +42,7 @@ public:
 
     value_type value;
 
-    MATH_FUNC snorm() = default;
+    snorm() = default;
 
     MATH_FUNC /* implicit */ snorm(float f);
 

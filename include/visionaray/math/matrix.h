@@ -28,7 +28,7 @@ public:
 
 public:
 
-    MATH_FUNC matrix() = default;
+    matrix() = default;
 
     MATH_FUNC matrix(column_type const& c0, column_type const& c1);
 
@@ -86,7 +86,7 @@ public:
 
 public:
 
-    MATH_FUNC matrix() = default;
+    matrix() = default;
 
     MATH_FUNC matrix(
             column_type const& c0,
@@ -152,7 +152,7 @@ public:
 
 public:
 
-    MATH_FUNC matrix() = default;
+    matrix() = default;
 
     MATH_FUNC matrix(
             column_type const& c0,
