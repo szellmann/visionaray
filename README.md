@@ -28,7 +28,7 @@ Build requirements
     tested with clang++-7.0.2 on Mac OS X 10.10,
     tested with Microsoft Visual Studio 2015 VC14 for x64)
 
-- [CMake][1] version 2.8 or newer
+- [CMake][1] version 2.8.9 or newer
 - [Boost][2]
 - OpenGL
 - [GLEW][3]
