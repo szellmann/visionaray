@@ -810,7 +810,7 @@ inline void get(
 //
 
 template <pixel_format DF, pixel_format SF, typename OutputColor>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<DF>   /* dst format */,
         pixel_format_constant<SF>   /* src format */,
@@ -853,7 +853,7 @@ inline void get(
 //
 
 template <typename T>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_R32F>  /* dst format */,
         pixel_format_constant<PF_R32F>  /* src format */,
@@ -886,7 +886,7 @@ inline void get(
 }
 
 template <typename T>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_DEPTH32F>  /* dst format */,
         pixel_format_constant<PF_DEPTH32F>  /* src format */,
@@ -920,7 +920,7 @@ inline void get(
 
 // TODO: merge w/ overload(s) from above
 template <typename T>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_DEPTH24_STENCIL8>  /* dst format */,
         pixel_format_constant<PF_DEPTH24_STENCIL8>  /* src format */,
@@ -959,7 +959,7 @@ inline void get(
 //
 
 template <pixel_format DF, pixel_format SF, typename OutputColor>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<DF>   /* dst format */,
         pixel_format_constant<SF>   /* src format */,
@@ -1014,7 +1014,7 @@ inline void get(
 //
 
 template <typename T>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_R32F>  /* dst format */,
         pixel_format_constant<PF_R32F>  /* src format */,
@@ -1047,7 +1047,7 @@ inline void get(
 }
 
 template <typename T>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_DEPTH32F>  /* dst format */,
         pixel_format_constant<PF_DEPTH32F>  /* src format */,
@@ -1081,7 +1081,7 @@ inline void get(
 
 // TODO: merge w/ overload(s) from above
 template <typename T>
-VSNRAY_CPU_FUNC
+VSNRAY_FUNC
 inline void get(
         pixel_format_constant<PF_DEPTH24_STENCIL8>  /* dst format */,
         pixel_format_constant<PF_DEPTH24_STENCIL8>  /* src format */,
