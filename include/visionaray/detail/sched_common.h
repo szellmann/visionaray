@@ -31,7 +31,7 @@ namespace detail
 
 template <typename K, typename R, typename Sampler>
 VSNRAY_FUNC
-inline auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
+inline auto invoke_kernel(K kernel, R r, Sampler& samp, int x, int y)
     -> decltype(kernel(r))
 {
     VSNRAY_UNUSED(samp);
@@ -48,7 +48,7 @@ template <
     typename = void
     >
 VSNRAY_FUNC
-inline auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
+inline auto invoke_kernel(K kernel, R r, Sampler& samp, int x, int y)
     -> decltype(kernel(r, samp))
 {
     VSNRAY_UNUSED(x);
@@ -65,7 +65,7 @@ template <
     typename = void
     >
 VSNRAY_FUNC
-inline auto invoke_kernel(K kernel, R r, Sampler& samp, unsigned x, unsigned y)
+inline auto invoke_kernel(K kernel, R r, Sampler& samp, int x, int y)
     -> decltype(kernel(r, x, y))
 {
     VSNRAY_UNUSED(samp);
