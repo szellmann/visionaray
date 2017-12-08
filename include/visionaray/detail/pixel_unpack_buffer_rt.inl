@@ -10,8 +10,6 @@
 #include <GL/glew.h>
 #endif
 
-#include <cuda_gl_interop.h>
-
 #include <thrust/fill.h>
 #include <thrust/execution_policy.h>
 
@@ -44,28 +42,6 @@ template <pixel_format ColorFormat, pixel_format DepthFormat>
 pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::pixel_unpack_buffer_rt()
     : impl_(new impl())
 {
-    cudaError_t err = cudaSuccess;
-
-    int dev = 0;
-    cudaDeviceProp prop;
-    err = cudaChooseDevice(&dev, &prop);
-    if (err != cudaSuccess)
-    {
-        throw std::runtime_error("choose device");
-    }
-
-    err = cudaGLSetGLDevice(dev);
-
-    if (err == cudaErrorSetOnActiveProcess)
-    {
-        err = cudaDeviceReset();
-        err = cudaGLSetGLDevice(dev);
-    }
-
-    if (err != cudaSuccess)
-    {
-        throw std::runtime_error("set GL device");
-    }
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>

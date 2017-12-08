@@ -9,8 +9,6 @@
 #include <GL/glew.h>
 #endif
 
-#include <cuda_gl_interop.h>
-
 #include <visionaray/gl/handle.h>
 
 #include "../graphics_resource.h"
@@ -32,28 +30,6 @@ struct pixel_pack_buffer::impl
 pixel_pack_buffer::pixel_pack_buffer()
     : impl_(new impl())
 {
-    cudaError_t err = cudaSuccess;
-
-    int dev = 0;
-    cudaDeviceProp prop;
-    err = cudaChooseDevice(&dev, &prop);
-    if (err != cudaSuccess)
-    {
-        throw std::runtime_error("choose device");
-    }
-
-    err = cudaGLSetGLDevice(dev);
-
-/*    if (err == cudaErrorSetOnActiveProcess)
-    {
-        err = cudaDeviceReset();
-        err = cudaGLSetGLDevice(dev);
-    }
-
-    if (err != cudaSuccess)
-    {
-        throw std::runtime_error("set GL device");
-    }*/
 }
 
 void pixel_pack_buffer::map(recti viewport, pixel_format format)

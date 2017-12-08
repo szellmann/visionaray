@@ -38,6 +38,10 @@
 #include <common/obj_loader.h>
 #include <common/viewer_glut.h>
 
+#ifdef __CUDACC__
+#include <common/cuda.h>
+#endif
+
 using namespace visionaray;
 
 using viewer_type = viewer_glut;
@@ -365,6 +369,14 @@ void renderer::on_resize(int w, int h)
 
 int main(int argc, char** argv)
 {
+#ifdef __CUDACC__
+    if (cuda::init_gl_interop() != cudaSuccess)
+    {
+        std::cerr << "Cannot initialize CUDA OpenGL interop\n";
+        return EXIT_FAILURE;
+    }
+#endif
+
     renderer rend;
 
     try

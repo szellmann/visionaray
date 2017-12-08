@@ -34,6 +34,10 @@
 #include <common/manip/zoom_manipulator.h>
 #include <common/viewer_glut.h>
 
+#ifdef __CUDACC__
+#include <common/cuda.h>
+#endif
+
 using namespace visionaray;
 
 using manipulators  = std::vector<std::shared_ptr<visionaray::camera_manipulator>>;
@@ -827,6 +831,14 @@ void renderer::on_resize(int w, int h)
 
 int main(int argc, char** argv)
 {
+#ifdef __CUDACC__
+    if (cuda::init_gl_interop() != cudaSuccess)
+    {
+        std::cerr << "Cannot initialize CUDA OpenGL interop\n";
+        return EXIT_FAILURE;
+    }
+#endif
+
     renderer rend;
 
     try
