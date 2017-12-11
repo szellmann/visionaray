@@ -383,7 +383,7 @@ int main(int argc, char** argv)
     {
         rend.init(argc, argv);
     }
-    catch (std::exception& e)
+    catch (std::exception const& e)
     {
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
@@ -393,7 +393,7 @@ int main(int argc, char** argv)
     {
         visionaray::load_obj(rend.filename, rend.mod);
     }
-    catch (std::exception& e)
+    catch (std::exception const& e)
     {
         std::cerr << "Failed loading obj model: " << e.what() << std::endl;
         return EXIT_FAILURE;
@@ -429,7 +429,7 @@ int main(int argc, char** argv)
         rend.device_normals = rend.mod.shading_normals;
         rend.device_materials = rend.host_materials;
     }
-    catch (std::bad_alloc&)
+    catch (std::bad_alloc const&)
     {
         std::cerr << "GPU memory allocation failed" << std::endl;
         rend.device_bvh = renderer::device_bvh_type();

@@ -845,7 +845,7 @@ int main(int argc, char** argv)
     {
         rend.init(argc, argv);
     }
-    catch (std::exception& e)
+    catch (std::exception const& e)
     {
         std::cerr << e.what() << '\n';
         return EXIT_FAILURE;
