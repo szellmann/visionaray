@@ -66,7 +66,7 @@ connection_manager::~connection_manager()
         stop();
         close_all();
     }
-    catch (std::exception& e)
+    catch (std::exception const& e)
     {
         static_cast<void>(e);
     }
@@ -79,7 +79,7 @@ void connection_manager::run()
     {
         io_service_.run();
     }
-    catch (std::exception& e)
+    catch (std::exception const& e)
     {
         printf("connection_manager::run: EXCEPTION caught: %s", e.what());
         throw;
