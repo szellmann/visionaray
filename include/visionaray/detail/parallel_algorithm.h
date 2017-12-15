@@ -18,33 +18,13 @@
 #include <tbb/parallel_reduce.h>
 #endif
 
+#include "algorithm.h"
 #include "macros.h"
 
 namespace visionaray
 {
 namespace paralgo
 {
-
-//-------------------------------------------------------------------------------------------------
-// counting_sort trivial key
-//
-
-namespace detail
-{
-
-struct trivial_key
-{
-    template <
-        typename T,
-        typename = typename std::enable_if<std::is_integral<T>::value>::type
-        >
-    T operator()(T val)
-    {
-        return val;
-    }
-};
-
-} // detail
 
 #if VSNRAY_HAVE_TBB
 
@@ -157,7 +137,7 @@ template <
     typename InputIt,
     typename OutputIt,
     typename Counts,
-    typename Key = detail::trivial_key
+    typename Key = visionaray::algo::detail::trivial_key
     >
 void counting_sort(InputIt first, InputIt last, OutputIt out, Counts& counts, Key key = Key())
 {
