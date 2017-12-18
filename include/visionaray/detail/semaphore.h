@@ -28,7 +28,10 @@ class semaphore
 {
 public:
 
-    semaphore(unsigned count = 0) : count_(count) {}
+    explicit semaphore(unsigned count = 0)
+        : count_(count)
+    {
+    }
 
     void notify()
     {
@@ -58,7 +61,7 @@ class semaphore
 {
 public:
 
-    semaphore(unsigned count = 0)
+    explicit semaphore(unsigned count = 0)
     {
         sem_init(&sem_, 0, count);
     }
