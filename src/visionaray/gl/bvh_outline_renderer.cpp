@@ -44,9 +44,7 @@ bvh_outline_renderer::bvh_outline_renderer()
 {
 }
 
-bvh_outline_renderer::~bvh_outline_renderer()
-{
-}
+bvh_outline_renderer::~bvh_outline_renderer() = default;
 
 void bvh_outline_renderer::frame(mat4 const& view, mat4 const& proj) const
 {

@@ -40,9 +40,7 @@ cpu_buffer_rt<ColorFormat, DepthFormat>::cpu_buffer_rt()
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-cpu_buffer_rt<ColorFormat, DepthFormat>::~cpu_buffer_rt()
-{
-}
+cpu_buffer_rt<ColorFormat, DepthFormat>::~cpu_buffer_rt() = default;
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename cpu_buffer_rt<ColorFormat, DepthFormat>::color_type* cpu_buffer_rt<ColorFormat, DepthFormat>::color()

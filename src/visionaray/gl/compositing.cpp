@@ -351,9 +351,7 @@ depth_compositor::depth_compositor()
 {
 }
 
-depth_compositor::~depth_compositor()
-{
-}
+depth_compositor::~depth_compositor() = default;
 
 void depth_compositor::composite_textures() const
 {

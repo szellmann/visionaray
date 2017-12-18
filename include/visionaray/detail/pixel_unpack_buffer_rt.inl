@@ -45,9 +45,7 @@ pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::pixel_unpack_buffer_rt()
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
-pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::~pixel_unpack_buffer_rt()
-{
-}
+pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::~pixel_unpack_buffer_rt() = default;
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::color_type* pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::color()
