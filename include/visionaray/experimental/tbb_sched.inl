@@ -51,9 +51,7 @@ tbb_sched<R>::tbb_sched(int num_threads)
 }
 
 template <typename R>
-tbb_sched<R>::~tbb_sched()
-{
-}
+tbb_sched<R>::~tbb_sched() = default;
 
 template <typename R>
 template <typename K, typename SP>
