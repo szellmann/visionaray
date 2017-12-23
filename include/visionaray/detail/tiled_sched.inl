@@ -235,13 +235,13 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 
     render_tile = [=](recti const& tile, random_sampler<T>& samp)
     {
-        unsigned numx = tile_width  / packet_size<T>::w;
-        unsigned numy = tile_height / packet_size<T>::h;
-        for (unsigned i = 0; i < numx * numy; ++i)
+        int numx = tile_width  / packet_size<T>::w;
+        int numy = tile_height / packet_size<T>::h;
+        for (int i = 0; i < numx * numy; ++i)
         {
-            auto pos = vec2i(i % numx, i / numx);
-            auto x = tile.x + pos.x * packet_size<T>::w;
-            auto y = tile.y + pos.y * packet_size<T>::h;
+            vec2i pos(i % numx, i / numx);
+            int x = tile.x + pos.x * packet_size<T>::w;
+            int y = tile.y + pos.y * packet_size<T>::h;
 
             recti xpixel(x, y, packet_size<T>::w - 1, packet_size<T>::h - 1);
             if ( !overlapping(clip_rect, xpixel) )
