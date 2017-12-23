@@ -16,7 +16,7 @@ namespace visionaray
 namespace detail
 {
 
-template <class F>
+template <typename F>
 void tile2d(int x0, int x1, int y0, int y1, int dx, int dy, F f)
 {
     //assert((x1 - x0) % tile_w == 0);
