@@ -1,11 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#ifndef NDEBUG
-#include <iomanip>
-#include <iostream>
-#endif
-
 #include <visionaray/pinhole_camera.h>
 
 #include "../input/mouse_event.h"
