@@ -5,6 +5,7 @@
 
 #include "camera_manipulator.h"
 #include "../input/mouse.h"
+#include "../input/key_event.h"
 #include "../input/keyboard.h"
 
 

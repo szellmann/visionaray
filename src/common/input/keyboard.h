@@ -100,44 +100,6 @@ inline key_modifiers& operator^=(key_modifiers& a, key b)
 }
 
 } // keyboard
-
-
-class key_event
-{
-public:
-
-    key_event(
-            keyboard::event_type type,
-            keyboard::key key
-            )
-        : type_(type)
-        , key_(key)
-        , modifiers_(keyboard::NoKey)
-    {
-    }
-
-    key_event(
-            keyboard::event_type type,
-            keyboard::key key,
-            keyboard::key_modifiers modifiers)
-        : type_(type)
-        , key_(key)
-        , modifiers_(modifiers)
-    {
-    }
-
-    keyboard::event_type get_type()     const { return type_; }
-    keyboard::key key()                 const { return key_; }
-    keyboard::key_modifiers modifiers() const { return modifiers_; }
-
-private:
-
-    keyboard::event_type type_;
-    keyboard::key key_;
-    keyboard::key_modifiers modifiers_;
-
-};
-
 } // visionaray
 
 #endif // VSNRAY_COMMON_INPUT_KEYBOARD_H

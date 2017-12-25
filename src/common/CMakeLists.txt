@@ -107,6 +107,7 @@ set(COMMON_HEADERS
 
     input/exception.h
     input/glut.h
+    input/key_event.h
     input/keyboard.h
     input/mouse.h
     input/qt.h

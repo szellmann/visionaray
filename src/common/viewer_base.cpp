@@ -15,6 +15,7 @@
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
+#include "input/key_event.h"
 #include "input/keyboard.h"
 #include "input/mouse.h"
 #include "manip/camera_manipulator.h"
