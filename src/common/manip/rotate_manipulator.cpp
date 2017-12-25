@@ -8,7 +8,6 @@
 
 #include <visionaray/pinhole_camera.h>
 
-#include "../input/mouse.h"
 #include "rotate_manipulator.h"
 
 using namespace visionaray;

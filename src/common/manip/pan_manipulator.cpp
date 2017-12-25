@@ -3,8 +3,9 @@
 
 #include <visionaray/pinhole_camera.h>
 
-#include "pan_manipulator.h"
+#include "../input/mouse_event.h"
 
+#include "pan_manipulator.h"
 
 using namespace visionaray;
 

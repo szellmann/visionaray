@@ -8,6 +8,8 @@
 
 #include <visionaray/pinhole_camera.h>
 
+#include "../input/mouse_event.h"
+
 #include "zoom_manipulator.h"
 
 

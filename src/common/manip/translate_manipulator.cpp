@@ -12,6 +12,7 @@
 #include <visionaray/pinhole_camera.h>
 
 #include "../input/mouse.h"
+#include "../input/mouse_event.h"
 #include "translate_manipulator.h"
 
 using namespace visionaray;

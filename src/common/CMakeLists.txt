@@ -110,6 +110,7 @@ set(COMMON_HEADERS
     input/key_event.h
     input/keyboard.h
     input/mouse.h
+    input/mouse_event.h
     input/qt.h
     input/sdl2.h
 

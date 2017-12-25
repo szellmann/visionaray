@@ -9,7 +9,7 @@
 #include <visionaray/pinhole_camera.h>
 
 #include "arcball_manipulator.h"
-#include "../input/mouse.h"
+#include "../input/mouse_event.h"
 
 
 using namespace visionaray;

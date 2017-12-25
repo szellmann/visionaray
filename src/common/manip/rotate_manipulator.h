@@ -7,6 +7,7 @@
 #define VSNRAY_COMMON_MANIP_ROTATE_MANIPULATOR_H 1
 
 #include "../input/mouse.h"
+#include "../input/mouse_event.h"
 #include "arcball.h"
 #include "model_manipulator.h"
 
