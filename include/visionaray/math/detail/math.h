@@ -197,35 +197,29 @@ inline int max_min(int x, int y, int z)
     return result;
 }
 
-#define FF(x) __int_as_float(x)
-#define II(x) __float_as_int(x)
-
 MATH_GPU_FUNC
 inline float min(float x, float y, float z)
 {
-    return FF( min(II(x), II(y), II(z)) );
+    return __int_as_float( min(__float_as_int(x), __float_as_int(y), __float_as_int(z)) );
 }
 
 MATH_GPU_FUNC
 inline float max(float x, float y, float z)
 {
-    return FF( max(II(x), II(y), II(z)) );
+    return __int_as_float( max(__float_as_int(x), __float_as_int(y), __float_as_int(z)) );
 }
 
 MATH_GPU_FUNC
 inline float min_max(float x, float y, float z)
 {
-    return FF( min_max(II(x), II(y), II(z)) );
+    return __int_as_float( min_max(__float_as_int(x), __float_as_int(y), __float_as_int(z)) );
 }
 
 MATH_GPU_FUNC
 inline float max_min(float x, float y, float z)
 {
-    return FF( max_min(II(x), II(y), II(z)) );
+    return __int_as_float( max_min(__float_as_int(x), __float_as_int(y), __float_as_int(z)) );
 }
-
-#undef II
-#undef FF
 
 #endif
 
