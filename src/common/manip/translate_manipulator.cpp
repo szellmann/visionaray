@@ -149,10 +149,10 @@ bool translate_manipulator::handle_mouse_down(visionaray::mouse_event const& eve
             camera_.get_viewport()
             );
 
-    if (brect.contains(event.get_pos()) && event.get_buttons() & buttons_)
+    if (brect.contains(event.pos()) && event.buttons() & buttons_)
     {
         dragging_ = true;
-        down_pos_ = event.get_pos();
+        down_pos_ = event.pos();
 
         return true;
     }
@@ -178,8 +178,8 @@ bool translate_manipulator::handle_mouse_move(visionaray::mouse_event const& eve
 
         auto w  =  camera_.get_viewport().w;
         auto h  =  camera_.get_viewport().h;
-        auto dx = -static_cast<float>(last_pos_.x - event.get_pos().x) / w;
-        auto dy = +static_cast<float>(last_pos_.y - event.get_pos().y) / h;
+        auto dx = -static_cast<float>(last_pos_.x - event.pos().x) / w;
+        auto dy = +static_cast<float>(last_pos_.y - event.pos().y) / h;
         auto s  = 2.0f * camera_.distance();
         auto Z = normalize( camera_.eye() - camera_.center() );
         auto Y = camera_.up();
@@ -188,7 +188,7 @@ bool translate_manipulator::handle_mouse_move(visionaray::mouse_event const& eve
 
         model_matrix_ = mat4::translation(d) * model_matrix_;
 
-        down_pos_ = event.get_pos();
+        down_pos_ = event.pos();
 
         return true;
     }

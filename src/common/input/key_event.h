@@ -35,7 +35,7 @@ public:
     {
     }
 
-    keyboard::event_type get_type()     const { return type_; }
+    keyboard::event_type type()         const { return type_; }
     keyboard::key key()                 const { return key_; }
     keyboard::key_modifiers modifiers() const { return modifiers_; }
 

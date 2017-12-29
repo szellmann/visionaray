@@ -323,7 +323,7 @@ void renderer::on_display()
 
 void renderer::on_mouse_move(visionaray::mouse_event const& event)
 {
-    if (event.get_buttons() != mouse::NoButton)
+    if (event.buttons() != mouse::NoButton)
     {
         frame_num = 0;
         host_rt.clear_color_buffer();

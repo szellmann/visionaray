@@ -39,21 +39,21 @@ arcball_manipulator::~arcball_manipulator()
 void arcball_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
 {
 
-    bool buttons   = event.get_buttons() & buttons_;
-    bool modifiers = (modifiers_ == keyboard::NoKey && event.get_modifiers() == keyboard::NoKey)
-                   || event.get_modifiers()  & modifiers_;
+    bool buttons   = event.buttons() & buttons_;
+    bool modifiers = (modifiers_ == keyboard::NoKey && event.modifiers() == keyboard::NoKey)
+                   || event.modifiers()  & modifiers_;
 
     if (!dragging_ && buttons && modifiers)
     {
         dragging_ = true;
         ball_.down_pos = ball_.project(
-                event.get_pos().x,
-                event.get_pos().y,
+                event.pos().x,
+                event.pos().y,
                 camera_.get_viewport()
                 );
         ball_.down_rotation = ball_.rotation;
 
-        down_modifiers_ = event.get_modifiers();
+        down_modifiers_ = event.modifiers();
     }
 
     camera_manipulator::handle_mouse_down(event);
@@ -75,7 +75,7 @@ void arcball_manipulator::handle_mouse_up(visionaray::mouse_event const& event)
 void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
 {
 
-    bool buttons   = event.get_buttons() & buttons_;
+    bool buttons   = event.buttons() & buttons_;
     bool modifiers = (modifiers_ == keyboard::NoKey && down_modifiers_ == keyboard::NoKey)
                    || down_modifiers_ & modifiers_;
 
@@ -85,8 +85,8 @@ void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event
         // rotation
 
         vec3 curr_pos = ball_.project(
-                event.get_pos().x,
-                event.get_pos().y,
+                event.pos().x,
+                event.pos().y,
                 camera_.get_viewport()
                 );
         ball_.rotation = quat::rotation(ball_.down_pos, curr_pos) * ball_.down_rotation;

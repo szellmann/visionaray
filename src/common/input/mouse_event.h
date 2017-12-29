@@ -41,10 +41,10 @@ public:
     {
     }
 
-    mouse::event_type get_type() const { return type_; }
-    mouse::pos const& get_pos()  const { return pos_; }
-    mouse::buttons get_buttons() const { return buttons_; }
-    keyboard::key_modifiers get_modifiers() const { return modifiers_; }
+    mouse::event_type type() const { return type_; }
+    mouse::pos const& pos()  const { return pos_; }
+    mouse::buttons buttons() const { return buttons_; }
+    keyboard::key_modifiers modifiers() const { return modifiers_; }
 
 private:
 

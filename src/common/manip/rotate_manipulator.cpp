@@ -212,19 +212,19 @@ bool rotate_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
 {
     auto bdisc = flip( bounding_disc(), camera_.get_viewport() );
 
-    if (bdisc.contains(event.get_pos()) && event.get_buttons() & buttons_)
+    if (bdisc.contains(event.pos()) && event.buttons() & buttons_)
     {
         dragging_ = true;
 
         auto brect = flip( bounding_rect(), camera_.get_viewport() );
 
         ball_.down_pos = ball_.project(
-            event.get_pos().x,
-            event.get_pos().y,
+            event.pos().x,
+            event.pos().y,
             brect
             );
         ball_.down_rotation = ball_.rotation;
-        down_pos_ = event.get_pos();
+        down_pos_ = event.pos();
 //      selected_ = select_from_mouse_pointer(event);
 
         return true;
@@ -248,15 +248,15 @@ bool rotate_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
 {
     auto bdisc = flip( bounding_disc(), camera_.get_viewport() );
 
-    mouse_over_ = bdisc.contains(event.get_pos());
+    mouse_over_ = bdisc.contains(event.pos());
 
-    if (dragging_ && event.get_buttons() & buttons_)
+    if (dragging_ && event.buttons() & buttons_)
     {
         auto brect = flip( bounding_rect(), camera_.get_viewport() );
 
         vec3 curr_pos = ball_.project(
-                event.get_pos().x,
-                event.get_pos().y,
+                event.pos().x,
+                event.pos().y,
                 brect
                 );
 
@@ -289,8 +289,8 @@ int rotate_manipulator::select_from_mouse_pointer(visionaray::mouse_event const&
     auto scaling = get_scaling(model_matrix_);
     auto radius = length((scaling * vec4(size_, 1.0f)).xyz()) / 2.0f;
     vec2i pos(
-            event.get_pos().x,
-            camera_.get_viewport().h - 1 - event.get_pos().y
+            event.pos().x,
+            camera_.get_viewport().h - 1 - event.pos().y
             );
 
     int result = -1;

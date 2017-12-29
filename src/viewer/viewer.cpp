@@ -730,12 +730,12 @@ void renderer::on_key_press(key_event const& event)
 
 void renderer::on_mouse_move(visionaray::mouse_event const& event)
 {
-    if (event.get_buttons() != mouse::NoButton)
+    if (event.buttons() != mouse::NoButton)
     {
         clear_frame();
     }
 
-    mouse_pos = event.get_pos();
+    mouse_pos = event.pos();
     viewer_type::on_mouse_move(event);
 }
 
