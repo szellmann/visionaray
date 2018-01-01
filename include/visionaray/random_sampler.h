@@ -39,6 +39,16 @@ inline unsigned tic(T /* */)
 {
     return clock64();
 }
+#elif defined(__KALMAR_ACCELERATOR__)
+template <
+    typename T,
+    typename = typename std::enable_if<std::is_floating_point<T>::value>::type
+    >
+VSNRAY_FUNC
+inline unsigned tic(T /* */)
+{
+    return {}; // TODO!
+}
 #else
 template <
     typename T,
