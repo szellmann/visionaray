@@ -451,4 +451,16 @@ inline fixed<I, F> trunc(fixed<I, F> const& a)
     return *reinterpret_cast<fixed<I, F>*>(&k);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Misc.
+//
+
+template <unsigned I, unsigned F>
+MATH_FUNC
+inline fixed<I, F> select(bool k, fixed<I, F> const& a, fixed<I, F> const& b)
+{
+    return k ? a : b;
+}
+
 } // visionaray
