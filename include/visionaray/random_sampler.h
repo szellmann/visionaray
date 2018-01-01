@@ -147,7 +147,7 @@ public:
     }
 
     // TODO: maybe don't have a random_samplerN at all?
-    VSNRAY_FUNC sampler_type& get_sampler(size_t i)
+    VSNRAY_FUNC sampler_type& get_sampler(size_t i) const
     {
         return samplers_[i];
     }
