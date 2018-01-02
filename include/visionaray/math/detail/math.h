@@ -7,9 +7,10 @@
 #define VSNRAY_MATH_DETAIL_MATH_H 1
 
 #ifdef __HCC__
-#include <hcc/hc_math.hpp> // include before <cmath> !!
-#endif
+#include <hcc/hc_math.hpp>
+#else
 #include <cmath>
+#endif
 #include <type_traits>
 
 #include "../config.h"
@@ -23,7 +24,7 @@ namespace MATH_NAMESPACE
 // Enable ADL!
 //
 
-#ifdef __CUDA_ARCH__
+#if defined(__CUDA_ARCH__)
 using ::abs;
 using ::acos;
 using ::asin;
@@ -45,6 +46,28 @@ using ::round;
 using ::sin;
 using ::sqrt;
 using ::tan;
+#elif defined(__KALMAR_ACCELERATOR__) && __KALMAR_ACCELERATOR__
+MATH_FUNC inline float abs(float x) { return hc::precise_math::fabsf(x); }
+MATH_FUNC inline float acos(float x) { return hc::precise_math::acosf(x); }
+MATH_FUNC inline float asin(float x) { return hc::precise_math::asinf(x); }
+MATH_FUNC inline float atan(float x) { return hc::precise_math::atanf(x); }
+MATH_FUNC inline float ceil(float x) { return hc::precise_math::ceilf(x); }
+MATH_FUNC inline float copysign(float x, float y) { return hc::precise_math::copysignf(x, y); }
+MATH_FUNC inline float cos(float x) { return hc::precise_math::cosf(x); }
+MATH_FUNC inline float exp(float x) { return hc::precise_math::expf(x); }
+MATH_FUNC inline float floor(float x) { return hc::precise_math::floorf(x); }
+MATH_FUNC inline int isfinite(float x) { return hc::precise_math::isfinite(x); }
+MATH_FUNC inline int isinf(float x) { return hc::precise_math::isinf(x); }
+MATH_FUNC inline int isnan(float x) { return hc::precise_math::isnan(x); }
+MATH_FUNC inline float log(float x) { return hc::precise_math::logf(x); }
+MATH_FUNC inline float log2(float x) { return hc::precise_math::log2f(x); }
+MATH_FUNC inline float log10(float x) { return hc::precise_math::log10f(x); }
+MATH_FUNC inline float log1p(float x) { return hc::precise_math::log1pf(x); }
+MATH_FUNC inline float pow(float x, float y) { return hc::precise_math::powf(x, y); }
+MATH_FUNC inline float round(float x) { return hc::precise_math::roundf(x); }
+MATH_FUNC inline float sin(float x) { return hc::precise_math::sinf(x); }
+MATH_FUNC inline float sqrt(float x) { return hc::precise_math::sqrtf(x); }
+MATH_FUNC inline float tan(float x) { return hc::precise_math::tanf(x); }
 #else
 using std::abs;
 using std::acos;
