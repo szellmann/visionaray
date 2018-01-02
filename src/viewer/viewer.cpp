@@ -59,9 +59,12 @@
 #include <visionaray/experimental/tbb_sched.h>
 #endif
 
-#ifdef __CUDACC__
+#if defined(__CUDACC__)
 #include <visionaray/gpu_buffer_rt.h>
 #include <visionaray/pixel_unpack_buffer_rt.h>
+#elif defined(__HCC__)
+// TODO: No HCC/GL interop yet!
+#include <visionaray/gpu_buffer_rt.h>
 #endif
 
 #include <common/manip/arcball_manipulator.h>
@@ -118,11 +121,14 @@ struct renderer : viewer_type
 
     using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
     using host_bvh_type             = index_bvh<primitive_type>;
-#ifdef __CUDACC__
+#if defined(__CUDACC__)
     using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
     using device_bvh_type           = cuda_index_bvh<primitive_type>;
     using device_tex_type           = cuda_texture<vector<4, unorm<8>>, 2>;
     using device_tex_ref_type       = typename device_tex_type::ref_type;
+#elif defined(__HCC__)
+    using device_render_target_type = gpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
+    using device_bvh_type           = hcc_index_bvh<primitive_type>;
 #endif
 
     enum device_type
@@ -147,7 +153,7 @@ struct renderer : viewer_type
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
         , host_sched(std::thread::hardware_concurrency())
-#ifdef __CUDACC__
+#if defined(__CUDACC__) || defined(__HCC__)
         , device_sched(8, 8)
 #endif
         , mouse_pos(0)
@@ -227,7 +233,7 @@ struct renderer : viewer_type
             cl::init(this->col_space)
             ) );
 
-#ifdef __CUDACC__
+#if defined(__CUDACC__) || defined(__HCC__)
         add_cmdline_option( cl::makeOption<device_type&>({
                 { "cpu",                CPU,            "Rendering on the CPU" },
                 { "gpu",                GPU,            "Rendering on the GPU" },
@@ -269,6 +275,11 @@ struct renderer : viewer_type
     thrust::device_vector<material_type>        device_materials;
     std::map<std::string, device_tex_type>      device_texture_map;
     thrust::device_vector<device_tex_ref_type>  device_textures;
+#elif defined(__HCC__)
+    device_bvh_type                             device_bvh;
+    hcc::device_vector<normal_type>             device_normals;
+    hcc::device_vector<tex_coord_type>          device_tex_coords;
+    hcc::device_vector<material_type>           device_materials;
 #endif
 
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
@@ -277,8 +288,11 @@ struct renderer : viewer_type
     tiled_sched<ray_type_cpu>                   host_sched;
 #endif
     host_render_target_type                     host_rt;
-#ifdef __CUDACC__
+#if defined(__CUDACC__)
     cuda_sched<ray_type_gpu>                    device_sched;
+    device_render_target_type                   device_rt;
+#elif defined(__HCC__)
+    hcc_sched<ray_type_gpu>                     device_sched;
     device_render_target_type                   device_rt;
 #endif
     pinhole_camera                              cam;
@@ -383,7 +397,7 @@ void renderer::clear_frame()
     if (algo == Pathtracing)
     {
         host_rt.clear_color_buffer();
-#ifdef __CUDACC__
+#if defined(__CUDACC__) || defined(__HCC__)
         device_rt.clear_color_buffer();
 #endif
     }
@@ -523,7 +537,7 @@ void renderer::on_display()
 
     if (dev_type == renderer::GPU)
     {
-#ifdef __CUDACC__
+#if defined(__CUDACC__)
         thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
 
         device_primitives.push_back(device_bvh.ref());
@@ -540,6 +554,30 @@ void renderer::on_display()
 //              thrust::raw_pointer_cast(device_textures.data()),
                 thrust::raw_pointer_cast(device_lights.data()),
                 thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+                bounces,
+                epsilon,
+                vec4(background_color(), 1.0f),
+                amb
+                );
+
+        call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, device_rt );
+#elif defined(__HCC__)
+        hcc::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
+
+        device_primitives.push_back(device_bvh.ref());
+
+        hcc::device_vector<light_type> device_lights = host_lights;
+
+        auto kparams = make_kernel_params(
+                normals_per_face_binding{},
+                device_primitives.data(),
+                device_primitives.data() + device_primitives.size(),
+                device_normals.data(),
+//              device_tex_coords.data(),
+                device_materials.data(),
+//              device_textures.data(),
+                device_lights.data(),
+                device_lights.data() + device_lights.size(),
                 bounces,
                 epsilon,
                 vec4(background_color(), 1.0f),
@@ -596,7 +634,8 @@ void renderer::on_display()
     }
     else if (dev_type == renderer::GPU && true /* direct rendering */)
     {
-#ifdef __CUDACC__
+#if defined(__CUDACC__) || defined(__HCC__)
+        // TODO: No HCC/GL interop yet!
         device_rt.display_color_buffer();
 #endif
     }
@@ -672,7 +711,7 @@ void renderer::on_key_press(key_event const& event)
         break;
 
    case 'm':
-#ifdef __CUDACC__
+#if defined(__CUDACC__) || defined(__HCC__)
         if (dev_type == renderer::CPU)
         {
             dev_type = renderer::GPU;
@@ -745,7 +784,7 @@ void renderer::on_resize(int w, int h)
     float aspect = w / static_cast<float>(h);
     cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
     host_rt.resize(w, h);
-#ifdef __CUDACC__
+#if defined(__CUDACC__) || defined(__HCC__)
     device_rt.resize(w, h);
 #endif
     clear_frame();
@@ -838,7 +877,7 @@ int main(int argc, char** argv)
 
     std::cout << "Ready\n";
 
-#ifdef __CUDACC__
+#if defined(__CUDACC__) || defined(__HCC__)
     // Copy data to GPU
     try
     {
@@ -848,6 +887,7 @@ int main(int argc, char** argv)
         rend.device_materials = rend.host_materials;
 
 
+#ifdef __CUDACC__ // TODO: support textures with hcc
         // Copy textures and texture references to the GPU
 
         rend.device_textures.resize(rend.mod.textures.size());
@@ -904,6 +944,7 @@ int main(int argc, char** argv)
                 }
             }
         }
+#endif // __CUDACC__
     }
     catch (std::bad_alloc const&)
     {
@@ -915,9 +956,11 @@ int main(int argc, char** argv)
         rend.device_tex_coords.shrink_to_fit();
         rend.device_materials.clear();
         rend.device_materials.shrink_to_fit();
+#ifdef __CUDACC__
         rend.device_texture_map.clear();
         rend.device_textures.clear();
         rend.device_textures.shrink_to_fit();
+#endif
     }
 #endif
 

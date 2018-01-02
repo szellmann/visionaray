@@ -51,12 +51,15 @@ void call_kernel(
     case Simple:
         if (ssaa_samples == 1)
         {
+            simple::kernel<KParams> kern;
+            kern.params = kparams;
             sched.frame(
-                simple::kernel<KParams>({kparams}),
+                kern,
                 make_sched_params(pixel_sampler::ssaa_type<1>{}, std::forward<Args>(args)...),
                 frame_num
                 );
         }
+#if 0
         else if (ssaa_samples == 2)
         {
             sched.frame(
@@ -118,14 +121,18 @@ void call_kernel(
         }
         break;
 
+#endif
     case Pathtracing:
+    {
+        pathtracing::kernel<KParams> kern;
+        kern.params = kparams;
         sched.frame(
-            pathtracing::kernel<KParams>({kparams}),
+            kern,
             make_sched_params(pixel_sampler::jittered_blend_type{}, std::forward<Args>(args)...),
             ++frame_num
             );
         break;
-
+    }
     }
 }
 

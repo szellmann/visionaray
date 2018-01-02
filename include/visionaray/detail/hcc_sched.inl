@@ -50,7 +50,7 @@ inline void hcc_sched_impl_frame(
                 }
 
                 // TODO: support any sampler
-                random_sampler<typename R::scalar_type> samp;// TODO
+                random_sampler<typename R::scalar_type> samp(detail::tic(float{}));// TODO
 
                 auto r = detail::make_primary_rays(
                         R{},

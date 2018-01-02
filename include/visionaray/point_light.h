@@ -60,9 +60,9 @@ private:
     scalar_type kl_;
     vec_type    position_;
 
-    T constant_attenuation_     = T(1.0);
-    T linear_attenuation_       = T(0.0);
-    T quadratic_attenuation_    = T(0.0);
+    T constant_attenuation_     /*= T(1.0)*/;
+    T linear_attenuation_       /*= T(0.0)*/;
+    T quadratic_attenuation_    /*= T(0.0)*/;
 };
 
 } // visionaray
