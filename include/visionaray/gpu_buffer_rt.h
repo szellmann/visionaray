@@ -6,7 +6,11 @@
 #ifndef VSNRAY_GPU_BUFFER_RT_H
 #define VSNRAY_GPU_BUFFER_RT_H 1
 
+#if defined(__CUDACC__)
 #include <thrust/device_vector.h>
+#elif defined(__HCC__)
+#include "hcc/device_vector.h"
+#endif
 
 #include "pixel_traits.h"
 #include "render_target.h"
@@ -45,8 +49,13 @@ public:
 
 private:
 
+#if defined(__CUDACC__)
     thrust::device_vector<color_type> color_buffer_;
     thrust::device_vector<depth_type> depth_buffer_;
+#elif defined(__HCC__)
+    hcc::device_vector<color_type> color_buffer_;
+    hcc::device_vector<depth_type> depth_buffer_;
+#endif
 
 };
 
