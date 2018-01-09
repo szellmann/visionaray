@@ -462,6 +462,13 @@ inline auto div(T1 const& a, T2 const& b, M const& m, T3 const& old = T3(0.0))
 
 template <typename T>
 MATH_FUNC
+inline T fract(T const& x)
+{
+    return abs(x - convert_to_float(convert_to_int(x)));
+}
+
+template <typename T>
+MATH_FUNC
 inline T heavyside(T const& x)
 {
     return select( x < T(0.0), T(0.0), T(1.0) );
