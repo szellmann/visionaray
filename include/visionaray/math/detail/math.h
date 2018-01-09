@@ -464,7 +464,7 @@ template <typename T>
 MATH_FUNC
 inline T fract(T const& x)
 {
-    return abs(x - convert_to_float(convert_to_int(x)));
+    return x - floor(x);
 }
 
 template <typename T>
