@@ -40,8 +40,8 @@ inline spectrum<T> fresnel_reflectance(
         dielectric_tag      /* */,
         spectrum<T> const&  etai,
         spectrum<T> const&  etat,
-        T                   cosi,
-        T                   cost
+        T const&            cosi,
+        T const&            cost
         )
 {
     // approximation for s-polarized light (perpendicular)
