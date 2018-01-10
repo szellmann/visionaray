@@ -290,6 +290,59 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
+// Glass material
+//
+// Parameters:
+//
+
+template <typename T>
+class glass
+{
+public:
+
+    using scalar_type = T;
+
+public:
+
+    // TODO: no support for  ambient (function returns 0.0)
+    VSNRAY_FUNC spectrum<T> ambient() const;
+
+    template <typename SR>
+    VSNRAY_FUNC
+    spectrum<typename SR::scalar_type> shade(SR const& sr) const;
+
+    template <typename SR, typename U, typename Sampler>
+    VSNRAY_FUNC spectrum<U> sample(
+            SR const&       sr,
+            vector<3, U>&   refl_dir,
+            U&              pdf,
+            Sampler&        sampler
+            ) const;
+
+
+    VSNRAY_FUNC spectrum<T>& ct();
+    VSNRAY_FUNC spectrum<T> const& ct() const;
+
+    VSNRAY_FUNC T& kt();
+    VSNRAY_FUNC T const& kt() const;
+
+    VSNRAY_FUNC spectrum<T>& cr();
+    VSNRAY_FUNC spectrum<T> const& cr() const;
+
+    VSNRAY_FUNC T& kr();
+    VSNRAY_FUNC T const& kr() const;
+
+    VSNRAY_FUNC spectrum<T>& ior();
+    VSNRAY_FUNC spectrum<T> const& ior() const;
+
+private:
+
+    specular_transmission<T>  specular_bsdf_;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Plastic material
 //
 // Parameters:
@@ -394,6 +447,7 @@ private:
 } // visionaray
 
 #include "detail/material/emissive.inl"
+#include "detail/material/glass.inl"
 #include "detail/material/matte.inl"
 #include "detail/material/mirror.inl"
 #include "detail/material/plastic.inl"

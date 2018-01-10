@@ -7,6 +7,7 @@
 #define VSNRAY_BRDF_H 1
 
 #include "math/constants.h"
+#include "math/limits.h"
 #include "math/vector.h"
 #include "fresnel.h"
 #include "sampling.h"
@@ -207,6 +208,113 @@ public:
                 absorption,
                 abs( dot(n, wo) )
                 ) * spectrum<U>(cr * kr) / abs( dot(n, wi) );
+    }
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Perfect specular transmission
+//
+
+template <typename T>
+class specular_transmission
+{
+public:
+
+    using scalar_type   = T;
+
+public:
+
+    spectrum<T> ct;
+    scalar_type kt;
+    spectrum<T> cr;
+    scalar_type kr;
+    spectrum<T> ior;
+
+    template <typename U>
+    VSNRAY_FUNC
+    spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    {
+        VSNRAY_UNUSED(n);
+        VSNRAY_UNUSED(wi);
+        VSNRAY_UNUSED(wo);
+
+        return spectrum<U>(0.0);
+    }
+
+    template <typename U, typename Sampler>
+    VSNRAY_FUNC
+    spectrum<U> sample_f(
+            vector<3, U> const& n,
+            vector<3, U> const& wo,
+            vector<3, U>& wi,
+            U& pdf,
+            Sampler& sampler
+            ) const
+    {
+        // IOR of material above normal direction
+        spectrum<U> ior1 = spectrum<U>(1.0);
+        // IOR of material below normal direction
+        spectrum<U> ior2 = spectrum<U>(ior);
+
+        U cosi = clamp(dot(n, wo), U(-1.0), U(1.0));
+
+        auto entering = cosi > U(0.0);
+
+        // If ray originates in 2nd medium, flip normal
+        // and swap refraction indices
+        vector<3, U> N = select(entering, n, -n);
+        spectrum<U> etai = select(entering, ior1, ior2);
+        spectrum<U> etat = select(entering, ior2, ior1);
+        cosi = select(!entering, abs(cosi), cosi);
+
+        U eta = etai[0] / etat[0]; // TODO: etaX are spectra!
+
+        // Snell's law
+        U sini = sqrt(max(U(0.0), U(1.0) - cosi * cosi));
+        U sint = eta * sini;
+        U cost = sqrt(max(U(0.0), U(1.0) - sint * sint));
+
+        spectrum<U> reflectance = fresnel_reflectance(
+                dielectric_tag(),
+                ior1,
+                ior2,
+                cosi,
+                cost
+                );
+
+        auto tir = sint >= U(1.0);
+        reflectance = select(tir, spectrum<U>(1.0), reflectance);
+
+        vector<3, U> refracted = refract(wo, N, eta); // NOTE: not normalized!
+        vector<3, U> reflected = reflect(wo, N);
+
+        auto u = sampler.next();
+
+        wi = select(
+                u < reflectance[0],
+                reflected,
+                normalize(refracted)
+                );
+
+        pdf = select(
+                u < reflectance[0],
+                reflectance[0],
+                U(1.0) - reflectance[0]
+                );
+
+        auto result = select(
+                u < reflectance[0],
+                reflectance * spectrum<U>(cr * kr),
+                (spectrum<U>(1.0) - reflectance) * spectrum<U>(ct * kt)
+                ) / abs(dot(N, wi));
+
+        return select(
+                length(refracted) < numeric_limits<U>::epsilon(),
+                spectrum<U>(0.0),
+                result
+                );
     }
 
 };
