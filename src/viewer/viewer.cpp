@@ -818,7 +818,7 @@ int main(int argc, char** argv)
                     gl.kt() = mat.transmission;
                     gl.cr() = from_rgb(mat.cs);
                     gl.kr() = 1.0f - mat.transmission;
-                    gl.ior() = from_rgb(vec3(1.3f)/*mat.ior*/);
+                    gl.ior() = from_rgb(mat.ior);
                     cont.push_back(gl);
                 }
                 else
