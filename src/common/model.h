@@ -34,6 +34,7 @@ public:
             , cr(0.0f, 0.0f, 0.0f)
             , ior(1.0f, 1.0f, 1.0f)
             , absorption(0.0f, 0.0f, 0.0f)
+            , transmission(0.0f)
             , specular_exp(32.0f)
             , glossiness(0.0f)
         {
@@ -62,6 +63,9 @@ public:
 
         // Absorption.
         vec3 absorption;
+
+        // Transmission.
+        float transmission;
 
         // Specular exponent.
         float specular_exp;

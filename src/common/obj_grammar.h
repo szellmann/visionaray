@@ -88,6 +88,8 @@ struct obj_grammar
     boost::spirit::qi::rule<It, vec3(), skip_t>   r_kd;
     boost::spirit::qi::rule<It, vec3(), skip_t>   r_ke;
     boost::spirit::qi::rule<It, vec3(), skip_t>   r_ks;
+    boost::spirit::qi::rule<It, float(), skip_t>  r_tr;
+    boost::spirit::qi::rule<It, float(), skip_t>  r_d;
     boost::spirit::qi::rule<It, float(), skip_t>  r_ns;
     boost::spirit::qi::rule<It, sref_t(), skip_t> r_map_kd;
 

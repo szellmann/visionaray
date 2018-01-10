@@ -165,6 +165,8 @@ struct mtl
         , kd(vec3(0.8f, 0.8f, 0.8f))
         , ke(vec3(0.0f, 0.0f, 0.0f))
         , ks(vec3(0.1f, 0.1f, 0.1f))
+        , tr(0.0f)
+        , d(1.0f)
         , ns(32.0f)
     {
     }
@@ -173,6 +175,8 @@ struct mtl
     vec3 kd;
     vec3 ke;
     vec3 ks;
+    float tr; // tr=1-d
+    float d;
     float ns;
     std::string map_kd;
 };
@@ -219,6 +223,12 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib, 
         else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_ks, qi::blank, mtl_it->second.ks) )
         {
         }
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_tr, qi::blank, mtl_it->second.tr) )
+        {
+        }
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_d, qi::blank, mtl_it->second.d) )
+        {
+        }
         else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_ns, qi::blank, mtl_it->second.ns) )
         {
         }
@@ -245,6 +255,8 @@ void add_material(Container& cont, mtl m, string_ref name)
     mat.cd = m.kd;
     mat.cs = m.ks;
     mat.ce = m.ke;
+    mat.transmission = m.tr > 0.0f ? m.tr : 0.0f;
+    mat.transmission = 1.0f - m.d > 0.0f ? 1.0f - m.d : mat.transmission;
     mat.specular_exp = m.ns;
     cont.emplace_back(mat);
 }
