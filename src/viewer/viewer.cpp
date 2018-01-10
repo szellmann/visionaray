@@ -814,9 +814,9 @@ int main(int argc, char** argv)
                     assert(mat.transmission <= 1.0f);
 
                     glass<float> gl;
-                    gl.ct() = from_rgb(vec3(1.0f));//from_rgb(mat.cd);
+                    gl.ct() = from_rgb(mat.cd);
                     gl.kt() = mat.transmission;
-                    gl.cr() = from_rgb(vec3(1.0f));//from_rgb(mat.cs);
+                    gl.cr() = from_rgb(mat.cs);
                     gl.kr() = 1.0f - mat.transmission;
                     gl.ior() = from_rgb(vec3(1.3f)/*mat.ior*/);
                     cont.push_back(gl);
