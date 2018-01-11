@@ -9,8 +9,9 @@
 #include <iterator>
 #include <limits>
 
-#include <visionaray/math/vector.h>
-#include <visionaray/tags.h>
+#include "math/vector.h"
+#include "prim_traits.h"
+#include "tags.h"
 
 namespace visionaray
 {
@@ -112,8 +113,8 @@ struct kernel_params<
     using primitive_type    = typename std::iterator_traits<Primitives>::value_type;
     using material_type     = typename std::iterator_traits<Materials>::value_type;
     using light_type        = typename std::iterator_traits<Lights>::value_type;
-    using normal_type       = vector<3, float>;
-    using color_type        = vector<3, float>;
+    using normal_type       = vector<3, typename scalar_type<primitive_type>::type>;
+    using color_type        = vector<3, typename scalar_type<primitive_type>::type>;
 
     using normal_binding    = unspecified_binding;
     using color_binding     = unspecified_binding;
@@ -165,7 +166,7 @@ struct kernel_params<
     using normal_type       = typename std::iterator_traits<Normals>::value_type;
     using material_type     = typename std::iterator_traits<Materials>::value_type;
     using light_type        = typename std::iterator_traits<Lights>::value_type;
-    using color_type        = vector<3, float>;
+    using color_type        = vector<3, typename scalar_type<primitive_type>::type>;
 
     using color_binding     = unspecified_binding;
 
@@ -224,7 +225,7 @@ struct kernel_params<
     using material_type     = typename std::iterator_traits<Materials>::value_type;
     using texture_type      = typename std::iterator_traits<Textures>::value_type;
     using light_type        = typename std::iterator_traits<Lights>::value_type;
-    using color_type        = vector<3, float>;
+    using color_type        = vector<3, typename scalar_type<primitive_type>::type>;
 
     using color_binding     = unspecified_binding;
 

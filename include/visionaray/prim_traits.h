@@ -21,6 +21,10 @@ namespace visionaray
 // Implemented for builtin types, if applicable
 //
 //
+//  - scalar_type:
+//      get the scalar type / floating point type associated with the primitive
+//      default: float
+//
 //  - num_vertices:
 //      get the vertex count of a primitive, if this primitive is made up of vertices
 //      or has control vertices
@@ -39,6 +43,30 @@ namespace visionaray
 //
 //-------------------------------------------------------------------------------------------------
 
+
+//-------------------------------------------------------------------------------------------------
+// scalar_type
+//
+
+template <typename Primitive, typename Check = void>
+struct scalar_type
+{
+    using type = float;
+};
+
+// specializations ----------------------------------------
+
+template <typename T>
+struct scalar_type<basic_sphere<T>>
+{
+    using type = T;
+};
+
+template <size_t Dim, typename T>
+struct scalar_type<basic_triangle<Dim, T>>
+{
+    using type = T;
+};
 
 //-------------------------------------------------------------------------------------------------
 // Number of vertices
