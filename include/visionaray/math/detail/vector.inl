@@ -692,12 +692,14 @@ template <size_t Dim, typename T>
 MATH_FUNC
 inline vector<Dim, T> refract(vector<Dim, T> const& i, vector<Dim, T> const& n, T const& eta)
 {
-    T k = T(1.0) - eta * eta * (T(1.0) - dot(n, i) * dot(n, i));
+    T cosi = dot(n, i);
+    T sini = max(T(0.0), T(1.0) - cosi * cosi);
+    T sint = eta * eta * sini;
 
     return select(
-            k < T(0.0),
+            sint >= T(1.0),
             vector<Dim, T>(0.0),
-            (sqrt(k) - eta * dot(n, i)) * n - eta * i
+            eta * -i + (eta * cosi - sqrt(T(1.0) - sint)) * n
             );
 }
 
