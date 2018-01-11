@@ -214,10 +214,13 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
     auto t2 = C / q;
 
     hit_record<basic_ray<T>, primitive<unsigned>> result;
-    result.hit = valid;
+    result.hit = valid && (t1 >= T(0.0) || t2 >= T(0.0));
     result.prim_id = sphere.prim_id;
     result.geom_id = sphere.geom_id;
-    result.t = select( valid, select( t1 > t2, t2, t1 ), T(-1.0) );
+    result.t = T(-1.0);
+    result.t = select(t1 >= T(0.0) && t2 >= T(0.0), min(t1, t2), result.t);
+    result.t = select(t1 >= T(0.0) && t2 <  T(0.0), t1,          result.t);
+    result.t = select(t1 <  T(0.0) && t2 >= T(0.0), t2,          result.t);
     return result;
 }
 
