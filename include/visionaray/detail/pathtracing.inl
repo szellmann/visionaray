@@ -74,6 +74,8 @@ struct kernel
             V refl_dir;
             V view_dir = -ray.dir;
 
+            hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
+
             auto surf = get_surface(hit_rec, params);
 
             auto n = surf.shading_normal;
@@ -104,8 +106,6 @@ struct kernel
             {
                 break;
             }
-
-            hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
 
             ray.ori = hit_rec.isect_pos + refl_dir * S(params.epsilon);
             ray.dir = refl_dir;
