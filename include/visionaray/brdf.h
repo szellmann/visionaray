@@ -7,7 +7,6 @@
 #define VSNRAY_BRDF_H 1
 
 #include "math/constants.h"
-#include "math/limits.h"
 #include "math/vector.h"
 #include "fresnel.h"
 #include "sampling.h"
@@ -304,17 +303,11 @@ public:
                 U(1.0) - reflectance[0]
                 );
 
-        auto result = select(
+        return select(
                 u < reflectance[0],
                 reflectance * spectrum<U>(cr * kr),
                 (spectrum<U>(1.0) - reflectance) * spectrum<U>(ct * kt)
                 ) / abs(dot(N, wi));
-
-        return select(
-                length(refracted) < numeric_limits<U>::epsilon(),
-                spectrum<U>(0.0),
-                result
-                );
     }
 
 };
