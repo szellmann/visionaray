@@ -70,6 +70,13 @@ using viewer_type = viewer_glut;
 
 
 //-------------------------------------------------------------------------------------------------
+// Switch between single and double precision implementation
+//
+
+#define USE_DOUBLE_PRECISION 1
+
+
+//-------------------------------------------------------------------------------------------------
 // Visionaray camera generating primary rays similar to how smallpt does
 //
 
@@ -89,8 +96,8 @@ struct smallpt_camera
         V cx(width * 0.5135 / height, 0.0, 0.0);
         V cy = normalize(cross(cx, dir)) * T(0.5135);
 
-        V d = cx * ((x - width / 2.0) / width) + cy * ((y - height / 2.0) / height) + dir;
-        return R(eye + d * 140.0, normalize(d));
+        V d = cx * ((x - width / T(2.0)) / width) + cy * ((y - height / T(2.0)) / height) + dir;
+        return R(eye + d * T(140.0), normalize(d));
     }
 };
 
@@ -101,9 +108,17 @@ struct smallpt_camera
 
 struct renderer : viewer_type
 {
-    using host_ray_type   = basic_ray<double>;
-    using device_ray_type = basic_ray<double>;
-    using material_type   = generic_material<emissive<double>, glass<double>, matte<double>, mirror<double>>;
+#if USE_DOUBLE_PRECISION
+    using S   = double;
+    using Vec = vec3d;
+#else
+    using S   = float;
+    using Vec = vec3f;
+#endif
+
+    using host_ray_type   = basic_ray<S>;
+    using device_ray_type = basic_ray<S>;
+    using material_type   = generic_material<emissive<S>, glass<S>, matte<S>, mirror<S>>;
 
     enum device_type
     {
@@ -137,41 +152,47 @@ struct renderer : viewer_type
 
     void init_scene()
     {
+#if USE_DOUBLE_PRECISION
+        S base_size = 1e5;
+#else
+        S base_size = 1e4;
+#endif
+
         // Left
-        spheres.push_back(make_sphere(vec3d(1e5 + 1.0, 40.8, 81.6), 1e5));
-        materials.push_back(make_matte(vec3d(0.75, 0.25, 0.25)));
+        spheres.push_back(make_sphere(Vec(base_size + 1.0, 40.8, 81.6), base_size));
+        materials.push_back(make_matte(Vec(0.75, 0.25, 0.25)));
 
         // Right
-        spheres.push_back(make_sphere(vec3d(-1e5 + 99.0, 40.8, 81.6), 1e5));
-        materials.push_back(make_matte(vec3d(0.25, 0.25, 0.75)));
+        spheres.push_back(make_sphere(Vec(-base_size + 99.0, 40.8, 81.6), base_size));
+        materials.push_back(make_matte(Vec(0.25, 0.25, 0.75)));
 
         // Back
-        spheres.push_back(make_sphere(vec3d(50.0, 40.8, 1e5), 1e5));
-        materials.push_back(make_matte(vec3d(0.75, 0.75, 0.75)));
+        spheres.push_back(make_sphere(Vec(50.0, 40.8, base_size), base_size));
+        materials.push_back(make_matte(Vec(0.75, 0.75, 0.75)));
 
         // Front
-        spheres.push_back(make_sphere(vec3d(50.0, 40.8, -1e5 + 170), 1e5));
-        materials.push_back(make_matte(vec3d(0.0)));
+        spheres.push_back(make_sphere(Vec(50.0, 40.8, -base_size + 170), base_size));
+        materials.push_back(make_matte(Vec(0.0)));
 
         // Bottom
-        spheres.push_back(make_sphere(vec3d(50.0, 1e5, 81.6), 1e5));
-        materials.push_back(make_matte(vec3d(0.75, 0.75, 0.75)));
+        spheres.push_back(make_sphere(Vec(50.0, base_size, 81.6), base_size));
+        materials.push_back(make_matte(Vec(0.75, 0.75, 0.75)));
 
         // Top
-        spheres.push_back(make_sphere(vec3d(50.0, -1e5 + 81.6, 81.6), 1e5));
-        materials.push_back(make_matte(vec3d(0.75, 0.75, 0.75)));
+        spheres.push_back(make_sphere(Vec(50.0, -base_size + 81.6, 81.6), base_size));
+        materials.push_back(make_matte(Vec(0.75, 0.75, 0.75)));
 
         // Mirror
-        spheres.push_back(make_sphere(vec3d(27.0, 16.5, 47.0), 16.5));
-        materials.push_back(make_mirror(vec3d(0.999)));
+        spheres.push_back(make_sphere(Vec(27.0, 16.5, 47.0), 16.5));
+        materials.push_back(make_mirror(Vec(0.999)));
 
         // Glass
-        spheres.push_back(make_sphere(vec3d(73.0, 16.5, 78.0), 16.5));
-        materials.push_back(make_glass(vec3d(0.999)));
+        spheres.push_back(make_sphere(Vec(73.0, 16.5, 78.0), 16.5));
+        materials.push_back(make_glass(Vec(0.999)));
 
         // Light
-        spheres.push_back(make_sphere(vec3d(50.0, 681.6 - 0.27, 81.6), 600.0));
-        materials.push_back(make_emissive(vec3d(12.0, 12.0, 12.0)));
+        spheres.push_back(make_sphere(Vec(50.0, 681.6 - 0.27, 81.6), 600.0));
+        materials.push_back(make_emissive(Vec(12.0, 12.0, 12.0)));
 
 #ifdef __CUDACC__
         // Copy to GPU
@@ -184,14 +205,14 @@ struct renderer : viewer_type
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>           host_rt;
     tiled_sched<host_ray_type>                          host_sched;
 
-    aligned_vector<basic_sphere<double>>                spheres;
+    aligned_vector<basic_sphere<S>>                     spheres;
     aligned_vector<material_type>                       materials;
 
 #ifdef __CUDACC__
     pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>  device_rt;
     cuda_sched<device_ray_type>                         device_sched;
 
-    thrust::device_vector<basic_sphere<double>>         device_spheres;
+    thrust::device_vector<basic_sphere<S>>              device_spheres;
     thrust::device_vector<material_type>                device_materials;
 #endif
 
@@ -206,50 +227,50 @@ protected:
 
 private:
 
-    basic_sphere<double> make_sphere(vec3d center, double radius)
+    basic_sphere<S> make_sphere(Vec center, S radius)
     {
         static int sphere_id = 0;
-        basic_sphere<double> sphere(center, radius);
+        basic_sphere<S> sphere(center, radius);
         sphere.prim_id = sphere_id;
         sphere.geom_id = sphere_id;
         ++sphere_id;
         return sphere;
     }
 
-    emissive<double> make_emissive(vec3d ce)
+    emissive<S> make_emissive(Vec ce)
     {
-        emissive<double> mat;
+        emissive<S> mat;
         mat.ce() = from_rgb(ce);
-        mat.ls() = 1.0;
+        mat.ls() = S(1.0);
         return mat;
     }
 
-    glass<double> make_glass(vec3d ct)
+    glass<S> make_glass(Vec ct)
     {
-        glass<double> mat;
+        glass<S> mat;
         mat.ct() = from_rgb(ct);
-        mat.kt() = 1.0;
+        mat.kt() = S(1.0);
         mat.cr() = from_rgb(ct);
-        mat.kr() = 1.0;
-        mat.ior() = spectrum<double>(1.5);
+        mat.kr() = S(1.0);
+        mat.ior() = spectrum<S>(1.5);
         return mat;
     }
 
-    matte<double> make_matte(vec3d cd)
+    matte<S> make_matte(Vec cd)
     {
-        matte<double> mat;
+        matte<S> mat;
         mat.cd() = from_rgb(cd);
-        mat.kd() = 1.0;
+        mat.kd() = S(1.0);
         return mat;
     }
 
-    mirror<double> make_mirror(vec3d cr)
+    mirror<S> make_mirror(Vec cr)
     {
-        mirror<double> mat;
+        mirror<S> mat;
         mat.cr() = from_rgb(cr);
-        mat.kr() = 0.9;
-        mat.ior() = spectrum<double>(0.0);
-        mat.absorption() = spectrum<double>(0.0);
+        mat.kr() = S(0.9);
+        mat.ior() = spectrum<S>(0.0);
+        mat.absorption() = spectrum<S>(0.0);
         return mat;
     }
 };
@@ -272,6 +293,12 @@ void renderer::on_display()
     // TODO: fix this in visionaray API!
     empty_light_type* ignore = 0;
 
+#if USE_DOUBLE_PRECISION
+    float epsilon = 1e-4f;
+#else
+    float epsilon = 1.5e-2f;
+#endif
+
     if (dev_type == GPU)
     {
 #ifdef __CUDACC__
@@ -288,7 +315,7 @@ void renderer::on_display()
                 ignore,
                 ignore,
                 10,
-                1e-4f, // epsilon
+                epsilon,
                 vec4(background_color(), 1.0f),
                 vec4(0.0f)
                 );
@@ -316,7 +343,7 @@ void renderer::on_display()
                 ignore,
                 ignore,
                 10,
-                1e-4f, // epsilon
+                epsilon,
                 vec4(background_color(), 1.0f),
                 vec4(0.0f)
                 );
