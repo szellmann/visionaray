@@ -57,7 +57,7 @@ typename gpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* gpu_buffer_r
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename gpu_buffer_rt<ColorFormat, DepthFormat>::ref_type gpu_buffer_rt<ColorFormat, DepthFormat>::ref()
 {
-#if defined(__CUDACC_)
+#if defined(__CUDACC__)
     return { color(), depth(), width(), height() };
 #elif defined(__HCC__)
     // TODO: check why aggregate initialization doesn't work with hcc here
