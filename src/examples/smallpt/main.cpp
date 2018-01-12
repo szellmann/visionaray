@@ -38,6 +38,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <GL/glew.h>
 
+#ifdef __CUDACC__
+#include <thrust/device_vector.h>
+#endif
+
 #include <visionaray/math/sphere.h>
 
 #include <visionaray/cpu_buffer_rt.h>
@@ -46,8 +50,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <visionaray/material.h>
 #include <visionaray/scheduler.h>
 
+#ifdef __CUDACC__
+#include <visionaray/pixel_unpack_buffer_rt.h>
+#endif
+
 #include <common/make_materials.h>
 #include <common/viewer_glut.h>
+
+#ifdef __CUDACC__
+#include <common/cuda.h>
+#endif
 
 using namespace visionaray;
 
@@ -60,10 +72,11 @@ using viewer_type = viewer_glut;
 
 struct smallpt_camera
 {
-    void begin_frame() {}
-    void end_frame() {}
+    VSNRAY_FUNC void begin_frame() {}
+    VSNRAY_FUNC void end_frame() {}
 
     template <typename R, typename T>
+    VSNRAY_FUNC
     inline R primary_ray(R /* */, T const& x, T const& y, T const& width, T const& height) const
     {
         using V = vector<3, T>;
@@ -85,12 +98,18 @@ struct smallpt_camera
 
 struct renderer : viewer_type
 {
-    using host_ray_type = basic_ray<double>;
-    using material_type = generic_material<emissive<double>, glass<double>, matte<double>, mirror<double>>;
+    using host_ray_type   = basic_ray<double>;
+    using device_ray_type = basic_ray<double>;
+    using material_type   = generic_material<emissive<double>, glass<double>, matte<double>, mirror<double>>;
+
+    struct empty_light_type {};
 
     renderer()
         : viewer_type(512, 512, "Visionaray Smallpt Example")
         , host_sched(std::thread::hardware_concurrency())
+#ifdef __CUDACC__
+        , device_sched(8, 8)
+#endif
     {
     }
 
@@ -131,16 +150,30 @@ struct renderer : viewer_type
         // Light
         spheres.push_back(make_sphere(vec3d(50.0, 681.6 - 0.27, 81.6), 600.0));
         materials.push_back(make_emissive(vec3d(12.0, 12.0, 12.0)));
+
+#ifdef __CUDACC__
+        // Copy to GPU
+        device_spheres = spheres;
+        device_materials = materials;
+#endif
     }
 
-    smallpt_camera                              cam;
-    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
-    tiled_sched<host_ray_type>                  host_sched;
+    smallpt_camera                                      cam;
+    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>           host_rt;
+    tiled_sched<host_ray_type>                          host_sched;
 
-    unsigned                                    frame_num = 0;
+    aligned_vector<basic_sphere<double>>                spheres;
+    aligned_vector<material_type>                       materials;
 
-    aligned_vector<basic_sphere<double>>        spheres;
-    aligned_vector<material_type>               materials;
+#ifdef __CUDACC__
+    pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>  device_rt;
+    cuda_sched<device_ray_type>                         device_sched;
+
+    thrust::device_vector<basic_sphere<double>>         device_spheres;
+    thrust::device_vector<material_type>                device_materials;
+#endif
+
+    unsigned                                            frame_num = 0;
 
 protected:
 
@@ -204,41 +237,73 @@ private:
 
 void renderer::on_display()
 {
-    auto sparams = make_sched_params(
-            pixel_sampler::jittered_blend_type{},
-            cam,
-            host_rt
-            ); 
-
-    // make_kernel_params needs (!) lights
-    // TODO: fix this in visionaray API!
-    struct no_lights {};
-    no_lights* ignore = 0;
-
-    auto kparams = make_kernel_params(
-            spheres.data(),
-            spheres.data() + spheres.size(),
-            materials.data(),
-            ignore,
-            ignore,
-            10,
-            1e-4f, // epsilon
-            vec4(background_color(), 1.0f),
-            vec4(0.0f)
-            );
-
-    pathtracing::kernel<decltype(kparams)> kernel;
-    kernel.params = kparams;
-    host_sched.frame(kernel, sparams, ++frame_num);
-
-
     // Enable gamma correction with OpenGL.
     glEnable(GL_FRAMEBUFFER_SRGB);
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    host_rt.display_color_buffer();
+
+    // make_kernel_params needs (!) lights
+    // TODO: fix this in visionaray API!
+    empty_light_type* ignore = 0;
+
+    if (1)
+    {
+#ifdef __CUDACC__
+        auto sparams = make_sched_params(
+                pixel_sampler::jittered_blend_type{},
+                cam,
+                device_rt
+                ); 
+
+        auto kparams = make_kernel_params(
+                thrust::raw_pointer_cast(device_spheres.data()),
+                thrust::raw_pointer_cast(device_spheres.data()) + device_spheres.size(),
+                thrust::raw_pointer_cast(device_materials.data()),
+                ignore,
+                ignore,
+                10,
+                1e-4f, // epsilon
+                vec4(background_color(), 1.0f),
+                vec4(0.0f)
+                );
+
+        pathtracing::kernel<decltype(kparams)> kernel;
+        kernel.params = kparams;
+        device_sched.frame(kernel, sparams, ++frame_num);
+
+        device_rt.display_color_buffer();
+#endif
+    }
+    else if (0)
+    {
+#ifndef __CUDA_ARCH__
+        auto sparams = make_sched_params(
+                pixel_sampler::jittered_blend_type{},
+                cam,
+                host_rt
+                ); 
+
+        auto kparams = make_kernel_params(
+                spheres.data(),
+                spheres.data() + spheres.size(),
+                materials.data(),
+                ignore,
+                ignore,
+                10,
+                1e-4f, // epsilon
+                vec4(background_color(), 1.0f),
+                vec4(0.0f)
+                );
+
+        pathtracing::kernel<decltype(kparams)> kernel;
+        kernel.params = kparams;
+        host_sched.frame(kernel, sparams, ++frame_num);
+
+        host_rt.display_color_buffer();
+#endif
+    }
 
     std::cout << "Num samples: " << frame_num << '\r';
     std::cout << std::flush;
@@ -253,8 +318,12 @@ void renderer::on_resize(int w, int h)
 {
     frame_num = 0;
 
-    host_rt.clear_color_buffer();
     host_rt.resize(w, h);
+    host_rt.clear_color_buffer();
+#ifdef __CUDACC__
+    device_rt.resize(w, h);
+    device_rt.clear_color_buffer();
+#endif
 
     viewer_type::on_resize(w, h);
 }
@@ -266,6 +335,14 @@ void renderer::on_resize(int w, int h)
 
 int main(int argc, char** argv)
 {
+#ifdef __CUDACC__
+    if (cuda::init_gl_interop() != cudaSuccess)
+    {   
+        std::cerr << "Cannot initialize CUDA OpenGL interop\n";
+        return EXIT_FAILURE;
+    }   
+#endif
+
     renderer rend;
 
     try
