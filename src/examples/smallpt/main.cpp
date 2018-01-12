@@ -32,6 +32,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include <exception>
+#include <iomanip>
 #include <iostream>
 #include <ostream>
 #include <thread>
@@ -58,6 +59,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 
 #include <common/make_materials.h>
+#include <common/timer.h>
 #include <common/viewer_glut.h>
 
 #ifdef __CUDACC__
@@ -217,6 +219,7 @@ struct renderer : viewer_type
 #endif
 
     unsigned                                            frame_num = 0;
+    double                                              avg_frame_time = 0.0;
 
     device_type                                         dev_type = CPU;
 
@@ -299,6 +302,8 @@ void renderer::on_display()
     float epsilon = 1.5e-2f;
 #endif
 
+    double elapsed = 0.0;
+
     if (dev_type == GPU)
     {
 #ifdef __CUDACC__
@@ -320,9 +325,14 @@ void renderer::on_display()
                 vec4(0.0f)
                 );
 
+        cuda::timer t;
+
         pathtracing::kernel<decltype(kparams)> kernel;
         kernel.params = kparams;
         device_sched.frame(kernel, sparams, ++frame_num);
+
+        elapsed = t.elapsed();
+        avg_frame_time += elapsed;
 
         device_rt.display_color_buffer();
 #endif
@@ -348,15 +358,25 @@ void renderer::on_display()
                 vec4(0.0f)
                 );
 
+        timer t;
+
         pathtracing::kernel<decltype(kparams)> kernel;
         kernel.params = kparams;
         host_sched.frame(kernel, sparams, ++frame_num);
+
+        elapsed = t.elapsed();
+        avg_frame_time += elapsed;
 
         host_rt.display_color_buffer();
 #endif
     }
 
-    std::cout << "Num samples: " << frame_num << '\r';
+    std::cout << std::setprecision(3);
+    std::cout << std::fixed;
+
+    std::cout << "Num frames: " << frame_num
+              << ", last frame time: " << elapsed
+              << ", avg. frame time: " << avg_frame_time / frame_num << '\r';
     std::cout << std::flush;
 }
 
