@@ -42,6 +42,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <thrust/device_vector.h>
 #endif
 
+#include <Support/CmdLine.h>
+#include <Support/CmdLineUtil.h>
+
 #include <visionaray/math/sphere.h>
 
 #include <visionaray/cpu_buffer_rt.h>
@@ -102,6 +105,12 @@ struct renderer : viewer_type
     using device_ray_type = basic_ray<double>;
     using material_type   = generic_material<emissive<double>, glass<double>, matte<double>, mirror<double>>;
 
+    enum device_type
+    {
+        CPU = 0,
+        GPU
+    };
+
     struct empty_light_type {};
 
     renderer()
@@ -111,6 +120,19 @@ struct renderer : viewer_type
         , device_sched(8, 8)
 #endif
     {
+#ifdef __CUDACC__
+        using namespace support;
+
+        add_cmdline_option( cl::makeOption<device_type&>({
+                { "cpu", CPU, "Rendering on the CPU" },
+                { "gpu", GPU, "Rendering on the GPU" },
+            },
+            "device",
+            cl::Desc("Rendering device"),
+            cl::ArgRequired,
+            cl::init(this->dev_type)
+            ) );
+#endif
     }
 
     void init_scene()
@@ -174,6 +196,8 @@ struct renderer : viewer_type
 #endif
 
     unsigned                                            frame_num = 0;
+
+    device_type                                         dev_type = CPU;
 
 protected:
 
@@ -248,7 +272,7 @@ void renderer::on_display()
     // TODO: fix this in visionaray API!
     empty_light_type* ignore = 0;
 
-    if (1)
+    if (dev_type == GPU)
     {
 #ifdef __CUDACC__
         auto sparams = make_sched_params(
@@ -276,7 +300,7 @@ void renderer::on_display()
         device_rt.display_color_buffer();
 #endif
     }
-    else if (0)
+    else if (dev_type == CPU)
     {
 #ifndef __CUDA_ARCH__
         auto sparams = make_sched_params(
