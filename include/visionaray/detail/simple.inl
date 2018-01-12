@@ -40,7 +40,6 @@ struct kernel
             auto surf = get_surface(hit_rec, params);
             auto ambient = surf.material.ambient() * C(from_rgba(params.ambient_color));
             auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgba(params.bg_color)) );
-            auto view_dir = -ray.dir;
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
