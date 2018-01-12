@@ -89,7 +89,7 @@ using viewer_type = viewer_glut;
 // support for emissive objects
 //
 
-#define USE_PLASTIC_MATERIAL 1
+#define USE_PLASTIC_MATERIAL 0
 
 
 //-------------------------------------------------------------------------------------------------
@@ -815,7 +815,7 @@ int main(int argc, char** argv)
 
                     glass<float> gl;
                     gl.ct() = from_rgb(mat.cd);
-                    gl.kt() = mat.transmission;
+                    gl.kt() = 1.0f;
                     gl.cr() = from_rgb(mat.cs);
                     gl.kr() = 1.0f;
                     gl.ior() = from_rgb(mat.ior);
