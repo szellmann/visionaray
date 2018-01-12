@@ -20,7 +20,11 @@ template <typename SR>
 VSNRAY_FUNC
 inline spectrum<typename SR::scalar_type> mirror<T>::shade(SR const& sr) const
 {
-    return specular_brdf_.f(sr.normal, sr.view_dir, sr.light_dir);
+    auto n = sr.normal;
+#if 1 // two-sided
+    n = faceforward( n, sr.view_dir, sr.geometric_normal );
+#endif
+    return specular_brdf_.f(n, sr.view_dir, sr.light_dir);
 }
 
 template <typename T>
@@ -33,7 +37,11 @@ inline spectrum<U> mirror<T>::sample(
         Sampler&        sampler
         ) const
 {
-    return specular_brdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, sampler);
+    auto n = sr.normal;
+#if 1 // two-sided
+    n = faceforward( n, sr.view_dir, sr.geometric_normal );
+#endif
+    return specular_brdf_.sample_f(n, sr.view_dir, refl_dir, pdf, sampler);
 }
 
 //--- deprecated begin ------------------------------------

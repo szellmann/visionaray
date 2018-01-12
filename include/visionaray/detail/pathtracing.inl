@@ -78,23 +78,22 @@ struct kernel
 
             auto surf = get_surface(hit_rec, params);
 
-            auto n = surf.shading_normal;
-
-#if 1 // two-sided
-            n = faceforward( n, view_dir, surf.geometric_normal );
-#endif
-
             S pdf(0.0);
-            auto sr     = make_shade_record<Params, S>();
-            sr.normal   = n;
-            sr.view_dir = view_dir;
+            auto sr             = make_shade_record<Params, S>();
+            sr.normal           = surf.shading_normal;
+            sr.geometric_normal = surf.geometric_normal;
+            sr.view_dir         = view_dir;
 
             auto src = surf.sample(sr, refl_dir, pdf, s);
 
             auto zero_pdf = pdf <= S(0.0);
             auto emissive = has_emissive_material(surf);
 
-            src = mul( src, dot(n, refl_dir) / pdf, !emissive, src ); // TODO: maybe have emissive material return refl_dir so that dot(N,R) = 1?
+            auto n = surf.shading_normal;
+#if 1 // two-sided
+            n = faceforward( n, view_dir, surf.geometric_normal );
+#endif
+            src = mul( src, dot(n, refl_dir) / pdf, !emissive, src ); // TODO: this probably belongs in the shader!
             dst = mul( dst, src, active_rays && !zero_pdf, dst );
             dst = select( zero_pdf && active_rays, C(0.0), dst );
 

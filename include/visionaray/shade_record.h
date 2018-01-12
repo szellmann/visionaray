@@ -24,6 +24,7 @@ struct shade_record_base
 
     vector<3, T> isect_pos;
     vector<3, T> normal;
+    vector<3, T> geometric_normal;
     vector<3, T> view_dir;
     vector<3, T> light_dir;
     L light;
@@ -58,20 +59,22 @@ template <
 VSNRAY_FUNC
 inline array<shade_record<L, float>, num_elements<T>::value> unpack(shade_record<L, T> const& sr)
 {
-    auto isect_pos  = unpack(sr.isect_pos);
-    auto normal     = unpack(sr.normal);
-    auto view_dir   = unpack(sr.view_dir);
-    auto light_dir  = unpack(sr.light_dir);
+    auto isect_pos        = unpack(sr.isect_pos);
+    auto normal           = unpack(sr.normal);
+    auto geometric_normal = unpack(sr.geometric_normal);
+    auto view_dir         = unpack(sr.view_dir);
+    auto light_dir        = unpack(sr.light_dir);
 
     array<shade_record<L, float>, num_elements<T>::value> result;
 
     for (unsigned i = 0; i < num_elements<T>::value; ++i)
     {
-        result[i].isect_pos = isect_pos[i];
-        result[i].normal    = normal[i];
-        result[i].view_dir  = view_dir[i];
-        result[i].light_dir = light_dir[i];
-        result[i].light     = sr.light;
+        result[i].isect_pos        = isect_pos[i];
+        result[i].normal           = normal[i];
+        result[i].geometric_normal = geometric_normal[i];
+        result[i].view_dir         = view_dir[i];
+        result[i].light_dir        = light_dir[i];
+        result[i].light            = sr.light;
     }
 
     return result;
@@ -97,6 +100,7 @@ inline array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> u
 {
     auto isect_pos  = unpack(sr.isect_pos);
     auto normal     = unpack(sr.normal);
+    auto geometric_normal = unpack(sr.normal);
     auto view_dir   = unpack(sr.view_dir);
     auto light_dir  = unpack(sr.light_dir);
     auto tex_color  = unpack(sr.tex_color);
@@ -105,12 +109,13 @@ inline array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> u
 
     for (unsigned i = 0; i < num_elements<T>::value; ++i)
     {
-        result[i].isect_pos = isect_pos[i];
-        result[i].normal    = normal[i];
-        result[i].view_dir  = view_dir[i];
-        result[i].light_dir = light_dir[i];
-        result[i].light     = sr.light;
-        result[i].tex_color = tex_color[i];
+        result[i].isect_pos        = isect_pos[i];
+        result[i].normal           = normal[i];
+        result[i].geometric_normal = geometric_normal[i];
+        result[i].view_dir         = view_dir[i];
+        result[i].light_dir        = light_dir[i];
+        result[i].light            = sr.light;
+        result[i].tex_color        = tex_color[i];
     }
 
     return result;

@@ -261,20 +261,13 @@ struct kernel
             auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgba(params.bg_color)) );
             auto view_dir = -ray.dir;
 
-            auto n = surf.shading_normal;
-
-#if 1 // two-sided
-            n = faceforward( n, view_dir, surf.geometric_normal );
-#endif
-
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
                 auto light_dir = normalize( V(it->position()) - hit_rec.isect_pos );
-                R shadow_ray
-                (
-                    hit_rec.isect_pos + light_dir * S(params.epsilon),
-                    light_dir
-                );
+                R shadow_ray(
+                        hit_rec.isect_pos + light_dir * S(params.epsilon),
+                        light_dir
+                        );
 
                 // only cast a shadow if occluder between light source and hit pos
                 auto shadow_rec  = any_hit(
@@ -285,13 +278,14 @@ struct kernel
                         isect
                         );
 
-                auto sr         = make_shade_record<Params, S>();
-                sr.isect_pos    = hit_rec.isect_pos;
-                sr.normal       = n;
-                sr.view_dir     = view_dir;
-                sr.light_dir    = light_dir;
-                sr.light        = *it;
-                auto clr        = surf.shade(sr);
+                auto sr             = make_shade_record<Params, S>();
+                sr.isect_pos        = hit_rec.isect_pos;
+                sr.normal           = surf.shading_normal;
+                sr.geometric_normal = surf.geometric_normal;
+                sr.view_dir         = view_dir;
+                sr.light_dir        = light_dir;
+                sr.light            = *it;
+                auto clr            = surf.shade(sr);
 
                 shaded_clr += select(
                         hit_rec.hit & !shadow_rec.hit,

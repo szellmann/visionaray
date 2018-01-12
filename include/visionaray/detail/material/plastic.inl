@@ -28,6 +28,9 @@ inline spectrum<typename SR::scalar_type> plastic<T>::shade(SR const& sr) const
     auto wi = sr.light_dir;
     auto wo = sr.view_dir;
     auto n = sr.normal;
+#if 1 // two-sided
+    n = faceforward( n, sr.view_dir, sr.geometric_normal );
+#endif
     auto ndotl = max( U(0.0), dot(n, wi) );
 
     return spectrum<U>(
@@ -89,14 +92,19 @@ inline spectrum<U> plastic<T>::sample(
 
     auto u         = sampler.next();
 
+    auto n = shade_rec.normal;
+#if 1 // two-sided
+    n = faceforward( n, shade_rec.view_dir, shade_rec.geometric_normal );
+#endif
+
     if (any(u < U(prob_diff)))
     {
-        diff       = detail::tex_color_from_shade_record<U>(shade_rec) * diffuse_brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl1, pdf1, sampler);
+        diff       = detail::tex_color_from_shade_record<U>(shade_rec) * diffuse_brdf_.sample_f(n, shade_rec.view_dir, refl1, pdf1, sampler);
     }
 
     if (any(u >= U(prob_diff)))
     {
-        spec       = specular_brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl2, pdf2, sampler);
+        spec       = specular_brdf_.sample_f(n, shade_rec.view_dir, refl2, pdf2, sampler);
     }
 
     pdf            = select( u < U(prob_diff), pdf1,  pdf2  );

@@ -30,6 +30,9 @@ inline spectrum<typename SR::scalar_type> matte<T>::shade(SR const& sr) const
     auto wi = sr.light_dir;
     auto wo = sr.view_dir;
     auto n = sr.normal;
+#if 1 // two-sided
+    n = faceforward( n, sr.view_dir, sr.geometric_normal );
+#endif
     auto ndotl = max( U(0.0), dot(n, wi) );
 
     return spectrum<U>(
@@ -213,7 +216,11 @@ inline spectrum<U> matte<T>::sample_impl(
         Sampler&        sampler
         ) const
 {
-    return diffuse_brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl_dir, pdf, sampler);
+    auto n = shade_rec.normal;
+#if 1 // two-sided
+    n = faceforward( n, shade_rec.view_dir, shade_rec.geometric_normal );
+#endif
+    return diffuse_brdf_.sample_f(n, shade_rec.view_dir, refl_dir, pdf, sampler);
 }
 
 } // visionaray

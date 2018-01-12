@@ -42,21 +42,16 @@ struct kernel
             auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgba(params.bg_color)) );
             auto view_dir = -ray.dir;
 
-            auto n = surf.shading_normal;
-
-#if 1 // two-sided
-            n = faceforward( n, view_dir, surf.geometric_normal );
-#endif
-
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
-                auto sr         = make_shade_record<Params, S>();
-                sr.isect_pos    = hit_rec.isect_pos;
-                sr.normal       = n;
-                sr.view_dir     = -ray.dir;
-                sr.light_dir    = normalize( V(it->position()) - hit_rec.isect_pos );
-                sr.light        = *it;
-                auto clr        = surf.shade(sr);
+                auto sr             = make_shade_record<Params, S>();
+                sr.isect_pos        = hit_rec.isect_pos;
+                sr.normal           = surf.shading_normal;
+                sr.geometric_normal = surf.geometric_normal;
+                sr.view_dir         = -ray.dir;
+                sr.light_dir        = normalize( V(it->position()) - hit_rec.isect_pos );
+                sr.light            = *it;
+                auto clr            = surf.shade(sr);
 
                 shaded_clr     += select( hit_rec.hit, clr, C(0.0) );
             }
