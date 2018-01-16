@@ -41,6 +41,9 @@ public:
     MATH_FUNC basic_aabb(vec_type const& min, vec_type const& max);
 
     template <typename U>
+    MATH_FUNC basic_aabb(basic_aabb<U> const& rhs);
+
+    template <typename U>
     MATH_FUNC basic_aabb(vector<3, U> const& min, vector<3, U> const& max);
 
     MATH_FUNC vec_type center() const;
