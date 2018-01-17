@@ -98,12 +98,12 @@ inline array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> u
         shade_record<L, vector<3, T>, T> const& sr
         )
 {
-    auto isect_pos  = unpack(sr.isect_pos);
-    auto normal     = unpack(sr.normal);
+    auto isect_pos        = unpack(sr.isect_pos);
+    auto normal           = unpack(sr.normal);
     auto geometric_normal = unpack(sr.geometric_normal);
-    auto view_dir   = unpack(sr.view_dir);
-    auto light_dir  = unpack(sr.light_dir);
-    auto tex_color  = unpack(sr.tex_color);
+    auto view_dir         = unpack(sr.view_dir);
+    auto light_dir        = unpack(sr.light_dir);
+    auto tex_color        = unpack(sr.tex_color);
 
     array<shade_record<L, vector<3, float>, float>, num_elements<T>::value> result;
 
