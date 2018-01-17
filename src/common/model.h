@@ -37,6 +37,7 @@ public:
             , transmission(0.0f)
             , specular_exp(32.0f)
             , glossiness(0.0f)
+            , illum(2)
         {
         }
 
@@ -72,6 +73,9 @@ public:
 
         // Glossiness term.
         float glossiness;
+
+        // Wavefront obj illumination model (default: 1 maps to plastic).
+        int illum;
     };
 
     using triangle_type     = basic_triangle<3, float>;

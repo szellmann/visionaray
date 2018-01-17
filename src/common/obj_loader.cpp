@@ -169,6 +169,7 @@ struct mtl
         , d(1.0f)
         , ns(32.0f)
         , ni(1.0f)
+        , illum(2)
     {
     }
 
@@ -181,6 +182,7 @@ struct mtl
     float ns;
     float ni;
     std::string map_kd;
+    int illum;
 };
 
 
@@ -240,6 +242,9 @@ void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib, 
         else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_map_kd, qi::blank, mtl_it->second.map_kd) )
         {
         }
+        else if ( mtl_it != matlib.end() && qi::phrase_parse(it, text.cend(), grammar.r_illum, qi::blank, mtl_it->second.illum) )
+        {
+        }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_unhandled, qi::blank) )
         {
         }
@@ -264,6 +269,7 @@ void add_material(Container& cont, mtl m, string_ref name)
     mat.transmission = m.tr > 0.0f ? m.tr : 0.0f;
     mat.transmission = 1.0f - m.d > 0.0f ? 1.0f - m.d : mat.transmission;
     mat.specular_exp = m.ns;
+    mat.illum = m.illum;
     cont.emplace_back(mat);
 }
 

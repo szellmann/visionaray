@@ -113,7 +113,12 @@ struct renderer : viewer_type
 #if USE_PLASTIC_MATERIAL
     using material_type             = plastic<float>;
 #else
-    using material_type             = generic_material<emissive<float>, glass<float>, plastic<float>>;
+    using material_type             = generic_material<
+                                            emissive<float>,
+                                            glass<float>,
+                                            matte<float>,
+                                            plastic<float>
+                                            >;
 #endif
 
     using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
@@ -809,10 +814,17 @@ int main(int argc, char** argv)
                     em.ls() = 1.0f;
                     cont.emplace_back(em);
                 }
-                else if (mat.transmission > 0.0f)
+                else if (mat.illum == 1)
                 {
-                    assert(mat.transmission <= 1.0f);
-
+                    matte<float> ma;
+                    ma.ca() = from_rgb(mat.ca);
+                    ma.cd() = from_rgb(mat.cd);
+                    ma.ka() = 1.0f;
+                    ma.kd() = 1.0f;
+                    cont.emplace_back(ma);
+                }
+                else if (mat.illum == 4 && mat.transmission > 0.0f)
+                {
                     glass<float> gl;
                     gl.ct() = from_rgb(mat.cd);
                     gl.kt() = 1.0f;
