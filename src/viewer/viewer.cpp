@@ -117,6 +117,7 @@ struct renderer : viewer_type
                                             emissive<float>,
                                             glass<float>,
                                             matte<float>,
+                                            mirror<float>,
                                             plastic<float>
                                             >;
 #endif
@@ -822,6 +823,15 @@ int main(int argc, char** argv)
                     ma.ka() = 1.0f;
                     ma.kd() = 1.0f;
                     cont.emplace_back(ma);
+                }
+                else if (mat.illum == 3)
+                {
+                    mirror<float> mi;
+                    mi.cr() = from_rgb(mat.cs);
+                    mi.kr() = 1.0f;
+                    mi.ior() = spectrum<float>(0.0f);
+                    mi.absorption() = spectrum<float>(0.0f);
+                    cont.emplace_back(mi);
                 }
                 else if (mat.illum == 4 && mat.transmission > 0.0f)
                 {
