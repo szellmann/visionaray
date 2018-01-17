@@ -79,12 +79,8 @@ struct kernel
             auto surf = get_surface(hit_rec, params);
 
             S pdf(0.0);
-            auto sr             = make_shade_record<Params, S>();
-            sr.normal           = surf.shading_normal;
-            sr.geometric_normal = surf.geometric_normal;
-            sr.view_dir         = view_dir;
 
-            auto src = surf.sample(sr, refl_dir, pdf, s);
+            auto src = surf.sample(view_dir, refl_dir, pdf, s);
 
             auto zero_pdf = pdf <= S(0.0);
             auto emissive = has_emissive_material(surf);

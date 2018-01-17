@@ -26,7 +26,6 @@ inline spectrum<typename SR::scalar_type> matte<T>::shade(SR const& sr) const
 
     spectrum<U> result(0.0);
 
-    auto l = sr.light;
     auto wi = sr.light_dir;
     auto wo = sr.view_dir;
     auto n = sr.normal;
@@ -35,12 +34,9 @@ inline spectrum<typename SR::scalar_type> matte<T>::shade(SR const& sr) const
 #endif
     auto ndotl = max( U(0.0), dot(n, wi) );
 
-    return spectrum<U>(
-            constants::pi<U>()
-          * cd_impl(sr, n, wo, wi)
-          * spectrum<U>(from_rgb(l.intensity(sr.isect_pos)))
-          * ndotl
-            );
+    spectrum<U> cd = from_rgb(sr.tex_color) * diffuse_brdf_.f(n, wo, wi);
+
+    return cd * constants::pi<U>() * from_rgb(sr.light_intensity) * ndotl;
 }
 
 template <typename T>
@@ -53,20 +49,11 @@ inline spectrum<U> matte<T>::sample(
         Sampler&        sampler
         ) const
 {
-    return sample_impl(shade_rec, refl_dir, pdf, sampler);
-}
-
-template <typename T>
-template <typename L, typename C, typename U, typename Sampler>
-VSNRAY_FUNC
-inline spectrum<U> matte<T>::sample(
-        shade_record<L, C, U> const&    sr,
-        vector<3, U>&                   refl_dir,
-        U&                              pdf,
-        Sampler&                        sampler
-        ) const
-{
-    return spectrum<U>(from_rgb(sr.tex_color)) * sample_impl(sr, refl_dir, pdf, sampler);
+    auto n = shade_rec.normal;
+#if 1 // two-sided
+    n = faceforward( n, shade_rec.view_dir, shade_rec.geometric_normal );
+#endif
+    return from_rgb(shade_rec.tex_color) * diffuse_brdf_.sample_f(n, shade_rec.view_dir, refl_dir, pdf, sampler);
 }
 
 // --- deprecated begin -----------------------------------
@@ -182,45 +169,6 @@ VSNRAY_FUNC
 inline T const& matte<T>::kd() const
 {
     return diffuse_brdf_.kd;
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Private functions
-//
-
-template <typename T>
-template <typename SR, typename V>
-VSNRAY_FUNC
-inline spectrum<T> matte<T>::cd_impl(SR const& sr, V const& n, V const& wo, V const& wi) const
-{
-    VSNRAY_UNUSED(sr);
-    return diffuse_brdf_.f(n, wo, wi);
-}
-
-template <typename T>
-template <typename L, typename C, typename S, typename V>
-VSNRAY_FUNC
-inline spectrum<T> matte<T>::cd_impl(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const
-{
-    return spectrum<T>(from_rgb(sr.tex_color)) * diffuse_brdf_.f(n, wo, wi);
-}
-
-template <typename T>
-template <typename SR, typename U, typename Sampler>
-VSNRAY_FUNC
-inline spectrum<U> matte<T>::sample_impl(
-        SR const&       shade_rec,
-        vector<3, U>&   refl_dir,
-        U&              pdf,
-        Sampler&        sampler
-        ) const
-{
-    auto n = shade_rec.normal;
-#if 1 // two-sided
-    n = faceforward( n, shade_rec.view_dir, shade_rec.geometric_normal );
-#endif
-    return diffuse_brdf_.sample_f(n, shade_rec.view_dir, refl_dir, pdf, sampler);
 }
 
 } // visionaray

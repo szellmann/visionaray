@@ -20,7 +20,7 @@ template <typename SR>
 VSNRAY_FUNC
 inline spectrum<typename SR::scalar_type> emissive<T>::shade(SR const& sr) const
 {
-    return ce_impl(sr);
+    return from_rgb(sr.tex_color) * ce_ * ls_;
 }
 
 template <typename T>
@@ -97,28 +97,6 @@ VSNRAY_FUNC
 inline T const& emissive<T>::ls() const
 {
     return ls_;
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Private functions
-//
-
-template <typename T>
-template <typename SR>
-VSNRAY_FUNC
-inline spectrum<T> emissive<T>::ce_impl(SR const& sr) const
-{
-    VSNRAY_UNUSED(sr);
-    return ce_ * ls_;
-}
-
-template <typename T>
-template <typename L, typename C, typename S>
-VSNRAY_FUNC
-inline spectrum<T> emissive<T>::ce_impl(shade_record<L, C, S> const& sr) const
-{
-    return spectrum<T>(from_rgb(sr.tex_color)) * ce_ * ls_;
 }
 
 } // visionaray

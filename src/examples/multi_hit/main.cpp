@@ -219,20 +219,9 @@ struct kernel
             auto surf = get_surface(hit_rec[i], params);
             auto view_dir = -ray.dir;
 
-            auto n = surf.shading_normal;
-
-#if 1 // two-sided
-            n = faceforward( n, view_dir, surf.geometric_normal );
-#endif
-
             auto it = params.lights.begin;
-            auto sr         = make_shade_record<decltype(params), S>();
-            sr.isect_pos    = hit_rec[i].isect_pos;
-            sr.normal       = n;
-            sr.view_dir     = view_dir;
-            sr.light_dir    = normalize( V(it->position()) - hit_rec[i].isect_pos );
-            sr.light        = *it;
-            auto shaded_clr = surf.shade(sr);
+            auto light_dir = normalize( V(it->position()) - hit_rec[i].isect_pos );
+            auto shaded_clr = surf.shade(view_dir, light_dir, it->intensity(hit_rec[i].isect_pos));
 
             // Front-to-back alpha compositing
             auto color      = to_rgba(shaded_clr);

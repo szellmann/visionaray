@@ -65,17 +65,17 @@ private:
 
     enum { Size_ = simd::num_elements<T>::value };
     using N_     = typename Params::normal_type;
-    using M_     = typename Params::material_type;
     using C_     = typename Params::color_type;
+    using M_     = typename Params::material_type;
 
 public:
     using type = surface<
         decltype(simd::pack(std::declval<array<N_, Size_>>())),
-        decltype(simd::pack(std::declval<array<M_, Size_>>())),
-        decltype(simd::pack(std::declval<array<C_, Size_>>()))
+        decltype(simd::pack(std::declval<array<C_, Size_>>())),
+        decltype(simd::pack(std::declval<array<M_, Size_>>()))
         >;
 
-    using array_type = array<surface<N_, M_, C_>, Size_>;
+    using array_type = array<surface<N_, C_, M_>, Size_>;
 };
 
 
@@ -468,8 +468,8 @@ inline auto get_surface_impl(
         )
     -> surface<
             typename Params::normal_type,
-            typename Params::material_type,
-            typename Params::color_type
+            typename Params::color_type,
+            typename Params::material_type
             >
 {
     auto ns = get_normal_dispatch(params, params.normals, hr);
@@ -482,8 +482,8 @@ inline auto get_surface_impl(
     return {
         ns.geometric_normal,
         ns.shading_normal,
-        params.materials[hr.geom_id],
-        tc
+        tc,
+        params.materials[hr.geom_id]
         };
 }
 
@@ -498,8 +498,8 @@ inline auto get_surface_impl(
         )
     -> surface<
             typename Params::normal_type,
-            typename Params::material_type,
-            typename Params::color_type
+            typename Params::color_type,
+            typename Params::material_type
             >
 {
     using P = typename Params::primitive_type;
@@ -515,8 +515,8 @@ inline auto get_surface_impl(
     return {
         ns.geometric_normal,
         ns.shading_normal,
-        params.materials[hr.geom_id],
-        color * tc
+        color * tc,
+        params.materials[hr.geom_id]
         };
 }
 
@@ -531,8 +531,8 @@ inline auto get_surface_impl(
         )
     -> surface<
             typename Params::normal_type,
-            typename Params::material_type,
-            typename Params::color_type
+            typename Params::color_type,
+            typename Params::material_type
             >
 {
     using P = typename Params::primitive_type;
@@ -548,8 +548,8 @@ inline auto get_surface_impl(
     return {
         ns.geometric_normal,
         ns.shading_normal,
-        params.materials[hr.geom_id],
-        color * tc
+        color * tc,
+        params.materials[hr.geom_id]
         };
 }
 

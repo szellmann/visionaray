@@ -10,6 +10,7 @@
 #include "detail/tags.h"
 #include "math/vector.h"
 #include "material.h"
+#include "shade_record.h"
 
 namespace visionaray
 {
@@ -26,45 +27,70 @@ struct surface<N, M>
     N shading_normal;
     M material;
 
-    template <typename SR>
+    template <typename U>
     VSNRAY_FUNC
-    spectrum<scalar_type> shade(SR const& shade_rec)
+    spectrum<scalar_type> shade(vector<3, U> const& view_dir, vector<3, U> const& light_dir, vector<3, U> const& light_intensity)
     {
+        shade_record<U> shade_rec;
+        shade_rec.normal           = shading_normal;
+        shade_rec.geometric_normal = geometric_normal;
+        shade_rec.view_dir         = view_dir;
+        shade_rec.tex_color        = vector<3, U>(1.0f);
+        shade_rec.light_dir        = light_dir;
+        shade_rec.light_intensity  = light_intensity;
+
         return material.shade(shade_rec);
     }
 
-    template <typename SR, typename U, typename S /* sampler */>
+    template <typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<scalar_type> sample(SR const& shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    spectrum<scalar_type> sample(vector<3, U> const& view_dir, vector<3, U>& refl_dir, U& pdf, S& sampler)
     {
+        shade_record<U> shade_rec;
+        shade_rec.normal           = shading_normal;
+        shade_rec.geometric_normal = geometric_normal;
+        shade_rec.view_dir         = view_dir;
+        shade_rec.tex_color        = vector<3, U>(1.0f);
+
         return material.sample(shade_rec, refl_dir, pdf, sampler);
     }
 };
 
-template <typename N, typename M, typename C>
-struct surface<N, M, C>
+template <typename N, typename C, typename M>
+struct surface<N, C, M>
 {
-    using base_type   = surface<N, M>;
     using scalar_type = typename M::scalar_type;
 
     N geometric_normal;
     N shading_normal;
-    M material;
     C tex_color;
+    M material;
 
-    template <typename SR>
+    template <typename U>
     VSNRAY_FUNC
-    spectrum<scalar_type> shade(SR shade_rec)
+    spectrum<scalar_type> shade(vector<3, U> const& view_dir, vector<3, U> const& light_dir, vector<3, U> const& light_intensity)
     {
-        shade_rec.tex_color = tex_color;
+        shade_record<U> shade_rec;
+        shade_rec.normal           = shading_normal;
+        shade_rec.geometric_normal = geometric_normal;
+        shade_rec.view_dir         = view_dir;
+        shade_rec.tex_color        = tex_color;
+        shade_rec.light_dir        = light_dir;
+        shade_rec.light_intensity  = light_intensity;
+
         return material.shade(shade_rec);
     }
 
-    template <typename SR, typename U, typename S /* sampler */>
+    template <typename U, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<scalar_type> sample(SR shade_rec, vector<3, U>& refl_dir, U& pdf, S& sampler)
+    spectrum<scalar_type> sample(vector<3, U> const& view_dir, vector<3, U>& refl_dir, U& pdf, S& sampler)
     {
-        shade_rec.tex_color = tex_color;
+        shade_record<U> shade_rec;
+        shade_rec.normal           = shading_normal;
+        shade_rec.geometric_normal = geometric_normal;
+        shade_rec.view_dir         = view_dir;
+        shade_rec.tex_color        = tex_color;
+
         return material.sample(shade_rec, refl_dir, pdf, sampler);
     }
 };

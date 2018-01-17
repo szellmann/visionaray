@@ -40,23 +40,19 @@ struct kernel
             auto surf = get_surface(hit_rec, params);
             auto ambient = surf.material.ambient() * C(from_rgba(params.ambient_color));
             auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgba(params.bg_color)) );
+            auto view_dir = -ray.dir;
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
             {
-                auto sr             = make_shade_record<Params, S>();
-                sr.isect_pos        = hit_rec.isect_pos;
-                sr.normal           = surf.shading_normal;
-                sr.geometric_normal = surf.geometric_normal;
-                sr.view_dir         = -ray.dir;
-                sr.light_dir        = normalize( V(it->position()) - hit_rec.isect_pos );
-                sr.light            = *it;
-                auto clr            = surf.shade(sr);
+                auto light_dir = normalize( V(it->position()) - hit_rec.isect_pos );
 
-                shaded_clr     += select( hit_rec.hit, clr, C(0.0) );
+                auto clr = surf.shade(view_dir, light_dir, it->intensity(hit_rec.isect_pos));
+
+                shaded_clr  += select( hit_rec.hit, clr, C(0.0) );
             }
 
-            result.color        = select( hit_rec.hit, to_rgba(shaded_clr), params.bg_color );
-            result.isect_pos    = hit_rec.isect_pos;
+            result.color     = select( hit_rec.hit, to_rgba(shaded_clr), params.bg_color );
+            result.isect_pos = hit_rec.isect_pos;
         }
         else
         {

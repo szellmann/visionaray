@@ -58,11 +58,11 @@ inline surface<N, M> make_surface(N const& gn, N const& sn, M const& m)
     return { gn, sn, m };
 }
 
-template <typename N, typename M, typename C>
+template <typename N, typename C, typename M>
 VSNRAY_FUNC
-inline surface<N, M, C> make_surface(N const& gn, N const& sn, M const m, C const& tex_color)
+inline surface<N, C, M> make_surface(N const& gn, N const& sn, C const tex_color, M const& m)
 {
-    return { gn, sn, m, tex_color };
+    return { gn, sn, tex_color, m };
 }
 
 
@@ -100,34 +100,34 @@ inline auto pack(array<surface<N, M, Args...>, Size> const& surfs)
         };
 }
 
-template <typename N, typename M, typename C, typename ...Args, size_t Size>
+template <typename N, typename C, typename M, typename ...Args, size_t Size>
 VSNRAY_FUNC
-inline auto pack(array<surface<N, M, C, Args...>, Size> const& surfs)
+inline auto pack(array<surface<N, C, M, Args...>, Size> const& surfs)
     -> decltype( make_surface(
             pack(std::declval<array<N, Size>>()),
             pack(std::declval<array<N, Size>>()),
-            pack(std::declval<array<M, Size>>()),
-            pack(std::declval<array<C, Size>>())
+            pack(std::declval<array<C, Size>>()),
+            pack(std::declval<array<M, Size>>())
             ) )
 {
     array<N, Size> geometric_normals;
     array<N, Size> shading_normals;
-    array<M, Size> materials;
     array<C, Size> tex_colors;
+    array<M, Size> materials;
 
     for (size_t i = 0; i < Size; ++i)
     {
         geometric_normals[i] = surfs[i].geometric_normal;
         shading_normals[i]   = surfs[i].shading_normal;
-        materials[i]         = surfs[i].material;
         tex_colors[i]        = surfs[i].tex_color;
+        materials[i]         = surfs[i].material;
     }
 
     return {
         pack(geometric_normals),
         pack(shading_normals),
-        pack(materials),
-        pack(tex_colors)
+        pack(tex_colors),
+        pack(materials)
         };
 }
 

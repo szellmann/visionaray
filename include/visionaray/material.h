@@ -121,12 +121,6 @@ private:
     spectrum<T> ce_;
     T           ls_;
 
-    template <typename SR>
-    VSNRAY_FUNC spectrum<T> ce_impl(SR const& sr) const;
-
-    template <typename L, typename C, typename S>
-    VSNRAY_FUNC spectrum<T> ce_impl(shade_record<L, C, S> const& sr) const;
-
 };
 
 
@@ -161,15 +155,6 @@ public:
             Sampler&        sampler
             ) const;
 
-    template <typename L, typename C, typename U, typename Sampler>
-    VSNRAY_FUNC spectrum<U> sample(
-            shade_record<L, C, U> const&    sr,
-            vector<3, U>&                   refl_dir,
-            U&                              pdf,
-            Sampler&                        sampler
-            ) const;
-
-
     // deprecated!
     VSNRAY_FUNC void VSNRAY_DEPRECATED set_ca(spectrum<T> const& ca);
     VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_ca() const;
@@ -202,20 +187,6 @@ private:
     T               ka_;
     lambertian<T>   diffuse_brdf_;
 
-    template <typename SR, typename V>
-    VSNRAY_FUNC spectrum<T> cd_impl(SR const& sr, V const& n, V const& wo, V const& wi) const;
-
-    template <typename L, typename C, typename S, typename V>
-    VSNRAY_FUNC spectrum<T> cd_impl(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const;
-
-    template <typename SR, typename U, typename Sampler>
-    VSNRAY_FUNC
-    spectrum<U> sample_impl(
-            SR const&       shade_rec,
-            vector<3, U>&   refl_dir,
-            U&              pdf,
-            Sampler&        sampler
-            ) const;
 };
 
 
@@ -427,20 +398,6 @@ private:
     T               ka_;
     lambertian<T>   diffuse_brdf_;
     blinn<T>        specular_brdf_;
-
-    template <typename SR, typename V>
-    VSNRAY_FUNC spectrum<T> cd_impl(SR const& sr, V const& n, V const& wo, V const& wi) const;
-
-    template <typename L, typename C, typename S, typename V>
-    VSNRAY_FUNC spectrum<T> cd_impl(shade_record<L, C, S> const& sr, V const& n, V const& wo, V const& wi) const;
-
-    template <typename SR, typename U, typename Sampler>
-    VSNRAY_FUNC spectrum<U> sample_impl(
-            SR const&       sr,
-            vector<3, U>&   refl_dir,
-            U&              pdf,
-            Sampler&        sampler
-            ) const;
 
 };
 

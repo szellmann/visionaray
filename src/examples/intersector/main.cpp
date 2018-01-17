@@ -398,18 +398,14 @@ void renderer::on_display()
             // shade the surface
             auto surf = get_surface(hit_rec, kparams);
 
-            auto sr = make_shade_record<decltype(kparams), S>();
-            sr.isect_pos = hit_rec.isect_pos;
-            // two-sided shading: if necessary, flip the normal
-            sr.normal = faceforward( surf.shading_normal, -ray.dir, surf.geometric_normal );
-            sr.view_dir = -ray.dir;
-            sr.light_dir = normalize( V(kparams.lights.begin->position()) - hit_rec.isect_pos );
-            sr.light = *kparams.lights.begin;
+            auto view_dir = -ray.dir;
+            auto light_dir = normalize( V(kparams.lights.begin->position()) - hit_rec.isect_pos );
+            auto li = kparams.lights.begin->intensity(hit_rec.isect_pos);
 
             // only shade where ray hit
             result.color = select(
                     hit_rec.hit,
-                    to_rgba( surf.shade(sr) ),
+                    to_rgba( surf.shade(view_dir, light_dir, li) ),
                     result.color
                     );
 

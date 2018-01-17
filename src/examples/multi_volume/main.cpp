@@ -22,6 +22,7 @@
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
+#include <visionaray/shade_record.h>
 
 #ifdef __CUDACC__
 #include <visionaray/pixel_unpack_buffer_rt.h>
@@ -509,13 +510,15 @@ struct kernel
                         auto grad = gradient(volumes[i], tex_coord);
                         do_shade &= length(grad) != 0.0f;
 
-                        shade_record<decltype(light), S> sr;
-                        sr.isect_pos = pos;
-                        sr.light = light;
-                        sr.normal = normalize(grad);
-                        sr.view_dir = -ray.dir;
-                        auto light_pos = ( Mat4(transforms_inv[i]) * vector<4, S>(V(sr.light.position()), S(1.0)) ).xyz();
-                        sr.light_dir = normalize(light_pos);
+                        auto light_pos = ( Mat4(transforms_inv[i]) * vector<4, S>(V(light.position()), S(1.0)) ).xyz();
+
+                        shade_record<S> sr;
+                        sr.normal           = normalize(grad);
+                        sr.geometric_normal = sr.normal;
+                        sr.view_dir         = -ray.dir;
+                        sr.tex_color        = vector<3, S>(1.0); // TODO: maybe have a default value in shade_record..
+                        sr.light_dir        = normalize(light_pos);
+                        sr.light_intensity  = light.intensity(pos);
 
                         auto shaded_clr = materials[i].shade(sr);
                         colori.xyz() = mul(
