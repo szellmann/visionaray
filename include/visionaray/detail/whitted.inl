@@ -126,7 +126,7 @@ inline auto specular_bounce(
 {
     return make_bounce_result(
         reflect(view_dir, normal),
-        mat.get_kr()
+        mat.kr()
         );
 }
 
