@@ -47,6 +47,17 @@ inline basic_aabb<T>::basic_aabb(basic_aabb<U> const& rhs)
 }
 
 template <typename T>
+template <typename U>
+MATH_FUNC
+inline basic_aabb<T>& basic_aabb<T>::operator=(basic_aabb<U> const& rhs)
+{
+    min = vector<3, T>(rhs.min);
+    max = vector<3, T>(rhs.max);
+
+    return *this;
+}
+
+template <typename T>
 MATH_FUNC
 inline vector<3, T> basic_aabb<T>::center() const
 {
