@@ -226,6 +226,7 @@ struct renderer : viewer_type
 protected:
 
     void on_display();
+    void on_key_press(key_event const& event);
     void on_resize(int w, int h);
 
 private:
@@ -378,6 +379,39 @@ void renderer::on_display()
               << ", last frame time: " << elapsed
               << ", avg. frame time: " << avg_frame_time / frame_num << '\r';
     std::cout << std::flush;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Key press event
+//
+
+void renderer::on_key_press(key_event const& event)
+{
+    switch (event.key())
+    {
+    case 'm':
+#ifdef __CUDACC__
+        if (dev_type == renderer::CPU)
+        {
+            dev_type = renderer::GPU;
+        }
+        else
+        {
+            dev_type = renderer::CPU;
+        }
+
+        avg_frame_time = 0.0;
+        frame_num = 0;
+        host_rt.clear_color_buffer();
+        device_rt.clear_color_buffer();
+#endif
+        break;
+    default:
+        break;
+    }
+
+    viewer_type::on_key_press(event);
 }
 
 
