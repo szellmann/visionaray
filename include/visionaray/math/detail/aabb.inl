@@ -31,18 +31,18 @@ inline basic_aabb<T>::basic_aabb(vector<3, T> const& min, vector<3, T> const& ma
 template <typename T>
 template <typename U>
 MATH_FUNC
-inline basic_aabb<T>::basic_aabb(vector<3, U> const& min, vector<3, U> const& max)
-    : min(min)
-    , max(max)
+inline basic_aabb<T>::basic_aabb(basic_aabb<U> const& rhs)
+    : min(rhs.min)
+    , max(rhs.max)
 {
 }
 
 template <typename T>
 template <typename U>
 MATH_FUNC
-inline basic_aabb<T>::basic_aabb(basic_aabb<U> const& rhs)
-    : min(rhs.min)
-    , max(rhs.max)
+inline basic_aabb<T>::basic_aabb(vector<3, U> const& min, vector<3, U> const& max)
+    : min(min)
+    , max(max)
 {
 }
 
