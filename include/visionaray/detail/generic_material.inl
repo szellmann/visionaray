@@ -237,7 +237,7 @@ public:
         auto srs = unpack(sr);
 
         array<vector<3, float>, N> rds;
-        float_array                     pdfs;
+        float_array                pdfs;
         array<spectrum<float>, N>  sampled;
 
         for (size_t i = 0; i < N; ++i)
