@@ -127,6 +127,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
         basic_triangle<3, U, unsigned> const&   tri
         )
 {
+
     typedef vector<3, T> vec_type;
 
     hit_record<basic_ray<T>, primitive<unsigned>> result;
@@ -172,10 +173,10 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
     result.prim_id = tri.prim_id;
     result.geom_id = tri.geom_id;
     result.t = dot(e2, s2) * inv_div;
-    result.isect_pos = ray.ori + ray.dir * result.t;
     result.u = b1;
     result.v = b2;
     return result;
+
 }
 
 
@@ -220,7 +221,6 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
     result.t = select(t1 >= T(0.0) && t2 >= T(0.0), min(t1, t2), result.t);
     result.t = select(t1 >= T(0.0) && t2 <  T(0.0), t1,          result.t);
     result.t = select(t1 <  T(0.0) && t2 >= T(0.0), t2,          result.t);
-    result.isect_pos = select(result.hit, ray.ori + result.t * ray.dir, result.isect_pos);
     return result;
 }
 
@@ -258,7 +258,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
             result.hit,
             ray.ori + result.t * ray.dir,
             result.isect_pos
-            );
+            ); // TODO: sphere/triangle don't assign isect_pos in intersect
 
     return result;
 }

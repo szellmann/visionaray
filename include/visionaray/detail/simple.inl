@@ -35,6 +35,8 @@ struct kernel
 
         if (any(hit_rec.hit))
         {
+            hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
+
             auto surf = get_surface(hit_rec, params);
             auto ambient = surf.material.ambient() * C(from_rgba(params.ambient_color));
             auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgba(params.bg_color)) );
