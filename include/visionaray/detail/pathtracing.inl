@@ -65,7 +65,7 @@ struct kernel
             if (bounce == 0)
             {
                 result.hit = hit_rec.hit;
-                result.isect_pos = ray.ori + ray.dir * hit_rec.t;
+                result.isect_pos = hit_rec.isect_pos;
             }
 
 
@@ -73,8 +73,6 @@ struct kernel
 
             V refl_dir;
             V view_dir = -ray.dir;
-
-            hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
 
             auto surf = get_surface(hit_rec, params);
 
