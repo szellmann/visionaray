@@ -43,7 +43,7 @@ template <
         >::type
     >
 VSNRAY_FUNC
-inline array<shade_record<float>, num_elements<T>::value> unpack(shade_record<T> const& sr)
+inline array<shade_record<element_type_t<T>>, num_elements<T>::value> unpack(shade_record<T> const& sr)
 {
     auto normal           = unpack(sr.normal);
     auto geometric_normal = unpack(sr.geometric_normal);
@@ -52,7 +52,7 @@ inline array<shade_record<float>, num_elements<T>::value> unpack(shade_record<T>
     auto light_dir        = unpack(sr.light_dir);
     auto light_intensity  = unpack(sr.light_intensity);
 
-    array<shade_record<float>, num_elements<T>::value> result;
+    array<shade_record<element_type_t<T>>, num_elements<T>::value> result;
 
     for (int i = 0; i < num_elements<T>::value; ++i)
     {
