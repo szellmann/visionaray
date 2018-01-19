@@ -40,70 +40,70 @@ struct widen<int32_t>
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::fixed(char c)
-    : rep_(c << F)
+    : rep_(rep_type(c) << F)
 {
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::fixed(short s)
-    : rep_(s << F)
+    : rep_(rep_type(s) << F)
 {
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::fixed(int i)
-    : rep_(i << F)
+    : rep_(rep_type(i) << F)
 {
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::fixed(long l)
-    : rep_(l << F)
+    : rep_(rep_type(l) << F)
 {
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::fixed(long long ll)
-    : rep_(ll << F)
+    : rep_(rep_type(ll) << F)
 {
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::fixed(unsigned char uc)
-    : rep_(uc << F)
+    : rep_(rep_type(uc) << F)
 {
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::fixed(unsigned short us)
-    : rep_(us << F)
+    : rep_(rep_type(us) << F)
 {
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::fixed(unsigned int ui)
-    : rep_(ui << F)
+    : rep_(rep_type(ui) << F)
 {
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::fixed(unsigned long ul)
-    : rep_(ul << F)
+    : rep_(rep_type(ul) << F)
 {
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::fixed(unsigned long long ull)
-    : rep_(ull << F)
+    : rep_(rep_type(ull) << F)
 {
 }
 
@@ -132,70 +132,70 @@ template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::operator char() const
 {
-    return static_cast<char>(rep_) >> F;
+    return static_cast<char>(rep_ >> F);
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::operator short() const
 {
-    return static_cast<short>(rep_) >> F;
+    return static_cast<short>(rep_ >> F);
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::operator int() const
 {
-    return static_cast<int>(rep_) >> F;
+    return static_cast<int>(rep_ >> F);
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::operator long() const
 {
-    return static_cast<long>(rep_) >> F;
+    return static_cast<long>(rep_ >> F);
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::operator long long() const
 {
-    return static_cast<long long>(rep_) >> F;
+    return static_cast<long long>(rep_ >> F);
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::operator unsigned char() const
 {
-    return static_cast<unsigned char>(rep_) >> F;
+    return static_cast<unsigned char>(rep_ >> F);
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::operator unsigned short() const
 {
-    return static_cast<unsigned short>(rep_) >> F;
+    return static_cast<unsigned short>(rep_ >> F);
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::operator unsigned int() const
 {
-    return static_cast<unsigned int>(rep_) >> F;
+    return static_cast<unsigned int>(rep_ >> F);
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::operator unsigned long() const
 {
-    return static_cast<unsigned long>(rep_) >> F;
+    return static_cast<unsigned long>(rep_ >> F);
 }
 
 template <unsigned I, unsigned F>
 MATH_FUNC
 inline fixed<I, F>::operator unsigned long long() const
 {
-    return static_cast<unsigned long long>(rep_) >> F;
+    return static_cast<unsigned long long>(rep_ >> F);
 }
 
 template <unsigned I, unsigned F>
