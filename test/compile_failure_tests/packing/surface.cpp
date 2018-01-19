@@ -21,9 +21,9 @@ using mat_type = matte<T>;
     using result_type = surface<N, M>;
 #elif defined WITH_TEX_COLOR
     template <typename N, typename M, int SIZE>
-    using param_type = array<surface<N, M, vec3f>, SIZE>;
+    using param_type = array<surface<N, vec3f, M>, SIZE>;
     template <typename N, typename M>
-    using result_type = surface<N, M, N>;
+    using result_type = surface<N, N/*TODO: in general TexCol != N*/, M>;
 #endif
 
 
