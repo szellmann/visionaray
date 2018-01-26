@@ -699,8 +699,11 @@ void renderer::on_key_press(key_event const& event)
             ssaa_samples = 1;
         }
         std::cout << "Use " << ssaa_samples << "x supersampling anti-aliasing\n";
-        counter.reset();
-        clear_frame();
+        if (algo != Pathtracing)
+        {
+            counter.reset();
+            clear_frame();
+        }
         break;
 
     case 'u':
