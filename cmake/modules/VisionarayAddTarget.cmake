@@ -11,6 +11,13 @@ function(visionaray_cuda_compile outfiles)
     endif()
 
     foreach(f ${ARGN})
+        get_filename_component(suffix ${f} EXT)
+
+        if(NOT ${suffix} STREQUAL ".cu")
+            message(FATAL_ERROR "Cannot cuda_compile file with extension ${suffix}")
+            return()
+        endif()
+
         if(BUILD_SHARED_LIBS)
             cuda_compile(cuda_compile_obj ${f} SHARED)
         else()
