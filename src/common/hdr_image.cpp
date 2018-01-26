@@ -75,7 +75,7 @@ bool hdr_image::load(std::string const& filename)
 
     if (res.size() != 4)
     {
-        std::cout << "Error: invalid resolution string in HDR file\n";
+        std::cerr << "Error: invalid resolution string in HDR file\n";
     }
 
     if (res[0] == "-Y" && res[2] == "+X")
@@ -85,7 +85,7 @@ bool hdr_image::load(std::string const& filename)
     }
     else
     {
-        std::cout << "Error: unsupported resolution string in HDR file\n";
+        std::cerr << "Error: unsupported resolution string in HDR file\n";
     }
 
     // scanlines ------------------------------------------
