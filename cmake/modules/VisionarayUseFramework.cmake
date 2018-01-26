@@ -18,7 +18,7 @@ function(visionaray_use_framework name)
     )
 
     if(${FRAMEWORK_${name}} STREQUAL FRAMEWORK_${name}-NOTFOUND)
-        message(ERROR ": Framework ${name} not found")
+        message(FATAL_ERROR ": Framework ${name} not found")
     else()
         set(__VSNRAY_LINK_LIBRARIES ${__VSNRAY_LINK_LIBRARIES} ${FRAMEWORK_${name}}/${name} PARENT_SCOPE)
     endif()
