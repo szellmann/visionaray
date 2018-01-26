@@ -85,11 +85,6 @@ struct kernel
             auto zero_pdf = pdf <= S(0.0);
             auto emissive = has_emissive_material(surf);
 
-            auto n = surf.shading_normal;
-#if 1 // two-sided
-            n = faceforward( n, view_dir, surf.geometric_normal );
-#endif
-            src = mul( src, dot(n, refl_dir) / pdf, !emissive, src ); // TODO: this probably belongs in the shader!
             dst = mul( dst, src, active_rays && !zero_pdf, dst );
             dst = select( zero_pdf && active_rays, C(0.0), dst );
 

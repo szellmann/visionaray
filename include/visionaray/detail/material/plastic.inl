@@ -88,7 +88,7 @@ inline spectrum<U> plastic<T>::sample(
     pdf            = select( u < U(prob_diff), pdf1,  pdf2  );
     refl_dir       = select( u < U(prob_diff), refl1, refl2 );
 
-    return           select( u < U(prob_diff), diff,  spec  );
+    return           select( u < U(prob_diff), diff,  spec  ) * (dot(n, refl_dir) / pdf);
 }
 
 //--- deprecated begin ------------------------------------

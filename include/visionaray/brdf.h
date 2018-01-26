@@ -303,11 +303,12 @@ public:
                 U(1.0) - reflectance[0]
                 );
 
-        return select(
+        auto result = select(
                 u < reflectance[0],
                 reflectance * spectrum<U>(cr * kr),
                 (spectrum<U>(1.0) - reflectance) * spectrum<U>(ct * kt)
                 ) / abs(dot(N, wi));
+        return result * (dot(N, wi) / pdf); // TODO: sure?
     }
 
 };
