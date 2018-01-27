@@ -160,29 +160,16 @@ aabb bounds(model::triangle_list const& tris)
 
 struct mtl
 {
-    mtl()
-        : ka(vec3(0.2f, 0.2f, 0.2f))
-        , kd(vec3(0.8f, 0.8f, 0.8f))
-        , ke(vec3(0.0f, 0.0f, 0.0f))
-        , ks(vec3(0.1f, 0.1f, 0.1f))
-        , tr(0.0f)
-        , d(1.0f)
-        , ns(32.0f)
-        , ni(1.0f)
-        , illum(2)
-    {
-    }
-
-    vec3 ka;
-    vec3 kd;
-    vec3 ke;
-    vec3 ks;
-    float tr; // tr=1-d
-    float d;
-    float ns;
-    float ni;
-    std::string map_kd;
-    int illum;
+    vec3 ka = vec3(0.2f, 0.2f, 0.2f);
+    vec3 kd = vec3(0.8f, 0.8f, 0.8f);
+    vec3 ke = vec3(0.0f, 0.0f, 0.0f);
+    vec3 ks = vec3(0.1f, 0.1f, 0.1);
+    float tr = 0.0f; // tr=1-d
+    float d = 1.0f;
+    float ns = 32.0f;
+    float ni = 1.0f;
+    std::string map_kd = "";
+    int illum = 2;
 };
 
 
