@@ -9,8 +9,8 @@
 #include <cstddef>
 
 #include "detail/macros.h"
+#include "math/array.h"
 #include "math/vector.h"
-#include "array.h"
 
 namespace visionaray
 {

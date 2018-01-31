@@ -8,7 +8,7 @@
 
 #include <utility>
 
-#include <visionaray/array.h>
+#include <visionaray/math/array.h>
 #include <visionaray/matrix_camera.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>

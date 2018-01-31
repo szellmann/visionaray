@@ -10,8 +10,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "math/array.h"
 #include "texture/texture.h"
-#include "array.h"
 #include "bvh.h"
 #include "generic_primitive.h"
 #include "get_color.h"

@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#include <visionaray/array.h>
+#include <visionaray/math/array.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/result_record.h>

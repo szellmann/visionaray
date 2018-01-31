@@ -2,8 +2,8 @@
 // See the LICENSE file for details.
 
 #include <visionaray/math/simd/simd.h>
+#include <visionaray/math/array.h>
 #include <visionaray/math/vector.h>
-#include <visionaray/array.h>
 
 using namespace visionaray;
 

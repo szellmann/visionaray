@@ -10,6 +10,7 @@
 #include "detail/math.h"
 
 #include "aabb.h"
+#include "array.h"
 #include "axis.h"
 #include "constants.h"
 #include "fixed.h"

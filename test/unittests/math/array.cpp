@@ -7,7 +7,7 @@
 #include <numeric>
 #include <utility>
 
-#include <visionaray/array.h>
+#include <visionaray/math/array.h>
 
 #include <gtest/gtest.h>
 

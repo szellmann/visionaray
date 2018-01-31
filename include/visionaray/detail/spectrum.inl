@@ -3,8 +3,8 @@
 
 #include <ostream>
 
+#include <visionaray/math/array.h>
 #include <visionaray/texture/texture.h>
-#include <visionaray/array.h>
 
 #include "color_conversion.h"
 

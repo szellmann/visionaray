@@ -2,7 +2,6 @@
 // See the LICENSE file for details.
 
 #include <visionaray/math/math.h>
-#include <visionaray/array.h>
 
 #include <gtest/gtest.h>
 

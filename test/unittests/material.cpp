@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/array.h>
+#include <visionaray/math/array.h>
 #include <visionaray/generic_material.h>
 
 #include <gtest/gtest.h>

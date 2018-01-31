@@ -6,7 +6,7 @@
 #include <vector>
 
 #include <visionaray/detail/algorithm.h>
-#include <visionaray/array.h>
+#include <visionaray/math/array.h>
 
 using namespace visionaray;
 

@@ -9,8 +9,8 @@
 #include <type_traits>
 
 #include "math/simd/type_traits.h"
+#include "math/array.h"
 #include "math/vector.h"
-#include "array.h"
 
 namespace visionaray
 {

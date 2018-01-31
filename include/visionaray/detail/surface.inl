@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <utility>
 
-#include "../array.h"
+#include "../math/array.h"
 #include "../generic_material.h"
 
 namespace visionaray

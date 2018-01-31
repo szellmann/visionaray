@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <type_traits>
 
-#include <visionaray/array.h>
+#include <visionaray/math/array.h>
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
 #include <visionaray/traverse.h>

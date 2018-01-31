@@ -3,9 +3,8 @@
 
 #include <type_traits>
 
-#include <visionaray/array.h>
-
 #include "../simd/type_traits.h"
+#include "../array.h"
 
 namespace MATH_NAMESPACE
 {

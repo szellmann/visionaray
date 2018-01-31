@@ -8,7 +8,7 @@
 
 #include <cstddef>
 
-#include "../array.h"
+#include "../math/array.h"
 #include "tags.h"
 
 namespace visionaray

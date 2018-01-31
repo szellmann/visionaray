@@ -17,8 +17,8 @@
 #include <random>
 #endif
 
-#include <visionaray/math/simd/simd.h>
-#include <visionaray/array.h>
+#include "math/simd/simd.h"
+#include "math/array.h"
 
 namespace visionaray
 {

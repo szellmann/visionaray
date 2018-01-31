@@ -110,7 +110,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/algorithm.h
     ${HEADER_DIR}/detail/aligned_allocator.h
     ${HEADER_DIR}/detail/area_light.inl
-    ${HEADER_DIR}/detail/array.inl
     ${HEADER_DIR}/detail/color_conversion.h
     ${HEADER_DIR}/detail/compiler.h
     ${HEADER_DIR}/detail/cpu_buffer_rt.inl
@@ -176,6 +175,7 @@ set(VSNRAY_HEADERS
     # Math
 
     ${HEADER_DIR}/math/detail/aabb.inl
+    ${HEADER_DIR}/math/detail/array.inl
     ${HEADER_DIR}/math/detail/fixed.inl
     ${HEADER_DIR}/math/detail/limits.inl
     ${HEADER_DIR}/math/detail/math.h
@@ -233,6 +233,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/simd/trans.h
     ${HEADER_DIR}/math/simd/type_traits.h
     ${HEADER_DIR}/math/aabb.h
+    ${HEADER_DIR}/math/array.h
     ${HEADER_DIR}/math/axis.h
     ${HEADER_DIR}/math/config.h
     ${HEADER_DIR}/math/constants.h
@@ -284,7 +285,6 @@ set(VSNRAY_HEADERS
 
     ${HEADER_DIR}/aligned_vector.h
     ${HEADER_DIR}/area_light.h
-    ${HEADER_DIR}/array.h
     ${HEADER_DIR}/array_ref.h
     ${HEADER_DIR}/brdf.h
     ${HEADER_DIR}/bvh.h
