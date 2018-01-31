@@ -6,20 +6,12 @@
 #ifndef VSNRAY_MATH_AABB_H
 #define VSNRAY_MATH_AABB_H 1
 
-#include <visionaray/detail/macros.h>
-
-#if VSNRAY_CXXLIB_HAS_HDR_ARRAY
-#include <array>
-#else
-#include <boost/array.hpp>
-#endif
-
+#include "array.h"
+#include "config.h"
 #include "vector.h"
-
 
 namespace MATH_NAMESPACE
 {
-
 
 template <typename T>
 class basic_aabb
@@ -28,11 +20,7 @@ public:
 
     typedef T value_type;
     typedef vector<3, T> vec_type;
-#if VSNRAY_CXXLIB_HAS_HDR_ARRAY
-    typedef std::array<vec_type, 8> vertex_list;
-#else
-    typedef boost::array<vec_type, 8> vertex_list;
-#endif
+    typedef array<vec_type, 8> vertex_list;
 
     vec_type min;
     vec_type max;
