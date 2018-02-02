@@ -1032,8 +1032,6 @@ inline auto pack(
             }} );
 }
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
 // pack eight vectors
 
 template <size_t Dim, typename T>
@@ -1053,8 +1051,6 @@ inline auto pack(
             v1, v2, v3, v4, v5, v6, v7, v8
             }} );
 }
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
 
 // unpack -------------------------------------------------
 
