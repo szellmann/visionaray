@@ -55,12 +55,14 @@ public:
             size_t                                  w,
             size_t                                  h,
             std::array<tex_address_mode, 2> const&  address_mode,
-            tex_filter_mode const&                  filter_mode
+            tex_filter_mode const&                  filter_mode,
+            bool                                    normalized_coords = true
             )
         : width_(w)
         , height_(h)
         , address_mode_(address_mode)
         , filter_mode_(filter_mode)
+        , normalized_coords_(normalized_coords)
     {
         if (width_ == 0 || height_ == 0)
         {
@@ -90,12 +92,14 @@ public:
             size_t              w,
             size_t              h,
             tex_address_mode    address_mode,
-            tex_filter_mode     filter_mode
+            tex_filter_mode     filter_mode,
+            bool                normalized_coords = true
             )
         : width_(w)
         , height_(h)
         , address_mode_{{ address_mode, address_mode }}
         , filter_mode_(filter_mode)
+        , normalized_coords_(normalized_coords)
     {
         if (width_ == 0 || height_ == 0)
         {
@@ -125,6 +129,7 @@ public:
         , height_(host_tex.height())
         , address_mode_(host_tex.get_address_mode())
         , filter_mode_(host_tex.get_filter_mode())
+        , normalized_coords_(host_tex.get_normalized_coords())
     {
         if (width_ == 0 || height_ == 0)
         {
@@ -154,6 +159,7 @@ public:
         , height_(host_tex.height())
         , address_mode_(host_tex.get_address_mode())
         , filter_mode_(host_tex.get_filter_mode())
+        , normalized_coords_(host_tex.get_normalized_coords())
     {
         if (width_ == 0 || height_ == 0)
         {
@@ -271,6 +277,13 @@ public:
         init_texture_object();
     }
 
+    void set_normalized_coords(bool nc)
+    {
+        normalized_coords_ = nc;
+
+        init_texture_object();
+    }
+
 private:
 
     cuda::pitch2d<cuda_type>        pitch_;
@@ -282,6 +295,7 @@ private:
 
     std::array<tex_address_mode, 2> address_mode_;
     tex_filter_mode                 filter_mode_;
+    bool                            normalized_coords_ = true;
 
 
     cudaError_t upload_data(T const* data)
@@ -323,7 +337,7 @@ private:
         texture_desc.addressMode[1]             = detail::map_address_mode( address_mode_[1] );
         texture_desc.filterMode                 = detail::map_filter_mode( filter_mode_ );
         texture_desc.readMode                   = cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value);
-        texture_desc.normalizedCoords           = true;
+        texture_desc.normalizedCoords           = normalized_coords_;
 
         cudaTextureObject_t obj = 0;
         cudaError_t err = cudaCreateTextureObject( &obj, &resource_desc, &texture_desc, 0 );
@@ -335,7 +349,6 @@ private:
 
         return err;
     }
-
 };
 
 

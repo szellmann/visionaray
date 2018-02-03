@@ -60,13 +60,15 @@ public:
             size_t                                  h,
             size_t                                  d,
             std::array<tex_address_mode, 3> const&  address_mode,
-            tex_filter_mode const&                  filter_mode
+            tex_filter_mode const&                  filter_mode,
+            bool                                    normalized_coords = true
             )
         : width_(w)
         , height_(h)
         , depth_(d)
         , address_mode_(address_mode)
         , filter_mode_(filter_mode)
+        , normalized_coords_(normalized_coords)
     {
         if (width_ == 0 || height_ == 0 || depth_ == 0)
         {
@@ -100,13 +102,15 @@ public:
             size_t              h,
             size_t              d,
             tex_address_mode    address_mode,
-            tex_filter_mode     filter_mode
+            tex_filter_mode     filter_mode,
+            bool                normalized_coords = true
             )
         : width_(w)
         , height_(h)
         , depth_(d)
         , address_mode_({{ address_mode, address_mode, address_mode }})
         , filter_mode_(filter_mode)
+        , normalized_coords_(normalized_coords)
     {
         if (width_ == 0 || height_ == 0 || depth_ == 0)
         {
@@ -140,6 +144,7 @@ public:
         , depth_(host_tex.depth())
         , address_mode_(host_tex.get_address_mode())
         , filter_mode_(host_tex.get_filter_mode())
+        , normalized_coords_(host_tex.get_normalized_coords())
     {
         if (width_ == 0 || height_ == 0 || depth_ == 0)
         {
@@ -173,6 +178,7 @@ public:
         , depth_(host_tex.depth())
         , address_mode_(host_tex.get_address_mode())
         , filter_mode_(host_tex.get_filter_mode())
+        , normalized_coords_(host_tex.get_normalized_coords())
     {
         if (width_ == 0 || height_ == 0 || depth_ == 0)
         {
@@ -304,6 +310,13 @@ public:
         init_texture_object();
     }
 
+    void set_normalized_coords(bool nc)
+    {
+        normalized_coords_ = nc;
+
+        init_texture_object();
+    }
+
 private:
 
     cuda::array                     array_;
@@ -316,6 +329,7 @@ private:
 
     std::array<tex_address_mode, 3> address_mode_;
     tex_filter_mode                 filter_mode_;
+    bool                            normalized_coords_ = true;
 
 
     cudaError_t upload_data(T const* data)
@@ -352,7 +366,7 @@ private:
         texture_desc.addressMode[2]             = detail::map_address_mode( address_mode_[2] );
         texture_desc.filterMode                 = detail::map_filter_mode( filter_mode_ );
         texture_desc.readMode                   = cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value);
-        texture_desc.normalizedCoords           = true;
+        texture_desc.normalizedCoords           = normalized_coords_;
 
         cudaTextureObject_t obj = 0;
         cudaError_t err = cudaCreateTextureObject( &obj, &resource_desc, &texture_desc, 0 );
@@ -364,7 +378,6 @@ private:
 
         return err;
     }
-
 };
 
 

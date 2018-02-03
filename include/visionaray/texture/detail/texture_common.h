@@ -66,10 +66,21 @@ public:
         return filter_mode_;
     }
 
+    void set_normalized_coords(bool nc)
+    {
+        normalized_coords_ = nc;
+    }
+
+    bool get_normalized_coords() const
+    {
+        return normalized_coords_;
+    }
+
 protected:
 
-    std::array<tex_address_mode, Dim>   address_mode_;
-    tex_filter_mode                     filter_mode_;
+    std::array<tex_address_mode, Dim> address_mode_;
+    tex_filter_mode                   filter_mode_;
+    bool                              normalized_coords_;
 
 };
 
