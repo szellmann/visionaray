@@ -44,43 +44,6 @@ void test_anisotropic(T g)
     }
 
 
-    // Test normalization property of HG phase function
-
-    // HG phase function only depends on the angle theta
-    // between wi and wo, so we can choose an arbitrary
-    // integration plane
-
-    Vec3 wo(-1.0, 0.0, 0.0);
-    Vec3 wi( 1.0, 0.0, 0.0);
-
-    // Just to make sure..
-    EXPECT_FLOAT_EQ(dot(wo, wi), -1.0f);
-
-    T angle(0.0);
-    T deg(0.001); // integrate in deg steps
-    T d = deg * constants::degrees_to_radians<T>();
-
-    T int_(0.0);
-
-    while (angle <= T(180.0))
-    {
-        T a = angle * constants::degrees_to_radians<T>();
-
-        // Riemann integration
-        int_ += am.tr(-wo, wi)[0] * sin(a) * d;
-
-        wi.x = cos(a);
-        wi.y = -sin(a);
-        angle += deg;
-    }
-
-    int_ *= constants::two_pi<T>();
-
-    T diff = T(1.0) - int_;
-
-    ASSERT_TRUE(abs(diff) < T(1e-2));
-
-
     // Test the extreme cases that g is either -1.0 or 1.0
 
     for (int i = 0; i < 100; ++i)
