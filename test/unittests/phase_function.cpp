@@ -1,8 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <limits>
-
 #include <visionaray/math/math.h>
 #include <visionaray/phase_function.h>
 #include <visionaray/random_sampler.h>
