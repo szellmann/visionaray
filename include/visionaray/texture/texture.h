@@ -30,6 +30,8 @@ inline auto tex1D(Tex const& tex, FloatT const& coord)
 {
     static_assert(Tex::dimensions == 1, "Incompatible texture type");
 
+    assert(tex.get_normalized_coords() && "Unnormalized coordinates on CPU not implemented yet");
+
     return detail::tex1D( tex, coord );
 }
 
@@ -40,6 +42,8 @@ inline auto tex2D(Tex const& tex, vector<2, FloatT> const& coord)
 {
     static_assert(Tex::dimensions == 2, "Incompatible texture type");
 
+    assert(tex.get_normalized_coords() && "Unnormalized coordinates on CPU not implemented yet");
+
     return detail::tex2D( tex, coord );
 }
 
@@ -49,6 +53,8 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> const& coord)
     -> decltype( detail::tex3D(tex, coord) )
 {
     static_assert(Tex::dimensions == 3, "Incompatible texture type");
+
+    assert(tex.get_normalized_coords() && "Unnormalized coordinates on CPU not implemented yet");
 
     return detail::tex3D( tex, coord );
 }
