@@ -11,6 +11,7 @@
 #include "fresnel.h"
 #include "sampling.h"
 #include "spectrum.h"
+#include "surface_interaction.h"
 
 namespace visionaray
 {
@@ -42,9 +43,16 @@ public:
         return spectrum<U>( cd * kd * constants::inv_pi<T>() );
     }
 
-    template <typename U, typename S /* sampler */>
+    template <typename U, typename Interaction, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<U> sample_f(vector<3, T> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler) const
+    spectrum<U> sample_f(
+            vector<3, T> const& n,
+            vector<3, U> const& wo,
+            vector<3, U>&       wi,
+            U&                  pdf,
+            Interaction&        inter,
+            S&                  sampler
+            ) const
     {
         auto w = n;
         auto v = select(
@@ -58,6 +66,8 @@ public:
         wi      = normalize( sp.x * u + sp.y * v + sp.z * w );
 
         pdf     = dot(n, wi) * constants::inv_pi<U>();
+
+        inter   = Interaction(surface_interaction::Diffuse);
 
         return f(n, wo, wi);
     }
@@ -126,9 +136,16 @@ public:
         return spectrum<U>(schlick * nfactor * pow(hdotn, exp) );
     }
 
-    template <typename U, typename S /* sampler */>
+    template <typename U, typename Interaction, typename S /* sampler */>
     VSNRAY_FUNC
-    spectrum<U> sample_f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U>& wi, U& pdf, S& sampler) const
+    spectrum<U> sample_f(
+            vector<3, U> const& n,
+            vector<3, U> const& wo,
+            vector<3, U>&       wi,
+            U&                  pdf,
+            Interaction&        inter,
+            S&                  sampler
+            ) const
     {
         auto u1 = sampler.next();
         auto u2 = sampler.next();
@@ -151,6 +168,8 @@ public:
 
         auto vdoth = dot(wo, h);
         pdf = ( ((exp + U(1.0)) * pow(costheta, exp)) / (U(2.0) * constants::pi<U>() * U(4.0) * vdoth) );
+
+        inter = Interaction(surface_interaction::GlossyReflection);
 
         return f(n, wo, wi);
     }
@@ -186,20 +205,23 @@ public:
         return spectrum<U>(0.0);
     }
 
-    template <typename U, typename Sampler>
+    template <typename U, typename Interaction, typename Sampler>
     VSNRAY_FUNC
     spectrum<U> sample_f(
             vector<3, U> const& n,
             vector<3, U> const& wo,
-            vector<3, U>& wi,
-            U& pdf,
-            Sampler& sampler
+            vector<3, U>&       wi,
+            U&                  pdf,
+            Interaction&        inter,
+            Sampler&            sampler
             ) const
     {
         VSNRAY_UNUSED(sampler);
 
         wi = reflect(wo, n);
         pdf = U(1.0);
+
+        inter = Interaction(surface_interaction::SpecularReflection);
 
         return fresnel_reflectance(
                 conductor_tag(),
@@ -208,7 +230,6 @@ public:
                 abs( dot(n, wo) )
                 ) * spectrum<U>(cr * kr) / abs( dot(n, wi) );
     }
-
 };
 
 
@@ -242,14 +263,15 @@ public:
         return spectrum<U>(0.0);
     }
 
-    template <typename U, typename Sampler>
+    template <typename U, typename Interaction, typename Sampler>
     VSNRAY_FUNC
     spectrum<U> sample_f(
             vector<3, U> const& n,
             vector<3, U> const& wo,
-            vector<3, U>& wi,
-            U& pdf,
-            Sampler& sampler
+            vector<3, U>&       wi,
+            U&                  pdf,
+            Interaction&        inter,
+            Sampler&            sampler
             ) const
     {
         // IOR of material above normal direction
@@ -303,6 +325,12 @@ public:
                 U(1.0) - reflectance[0]
                 );
 
+        inter = select(
+                u < reflectance[0],
+                Interaction(surface_interaction::SpecularReflection),
+                Interaction(surface_interaction::SpecularTransmission)
+                );
+
         auto result = select(
                 u < reflectance[0],
                 reflectance * spectrum<U>(cr * kr),
@@ -310,7 +338,6 @@ public:
                 ) / abs(dot(N, wi));
         return result * (dot(N, wi) / pdf); // TODO: sure?
     }
-
 };
 
 } // visionaray

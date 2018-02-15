@@ -28,12 +28,13 @@ inline spectrum<typename SR::scalar_type> mirror<T>::shade(SR const& sr) const
 }
 
 template <typename T>
-template <typename SR, typename U, typename Sampler>
+template <typename SR, typename U, typename Interaction, typename Sampler>
 VSNRAY_FUNC
 inline spectrum<U> mirror<T>::sample(
         SR const&       sr,
         vector<3, U>&   refl_dir,
         U&              pdf,
+        Interaction&    inter,
         Sampler&        sampler
         ) const
 {
@@ -41,7 +42,7 @@ inline spectrum<U> mirror<T>::sample(
 #if 1 // two-sided
     n = faceforward( n, sr.view_dir, sr.geometric_normal );
 #endif
-    auto result = specular_brdf_.sample_f(n, sr.view_dir, refl_dir, pdf, sampler);
+    auto result = specular_brdf_.sample_f(n, sr.view_dir, refl_dir, pdf, inter, sampler);
     return result * (dot(n, refl_dir) / pdf);
 }
 

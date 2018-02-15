@@ -39,12 +39,13 @@ inline spectrum<typename SR::scalar_type> plastic<T>::shade(SR const& sr) const
 }
 
 template <typename T>
-template <typename SR, typename U, typename Sampler>
+template <typename SR, typename U, typename Interaction, typename Sampler>
 VSNRAY_FUNC
 inline spectrum<U> plastic<T>::sample(
         SR const&       shade_rec,
         vector<3, U>&   refl_dir,
         U&              pdf,
+        Interaction&    inter,
         Sampler&        sampler
         ) const
 {
@@ -56,6 +57,9 @@ inline spectrum<U> plastic<T>::sample(
 
     spectrum<U>  diff(0.0);
     spectrum<U>  spec(0.0);
+
+    Interaction inter1(0);
+    Interaction inter2(0);
 
     auto prob_diff = mean_value( diffuse_brdf_.cd ) * diffuse_brdf_.kd;
     auto prob_spec = mean_value( specular_brdf_.cs ) * specular_brdf_.ks;
@@ -77,16 +81,17 @@ inline spectrum<U> plastic<T>::sample(
 
     if (any(u < U(prob_diff)))
     {
-        diff       = from_rgb(shade_rec.tex_color) * diffuse_brdf_.sample_f(n, shade_rec.view_dir, refl1, pdf1, sampler);
+        diff       = from_rgb(shade_rec.tex_color) * diffuse_brdf_.sample_f(n, shade_rec.view_dir, refl1, pdf1, inter1, sampler);
     }
 
     if (any(u >= U(prob_diff)))
     {
-        spec       = specular_brdf_.sample_f(n, shade_rec.view_dir, refl2, pdf2, sampler);
+        spec       = specular_brdf_.sample_f(n, shade_rec.view_dir, refl2, pdf2, inter2, sampler);
     }
 
-    pdf            = select( u < U(prob_diff), pdf1,  pdf2  );
-    refl_dir       = select( u < U(prob_diff), refl1, refl2 );
+    pdf            = select( u < U(prob_diff), pdf1,   pdf2   );
+    refl_dir       = select( u < U(prob_diff), refl1,  refl2  );
+    inter          = select( u < U(prob_diff), inter1, inter2 );
 
     return           select( u < U(prob_diff), diff,  spec  ) * (dot(n, refl_dir) / pdf);
 }

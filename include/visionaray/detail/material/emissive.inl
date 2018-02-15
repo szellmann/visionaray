@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/surface_interaction.h>
+
 namespace visionaray
 {
 
@@ -24,18 +26,20 @@ inline spectrum<typename SR::scalar_type> emissive<T>::shade(SR const& sr) const
 }
 
 template <typename T>
-template <typename SR, typename U, typename Sampler>
+template <typename SR, typename U, typename Interaction, typename Sampler>
 VSNRAY_FUNC
 inline spectrum<U> emissive<T>::sample(
         SR const&       shade_rec,
         vector<3, U>&   refl_dir,
         U&              pdf,
+        Interaction&    inter,
         Sampler&        sampler
         ) const
 {
     VSNRAY_UNUSED(refl_dir); // TODO?
     VSNRAY_UNUSED(sampler);
     pdf = U(1.0);
+    inter = Interaction(surface_interaction::Emission);
     return shade(shade_rec);
 }
 

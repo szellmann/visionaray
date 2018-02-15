@@ -43,16 +43,17 @@ inline spectrum<typename SR::scalar_type> generic_material<T, Ts...>::shade(SR c
 }
 
 template <typename T, typename ...Ts>
-template <typename SR, typename U, typename Sampler>
+template <typename SR, typename U, typename Interaction, typename Sampler>
 VSNRAY_FUNC
 inline spectrum<U> generic_material<T, Ts...>::sample(
         SR const&       sr,
         vector<3, U>&   refl_dir,
         U&              pdf,
+        Interaction&    inter,
         Sampler&        sampler
         ) const
 {
-    return apply_visitor( sample_visitor<SR, U, Sampler>(sr, refl_dir, pdf, sampler), *this );
+    return apply_visitor( sample_visitor<SR, U, Interaction, Sampler>(sr, refl_dir, pdf, inter, sampler), *this );
 }
 
 
@@ -114,16 +115,17 @@ struct generic_material<T, Ts...>::shade_visitor
 };
 
 template <typename T, typename ...Ts>
-template <typename SR, typename U, typename Sampler>
+template <typename SR, typename U, typename Interaction, typename Sampler>
 struct generic_material<T, Ts...>::sample_visitor
 {
     using return_type = spectrum<typename SR::scalar_type>;
 
     VSNRAY_FUNC
-    sample_visitor(SR const& sr, vector<3, U>& refl_dir, U& pdf, Sampler& sampler)
+    sample_visitor(SR const& sr, vector<3, U>& refl_dir, U& pdf, Interaction& inter, Sampler& sampler)
         : sr_(sr)
         , refl_dir_(refl_dir)
         , pdf_(pdf)
+        , inter_(inter)
         , sampler_(sampler)
     {
     }
@@ -132,12 +134,13 @@ struct generic_material<T, Ts...>::sample_visitor
     VSNRAY_FUNC
     return_type operator()(X const& ref) const
     {
-        return ref.sample(sr_, refl_dir_, pdf_, sampler_);
+        return ref.sample(sr_, refl_dir_, pdf_, inter_, sampler_);
     }
 
     SR const&       sr_;
     vector<3, U>&   refl_dir_;
     U&              pdf_;
+    Interaction&    inter_;
     Sampler&        sampler_;
 };
 
@@ -226,27 +229,31 @@ public:
     template <typename SR, typename S /* sampler */>
     VSNRAY_FUNC
     spectrum<scalar_type> sample(
-            SR const&               sr,
-            vector<3, scalar_type>& refl_dir,
-            scalar_type&            pdf,
-            S&                      samp
+            SR const&                sr,
+            vector<3, scalar_type>&  refl_dir,
+            scalar_type&             pdf,
+            int_type_t<scalar_type>& inter,
+            S&                       samp
             ) const
     {
         using float_array = aligned_array_t<scalar_type>;
+        using int_array = aligned_array_t<int_type_t<scalar_type>>;
 
         auto srs = unpack(sr);
 
         array<vector<3, float>, N> rds;
         float_array                pdfs;
+        int_array                  inters;
         array<spectrum<float>, N>  sampled;
 
         for (size_t i = 0; i < N; ++i)
         {
-            sampled[i] = mats_[i].sample(srs[i], rds[i], pdfs[i], samp.get_sampler(i));
+            sampled[i] = mats_[i].sample(srs[i], rds[i], pdfs[i], inters[i], samp.get_sampler(i));
         }
 
         refl_dir = pack(rds);
         pdf = scalar_type(pdfs);
+        inter = int_type_t<scalar_type>(inters);
         return pack(sampled);
     }
 

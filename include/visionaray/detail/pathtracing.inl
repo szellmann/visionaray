@@ -34,6 +34,7 @@ struct kernel
             ) const
     {
         using S = typename R::scalar_type;
+        using I = simd::int_type_t<S>;
         using V = typename result_record<S>::vec_type;
         using C = spectrum<S>;
 
@@ -79,8 +80,9 @@ struct kernel
             auto surf = get_surface(hit_rec, params);
 
             S pdf(0.0);
+            I inter = 0;
 
-            auto src = surf.sample(view_dir, refl_dir, pdf, s);
+            auto src = surf.sample(view_dir, refl_dir, pdf, inter, s);
 
             auto zero_pdf = pdf <= S(0.0);
             auto emissive = has_emissive_material(surf);

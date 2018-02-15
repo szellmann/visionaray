@@ -31,6 +31,7 @@ namespace visionaray
 //      modifiable parameter refl_dir:  outgoing light direction (computed by function,
 //                                      must be normalized)
 //      modifiable parameter pdf:       probability density function of the the sampled BRDF
+//      modifiable parameter inter:     interaction type for tracking (e.g. to perform MIS later)
 //      modifiable parameter sampler:   implements sampler interface to get pseudo random
 //                                      numbers or quasi random numbers
 //
@@ -95,12 +96,14 @@ public:
     template <typename SR>
     VSNRAY_FUNC spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
-    template <typename SR, typename U, typename Sampler>
+    template <typename SR, typename U, typename Interaction, typename Sampler>
     VSNRAY_FUNC spectrum<U> sample(
             SR const&       shade_rec,
             vector<3, U>&   refl_dir,
             U&              pdf,
-            Sampler&        sampler) const;
+            Interaction&    inter,
+            Sampler&        sampler
+            ) const;
 
     // deprecated!
     VSNRAY_FUNC void VSNRAY_DEPRECATED set_ce(spectrum<T> const& ce);
@@ -147,11 +150,12 @@ public:
     VSNRAY_FUNC
     spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
-    template <typename SR, typename U, typename Sampler>
+    template <typename SR, typename U, typename Interaction, typename Sampler>
     VSNRAY_FUNC spectrum<U> sample(
             SR const&       shade_rec,
             vector<3, U>&   refl_dir,
             U&              pdf,
+            Interaction&    inter,
             Sampler&        sampler
             ) const;
 
@@ -216,11 +220,12 @@ public:
     VSNRAY_FUNC
     spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
-    template <typename SR, typename U, typename Sampler>
+    template <typename SR, typename U, typename Interaction, typename Sampler>
     VSNRAY_FUNC spectrum<U> sample(
             SR const&       sr,
             vector<3, U>&   refl_dir,
             U&              pdf,
+            Interaction&    inter,
             Sampler&        sampler
             ) const;
 
@@ -282,11 +287,12 @@ public:
     VSNRAY_FUNC
     spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
-    template <typename SR, typename U, typename Sampler>
+    template <typename SR, typename U, typename Interaction, typename Sampler>
     VSNRAY_FUNC spectrum<U> sample(
             SR const&       sr,
             vector<3, U>&   refl_dir,
             U&              pdf,
+            Interaction&    inter,
             Sampler&        sampler
             ) const;
 
@@ -339,11 +345,12 @@ public:
     VSNRAY_FUNC
     spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
-    template <typename SR, typename U, typename Sampler>
+    template <typename SR, typename U, typename Interaction, typename Sampler>
     VSNRAY_FUNC spectrum<U> sample(
             SR const&       shade_rec,
             vector<3, U>&   refl_dir,
             U&              pdf,
+            Interaction&    inter,
             Sampler&        sampler
             ) const;
 
