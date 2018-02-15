@@ -322,6 +322,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/spectrum.h
     ${HEADER_DIR}/spot_light.h
     ${HEADER_DIR}/surface.h
+    ${HEADER_DIR}/surface_interaction.h
     ${HEADER_DIR}/swizzle.h
     ${HEADER_DIR}/tags.h
     ${HEADER_DIR}/traverse.h
