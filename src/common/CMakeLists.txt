@@ -105,7 +105,6 @@ set(COMMON_HEADERS
     async/connection_manager.h
     async/message.h
 
-    input/exception.h
     input/glut.h
     input/key_event.h
     input/keyboard.h
