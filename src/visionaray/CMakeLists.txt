@@ -352,7 +352,6 @@ set(VSNRAY_SOURCES
     gl/shader.cpp
     gl/util.cpp
 
-    exception.cpp
     pixel_format.cpp
     util.cpp
 

@@ -6,7 +6,7 @@
 #ifndef VSNRAY_EXCEPTION_H
 #define VSNRAY_EXCEPTION_H 1
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 #include <visionaray/detail/macros.h>
@@ -15,33 +15,13 @@
 namespace visionaray
 {
 
-class VSNRAY_EXPORT exception : public std::exception
+class VSNRAY_EXPORT not_implemented_yet : public std::logic_error
 {
 public:
-
-    exception(std::string const& what = "visionaray exception");
-    virtual ~exception() VSNRAY_NOEXCEPT {}
-
-    virtual char const* what() const VSNRAY_NOEXCEPT;
-    virtual char const* where() const VSNRAY_NOEXCEPT;
-
-protected:
-
-    std::string what_;
-    std::string where_;
-
-};
-
-
-class VSNRAY_EXPORT not_implemented_yet : public exception
-{
-public:
-
-    not_implemented_yet(std::string const& what = "not implemented yet")
-        : exception(what)
+    not_implemented_yet()
+        : std::logic_error("Not implemented yet")
     {
     }
-
 };
 
 } // visionaray
