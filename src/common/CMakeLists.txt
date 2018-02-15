@@ -126,6 +126,7 @@ set(COMMON_HEADERS
     blocking_queue.h
     call_kernel.h
     cfile.h
+    exception.h
     hdr_image.h
     image.h
     image_base.h

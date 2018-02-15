@@ -289,7 +289,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/brdf.h
     ${HEADER_DIR}/bvh.h
     ${HEADER_DIR}/cpu_buffer_rt.h
-    ${HEADER_DIR}/exception.h
     ${HEADER_DIR}/export.h
     ${HEADER_DIR}/fresnel.h
     ${HEADER_DIR}/generic_primitive.h

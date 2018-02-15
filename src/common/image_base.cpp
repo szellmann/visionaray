@@ -3,8 +3,7 @@
 
 #include <algorithm>
 
-#include <visionaray/exception.h>
-
+#include "exception.h"
 #include "image_base.h"
 
 namespace visionaray
