@@ -7,7 +7,6 @@
 #define VSNRAY_EXCEPTION_H 1
 
 #include <stdexcept>
-#include <string>
 
 #include <visionaray/detail/macros.h>
 #include <visionaray/export.h>
