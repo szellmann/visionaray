@@ -44,4 +44,11 @@ inline void area_light<Geometry>::sample(
     }
 }
 
+template <typename Geometry>
+VSNRAY_FUNC
+inline vector<3, float> area_light<Geometry>::position() const
+{
+    return get_bounds(geometry_).center();
+}
+
 } // visionaray

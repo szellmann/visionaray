@@ -38,6 +38,10 @@ public:
             Sampler& samp
             ) const;
 
+    // Return center of bounding box
+    // TODO: maybe return something more meaningful, e.g. center of gravity?
+    VSNRAY_FUNC vector<3, float> position() const;
+
 private:
 
     Geometry geometry_;
