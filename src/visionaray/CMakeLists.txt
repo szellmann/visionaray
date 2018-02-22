@@ -304,6 +304,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/material.h
     ${HEADER_DIR}/matrix_camera.h
     ${HEADER_DIR}/medium.h
+    ${HEADER_DIR}/morton.h
     ${HEADER_DIR}/packet_traits.h
     ${HEADER_DIR}/phase_function.h
     ${HEADER_DIR}/pinhole_camera.h
