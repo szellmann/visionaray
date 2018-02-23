@@ -92,8 +92,8 @@ TEST(Matrix, Inverse)
 
         // make some non-singular matrix
         mat2 A(1, 2, 3, 4);
-        mat2 B = inverse(A);std::cout << B << '\n';
-        mat2 C = A * B;std::cout << C << '\n';
+        mat2 B = inverse(A);
+        mat2 C = A * B;
 
         for_each_mat2_e(
             [&](int i, int j)
