@@ -112,6 +112,7 @@ set(UNITTESTS_SOURCES
     get_normal.cpp
     material.cpp
     medium.cpp
+    morton.cpp
     phase_function.cpp
     render_target.cpp
     sampling.cpp
