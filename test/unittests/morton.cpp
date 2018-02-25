@@ -27,3 +27,46 @@ TEST(Morton, Encode)
     z = morton_encode(1, 1, 1);
     ASSERT_EQ(z, 7);
 }
+
+TEST(Morton, Decode)
+{
+    vec3i p = morton_decode(0);
+    ASSERT_EQ(p.x, 0);
+    ASSERT_EQ(p.y, 0);
+    ASSERT_EQ(p.z, 0);
+
+    p = morton_decode(1);
+    ASSERT_EQ(p.x, 1);
+    ASSERT_EQ(p.y, 0);
+    ASSERT_EQ(p.z, 0);
+
+    p = morton_decode(2);
+    ASSERT_EQ(p.x, 0);
+    ASSERT_EQ(p.y, 1);
+    ASSERT_EQ(p.z, 0);
+
+    p = morton_decode(3);
+    ASSERT_EQ(p.x, 1);
+    ASSERT_EQ(p.y, 1);
+    ASSERT_EQ(p.z, 0);
+
+    p = morton_decode(4);
+    ASSERT_EQ(p.x, 0);
+    ASSERT_EQ(p.y, 0);
+    ASSERT_EQ(p.z, 1);
+
+    p = morton_decode(5);
+    ASSERT_EQ(p.x, 1);
+    ASSERT_EQ(p.y, 0);
+    ASSERT_EQ(p.z, 1);
+
+    p = morton_decode(6);
+    ASSERT_EQ(p.x, 0);
+    ASSERT_EQ(p.y, 1);
+    ASSERT_EQ(p.z, 1);
+
+    p = morton_decode(7);
+    ASSERT_EQ(p.x, 1);
+    ASSERT_EQ(p.y, 1);
+    ASSERT_EQ(p.z, 1);
+}
