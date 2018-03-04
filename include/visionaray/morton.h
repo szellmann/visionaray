@@ -42,10 +42,7 @@ inline vec3i morton_decode3D(int index)
         return n;
     };  
 
-    vec3i result(compact_bits(index));
-    result.y >>= 1;
-    result.z >>= 2;
-    return result;
+    return { compact_bits(index), compact_bits(index >> 1), compact_bits(index >> 2) };
 }
 
 } // visionaray
