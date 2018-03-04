@@ -14,6 +14,22 @@ namespace visionaray
 {
 
 VSNRAY_FUNC
+inline int morton_encode2D(int x, int y)
+{
+    auto separate_bits = [](int n)
+    {
+        n &= 0x0000FFFF;
+        n = (n ^ (n <<  8)) & 0x00FF00FF;
+        n = (n ^ (n <<  4)) & 0x0F0F0F0F;
+        n = (n ^ (n <<  2)) & 0x33333333;
+        n = (n ^ (n <<  1)) & 0x55555555;
+        return n;
+    };
+
+    return separate_bits(x) | (separate_bits(y) << 1);
+}
+
+VSNRAY_FUNC
 inline int morton_encode3D(int x, int y, int z)
 {
     auto separate_bits = [](int n)
@@ -27,6 +43,22 @@ inline int morton_encode3D(int x, int y, int z)
     };  
 
     return separate_bits(x) | (separate_bits(y) << 1) | (separate_bits(z) << 2); 
+}
+
+VSNRAY_FUNC
+inline vec2i morton_decode2D(int index)
+{
+    auto compact_bits = [](int n)
+    {
+        n &= 0x55555555;
+        n = (n ^ (n >>  1)) & 0x33333333;
+        n = (n ^ (n >>  2)) & 0x0F0F0F0F;
+        n = (n ^ (n >>  4)) & 0x00FF00FF;
+        n = (n ^ (n >>  8)) & 0x0000FFFF;
+        return n;
+    };
+
+    return { compact_bits(index), compact_bits(index >> 1) };
 }
 
 VSNRAY_FUNC
