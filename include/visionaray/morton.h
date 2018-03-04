@@ -14,7 +14,7 @@ namespace visionaray
 {
 
 VSNRAY_FUNC
-inline int morton_encode(int x, int y, int z)
+inline int morton_encode3D(int x, int y, int z)
 {
     auto separate_bits = [](int n)
     {
@@ -30,7 +30,7 @@ inline int morton_encode(int x, int y, int z)
 }
 
 VSNRAY_FUNC
-inline vec3i morton_decode(int index)
+inline vec3i morton_decode3D(int index)
 {
     auto compact_bits = [](int n)
     {
