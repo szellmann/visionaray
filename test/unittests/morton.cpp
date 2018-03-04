@@ -30,7 +30,6 @@ TEST(Morton, Encode)
 
 TEST(Morton, Decode)
 {
-#if 0
     vec3i p = morton_decode3D(0);
     ASSERT_EQ(p.x, 0);
     ASSERT_EQ(p.y, 0);
@@ -70,5 +69,4 @@ TEST(Morton, Decode)
     ASSERT_EQ(p.x, 1);
     ASSERT_EQ(p.y, 1);
     ASSERT_EQ(p.z, 1);
-#endif
 }
