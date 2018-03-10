@@ -24,7 +24,7 @@ namespace detail
 
 inline unsigned clz(unsigned val)
 {
-#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ > 0 // TODO: clz since Fermi
+#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
     return __clz(val);
 #else
     return __builtin_clz(val);
