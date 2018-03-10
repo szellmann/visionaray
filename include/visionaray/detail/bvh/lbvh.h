@@ -26,6 +26,8 @@ inline unsigned clz(unsigned val)
 {
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
     return __clz(val);
+#elif defined(_WIN32)
+    return __lzcnt(val);
 #else
     return __builtin_clz(val);
 #endif
