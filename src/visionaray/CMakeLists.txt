@@ -94,6 +94,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/bvh/get_tex_coord.h
     ${HEADER_DIR}/detail/bvh/hit_record.h
     ${HEADER_DIR}/detail/bvh/intersect.inl
+    ${HEADER_DIR}/detail/bvh/lbvh.h
     ${HEADER_DIR}/detail/bvh/prim_traits.h
     ${HEADER_DIR}/detail/bvh/sah.h
     ${HEADER_DIR}/detail/bvh/statistics.h
