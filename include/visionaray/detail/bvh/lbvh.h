@@ -60,9 +60,8 @@ struct lbvh_builder
     int find_split(int first, int last) const
     {
         int code_first = prim_refs[first].morton_code;
-        int code_last  = prim_refs[last].morton_code;
 
-        int common_prefix = clz(code_first ^ code_last);
+        int common_prefix = clz(code_first ^ prim_refs[last - 1].morton_code);
 
         int result = first;
         int step = last - first;
@@ -129,7 +128,7 @@ struct lbvh_builder
                     static_cast<int>(centroid.x),
                     static_cast<int>(centroid.y),
                     static_cast<int>(centroid.z)
-                    );std::cout << prim_refs[i].morton_code << '\n';
+                    );
         }
 
         std::cout << t.elapsed() << '\n';
