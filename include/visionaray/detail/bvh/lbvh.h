@@ -62,15 +62,21 @@ struct lbvh_builder
     int find_split(int first, int last) const
     {
         int code_first = prim_refs[first].morton_code;
+        int code_last  = prim_refs[last - 1].morton_code;
 
-        int common_prefix = clz(code_first ^ prim_refs[last - 1].morton_code);
+        if (code_first == code_last)
+        {
+            return (first + last - 1) / 2;
+        }
+
+        int common_prefix = clz(code_first ^ code_last);
 
         int result = first;
-        int step = last - first;
+        int step = last - first - 1;
 
         do
         {
-            step /= 2;
+            step = (step + 1) / 2;
             int next = result + step;
 
             if (next < last)
@@ -151,7 +157,7 @@ struct lbvh_builder
         int leaf_size = leaf.last - leaf.first;
 
         for (int i = 0; i < leaf_size; ++i)
-        {
+        {std::cout << leaf.first + i << '\n';
             indices.push_back(leaf.first + i);
         }
 
@@ -164,7 +170,7 @@ struct lbvh_builder
     template <typename Data>
     bool split(leaf_infos& childs, leaf_info const& leaf, Data const& data, int max_leaf_size)
     {
-        if (leaf.last - leaf.first == 1)
+        if (leaf.last - leaf.first <= 1/*max_leaf_size*/)
         {
             return false;
         }
@@ -172,10 +178,10 @@ struct lbvh_builder
         int split = find_split(leaf.first, leaf.last);
 
         childs[0].first = leaf.first;
-        childs[0].last = split;
-        childs[0].prim_bounds = combine(prim_bounds[leaf.first], prim_bounds[split]);
+        childs[0].last = split + 1;
+        childs[0].prim_bounds = combine(prim_bounds[leaf.first], prim_bounds[split + 1]);
 
-        childs[1].first = split;
+        childs[1].first = split + 1;
         childs[1].last = leaf.last;
         childs[1].prim_bounds = combine(prim_bounds[split + 1], prim_bounds[leaf.last]);
 
