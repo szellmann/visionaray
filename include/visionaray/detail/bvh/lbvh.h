@@ -22,9 +22,9 @@ namespace visionaray
 namespace detail
 {
 
-inline unsigned count_leading_zeros(unsigned val)
+inline unsigned clz(unsigned val)
 {
-#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ > 0 /*TODO: clz since Fermi*/
+#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ > 0 // TODO: clz since Fermi
     return __clz(val);
 #else
     return __builtin_clz(val);
@@ -59,6 +59,31 @@ struct lbvh_builder
     VSNRAY_FUNC
     int find_split(int first, int last) const
     {
+        int code_first = prim_refs[first].morton_code;
+        int code_last  = prim_refs[last].morton_code;
+
+        int common_prefix = clz(code_first ^ code_last);
+
+        int result = first;
+        int step = last - first;
+
+        do
+        {
+            step /= 2;
+            int next = result + step;
+
+            if (next < last)
+            {
+                int code = prim_refs[next].morton_code;
+                if (clz(code_first ^ code) > common_prefix)
+                {
+                    result = next;
+                }
+            }
+        }
+        while (step > 1);
+
+        return result;
     }
 
     template <typename I>
@@ -104,7 +129,7 @@ struct lbvh_builder
                     static_cast<int>(centroid.x),
                     static_cast<int>(centroid.y),
                     static_cast<int>(centroid.z)
-                    );
+                    );std::cout << prim_refs[i].morton_code << '\n';
         }
 
         std::cout << t.elapsed() << '\n';
