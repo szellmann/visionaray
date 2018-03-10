@@ -171,11 +171,11 @@ struct lbvh_builder
 
         childs[0].first = leaf.first;
         childs[0].last = split;
-        childs[0].prim_bounds = combine(prim_bounds[leaf.first], prim_bounds[split - 1]);
+        childs[0].prim_bounds = combine(prim_bounds[leaf.first], prim_bounds[split]);
 
         childs[1].first = split;
         childs[1].last = leaf.last;
-        childs[1].prim_bounds = combine(prim_bounds[split], prim_bounds[leaf.last - 1]);
+        childs[1].prim_bounds = combine(prim_bounds[split + 1], prim_bounds[leaf.last]);
 
         return true;
     }
