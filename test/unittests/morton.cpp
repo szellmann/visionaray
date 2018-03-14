@@ -37,6 +37,13 @@ TEST(Morton, Encode2D)
     ASSERT_EQ(z, 10);
     z = morton_encode2D(1, 3);
     ASSERT_EQ(z, 11);
+
+    // Diagonal, 2^0..2^29
+    for (int i = 0; i < 30; ++i)
+    {
+        z = morton_encode2D(2 << i, 2 << i);
+        ASSERT_EQ(z, (2 << i) * (2 << i) * 3);
+    }
 }
 
 TEST(Morton, Encode3D)
