@@ -12,10 +12,7 @@
 #include <visionaray/aligned_vector.h>
 #include <visionaray/morton.h>
 
-#include "/Users/stefan/visionaray/src/common/timer.h"
 #include <visionaray/math/io.h>
-#include <iostream>
-#include <ostream>
 
 namespace visionaray
 {
@@ -66,13 +63,13 @@ struct lbvh_builder
 
         if (code_first == code_last)
         {
-            return (first + last - 1) / 2;
+            return (first + last) / 2;
         }
 
         int common_prefix = clz(code_first ^ code_last);
 
         int result = first;
-        int step = last - first - 1;
+        int step = last - first;
 
         do
         {
@@ -97,13 +94,17 @@ struct lbvh_builder
     VSNRAY_FUNC
     leaf_info init(I first, I last)
     {
-        timer t;
-
         // Calculate bounding box for all primitives
-        // and centroids of primitive bounding boxes
 
         aabb scene_bounds;
         scene_bounds.invalidate();
+
+
+        // Also calculate bounding box for all centroids
+
+        aabb centroid_bounds;
+        centroid_bounds.invalidate();
+
 
         prim_bounds.resize(last - first);
         aligned_vector<vec3> centroids(last - first);
@@ -113,7 +114,9 @@ struct lbvh_builder
         {
             prim_bounds[i] = get_bounds(*it);
             scene_bounds.insert(prim_bounds[i]);
+
             centroids[i] = prim_bounds[i].center();
+            centroid_bounds.insert(centroids[i]);
         }
 
 
@@ -126,7 +129,7 @@ struct lbvh_builder
             vec3 centroid = centroids[i];
 
             // Express centroid in [0..1] relative to bounding box
-            centroid = (centroid - scene_bounds.center()) / scene_bounds.size();
+            centroid = (centroid - centroid_bounds.center()) / centroid_bounds.size();
 
             // Quantize centroid to 10-bit
             centroid = min(max(centroid * 1024.0f, vec3(0.0f)), vec3(1023.0f));
@@ -139,13 +142,7 @@ struct lbvh_builder
                     );
         }
 
-        std::cout << t.elapsed() << '\n';
-
-        t.reset();
-
         std::sort(prim_refs.begin(), prim_refs.end());
-
-        std::cout << t.elapsed() << '\n';
 
         return { 0, static_cast<int>(last - first), scene_bounds };
     }
@@ -154,14 +151,12 @@ struct lbvh_builder
     template <typename Indices>
     int insert_indices(Indices& indices, leaf_info const& leaf)
     {
-        int leaf_size = leaf.last - leaf.first;
-
-        for (int i = 0; i < leaf_size; ++i)
-        {std::cout << leaf.first + i << '\n';
-            indices.push_back(leaf.first + i);
+        for (int i = leaf.first; i < leaf.last; ++i)
+        {
+            indices.push_back(prim_refs[i].id);
         }
 
-        return leaf_size;
+        return leaf.last - leaf.first;
     }
 
     // Return true if the leaf should be split into two new leaves. In this case
@@ -170,7 +165,7 @@ struct lbvh_builder
     template <typename Data>
     bool split(leaf_infos& childs, leaf_info const& leaf, Data const& data, int max_leaf_size)
     {
-        if (leaf.last - leaf.first <= 1/*max_leaf_size*/)
+        if (leaf.last - leaf.first <= max_leaf_size)
         {
             return false;
         }
@@ -179,11 +174,25 @@ struct lbvh_builder
 
         childs[0].first = leaf.first;
         childs[0].last = split + 1;
-        childs[0].prim_bounds = combine(prim_bounds[leaf.first], prim_bounds[split + 1]);
+        childs[0].prim_bounds.invalidate();
+        for (int i = childs[0].first; i != childs[0].last; ++i)
+        {
+            childs[0].prim_bounds = combine(
+                    childs[0].prim_bounds,
+                    prim_bounds[prim_refs[i].id]
+                    );
+        }
 
         childs[1].first = split + 1;
         childs[1].last = leaf.last;
-        childs[1].prim_bounds = combine(prim_bounds[split + 1], prim_bounds[leaf.last]);
+        childs[1].prim_bounds.invalidate();
+        for (int i = childs[1].first; i != childs[1].last; ++i)
+        {
+            childs[1].prim_bounds = combine(
+                    childs[1].prim_bounds,
+                    prim_bounds[prim_refs[i].id]
+                    );
+        }
 
         return true;
     }
