@@ -66,7 +66,7 @@ struct lbvh_builder
             return (first + last) / 2;
         }
 
-        int common_prefix = clz(code_first ^ code_last);
+        unsigned common_prefix = clz(code_first ^ code_last);
 
         int result = first;
         int step = last - first;
