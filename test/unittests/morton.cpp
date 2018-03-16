@@ -38,8 +38,8 @@ TEST(Morton, Encode2D)
     z = morton_encode2D(1, 3);
     ASSERT_EQ(z, 11);
 
-    // Diagonal, 2^0..2^29
-    for (int i = 0; i < 30; ++i)
+    // Diagonal, 2^0..2^14
+    for (int i = 0; i < 14; ++i)
     {
         z = morton_encode2D(2 << i, 2 << i);
         ASSERT_EQ(z, (2 << i) * (2 << i) * 3);
