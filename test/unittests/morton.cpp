@@ -9,7 +9,7 @@ using namespace visionaray;
 
 TEST(Morton, Encode2D)
 {
-    int z;
+    unsigned z;
 
     z = morton_encode2D(0, 0);
     ASSERT_EQ(z, 0);
@@ -38,8 +38,8 @@ TEST(Morton, Encode2D)
     z = morton_encode2D(1, 3);
     ASSERT_EQ(z, 11);
 
-    // Diagonal, 2^0..2^14
-    for (int i = 0; i < 14; ++i)
+    // Diagonal, 2^0..2^15
+    for (unsigned i = 0; i < 15; ++i)
     {
         z = morton_encode2D(2 << i, 2 << i);
         ASSERT_EQ(z, (2 << i) * (2 << i) * 3);
@@ -48,7 +48,7 @@ TEST(Morton, Encode2D)
 
 TEST(Morton, Encode3D)
 {
-    int z;
+    unsigned z;
 
     z = morton_encode3D(0, 0, 0);
     ASSERT_EQ(z, 0);
@@ -71,7 +71,7 @@ TEST(Morton, Encode3D)
 
 TEST(Morton, Decode2D)
 {
-    vec2i p;
+    vec2ui p;
 
     p = morton_decode2D(0);
     ASSERT_EQ(p.x, 0);
@@ -124,7 +124,7 @@ TEST(Morton, Decode2D)
 
 TEST(Morton, Decode3D)
 {
-    vec3i p;
+    vec3ui p;
 
     p = morton_decode3D(0);
     ASSERT_EQ(p.x, 0);
