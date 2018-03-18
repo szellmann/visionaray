@@ -42,7 +42,7 @@ struct lbvh_builder
     struct prim_ref
     {
         int id;
-        int morton_code;
+        unsigned morton_code;
 
         bool operator<(prim_ref rhs) const
         {
@@ -58,8 +58,8 @@ struct lbvh_builder
     VSNRAY_FUNC
     int find_split(int first, int last) const
     {
-        int code_first = prim_refs[first].morton_code;
-        int code_last  = prim_refs[last - 1].morton_code;
+        unsigned code_first = prim_refs[first].morton_code;
+        unsigned code_last  = prim_refs[last - 1].morton_code;
 
         if (code_first == code_last)
         {
@@ -78,7 +78,7 @@ struct lbvh_builder
 
             if (next < last)
             {
-                int code = prim_refs[next].morton_code;
+                unsigned code = prim_refs[next].morton_code;
                 if (clz(code_first ^ code) > common_prefix)
                 {
                     result = next;
