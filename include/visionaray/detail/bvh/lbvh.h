@@ -21,6 +21,11 @@ namespace detail
 
 inline unsigned clz(unsigned val)
 {
+    if (val == 0)
+    {
+        return unsigned(-1);
+    }
+
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
     return __clz(val);
 #elif defined(_WIN32)
