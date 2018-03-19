@@ -57,7 +57,7 @@ inline auto intersect(
 
     RT result;
 
-    stack<32> st;
+    stack<64> st;
     st.push(0); // address of root node
 
     auto inv_dir = T(1.0) / ray.dir;
