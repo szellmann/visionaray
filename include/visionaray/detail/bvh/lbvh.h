@@ -21,11 +21,6 @@ namespace detail
 
 inline unsigned clz(unsigned val)
 {
-    if (val == 0)
-    {
-        return unsigned(-1);
-    }
-
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
     return __clz(val);
 #elif defined(_WIN32)
@@ -84,7 +79,7 @@ struct lbvh_builder
             if (next < last)
             {
                 unsigned code = prim_refs[next].morton_code;
-                if (clz(code_first ^ code) > common_prefix)
+                if (code_first == code || clz(code_first ^ code) > common_prefix)
                 {
                     result = next;
                 }
