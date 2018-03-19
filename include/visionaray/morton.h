@@ -46,7 +46,7 @@ inline unsigned morton_encode3D(unsigned x, unsigned y, unsigned z)
 }
 
 VSNRAY_FUNC
-inline vec2i morton_decode2D(unsigned index)
+inline vec2ui morton_decode2D(unsigned index)
 {
     auto compact_bits = [](unsigned n)
     {
@@ -62,7 +62,7 @@ inline vec2i morton_decode2D(unsigned index)
 }
 
 VSNRAY_FUNC
-inline vec3i morton_decode3D(unsigned index)
+inline vec3ui morton_decode3D(unsigned index)
 {
     auto compact_bits = [](unsigned n)
     {
