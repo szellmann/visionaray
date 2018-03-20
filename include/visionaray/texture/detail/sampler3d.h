@@ -125,7 +125,7 @@ inline FloatT tex3D_impl_expand_types(
 }
 
 
-// any texture, non-simd coordinates
+// any texture, simd coordinates
 
 template <
     typename T,
