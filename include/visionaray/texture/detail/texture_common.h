@@ -80,7 +80,7 @@ protected:
 
     std::array<tex_address_mode, Dim> address_mode_;
     tex_filter_mode                   filter_mode_;
-    bool                              normalized_coords_;
+    bool                              normalized_coords_ = true;
 
 };
 
