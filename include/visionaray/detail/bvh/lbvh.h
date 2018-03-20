@@ -142,7 +142,7 @@ struct lbvh_builder
                     );
         }
 
-        std::sort(prim_refs.begin(), prim_refs.end());
+        std::stable_sort(prim_refs.begin(), prim_refs.end());
 
         return { 0, static_cast<int>(last - first), scene_bounds };
     }
