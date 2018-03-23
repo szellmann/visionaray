@@ -126,7 +126,7 @@ private:
     // The acceptor object used to accept incoming socket connections.
     boost::asio::ip::tcp::acceptor acceptor_;
     // To protect the list of messages...
-    boost::asio::strand strand_;
+    boost::asio::io_service::strand strand_;
     // To keep the io_service running...
     std::shared_ptr<boost::asio::io_service::work> work_;
     // The list of active connections
