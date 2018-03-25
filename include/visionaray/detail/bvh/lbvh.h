@@ -129,6 +129,7 @@ struct lbvh_builder
             vec3 centroid = centroids[i];
 
             // Express centroid in [0..1] relative to bounding box
+            centroid -= centroid_bounds.center();
             centroid = (centroid + centroid_bounds.size() * 0.5f) / centroid_bounds.size();
 
             // Quantize centroid to 10-bit
