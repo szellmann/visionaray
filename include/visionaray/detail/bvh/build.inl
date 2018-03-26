@@ -7,6 +7,7 @@
 
 #include <visionaray/math/aabb.h>
 
+#include "lbvh.h"
 #include "sah.h"
 #include "../algorithm.h"
 
@@ -161,7 +162,20 @@ void build_tree(Tree& tree, Builder& builder, I first, I last, int max_leaf_size
 
 
 template <typename Tree, typename P>
-Tree build(P* primitives, size_t num_prims, bool enable_spatial_splits)
+Tree build(detail::lbvh_builder /* */, P* primitives, size_t num_prims)
+{
+    Tree tree(primitives, num_prims);
+
+    detail::lbvh_builder builder;
+
+    detail::build_tree(tree, builder, primitives, primitives + num_prims);
+
+    return tree;
+}
+
+
+template <typename Tree, typename P>
+Tree build(detail::binned_sah_builder /* */, P* primitives, size_t num_prims, bool enable_spatial_splits)
 {
     Tree tree(primitives, num_prims);
 
@@ -173,6 +187,22 @@ Tree build(P* primitives, size_t num_prims, bool enable_spatial_splits)
     detail::build_tree(tree, builder, primitives, primitives + num_prims);
 
     return tree;
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// Default: binned_sah builder
+//
+
+template <typename Tree, typename P>
+Tree build(P* primitives, size_t num_prims, bool enable_spatial_splits)
+{
+    return build<Tree>(
+            detail::binned_sah_builder{},
+            primitives,
+            num_prims,
+            enable_spatial_splits
+            );
 }
 
 
