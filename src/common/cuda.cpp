@@ -1,6 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <cuda_gl_interop.h>
 
 #include "cuda.h"
