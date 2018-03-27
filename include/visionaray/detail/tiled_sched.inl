@@ -9,6 +9,7 @@
 #include <thread>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include <visionaray/math/detail/math.h> // div_up
 #include <visionaray/random_sampler.h>
