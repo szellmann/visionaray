@@ -5,11 +5,11 @@
 #include <cassert>
 #include <condition_variable>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include <visionaray/math/detail/math.h> // div_up
 #include <visionaray/random_sampler.h>
@@ -122,31 +122,35 @@ struct tiled_sched<R>::impl
                 );
     }
 
-    std::vector<std::thread>    threads;
-    detail::sync_params         sync_params;
+    std::unique_ptr<std::thread[]> threads;
+    unsigned                       num_threads;
+    detail::sync_params            sync_params;
 
-    int                         width;
-    int                         height;
-    static const int            tile_width  = 16;
-    static const int            tile_height = 16;
-    recti                       scissor_box;
+    int                            width;
+    int                            height;
+    static const int               tile_width  = 16;
+    static const int               tile_height = 16;
+    recti                          scissor_box;
 
-    render_tile_func            render_tile;
+    render_tile_func               render_tile;
 };
 
 template <typename R>
 void tiled_sched<R>::impl::init_threads(unsigned num_threads)
 {
+    threads.reset(new std::thread[num_threads]);
+    this->num_threads = num_threads;
+
     for (unsigned i = 0; i < num_threads; ++i)
     {
-        threads.emplace_back([this](){ render_loop(); });
+        threads[i] = std::thread([this](){ render_loop(); });
     }
 }
 
 template <typename R>
 void tiled_sched<R>::impl::destroy_threads()
 {
-    if (threads.size() == 0)
+    if (num_threads == 0)
     {
         return;
     }
@@ -154,8 +158,10 @@ void tiled_sched<R>::impl::destroy_threads()
     sync_params.render_loop_exit = true;
     sync_params.threads_start.notify_all();
 
-    for (auto& t : threads)
+    for (unsigned i = 0; i < num_threads; ++i)
     {
+        std::thread& t = threads[i];
+
         if (t.joinable())
         {
             t.join();
@@ -163,7 +169,7 @@ void tiled_sched<R>::impl::destroy_threads()
     }
 
     sync_params.render_loop_exit = false;
-    threads.clear();
+    threads.reset(nullptr);
 }
 
 //-------------------------------------------------------------------------------------------------
