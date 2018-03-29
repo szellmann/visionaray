@@ -11,6 +11,7 @@
 #include <cassert>
 #include <memory>
 #include <thread>
+#include <type_traits>
 
 #include "../math/detail/math.h"
 #include "semaphore.h"
