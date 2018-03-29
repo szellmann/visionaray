@@ -13,6 +13,7 @@
 #endif
 
 #ifdef VSNRAY_DETAIL_SEMAPHORE_USE_STD
+#include <atomic>
 #include <condition_variable>
 #include <mutex>
 #else
@@ -35,7 +36,6 @@ public:
 
     void notify()
     {
-        std::unique_lock<std::mutex> l(mutex_);
         ++count_;
         cond_.notify_one();
     }
@@ -51,7 +51,7 @@ private:
 
     std::condition_variable cond_;
     std::mutex mutex_;
-    unsigned count_;
+    std::atomic<unsigned> count_;
 
 };
 
@@ -91,6 +91,5 @@ private:
 #endif
 
 } // visionaray
-
 
 #endif // VSNRAY_DETAIL_SEMAPHORE_H
