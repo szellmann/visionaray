@@ -27,7 +27,8 @@ namespace detail
 struct sync_params
 {
     sync_params()
-        : render_loop_exit(false)
+        : start_threads(false)
+        , render_loop_exit(false)
     {
     }
 
@@ -39,6 +40,7 @@ struct sync_params
     std::atomic<long>       tile_fin_counter;
     std::atomic<long>       tile_num;
 
+    bool                    start_threads;
     std::atomic<bool>       render_loop_exit;
 };
 
@@ -156,7 +158,12 @@ void tiled_sched<R>::impl::destroy_threads()
     }
 
     sync_params.render_loop_exit = true;
-    sync_params.threads_start.notify_all();
+
+    {
+        std::lock_guard<std::mutex> lock(sync_params.mutex);
+        sync_params.start_threads = true;
+        sync_params.threads_start.notify_all();
+    }
 
     for (unsigned i = 0; i < num_threads; ++i)
     {
@@ -168,6 +175,7 @@ void tiled_sched<R>::impl::destroy_threads()
         }
     }
 
+    sync_params.start_threads = false;
     sync_params.render_loop_exit = false;
     threads.reset(nullptr);
 }
@@ -183,7 +191,7 @@ void tiled_sched<R>::impl::render_loop()
     {
         {
             std::unique_lock<std::mutex> l( sync_params.mutex );
-            sync_params.threads_start.wait(l);
+            sync_params.threads_start.wait(l, [this](){ return sync_params.start_threads; });
         }
 
     // case event.exit:
@@ -311,9 +319,15 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     sparams.tile_num = numtilesx * numtilesy;
 
     // render frame
-    sparams.threads_start.notify_all();
+    {
+        std::lock_guard<std::mutex> lock(sparams.mutex);
+        sparams.start_threads = true;
+        sparams.threads_start.notify_all();
+    }
 
     sparams.threads_ready.wait();
+
+    sparams.start_threads = false;
 
     sched_params.rt.end_frame();
 
