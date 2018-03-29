@@ -12,8 +12,6 @@
 #include <visionaray/aligned_vector.h>
 #include <visionaray/morton.h>
 
-#include <visionaray/math/io.h>
-
 namespace visionaray
 {
 namespace detail
