@@ -55,6 +55,51 @@ private:
 };
 
 
+//-------------------------------------------------------------------------------------------------
+// Tiled range class
+//
+
+template <typename I>
+class tiled_range1d
+{
+public:
+    static_assert(std::is_integral<I>::value, "Type must be integral.");
+
+    tiled_range1d(I b, I e, I ts)
+        : begin_(b)
+        , end_(e)
+        , tile_size_(ts)
+    {   
+    }   
+
+    I&        begin()           { return begin_; }
+    I const&  begin()     const { return begin_; }
+    I const& cbegin()     const { return begin_; }
+
+    I&        end()             { return end_; }
+    I const&  end()       const { return end_; }
+    I const& cend()       const { return end_; }
+
+    I&        tile_size()       { return tile_size_; }
+    I const&  tile_size() const { return tile_size_; }
+
+    I length() const
+    {   
+        return (end_ - begin_) * tile_size_;
+    }   
+
+private:
+
+    I begin_;
+    I end_;
+    I tile_size_;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Thread pool
+//
+
 class thread_pool
 {
 public:
@@ -208,6 +253,26 @@ void parallel_for(thread_pool& pool, range1d<I> const& range, Func const& func)
 {
     unsigned len = static_cast<unsigned>(range.length());
     unsigned tile_size = div_up(len, pool.num_threads);
+    unsigned num_tiles = div_up(len, tile_size);
+
+    pool.run([&](long tile_index)
+        {
+            unsigned first = static_cast<unsigned>(tile_index) * tile_size;
+            unsigned last = std::min(first + tile_size, len);
+
+            for (unsigned i = first; i != last; ++i)
+            {
+                func(i);
+            }
+
+        }, static_cast<long>(num_tiles));
+}
+
+template <typename I, typename Func>
+void parallel_for(thread_pool& pool, tiled_range1d<I> const& range, Func const& func)
+{
+    unsigned len = static_cast<unsigned>(range.length());
+    unsigned tile_size = static_cast<unsigned>(range.tile_size());
     unsigned num_tiles = div_up(len, tile_size);
 
     pool.run([&](long tile_index)
