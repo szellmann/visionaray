@@ -162,8 +162,8 @@ void tiled_sched<R>::impl::destroy_threads()
     {
         std::lock_guard<std::mutex> lock(sync_params.mutex);
         sync_params.start_threads = true;
-        sync_params.threads_start.notify_all();
     }
+    sync_params.threads_start.notify_all();
 
     for (unsigned i = 0; i < num_threads; ++i)
     {
@@ -322,8 +322,8 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     {
         std::lock_guard<std::mutex> lock(sparams.mutex);
         sparams.start_threads = true;
-        sparams.threads_start.notify_all();
     }
+    sparams.threads_start.notify_all();
 
     sparams.threads_ready.wait();
 
