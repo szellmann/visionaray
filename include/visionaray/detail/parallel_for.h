@@ -69,8 +69,8 @@ public:
         : begin_(b)
         , end_(e)
         , tile_size_(ts)
-    {   
-    }   
+    {
+    }
 
     I&        begin()           { return begin_; }
     I const&  begin()     const { return begin_; }
@@ -84,9 +84,9 @@ public:
     I const&  tile_size() const { return tile_size_; }
 
     I length() const
-    {   
+    {
         return (end_ - begin_) * tile_size_;
-    }   
+    }
 
 private:
 
