@@ -277,13 +277,10 @@ void parallel_for(thread_pool& pool, tiled_range1d<I> const& range, Func const& 
 
     pool.run([&](long tile_index)
         {
-            unsigned first = static_cast<unsigned>(tile_index) * tile_size;
-            unsigned last = std::min(first + tile_size, len);
+            I first = static_cast<I>(tile_index) * static_cast<I>(tile_size);
+            I last = std::min(first + static_cast<I>(tile_size), static_cast<I>(len));
 
-            for (unsigned i = first; i != last; ++i)
-            {
-                func(i);
-            }
+            func(range1d<I>(first, last));
 
         }, static_cast<long>(num_tiles));
 }
