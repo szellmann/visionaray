@@ -39,9 +39,9 @@ public:
     I const&  begin() const { return begin_; }
     I const& cbegin() const { return begin_; }
 
-    I&        end()         { return end; }
-    I const&  end() const   { return end; }
-    I const& cend() const   { return end; }
+    I&        end()         { return end_; }
+    I const&  end() const   { return end_; }
+    I const& cend() const   { return end_; }
 
     I length() const
     {
