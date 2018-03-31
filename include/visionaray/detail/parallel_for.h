@@ -85,7 +85,7 @@ public:
 
     I length() const
     {
-        return (end_ - begin_) * tile_size_;
+        return end_ - begin_;
     }
 
 private:
