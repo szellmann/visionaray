@@ -120,40 +120,38 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     static const int dx = 16;
     static const int dy = 16;
 
+    static const int pw = packet_size<typename R::scalar_type>::w;
+    static const int ph = packet_size<typename R::scalar_type>::h;
+
     parallel_for(
         pool_,
         tiled_range2d<int>(0, w, dx, 0, h, dy),
         [&](range2d<int> const& r)
         {
-            using T = typename R::scalar_type;
-
-            int numx = dx / packet_size<T>::w;
-            int numy = dy / packet_size<T>::h;
-            for (int i = 0; i < numx * numy; ++i)
+            for (int y = r.col_begin(); y != r.col_end(); y += ph)
             {
-                vec2i pos(i % numx, i / numx);
-                int x = r.row_begin() + pos.x * packet_size<T>::w;
-                int y = r.col_begin() + pos.y * packet_size<T>::h;
-
-                recti xpixel(x, y, packet_size<T>::w - 1, packet_size<T>::h - 1);
-                if ( !overlapping(clip_rect, xpixel) )
+                for (int x = r.row_begin(); x != r.row_end(); x += pw)
                 {
-                    continue;
-                }
+                    recti xpixel(x, y, pw - 1, ph - 1);
+                    if ( !overlapping(clip_rect, xpixel) )
+                    {
+                        continue;
+                    }
 
-                tiled_sched_impl::call_sample_pixel(
-                        typename detail::sched_params_has_intersector<SP>::type(),
-                        R{},
-                        kernel,
-                        sched_params,
-                        samp,
-                        frame_num,
-                        x,
-                        y,
-                        w,
-                        h,
-                        sched_params.cam
-                        );
+                    tiled_sched_impl::call_sample_pixel(
+                            typename detail::sched_params_has_intersector<SP>::type(),
+                            R{},
+                            kernel,
+                            sched_params,
+                            samp,
+                            frame_num,
+                            x,
+                            y,
+                            w,
+                            h,
+                            sched_params.cam
+                            );
+                }
             }
         });
 
