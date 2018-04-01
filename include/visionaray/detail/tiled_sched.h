@@ -6,7 +6,7 @@
 #ifndef VSNRAY_DETAIL_TILED_SCHED_H
 #define VSNRAY_DETAIL_TILED_SCHED_H 1
 
-#include <memory>
+#include "parallel_for.h" // thread_pool
 
 namespace visionaray
 {
@@ -17,7 +17,6 @@ class tiled_sched
 public:
 
     explicit tiled_sched(unsigned num_threads);
-   ~tiled_sched();
 
     template <typename K, typename SP>
     void frame(K kernel, SP sched_params, unsigned frame_num = 0);
@@ -26,8 +25,7 @@ public:
 
 private:
 
-    struct impl;
-    std::unique_ptr<impl> const impl_;
+    thread_pool pool_;
 
 };
 

@@ -11,279 +11,81 @@
 #include <type_traits>
 #include <utility>
 
-#include <visionaray/math/detail/math.h> // div_up
 #include <visionaray/random_sampler.h>
 
-#include "macros.h"
+#include "parallel_for.h"
 #include "sched_common.h"
-#include "semaphore.h"
 
 namespace visionaray
 {
-
-namespace detail
+namespace tiled_sched_impl
 {
-
-struct sync_params
-{
-    sync_params()
-        : start_threads(false)
-        , render_loop_exit(false)
-    {
-    }
-
-    std::mutex mutex;
-    std::condition_variable threads_start;
-    visionaray::semaphore   threads_ready;
-
-    std::atomic<long>       tile_idx_counter;
-    std::atomic<long>       tile_fin_counter;
-    std::atomic<long>       tile_num;
-
-    std::atomic<bool>       start_threads;
-    std::atomic<bool>       render_loop_exit;
-};
-
-
-} // detail
-
 
 //-------------------------------------------------------------------------------------------------
-// Private implementation
+// Generate primary ray and sample pixel
 //
 
-template <typename R>
-struct tiled_sched<R>::impl
+template <typename R, typename K, typename SP, typename Sampler, typename ...Args>
+void call_sample_pixel(
+        std::false_type /* has intersector */,
+        R               /* */,
+        K               kernel,
+        SP              sparams,
+        Sampler&        samp,
+        unsigned        frame_num,
+        Args&&...       args
+        )
 {
-    // TODO: any sampler
-    typedef std::function<void(recti const&, random_sampler<typename R::scalar_type>&)> render_tile_func;
+    auto r = detail::make_primary_rays(
+            R{},
+            typename SP::pixel_sampler_type{},
+            samp,
+            std::forward<Args>(args)...
+            );
 
-    void init_threads(unsigned num_threads);
-    void destroy_threads();
-
-    void render_loop();
-
-    template <typename K, typename SP>
-    void init_render_func(K kernel, SP sparams, unsigned frame_num);
-
-    template <typename K, typename SP, typename Sampler, typename ...Args>
-    void call_sample_pixel(
-            std::false_type /* has intersector */,
-            K               kernel,
-            SP              sparams,
-            Sampler&        samp,
-            unsigned        frame_num,
-            Args&&...       args
-            )
-    {
-        auto r = detail::make_primary_rays(
-                R{},
-                typename SP::pixel_sampler_type{},
-                samp,
-                std::forward<Args>(args)...
-                );
-
-        sample_pixel(
-                kernel,
-                typename SP::pixel_sampler_type(),
-                r,
-                samp,
-                frame_num,
-                sparams.rt.ref(),
-                std::forward<Args>(args)...
-                );
-    }
-
-    template <typename K, typename SP, typename Sampler, typename ...Args>
-    void call_sample_pixel(
-            std::true_type  /* has intersector */,
-            K               kernel,
-            SP              sparams,
-            Sampler&        samp,
-            unsigned        frame_num,
-            Args&&...       args
-            )
-    {
-        auto r = detail::make_primary_rays(
-                R{},
-                typename SP::pixel_sampler_type{},
-                samp,
-                std::forward<Args>(args)...
-                );
-
-        sample_pixel(
-                detail::have_intersector_tag(),
-                sparams.intersector,
-                kernel,
-                typename SP::pixel_sampler_type(),
-                r,
-                samp,
-                frame_num,
-                sparams.rt.ref(),
-                std::forward<Args>(args)...
-                );
-    }
-
-    std::unique_ptr<std::thread[]> threads;
-    unsigned                       num_threads;
-    detail::sync_params            sync_params;
-
-    int                            width;
-    int                            height;
-    static const int               tile_width  = 16;
-    static const int               tile_height = 16;
-    recti                          scissor_box;
-
-    render_tile_func               render_tile;
-};
-
-template <typename R>
-void tiled_sched<R>::impl::init_threads(unsigned num_threads)
-{
-    threads.reset(new std::thread[num_threads]);
-    this->num_threads = num_threads;
-
-    for (unsigned i = 0; i < num_threads; ++i)
-    {
-        threads[i] = std::thread([this](){ render_loop(); });
-    }
+    sample_pixel(
+            kernel,
+            typename SP::pixel_sampler_type(),
+            r,
+            samp,
+            frame_num,
+            sparams.rt.ref(),
+            std::forward<Args>(args)...
+            );
 }
 
-template <typename R>
-void tiled_sched<R>::impl::destroy_threads()
+template <typename R, typename K, typename SP, typename Sampler, typename ...Args>
+void call_sample_pixel(
+        std::true_type  /* has intersector */,
+        R               /* */,
+        K               kernel,
+        SP              sparams,
+        Sampler&        samp,
+        unsigned        frame_num,
+        Args&&...       args
+        )
 {
-    if (num_threads == 0)
-    {
-        return;
-    }
+    auto r = detail::make_primary_rays(
+            R{},
+            typename SP::pixel_sampler_type{},
+            samp,
+            std::forward<Args>(args)...
+            );
 
-    sync_params.render_loop_exit = true;
-    sync_params.start_threads = true;
-    sync_params.threads_start.notify_all();
-
-    for (unsigned i = 0; i < num_threads; ++i)
-    {
-        std::thread& t = threads[i];
-
-        if (t.joinable())
-        {
-            t.join();
-        }
-    }
-
-    sync_params.start_threads = false;
-    sync_params.render_loop_exit = false;
-    threads.reset(nullptr);
+    sample_pixel(
+            detail::have_intersector_tag(),
+            sparams.intersector,
+            kernel,
+            typename SP::pixel_sampler_type(),
+            r,
+            samp,
+            frame_num,
+            sparams.rt.ref(),
+            std::forward<Args>(args)...
+            );
 }
 
-//-------------------------------------------------------------------------------------------------
-// Main render loop
-//
-
-template <typename R>
-void tiled_sched<R>::impl::render_loop()
-{
-    for (;;)
-    {
-        {
-            std::unique_lock<std::mutex> l( sync_params.mutex );
-            auto const& start_threads = sync_params.start_threads;
-            sync_params.threads_start.wait(
-                    l,
-                    [&start_threads]()
-                        -> std::atomic<bool> const&
-                    {
-                        return start_threads;
-                    }
-                    );
-        }
-
-    // case event.exit:
-        if (sync_params.render_loop_exit)
-        {
-            break;
-        }
-
-    // case event.render:
-        random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
-        for (;;)
-        {
-            auto tile_idx = sync_params.tile_idx_counter.fetch_add(1);
-
-            if (tile_idx >= sync_params.tile_num)
-            {
-                break;
-            }
-
-            auto tilew = tile_width;
-            auto tileh = tile_height;
-            auto numtilesx = div_up( width, tilew );
-
-            recti tile(
-                    (tile_idx % numtilesx) * tilew,
-                    (tile_idx / numtilesx) * tileh,
-                    tilew,
-                    tileh
-                    );
-
-            render_tile(tile, samp);
-
-            auto num_tiles_fin = sync_params.tile_fin_counter.fetch_add(1);
-
-            if (num_tiles_fin >= sync_params.tile_num - 1)
-            {
-                assert(num_tiles_fin == sync_params.tile_num - 1);
-                sync_params.threads_ready.notify();
-                break;
-            }
-        }
-    }
-}
-
-template <typename R>
-template <typename K, typename SP>
-void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame_num)
-{
-    using T = typename R::scalar_type;
-
-    width       = sparams.rt.width();
-    height      = sparams.rt.height();
-    scissor_box = sparams.scissor_box;
-
-    recti clip_rect(scissor_box.x, scissor_box.y, scissor_box.w - 1, scissor_box.h - 1);
-
-    render_tile = [=](recti const& tile, random_sampler<T>& samp)
-    {
-        int numx = tile_width  / packet_size<T>::w;
-        int numy = tile_height / packet_size<T>::h;
-        for (int i = 0; i < numx * numy; ++i)
-        {
-            vec2i pos(i % numx, i / numx);
-            int x = tile.x + pos.x * packet_size<T>::w;
-            int y = tile.y + pos.y * packet_size<T>::h;
-
-            recti xpixel(x, y, packet_size<T>::w - 1, packet_size<T>::h - 1);
-            if ( !overlapping(clip_rect, xpixel) )
-            {
-                continue;
-            }
-
-            call_sample_pixel(
-                    typename detail::sched_params_has_intersector<SP>::type(),
-                    kernel,
-                    sparams,
-                    samp,
-                    frame_num,
-                    x,
-                    y,
-                    sparams.rt.width(),
-                    sparams.rt.height(),
-                    sparams.cam
-                    );
-        }
-    };
-}
-
+} // tiled_sched_impl
 
 
 //-------------------------------------------------------------------------------------------------
@@ -292,15 +94,8 @@ void tiled_sched<R>::impl::init_render_func(K kernel, SP sparams, unsigned frame
 
 template <typename R>
 tiled_sched<R>::tiled_sched(unsigned num_threads)
-    : impl_(new impl())
+    : pool_(num_threads)
 {
-    impl_->init_threads(num_threads);
-}
-
-template <typename R>
-tiled_sched<R>::~tiled_sched()
-{
-    impl_->destroy_threads();
 }
 
 template <typename R>
@@ -311,24 +106,57 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 
     sched_params.rt.begin_frame();
 
-    impl_->init_render_func(kernel, sched_params, frame_num);
+    random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
 
-    auto numtilesx = div_up(impl_->width,  impl_->tile_width);
-    auto numtilesy = div_up(impl_->height, impl_->tile_height);
+    recti clip_rect(
+            sched_params.scissor_box.x,
+            sched_params.scissor_box.y,
+            sched_params.scissor_box.w - 1,
+            sched_params.scissor_box.h - 1
+            );
 
-    auto& sparams = impl_->sync_params;
+    int w = sched_params.rt.width();
+    int h = sched_params.rt.height();
 
-    sparams.tile_idx_counter = 0;
-    sparams.tile_fin_counter = 0;
-    sparams.tile_num = numtilesx * numtilesy;
+    static const int dx = 16;
+    static const int dy = 16;
 
-    // render frame
-    sparams.start_threads = true;
-    sparams.threads_start.notify_all();
+    parallel_for(
+        pool_,
+        tiled_range2d<int>(0, w, dx, 0, h, dy),
+        [&](range2d<int> const& r)
+        {
+            using T = typename R::scalar_type;
 
-    sparams.threads_ready.wait();
+            int numx = dx / packet_size<T>::w;
+            int numy = dy / packet_size<T>::h;
+            for (int i = 0; i < numx * numy; ++i)
+            {
+                vec2i pos(i % numx, i / numx);
+                int x = r.row_begin() + pos.x * packet_size<T>::w;
+                int y = r.col_begin() + pos.y * packet_size<T>::h;
 
-    sparams.start_threads = false;
+                recti xpixel(x, y, packet_size<T>::w - 1, packet_size<T>::h - 1);
+                if ( !overlapping(clip_rect, xpixel) )
+                {
+                    continue;
+                }
+
+                tiled_sched_impl::call_sample_pixel(
+                        typename detail::sched_params_has_intersector<SP>::type(),
+                        R{},
+                        kernel,
+                        sched_params,
+                        samp,
+                        frame_num,
+                        x,
+                        y,
+                        w,
+                        h,
+                        sched_params.cam
+                        );
+            }
+        });
 
     sched_params.rt.end_frame();
 
@@ -338,13 +166,12 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 template <typename R>
 void tiled_sched<R>::reset(unsigned num_threads)
 {
-    if (static_cast<unsigned>(impl_->threads.size()) == num_threads)
+    if (pool_.num_threads == num_threads)
     {
         return;
     }
 
-    impl_->destroy_threads();
-    impl_->init_threads(num_threads);
+    pool_.reset(num_threads);
 }
 
 } // visionaray
