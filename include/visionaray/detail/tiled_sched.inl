@@ -105,8 +105,6 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 
     sched_params.rt.begin_frame();
 
-    random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
-
     int w = sched_params.rt.width();
     int h = sched_params.rt.height();
 
@@ -119,12 +117,14 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     parallel_for(
         pool_,
         tiled_range2d<int>(0, w, dx, 0, h, dy),
-        [&](range2d<int> const& r)
+        [=](range2d<int> const& r)
         {
             for (int y = r.col_begin(); y < r.col_end(); y += ph)
             {
                 for (int x = r.row_begin(); x < r.row_end(); x += pw)
                 {
+                    random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
+
                     tiled_sched_impl::call_sample_pixel(
                             typename detail::sched_params_has_intersector<SP>::type(),
                             R{},
