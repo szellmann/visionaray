@@ -107,13 +107,6 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 
     random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
 
-    recti clip_rect(
-            sched_params.scissor_box.x,
-            sched_params.scissor_box.y,
-            sched_params.scissor_box.w - 1,
-            sched_params.scissor_box.h - 1
-            );
-
     int w = sched_params.rt.width();
     int h = sched_params.rt.height();
 
@@ -128,16 +121,10 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
         tiled_range2d<int>(0, w, dx, 0, h, dy),
         [&](range2d<int> const& r)
         {
-            for (int y = r.col_begin(); y != r.col_end(); y += ph)
+            for (int y = r.col_begin(); y < r.col_end(); y += ph)
             {
-                for (int x = r.row_begin(); x != r.row_end(); x += pw)
+                for (int x = r.row_begin(); x < r.row_end(); x += pw)
                 {
-                    recti xpixel(x, y, pw - 1, ph - 1);
-                    if ( !overlapping(clip_rect, xpixel) )
-                    {
-                        continue;
-                    }
-
                     tiled_sched_impl::call_sample_pixel(
                             typename detail::sched_params_has_intersector<SP>::type(),
                             R{},
