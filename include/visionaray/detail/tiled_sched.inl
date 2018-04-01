@@ -11,7 +11,13 @@
 #include <type_traits>
 #include <utility>
 
+#if VSNRAY_HAVE_TBB
+#include <tbb/blocked_range2d.h>
+#include <tbb/parallel_for.h>
+#else
 #include "../parallel_for.h"
+#endif
+
 #include "../random_sampler.h"
 #include "sched_common.h"
 
@@ -105,19 +111,26 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 
     sched_params.rt.begin_frame();
 
-    int w = sched_params.rt.width();
-    int h = sched_params.rt.height();
+    int pw = packet_size<typename R::scalar_type>::w;
+    int ph = packet_size<typename R::scalar_type>::h;
 
-    static const int dx = 16;
-    static const int dy = 16;
+    // Tile size must be be a multiple of packet size.
+    int dx = round_up(16, pw);
+    int dy = round_up(16, ph);
 
-    static const int pw = packet_size<typename R::scalar_type>::w;
-    static const int ph = packet_size<typename R::scalar_type>::h;
+    int nx = round_up(static_cast<int>(sched_params.rt.width()), dx);
+    int ny = round_up(static_cast<int>(sched_params.rt.height()), dy);
 
+#if VSNRAY_HAVE_TBB
+    tbb::parallel_for(
+        tbb::blocked_range2d<int>(0, nx, dx, 0, ny, dy),
+        [=](tbb::blocked_range2d<int> const& r)
+#else
     parallel_for(
         pool_,
-        tiled_range2d<int>(0, w, dx, 0, h, dy),
+        tiled_range2d<int>(0, nx, dx, 0, ny, dy),
         [=](range2d<int> const& r)
+#endif
         {
             for (int y = r.cols().begin(); y < r.cols().end(); y += ph)
             {
@@ -134,8 +147,8 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                             frame_num,
                             x,
                             y,
-                            w,
-                            h,
+                            sched_params.rt.width(),
+                            sched_params.rt.height(),
                             sched_params.cam
                             );
                 }
@@ -150,12 +163,16 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
 template <typename R>
 void tiled_sched<R>::reset(unsigned num_threads)
 {
+#if VSNRAY_HAVE_TBB
+    pool_ = tbb::task_scheduler_init(num_threads);
+#else
     if (pool_.num_threads == num_threads)
     {
         return;
     }
 
     pool_.reset(num_threads);
+#endif
 }
 
 } // visionaray

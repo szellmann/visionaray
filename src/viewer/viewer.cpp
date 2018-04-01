@@ -55,8 +55,18 @@
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 
-#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-#include <visionaray/experimental/tbb_sched.h>
+#if defined(__INTEL_COMPILER)
+#include <visionaray/config.h>
+#if !VSNRAY_HAVE_TBB
+#error "TBB required with Intel compiler"
+#endif
+#endif
+
+#if defined(__MINGW32__) || defined(__MINGW64__)
+#include <visionaray/config.h>
+#if !VSNRAY_HAVE_TBB
+#error "TBB required with MinGW compiler"
+#endif
 #endif
 
 #ifdef __CUDACC__

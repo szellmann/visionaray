@@ -6,7 +6,13 @@
 #ifndef VSNRAY_DETAIL_TILED_SCHED_H
 #define VSNRAY_DETAIL_TILED_SCHED_H 1
 
+#include <visionaray/config.h>
+
+#if VSNRAY_HAVE_TBB
+#include <tbb/task_scheduler_init.h>
+#else
 #include "../thread_pool.h"
+#endif
 
 namespace visionaray
 {
@@ -25,7 +31,11 @@ public:
 
 private:
 
+#if VSNRAY_HAVE_TBB
+    tbb::task_scheduler_init pool_;
+#else
     thread_pool pool_;
+#endif
 
 };
 
