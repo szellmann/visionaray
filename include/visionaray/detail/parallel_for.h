@@ -243,7 +243,7 @@ public:
 
         for (unsigned i = 0; i < num_threads; ++i)
         {
-            threads[i] = std::thread([this,i](){ thread_loop(i); });
+            threads[i] = std::thread([this](){ thread_loop(); });
         }
     }
 
@@ -316,14 +316,13 @@ private:
         std::atomic<long>       work_items_finished_counter;
     } sync_params;
 
-    void thread_loop(unsigned id)
+    void thread_loop()
     {
         for (;;)
         {
             // Wait until activated
             {
                 std::unique_lock<std::mutex> lock(sync_params.mutex);
-                auto const& start_threads = sync_params.start_threads;
                 sync_params.threads_start.wait(
                         lock,
                         [this]()
