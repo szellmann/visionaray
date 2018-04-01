@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "math/detail/math.h"
+#include "thread_pool.h"
 
 namespace visionaray
 {
