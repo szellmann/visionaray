@@ -62,46 +62,21 @@ public:
     static_assert(std::is_integral<I>::value, "Type must be integral.");
 
     range2d(I rb, I re, I cb, I ce)
-        : row_begin_(rb)
-        , row_end_(re)
-        , col_begin_(cb)
-        , col_end_(ce)
+        : rows_(rb, re)
+        , cols_(cb, ce)
     {
     }
 
-    I&        row_begin()           { return row_begin_; }
-    I const&  row_begin()     const { return row_begin_; }
-    I const& crow_begin()     const { return row_begin_; }
+    range1d<I>& rows()             { return rows_; }
+    range1d<I> const& rows() const { return rows_; }
 
-    I&        row_end()             { return row_end_; }
-    I const&  row_end()       const { return row_end_; }
-    I const& crow_end()       const { return row_end_; }
-
-    I&        col_begin()           { return col_begin_; }
-    I const&  col_begin()     const { return col_begin_; }
-    I const& ccol_begin()     const { return col_begin_; }
-
-    I&        col_end()             { return col_end_; }
-    I const&  col_end()       const { return col_end_; }
-    I const& ccol_end()       const { return col_end_; }
-
-    I row_length() const
-    {
-        return row_end_ - row_begin_;
-    }
-
-    I col_length() const
-    {
-        return col_end_ - col_begin_;
-    }
+    range1d<I>& cols()             { return cols_; }
+    range1d<I> const& cols() const { return cols_; }
 
 private:
 
-    I row_begin_;
-    I row_end_;
-
-    I col_begin_;
-    I col_end_;
+    range1d<I> rows_;
+    range1d<I> cols_;
 };
 
 
@@ -157,56 +132,21 @@ public:
     static_assert(std::is_integral<I>::value, "Type must be integral.");
 
     tiled_range2d(I rb, I re, I rts, I cb, I ce, I cts)
-        : row_begin_(rb)
-        , row_end_(re)
-        , row_tile_size_(rts)
-        , col_begin_(cb)
-        , col_end_(ce)
-        , col_tile_size_(cts)
+        : rows_(rb, re, rts)
+        , cols_(cb, ce, cts)
     {
     }
 
-    I&        row_begin()           { return row_begin_; }
-    I const&  row_begin()     const { return row_begin_; }
-    I const& crow_begin()     const { return row_begin_; }
+    tiled_range1d<I>& rows()             { return rows_; }
+    tiled_range1d<I> const& rows() const { return rows_; }
 
-    I&        row_end()             { return row_end_; }
-    I const&  row_end()       const { return row_end_; }
-    I const& crow_end()       const { return row_end_; }
-
-    I&        row_tile_size()       { return row_tile_size_; }
-    I const&  row_tile_size() const { return row_tile_size_; }
-
-    I&        col_begin()           { return col_begin_; }
-    I const&  col_begin()     const { return col_begin_; }
-    I const& ccol_begin()     const { return col_begin_; }
-
-    I&        col_end()             { return col_end_; }
-    I const&  col_end()       const { return col_end_; }
-    I const& ccol_end()       const { return col_end_; }
-
-    I&        col_tile_size()       { return col_tile_size_; }
-    I const&  col_tile_size() const { return col_tile_size_; }
-
-    I row_length() const
-    {
-        return row_end_ - row_begin_;
-    }
-
-    I col_length() const
-    {
-        return col_end_ - col_begin_;
-    }
+    tiled_range1d<I>& cols()             { return cols_; }
+    tiled_range1d<I> const& cols() const { return cols_; }
 
 private:
 
-    I row_begin_;
-    I row_end_;
-    I row_tile_size_;
-
-    I col_begin_;
-    I col_end_;
-    I col_tile_size_;
+    tiled_range1d<I> rows_;
+    tiled_range1d<I> cols_;
 };
 
 
@@ -254,10 +194,10 @@ void parallel_for(thread_pool& pool, tiled_range1d<I> const& range, Func const& 
 template <typename I, typename Func>
 void parallel_for(thread_pool& pool, tiled_range2d<I> const& range, Func const& func)
 {
-    I width = range.row_length();
-    I height = range.col_length();
-    I tile_width = range.row_tile_size();
-    I tile_height = range.col_tile_size();
+    I width = range.rows().length();
+    I height = range.cols().length();
+    I tile_width = range.rows().tile_size();
+    I tile_height = range.cols().tile_size();
     I num_tiles_x = div_up(width, tile_width);
     I num_tiles_y = div_up(height, tile_height);
 

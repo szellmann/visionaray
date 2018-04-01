@@ -119,9 +119,9 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
         tiled_range2d<int>(0, w, dx, 0, h, dy),
         [=](range2d<int> const& r)
         {
-            for (int y = r.col_begin(); y < r.col_end(); y += ph)
+            for (int y = r.cols().begin(); y < r.cols().end(); y += ph)
             {
-                for (int x = r.row_begin(); x < r.row_end(); x += pw)
+                for (int x = r.rows().begin(); x < r.rows().end(); x += pw)
                 {
                     random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
 
