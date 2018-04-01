@@ -254,19 +254,22 @@ void parallel_for(thread_pool& pool, tiled_range1d<I> const& range, Func const& 
 template <typename I, typename Func>
 void parallel_for(thread_pool& pool, tiled_range2d<I> const& range, Func const& func)
 {
-    unsigned tile_width = static_cast<unsigned>(range.row_tile_size());
-    unsigned tile_height = static_cast<unsigned>(range.col_tile_size());
-    unsigned num_tiles_x = div_up(static_cast<unsigned>(range.row_length()), tile_width);
-    unsigned num_tiles_y = div_up(static_cast<unsigned>(range.col_length()), tile_height);
+    I width = range.row_length();
+    I height = range.col_length();
+    I tile_width = range.row_tile_size();
+    I tile_height = range.col_tile_size();
+    I num_tiles_x = div_up(width, tile_width);
+    I num_tiles_y = div_up(height, tile_height);
 
-    pool.run([&](long tile_index)
+    pool.run([=](long tile_index)
         {
-            func(range2d<I>(
-                    (tile_index % num_tiles_x) * tile_width,
-                    tile_width,
-                    (tile_index / num_tiles_x) * tile_height,
-                    tile_height
-                    ));
+            I first_x = (tile_index % num_tiles_x) * tile_width;
+            I last_x = std::min(first_x + tile_width, width);
+
+            I first_y = (tile_index / num_tiles_x) * tile_height;
+            I last_y = std::min(first_y + tile_height, height);
+
+            func(range2d<I>(first_x, last_x, first_y, last_y));
 
         }, static_cast<long>(num_tiles_x * num_tiles_y));
 }
