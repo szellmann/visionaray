@@ -157,16 +157,16 @@ private:
 template <typename I, typename Func>
 void parallel_for(thread_pool& pool, range1d<I> const& range, Func const& func)
 {
-    unsigned len = static_cast<unsigned>(range.length());
-    unsigned tile_size = div_up(len, pool.num_threads);
-    unsigned num_tiles = div_up(len, tile_size);
+    I len = range.length();
+    I tile_size = div_up(len, static_cast<I>(pool.num_threads));
+    I num_tiles = div_up(len, tile_size);
 
-    pool.run([&](long tile_index)
+    pool.run([=](long tile_index)
         {
-            unsigned first = static_cast<unsigned>(tile_index) * tile_size;
-            unsigned last = std::min(first + tile_size, len);
+            I first = static_cast<I>(tile_index) * tile_size;
+            I last = std::min(first + tile_size, len);
 
-            for (unsigned i = first; i != last; ++i)
+            for (I i = first; i != last; ++i)
             {
                 func(i);
             }
@@ -177,14 +177,15 @@ void parallel_for(thread_pool& pool, range1d<I> const& range, Func const& func)
 template <typename I, typename Func>
 void parallel_for(thread_pool& pool, tiled_range1d<I> const& range, Func const& func)
 {
-    unsigned len = static_cast<unsigned>(range.length());
-    unsigned tile_size = static_cast<unsigned>(range.tile_size());
-    unsigned num_tiles = div_up(len, tile_size);
+    I beg = range.begin();
+    I len = range.length();
+    I tile_size = range.tile_size();
+    I num_tiles = div_up(len, tile_size);
 
-    pool.run([&](long tile_index)
+    pool.run([=](long tile_index)
         {
-            I first = static_cast<I>(tile_index) * static_cast<I>(tile_size);
-            I last = std::min(first + static_cast<I>(tile_size), static_cast<I>(len));
+            I first = static_cast<I>(tile_index) * tile_size + beg;
+            I last = std::min(first + tile_size, beg + len);
 
             func(range1d<I>(first, last));
 
@@ -194,6 +195,8 @@ void parallel_for(thread_pool& pool, tiled_range1d<I> const& range, Func const& 
 template <typename I, typename Func>
 void parallel_for(thread_pool& pool, tiled_range2d<I> const& range, Func const& func)
 {
+    I first_row = range.rows().begin();
+    I first_col  = range.cols().begin();
     I width = range.rows().length();
     I height = range.cols().length();
     I tile_width = range.rows().tile_size();
@@ -203,11 +206,11 @@ void parallel_for(thread_pool& pool, tiled_range2d<I> const& range, Func const& 
 
     pool.run([=](long tile_index)
         {
-            I first_x = (tile_index % num_tiles_x) * tile_width;
-            I last_x = std::min(first_x + tile_width, width);
+            I first_x = (tile_index % num_tiles_x) * tile_width + first_row;
+            I last_x = std::min(first_x + tile_width, first_row + width);
 
-            I first_y = (tile_index / num_tiles_x) * tile_height;
-            I last_y = std::min(first_y + tile_height, height);
+            I first_y = (tile_index / num_tiles_x) * tile_height + first_col;
+            I last_y = std::min(first_y + tile_height, first_col + height);
 
             func(range2d<I>(first_x, last_x, first_y, last_y));
 
