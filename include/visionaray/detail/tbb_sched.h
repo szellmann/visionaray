@@ -10,7 +10,7 @@
 #include <tbb/parallel_for.h>
 #include <tbb/task_scheduler_init.h>
 
-#include "basic_tiled_sched.h"
+#include "basic_sched.h"
 #include "range.h"
 
 namespace visionaray
@@ -63,7 +63,7 @@ struct tbb_sched_backend
 };
 
 template <typename R>
-using tbb_sched = basic_tiled_sched<tbb_sched_backend, R>;
+using tbb_sched = basic_sched<tbb_sched_backend, R>;
 
 } // visionaray
 

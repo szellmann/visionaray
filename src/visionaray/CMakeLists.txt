@@ -111,8 +111,8 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/algorithm.h
     ${HEADER_DIR}/detail/aligned_allocator.h
     ${HEADER_DIR}/detail/area_light.inl
-    ${HEADER_DIR}/detail/basic_tiled_sched.h
-    ${HEADER_DIR}/detail/basic_tiled_sched.inl
+    ${HEADER_DIR}/detail/basic_sched.h
+    ${HEADER_DIR}/detail/basic_sched.inl
     ${HEADER_DIR}/detail/color_conversion.h
     ${HEADER_DIR}/detail/compiler.h
     ${HEADER_DIR}/detail/cpu_buffer_rt.inl

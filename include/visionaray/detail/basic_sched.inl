@@ -17,7 +17,7 @@
 
 namespace visionaray
 {
-namespace basic_tiled_sched_impl
+namespace basic_sched_impl
 {
 
 //-------------------------------------------------------------------------------------------------
@@ -84,22 +84,23 @@ void call_sample_pixel(
             );
 }
 
-} // basic_tiled_sched_impl
+} // basic_sched_impl
 
 
 //-------------------------------------------------------------------------------------------------
-// basic_tiled_sched implementation
+// basic_sched implementation
 //
 
 template <typename B, typename R>
-basic_tiled_sched<B, R>::basic_tiled_sched(unsigned num_threads)
-    : backend_(num_threads)
+template <typename ...Args>
+basic_sched<B, R>::basic_sched(Args&&... args)
+    : backend_(std::forward<Args>(args)...)
 {
 }
 
 template <typename B, typename R>
 template <typename K, typename SP>
-void basic_tiled_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_num)
+void basic_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     sched_params.cam.begin_frame();
 
@@ -124,7 +125,7 @@ void basic_tiled_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_nu
         {
             random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
 
-            basic_tiled_sched_impl::call_sample_pixel(
+            basic_sched_impl::call_sample_pixel(
                     typename detail::sched_params_has_intersector<SP>::type(),
                     R{},
                     kernel,
@@ -145,9 +146,10 @@ void basic_tiled_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_nu
 }
 
 template <typename B, typename R>
-void basic_tiled_sched<B, R>::reset(unsigned num_threads)
+template <typename ...Args>
+void basic_sched<B, R>::reset(Args&&... args)
 {
-    backend_.reset(num_threads);
+    backend_.reset(std::forward<Args>(args)...);
 }
 
 } // visionaray

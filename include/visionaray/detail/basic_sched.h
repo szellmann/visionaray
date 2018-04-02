@@ -3,23 +3,25 @@
 
 #pragma once
 
-#ifndef VSNRAY_DETAIL_BASIC_TILED_SCHED_H
-#define VSNRAY_DETAIL_BASIC_TILED_SCHED_H 1
+#ifndef VSNRAY_DETAIL_BASIC_SCHED_H
+#define VSNRAY_DETAIL_BASIC_SCHED_H 1
 
 namespace visionaray
 {
 
 template <typename Backend, typename R>
-class basic_tiled_sched
+class basic_sched
 {
 public:
 
-    explicit basic_tiled_sched(unsigned num_threads);
+    template <typename ...Args>
+    explicit basic_sched(Args&&... args);
 
     template <typename K, typename SP>
     void frame(K kernel, SP sched_params, unsigned frame_num = 0);
 
-    void reset(unsigned num_threads);
+    template <typename ...Args>
+    void reset(Args&&... args);
 
 private:
 
@@ -29,6 +31,6 @@ private:
 
 } // visionaray
 
-#include "basic_tiled_sched.inl"
+#include "basic_sched.inl"
 
-#endif // VSNRAY_DETAIL_BASIC_TILED_SCHED_H
+#endif // VSNRAY_DETAIL_BASIC_SCHED_H

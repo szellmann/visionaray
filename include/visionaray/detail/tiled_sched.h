@@ -6,7 +6,7 @@
 #ifndef VSNRAY_DETAIL_TILED_SCHED_H
 #define VSNRAY_DETAIL_TILED_SCHED_H 1
 
-#include "basic_tiled_sched.h"
+#include "basic_sched.h"
 #include "parallel_for.h"
 #include "range.h"
 #include "thread_pool.h"
@@ -53,7 +53,7 @@ struct tiled_sched_backend
 };
 
 template <typename R>
-using tiled_sched = basic_tiled_sched<tiled_sched_backend, R>;
+using tiled_sched = basic_sched<tiled_sched_backend, R>;
 
 } // visionaray
 
