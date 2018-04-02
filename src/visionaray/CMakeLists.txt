@@ -127,6 +127,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/matrix_camera.inl
     ${HEADER_DIR}/detail/multi_hit.h
     ${HEADER_DIR}/detail/parallel_algorithm.h
+    ${HEADER_DIR}/detail/parallel_for.h
     ${HEADER_DIR}/detail/pathtracing.inl
     ${HEADER_DIR}/detail/pinhole_camera.inl
     ${HEADER_DIR}/detail/pixel_access.h
@@ -146,6 +147,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/tags.h
     ${HEADER_DIR}/detail/tbb_sched.h
     ${HEADER_DIR}/detail/tiled_sched.h
+    ${HEADER_DIR}/detail/thread_pool.h
     ${HEADER_DIR}/detail/traversal_result.h
     ${HEADER_DIR}/detail/traverse_linear.inl
     ${HEADER_DIR}/detail/whitted.inl
@@ -309,7 +311,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/medium.h
     ${HEADER_DIR}/morton.h
     ${HEADER_DIR}/packet_traits.h
-    ${HEADER_DIR}/parallel_for.h
     ${HEADER_DIR}/phase_function.h
     ${HEADER_DIR}/pinhole_camera.h
     ${HEADER_DIR}/pixel_format.h
@@ -330,7 +331,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/surface_interaction.h
     ${HEADER_DIR}/swizzle.h
     ${HEADER_DIR}/tags.h
-    ${HEADER_DIR}/thread_pool.h
     ${HEADER_DIR}/traverse.h
     ${HEADER_DIR}/update_if.h
     ${HEADER_DIR}/variant.h

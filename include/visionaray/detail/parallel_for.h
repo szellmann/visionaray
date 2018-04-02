@@ -3,13 +3,13 @@
 
 #pragma once
 
-#ifndef VSNRAY_PARALLEL_FOR_H
-#define VSNRAY_PARALLEL_FOR_H 1
+#ifndef VSNRAY_DETAIL_PARALLEL_FOR_H
+#define VSNRAY_DETAIL_PARALLEL_FOR_H 1
 
 #include <algorithm>
 #include <type_traits>
 
-#include "math/detail/math.h"
+#include "../math/detail/math.h"
 #include "thread_pool.h"
 
 namespace visionaray
@@ -219,4 +219,4 @@ void parallel_for(thread_pool& pool, tiled_range2d<I> const& range, Func const& 
 
 } // visionaray
 
-#endif // VSNRAY_PARALLEL_FOR_H
+#endif // VSNRAY_DETAIL_PARALLEL_FOR_H

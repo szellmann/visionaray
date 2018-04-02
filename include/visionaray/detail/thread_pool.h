@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_THREAD_POOL_H
-#define VSNRAY_THREAD_POOL_H 1
+#ifndef VSNRAY_DETAIL_THREAD_POOL_H
+#define VSNRAY_DETAIL_THREAD_POOL_H 1
 
 #include <atomic>
 #include <cassert>
@@ -14,7 +14,7 @@
 #include <mutex>
 #include <thread>
 
-#include "detail/semaphore.h"
+#include "semaphore.h"
 
 namespace visionaray
 {
@@ -172,4 +172,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_THREAD_POOL_H
+#endif // VSNRAY_DETAIL_THREAD_POOL_H

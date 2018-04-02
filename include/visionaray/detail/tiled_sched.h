@@ -6,10 +6,9 @@
 #ifndef VSNRAY_DETAIL_TILED_SCHED_H
 #define VSNRAY_DETAIL_TILED_SCHED_H 1
 
-#include "../parallel_for.h"
-#include "../thread_pool.h"
-
 #include "basic_tiled_sched.h"
+#include "parallel_for.h"
+#include "thread_pool.h"
 
 namespace visionaray
 {
