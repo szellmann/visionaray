@@ -307,6 +307,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/gpu_buffer_rt.h
     ${HEADER_DIR}/intersector.h
     ${HEADER_DIR}/kernels.h
+    ${HEADER_DIR}/make_generator.h
     ${HEADER_DIR}/material.h
     ${HEADER_DIR}/matrix_camera.h
     ${HEADER_DIR}/medium.h

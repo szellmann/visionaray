@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "../random_generator.h"
+#include "../make_generator.h"
 #include "range.h"
 #include "sched_common.h"
 
@@ -123,7 +123,11 @@ void basic_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_num)
         tiled_range2d<int>(x0, nx, dx, y0, ny, dy), pw, ph,
         [=](int x, int y)
         {
-            random_generator<typename R::scalar_type> gen(detail::tic(typename R::scalar_type{}));
+            auto gen = make_generator(
+                    typename R::scalar_type{},
+                    typename SP::pixel_sampler_type{},
+                    detail::tic(typename R::scalar_type{})
+                    );
 
             basic_sched_impl::call_sample_pixel(
                     typename detail::sched_params_has_intersector<SP>::type(),

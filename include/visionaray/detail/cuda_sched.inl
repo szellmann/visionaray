@@ -8,7 +8,7 @@
 #include <cuda_runtime_api.h>
 
 #include <visionaray/math/detail/math.h> // div_up
-#include <visionaray/random_generator.h>
+#include <visionaray/make_generator.h>
 
 #include "sched_common.h"
 
@@ -75,8 +75,11 @@ __global__ void render(
         return;
     }
 
-    // TODO: support any sampler
-    random_generator<typename R::scalar_type> gen(detail::cuda_seed());
+    auto gen = make_generator(
+            typename R::scalar_type{},
+            PxSamplerT{},
+            detail::cuda_seed()
+            );
 
     auto r = detail::make_primary_rays(
             R{},
