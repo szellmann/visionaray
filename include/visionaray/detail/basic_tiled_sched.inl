@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "../random_sampler.h"
+#include "range.h"
 #include "sched_common.h"
 
 namespace visionaray
@@ -118,31 +119,25 @@ void basic_tiled_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_nu
     int nx = x0 + sched_params.scissor_box.w;
     int ny = y0 + sched_params.scissor_box.h;
 
-    backend_.parallel_for(
-        typename B::tiled_range_type(x0, nx, dx, y0, ny, dy),
-        [=](typename B::range_type const& r)
+    backend_.for_each_packet(
+        tiled_range2d<int>(x0, nx, dx, y0, ny, dy), pw, ph,
+        [=](int x, int y)
         {
-            for (int y = r.cols().begin(); y < r.cols().end(); y += ph)
-            {
-                for (int x = r.rows().begin(); x < r.rows().end(); x += pw)
-                {
-                    random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
+            random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
 
-                    basic_tiled_sched_impl::call_sample_pixel(
-                            typename detail::sched_params_has_intersector<SP>::type(),
-                            R{},
-                            kernel,
-                            sched_params,
-                            samp,
-                            frame_num,
-                            x,
-                            y,
-                            sched_params.rt.width(),
-                            sched_params.rt.height(),
-                            sched_params.cam
-                            );
-                }
-            }
+            basic_tiled_sched_impl::call_sample_pixel(
+                    typename detail::sched_params_has_intersector<SP>::type(),
+                    R{},
+                    kernel,
+                    sched_params,
+                    samp,
+                    frame_num,
+                    x,
+                    y,
+                    sched_params.rt.width(),
+                    sched_params.rt.height(),
+                    sched_params.cam
+                    );
         });
 
     sched_params.rt.end_frame();

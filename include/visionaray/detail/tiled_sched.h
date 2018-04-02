@@ -8,6 +8,7 @@
 
 #include "basic_tiled_sched.h"
 #include "parallel_for.h"
+#include "range.h"
 #include "thread_pool.h"
 
 namespace visionaray
@@ -15,9 +16,6 @@ namespace visionaray
 
 struct tiled_sched_backend
 {
-    using tiled_range_type = tiled_range2d<int>;
-    using range_type = range2d<int>;
-
     explicit tiled_sched_backend(unsigned num_threads)
         : pool_(num_threads)
     {
@@ -29,9 +27,26 @@ struct tiled_sched_backend
     }
 
     template <typename Func>
-    void parallel_for(tiled_range2d<int> const& r, Func const& func)
+    void for_each_packet(
+            tiled_range2d<int> const& tr,
+            int packet_width,
+            int packet_height,
+            Func const& func
+            )
     {
-        visionaray::parallel_for(pool_, r, func);
+        visionaray::parallel_for(
+            pool_,
+            tr,
+            [=](range2d<int> const& r)
+            {
+                for (int y = r.cols().begin(); y < r.cols().end(); y += packet_height)
+                {
+                    for (int x = r.rows().begin(); x < r.rows().end(); x += packet_width)
+                    {
+                        func(x, y);
+                    }
+                }
+            });
     }
 
     thread_pool pool_;
