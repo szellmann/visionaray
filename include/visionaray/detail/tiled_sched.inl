@@ -118,17 +118,20 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     int dx = round_up(16, pw);
     int dy = round_up(16, ph);
 
-    int nx = round_up(static_cast<int>(sched_params.rt.width()), dx);
-    int ny = round_up(static_cast<int>(sched_params.rt.height()), dy);
+    int x0 = sched_params.scissor_box.x;
+    int y0 = sched_params.scissor_box.y;
+
+    int nx = x0 + sched_params.scissor_box.w;
+    int ny = y0 + sched_params.scissor_box.h;
 
 #if VSNRAY_HAVE_TBB
     tbb::parallel_for(
-        tbb::blocked_range2d<int>(0, nx, dx, 0, ny, dy),
+        tbb::blocked_range2d<int>(x0, nx, dx, y0, ny, dy),
         [=](tbb::blocked_range2d<int> const& r)
 #else
     parallel_for(
         pool_,
-        tiled_range2d<int>(0, nx, dx, 0, ny, dy),
+        tiled_range2d<int>(x0, nx, dx, y0, ny, dy),
         [=](range2d<int> const& r)
 #endif
         {
