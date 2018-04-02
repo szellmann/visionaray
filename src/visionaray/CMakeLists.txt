@@ -111,6 +111,8 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/algorithm.h
     ${HEADER_DIR}/detail/aligned_allocator.h
     ${HEADER_DIR}/detail/area_light.inl
+    ${HEADER_DIR}/detail/basic_tiled_sched.h
+    ${HEADER_DIR}/detail/basic_tiled_sched.inl
     ${HEADER_DIR}/detail/color_conversion.h
     ${HEADER_DIR}/detail/compiler.h
     ${HEADER_DIR}/detail/cpu_buffer_rt.inl
@@ -142,8 +144,8 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/stack.h
     ${HEADER_DIR}/detail/surface.inl
     ${HEADER_DIR}/detail/tags.h
+    ${HEADER_DIR}/detail/tbb_sched.h
     ${HEADER_DIR}/detail/tiled_sched.h
-    ${HEADER_DIR}/detail/tiled_sched.inl
     ${HEADER_DIR}/detail/traversal_result.h
     ${HEADER_DIR}/detail/traverse_linear.inl
     ${HEADER_DIR}/detail/whitted.inl

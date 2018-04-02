@@ -6,41 +6,41 @@
 #ifndef VSNRAY_DETAIL_TILED_SCHED_H
 #define VSNRAY_DETAIL_TILED_SCHED_H 1
 
-#include <visionaray/config.h>
-
-#if VSNRAY_HAVE_TBB
-#include <tbb/task_scheduler_init.h>
-#else
+#include "../parallel_for.h"
 #include "../thread_pool.h"
-#endif
+
+#include "basic_tiled_sched.h"
 
 namespace visionaray
 {
 
-template <typename R>
-class tiled_sched
+struct tiled_sched_backend
 {
-public:
+    using tiled_range_type = tiled_range2d<int>;
+    using range_type = range2d<int>;
 
-    explicit tiled_sched(unsigned num_threads);
+    explicit tiled_sched_backend(unsigned num_threads)
+        : pool_(num_threads)
+    {
+    }
 
-    template <typename K, typename SP>
-    void frame(K kernel, SP sched_params, unsigned frame_num = 0);
+    void reset(unsigned num_threads)
+    {
+        pool_.reset(num_threads);
+    }
 
-    void reset(unsigned num_threads);
+    template <typename Func>
+    void parallel_for(tiled_range2d<int> const& r, Func const& func)
+    {
+        visionaray::parallel_for(pool_, r, func);
+    }
 
-private:
-
-#if VSNRAY_HAVE_TBB
-    tbb::task_scheduler_init pool_;
-#else
     thread_pool pool_;
-#endif
-
 };
+
+template <typename R>
+using tiled_sched = basic_tiled_sched<tiled_sched_backend, R>;
 
 } // visionaray
 
-#include "tiled_sched.inl"
-
-#endif // VSNRAY_DETAIL_TILED_SCHED_H
+#endif // VSNRAY_DETAIL_TILED_SCHED

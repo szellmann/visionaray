@@ -11,19 +11,12 @@
 #include <type_traits>
 #include <utility>
 
-#if VSNRAY_HAVE_TBB
-#include <tbb/blocked_range2d.h>
-#include <tbb/parallel_for.h>
-#else
-#include "../parallel_for.h"
-#endif
-
 #include "../random_sampler.h"
 #include "sched_common.h"
 
 namespace visionaray
 {
-namespace tiled_sched_impl
+namespace basic_tiled_sched_impl
 {
 
 //-------------------------------------------------------------------------------------------------
@@ -90,22 +83,23 @@ void call_sample_pixel(
             );
 }
 
-} // tiled_sched_impl
+} // basic_tiled_sched_impl
 
 
 //-------------------------------------------------------------------------------------------------
-// tiled_sched implementation
+// basic_tiled_sched implementation
 //
 
-template <typename R>
-tiled_sched<R>::tiled_sched(unsigned num_threads)
-    : pool_(num_threads)
+template <typename B, typename R>
+template <typename ...Args>
+basic_tiled_sched<B, R>::basic_tiled_sched(Args&&... args)
+    : backend_(std::forward<Args>(args)...)
 {
 }
 
-template <typename R>
+template <typename B, typename R>
 template <typename K, typename SP>
-void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
+void basic_tiled_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_num)
 {
     sched_params.cam.begin_frame();
 
@@ -124,16 +118,9 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     int nx = x0 + sched_params.scissor_box.w;
     int ny = y0 + sched_params.scissor_box.h;
 
-#if VSNRAY_HAVE_TBB
-    tbb::parallel_for(
-        tbb::blocked_range2d<int>(x0, nx, dx, y0, ny, dy),
-        [=](tbb::blocked_range2d<int> const& r)
-#else
-    parallel_for(
-        pool_,
-        tiled_range2d<int>(x0, nx, dx, y0, ny, dy),
-        [=](range2d<int> const& r)
-#endif
+    backend_.parallel_for(
+        typename B::tiled_range_type(x0, nx, dx, y0, ny, dy),
+        [=](typename B::range_type const& r)
         {
             for (int y = r.cols().begin(); y < r.cols().end(); y += ph)
             {
@@ -141,7 +128,7 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                 {
                     random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
 
-                    tiled_sched_impl::call_sample_pixel(
+                    basic_tiled_sched_impl::call_sample_pixel(
                             typename detail::sched_params_has_intersector<SP>::type(),
                             R{},
                             kernel,
@@ -163,19 +150,10 @@ void tiled_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     sched_params.cam.end_frame();
 }
 
-template <typename R>
-void tiled_sched<R>::reset(unsigned num_threads)
+template <typename B, typename R>
+void basic_tiled_sched<B, R>::reset(unsigned num_threads)
 {
-#if VSNRAY_HAVE_TBB
-    pool_ = tbb::task_scheduler_init(num_threads);
-#else
-    if (pool_.num_threads == num_threads)
-    {
-        return;
-    }
-
-    pool_.reset(num_threads);
-#endif
+    backend_.reset(num_threads);
 }
 
 } // visionaray
