@@ -14,8 +14,7 @@ class basic_tiled_sched
 {
 public:
 
-    template <typename ...Args>
-    explicit basic_tiled_sched(Args&&... args);
+    explicit basic_tiled_sched(unsigned num_threads);
 
     template <typename K, typename SP>
     void frame(K kernel, SP sched_params, unsigned frame_num = 0);

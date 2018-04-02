@@ -92,9 +92,8 @@ void call_sample_pixel(
 //
 
 template <typename B, typename R>
-template <typename ...Args>
-basic_tiled_sched<B, R>::basic_tiled_sched(Args&&... args)
-    : backend_(std::forward<Args>(args)...)
+basic_tiled_sched<B, R>::basic_tiled_sched(unsigned num_threads)
+    : backend_(num_threads)
 {
 }
 
