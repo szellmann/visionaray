@@ -3,7 +3,7 @@
 
 #include <hcc/hc.hpp>
 
-#include <visionaray/random_sampler.h>
+#include <visionaray/random_generator.h>
 
 namespace visionaray
 {
@@ -50,12 +50,12 @@ inline void hcc_sched_impl_frame(
                 }
 
                 // TODO: support any sampler
-                random_sampler<typename R::scalar_type> samp;// TODO
+                random_generator<typename R::scalar_type> gen;// TODO
 
                 auto r = detail::make_primary_rays(
                         R{},
                         PxSamplerT{},
-                        samp,
+                        gen,
                         x,
                         y,
                         rt_ref.width(),
@@ -67,7 +67,7 @@ inline void hcc_sched_impl_frame(
                         kernel,
                         PxSamplerT(),
                         r,
-                        samp,
+                        gen,
                         frame_num,
                         rt_ref,
                         x,
