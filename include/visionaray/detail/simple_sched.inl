@@ -21,9 +21,6 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     sched_params.rt.begin_frame();
 
 
-    // TODO: support any sampler
-    random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
-
     auto scissor_box = sched_params.scissor_box;
 
     for (int y = 0; y < sched_params.rt.height(); ++y)
@@ -34,6 +31,9 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             {
                 continue;
             }
+
+            // TODO: support any sampler
+            random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
 
             auto r = detail::make_primary_rays(
                     R{},
