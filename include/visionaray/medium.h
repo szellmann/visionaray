@@ -28,11 +28,11 @@ public:
         return spectrum<U>(phase_.tr(wo, wi));
     }
 
-    template <typename U, typename Sampler>
+    template <typename U, typename Generator>
     VSNRAY_FUNC
-    spectrum<U> sample(vector<3, U> const& wo, vector<3, U>& wi, U& pdf, Sampler& sampler)
+    spectrum<U> sample(vector<3, U> const& wo, vector<3, U>& wi, U& pdf, Generator& gen)
     {
-        return spectrum<U>(phase_.sample(wo, wi, pdf, sampler));
+        return spectrum<U>(phase_.sample(wo, wi, pdf, gen));
     }
 
     // Anisotropy in [-1.0..1.0], where -1.0 scatters all light backwards

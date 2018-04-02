@@ -43,13 +43,13 @@ public:
     template <typename SR>
     VSNRAY_FUNC spectrum<typename SR::scalar_type> shade(SR const& sr) const;
 
-    template <typename SR, typename U, typename Interaction, typename Sampler>
+    template <typename SR, typename U, typename Interaction, typename Generator>
     VSNRAY_FUNC spectrum<U> sample(
             SR const&       sr,
             vector<3, U>&   refl_dir,
             U&              pdf,
             Interaction&    inter,
-            Sampler&        sampler
+            Generator&      gen
             ) const;
 
 private:
@@ -63,7 +63,7 @@ private:
     template <typename SR>
     struct shade_visitor;
 
-    template <typename SR, typename U, typename Interaction, typename S>
+    template <typename SR, typename U, typename Interaction, typename Generator>
     struct sample_visitor;
 
 };

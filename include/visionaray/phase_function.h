@@ -40,14 +40,14 @@ public:
         return one_over_four_pi * (U(1.0) - U(g) * U(g)) / (denom * sqrt(denom));
     }
 
-    template <typename U, typename Sampler>
+    template <typename U, typename Generator>
     VSNRAY_FUNC
-    U sample(vector<3, U> const& wo, vector<3, U>& wi, U& pdf, Sampler& sampler) const
+    U sample(vector<3, U> const& wo, vector<3, U>& wi, U& pdf, Generator& gen) const
     {
         auto g_not_zero = abs(U(g)) >= numeric_limits<U>::epsilon();
 
-        U u1 = sampler.next();
-        U u2 = sampler.next();
+        U u1 = gen.next();
+        U u2 = gen.next();
 
         U a = select(
             g_not_zero,

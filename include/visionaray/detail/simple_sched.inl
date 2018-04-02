@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/random_sampler.h>
+#include <visionaray/random_generator.h>
 
 #include "sched_common.h"
 
@@ -32,8 +32,8 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                 continue;
             }
 
-            // TODO: support any sampler
-            random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
+            // TODO: support any generator
+            random_generator<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
 
             auto r = detail::make_primary_rays(
                     R{},

@@ -26,18 +26,18 @@ inline spectrum<typename SR::scalar_type> emissive<T>::shade(SR const& sr) const
 }
 
 template <typename T>
-template <typename SR, typename U, typename Interaction, typename Sampler>
+template <typename SR, typename U, typename Interaction, typename Generator>
 VSNRAY_FUNC
 inline spectrum<U> emissive<T>::sample(
         SR const&       shade_rec,
         vector<3, U>&   refl_dir,
         U&              pdf,
         Interaction&    inter,
-        Sampler&        sampler
+        Generator&      gen
         ) const
 {
     VSNRAY_UNUSED(refl_dir); // TODO?
-    VSNRAY_UNUSED(sampler);
+    VSNRAY_UNUSED(gen);
     pdf = U(1.0);
     inter = Interaction(surface_interaction::Emission);
     return shade(shade_rec);

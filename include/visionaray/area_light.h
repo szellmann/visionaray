@@ -27,15 +27,15 @@ public:
     template <typename T>
     VSNRAY_FUNC vector<3, T> intensity(vector<3, T> const& pos) const;
 
-    template <typename T, typename Sampler>
-    VSNRAY_FUNC vector<3, T> sample(T& pdf, Sampler& samp) const;
+    template <typename T, typename Generator>
+    VSNRAY_FUNC vector<3, T> sample(T& pdf, Generator& gen) const;
 
     // Get N sampled positions.
-    template <typename T, size_t N, typename Sampler>
+    template <typename T, size_t N, typename Generator>
     VSNRAY_FUNC void sample(
             array<T, N>& pdfs,
             array<vector<3, T>, N>& result,
-            Sampler& samp
+            Generator& gen
             ) const;
 
     // Return center of bounding box

@@ -5,7 +5,7 @@
 
 #include <visionaray/math/math.h>
 #include <visionaray/medium.h>
-#include <visionaray/random_sampler.h>
+#include <visionaray/random_generator.h>
 
 #include <gtest/gtest.h>
 
@@ -24,7 +24,7 @@ void test_anisotropic(T g)
     anisotropic_medium<T> am;
     am.anisotropy() = g;
 
-    random_sampler<T> rs;
+    random_generator<T> rng;
 
 
     // Test sample()
@@ -32,12 +32,12 @@ void test_anisotropic(T g)
     for (int i = 0; i < 100; ++i)
     {
         // Generate a random direction vector
-        Vec3 wo = normalize(Vec3(rs.next(), rs.next(), rs.next()));
+        Vec3 wo = normalize(Vec3(rng.next(), rng.next(), rng.next()));
 
         // Sample light directions
         Vec3 wi;
         T pdf;
-        am.sample(wo, wi, pdf, rs);
+        am.sample(wo, wi, pdf, rng);
 
         // Test if light direction is normalized
         EXPECT_FLOAT_EQ(length(wi), T(1.0));
@@ -49,14 +49,14 @@ void test_anisotropic(T g)
     for (int i = 0; i < 100; ++i)
     {
         // Generate a random direction vector
-        Vec3 wo = normalize(Vec3(rs.next(), rs.next(), rs.next()));
+        Vec3 wo = normalize(Vec3(rng.next(), rng.next(), rng.next()));
 
         // Sample light directions
         Vec3 wi;
         T pdf;
 
         am.anisotropy() = T(-1.0);
-        am.sample(wo, wi, pdf, rs);
+        am.sample(wo, wi, pdf, rng);
 
         Vec3 v1 = wo - wi; // perfect backward scattering
         EXPECT_FLOAT_EQ(v1.x, 0.0f);
@@ -64,7 +64,7 @@ void test_anisotropic(T g)
         EXPECT_FLOAT_EQ(v1.z, 0.0f);
 
         am.anisotropy() = T(1.0);
-        am.sample(wo, wi, pdf, rs);
+        am.sample(wo, wi, pdf, rng);
 
         Vec3 v2 = wo + wi; // perfect forward scattering
         EXPECT_FLOAT_EQ(v2.x, 0.0f);

@@ -2,7 +2,7 @@
 // See the LICENSE file for details.
 
 #include <visionaray/math/simd/simd.h>
-#include <visionaray/random_sampler.h>
+#include <visionaray/random_generator.h>
 #include <visionaray/sampling.h>
 
 #include <gtest/gtest.h>
@@ -29,16 +29,16 @@ TEST(Sampling, ConcentricSampleDisk)
 {
     static const int NumSamples = 10000;
 
-    random_sampler<float> rs1(0U);
-    random_sampler<simd::float4> rs4 = {{{ 0U }}};
-    random_sampler<simd::float8> rs8 = {{{ 0U }}};
-    random_sampler<simd::float16> rs16 = {{{ 0U }}};
+    random_generator<float> rng1(0U);
+    random_generator<simd::float4> rng4 = {{{ 0U }}};
+    random_generator<simd::float8> rng8 = {{{ 0U }}};
+    random_generator<simd::float16> rng16 = {{{ 0U }}};
 
     // Check that all samples are inside the disk
     for (int i = 0; i < NumSamples; ++i)
     {
-        float u1 = rs1.next();
-        float u2 = rs1.next();
+        float u1 = rng1.next();
+        float u2 = rng1.next();
 
         auto sample = concentric_sample_disk(u1, u2);
         EXPECT_TRUE(length(sample) >= 0.0f);
@@ -47,8 +47,8 @@ TEST(Sampling, ConcentricSampleDisk)
 
     for (int i = 0; i < NumSamples / 4; ++i)
     {
-        simd::float4 u1 = rs4.next();
-        simd::float4 u2 = rs4.next();
+        simd::float4 u1 = rng4.next();
+        simd::float4 u2 = rng4.next();
 
         auto sample = concentric_sample_disk(u1, u2);
         EXPECT_TRUE(all(length(sample) >= simd::float4(0.0f)));
@@ -57,8 +57,8 @@ TEST(Sampling, ConcentricSampleDisk)
 
     for (int i = 0; i < NumSamples / 8; ++i)
     {
-        simd::float8 u1 = rs8.next();
-        simd::float8 u2 = rs8.next();
+        simd::float8 u1 = rng8.next();
+        simd::float8 u2 = rng8.next();
 
         auto sample = concentric_sample_disk(u1, u2);
         EXPECT_TRUE(all(length(sample) >= simd::float8(0.0f)));
@@ -67,8 +67,8 @@ TEST(Sampling, ConcentricSampleDisk)
 
     for (int i = 0; i < NumSamples / 16; ++i)
     {
-        simd::float16 u1 = rs16.next();
-        simd::float16 u2 = rs16.next();
+        simd::float16 u1 = rng16.next();
+        simd::float16 u2 = rng16.next();
 
         auto sample = concentric_sample_disk(u1, u2);
         EXPECT_TRUE(all(length(sample) >= simd::float16(0.0f)));

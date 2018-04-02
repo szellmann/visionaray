@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "../random_sampler.h"
+#include "../random_generator.h"
 #include "range.h"
 #include "sched_common.h"
 
@@ -24,13 +24,13 @@ namespace basic_sched_impl
 // Generate primary ray and sample pixel
 //
 
-template <typename R, typename K, typename SP, typename Sampler, typename ...Args>
+template <typename R, typename K, typename SP, typename Generator, typename ...Args>
 void call_sample_pixel(
         std::false_type /* has intersector */,
         R               /* */,
         K               kernel,
         SP              sparams,
-        Sampler&        samp,
+        Generator&      gen,
         unsigned        frame_num,
         Args&&...       args
         )
@@ -38,7 +38,7 @@ void call_sample_pixel(
     auto r = detail::make_primary_rays(
             R{},
             typename SP::pixel_sampler_type{},
-            samp,
+            gen,
             std::forward<Args>(args)...
             );
 
@@ -46,20 +46,20 @@ void call_sample_pixel(
             kernel,
             typename SP::pixel_sampler_type(),
             r,
-            samp,
+            gen,
             frame_num,
             sparams.rt.ref(),
             std::forward<Args>(args)...
             );
 }
 
-template <typename R, typename K, typename SP, typename Sampler, typename ...Args>
+template <typename R, typename K, typename SP, typename Generator, typename ...Args>
 void call_sample_pixel(
         std::true_type  /* has intersector */,
         R               /* */,
         K               kernel,
         SP              sparams,
-        Sampler&        samp,
+        Generator&      gen,
         unsigned        frame_num,
         Args&&...       args
         )
@@ -67,7 +67,7 @@ void call_sample_pixel(
     auto r = detail::make_primary_rays(
             R{},
             typename SP::pixel_sampler_type{},
-            samp,
+            gen,
             std::forward<Args>(args)...
             );
 
@@ -77,7 +77,7 @@ void call_sample_pixel(
             kernel,
             typename SP::pixel_sampler_type(),
             r,
-            samp,
+            gen,
             frame_num,
             sparams.rt.ref(),
             std::forward<Args>(args)...
@@ -123,14 +123,14 @@ void basic_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_num)
         tiled_range2d<int>(x0, nx, dx, y0, ny, dy), pw, ph,
         [=](int x, int y)
         {
-            random_sampler<typename R::scalar_type> samp(detail::tic(typename R::scalar_type{}));
+            random_generator<typename R::scalar_type> gen(detail::tic(typename R::scalar_type{}));
 
             basic_sched_impl::call_sample_pixel(
                     typename detail::sched_params_has_intersector<SP>::type(),
                     R{},
                     kernel,
                     sched_params,
-                    samp,
+                    gen,
                     frame_num,
                     x,
                     y,

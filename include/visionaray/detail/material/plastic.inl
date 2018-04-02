@@ -39,14 +39,14 @@ inline spectrum<typename SR::scalar_type> plastic<T>::shade(SR const& sr) const
 }
 
 template <typename T>
-template <typename SR, typename U, typename Interaction, typename Sampler>
+template <typename SR, typename U, typename Interaction, typename Generator>
 VSNRAY_FUNC
 inline spectrum<U> plastic<T>::sample(
         SR const&       shade_rec,
         vector<3, U>&   refl_dir,
         U&              pdf,
         Interaction&    inter,
-        Sampler&        sampler
+        Generator&      gen
         ) const
 {
     U pdf1(0.0);
@@ -72,7 +72,7 @@ inline spectrum<U> plastic<T>::sample(
     prob_diff      = prob_diff / (prob_diff + prob_spec);
 
 
-    auto u         = sampler.next();
+    auto u         = gen.next();
 
     auto n = shade_rec.normal;
 #if 1 // two-sided
@@ -81,12 +81,12 @@ inline spectrum<U> plastic<T>::sample(
 
     if (any(u < U(prob_diff)))
     {
-        diff       = from_rgb(shade_rec.tex_color) * diffuse_brdf_.sample_f(n, shade_rec.view_dir, refl1, pdf1, inter1, sampler);
+        diff       = from_rgb(shade_rec.tex_color) * diffuse_brdf_.sample_f(n, shade_rec.view_dir, refl1, pdf1, inter1, gen);
     }
 
     if (any(u >= U(prob_diff)))
     {
-        spec       = specular_brdf_.sample_f(n, shade_rec.view_dir, refl2, pdf2, inter2, sampler);
+        spec       = specular_brdf_.sample_f(n, shade_rec.view_dir, refl2, pdf2, inter2, gen);
     }
 
     pdf            = select( u < U(prob_diff), pdf1,   pdf2   );

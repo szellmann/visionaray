@@ -19,7 +19,7 @@
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/get_normal.h>
 #include <visionaray/pinhole_camera.h>
-#include <visionaray/random_sampler.h>
+#include <visionaray/random_generator.h>
 #include <visionaray/sampling.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/traverse.h>
@@ -181,7 +181,7 @@ void renderer::on_display()
 
     auto bgcolor = background_color();
 
-    host_sched.frame([&](R ray, random_sampler<S>& samp) -> result_record<S>
+    host_sched.frame([&](R ray, random_generator<S>& gen) -> result_record<S>
     {
         result_record<S> result;
         result.color = C(bgcolor, 1.0f);
@@ -217,7 +217,7 @@ void renderer::on_display()
 
             for (int i = 0; i < AO_Samples; ++i)
             {
-                auto sp = cosine_sample_hemisphere(samp.next(), samp.next());
+                auto sp = cosine_sample_hemisphere(gen.next(), gen.next());
 
                 auto dir = normalize( sp.x * u + sp.y * v + sp.z * w );
 

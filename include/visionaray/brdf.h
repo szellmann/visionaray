@@ -43,7 +43,7 @@ public:
         return spectrum<U>( cd * kd * constants::inv_pi<T>() );
     }
 
-    template <typename U, typename Interaction, typename S /* sampler */>
+    template <typename U, typename Interaction, typename Generator>
     VSNRAY_FUNC
     spectrum<U> sample_f(
             vector<3, T> const& n,
@@ -51,7 +51,7 @@ public:
             vector<3, U>&       wi,
             U&                  pdf,
             Interaction&        inter,
-            S&                  sampler
+            Generator&          gen
             ) const
     {
         auto w = n;
@@ -62,7 +62,7 @@ public:
                 );
         auto u = cross(v, w);
 
-        auto sp = cosine_sample_hemisphere(sampler.next(), sampler.next());
+        auto sp = cosine_sample_hemisphere(gen.next(), gen.next());
         wi      = normalize( sp.x * u + sp.y * v + sp.z * w );
 
         pdf     = dot(n, wi) * constants::inv_pi<U>();
@@ -136,7 +136,7 @@ public:
         return spectrum<U>(schlick * nfactor * pow(hdotn, exp) );
     }
 
-    template <typename U, typename Interaction, typename S /* sampler */>
+    template <typename U, typename Interaction, typename Generator>
     VSNRAY_FUNC
     spectrum<U> sample_f(
             vector<3, U> const& n,
@@ -144,11 +144,11 @@ public:
             vector<3, U>&       wi,
             U&                  pdf,
             Interaction&        inter,
-            S&                  sampler
+            Generator&          gen
             ) const
     {
-        auto u1 = sampler.next();
-        auto u2 = sampler.next();
+        auto u1 = gen.next();
+        auto u2 = gen.next();
 
         auto costheta = pow(u1, U(1.0) / (exp + U(1.0)));
         auto sintheta = sqrt( max(U(0.0), U(1.0) - costheta * costheta) );
@@ -205,7 +205,7 @@ public:
         return spectrum<U>(0.0);
     }
 
-    template <typename U, typename Interaction, typename Sampler>
+    template <typename U, typename Interaction, typename Generator>
     VSNRAY_FUNC
     spectrum<U> sample_f(
             vector<3, U> const& n,
@@ -213,10 +213,10 @@ public:
             vector<3, U>&       wi,
             U&                  pdf,
             Interaction&        inter,
-            Sampler&            sampler
+            Generator&          gen
             ) const
     {
-        VSNRAY_UNUSED(sampler);
+        VSNRAY_UNUSED(gen);
 
         wi = reflect(wo, n);
         pdf = U(1.0);
@@ -263,7 +263,7 @@ public:
         return spectrum<U>(0.0);
     }
 
-    template <typename U, typename Interaction, typename Sampler>
+    template <typename U, typename Interaction, typename Generator>
     VSNRAY_FUNC
     spectrum<U> sample_f(
             vector<3, U> const& n,
@@ -271,7 +271,7 @@ public:
             vector<3, U>&       wi,
             U&                  pdf,
             Interaction&        inter,
-            Sampler&            sampler
+            Generator&          gen
             ) const
     {
         // IOR of material above normal direction
@@ -311,7 +311,7 @@ public:
         vector<3, U> refracted = refract(wo, N, eta); // NOTE: not normalized!
         vector<3, U> reflected = reflect(wo, N);
 
-        auto u = sampler.next();
+        auto u = gen.next();
 
         wi = select(
                 u < reflectance[0],

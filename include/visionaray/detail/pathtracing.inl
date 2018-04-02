@@ -26,11 +26,11 @@ struct kernel
 
     Params params;
 
-    template <typename Intersector, typename R, typename Sampler>
+    template <typename Intersector, typename R, typename Generator>
     VSNRAY_FUNC result_record<typename R::scalar_type> operator()(
             Intersector& isect,
             R ray,
-            Sampler& s
+            Generator& gen
             ) const
     {
         using S = typename R::scalar_type;
@@ -82,7 +82,7 @@ struct kernel
             S pdf(0.0);
             I inter = 0;
 
-            auto src = surf.sample(view_dir, refl_dir, pdf, inter, s);
+            auto src = surf.sample(view_dir, refl_dir, pdf, inter, gen);
 
             auto zero_pdf = pdf <= S(0.0);
             auto emissive = has_emissive_material(surf);
@@ -111,14 +111,14 @@ struct kernel
         return result;
     }
 
-    template <typename R, typename Sampler>
+    template <typename R, typename Generator>
     VSNRAY_FUNC result_record<typename R::scalar_type> operator()(
             R ray,
-            Sampler& s
+            Generator& gen
             ) const
     {
         default_intersector ignore;
-        return (*this)(ignore, ray, s);
+        return (*this)(ignore, ray, gen);
     }
 };
 

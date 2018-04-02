@@ -3,7 +3,7 @@
 
 #include <visionaray/math/math.h>
 #include <visionaray/phase_function.h>
-#include <visionaray/random_sampler.h>
+#include <visionaray/random_generator.h>
 
 #include <gtest/gtest.h>
 
@@ -20,7 +20,7 @@ void test_normalization(PF const& pf)
     using T = typename PF::scalar_type;
     using Vec3 = vector<3, T>;
 
-    random_sampler<T> rs;
+    random_generator<T> rng;
 
 
     // Test normalization property of phase function

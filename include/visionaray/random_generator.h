@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_RANDOM_SAMPLER_H
-#define VSNRAY_RANDOM_SAMPLER_H 1
+#ifndef VSNRAY_RANDOM_GENERATOR_H
+#define VSNRAY_RANDOM_GENERATOR_H 1
 
 #include <chrono>
 #include <type_traits>
@@ -82,11 +82,11 @@ VSNRAY_FUNC array<unsigned, simd::num_elements<T>::value> tic(T /* */)
 
 
 //-------------------------------------------------------------------------------------------------
-// random_sampler classes, uses a standard pseudo RNG to generate samples
+// random_generator classes, uses a standard pseudo RNG to generate samples
 //
 
 template <typename T, typename = void>
-class random_sampler
+class random_generator
 {
 public:
 
@@ -105,9 +105,9 @@ public:
     typedef std::uniform_real_distribution<T> uniform_dist;
 #endif
 
-    random_sampler() = default;
+    random_generator() = default;
 
-    VSNRAY_FUNC random_sampler(unsigned seed)
+    VSNRAY_FUNC random_generator(unsigned seed)
         : rng_(rand_engine(seed))
         , dist_(uniform_dist(0, 1))
     {
@@ -126,7 +126,7 @@ private:
 };
 
 template <typename T>
-class random_sampler<T, typename std::enable_if<simd::is_simd_vector<T>::value>::type>
+class random_generator<T, typename std::enable_if<simd::is_simd_vector<T>::value>::type>
 {
 public:
 
@@ -134,13 +134,13 @@ public:
 
 public:
 
-    typedef random_sampler<float> sampler_type;
+    typedef random_generator<float> generator_type;
 
-    VSNRAY_FUNC random_sampler(array<unsigned, simd::num_elements<value_type>::value> const& seed)
+    VSNRAY_FUNC random_generator(array<unsigned, simd::num_elements<value_type>::value> const& seed)
     {
         for (int i = 0; i < simd::num_elements<value_type>::value; ++i)
         {
-            samplers_[i] = sampler_type(seed[i]);
+            generators_[i] = generator_type(seed[i]);
         }
     }
 
@@ -150,24 +150,24 @@ public:
 
         for (int i = 0; i < simd::num_elements<value_type>::value; ++i)
         {
-            arr[i] = samplers_[i].next();
+            arr[i] = generators_[i].next();
         }
 
         return value_type(arr);
     }
 
-    // TODO: maybe don't have a random_samplerN at all?
-    VSNRAY_FUNC sampler_type& get_sampler(size_t i)
+    // TODO: maybe don't have a random_generatorN at all?
+    VSNRAY_FUNC generator_type& get_generator(size_t i)
     {
-        return samplers_[i];
+        return generators_[i];
     }
 
 private:
 
-    array<sampler_type, simd::num_elements<value_type>::value> samplers_;
+    array<generator_type, simd::num_elements<value_type>::value> generators_;
 
 };
 
 } // visionaray
 
-#endif // VSNRAY_RANDOM_SAMPLER_H
+#endif // VSNRAY_RANDOM_GENERATOR_H

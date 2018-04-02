@@ -24,17 +24,17 @@ inline spectrum<typename SR::scalar_type> glass<T>::shade(SR const& sr) const
 }
 
 template <typename T>
-template <typename SR, typename U, typename Interaction, typename Sampler>
+template <typename SR, typename U, typename Interaction, typename Generator>
 VSNRAY_FUNC
 inline spectrum<U> glass<T>::sample(
         SR const&       sr,
         vector<3, U>&   refl_dir,
         U&              pdf,
         Interaction&    inter,
-        Sampler&        sampler
+        Generator&      gen
         ) const
 {
-    return specular_bsdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, inter, sampler);
+    return specular_bsdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, inter, gen);
 }
 
 template <typename T>
