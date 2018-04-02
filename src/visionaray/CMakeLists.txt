@@ -319,7 +319,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/pixel_unpack_buffer_rt.h
     ${HEADER_DIR}/point_light.h
     ${HEADER_DIR}/prim_traits.h
-    ${HEADER_DIR}/random_sampler.h
+    ${HEADER_DIR}/random_generator.h
     ${HEADER_DIR}/render_target.h
     ${HEADER_DIR}/result_record.h
     ${HEADER_DIR}/sampling.h
