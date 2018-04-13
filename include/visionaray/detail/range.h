@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_DETAIL_RANGE_FOR_H
-#define VSNRAY_DETAIL_RANGE_FOR_H 1
+#ifndef VSNRAY_DETAIL_RANGE_H
+#define VSNRAY_DETAIL_RANGE_H 1
 
 #include "macros.h"
 
@@ -147,4 +147,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_DETAIL_RANGE_FOR_H
+#endif // VSNRAY_DETAIL_RANGE_H
