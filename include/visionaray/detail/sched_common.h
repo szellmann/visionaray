@@ -9,7 +9,6 @@
 #include <utility>
 
 #include <visionaray/math/array.h>
-#include <visionaray/matrix_camera.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/render_target.h>
@@ -305,9 +304,9 @@ inline array<R, Num> make_primary_rays(
 // Depth transform
 //
 
-template <typename T>
+template <typename T, typename Camera>
 VSNRAY_FUNC
-inline T depth_transform(vector<3, T> const& isect_pos, matrix_camera const& cam)
+inline T depth_transform(vector<3, T> const& isect_pos, Camera cam)
 {
     matrix<4, 4, T> view_matrix(cam.get_view_matrix());
     matrix<4, 4, T> proj_matrix(cam.get_proj_matrix());
