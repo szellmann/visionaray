@@ -250,8 +250,6 @@ class bvh_t
 {
 public:
 
-    using tag_type = bvh_tag;
-
     using primitive_type    = typename PrimitiveVector::value_type;
     using primitive_vector  = PrimitiveVector;
     using node_type         = typename NodeVector::value_type;
@@ -324,8 +322,6 @@ template <typename PrimitiveVector, typename NodeVector, typename IndexVector>
 class index_bvh_t
 {
 public:
-
-    using tag_type = index_bvh_tag;
 
     using primitive_type    = typename PrimitiveVector::value_type;
     using primitive_vector  = PrimitiveVector;

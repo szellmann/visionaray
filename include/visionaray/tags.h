@@ -16,9 +16,6 @@
 namespace visionaray
 {
 
-struct bvh_tag {};
-struct index_bvh_tag {};
-
 struct conductor_tag {};
 struct dielectric_tag {};
 
