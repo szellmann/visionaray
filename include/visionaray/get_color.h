@@ -6,11 +6,11 @@
 #ifndef VSNRAY_GET_COLOR_H
 #define VSNRAY_GET_COLOR_H 1
 
-#include <array>
 #include <iterator>
 #include <type_traits>
 
 #include "math/simd/type_traits.h"
+#include "math/array.h"
 #include "math/intersect.h"
 #include "math/primitive.h"
 #include "math/ray.h"
@@ -189,17 +189,18 @@ template <
     typename Primitive,
     typename ColorBinding
     >
+VSNRAY_FUNC
 inline auto get_color(
-        Colors                      colors,
-        std::array<HR, N> const&    hr,
-        Primitive                   /* */,
-        ColorBinding                /* */
+        Colors              colors,
+        array<HR, N> const& hr,
+        Primitive           /* */,
+        ColorBinding        /* */
         )
-    -> std::array<typename std::iterator_traits<Colors>::value_type, N>
+    -> array<typename std::iterator_traits<Colors>::value_type, N>
 {
     using C = typename std::iterator_traits<Colors>::value_type;
 
-    std::array<C, N> result;
+    array<C, N> result;
 
     for (size_t i = 0; i < N; ++i)
     {
