@@ -10,6 +10,7 @@
 #include <iterator>
 #include <type_traits>
 
+#include "detail/macros.h"
 #include "math/detail/math.h"
 #include "math/simd/type_traits.h"
 #include "math/intersect.h"
