@@ -6,12 +6,12 @@
 #ifndef VSNRAY_GET_TEX_COORD_H
 #define VSNRAY_GET_TEX_COORD_H 1
 
-#include <array>
 #include <iterator>
 #include <type_traits>
 
 #include "math/detail/math.h"
 #include "math/simd/type_traits.h"
+#include "math/array.h"
 #include "math/intersect.h"
 #include "math/primitive.h"
 #include "math/triangle.h"
@@ -110,15 +110,15 @@ template <
     typename Primitive
     >
 inline auto get_tex_coord(
-        TexCoords                   coords,
-        std::array<HR, N> const&    hr,
-        Primitive                   /* */
+        TexCoords           coords,
+        array<HR, N> const& hr,
+        Primitive           /* */
         )
-    -> std::array<typename std::iterator_traits<TexCoords>::value_type, N>
+    -> array<typename std::iterator_traits<TexCoords>::value_type, N>
 {
     using TC = typename std::iterator_traits<TexCoords>::value_type;
 
-    std::array<TC, N> result;
+    array<TC, N> result;
 
     for (size_t i = 0; i < N; ++i)
     {
