@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_SIMPLE_BUFFER_RT
-#define VSNRAY_SIMPLE_BUFFER_RT 1
+#ifndef VSNRAY_SIMPLE_BUFFER_RT_H
+#define VSNRAY_SIMPLE_BUFFER_RT_H 1
 
 #include "aligned_vector.h"
 #include "pixel_traits.h"
@@ -55,4 +55,4 @@ private:
 
 #include "detail/simple_buffer_rt.inl"
 
-#endif // VSNRAY_SIMPLE_BUFFER_RT
+#endif // VSNRAY_SIMPLE_BUFFER_RT_H
