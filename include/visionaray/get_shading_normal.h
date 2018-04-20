@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_GET_SHADING_NORMAL
-#define VSNRAY_GET_SHADING_NORMAL 1
+#ifndef VSNRAY_GET_SHADING_NORMAL_H
+#define VSNRAY_GET_SHADING_NORMAL_H 1
 
 #include <cstddef>
 #include <iterator>
@@ -194,4 +194,4 @@ struct get_shading_normal_t
 } // detail
 } // visionaray
 
-#endif // VSNRAY_GET_SHADING_NORMAL
+#endif // VSNRAY_GET_SHADING_NORMAL_H

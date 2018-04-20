@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_GET_NORMAL
-#define VSNRAY_GET_NORMAL 1
+#ifndef VSNRAY_GET_NORMAL_H
+#define VSNRAY_GET_NORMAL_H 1
 
 #include <cstddef>
 #include <iterator>
@@ -182,4 +182,4 @@ struct get_normal_t
 } // detail
 } // visionaray
 
-#endif // VSNRAY_GET_NORMAL
+#endif // VSNRAY_GET_NORMAL_H
