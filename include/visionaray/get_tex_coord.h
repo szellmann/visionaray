@@ -54,6 +54,7 @@ template <
     typename U,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
+VSNRAY_FUNC
 inline vector<2, T> get_tex_coord(
         TexCoords                                               coords,
         hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
