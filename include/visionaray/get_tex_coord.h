@@ -109,6 +109,7 @@ template <
     size_t N,
     typename Primitive
     >
+VSNRAY_FUNC
 inline auto get_tex_coord(
         TexCoords           coords,
         array<HR, N> const& hr,

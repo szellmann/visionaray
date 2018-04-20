@@ -99,6 +99,7 @@ template <
     typename U,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
+VSNRAY_FUNC
 inline vector<3, T> get_shading_normal(
         Normals                                                 normals,
         hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
