@@ -91,7 +91,7 @@ inline void serialize(A& a, MATH_NAMESPACE::basic_aabb<T>& b, unsigned /* versio
 
 
 template <typename A, typename T>
-inline void serialize(A& a, MATH_NAMESPACE::rectangle<MATH_NAMESPACE::xywh_layout, T>& r, unsigned /* version */ )
+inline void serialize(A& a, MATH_NAMESPACE::rectangle<MATH_NAMESPACE::xywh_layout<T>, T>& r, unsigned /* version */ )
 {
     a & r.x;
     a & r.y;

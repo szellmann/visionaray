@@ -121,13 +121,13 @@ TEST(Serialization, Matrix)
 
 TEST(Serialization, RectangleXYWH)
 {
-    rectangle<xywh_layout, int>    dsti;
-    rectangle<xywh_layout, float>  dstf;
-    rectangle<xywh_layout, double> dstd;
+    rectangle<xywh_layout<int>, int>       dsti;
+    rectangle<xywh_layout<float>, float>   dstf;
+    rectangle<xywh_layout<double>, double> dstd;
 
-    rectangle<xywh_layout, int>    srci(0, 0, 1024, 768);
-    rectangle<xywh_layout, float>  srcf(-3.14f, -314.15f, 6.28f, 628.31f);
-    rectangle<xywh_layout, double> srcd(700.0, 700.0, 0.0, 0.0);
+    rectangle<xywh_layout<int>, int>       srci(0, 0, 1024, 768);
+    rectangle<xywh_layout<float>, float>   srcf(-3.14f, -314.15f, 6.28f, 628.31f);
+    rectangle<xywh_layout<double>, double> srcd(700.0, 700.0, 0.0, 0.0);
 
     std::stringstream sstream;
     boost::archive::text_oarchive oa(sstream);
