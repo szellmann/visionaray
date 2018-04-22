@@ -27,7 +27,7 @@ public:
 
     min_max_layout() = default;
     MATH_FUNC min_max_layout(vector_type const& min, vector_type const& max) : min(min), max(max) {}
-
+    MATH_FUNC min_max_layout(T x, T y, T w, T h) : min(x, y), max(x + w, y + h) {}
     vector_type min;
     vector_type max;
 };
@@ -53,12 +53,48 @@ public:
 // rectangle
 //
 
-template <template <typename> class L /* data layout */, typename T>
+template <typename Layout, typename T>
 class rectangle;
 
 
+//-------------------------------------------------------------------------------------------------
+// rectangle with min/max layout
+//
+
 template <typename T>
-class rectangle<xywh_layout, T> : public xywh_layout<T>
+class rectangle<min_max_layout<2, T>, T> : public min_max_layout<2, T>
+{
+public:
+
+    typedef T value_type;
+
+
+    rectangle() = default;
+    MATH_FUNC rectangle(T x, T y, T w, T h);
+    MATH_FUNC rectangle(vector<2, T> const& min, vector<2, T> const& max);
+
+    MATH_FUNC void invalidate();
+
+    MATH_FUNC bool invalid() const;
+    MATH_FUNC bool valid() const;
+
+    MATH_FUNC bool empty() const;
+
+    MATH_FUNC bool contains(vector<2, T> const& v) const;
+    MATH_FUNC bool contains(rectangle const& r) const;
+
+    MATH_FUNC void insert(vector<2, T> const& v);
+    MATH_FUNC void insert(rectangle const& r);
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// rectangle with xywh layout
+//
+
+template <typename T>
+class rectangle<xywh_layout<T>, T> : public xywh_layout<T>
 {
 public:
 

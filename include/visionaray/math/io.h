@@ -338,7 +338,7 @@ operator<<(std::basic_ostream<CharT, Traits>& out, matrix<4, 4, T> const& m)
 
 template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, rectangle<xywh_layout, T> const& r)
+operator<<(std::basic_ostream<CharT, Traits>& out, rectangle<xywh_layout<T>, T> const& r)
 {
 
     std::basic_ostringstream<CharT, Traits> s;
