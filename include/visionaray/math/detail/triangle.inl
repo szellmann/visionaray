@@ -2,7 +2,7 @@
 // See the LICENSE file for details.
 
 #include "../aabb.h"
-
+#include "../rectangle.h"
 
 namespace MATH_NAMESPACE
 {
@@ -41,6 +41,20 @@ MATH_FUNC
 basic_aabb<T> get_bounds(basic_triangle<Dim, T, P> const& t)
 {
     basic_aabb<T> bounds;
+
+    bounds.invalidate();
+    bounds.insert(t.v1);
+    bounds.insert(t.v1 + t.e1);
+    bounds.insert(t.v1 + t.e2);
+
+    return bounds;
+}
+
+template <typename T, typename P>
+MATH_FUNC
+rectangle<min_max_layout<2, T>, T> get_bounds(basic_triangle<2, T, P> const& t)
+{
+    rectangle<min_max_layout<2, T>, T> bounds;
 
     bounds.invalidate();
     bounds.insert(t.v1);
