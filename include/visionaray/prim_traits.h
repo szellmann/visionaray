@@ -8,6 +8,7 @@
 
 #include <cstddef>
 
+#include <visionaray/math/plane.h>
 #include <visionaray/math/sphere.h>
 #include <visionaray/math/triangle.h>
 
@@ -55,6 +56,12 @@ struct scalar_type
 };
 
 // specializations ----------------------------------------
+
+template <size_t Dim, typename T>
+struct scalar_type<basic_plane<Dim, T>>
+{
+    using type = T;
+};
 
 template <typename T>
 struct scalar_type<basic_sphere<T>>
