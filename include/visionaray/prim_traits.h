@@ -57,20 +57,20 @@ struct scalar_type
 
 // specializations ----------------------------------------
 
-template <size_t Dim, typename T>
-struct scalar_type<basic_plane<Dim, T>>
+template <size_t Dim, typename T, typename P>
+struct scalar_type<basic_plane<Dim, T, P>>
 {
     using type = T;
 };
 
-template <typename T>
-struct scalar_type<basic_sphere<T>>
+template <typename T, typename P>
+struct scalar_type<basic_sphere<T, P>>
 {
     using type = T;
 };
 
-template <size_t Dim, typename T>
-struct scalar_type<basic_triangle<Dim, T>>
+template <size_t Dim, typename T, typename P>
+struct scalar_type<basic_triangle<Dim, T, P>>
 {
     using type = T;
 };
@@ -89,8 +89,8 @@ struct num_vertices
 
 // specializations ----------------------------------------
 
-template <size_t Dim, typename T>
-struct num_vertices<basic_triangle<Dim, T>>
+template <size_t Dim, typename T, typename P>
+struct num_vertices<basic_triangle<Dim, T, P>>
 {
     enum { value = 3 };
 };
@@ -110,14 +110,14 @@ struct num_normals
 
 // specializations ----------------------------------------
 
-template <size_t Dim, typename T>
-struct num_normals<basic_triangle<Dim, T>, normals_per_face_binding>
+template <size_t Dim, typename T, typename P>
+struct num_normals<basic_triangle<Dim, T, P>, normals_per_face_binding>
 {
     enum { value = 1 };
 };
 
-template <size_t Dim, typename T>
-struct num_normals<basic_triangle<Dim, T>, normals_per_vertex_binding>
+template <size_t Dim, typename T, typename P>
+struct num_normals<basic_triangle<Dim, T, P>, normals_per_vertex_binding>
 {
     enum { value = 3 };
 };
@@ -137,8 +137,8 @@ struct num_tex_coords
 
 // specializations ----------------------------------------
 
-template <size_t Dim, typename T>
-struct num_tex_coords<basic_triangle<Dim, T>>
+template <size_t Dim, typename T, typename P>
+struct num_tex_coords<basic_triangle<Dim, T, P>>
 {
     enum { value = 3 };
 };
