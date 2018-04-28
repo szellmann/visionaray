@@ -513,6 +513,14 @@ inline T rsqrt(T const& x)
     return T(1.0) / sqrt(x);
 }
 
+#ifdef __CUDA_ARCH__
+MATH_GPU_FUNC
+inline float rsqrt(float x)
+{
+    return rsqrtf(x);
+}
+#endif
+
 template <typename T>
 MATH_FUNC
 inline T cot(T const& x)
