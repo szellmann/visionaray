@@ -733,6 +733,20 @@ inline vector<Dim, T> ceil(vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
+inline vector<Dim, T> round(vector<Dim, T> const& v)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = round(v[d]);
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
 inline vector<Dim, T> fract(vector<Dim, T> const& v)
 {
     vector<Dim, T> result;
