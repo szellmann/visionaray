@@ -147,6 +147,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/surface.inl
     ${HEADER_DIR}/detail/tags.h
     ${HEADER_DIR}/detail/tbb_sched.h
+    ${HEADER_DIR}/detail/thin_lens_camera.inl
     ${HEADER_DIR}/detail/tiled_sched.h
     ${HEADER_DIR}/detail/thread_pool.h
     ${HEADER_DIR}/detail/traversal_result.h
@@ -333,6 +334,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/surface_interaction.h
     ${HEADER_DIR}/swizzle.h
     ${HEADER_DIR}/tags.h
+    ${HEADER_DIR}/thin_lens_camera.h
     ${HEADER_DIR}/traverse.h
     ${HEADER_DIR}/update_if.h
     ${HEADER_DIR}/variant.h
