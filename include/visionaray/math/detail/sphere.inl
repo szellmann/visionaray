@@ -27,6 +27,13 @@ inline basic_sphere<T, P>::basic_sphere(vector<3, T> const& c, T r)
 
 template <typename T, typename P>
 MATH_FUNC
+inline T area(basic_sphere<T, P> const& s)
+{
+    return T(4.0) * constants::pi<T>() * s.radius * s.radius;
+}
+
+template <typename T, typename P>
+MATH_FUNC
 inline basic_aabb<T> get_bounds(basic_sphere<T, P> const& s)
 {
     basic_aabb<T> bounds;
