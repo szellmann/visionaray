@@ -16,12 +16,6 @@ namespace MATH_NAMESPACE
 
 template <typename T>
 MATH_FUNC
-inline basic_aabb<T>::basic_aabb()
-{
-}
-
-template <typename T>
-MATH_FUNC
 inline basic_aabb<T>::basic_aabb(vector<3, T> const& min, vector<3, T> const& max)
     : min(min)
     , max(max)
