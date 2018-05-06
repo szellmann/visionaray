@@ -63,7 +63,7 @@ struct viewer_glut::impl
     void init(
             int argc,
             char** argv,
-            std::string window_title,
+            char const* window_title,
             bool full_screen,
             int width,
             int height
@@ -104,7 +104,7 @@ viewer_glut::impl::impl(viewer_glut* instance)
 void viewer_glut::impl::init(
         int argc,
         char** argv,
-        std::string window_title,
+        char const* window_title,
         bool full_screen,
         int width,
         int height
@@ -115,7 +115,7 @@ void viewer_glut::impl::init(
     glutInitDisplayMode(/*GLUT_3_2_CORE_PROFILE |*/ GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 
     glutInitWindowSize(width, height);
-    win_id = glutCreateWindow(window_title.c_str());
+    win_id = glutCreateWindow(window_title);
 
     if (full_screen)
     {
@@ -261,7 +261,7 @@ void viewer_glut::impl::special_up_func(int key, int, int)
 viewer_glut::viewer_glut(
         int width,
         int height,
-        std::string window_title
+        char const* window_title
         )
     : viewer_base(width, height, window_title)
     , impl_(new impl(this))

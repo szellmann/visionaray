@@ -109,7 +109,7 @@ void viewer_sdl2::impl::call_resize(int w, int h)
 // viewer_sdl2
 //
 
-viewer_sdl2::viewer_sdl2(int width, int height, std::string window_title)
+viewer_sdl2::viewer_sdl2(int width, int height, char const* window_title)
     : viewer_base(width, height, window_title)
     , impl_(new impl)
 {
@@ -134,7 +134,7 @@ void viewer_sdl2::init(int argc, char** argv)
     }
 
     impl_->window = SDL_CreateWindow(
-            window_title().c_str(),
+            window_title(),
             SDL_WINDOWPOS_CENTERED,
             SDL_WINDOWPOS_CENTERED,
             width(),

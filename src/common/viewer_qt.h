@@ -7,7 +7,6 @@
 #define VSNRAY_COMMON_VIEWER_QT_H 1
 
 #include <memory>
-#include <string>
 
 #include <QGLWidget>
 
@@ -29,7 +28,7 @@ public:
     viewer_qt(
             int width                   = 512,
             int height                  = 512,
-            std::string window_title    = "Visionaray Qt Viewer"
+            char const* window_title    = "Visionaray Qt Viewer"
             );
     virtual ~viewer_qt();
 

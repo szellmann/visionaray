@@ -7,7 +7,6 @@
 #define VSNRAY_COMMON_VIEWER_GLUT_H 1
 
 #include <memory>
-#include <string>
 
 #include "viewer_base.h"
 
@@ -21,7 +20,7 @@ public:
     viewer_glut(
             int width                   = 512,
             int height                  = 512,
-            std::string window_title    = "Visionaray GLUT Viewer"
+            char const* window_title    = "Visionaray GLUT Viewer"
             );
     virtual ~viewer_glut();
 

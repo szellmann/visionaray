@@ -7,7 +7,6 @@
 #define VSNRAY_COMMON_VIEWER_SDL2_H 1
 
 #include <memory>
-#include <string>
 
 #include "viewer_base.h"
 
@@ -21,7 +20,7 @@ public:
     viewer_sdl2(
             int width,
             int height,
-            std::string window_title    = "Visionaray SDL2 Viewer"
+            char const* window_title    = "Visionaray SDL2 Viewer"
             );
     virtual ~viewer_sdl2();
 

@@ -7,7 +7,6 @@
 #define VSNRAY_COMMON_VIEWER_BASE_H 1
 
 #include <memory>
-#include <string>
 
 #include <visionaray/math/vector.h>
 
@@ -38,7 +37,7 @@ public:
     viewer_base(
             int width                   = 512,
             int height                  = 512,
-            std::string window_title    = ""
+            char const* window_title    = ""
             );
     virtual ~viewer_base();
 
@@ -47,7 +46,7 @@ public:
     void add_manipulator( std::shared_ptr<camera_manipulator> manip );
     void add_cmdline_option( std::shared_ptr<support::cl::OptionBase> option );
 
-    std::string window_title() const;
+    char const* window_title() const;
     bool full_screen() const;
     int width() const;
     int height() const;

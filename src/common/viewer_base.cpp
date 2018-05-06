@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <ostream>
+#include <string>
 #include <vector>
 
 #if VSNRAY_COMMON_HAVE_GLEW
@@ -38,10 +39,10 @@ struct viewer_base::impl
     bool            full_screen        = false;
     int             width              = 512;
     int             height             = 512;
-    std::string     window_title       = "";
+    char const*     window_title       = "";
     vec3            bgcolor            = { 0.1f, 0.4f, 1.0f };
 
-    impl(int width, int height, std::string window_title);
+    impl(int width, int height, char const* window_title);
 
     void init(int argc, char** argv);
 
@@ -49,7 +50,7 @@ struct viewer_base::impl
 };
 
 
-viewer_base::impl::impl(int width, int height, std::string window_title)
+viewer_base::impl::impl(int width, int height, char const* window_title)
     : width(width)
     , height(height)
     , window_title(window_title)
@@ -130,7 +131,7 @@ void viewer_base::impl::parse_cmd_line(int argc, char** argv)
 viewer_base::viewer_base(
         int width,
         int height,
-        std::string window_title
+        char const* window_title
         )
     : impl_(new impl(width, height, window_title))
 {
@@ -155,7 +156,7 @@ void viewer_base::add_cmdline_option( std::shared_ptr<cl::OptionBase> option )
     impl_->options.emplace_back(option);
 }
 
-std::string viewer_base::window_title() const
+char const* viewer_base::window_title() const
 {
     return impl_->window_title;
 }

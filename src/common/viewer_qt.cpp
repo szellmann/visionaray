@@ -65,7 +65,7 @@ struct viewer_qt::impl
 viewer_qt::viewer_qt(
         int width,
         int height,
-        std::string window_title
+        char const* window_title
         )
     : viewer_base(width, height, window_title)
     , impl_(new impl)
@@ -149,7 +149,7 @@ void viewer_qt::event_loop()
             );
 
     impl_->main_window->resize(width(), height());
-    impl_->main_window->setWindowTitle(QString(window_title().c_str()));
+    impl_->main_window->setWindowTitle(QString(window_title()));
     impl_->main_window->show();
 
     impl_->app->exec();
