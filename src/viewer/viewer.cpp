@@ -808,7 +808,7 @@ int main(int argc, char** argv)
     rend.host_materials = make_materials(
             renderer::material_type{},
             rend.mod.materials,
-            [&rend](aligned_vector<renderer::material_type>& cont, model::material_type mat)
+            [](aligned_vector<renderer::material_type>& cont, model::material_type mat)
             {
                 // Add emissive material if emissive component > 0
                 if (length(mat.ce) > 0.0f)
