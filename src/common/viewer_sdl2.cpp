@@ -122,6 +122,8 @@ viewer_sdl2::viewer_sdl2(int width, int height, char const* window_title)
 
 viewer_sdl2::~viewer_sdl2()
 {
+    SDL_GL_DeleteContext(impl_->context);
+    SDL_DestroyWindow(impl_->window);
 }
 
 void viewer_sdl2::init(int argc, char** argv)
