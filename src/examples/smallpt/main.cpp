@@ -58,6 +58,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <visionaray/pixel_unpack_buffer_rt.h>
 #endif
 
+#include <common/input/key_event.h>
 #include <common/make_materials.h>
 #include <common/timer.h>
 #include <common/viewer_glut.h>

@@ -47,6 +47,10 @@
 #endif
 
 #include "input/glut.h"
+#include "input/key_event.h"
+#include "input/keyboard.h"
+#include "input/mouse.h"
+#include "input/mouse_event.h"
 #include "viewer_glut.h"
 
 

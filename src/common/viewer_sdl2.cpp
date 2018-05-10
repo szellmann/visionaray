@@ -9,6 +9,10 @@
 
 #include <SDL2/SDL.h>
 
+#include "input/key_event.h"
+#include "input/keyboard.h"
+#include "input/mouse.h"
+#include "input/mouse_event.h"
 #include "input/sdl2.h"
 #include "viewer_sdl2.h"
 

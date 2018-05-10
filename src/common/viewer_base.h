@@ -10,10 +10,6 @@
 
 #include <visionaray/math/vector.h>
 
-#include "input/key_event.h"
-#include "input/keyboard.h"
-#include "input/mouse_event.h"
-
 namespace support
 {
 namespace cl
@@ -28,6 +24,7 @@ namespace visionaray
 {
 
 class camera_manipulator;
+class key_event;
 class mouse_event;
 
 class viewer_base
