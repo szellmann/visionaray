@@ -21,7 +21,7 @@ using namespace visionaray;
 
 
 //-------------------------------------------------------------------------------------------------
-// Event window
+// Graphics view
 //
 
 @interface graphics_view : NSView
@@ -377,7 +377,7 @@ using namespace visionaray;
     NSUInteger mf = [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
     auto m = keyboard::map_cocoa_modifiers(mf);
 
-    mouse_event e(mouse::Move, p, b, m);
+    mouse_event e(mouse::ButtonUp, p, b, m);
 
     _viewer->call_on_mouse_up(e);
 }
