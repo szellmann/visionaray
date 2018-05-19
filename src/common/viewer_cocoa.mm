@@ -160,6 +160,8 @@ static CVReturn display_link_callback(
 
 - (void) _surfaceNeedsUpdate:(NSNotification*)notification
 {
+    VSNRAY_UNUSED(notification);
+
     [self update];
 }
 
@@ -296,7 +298,7 @@ static CVReturn display_link_callback(
     mouse::pos p = { epos.x, self.frame.size.height - epos.y - 1 };
 
     auto b = mouse::map_cocoa_button(et);
-    NSUInteger mf = [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
+    NSUInteger mf = [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
     auto m = keyboard::map_cocoa_modifiers(mf);
 
     mouse_event e(mouse::ButtonDown, p, b, m);
@@ -313,7 +315,7 @@ static CVReturn display_link_callback(
     mouse::pos p = { epos.x, self.frame.size.height - epos.y - 1 };
 
     auto b = mouse::map_cocoa_button(et);
-    NSUInteger mf = [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
+    NSUInteger mf = [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
     auto m = keyboard::map_cocoa_modifiers(mf);
 
     mouse_event e(mouse::Move, p, b, m);
@@ -330,7 +332,7 @@ static CVReturn display_link_callback(
     mouse::pos p = { epos.x, self.frame.size.height - epos.y - 1 };
 
     auto b = mouse::map_cocoa_button(et);
-    NSUInteger mf = [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
+    NSUInteger mf = [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
     auto m = keyboard::map_cocoa_modifiers(mf);
 
     mouse_event e(mouse::Move, p, b, m);
@@ -347,7 +349,7 @@ static CVReturn display_link_callback(
     mouse::pos p = { epos.x, self.frame.size.height - epos.y - 1 };
 
     auto b = mouse::map_cocoa_button(et);
-    NSUInteger mf = [event modifierFlags] & NSDeviceIndependentModifierFlagsMask;
+    NSUInteger mf = [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
     auto m = keyboard::map_cocoa_modifiers(mf);
 
     mouse_event e(mouse::Move, p, b, m);
