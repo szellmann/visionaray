@@ -314,19 +314,24 @@ using namespace visionaray;
     _viewer->call_on_key_press(e);
 }
 
-- (void)mouseDown:(NSEvent*)event
+static mouse_event map_cocoa_event(NSEvent* event, NSView* view, mouse::event_type vet)
 {
-    [self setNeedsDisplay:YES];
-
     NSEventType et = [event type];
     CGPoint epos = [event locationInWindow];
-    mouse::pos p = { epos.x, self.frame.size.height - epos.y - 1 };
+    mouse::pos p = { epos.x, view.frame.size.height - epos.y - 1 };
 
     auto b = mouse::map_cocoa_button(et);
     NSUInteger mf = [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
     auto m = keyboard::map_cocoa_modifiers(mf);
 
-    mouse_event e(mouse::ButtonDown, p, b, m);
+    return mouse_event(vet, p, b, m);
+}
+
+- (void)mouseDown:(NSEvent*)event
+{
+    [self setNeedsDisplay:YES];
+
+    mouse_event e = map_cocoa_event(event, self, mouse::ButtonDown);
 
     _viewer->call_on_mouse_down(e);
 }
@@ -335,15 +340,7 @@ using namespace visionaray;
 {
     [self setNeedsDisplay:YES];
 
-    NSEventType et = [event type];
-    CGPoint epos = [event locationInWindow];
-    mouse::pos p = { epos.x, self.frame.size.height - epos.y - 1 };
-
-    auto b = mouse::map_cocoa_button(et);
-    NSUInteger mf = [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
-    auto m = keyboard::map_cocoa_modifiers(mf);
-
-    mouse_event e(mouse::Move, p, b, m);
+    mouse_event e = map_cocoa_event(event, self, mouse::Move);
 
     _viewer->call_on_mouse_move(e);
 }
@@ -352,15 +349,7 @@ using namespace visionaray;
 {
     [self setNeedsDisplay:YES];
 
-    NSEventType et = [event type];
-    CGPoint epos = [event locationInWindow];
-    mouse::pos p = { epos.x, self.frame.size.height - epos.y - 1 };
-
-    auto b = mouse::map_cocoa_button(et);
-    NSUInteger mf = [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
-    auto m = keyboard::map_cocoa_modifiers(mf);
-
-    mouse_event e(mouse::Move, p, b, m);
+    mouse_event e = map_cocoa_event(event, self, mouse::Move);
 
     _viewer->call_on_mouse_move(e);
 }
@@ -369,15 +358,7 @@ using namespace visionaray;
 {
     [self setNeedsDisplay:YES];
 
-    NSEventType et = [event type];
-    CGPoint epos = [event locationInWindow];
-    mouse::pos p = { epos.x, self.frame.size.height - epos.y - 1 };
-
-    auto b = mouse::map_cocoa_button(et);
-    NSUInteger mf = [event modifierFlags] & NSEventModifierFlagDeviceIndependentFlagsMask;
-    auto m = keyboard::map_cocoa_modifiers(mf);
-
-    mouse_event e(mouse::ButtonUp, p, b, m);
+    mouse_event e = map_cocoa_event(event, self, mouse::ButtonUp);
 
     _viewer->call_on_mouse_up(e);
 }
