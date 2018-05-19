@@ -210,8 +210,34 @@ public:
 
 };
 
+template <size_t N, size_t M, typename T>
+class matrix
+{
+public:
+
+    using column_type = vector<N, T>;
+
+public:
+
+    column_type cols[M];
+
+    // Construct identity matrix (requires N == M!)
+    MATH_FUNC static matrix identity();
+
+    MATH_FUNC T* data();
+    MATH_FUNC T const* data() const;
+
+    MATH_FUNC column_type& operator()(size_t col);
+    MATH_FUNC column_type const& operator()(size_t col) const;
+
+    MATH_FUNC T& operator()(size_t row, size_t col);
+    MATH_FUNC T const& operator()(size_t row, size_t col) const;
+
+};
+
 } // MATH_NAMESPACE
 
+#include "detail/matrix.inl"
 #include "detail/matrix2.inl"
 #include "detail/matrix3.inl"
 #include "detail/matrix4.inl"

@@ -330,6 +330,30 @@ operator<<(std::basic_ostream<CharT, Traits>& out, matrix<4, 4, T> const& m)
 
 }
 
+template <size_t N, size_t M, typename T, typename CharT, typename Traits>
+std::basic_ostream<CharT, Traits>&
+operator<<(std::basic_ostream<CharT, Traits>& out, matrix<N, M, T> const& m)
+{
+
+    std::basic_ostringstream<CharT, Traits> s;
+    s.flags(out.flags());
+    s.imbue(out.getloc());
+    s.precision(out.precision());
+
+    s << '(';
+    for (size_t i = 0; i < N; ++i)
+    {
+        s << m.cols[i];
+        if (i < N - 1)
+        {
+            s << ',';
+        }
+    }
+    s << ')';
+
+    return out << s.str();
+
+}
 
 
 //-------------------------------------------------------------------------------------------------
