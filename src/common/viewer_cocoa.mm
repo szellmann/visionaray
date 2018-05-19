@@ -52,7 +52,9 @@ using namespace visionaray;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)acceptsMouseMovedEvents;
 - (void)drawRect: (NSRect)bounds;
+
 - (void)render;
+- (void)resize:(NSRect)bounds;
 
 - (void)keyDown:(NSEvent*)event;
 
@@ -99,6 +101,11 @@ static CVReturn display_link_callback(
     VSNRAY_UNUSED(display_link, now, output_time, flags_in, flags_out);
 
     graphics_view* view = static_cast<graphics_view*>(display_link_context);
+
+    if (view->initial_bounds.size.width <= 0 || view->initial_bounds.size.height <= 0)
+    {
+        return kCVReturnSuccess;
+    }
 
     if ([view lockFocusIfCanDraw] == NO)
     {
@@ -260,9 +267,7 @@ static CVReturn display_link_callback(
     if (bounds.size.width != initial_bounds.size.width
      || bounds.size.height != initial_bounds.size.height)
     {
-        _viewer->call_on_resize(bounds.size.width, bounds.size.height);
-        [gl_context update];
-        initial_bounds = bounds;
+        [self resize: bounds];
     }
 
     [self render];
@@ -277,9 +282,16 @@ static CVReturn display_link_callback(
     [gl_context flushBuffer];
 }
 
+- (void)resize: (NSRect)bounds
+{
+    _viewer->call_on_resize(bounds.size.width, bounds.size.height);
+    [gl_context update];
+    initial_bounds = bounds;
+}
+
 - (void)keyDown:(NSEvent*)event
 {
-    [self setNeedsDisplay:YES];
+    [self setNeedsDisplay: YES];
 
     NSString* str = [event characters];
     char const* chars = [str UTF8String];
@@ -461,6 +473,9 @@ void viewer_cocoa::init(int argc, char** argv)
 
 void viewer_cocoa::event_loop()
 {
+    // Bring to front
+    [NSApp activateIgnoringOtherApps: YES];
+
     // Init continuous rendering
     [impl_->view registerDisplayLink];
 
