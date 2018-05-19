@@ -8,6 +8,7 @@
 #import <GL/glew.h>
 
 #import <Cocoa/Cocoa.h>
+#import <CoreVideo/CoreVideo.h>
 #import <OpenGL/OpenGL.h>
 #import <OpenGL/gl.h>
 
@@ -89,37 +90,6 @@ using namespace visionaray;
         ];
 }
 
-static CVReturn display_link_callback(
-        CVDisplayLinkRef   display_link,
-        CVTimeStamp const* now,
-        CVTimeStamp const* output_time,
-        CVOptionFlags      flags_in,
-        CVOptionFlags*     flags_out,
-        void*              display_link_context
-        )
-
-{
-    VSNRAY_UNUSED(display_link, now, output_time, flags_in, flags_out);
-
-    graphics_view* view = static_cast<graphics_view*>(display_link_context);
-
-    if (view->initial_bounds.size.width <= 0 || view->initial_bounds.size.height <= 0)
-    {
-        return kCVReturnSuccess;
-    }
-
-    if ([view lockFocusIfCanDraw] == NO)
-    {
-        return kCVReturnSuccess;
-    }
-
-    [view render];
-
-    [view unlockFocus];
-
-    return kCVReturnSuccess;
-}
-
 - (void) registerDisplayLink
 {
     // Regiser display link for continuous rendering
@@ -135,7 +105,40 @@ static CVReturn display_link_callback(
 
     CVDisplayLinkCreateWithActiveCGDisplays(&display_link);
 
-    CVDisplayLinkSetOutputCallback(display_link, &display_link_callback, self);
+    CVDisplayLinkSetOutputCallback(
+            display_link,
+            [](
+                CVDisplayLinkRef   disp_link,
+                CVTimeStamp const* now,
+                CVTimeStamp const* output_time,
+                CVOptionFlags      flags_in,
+                CVOptionFlags*     flags_out,
+                void*              display_link_context
+                )
+                -> CVReturn
+            {
+                VSNRAY_UNUSED(disp_link, now, output_time, flags_in, flags_out);
+
+                graphics_view* view = static_cast<graphics_view*>(display_link_context);
+
+                if (view->initial_bounds.size.width <= 0 || view->initial_bounds.size.height <= 0)
+                {
+                    return kCVReturnSuccess;
+                }
+
+                if ([view lockFocusIfCanDraw] == NO)
+                {
+                    return kCVReturnSuccess;
+                }
+
+                [view render];
+
+                [view unlockFocus];
+
+                return kCVReturnSuccess;
+            },
+            self
+            );
 
     CGLContextObj cgl_context = [gl_context CGLContextObj];
 
