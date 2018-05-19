@@ -2,6 +2,8 @@
 // See the LICENSE file for details.
 
 #import <cassert>
+#import <stdexcept>
+#import <string>
 
 #import <GL/glew.h>
 
@@ -188,9 +190,9 @@ static CVReturn display_link_callback(
     GLenum error = glewInit();
     if (error != GLEW_OK)
     {
-        //std::string error_string("glewInit() failed: ");
-        //error_string.append(reinterpret_cast<char const*>(glewGetErrorString(error)));
-        //throw std::runtime_error(error_string);
+        std::string error_string("glewInit() failed: ");
+        error_string.append(reinterpret_cast<char const*>(glewGetErrorString(error)));
+        throw std::runtime_error(error_string);
     }
 }
 
