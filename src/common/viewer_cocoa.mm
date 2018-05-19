@@ -52,6 +52,7 @@ using namespace visionaray;
 - (BOOL)acceptsFirstResponder;
 - (BOOL)acceptsMouseMovedEvents;
 - (void)drawRect: (NSRect)bounds;
+- (void)dealloc;
 
 - (void)render;
 - (void)resize:(NSRect)bounds;
@@ -271,6 +272,13 @@ static CVReturn display_link_callback(
     }
 
     [self render];
+}
+
+- (void)dealloc
+{
+    CVDisplayLinkRelease(display_link);
+
+    [super dealloc];
 }
 
 - (void)render
