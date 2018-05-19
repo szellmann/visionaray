@@ -33,12 +33,12 @@ endif()
 
 # Cocoa
 
-#if (APPLE AND VSNRAY_ENABLE_COCOA)
+if (APPLE AND VSNRAY_ENABLE_COCOA)
     find_library(COCOA_LIBRARY Cocoa)
     find_library(CORE_VIDEO_LIBRARY CoreVideo)
     visionaray_link_libraries(${COCOA_LIBRARY})
     visionaray_link_libraries(${CORE_VIDEO_LIBRARY})
-#endif()
+endif()
 
 # Qt5
 
@@ -190,7 +190,7 @@ if (VSNRAY_ENABLE_CUDA AND CUDA_FOUND)
     set(COMMON_SOURCES ${COMMON_SOURCES} cuda.cpp)
 endif()
 
-if (APPLE)# AND VSNRAY_ENABLE_COCOA)
+if (APPLE AND VSNRAY_ENABLE_COCOA)
     set(COMMON_HEADERS ${COMMON_HEADERS} viewer_cocoa.h)
     set(COMMON_SOURCES ${COMMON_SOURCES} viewer_cocoa.mm)
 endif()
