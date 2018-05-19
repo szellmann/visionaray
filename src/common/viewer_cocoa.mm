@@ -85,15 +85,17 @@ using namespace visionaray;
 }
 
 static CVReturn display_link_callback(
-        CVDisplayLinkRef display_link,
-        const CVTimeStamp* now,
-        const CVTimeStamp* output_time,
-        CVOptionFlags flags_in,
-        CVOptionFlags* flags_out,
-        void* display_link_context
+        CVDisplayLinkRef   display_link,
+        CVTimeStamp const* now,
+        CVTimeStamp const* output_time,
+        CVOptionFlags      flags_in,
+        CVOptionFlags*     flags_out,
+        void*              display_link_context
         )
 
 {
+    VSNRAY_UNUSED(display_link, now, output_time, flags_in, flags_out);
+
     graphics_view* view = static_cast<graphics_view*>(display_link_context);
 
     if ([view lockFocusIfCanDraw] == NO)
