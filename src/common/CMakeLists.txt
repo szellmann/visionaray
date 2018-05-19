@@ -31,6 +31,15 @@ if (VSNRAY_ENABLE_CUDA)
     visionaray_use_package(CUDA)
 endif()
 
+# Cocoa
+
+#if (APPLE AND VSNRAY_ENABLE_COCOA)
+    find_library(COCOA_LIBRARY Cocoa)
+    find_library(CORE_VIDEO_LIBRARY CoreVideo)
+    visionaray_link_libraries(${COCOA_LIBRARY})
+    visionaray_link_libraries(${CORE_VIDEO_LIBRARY})
+#endif()
+
 # Qt5
 
 if (VSNRAY_ENABLE_QT5)
@@ -105,6 +114,7 @@ set(COMMON_HEADERS
     async/connection_manager.h
     async/message.h
 
+    input/cocoa.h
     input/glut.h
     input/key_event.h
     input/keyboard.h
@@ -178,6 +188,11 @@ set(COMMON_SOURCES
 if (VSNRAY_ENABLE_CUDA AND CUDA_FOUND)
     set(COMMON_HEADERS ${COMMON_HEADERS} cuda.h)
     set(COMMON_SOURCES ${COMMON_SOURCES} cuda.cpp)
+endif()
+
+if (APPLE)# AND VSNRAY_ENABLE_COCOA)
+    set(COMMON_HEADERS ${COMMON_HEADERS} viewer_cocoa.h)
+    set(COMMON_SOURCES ${COMMON_SOURCES} viewer_cocoa.mm)
 endif()
 
 if (VSNRAY_ENABLE_QT5)
