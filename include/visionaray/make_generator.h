@@ -25,7 +25,7 @@ struct make_generator_impl
         void_t() = default;
 
         template <typename ...Args>
-        void_t(Args...) {}
+        VSNRAY_FUNC void_t(Args...) {}
     };
 
     using generator_type = void_t;
