@@ -508,6 +508,13 @@ inline T lerp(T const& a, T const& b, T const& c, S const& u, S const& v)
 
 template <typename T>
 MATH_FUNC
+inline T step(T const& edge, T const& x)
+{
+    return x < edge ? T(0.0) : T(1.0);
+}
+
+template <typename T>
+MATH_FUNC
 inline T rsqrt(T const& x)
 {
     return T(1.0) / sqrt(x);

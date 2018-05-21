@@ -808,6 +808,20 @@ inline vector<Dim, T> max(vector<Dim, T> const& u, vector<Dim, T> const& v)
 
 template <size_t Dim, typename T>
 MATH_FUNC
+inline vector<Dim, T> step(vector<Dim, T> const& edge, vector<Dim, T> const& x)
+{
+    vector<Dim, T> result;
+
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        result[d] = step(edge[d], x[d]);
+    }
+
+    return result;
+}
+
+template <size_t Dim, typename T>
+MATH_FUNC
 inline vector<Dim, T> rotate(vector<Dim, T> v, int count = 1)
 {
     auto tmp = v;
