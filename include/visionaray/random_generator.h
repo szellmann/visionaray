@@ -7,6 +7,7 @@
 #define VSNRAY_RANDOM_GENERATOR_H 1
 
 #include <chrono>
+#include <cstddef>
 #include <type_traits>
 
 #if defined(__CUDACC__)
