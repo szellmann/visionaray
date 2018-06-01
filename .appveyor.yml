@@ -4,10 +4,6 @@
 
 platform: x64
 
-image:
-    - Visual Studio 2015
-    - Visual Studio 2017
-
 environment:
     BOOST_ROOT: C:/Libraries/boost_1_60_0
     BOOST_LIBRARYDIR_WIN32: C:/Libraries/boost_1_60_0/lib32-msvc-14.0
