@@ -6,19 +6,8 @@
 using namespace visionaray;
 
 
-arcball::arcball()
-    : radius(1.0f)
-    , down_pos(0.0f)
-    , rotation(quat::identity())
-    , down_rotation(quat::identity())
-{
-}
-
 arcball::arcball(float r)
     : radius(r)
-    , down_pos(0.0f)
-    , rotation(quat::identity())
-    , down_rotation(quat::identity())
 {
 }
 

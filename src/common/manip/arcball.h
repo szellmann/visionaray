@@ -15,15 +15,15 @@ class arcball
 {
 public:
 
-    arcball();
+    arcball() = default;
     explicit arcball(float r);
 
     vec3 project(int x, int y, recti const& viewport);
 
-    float radius;
-    vec3 down_pos;
-    quat rotation;
-    quat down_rotation;
+    float radius = 1.0f;
+    vec3 down_pos = vec3(0.0f);
+    quat rotation = quat::identity();
+    quat down_rotation = quat::identity();
 
 };
 
