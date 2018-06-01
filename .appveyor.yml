@@ -46,6 +46,3 @@ build_script:
       -DVSNRAY_ENABLE_UNITTESTS=ON
       ..
     - msbuild visionaray.sln
-
-test_script:
-    - cmake -R unittests
