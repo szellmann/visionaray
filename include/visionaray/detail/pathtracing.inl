@@ -13,6 +13,7 @@
 
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
+#include <visionaray/surface_interaction.h>
 #include <visionaray/traverse.h>
 
 namespace visionaray
@@ -85,7 +86,7 @@ struct kernel
             auto src = surf.sample(view_dir, refl_dir, pdf, inter, gen);
 
             auto zero_pdf = pdf <= S(0.0);
-            auto emissive = has_emissive_material(surf);
+            auto emissive = inter == I(surface_interaction::Emission);
 
             dst = mul( dst, src, active_rays && !zero_pdf, dst );
             dst = select( zero_pdf && active_rays, C(0.0), dst );
