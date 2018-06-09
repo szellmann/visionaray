@@ -162,7 +162,7 @@ struct lbvh_builder
     // sr.leaves contains the information of the left/right leaves and the
     // method returns true. If the leaf should not be split, returns false.
     template <typename Data>
-    bool split(leaf_infos& childs, leaf_info const& leaf, Data const& data, int max_leaf_size)
+    bool split(leaf_infos& childs, leaf_info const& leaf, Data const& /*data*/, int max_leaf_size)
     {
         if (leaf.last - leaf.first <= max_leaf_size)
         {
