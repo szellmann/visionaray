@@ -6,11 +6,6 @@
 #ifndef VSNRAY_DETAIL_PATHTRACING_INL
 #define VSNRAY_DETAIL_PATHTRACING_INL 1
 
-#ifndef NDEBUG
-#include <iostream>
-#include <ostream>
-#endif
-
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
 #include <visionaray/surface_interaction.h>
