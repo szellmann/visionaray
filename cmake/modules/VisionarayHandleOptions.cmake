@@ -8,6 +8,8 @@
 
 if(MSVC)
 
+elseif(__COMPILER_PGI)
+
 else() # GNU, Clang, etc.
 
     #------------------------------------------------------
