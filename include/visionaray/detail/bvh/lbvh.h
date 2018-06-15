@@ -17,6 +17,7 @@ namespace visionaray
 namespace detail
 {
 
+VSNRAY_FUNC
 inline unsigned clz(unsigned val)
 {
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
