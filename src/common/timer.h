@@ -12,6 +12,11 @@
 #include <cuda.h>
 #endif
 
+#ifdef __HIPCC__
+#include <hip/hip_runtime.h>
+#include <hip/hip_runtime_api.h>
+#endif
+
 
 namespace visionaray
 {
