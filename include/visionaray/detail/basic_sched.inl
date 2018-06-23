@@ -1,13 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <atomic>
-#include <cassert>
-#include <condition_variable>
-#include <functional>
-#include <memory>
-#include <mutex>
-#include <thread>
 #include <type_traits>
 #include <utility>
 
