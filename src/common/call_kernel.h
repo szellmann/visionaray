@@ -10,6 +10,7 @@
 
 #include <visionaray/kernels.h>
 #include <visionaray/scheduler.h>
+#include <visionaray/tags.h>
 
 namespace visionaray
 {
