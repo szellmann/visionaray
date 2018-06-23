@@ -25,57 +25,41 @@ public:
 
     struct material_type
     {
-        material_type()
-            : name("")
-            , ca(0.2f, 0.2f, 0.2f)
-            , cd(0.8f, 0.8f, 0.8f)
-            , cs(0.1f, 0.1f, 0.1f)
-            , ce(0.0f, 0.0f, 0.0f)
-            , cr(0.0f, 0.0f, 0.0f)
-            , ior(1.0f, 1.0f, 1.0f)
-            , absorption(0.0f, 0.0f, 0.0f)
-            , transmission(0.0f)
-            , specular_exp(32.0f)
-            , glossiness(0.0f)
-            , illum(2)
-        {
-        }
-
         // Material name.
-        std::string name;
+        std::string name = "";
 
         // Ambient color.
-        vec3 ca;
+        vec3 ca = { 0.2f, 0.2f, 0.2f };
 
         // Diffuse color.
-        vec3 cd;
+        vec3 cd = { 0.8f, 0.8f, 0.8f };
 
         // Specular color.
-        vec3 cs;
+        vec3 cs = { 0.1f, 0.1f, 0.1f };
 
         // Emissive color.
-        vec3 ce;
+        vec3 ce = { 0.0f, 0.0f, 0.0f };
 
         // Reflective color.
-        vec3 cr;
+        vec3 cr = { 0.0f, 0.0f, 0.0f };
 
         // Index of refraction.
-        vec3 ior;
+        vec3 ior = { 1.0f, 1.0f, 1.0f };
 
         // Absorption.
-        vec3 absorption;
+        vec3 absorption = { 0.0f, 0.0f, 0.0f };
 
         // Transmission.
-        float transmission;
+        float transmission = 0.0f;
 
         // Specular exponent.
-        float specular_exp;
+        float specular_exp = 32.0f;
 
         // Glossiness term.
-        float glossiness;
+        float glossiness = 0.0f;
 
         // Wavefront obj illumination model (default: 1 maps to plastic).
-        int illum;
+        int illum = 2;
     };
 
     using triangle_type     = basic_triangle<3, float>;
