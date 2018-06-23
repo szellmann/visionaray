@@ -85,7 +85,7 @@ struct kernel
             dst = mul( dst, src, active_rays && !zero_pdf, dst );
             dst = select( zero_pdf && active_rays, C(0.0), dst );
 
-            active_rays &= inter != I(surface_interaction::Emission);
+            active_rays &= inter != surface_interaction::Emission;
             active_rays &= !zero_pdf;
 
 
