@@ -81,12 +81,11 @@ struct kernel
             auto src = surf.sample(view_dir, refl_dir, pdf, inter, gen);
 
             auto zero_pdf = pdf <= S(0.0);
-            auto emissive = inter == I(surface_interaction::Emission);
 
             dst = mul( dst, src, active_rays && !zero_pdf, dst );
             dst = select( zero_pdf && active_rays, C(0.0), dst );
 
-            active_rays &= !emissive;
+            active_rays &= inter != I(surface_interaction::Emission);
             active_rays &= !zero_pdf;
 
 
