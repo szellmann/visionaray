@@ -210,6 +210,14 @@ struct renderer : viewer_type
             cl::init(this->ssaa_samples)
             ) );
 
+        add_cmdline_option( cl::makeOption<unsigned&>(
+            cl::Parser<>(),
+            "bounces",
+            cl::Desc("Number of bounces for recursive ray tracing"),
+            cl::ArgRequired,
+            cl::init(this->bounces)
+            ) );
+
         add_cmdline_option( cl::makeOption<vec3&, cl::ScalarType>(
             [&](StringRef name, StringRef /*arg*/, vec3& value)
             {
@@ -250,6 +258,7 @@ struct renderer : viewer_type
     int                                         w               = 800;
     int                                         h               = 800;
     unsigned                                    frame_num       = 0;
+    unsigned                                    bounces         = 0;
     unsigned                                    ssaa_samples    = 1;
     algorithm                                   algo            = Simple;
     bvh_build_strategy                          builder         = Binned;
@@ -520,7 +529,7 @@ void renderer::on_display()
 
     auto bounds     = mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
-    auto bounces    = algo == Pathtracing ? 10U : 4U;
+    auto bounces    = this->bounces ? this->bounces : algo == Pathtracing ? 10U : 4U;
     auto epsilon    = std::max( 1E-3f, length(diagonal) * 1E-5f );
     auto amb        = ambient.x >= 0.0f // if set via cmdline
                             ? vec4(ambient, 1.0f)

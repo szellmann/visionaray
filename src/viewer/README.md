@@ -17,6 +17,7 @@ Options:
       =pathtracing        - Pathtracing global illumination kernel
    -ambient               Ambient color
    -bgcolor               Background color
+   -bounces=<ARG>         Number of bounces for recursive ray tracing
    -bvh=<ARG>             BVH build strategy:
       =default            - Binned SAH
       =split              - Binned SAH with spatial splits
