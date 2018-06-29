@@ -1212,31 +1212,48 @@ TEST(SIMD, Logical)
 
 TEST(SIMD, Transposition)
 {
-    // shuffle
+    // float4 ---------------------------------------------
+    {
+        // shuffle
 
-    simd::float4 u(1.0f, 2.0f, 3.0f, 4.0f);
-    simd::float4 v(5.0f, 6.0f, 7.0f, 8.0f);
+        simd::float4 u(1.0f, 2.0f, 3.0f, 4.0f);
+        simd::float4 v(5.0f, 6.0f, 7.0f, 8.0f);
 
-    EXPECT_TRUE( all(simd::shuffle<0, 1, 2, 3>(u)    == simd::float4(1.0f, 2.0f, 3.0f, 4.0f)) );
-    EXPECT_TRUE( all(simd::shuffle<3, 2, 1, 0>(u)    == simd::float4(4.0f, 3.0f, 2.0f, 1.0f)) );
-    EXPECT_TRUE( all(simd::shuffle<0, 0, 3, 3>(u)    == simd::float4(1.0f, 1.0f, 4.0f, 4.0f)) );
-    EXPECT_TRUE( all(simd::shuffle<3, 3, 0, 0>(u)    == simd::float4(4.0f, 4.0f, 1.0f, 1.0f)) );
-    EXPECT_TRUE( all(simd::shuffle<0, 1, 2, 3>(u, v) == simd::float4(1.0f, 2.0f, 7.0f, 8.0f)) );
-    EXPECT_TRUE( all(simd::shuffle<3, 2, 1, 0>(u, v) == simd::float4(4.0f, 3.0f, 6.0f, 5.0f)) );
-    EXPECT_TRUE( all(simd::shuffle<0, 0, 3, 3>(u, v) == simd::float4(1.0f, 1.0f, 8.0f, 8.0f)) );
-    EXPECT_TRUE( all(simd::shuffle<3, 3, 0, 0>(u, v) == simd::float4(4.0f, 4.0f, 5.0f, 5.0f)) );
-
-
-    // move_xx
-
-    EXPECT_TRUE( all(move_lo(u, v)                   == simd::float4(1.0f, 2.0f, 5.0f, 6.0f)) );
-    EXPECT_TRUE( all(move_hi(u, v)                   == simd::float4(7.0f, 8.0f, 3.0f, 4.0f)) );
+        EXPECT_TRUE( all(simd::shuffle<0, 1, 2, 3>(u)    == simd::float4(1.0f, 2.0f, 3.0f, 4.0f)) );
+        EXPECT_TRUE( all(simd::shuffle<3, 2, 1, 0>(u)    == simd::float4(4.0f, 3.0f, 2.0f, 1.0f)) );
+        EXPECT_TRUE( all(simd::shuffle<0, 0, 3, 3>(u)    == simd::float4(1.0f, 1.0f, 4.0f, 4.0f)) );
+        EXPECT_TRUE( all(simd::shuffle<3, 3, 0, 0>(u)    == simd::float4(4.0f, 4.0f, 1.0f, 1.0f)) );
+        EXPECT_TRUE( all(simd::shuffle<0, 1, 2, 3>(u, v) == simd::float4(1.0f, 2.0f, 7.0f, 8.0f)) );
+        EXPECT_TRUE( all(simd::shuffle<3, 2, 1, 0>(u, v) == simd::float4(4.0f, 3.0f, 6.0f, 5.0f)) );
+        EXPECT_TRUE( all(simd::shuffle<0, 0, 3, 3>(u, v) == simd::float4(1.0f, 1.0f, 8.0f, 8.0f)) );
+        EXPECT_TRUE( all(simd::shuffle<3, 3, 0, 0>(u, v) == simd::float4(4.0f, 4.0f, 5.0f, 5.0f)) );
 
 
-    // interleave_xx
+        // move_xx
 
-    EXPECT_TRUE( all(interleave_lo(u, v)             == simd::float4(1.0f, 5.0f, 2.0f, 6.0f)) );
-    EXPECT_TRUE( all(interleave_hi(u, v)             == simd::float4(3.0f, 7.0f, 4.0f, 8.0f)) );
+        EXPECT_TRUE( all(move_lo(u, v)                   == simd::float4(1.0f, 2.0f, 5.0f, 6.0f)) );
+        EXPECT_TRUE( all(move_hi(u, v)                   == simd::float4(7.0f, 8.0f, 3.0f, 4.0f)) );
+
+
+        // interleave_xx
+
+        EXPECT_TRUE( all(interleave_lo(u, v)             == simd::float4(1.0f, 5.0f, 2.0f, 6.0f)) );
+        EXPECT_TRUE( all(interleave_hi(u, v)             == simd::float4(3.0f, 7.0f, 4.0f, 8.0f)) );
+    }
+
+    // float8 ---------------------------------------------
+    {
+        // shuffle
+
+        simd::float8 u(1, 2, 3, 4, 5, 6, 7, 8);
+        simd::float8 v(9, 10, 11, 12, 13, 14, 15, 16);
+
+
+        // interleave_xx
+
+        EXPECT_TRUE( all(interleave_lo(u, v)             == simd::float8(1, 9, 2, 10, 3, 11, 4, 12)) );
+        EXPECT_TRUE( all(interleave_hi(u, v)             == simd::float8(5, 13, 6, 14, 7, 15, 8, 16)) );
+    }
 }
 
 
