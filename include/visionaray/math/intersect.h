@@ -36,17 +36,9 @@ struct hit_record<basic_ray<T>, basic_aabb<U>>
     using scalar_type = T;
     using mask_type = simd::mask_type_t<T>;
 
-    MATH_FUNC hit_record()
-        : hit(false)
-        , tnear(numeric_limits<float>::max())
-        , tfar(-numeric_limits<float>::max())
-    {
-    }
-
-    mask_type   hit;
-    scalar_type tnear;
-    scalar_type tfar;
-
+    mask_type   hit   = false;
+    scalar_type tnear = T( numeric_limits<float>::max());
+    scalar_type tfar  = T(-numeric_limits<float>::max());
 };
 
 template <typename T, typename U>
@@ -92,26 +84,15 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
     using int_type = simd::int_type_t<T>;
     using mask_type = simd::mask_type_t<T>;
 
-    MATH_FUNC hit_record()
-        : hit(false)
-        , prim_id(0)
-        , geom_id(0)
-        , t(numeric_limits<float>::max())
-        , u(0.0)
-        , v(0.0)
-    {
-    }
+    mask_type hit          = false;
+    int_type prim_id       = int_type(0);
+    int_type geom_id       = int_type(0);
 
-
-    mask_type hit;
-    int_type prim_id;
-    int_type geom_id;
-
-    T t;
+    T t                    = numeric_limits<T>::max();
     vector<3, T> isect_pos;
 
-    T u;
-    T v;
+    T u                    = T(0.0);
+    T v                    = T(0.0);
 };
 
 
