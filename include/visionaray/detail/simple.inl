@@ -8,6 +8,7 @@
 
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
+#include <visionaray/spectrum.h>
 #include <visionaray/traverse.h>
 
 
