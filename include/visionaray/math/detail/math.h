@@ -469,7 +469,7 @@ inline T fract(T const& x)
 
 template <typename T>
 MATH_FUNC
-inline T heavyside(T const& x)
+inline T heaviside(T const& x)
 {
     return select( x < T(0.0), T(0.0), T(1.0) );
 }
