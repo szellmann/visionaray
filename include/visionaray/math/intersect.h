@@ -36,7 +36,7 @@ struct hit_record<basic_ray<T>, basic_aabb<U>>
     using scalar_type = T;
     using mask_type = simd::mask_type_t<T>;
 
-    mask_type   hit   = false;
+    mask_type   hit   = mask_type(false);
     scalar_type tnear = T( numeric_limits<float>::max());
     scalar_type tfar  = T(-numeric_limits<float>::max());
 };
@@ -84,7 +84,7 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
     using int_type = simd::int_type_t<T>;
     using mask_type = simd::mask_type_t<T>;
 
-    mask_type hit          = false;
+    mask_type hit          = mask_type(false);
     int_type prim_id       = int_type(0);
     int_type geom_id       = int_type(0);
 
