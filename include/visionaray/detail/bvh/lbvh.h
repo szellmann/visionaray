@@ -12,6 +12,10 @@
 #include <visionaray/aligned_vector.h>
 #include <visionaray/morton.h>
 
+#ifdef _WIN32
+#include <intrin.h>
+#endif
+
 namespace visionaray
 {
 namespace detail
