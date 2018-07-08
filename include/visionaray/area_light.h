@@ -23,6 +23,9 @@ public:
     area_light() = default;
     area_light(Geometry geometry);
 
+    VSNRAY_FUNC Geometry& geometry();
+    VSNRAY_FUNC Geometry const& geometry() const;
+
     // Evaluate the light intensity at pos.
     template <typename T>
     VSNRAY_FUNC vector<3, T> intensity(vector<3, T> const& pos) const;

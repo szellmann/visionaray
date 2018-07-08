@@ -15,6 +15,20 @@ inline area_light<Geometry>::area_light(Geometry geometry)
 }
 
 template <typename Geometry>
+VSNRAY_FUNC
+inline Geometry& area_light<Geometry>::geometry()
+{
+    return geometry_;
+}
+
+template <typename Geometry>
+VSNRAY_FUNC
+inline Geometry const& area_light<Geometry>::geometry() const
+{
+    return geometry_;
+}
+
+template <typename Geometry>
 template <typename T>
 VSNRAY_FUNC
 inline vector<3, T> area_light<Geometry>::intensity(vector<3, T> const& pos) const
