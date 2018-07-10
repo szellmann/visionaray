@@ -194,7 +194,7 @@ inline auto tex1D(Tex const& tex, FloatT coord)
     -> decltype( tex1D_impl_expand_types(
             tex.data(),
             coord,
-            FloatT(),
+            simd::int_type_t<FloatT>(),
             tex.get_filter_mode(),
             tex.get_address_mode()
             ) )
