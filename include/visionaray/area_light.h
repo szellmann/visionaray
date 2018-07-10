@@ -15,9 +15,15 @@
 namespace visionaray
 {
 
-template <typename Geometry>
+template <typename T, typename Geometry>
 class area_light
 {
+public:
+
+    using scalar_type   = T;
+    using vec_type      = vector<3, T>;
+    using color_type    = vector<3, T>;
+
 public:
 
     area_light() = default;
@@ -27,23 +33,23 @@ public:
     VSNRAY_FUNC Geometry const& geometry() const;
 
     // Evaluate the light intensity at pos.
-    template <typename T>
-    VSNRAY_FUNC vector<3, T> intensity(vector<3, T> const& pos) const;
+    template <typename U>
+    VSNRAY_FUNC vector<3, U> intensity(vector<3, U> const& pos) const;
 
-    template <typename T, typename Generator>
-    VSNRAY_FUNC vector<3, T> sample(T& pdf, Generator& gen) const;
+    template <typename U, typename Generator>
+    VSNRAY_FUNC vector<3, U> sample(U& pdf, Generator& gen) const;
 
     // Get N sampled positions.
-    template <typename T, size_t N, typename Generator>
+    template <size_t N, typename U, typename Generator>
     VSNRAY_FUNC void sample(
-            array<T, N>& pdfs,
-            array<vector<3, T>, N>& result,
+            array<U, N>& pdfs,
+            array<vector<3, U>, N>& result,
             Generator& gen
             ) const;
 
     // Return center of bounding box
     // TODO: maybe return something more meaningful, e.g. center of gravity?
-    VSNRAY_FUNC vector<3, float> position() const;
+    VSNRAY_FUNC vector<3, T> position() const;
 
 private:
 
