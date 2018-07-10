@@ -15,24 +15,11 @@ inline area_light<T, Geometry>::area_light(Geometry geometry)
 }
 
 template <typename T, typename Geometry>
-VSNRAY_FUNC
-inline Geometry& area_light<T, Geometry>::geometry()
-{
-    return geometry_;
-}
-
-template <typename T, typename Geometry>
-VSNRAY_FUNC
-inline Geometry const& area_light<T, Geometry>::geometry() const
-{
-    return geometry_;
-}
-
-template <typename T, typename Geometry>
 template <typename U>
 VSNRAY_FUNC
 inline vector<3, U> area_light<T, Geometry>::intensity(vector<3, U> const& pos) const
 {
+    return vector<3, U>(cl_ * kl_);
 }
 
 template <typename T, typename Geometry>
@@ -63,6 +50,34 @@ VSNRAY_FUNC
 inline vector<3, T> area_light<T, Geometry>::position() const
 {
     return vector<3, T>(get_bounds(geometry_).center());
+}
+
+template <typename T, typename Geometry>
+VSNRAY_FUNC
+inline Geometry& area_light<T, Geometry>::geometry()
+{
+    return geometry_;
+}
+
+template <typename T, typename Geometry>
+VSNRAY_FUNC
+inline Geometry const& area_light<T, Geometry>::geometry() const
+{
+    return geometry_;
+}
+
+template <typename T, typename Geometry>
+VSNRAY_FUNC
+inline void area_light<T, Geometry>::set_cl(vector<3, T> const& cl)
+{
+    cl_ = cl;
+}
+
+template <typename T, typename Geometry>
+VSNRAY_FUNC
+inline void area_light<T, Geometry>::set_kl(T kl)
+{
+    kl_ = kl;
 }
 
 } // visionaray

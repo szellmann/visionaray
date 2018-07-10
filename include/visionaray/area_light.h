@@ -29,9 +29,6 @@ public:
     area_light() = default;
     area_light(Geometry geometry);
 
-    VSNRAY_FUNC Geometry& geometry();
-    VSNRAY_FUNC Geometry const& geometry() const;
-
     // Evaluate the light intensity at pos.
     template <typename U>
     VSNRAY_FUNC vector<3, U> intensity(vector<3, U> const& pos) const;
@@ -51,7 +48,16 @@ public:
     // TODO: maybe return something more meaningful, e.g. center of gravity?
     VSNRAY_FUNC vector<3, T> position() const;
 
+    VSNRAY_FUNC Geometry& geometry();
+    VSNRAY_FUNC Geometry const& geometry() const;
+
+    VSNRAY_FUNC void set_cl(color_type const& cl);
+    VSNRAY_FUNC void set_kl(scalar_type kl);
+
 private:
+
+    color_type  cl_;
+    scalar_type kl_;
 
     Geometry geometry_;
 
