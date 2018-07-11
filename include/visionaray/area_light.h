@@ -11,6 +11,7 @@
 #include "detail/macros.h"
 #include "math/array.h"
 #include "math/vector.h"
+#include "light_sample.h"
 
 namespace visionaray
 {
@@ -33,16 +34,8 @@ public:
     template <typename U>
     VSNRAY_FUNC vector<3, U> intensity(vector<3, U> const& pos) const;
 
-    template <typename U, typename Generator>
-    VSNRAY_FUNC vector<3, U> sample(U& pdf, Generator& gen) const;
-
-    // Get N sampled positions.
-    template <size_t N, typename U, typename Generator>
-    VSNRAY_FUNC void sample(
-            array<U, N>& pdfs,
-            array<vector<3, U>, N>& result,
-            Generator& gen
-            ) const;
+    template <typename Generator, typename U = typename Generator::value_type>
+    VSNRAY_FUNC light_sample<U> sample(Generator& gen) const;
 
     // Return center of bounding box
     // TODO: maybe return something more meaningful, e.g. center of gravity?

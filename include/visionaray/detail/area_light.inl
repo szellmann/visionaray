@@ -23,26 +23,24 @@ inline vector<3, U> area_light<T, Geometry>::intensity(vector<3, U> const& pos) 
 }
 
 template <typename T, typename Geometry>
-template <typename U, typename Generator>
+template <typename Generator, typename U>
 VSNRAY_FUNC
-inline vector<3, U> area_light<T, Geometry>::sample(U& pdf, Generator& gen) const
+inline light_sample<U> area_light<T, Geometry>::sample(Generator& gen) const
 {
-    return sample_surface(geometry_, pdf, gen);
-}
+    light_sample<U> result;
 
-template <typename T, typename Geometry>
-template <size_t N, typename U, typename Generator>
-VSNRAY_FUNC
-inline void area_light<T, Geometry>::sample(
-        array<U, N>& pdfs,
-        array<vector<3, U>, N>& result,
-        Generator& gen
-        ) const
-{
-    for (size_t i = 0; i < N; ++i)
-    {
-        result[i] = sample(pdfs[i], gen);
-    }
+    auto pos = sample_surface(geometry_, gen);
+
+    // Satisfy get_normal() interface
+    struct { vector<3, U> isect_pos; } hr;
+    hr.isect_pos = pos;
+
+    result.pos = pos;
+    result.intensity = intensity(pos);
+    result.normal = get_normal(hr, geometry_);
+    result.area = U(area(geometry_));
+
+    return result;
 }
 
 template <typename T, typename Geometry>
