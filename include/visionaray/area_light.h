@@ -6,10 +6,7 @@
 #ifndef VSNRAY_AREA_LIGHT_H
 #define VSNRAY_AREA_LIGHT_H 1
 
-#include <cstddef>
-
 #include "detail/macros.h"
-#include "math/array.h"
 #include "math/vector.h"
 #include "light_sample.h"
 
