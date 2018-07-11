@@ -6,10 +6,14 @@
 #ifndef VSNRAY_SAMPLING_H
 #define VSNRAY_SAMPLING_H 1
 
-#include <visionaray/math/detail/math.h>
-#include <visionaray/math/simd/type_traits.h>
-#include <visionaray/math/constants.h>
-#include <visionaray/math/vector.h>
+#include <type_traits>
+
+#include "math/detail/math.h"
+#include "math/simd/type_traits.h"
+#include "math/array.h"
+#include "math/constants.h"
+#include "math/vector.h"
+#include "light_sample.h"
 
 namespace visionaray
 {
@@ -93,6 +97,74 @@ inline vector<3, T> cosine_sample_hemisphere(T const& u1, T const& u2)
     auto y     = r * sin(theta);
     auto z     = sqrt( max(T(0.0), T(1.0) - u1) );
     return vector<3, T>(x, y, z);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Sample a random light
+//
+
+// non-simd
+template <
+    typename Lights,
+    typename Generator,
+    typename T = typename Generator::value_type,
+    typename = typename std::enable_if<!simd::is_simd_vector<T>::value>::type
+    >
+light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen)
+{
+    auto num_lights = end - begin;
+
+    auto u = gen.next();
+
+    int light_id = static_cast<int>(u * num_lights);
+
+    return begin[light_id].sample(gen);
+}
+
+// simd
+template <
+    typename Lights,
+    typename Generator,
+    typename T = typename Generator::value_type,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    >
+light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen, T = T())
+{
+    using float_array = simd::aligned_array_t<T>;
+
+    auto num_lights = end - begin;
+
+    auto u = gen.next();
+
+    float_array uf;
+    store(uf, u);
+
+    array<vector<3, float>, simd::num_elements<T>::value> poss;
+    array<vector<3, float>, simd::num_elements<T>::value> intensities;
+    array<vector<3, float>, simd::num_elements<T>::value> normals;
+    array<float, simd::num_elements<T>::value> areas;
+
+    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    {
+        int light_id = static_cast<int>(uf[i] * num_lights);
+
+        auto ls = begin[light_id].sample(gen.get_generator(i));
+
+        poss[i] = ls.pos;
+        intensities[i] = ls.intensity;
+        normals[i] = ls.normal;
+        areas[i] = ls.area;
+    }
+
+    light_sample<T> result;
+
+    result.pos = simd::pack(poss);
+    result.intensity = simd::pack(intensities);
+    result.normal = simd::pack(normals);
+    result.area = T(areas.data());
+
+    return result;
 }
 
 } // visionaray
