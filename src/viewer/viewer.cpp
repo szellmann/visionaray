@@ -67,7 +67,6 @@
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
-#include <common/call_kernel.h>
 #include <common/make_materials.h>
 #include <common/model.h>
 #include <common/obj_loader.h>
@@ -77,6 +76,8 @@
 #ifdef __CUDACC__
 #include <common/cuda.h>
 #endif
+
+#include "call_kernel.h"
 
 
 using namespace visionaray;

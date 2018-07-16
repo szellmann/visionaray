@@ -133,7 +133,6 @@ set(COMMON_HEADERS
     manip/zoom_manipulator.h
 
     blocking_queue.h
-    call_kernel.h
     cfile.h
     exception.h
     hdr_image.h
