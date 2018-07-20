@@ -36,8 +36,6 @@ public:
     template <template <typename> class M>
     /* implicit */ generic_material(M<scalar_type> const& material);
 
-    VSNRAY_FUNC bool is_emissive() const;
-
     VSNRAY_FUNC spectrum<scalar_type> ambient() const;
 
     template <typename SR>
@@ -61,8 +59,6 @@ public:
 private:
 
     // Variant visitors
-
-    struct is_emissive_visitor;
 
     struct ambient_visitor;
 

@@ -22,13 +22,6 @@ inline generic_material<T, Ts...>::generic_material(M<typename T::scalar_type> c
 
 template <typename T, typename ...Ts>
 VSNRAY_FUNC
-inline bool generic_material<T, Ts...>::is_emissive() const
-{
-    return apply_visitor( is_emissive_visitor(), *this );
-}
-
-template <typename T, typename ...Ts>
-VSNRAY_FUNC
 inline spectrum<typename T::scalar_type> generic_material<T, Ts...>::ambient() const
 {
     return apply_visitor( ambient_visitor(), *this );
@@ -71,26 +64,6 @@ inline typename SR::scalar_type generic_material<T, Ts...>::pdf(
 //-------------------------------------------------------------------------------------------------
 // Private variant visitors
 //
-
-template <typename T, typename ...Ts>
-struct generic_material<T, Ts...>::is_emissive_visitor
-{
-    using Base = generic_material<T, Ts...>;
-    using return_type = bool;
-
-    template <typename X>
-    VSNRAY_FUNC
-    bool operator()(X) const
-    {
-        return false;
-    }
-
-    VSNRAY_FUNC
-    bool operator()(emissive<typename Base::scalar_type>) const
-    {
-        return true;
-    }
-};
 
 template <typename T, typename ...Ts>
 struct generic_material<T, Ts...>::ambient_visitor
@@ -213,22 +186,6 @@ public:
     single_material const& get(int i) const
     {
         return mats_[i];
-    }
-
-    VSNRAY_FUNC
-    mask_type_t<scalar_type> is_emissive() const
-    {
-        using mask_t = mask_type_t<scalar_type>;
-        using mask_array = aligned_array_t<mask_t>;
-
-        mask_array arr;
-
-        for (size_t i = 0; i < N; ++i)
-        {
-            arr[i] = mats_[i].is_emissive();
-        }
-
-        return mask_t(arr);
     }
 
     VSNRAY_FUNC
