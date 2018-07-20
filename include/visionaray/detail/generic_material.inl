@@ -56,6 +56,17 @@ inline spectrum<U> generic_material<T, Ts...>::sample(
     return apply_visitor( sample_visitor<SR, U, Interaction, Generator>(sr, refl_dir, pdf, inter, gen), *this );
 }
 
+template <typename T, typename ...Ts>
+template <typename SR, typename Interaction>
+VSNRAY_FUNC
+inline typename SR::scalar_type generic_material<T, Ts...>::pdf(
+        SR const& sr,
+        Interaction const& inter
+        ) const
+{
+    return apply_visitor( pdf_visitor<SR, Interaction>(sr, inter), *this );
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Private variant visitors
@@ -142,6 +153,30 @@ struct generic_material<T, Ts...>::sample_visitor
     U&              pdf_;
     Interaction&    inter_;
     Generator&      gen_;
+};
+
+template <typename T, typename ...Ts>
+template <typename SR, typename Interaction>
+struct generic_material<T, Ts...>::pdf_visitor
+{
+    using return_type = typename SR::scalar_type;
+
+    VSNRAY_FUNC
+    pdf_visitor(SR const& sr, Interaction const& inter)
+        : sr_(sr)
+        , inter_(inter)
+    {
+    }
+
+    template <typename X>
+    VSNRAY_FUNC
+    return_type operator()(X const& ref) const
+    {
+        return ref.pdf(sr_, inter_);
+    }
+
+    SR const& sr_;
+    Interaction const& inter_;
 };
 
 
@@ -255,6 +290,27 @@ public:
         pdf = scalar_type(pdfs);
         inter = int_type_t<scalar_type>(inters);
         return pack(sampled);
+    }
+
+    template <typename SR, typename Interaction>
+    VSNRAY_FUNC
+    scalar_type pdf(SR const& sr, Interaction const& inter) const
+    {
+        using float_array = aligned_array_t<scalar_type>;
+        using int_array = aligned_array_t<int_type_t<scalar_type>>;
+
+        auto srs = unpack(sr);
+        int_array inters;
+        store(inters, inter);
+
+        float_array pdfs;
+
+        for (size_t i = 0; i < N; ++i)
+        {
+            pdfs[i] = mats_[i].pdf(srs[i], inters[i]);
+        }
+
+        return scalar_type(pdfs);
     }
 
 private:

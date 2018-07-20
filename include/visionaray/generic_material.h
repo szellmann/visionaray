@@ -52,6 +52,12 @@ public:
             Generator&      gen
             ) const;
 
+    template <typename SR, typename Interaction>
+    VSNRAY_FUNC typename SR::scalar_type pdf(
+            SR const& sr,
+            Interaction const& inter
+            ) const;
+
 private:
 
     // Variant visitors
@@ -65,6 +71,9 @@ private:
 
     template <typename SR, typename U, typename Interaction, typename Generator>
     struct sample_visitor;
+
+    template <typename SR, typename Interaction>
+    struct pdf_visitor;
 
 };
 
