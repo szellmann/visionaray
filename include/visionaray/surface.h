@@ -60,6 +60,19 @@ struct surface<N, M>
 
         return material.sample(shade_rec, refl_dir, pdf, inter, sampler);
     }
+
+    template <typename U, typename Interaction>
+    VSNRAY_FUNC
+    scalar_type pdf(vector<3, U> const& view_dir, vector<3, U> const& light_dir, Interaction const& inter)
+    {
+        shade_record<U> shade_rec;
+        shade_rec.normal           = shading_normal;
+        shade_rec.geometric_normal = geometric_normal;
+        shade_rec.view_dir         = view_dir;
+        shade_rec.light_dir        = light_dir;
+
+        return material.pdf(shade_rec, inter);
+    }
 };
 
 template <typename N, typename C, typename M>
@@ -104,6 +117,19 @@ struct surface<N, C, M>
         shade_rec.tex_color        = tex_color;
 
         return material.sample(shade_rec, refl_dir, pdf, inter, sampler);
+    }
+
+    template <typename U, typename Interaction>
+    VSNRAY_FUNC
+    scalar_type pdf(vector<3, U> const& view_dir, vector<3, U> const& light_dir, Interaction const& inter)
+    {
+        shade_record<U> shade_rec;
+        shade_rec.normal           = shading_normal;
+        shade_rec.geometric_normal = geometric_normal;
+        shade_rec.view_dir         = view_dir;
+        shade_rec.light_dir        = light_dir;
+
+        return material.pdf(shade_rec, inter);
     }
 };
 

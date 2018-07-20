@@ -38,6 +38,15 @@ inline spectrum<U> glass<T>::sample(
 }
 
 template <typename T>
+template <typename SR, typename Interaction>
+VSNRAY_FUNC
+inline typename SR::scalar_type glass<T>::pdf(SR const& sr, Interaction const& inter) const
+{
+    VSNRAY_UNUSED(inter);
+    return specular_bsdf_.pdf(sr.normal, sr.view_dir, sr.light_dir);
+}
+
+template <typename T>
 VSNRAY_FUNC
 inline spectrum<T>& glass<T>::ct()
 {

@@ -96,6 +96,22 @@ inline spectrum<U> plastic<T>::sample(
     return           select( u < U(prob_diff), diff,  spec  ) * (dot(n, refl_dir) / pdf);
 }
 
+template <typename T>
+template <typename SR, typename Interaction> 
+VSNRAY_FUNC
+inline typename SR::scalar_type plastic<T>::pdf(SR const& sr, Interaction const& inter) const
+{
+    auto n = sr.normal;
+#if 1 // two-sided
+    n = faceforward( n, sr.view_dir, sr.geometric_normal );
+#endif
+    return select(
+            inter == surface_interaction::Diffuse,
+            diffuse_brdf_.pdf(n, sr.view_dir, sr.light_dir),
+            specular_brdf_.pdf(n, sr.view_dir, sr.light_dir)
+            );
+}
+
 //--- deprecated begin ------------------------------------
 
 template <typename T>

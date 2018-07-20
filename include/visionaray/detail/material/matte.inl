@@ -58,6 +58,20 @@ inline spectrum<U> matte<T>::sample(
     return result * (dot(n, refl_dir) / pdf);
 }
 
+template <typename T>
+template <typename SR, typename Interaction> 
+VSNRAY_FUNC
+inline typename SR::scalar_type matte<T>::pdf(SR const& sr, Interaction const& inter) const
+{
+    VSNRAY_UNUSED(inter);
+
+    auto n = sr.normal;
+#if 1 // two-sided
+    n = faceforward( n, sr.view_dir, sr.geometric_normal );
+#endif
+    return diffuse_brdf_.pdf(n, sr.view_dir, sr.light_dir);
+}
+
 // --- deprecated begin -----------------------------------
 
 template <typename T>

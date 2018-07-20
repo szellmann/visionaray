@@ -43,6 +43,15 @@ inline spectrum<U> emissive<T>::sample(
     return shade(shade_rec);
 }
 
+template <typename T>
+template <typename SR, typename Interaction>
+VSNRAY_FUNC
+inline typename SR::scalar_type emissive<T>::pdf(SR const& sr, Interaction const& inter) const
+{
+    VSNRAY_UNUSED(sr, inter);
+    return typename SR::scalar_type(1.0);
+}
+
 // --- deprecated begin -----------------------------------
 
 template <typename T>

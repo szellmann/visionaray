@@ -65,13 +65,20 @@ public:
         auto sp = cosine_sample_hemisphere(gen.next(), gen.next());
         wi      = normalize( sp.x * u + sp.y * v + sp.z * w );
 
-        pdf     = dot(n, wi) * constants::inv_pi<U>();
+        pdf     = this->pdf(n, wo, wi);
 
         inter   = Interaction(surface_interaction::Diffuse);
 
         return f(n, wo, wi);
     }
 
+    template <typename U>
+    VSNRAY_FUNC
+    U pdf(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    {
+        VSNRAY_UNUSED(wo);
+        return dot(n, wi) * constants::inv_pi<U>();
+    }
 };
 
 
@@ -173,6 +180,16 @@ public:
 
         return f(n, wo, wi);
     }
+
+    template <typename U>
+    VSNRAY_FUNC
+    U pdf(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    {
+        vector<3, U> h = normalize(wi + wo);
+        U costheta = dot(n, h);
+        U vdoth = dot(wo, h);
+        return ( ((exp + U(1.0)) * pow(costheta, exp)) / (U(2.0) * constants::pi<U>() * U(4.0) * vdoth) );
+    }
 };
 
 
@@ -229,6 +246,14 @@ public:
                 absorption,
                 abs( dot(n, wo) )
                 ) * spectrum<U>(cr * kr) / abs( dot(n, wi) );
+    }
+
+    template <typename U>
+    VSNRAY_FUNC
+    U pdf(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    {
+        VSNRAY_UNUSED(n, wo, wi);
+        return U(0.0);
     }
 };
 
@@ -337,6 +362,14 @@ public:
                 (spectrum<U>(1.0) - reflectance) * spectrum<U>(ct * kt)
                 ) / abs(dot(N, wi));
         return result * (dot(N, wi) / pdf); // TODO: sure?
+    }
+
+    template <typename U>
+    VSNRAY_FUNC
+    U pdf(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    {
+        VSNRAY_UNUSED(n, wo, wi);
+        return U(0.0);
     }
 };
 

@@ -105,6 +105,12 @@ public:
             Generator&      gen
             ) const;
 
+    template <typename SR, typename Interaction>
+    VSNRAY_FUNC typename SR::scalar_type pdf(
+            SR const&          shared_rec,
+            Interaction const& inter
+            ) const;
+
     // deprecated!
     VSNRAY_FUNC void VSNRAY_DEPRECATED set_ce(spectrum<T> const& ce);
     VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_ce() const;
@@ -157,6 +163,12 @@ public:
             U&              pdf,
             Interaction&    inter,
             Generator&      gen
+            ) const;
+
+    template <typename SR, typename Interaction>
+    VSNRAY_FUNC typename SR::scalar_type pdf(
+            SR const&          shared_rec,
+            Interaction const& inter
             ) const;
 
     // deprecated!
@@ -229,6 +241,11 @@ public:
             Generator&      gen
             ) const;
 
+    template <typename SR, typename Interaction>
+    VSNRAY_FUNC typename SR::scalar_type pdf(
+            SR const&          shared_rec,
+            Interaction const& inter
+            ) const;
 
     // deprecated!
     VSNRAY_FUNC void VSNRAY_DEPRECATED set_cr(spectrum<T> const& cr);
@@ -296,6 +313,11 @@ public:
             Generator&      gen
             ) const;
 
+    template <typename SR, typename Interaction>
+    VSNRAY_FUNC typename SR::scalar_type pdf(
+            SR const&          shared_rec,
+            Interaction const& inter
+            ) const;
 
     VSNRAY_FUNC spectrum<T>& ct();
     VSNRAY_FUNC spectrum<T> const& ct() const;
@@ -354,6 +376,11 @@ public:
             Generator&      gen
             ) const;
 
+    template <typename SR, typename Interaction>
+    VSNRAY_FUNC typename SR::scalar_type pdf(
+            SR const&          shared_rec,
+            Interaction const& inter
+            ) const;
 
     // deprecated!
     VSNRAY_FUNC void VSNRAY_DEPRECATED set_ca(spectrum<T> const& ca);
