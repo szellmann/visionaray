@@ -111,6 +111,7 @@ template <
     typename T = typename Generator::value_type,
     typename = typename std::enable_if<!simd::is_simd_vector<T>::value>::type
     >
+VSNRAY_FUNC
 light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen)
 {
     auto num_lights = end - begin;
