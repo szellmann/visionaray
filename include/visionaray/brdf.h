@@ -361,7 +361,7 @@ public:
                 reflectance * spectrum<U>(cr * kr),
                 (spectrum<U>(1.0) - reflectance) * spectrum<U>(ct * kt)
                 );
-        return result / pdf; // TODO: sure?
+        return result;
     }
 
     template <typename U>

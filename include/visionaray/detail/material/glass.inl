@@ -34,7 +34,8 @@ inline spectrum<U> glass<T>::sample(
         Generator&      gen
         ) const
 {
-    return specular_bsdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, inter, gen);
+    auto result = specular_bsdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, inter, gen);
+    return result / pdf;
 }
 
 template <typename T>
