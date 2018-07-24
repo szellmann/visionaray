@@ -360,8 +360,8 @@ public:
                 u < reflectance[0],
                 reflectance * spectrum<U>(cr * kr),
                 (spectrum<U>(1.0) - reflectance) * spectrum<U>(ct * kt)
-                ) / abs(dot(N, wi));
-        return result * (dot(N, wi) / pdf); // TODO: sure?
+                );
+        return result / pdf; // TODO: sure?
     }
 
     template <typename U>
