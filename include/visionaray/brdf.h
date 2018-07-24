@@ -356,12 +356,11 @@ public:
                 Interaction(surface_interaction::SpecularTransmission)
                 );
 
-        auto result = select(
+        return select(
                 u < reflectance[0],
                 reflectance * spectrum<U>(cr * kr),
                 (spectrum<U>(1.0) - reflectance) * spectrum<U>(ct * kt)
-                );
-        return result;
+                ) / dot(N, wi);
     }
 
     template <typename U>
