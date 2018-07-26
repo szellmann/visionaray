@@ -104,6 +104,7 @@ set(UNITTESTS_SOURCES
     math/ray.cpp
     math/rectangle.cpp
     math/serialization.cpp
+    math/triangle.cpp
     math/snorm.cpp
     math/unorm.cpp
     math/vector.cpp
