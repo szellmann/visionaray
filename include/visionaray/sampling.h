@@ -95,7 +95,7 @@ inline vector<3, T> cosine_sample_hemisphere(T const& u1, T const& u2)
     auto theta = constants::two_pi<T>() * u2;
     auto x     = r * cos(theta);
     auto y     = r * sin(theta);
-    auto z     = sqrt( max(T(0.0), T(1.0) - u1) );
+    auto z     = sqrt(T(1.0) - u1);
     return vector<3, T>(x, y, z);
 }
 
