@@ -295,7 +295,11 @@ struct renderer : viewer_type
     host_render_target_type                     host_rt;
 #ifdef __CUDACC__
     cuda_sched<ray_type_gpu>                    device_sched;
-    device_render_target_type                   device_rt;
+    bool                                        direct_rendering = true;
+    pixel_unpack_buffer_rt<
+        PF_RGBA32F, PF_UNSPECIFIED>             direct_rendering_rt;
+    gpu_buffer_rt<
+        PF_RGBA32F, PF_UNSPECIFIED>             indirect_rendering_rt;
 #endif
     pinhole_camera                              cam;
 
@@ -400,7 +404,14 @@ void renderer::clear_frame()
     {
         host_rt.clear_color_buffer();
 #ifdef __CUDACC__
-        device_rt.clear_color_buffer();
+        if (direct_rendering)
+        {
+            direct_rendering_rt.clear_color_buffer();
+        }
+        else
+        {
+            indirect_rendering_rt.clear_color_buffer();
+        }
 #endif
     }
 }
@@ -562,7 +573,14 @@ void renderer::on_display()
                 amb
                 );
 
-        call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, device_rt );
+        if (direct_rendering)
+        {
+            call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, direct_rendering_rt );
+        }
+        else
+        {
+            call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, indirect_rendering_rt );
+        }
 #endif
     }
     else if (dev_type == renderer::CPU)
@@ -604,16 +622,16 @@ void renderer::on_display()
         glDisable(GL_FRAMEBUFFER_SRGB);
     }
 
-    if (dev_type == renderer::GPU && false /* no direct rendering */)
+    if (dev_type == renderer::GPU && direct_rendering)
     {
 #ifdef __CUDACC__
-//        device_rt.display_color_buffer();
+        direct_rendering_rt.display_color_buffer();
 #endif
     }
-    else if (dev_type == renderer::GPU && true /* direct rendering */)
+    else if (dev_type == renderer::GPU && !direct_rendering)
     {
 #ifdef __CUDACC__
-        device_rt.display_color_buffer();
+        indirect_rendering_rt.display_color_buffer();
 #endif
     }
     else
@@ -765,7 +783,14 @@ void renderer::on_resize(int w, int h)
     cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
     host_rt.resize(w, h);
 #ifdef __CUDACC__
-    device_rt.resize(w, h);
+    if (direct_rendering)
+    {
+        direct_rendering_rt.resize(w, h);
+    }
+    else
+    {
+        indirect_rendering_rt.resize(w, h);
+    }
 #endif
     clear_frame();
     viewer_type::on_resize(w, h);
@@ -773,15 +798,15 @@ void renderer::on_resize(int w, int h)
 
 int main(int argc, char** argv)
 {
+    renderer rend;
+
 #ifdef __CUDACC__
-    if (cuda::init_gl_interop() != cudaSuccess)
+    if (rend.direct_rendering && cuda::init_gl_interop() != cudaSuccess)
     {
         std::cerr << "Cannot initialize CUDA OpenGL interop\n";
         return EXIT_FAILURE;
     }
 #endif
-
-    renderer rend;
 
     try
     {
