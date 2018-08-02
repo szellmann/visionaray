@@ -622,19 +622,17 @@ void renderer::on_display()
         glDisable(GL_FRAMEBUFFER_SRGB);
     }
 
+#ifdef __CUDACC__
     if (dev_type == renderer::GPU && direct_rendering)
     {
-#ifdef __CUDACC__
         direct_rendering_rt.display_color_buffer();
-#endif
     }
     else if (dev_type == renderer::GPU && !direct_rendering)
     {
-#ifdef __CUDACC__
         indirect_rendering_rt.display_color_buffer();
-#endif
     }
     else
+#endif
     {
         host_rt.display_color_buffer();
     }
