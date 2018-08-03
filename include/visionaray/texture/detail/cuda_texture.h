@@ -29,7 +29,7 @@ namespace detail
 // Map visionaray texture address mode to cuda texture address mode
 //
 
-cudaTextureAddressMode map_address_mode(tex_address_mode mode)
+inline cudaTextureAddressMode map_address_mode(tex_address_mode mode)
 {
     switch (mode)
     {
@@ -56,7 +56,7 @@ cudaTextureAddressMode map_address_mode(tex_address_mode mode)
 // Map visionaray texture filter mode to cuda texture filter mode
 //
 
-cudaTextureFilterMode map_filter_mode(tex_filter_mode mode)
+inline cudaTextureFilterMode map_filter_mode(tex_filter_mode mode)
 {
     switch (mode)
     {
