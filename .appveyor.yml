@@ -37,7 +37,7 @@ build_script:
       -DGLEW_LIBRARY="C:\projects\nupengl.core.0.1.0.1\build\native\lib\x64\glew32.lib"
       -DGLUT_INCLUDE_DIR="C:\projects\nupengl.core.0.1.0.1\build\native\include"
       -DGLUT_glut_LIBRARY="C:\projects\nupengl.core.0.1.0.1\build\native\lib\x64\freeglut.lib"
-      -DVSNRAY_ENABLE_EXAMPLES=ON
+      -DVSNRAY_ENABLE_EXAMPLES=OFF
       -DVSNRAY_ENABLE_COMPILE_FAILURE_TESTS=ON
       -DVSNRAY_ENABLE_UNITTESTS=ON
       ..
