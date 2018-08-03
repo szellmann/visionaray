@@ -6,11 +6,10 @@
 #ifndef VSNRAY_POINT_LIGHT_H
 #define VSNRAY_POINT_LIGHT_H 1
 
-#include <cstddef>
-
 #include "detail/macros.h"
 #include "math/array.h"
 #include "math/vector.h"
+#include "light_sample.h"
 
 namespace visionaray
 {
@@ -31,16 +30,8 @@ public:
     VSNRAY_FUNC vector<3, U> intensity(vector<3, U> const& pos) const;
 
     // Get a single sampled position (always the same).
-    template <typename U, typename Generator>
-    VSNRAY_FUNC vector<3, U> sample(U& pdf, Generator& gen) const;
-
-    // Get N sampled positions (all the same).
-    template <typename U, size_t N, typename Generator>
-    VSNRAY_FUNC void sample(
-            array<U, N>& pdfs,
-            array<vector<3, U>, N>& result,
-            Generator& gen
-            ) const;
+    template <typename Generator, typename U = typename Generator::value_type>
+    VSNRAY_FUNC light_sample<U> sample(Generator& gen) const;
 
     VSNRAY_FUNC vec_type position() const;
     VSNRAY_FUNC T constant_attenuation() const;

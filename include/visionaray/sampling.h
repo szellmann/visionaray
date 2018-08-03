@@ -53,6 +53,19 @@ inline F radical_inverse(I n)
 
 
 //-------------------------------------------------------------------------------------------------
+// Calculate Veach's power heuristic for p^2
+//
+
+template <typename T>
+VSNRAY_FUNC
+T power_heuristic(T const& pdf1, T const& pdf2)
+{
+    return       (pdf1 * pdf1)
+        / (pdf1 * pdf1 + pdf2 * pdf2);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Utility functions for geometry sampling
 //
 
@@ -141,10 +154,13 @@ light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen, T 
     float_array uf;
     store(uf, u);
 
+    light_sample<T> result;
+
     array<vector<3, float>, simd::num_elements<T>::value> poss;
     array<vector<3, float>, simd::num_elements<T>::value> intensities;
     array<vector<3, float>, simd::num_elements<T>::value> normals;
-    array<float, simd::num_elements<T>::value> areas;
+    float* area = reinterpret_cast<float*>(&result.area);
+    int* delta_light = reinterpret_cast<int*>(&result.delta_light);
 
     for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
     {
@@ -155,15 +171,13 @@ light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen, T 
         poss[i] = ls.pos;
         intensities[i] = ls.intensity;
         normals[i] = ls.normal;
-        areas[i] = ls.area;
+        area[i] = ls.area;
+        delta_light[i] = ls.delta_light ? 0xFFFFFFFF : 0x00000000;
     }
-
-    light_sample<T> result;
 
     result.pos = simd::pack(poss);
     result.intensity = simd::pack(intensities);
     result.normal = simd::pack(normals);
-    result.area = T(areas.data());
 
     return result;
 }

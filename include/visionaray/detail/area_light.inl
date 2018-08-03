@@ -39,6 +39,7 @@ inline light_sample<U> area_light<T, Geometry>::sample(Generator& gen) const
     result.intensity = intensity(pos);
     result.normal = get_normal(hr, geometry_);
     result.area = U(area(geometry_));
+    result.delta_light = false;
 
     return result;
 }

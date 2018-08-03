@@ -28,29 +28,25 @@ inline vector<3, U> point_light<T>::intensity(vector<3, U> const& pos) const
 }
 
 template <typename T>
-template <typename U, typename Generator>
+template <typename Generator, typename U>
 VSNRAY_FUNC
-inline vector<3, U> point_light<T>::sample(U& pdf, Generator& gen) const
+inline light_sample<U> point_light<T>::sample(Generator& gen) const
 {
-    VSNRAY_UNUSED(gen);
+    light_sample<U> result;
 
-    pdf = U(1.0);
-    return vector<3, U>(position());
-}
+    auto pos = position();
 
-template <typename T>
-template <typename U, size_t N, typename Generator>
-VSNRAY_FUNC
-inline void point_light<T>::sample(
-        array<U, N>& pdfs,
-        array<vector<3, U>, N>& result,
-        Generator& gen
-        ) const
-{
-    for (size_t i = 0; i < N; ++i)
-    {
-        result[i] = sample(pdfs[i], gen);
-    }
+    result.pos = pos;
+    result.intensity = intensity(pos);
+    result.normal = normalize( vector<3, U>(
+            gen.next() * U(2.0) - U(1.0),
+            gen.next() * U(2.0) - U(1.0),
+            gen.next() * U(2.0) - U(1.0)
+            ) );
+    result.area = U(1.0);
+    result.delta_light = true;
+
+    return result;
 }
 
 template <typename T>

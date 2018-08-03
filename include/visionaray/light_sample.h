@@ -6,16 +6,28 @@
 #ifndef VSNRAY_LIGHT_SAMPLE_H
 #define VSNRAY_LIGHT_SAMPLE_H 1
 
+#include "math/simd/type_traits.h"
+
 namespace visionaray
 {
 
 template <typename T>
 struct light_sample
 {
+    // Sampled position
     vector<3, T> pos;
+
+    // Light intensity at pos
     vector<3, T> intensity;
+
+    // Light normal at pos
     vector<3, T> normal;
+
+    // Area of the sampled light source
     T area;
+
+    // Indicates if sample was generated from a delta light
+    simd::mask_type_t<T> delta_light;
 };
 
 } // visionaray
