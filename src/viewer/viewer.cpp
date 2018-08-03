@@ -46,6 +46,7 @@
 #include <visionaray/gl/debug_callback.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
+#include <visionaray/area_light.h>
 #include <visionaray/bvh.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/generic_material.h>
@@ -93,6 +94,17 @@ using viewer_type = viewer_glut;
 
 
 //-------------------------------------------------------------------------------------------------
+// With emissive materials enabled, assemble light sources from emissive surfaces for
+// direct light sampling
+//
+
+#define USE_AREA_LIGHT_SAMPLING 0
+
+
+static_assert(!(USE_PLASTIC_MATERIAL && USE_AREA_LIGHT_SAMPLING), "Invalid configuration");
+
+
+//-------------------------------------------------------------------------------------------------
 // Renderer, stores state, geometry, normals, ...
 //
 
@@ -120,6 +132,11 @@ struct renderer : viewer_type
                                             mirror<float>,
                                             plastic<float>
                                             >;
+#endif
+#if USE_AREA_LIGHT_SAMPLING
+    using light_type                = area_light<float, basic_triangle<3, float>>;
+#else
+    using light_type                = point_light<float>;
 #endif
 
     using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
@@ -277,6 +294,7 @@ struct renderer : viewer_type
 
     host_bvh_type                               host_bvh;
     aligned_vector<material_type>               host_materials;
+    aligned_vector<light_type>                  host_lights;
 #ifdef __CUDACC__
     device_bvh_type                             device_bvh;
     thrust::device_vector<normal_type>          device_normals;
@@ -527,16 +545,17 @@ void renderer::on_close()
 
 void renderer::on_display()
 {
+#if !USE_AREA_LIGHT_SAMPLING
     using light_type = point_light<float>;
-
-    aligned_vector<light_type> host_lights;
 
     light_type light;
     light.set_cl( vec3(1.0, 1.0, 1.0) );
     light.set_kl(1.0);
     light.set_position( cam.eye() );
 
-    host_lights.push_back( light );
+    host_lights[0] = light;
+#endif
+
 
     auto bounds     = mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
@@ -900,6 +919,62 @@ int main(int argc, char** argv)
             rend.mod.primitives.size(),
             rend.builder == renderer::Split
             );
+
+#if USE_AREA_LIGHT_SAMPLING
+    // Loop over all triangles, check if their
+    // material is emissive, and if so, build
+    // BVHs to create area lights from.
+
+    struct range
+    {
+        std::size_t begin;
+        std::size_t end;
+        unsigned    geom_id;
+    };
+
+    std::vector<range> ranges;
+
+    for (std::size_t i = 0; i < rend.mod.primitives.size(); ++i)
+    {
+        auto pi = rend.mod.primitives[i];
+        if (rend.host_materials[pi.geom_id].as<emissive<float>>() != nullptr)
+        {
+            range r;
+            r.begin = i;
+
+            std::size_t j = i + 1;
+            for (;j < rend.mod.primitives.size(); ++j)
+            {
+                auto pii = rend.mod.primitives[j];
+                if (rend.host_materials[pii.geom_id].as<emissive<float>>() == nullptr
+                                || pii.geom_id != pi.geom_id)
+                {
+                    break;
+                }
+            }
+
+            r.end = j;
+            r.geom_id = pi.geom_id;
+            ranges.push_back(r);
+
+            i = r.end - 1;
+        }
+    }
+
+    for (auto r : ranges)
+    {
+        for (std::size_t i = r.begin; i != r.end; ++i)
+        {
+            area_light<float, basic_triangle<3, float>> light(rend.mod.primitives[i]);
+            auto mat = *rend.host_materials[r.geom_id].as<emissive<float>>();
+            light.set_cl(to_rgb(mat.ce()));
+            light.set_kl(mat.ls());
+            rend.host_lights.push_back(light);
+        }
+    }
+#else
+    rend.host_lights.resize(1);
+#endif
 
     std::cout << "Ready\n";
 
