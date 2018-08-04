@@ -147,6 +147,12 @@ struct kernel
             throughput = mul( throughput, src, !zero_pdf, throughput );
             throughput = select( zero_pdf, C(0.0), throughput );
 
+            // Russian roulette
+            auto prob = max_element(throughput.samples());
+            auto terminate = gen.next() > prob;
+            active_rays &= !terminate;
+            throughput /= prob;
+
             if (!any(active_rays))
             {
                 break;
