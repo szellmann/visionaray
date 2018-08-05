@@ -53,6 +53,18 @@ inline F radical_inverse(I n)
 
 
 //-------------------------------------------------------------------------------------------------
+// Calculate Veach's balance heuristic
+//
+
+template <typename T>
+VSNRAY_FUNC
+T balance_heuristic(T const& pdf1, T const& pdf2)
+{
+    return pdf1 / (pdf1 + pdf2);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Calculate Veach's power heuristic for p^2
 //
 
