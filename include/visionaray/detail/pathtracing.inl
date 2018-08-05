@@ -160,7 +160,8 @@ struct kernel
                 auto prob = max_element(throughput.samples());
                 brdf_pdf *= prob;
 
-                auto src = surf.shade(view_dir, L, ls.intensity) / S(M_PI) / ldotn;
+                // TODO: inv_pi / dot(n, wi) factor only valid for plastic and matte
+                auto src = surf.shade(view_dir, L, ls.intensity) * constants::inv_pi<S>() / ldotn;
                 auto solid_angle = (ldotln * ls.area) / (ld * ld);
                 auto light_pdf = S(1.0) / solid_angle;
 
