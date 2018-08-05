@@ -301,6 +301,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/fresnel.h
     ${HEADER_DIR}/generic_primitive.h
     ${HEADER_DIR}/generic_material.h
+    ${HEADER_DIR}/get_area.h
     ${HEADER_DIR}/get_color.h
     ${HEADER_DIR}/get_normal.h
     ${HEADER_DIR}/get_shading_normal.h
