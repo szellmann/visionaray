@@ -39,10 +39,10 @@ template <
     typename Primitive = typename std::iterator_traits<Primitives>::value_type,
     typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type,
-    typename T1
+    typename = void
     >
 VSNRAY_FUNC
-inline auto get_area(Primitives const& prims, HR const& hr, T1 = {})
+inline auto get_area(Primitives const& prims, HR const& hr)
     -> typename HR::scalar_type
 {
     using T = typename HR::scalar_type;
@@ -69,11 +69,11 @@ template <
     typename Primitive = typename std::iterator_traits<Primitives>::value_type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<typename HR::scalar_type>::value>::type,
-    typename T1,
-    typename T2
+    typename = void,
+    typename = void
     >
 VSNRAY_FUNC
-inline auto get_area(Primitives const& prims, HR const& hr, T1 = {}, T2 = {})
+inline auto get_area(Primitives const& prims, HR const& hr)
     -> decltype(area(std::declval<typename Primitive::primitive_type>()))
 {
     // Find the BVH that contains prim_id
