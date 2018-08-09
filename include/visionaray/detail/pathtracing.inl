@@ -115,7 +115,7 @@ struct kernel
 
             S mis_weight = select(
                 bounce > 0 && num_lights > 0 && !last_specular,
-                balance_heuristic(brdf_pdf, light_pdf / static_cast<float>(num_lights)),
+                power_heuristic(brdf_pdf, light_pdf / static_cast<float>(num_lights)),
                 S(1.0)
                 );
 
@@ -165,7 +165,7 @@ struct kernel
                 auto solid_angle = (ldotln * ls.area) / (ld * ld);
                 auto light_pdf = S(1.0) / solid_angle;
 
-                S mis_weight = balance_heuristic(light_pdf / static_cast<float>(num_lights), brdf_pdf);
+                S mis_weight = power_heuristic(light_pdf / static_cast<float>(num_lights), brdf_pdf);
 
                 intensity += select(
                     active_rays && !lhr.hit && ldotn > S(0.0) && ldotln > S(0.0),
