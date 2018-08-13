@@ -171,6 +171,94 @@ static dds_pixel_format get_pixel_format(dds_header::pixel_format_t pf)
 }
 
 
+static void decode_tile_rgb_5_6_5(uint8_t* dst, uint8_t const* src)
+{
+    using visionaray::vec3;
+
+    uint16_t c0 = *reinterpret_cast<uint16_t const*>(src);
+    uint16_t c1 = *reinterpret_cast<uint16_t const*>(src + 2);
+
+    vec3 color[4];
+
+    color[0] = vec3(
+        ((c0 & 0xF800) >> 11) / 32.0f,
+        ((c0 & 0x7E0) >> 5)   / 64.0f,
+        (c0 & 0x1F)           / 32.0f
+        );
+
+    color[1] = vec3(
+        ((c1 & 0xF800) >> 11) / 32.0f,
+        ((c1 & 0x7E0) >> 5)   / 64.0f,
+        (c1 & 0x1F)           / 32.0f
+        );
+
+    color[2] = c0 > c1
+        ? (2.0f * color[0] + color[1]) / 3.0f
+        : (color[0] + color[1]) / 2.0f;
+
+    color[3] = c0 > c1
+        ? (color[0] + 2.0f * color[1]) / 3.0f
+        : vec3(0.0f);
+
+    uint32_t bitmask = *reinterpret_cast<uint32_t const*>(src + 4);
+    for (int i = 0; i < 16; ++i)
+    {
+        int index = bitmask & 0x3;
+
+        dst[i * 3]     = color[index].x * 255;
+        dst[i * 3 + 1] = color[index].y * 255;
+        dst[i * 3 + 2] = color[index].z * 255;
+
+        bitmask >>= 2;
+    }
+}
+
+
+static void decode_tile_alpha_dxt5(uint8_t* dst, uint8_t const* src)
+{
+    uint8_t a0 = src[0];
+    uint8_t a1 = src[1];
+
+    float alpha[8];
+
+    alpha[0] = src[0] / 255.0f;
+    alpha[1] = src[1] / 255.0f;
+
+    alpha[2] = a0 > a1
+        ? (6.0f * alpha[0] + 1.0f * alpha[1]) / 7.0f
+        : (4.0f * alpha[0] + 1.0f * alpha[1]) / 5.0f;
+
+    alpha[3] = a0 > a1
+        ? (5.0f * alpha[0] + 2.0f * alpha[1]) / 7.0f
+        : (3.0f * alpha[0] + 2.0f * alpha[1]) / 5.0f;
+
+    alpha[4] = a0 > a1
+        ? (4.0f * alpha[0] + 3.0f * alpha[1]) / 7.0f
+        : (2.0f * alpha[0] + 3.0f * alpha[1]) / 5.0f;
+
+    alpha[5] = a0 > a1
+        ? (3.0f * alpha[0] + 4.0f * alpha[1]) / 7.0f
+        : (1.0f * alpha[0] + 4.0f * alpha[1]) / 5.0f;
+
+    alpha[6] = a0 > a1
+        ? (2.0f * alpha[0] + 5.0f * alpha[1]) / 7.0f
+        : 0.0f;
+
+    alpha[7] = a0 > a1
+        ? (1.0f * alpha[0] + 6.0f * alpha[1]) / 7.0f
+        : 1.0f;
+
+    uint64_t bitmask = *reinterpret_cast<uint64_t const*>(src + 2);
+    for (int i = 0; i < 16; ++i)
+    {
+        int index = bitmask & 0x7;
+
+        dst[i] = alpha[index] * 255;
+
+        bitmask >>= 3;
+    }
+}
+
 namespace visionaray
 {
 
@@ -217,41 +305,36 @@ bool dds_image::load(std::string const& filename)
 
         for (size_t i = 0; i < bytes.size(); i += 8)
         {
-            uint16_t c0 = *reinterpret_cast<uint16_t*>(&bytes[i]);
-            uint16_t c1 = *reinterpret_cast<uint16_t*>(&bytes[i + 2]);
+            decode_tile_rgb_5_6_5(data_.data() + i * 2 * 3, bytes.data() + i);
+        }
 
-            vec3 color[4];
+        return true;
+    }
 
-            color[0] = vec3(
-                ((c0 & 0xF800) >> 11) / 32.0f,
-                ((c0 & 0x7E0) >> 5)   / 64.0f,
-                (c0 & 0x1F)           / 32.0f
-                );
+    if (format == DDS_PF_DXT5)
+    {
+        std::vector<uint8_t> bytes(header.pitch_or_linear_size);
+        file.read(reinterpret_cast<char*>(bytes.data()), bytes.size());
 
-            color[1] = vec3(
-                ((c1 & 0xF800) >> 11) / 32.0f,
-                ((c1 & 0x7E0) >> 5)   / 64.0f,
-                (c1 & 0x1F)           / 32.0f
-                );
+        format_ = PF_RGBA8;
 
-            color[2] = c0 > c1
-                ? (2.0f * color[0] + color[1]) / 3.0f
-                : (color[0] + color[1]) / 2.0f;
+        auto pitch = header.width * 4;
+        data_.resize(pitch * header.height);
 
-            color[3] = c0 > c1
-                ? (color[0] + 2.0f * color[1]) / 3.0f
-                : vec3(0.0f);
+        for (size_t i = 0; i < bytes.size(); i += 16)
+        {
+            uint8_t rgb[48];
+            uint8_t alpha[16];
+            decode_tile_alpha_dxt5(alpha, bytes.data() + i);
+            decode_tile_rgb_5_6_5(rgb, bytes.data() + i + 8);
 
-            uint32_t bitmask = *reinterpret_cast<uint32_t*>(&bytes[i + 4]);
-            for (int j = i * 2; j < i * 2 + 16; ++j)
+            for (int j = 0; j < 16; ++j)
             {
-                int index = bitmask & 0x3;
-
-                data_[j * 3]     = color[index].x * 255;
-                data_[j * 3 + 1] = color[index].y * 255;
-                data_[j * 3 + 2] = color[index].z * 255;
-
-                bitmask >> 2;
+                size_t index = (i + j) * 4;
+                data_[index]     = rgb[j * 3];
+                data_[index + 1] = rgb[j * 3 + 1];
+                data_[index + 2] = rgb[j * 3 + 2];
+                data_[index + 3] = alpha[j];
             }
         }
 
