@@ -8,6 +8,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "dds_image.h"
 #include "hdr_image.h"
 #include "image.h"
 #include "jpeg_image.h"
@@ -20,11 +21,21 @@
 // Helpers
 //
 
-enum image_type { HDR, JPEG, PNG, PNM, TGA, TIFF, Unknown };
+enum image_type { DDS, HDR, JPEG, PNG, PNM, TGA, TIFF, Unknown };
 
 static image_type get_type(std::string const& filename)
 {
     boost::filesystem::path p(filename);
+
+
+    // DDS
+
+    static const std::string dds_extensions[] = { ".dds", ".DDS" };
+
+    if (std::find(dds_extensions, dds_extensions + 2, p.extension()) != dds_extensions + 2)
+    {
+        return DDS;
+    }
 
 
     // HDR
@@ -159,6 +170,20 @@ bool image::load(std::string const& filename)
 
 
     // native formats
+
+    case DDS:
+    {
+        dds_image dds;
+        if (dds.load(fn))
+        {
+            width_  = dds.width_;
+            height_ = dds.height_;
+            format_ = dds.format_;
+            data_   = std::move(dds.data_);
+            return true;
+        }
+        return false;
+    }
 
 //    case HDR:
 //    {

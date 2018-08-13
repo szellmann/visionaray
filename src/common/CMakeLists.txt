@@ -134,6 +134,7 @@ set(COMMON_HEADERS
 
     blocking_queue.h
     cfile.h
+    dds_image.h
     exception.h
     hdr_image.h
     image.h
@@ -169,6 +170,7 @@ set(COMMON_SOURCES
     manip/translate_manipulator.cpp
     manip/zoom_manipulator.cpp
 
+    dds_image.cpp
     hdr_image.cpp
     image.cpp
     image_base.cpp
