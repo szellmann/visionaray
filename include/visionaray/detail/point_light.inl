@@ -37,7 +37,7 @@ inline light_sample<U> point_light<T>::sample(Generator& gen) const
     auto pos = position();
 
     result.pos = pos;
-    result.intensity = intensity(pos);
+    result.intensity = intensity(pos) * constants::pi<U>();
     result.normal = normalize( vector<3, U>(
             gen.next() * U(2.0) - U(1.0),
             gen.next() * U(2.0) - U(1.0),

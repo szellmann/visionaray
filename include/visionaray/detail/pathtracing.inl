@@ -132,9 +132,7 @@ struct kernel
             {
                 auto ls = sample_random_light(params.lights.begin, params.lights.end, gen);
 
-                //search_light &= (ls.delta_light || inter != surface_interaction::Diffuse);
-
-                auto ld = length(ls.pos - hit_rec.isect_pos);
+                auto ld = select(ls.delta_light, S(1.0), length(ls.pos - hit_rec.isect_pos));
                 auto L = normalize(ls.pos - hit_rec.isect_pos);
 
                 auto n = surf.shading_normal;
@@ -142,7 +140,7 @@ struct kernel
                 n = faceforward( n, view_dir, surf.geometric_normal );
 #endif
 
-                auto ln = ls.normal;
+                auto ln = select(ls.delta_light, -L, ls.normal);
 #if 1
                 ln = faceforward( ln, -L, ln );
 #endif
