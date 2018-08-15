@@ -75,6 +75,9 @@ endif()
 set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/CmdLine)
 set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
 
+set(TINYPLY_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/tinyply)
+set(TINYPLY_INCLUDE_DIR ${TINYPLY_DIR}/source)
+
 if (NOT EXISTS ${CMD_LINE_DIR}/.git)
     message(SEND_ERROR "Git submodules not initialized.\nPlease run \"git submodule update --init --recursive\"")
     return()
@@ -103,6 +106,7 @@ include_directories(${__VSNRAY_CONFIG_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${CMD_LINE_INCLUDE_DIR})
+include_directories(${TINYPLY_INCLUDE_DIR})
 
 set(CMAKE_AUTOMOC ON)
 
@@ -145,6 +149,7 @@ set(COMMON_HEADERS
     model.h
     obj_grammar.h
     obj_loader.h
+    ply_loader.h
     png_image.h
     pnm_image.h
     tga_image.h
@@ -177,6 +182,7 @@ set(COMMON_SOURCES
     jpeg_image.cpp
     obj_grammar.cpp
     obj_loader.cpp
+    ply_loader.cpp
     png_image.cpp
     pnm_image.cpp
     tga_image.cpp
@@ -224,6 +230,15 @@ set(CMD_LINE_SOURCES
 )
 
 
+set(TINYPLY_HEADERS
+    ${TINYPLY_INCLUDE_DIR}/tinyply.h
+)
+
+set(TINYPLY_SOURCES
+    ${TINYPLY_INCLUDE_DIR}/tinyply.cpp
+)
+
+
 #--------------------------------------------------------------------------------------------------
 # Add library target
 #
@@ -234,6 +249,8 @@ visionaray_add_library(visionaray_common
     ${COMMON_SOURCES}
     ${CMD_LINE_HEADERS}
     ${CMD_LINE_SOURCES}
+    ${TINYPLY_HEADERS}
+    ${TINYPLY_SOURCES}
 )
 
 
