@@ -180,6 +180,7 @@ set(COMMON_SOURCES
     image.cpp
     image_base.cpp
     jpeg_image.cpp
+    model.cpp
     obj_grammar.cpp
     obj_loader.cpp
     ply_loader.cpp

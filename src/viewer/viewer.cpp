@@ -69,7 +69,6 @@
 #include <common/manip/zoom_manipulator.h>
 #include <common/make_materials.h>
 #include <common/model.h>
-#include <common/obj_loader.h>
 #include <common/timer.h>
 #include <common/viewer_glut.h>
 
@@ -821,13 +820,9 @@ int main(int argc, char** argv)
     // Load the scene
     std::cout << "Loading model...\n";
 
-    try
+    if (!rend.mod.load(rend.filename))
     {
-        visionaray::load_obj(rend.filename, rend.mod);
-    }
-    catch (std::exception const& e)
-    {
-        std::cerr << "Failed loading obj model: " << e.what() << std::endl;
+        std::cerr << "Failed loading model\n";
         return EXIT_FAILURE;
     }
 

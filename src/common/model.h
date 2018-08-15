@@ -85,6 +85,8 @@ public:
     tex_list        textures;
     aabb            bbox;
 
+    bool load(std::string const& filename);
+
 };
 
 } // visionaray
