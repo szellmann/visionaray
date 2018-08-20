@@ -172,8 +172,8 @@ struct kernel
                     );
             }
 
-            throughput = mul( throughput, src * (dot(n, refl_dir) / brdf_pdf), !zero_pdf, throughput );
-            throughput = select( zero_pdf, C(0.0), throughput );
+            throughput *= src * (dot(n, refl_dir) / brdf_pdf);
+            throughput = select(zero_pdf, C(0.0), throughput);
 
             // Russian roulette
             auto prob = max_element(throughput.samples());
