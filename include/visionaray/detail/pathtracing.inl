@@ -128,17 +128,17 @@ struct kernel
             active_rays &= inter != surface_interaction::Emission;
             active_rays &= !zero_pdf;
 
+            auto n = surf.shading_normal;
+#if 1
+            n = faceforward( n, view_dir, surf.geometric_normal );
+#endif
+
             if (num_lights > 0)
             {
                 auto ls = sample_random_light(params.lights.begin, params.lights.end, gen);
 
                 auto ld = select(ls.delta_light, S(1.0), length(ls.pos - hit_rec.isect_pos));
                 auto L = normalize(ls.pos - hit_rec.isect_pos);
-
-                auto n = surf.shading_normal;
-#if 1
-                n = faceforward( n, view_dir, surf.geometric_normal );
-#endif
 
                 auto ln = select(ls.delta_light, -L, ls.normal);
 #if 1
@@ -172,7 +172,7 @@ struct kernel
                     );
             }
 
-            throughput = mul( throughput, src, !zero_pdf, throughput );
+            throughput = mul( throughput, src * (dot(n, refl_dir) / brdf_pdf), !zero_pdf, throughput );
             throughput = select( zero_pdf, C(0.0), throughput );
 
             // Russian roulette

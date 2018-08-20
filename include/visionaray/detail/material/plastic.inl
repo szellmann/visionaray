@@ -93,7 +93,7 @@ inline spectrum<U> plastic<T>::sample(
     refl_dir       = select( u < U(prob_diff), refl1,  refl2  );
     inter          = select( u < U(prob_diff), inter1, inter2 );
 
-    return           select( u < U(prob_diff), diff,  spec  ) * (dot(n, refl_dir) / pdf);
+    return select(u < U(prob_diff), diff, spec);
 }
 
 template <typename T>

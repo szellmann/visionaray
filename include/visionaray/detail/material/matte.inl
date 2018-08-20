@@ -50,12 +50,7 @@ inline spectrum<U> matte<T>::sample(
         Generator&      gen
         ) const
 {
-    auto n = shade_rec.normal;
-#if 1 // two-sided
-    n = faceforward( n, shade_rec.view_dir, shade_rec.geometric_normal );
-#endif
-    auto f = from_rgb(shade_rec.tex_color) * diffuse_brdf_.sample_f(n, shade_rec.view_dir, refl_dir, pdf, inter, gen);
-    return f * (dot(n, refl_dir) / pdf);
+    return from_rgb(shade_rec.tex_color) * diffuse_brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl_dir, pdf, inter, gen);
 }
 
 template <typename T>

@@ -38,12 +38,7 @@ inline spectrum<U> mirror<T>::sample(
         Generator&      gen
         ) const
 {
-    auto n = sr.normal;
-#if 1 // two-sided
-    n = faceforward( n, sr.view_dir, sr.geometric_normal );
-#endif
-    auto f = specular_brdf_.sample_f(n, sr.view_dir, refl_dir, pdf, inter, gen);
-    return f * (dot(n, refl_dir) / pdf);
+    return specular_brdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, inter, gen);
 }
 
 template <typename T>

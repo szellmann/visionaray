@@ -34,10 +34,7 @@ inline spectrum<U> glass<T>::sample(
         Generator&      gen
         ) const
 {
-    auto f = specular_bsdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, inter, gen);
-    // If ray originates in 2nd medium, flip normal
-    auto n = faceforward(sr.normal, sr.view_dir, sr.geometric_normal);
-    return f * (dot(n, refl_dir) / pdf);
+    return specular_bsdf_.sample_f(sr.normal, sr.view_dir, refl_dir, pdf, inter, gen);
 }
 
 template <typename T>
