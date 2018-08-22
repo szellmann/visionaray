@@ -35,6 +35,50 @@ public:
 //
 
 template <>
+class numeric_limits<char>
+{
+public:
+
+    MATH_FUNC static char min();
+    MATH_FUNC static char lowest();
+    MATH_FUNC static char max();
+
+};
+
+template <>
+class numeric_limits<unsigned char>
+{
+public:
+
+    MATH_FUNC static unsigned char min();
+    MATH_FUNC static unsigned char lowest();
+    MATH_FUNC static unsigned char max();
+
+};
+
+template <>
+class numeric_limits<short>
+{
+public:
+
+    MATH_FUNC static short min();
+    MATH_FUNC static short lowest();
+    MATH_FUNC static short max();
+
+};
+
+template <>
+class numeric_limits<unsigned short>
+{
+public:
+
+    MATH_FUNC static unsigned short min();
+    MATH_FUNC static unsigned short lowest();
+    MATH_FUNC static unsigned short max();
+
+};
+
+template <>
 class numeric_limits<int>
 {
 public:
@@ -57,6 +101,51 @@ public:
 };
 
 template <>
+class numeric_limits<long>
+{
+public:
+
+    MATH_FUNC static long min();
+    MATH_FUNC static long lowest();
+    MATH_FUNC static long max();
+
+};
+
+template <>
+class numeric_limits<unsigned long>
+{
+public:
+
+    MATH_FUNC static unsigned long min();
+    MATH_FUNC static unsigned long lowest();
+    MATH_FUNC static unsigned long max();
+
+};
+
+template <>
+class numeric_limits<long long>
+{
+public:
+
+    MATH_FUNC static long long min();
+    MATH_FUNC static long long lowest();
+    MATH_FUNC static long long max();
+
+};
+
+template <>
+class numeric_limits<unsigned long long>
+{
+public:
+
+    MATH_FUNC static unsigned long long min();
+    MATH_FUNC static unsigned long long lowest();
+    MATH_FUNC static unsigned long long max();
+
+};
+
+
+template <>
 class numeric_limits<float>
 {
 public:
@@ -77,6 +166,18 @@ public:
     MATH_FUNC static double lowest();
     MATH_FUNC static double max();
     MATH_FUNC static double epsilon();
+
+};
+
+template <>
+class numeric_limits<long double>
+{
+public:
+
+    MATH_FUNC static long double min();
+    MATH_FUNC static long double lowest();
+    MATH_FUNC static long double max();
+    MATH_FUNC static long double epsilon();
 
 };
 

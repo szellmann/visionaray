@@ -38,6 +38,86 @@ inline T numeric_limits<T>::epsilon()
 
 
 //-------------------------------------------------------------------------------------------------
+// char limits
+//
+
+MATH_FUNC inline char numeric_limits<char>::min()
+{
+    return CHAR_MIN;
+}
+
+MATH_FUNC inline char numeric_limits<char>::lowest()
+{
+    return CHAR_MIN;
+}
+
+MATH_FUNC inline char numeric_limits<char>::max()
+{
+    return CHAR_MAX;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// unsigned char limits
+//
+
+MATH_FUNC inline unsigned char numeric_limits<unsigned char>::min()
+{
+    return 0;
+}
+
+MATH_FUNC inline unsigned char numeric_limits<unsigned char>::lowest()
+{
+    return 0;
+}
+
+MATH_FUNC inline unsigned char numeric_limits<unsigned char>::max()
+{
+    return UCHAR_MAX;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// short limits
+//
+
+MATH_FUNC inline short numeric_limits<short>::min()
+{
+    return SHRT_MIN;
+}
+
+MATH_FUNC inline short numeric_limits<short>::lowest()
+{
+    return SHRT_MIN;
+}
+
+MATH_FUNC inline short numeric_limits<short>::max()
+{
+    return SHRT_MAX;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// unsigned short limits
+//
+
+MATH_FUNC inline unsigned short numeric_limits<unsigned short>::min()
+{
+    return 0;
+}
+
+MATH_FUNC inline unsigned short numeric_limits<unsigned short>::lowest()
+{
+    return 0;
+}
+
+MATH_FUNC inline unsigned short numeric_limits<unsigned short>::max()
+{
+    return USHRT_MAX;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // int limits
 //
 
@@ -74,6 +154,86 @@ MATH_FUNC inline unsigned numeric_limits<unsigned>::lowest()
 MATH_FUNC inline unsigned numeric_limits<unsigned>::max()
 {
     return UINT_MAX;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// long limits
+//
+
+MATH_FUNC inline long numeric_limits<long>::min()
+{
+    return LONG_MIN;
+}
+
+MATH_FUNC inline long numeric_limits<long>::lowest()
+{
+    return LONG_MIN;
+}
+
+MATH_FUNC inline long numeric_limits<long>::max()
+{
+    return LONG_MAX;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// unsigned long limits
+//
+
+MATH_FUNC inline unsigned long numeric_limits<unsigned long>::min()
+{
+    return 0;
+}
+
+MATH_FUNC inline unsigned long numeric_limits<unsigned long>::lowest()
+{
+    return 0;
+}
+
+MATH_FUNC inline unsigned long numeric_limits<unsigned long>::max()
+{
+    return ULONG_MAX;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// long long limits
+//
+
+MATH_FUNC inline long long numeric_limits<long long>::min()
+{
+    return LLONG_MIN;
+}
+
+MATH_FUNC inline long long numeric_limits<long long>::lowest()
+{
+    return LLONG_MIN;
+}
+
+MATH_FUNC inline long long numeric_limits<long long>::max()
+{
+    return LLONG_MAX;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// unsigned long long limits
+//
+
+MATH_FUNC inline unsigned long long numeric_limits<unsigned long long>::min()
+{
+    return 0;
+}
+
+MATH_FUNC inline unsigned long long numeric_limits<unsigned long long>::lowest()
+{
+    return 0;
+}
+
+MATH_FUNC inline unsigned long long numeric_limits<unsigned long long>::max()
+{
+    return ULLONG_MAX;
 }
 
 
@@ -124,6 +284,31 @@ MATH_FUNC inline double numeric_limits<double>::max()
 MATH_FUNC inline double numeric_limits<double>::epsilon()
 {
     return DBL_EPSILON;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// double limits
+//
+
+MATH_FUNC inline long double numeric_limits<long double>::min()
+{
+    return LDBL_MIN;
+}
+
+MATH_FUNC inline long double numeric_limits<long double>::lowest()
+{
+    return -LDBL_MAX;
+}
+
+MATH_FUNC inline long double numeric_limits<long double>::max()
+{
+    return LDBL_MAX;
+}
+
+MATH_FUNC inline long double numeric_limits<long double>::epsilon()
+{
+    return LDBL_EPSILON;
 }
 
 
