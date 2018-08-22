@@ -75,6 +75,9 @@ endif()
 set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/CmdLine)
 set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
 
+set(IMGUI_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/imgui)
+set(IMGUI_INCLUDE_DIR ${IMGUI_DIR})
+
 set(TINYPLY_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/tinyply)
 set(TINYPLY_INCLUDE_DIR ${TINYPLY_DIR}/source)
 
@@ -106,6 +109,7 @@ include_directories(${__VSNRAY_CONFIG_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${CMD_LINE_INCLUDE_DIR})
+include_directories(${IMGUI_INCLUDE_DIR})
 include_directories(${TINYPLY_INCLUDE_DIR})
 
 set(CMAKE_AUTOMOC ON)
@@ -233,6 +237,23 @@ set(CMD_LINE_SOURCES
 )
 
 
+set(IMGUI_HEADERS
+    ${IMGUI_INCLUDE_DIR}/imconfig.h
+    ${IMGUI_INCLUDE_DIR}/imgui.h
+    ${IMGUI_INCLUDE_DIR}/imgui_internal.h
+    ${IMGUI_INCLUDE_DIR}/imstb_rectpack.h
+    ${IMGUI_INCLUDE_DIR}/imstb_textedit.h
+    ${IMGUI_INCLUDE_DIR}/imstb_truetype.h
+)
+
+set(IMGUI_SOURCES
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_demo.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+)
+
+
 set(TINYPLY_HEADERS
     ${TINYPLY_INCLUDE_DIR}/tinyply.h
 )
@@ -252,6 +273,8 @@ visionaray_add_library(visionaray_common
     ${COMMON_SOURCES}
     ${CMD_LINE_HEADERS}
     ${CMD_LINE_SOURCES}
+    ${IMGUI_HEADERS}
+    ${IMGUI_SOURCES}
     ${TINYPLY_HEADERS}
     ${TINYPLY_SOURCES}
 )
