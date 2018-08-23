@@ -19,6 +19,8 @@ template <typename U>
 VSNRAY_FUNC
 inline vector<3, U> area_light<T, Geometry>::intensity(vector<3, U> const& pos) const
 {
+    VSNRAY_UNUSED(pos);
+
     return vector<3, U>(cl_ * kl_);
 }
 
