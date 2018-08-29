@@ -152,6 +152,7 @@ set(COMMON_HEADERS
     ply_loader.h
     png_image.h
     pnm_image.h
+    sg.h
     tga_image.h
     tiff_image.h
     timer.h
@@ -186,6 +187,7 @@ set(COMMON_SOURCES
     ply_loader.cpp
     png_image.cpp
     pnm_image.cpp
+    sg.cpp
     tga_image.cpp
     tiff_image.cpp
     viewer_base.cpp
