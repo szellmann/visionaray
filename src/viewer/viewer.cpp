@@ -101,7 +101,7 @@ using viewer_type = viewer_glut;
 #define USE_AREA_LIGHT_SAMPLING 0
 
 
-static_assert(!(USE_PLASTIC_MATERIAL && USE_AREA_LIGHT_SAMPLING), "Invalid configuration");
+static_assert(!(USE_PLASTIC_MATERIAL & USE_AREA_LIGHT_SAMPLING), "Invalid configuration");
 
 
 //-------------------------------------------------------------------------------------------------
