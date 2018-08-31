@@ -2,10 +2,6 @@
 // See the LICENSE file for details.
 
 #include <cassert>
-#include <iostream>
-#include <ostream>
-
-#include <visionaray/math/io.h>
 
 #include "model.h"
 #include "sg.h"
