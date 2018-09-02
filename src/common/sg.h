@@ -57,7 +57,7 @@ struct vertex
 {
     vec3 pos;
     vec3 normal;
-    vec3 tex_coord;
+    vec2 tex_coord;
     vec4 color;
 };
 
