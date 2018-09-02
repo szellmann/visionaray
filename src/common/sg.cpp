@@ -152,6 +152,10 @@ struct flatten_visitor : node_visitor
 
             vec3 gn = normalize(cross(v2 - v1, v3 - v1));
 
+            vec2 tc1 = tm.vertices[tm.indices[i]].tex_coord;
+            vec2 tc2 = tm.vertices[tm.indices[i + 1]].tex_coord;
+            vec2 tc3 = tm.vertices[tm.indices[i + 2]].tex_coord;
+
             v1 = (current_transform * vec4(v1, 1.0f)).xyz();
             v2 = (current_transform * vec4(v2, 1.0f)).xyz();
             v3 = (current_transform * vec4(v3, 1.0f)).xyz();
@@ -172,6 +176,10 @@ struct flatten_visitor : node_visitor
             model_.shading_normals.push_back(n3);
 
             model_.geometric_normals.push_back(gn);
+
+            model_.tex_coords.push_back(tc1);
+            model_.tex_coords.push_back(tc2);
+            model_.tex_coords.push_back(tc3);
 
             model_.bbox.insert(v1);
             model_.bbox.insert(v2);
@@ -218,6 +226,11 @@ struct flatten_visitor : node_visitor
                 vec3 gn1 = normalize(cross(v2 - v1, v3 - v1));
                 vec3 gn2 = normalize(cross(v3 - v1, v4 - v1));
 
+                vec2 tc1(i / static_cast<float>(resolution), j / static_cast<float>(resolution / 2));
+                vec2 tc2((i + 1) / static_cast<float>(resolution), j / static_cast<float>(resolution / 2));
+                vec2 tc3((i + 1) / static_cast<float>(resolution), (j + 1) / static_cast<float>(resolution / 2));
+                vec2 tc4(i / static_cast<float>(resolution), (j + 1) / static_cast<float>(resolution / 2));
+
                 v1 = (current_transform * vec4(v1, 1.0f)).xyz();
                 v2 = (current_transform * vec4(v2, 1.0f)).xyz();
                 v3 = (current_transform * vec4(v3, 1.0f)).xyz();
@@ -259,6 +272,11 @@ struct flatten_visitor : node_visitor
 
                 model_.geometric_normals.push_back(gn1);
                 model_.geometric_normals.push_back(gn2);
+
+                model_.tex_coords.push_back(tc1);
+                model_.tex_coords.push_back(tc2);
+                model_.tex_coords.push_back(tc3);
+                model_.tex_coords.push_back(tc4);
 
                 model_.bbox.insert(v1);
                 model_.bbox.insert(v2);
