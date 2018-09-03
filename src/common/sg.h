@@ -7,6 +7,7 @@
 #define VSNRAY_COMMON_SG_H 1
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <visionaray/math/forward.h>
@@ -71,6 +72,9 @@ public:
 
     using node_pointer = std::shared_ptr<node>;
 
+    std::string& name();
+    std::string const& name() const;
+
     std::vector<node_pointer>& parents();
     std::vector<node_pointer> const& parents() const;
 
@@ -81,6 +85,7 @@ public:
 
 protected:
 
+    std::string name_;
     std::vector<node_pointer> parents_;
     std::vector<node_pointer> children_;
 

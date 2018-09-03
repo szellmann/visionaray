@@ -15,6 +15,16 @@ namespace sg
 // node
 //
 
+std::string& node::name()
+{
+    return name_;
+}
+
+std::string const& node::name() const
+{
+    return name_;
+}
+
 std::vector<node::node_pointer>& node::parents()
 {
     return parents_;
