@@ -101,8 +101,8 @@ public:
 
     transform(mat4 matrix);
 
-    void set_matrix(mat4 matrix);
-    mat4 get_matrix() const;
+    mat4& matrix();
+    mat4 const& matrix() const;
 
 private:
 

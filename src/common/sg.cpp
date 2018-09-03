@@ -66,12 +66,12 @@ transform::transform(mat4 matrix)
 {
 }
 
-void transform::set_matrix(mat4 matrix)
+mat4& transform::matrix()
 {
-    matrix_ = matrix;
+    return matrix_;
 }
 
-mat4 transform::get_matrix() const
+mat4 const& transform::matrix() const
 {
     return matrix_;
 }
@@ -136,7 +136,7 @@ struct flatten_visitor : node_visitor
     {
         mat4 prev = current_transform;
 
-        current_transform = t.get_matrix() * current_transform;
+        current_transform = t.matrix() * current_transform;
 
         node_visitor::apply(t);
 
