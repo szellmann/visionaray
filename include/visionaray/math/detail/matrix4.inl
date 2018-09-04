@@ -386,4 +386,21 @@ inline matrix<4, 4, T> translate(matrix<4, 4, T> const& m, vector<3, T> const& v
     return m * matrix<4, 4, T>::translation(v);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Misc.
+//
+
+template <typename M, typename T>
+MATH_FUNC
+matrix<4, 4, T> select(M const& m, matrix<4, 4, T> const& u, matrix<4, 4, T> const& v)
+{
+    return matrix<4, 4, T>( 
+            select(m, u.col0, v.col0),
+            select(m, u.col1, v.col1),
+            select(m, u.col2, v.col2),
+            select(m, u.col3, v.col3)
+            );  
+}
+
 } // MATH_NAMESPACE
