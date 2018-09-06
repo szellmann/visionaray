@@ -13,6 +13,7 @@
 #include <visionaray/math/forward.h>
 #include <visionaray/math/matrix.h>
 #include <visionaray/aligned_vector.h>
+#include <visionaray/spectrum.h>
 
 #define VSNRAY_SG_NODE                                                          \
     virtual void accept(node_visitor& visitor)                                  \
@@ -30,6 +31,7 @@ namespace sg
 
 class node;
 class transform;
+class surface_properties;
 class triangle_mesh;
 class sphere;
 
@@ -46,6 +48,7 @@ public:
 
     virtual void apply(node& n);
     virtual void apply(transform& t);
+    virtual void apply(surface_properties& sp);
     virtual void apply(triangle_mesh& tm);
     virtual void apply(sphere& s);
 
@@ -60,6 +63,22 @@ struct vertex
     vec3 normal;
     vec2 tex_coord;
     vec4 color;
+};
+
+struct material
+{
+    virtual ~material() {}
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Disney principled material
+//
+
+struct disney_material : material
+{
+    vec4 base_color;
+    // TODO..
 };
 
 class node : public std::enable_shared_from_this<node>
@@ -109,6 +128,26 @@ private:
     mat4 matrix_;
 
 };
+
+
+//-------------------------------------------------------------------------------------------------
+// Surface properties node
+//
+
+class surface_properties : public node
+{
+public:
+
+    VSNRAY_SG_NODE
+
+    std::shared_ptr<sg::material>& material();
+    std::shared_ptr<sg::material> const& material() const;
+
+private:
+
+    std::shared_ptr<sg::material> material_ = nullptr;
+};
+
 
 class triangle_mesh : public node
 {

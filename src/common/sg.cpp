@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <algorithm>
 #include <cassert>
 
 #include "model.h"
@@ -78,6 +79,21 @@ mat4 const& transform::matrix() const
 
 
 //-------------------------------------------------------------------------------------------------
+// surface_properties
+//
+
+std::shared_ptr<material>& surface_properties::material()
+{
+    return material_;
+}
+
+std::shared_ptr<material> const& surface_properties::material() const
+{
+    return material_;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // node_visitor
 //
 
@@ -108,6 +124,11 @@ void node_visitor::apply(node& n)
 void node_visitor::apply(transform& t)
 {
     apply(static_cast<node&>(t));
+}
+
+void node_visitor::apply(surface_properties& sp)
+{
+    apply(static_cast<node&>(sp));
 }
 
 void node_visitor::apply(triangle_mesh& tm)
@@ -143,12 +164,47 @@ struct flatten_visitor : node_visitor
         current_transform = prev;
     }
 
+    void apply(surface_properties& sp)
+    {
+        unsigned prev = current_geom_id;
+
+        if (sp.material())
+        {
+            auto it = std::find(materials.begin(), materials.end(), sp.material());
+            if (it == materials.end())
+            {
+                current_geom_id = static_cast<unsigned>(materials.size());
+                materials.push_back(sp.material());
+            }
+            else
+            {
+                current_geom_id = static_cast<unsigned>(std::distance(materials.begin(), it));
+            }
+        }
+
+        node_visitor::apply(sp);
+
+        current_geom_id = prev;
+    }
+
     void apply(triangle_mesh& tm)
     {
         // Matrix to transform normals
         mat4 trans_inv = inverse(transpose(current_transform));
 
         assert(tm.indices.size() % 3 == 0);
+
+        size_t first_primitive = model_.primitives.size();
+        model_.primitives.resize(model_.primitives.size() + tm.indices.size() / 3);
+
+        size_t first_shading_normal = model_.shading_normals.size();
+        model_.shading_normals.resize(model_.shading_normals.size() + tm.indices.size());
+
+        size_t first_geometric_normal = model_.geometric_normals.size();
+        model_.geometric_normals.resize(model_.geometric_normals.size() + tm.indices.size() / 3);
+
+        size_t first_tex_coord = model_.tex_coords.size();
+        model_.tex_coords.resize(model_.tex_coords.size() + tm.indices.size());
 
         for (size_t i = 0; i < tm.indices.size(); i += 3)
         {
@@ -176,20 +232,20 @@ struct flatten_visitor : node_visitor
 
             gn = (trans_inv * vec4(gn, 1.0f)).xyz();
 
-            basic_triangle<3, float> t(v1, v2 - v1, v3 - v1);
-            t.prim_id = static_cast<unsigned>(model_.primitives.size());
-            t.geom_id = 0; // TODO
-            model_.primitives.push_back(t);
+            auto& t = model_.primitives[first_primitive + i / 3];
+            t = basic_triangle<3, float>(v1, v2 - v1, v3 - v1);
+            t.prim_id = static_cast<unsigned>(first_primitive + i / 3);
+            t.geom_id = current_geom_id;
 
-            model_.shading_normals.push_back(n1);
-            model_.shading_normals.push_back(n2);
-            model_.shading_normals.push_back(n3);
+            model_.shading_normals[first_shading_normal + i]     = n1;
+            model_.shading_normals[first_shading_normal + i + 1] = n2;
+            model_.shading_normals[first_shading_normal + i + 2] = n3;
 
-            model_.geometric_normals.push_back(gn);
+            model_.geometric_normals[first_geometric_normal + i / 3] = gn;
 
-            model_.tex_coords.push_back(tc1);
-            model_.tex_coords.push_back(tc2);
-            model_.tex_coords.push_back(tc3);
+            model_.tex_coords[first_tex_coord + i]     = tc1;
+            model_.tex_coords[first_tex_coord + i + 1] = tc2;
+            model_.tex_coords[first_tex_coord + i + 2] = tc3;
 
             model_.bbox.insert(v1);
             model_.bbox.insert(v2);
@@ -264,12 +320,12 @@ struct flatten_visitor : node_visitor
 
                 basic_triangle<3, float> t1(v1, v2 - v1, v3 - v1);
                 t1.prim_id = static_cast<unsigned>(model_.primitives.size());
-                t1.geom_id = 0; // TODO
+                t1.geom_id = current_geom_id;
                 model_.primitives.push_back(t1);
 
                 basic_triangle<3, float> t2(v1, v3 - v1, v4 - v1);
                 t2.prim_id = static_cast<unsigned>(model_.primitives.size());
-                t2.geom_id = 0; // TODO
+                t2.geom_id = current_geom_id;
                 model_.primitives.push_back(t2);
 
                 model_.shading_normals.push_back(n1);
@@ -301,15 +357,30 @@ struct flatten_visitor : node_visitor
     // The model to add triangles to
     model& model_;
 
+    // List of materials to derive geom_ids from
+    std::vector<std::shared_ptr<sg::material>> materials;
+
     // Current transform w.r.t. transform nodes
     mat4 current_transform = mat4::identity();
+
+    // Current geometry id w.r.t. material list
+    unsigned current_geom_id = 0;
 };
 
 void flatten(model& mod, node& root)
 {
     flatten_visitor visitor(mod);
     root.accept(visitor);
-    mod.materials.push_back({}); // TODO
+
+    for (auto& mat : visitor.materials)
+    {
+        model::material_type newmat = {};
+        auto disney = std::dynamic_pointer_cast<sg::disney_material>(mat);
+        assert(disney != nullptr);
+        newmat.cd = disney->base_color.xyz();
+        newmat.cs = vec3(0.0f);
+        mod.materials.push_back(newmat); // TODO
+    }
 }
 
 } // sg
