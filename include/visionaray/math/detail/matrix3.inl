@@ -254,4 +254,22 @@ inline matrix<3, 3, T> transpose(matrix<3, 3, T> const& m)
 
 }
 
+// Return top-left 2x2 matrix
+template <typename T>
+MATH_FUNC
+inline matrix<2, 2, T> top_left(matrix<3, 3, T> const& m)
+{
+    matrix<2, 2, T> result;
+
+    for (size_t y = 0; y < 2; ++y)
+    {
+        for (size_t x = 0; x < 2; ++x)
+        {
+            result(x, y) = m(y, x);
+        }
+    }
+
+    return result;
+}
+
 } // MATH_NAMESPACE
