@@ -11,7 +11,6 @@
 #include "builtin.h"
 #include "forward.h"
 #include "gather.h"
-#include "matrix.h"
 #include "neon.h"
 #include "random.h"
 #include "sse.h"
