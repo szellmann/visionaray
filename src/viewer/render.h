@@ -13,14 +13,18 @@
 #include <visionaray/math/simd/simd.h>
 #include <visionaray/math/forward.h>
 #include <visionaray/math/ray.h>
+#include <visionaray/math/sphere.h>
+#include <visionaray/math/triangle.h>
 #include <visionaray/aligned_vector.h>
 #include <visionaray/area_light.h>
 #include <visionaray/bvh.h>
+#include <visionaray/generic_light.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/material.h>
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
+#include <visionaray/spot_light.h>
 
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <visionaray/detail/tbb_sched.h>
@@ -41,6 +45,12 @@ namespace visionaray
 //
 
 using plastic_t = plastic<float>;
+using generic_light_t = generic_light<
+        point_light<float>,
+        spot_light<float>,
+        area_light<float, basic_triangle<3, float>>//,
+//      area_light<float, basic_sphere<float>>
+        >;
 using generic_material_t = generic_material<
         emissive<float>,
         glass<float>,
@@ -153,6 +163,35 @@ void render_generic_material_cu(
         unsigned                                                           ssaa_samples
         );
 #endif
+
+
+//-------------------------------------------------------------------------------------------------
+// Render mesh instances (everything else is generic!)
+//
+
+void render_instances_cpp(
+        index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
+        aligned_vector<vec3> const&                              geometric_normals,
+        aligned_vector<vec3> const&                              shading_normals,
+        aligned_vector<vec2> const&                              tex_coords,
+        aligned_vector<generic_material_t> const&                materials,
+        aligned_vector<texture_t> const&                         textures,
+        aligned_vector<generic_light_t> const&                   lights,
+        unsigned                                                 bounces,
+        float                                                    epsilon,
+        vec4                                                     bgcolor,
+        vec4                                                     ambient,
+        host_device_rt&                                          rt,
+#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
+        tbb_sched<basic_ray<simd::float4>>&                                sched,
+#else
+        tiled_sched<basic_ray<simd::float4>>&                              sched,
+#endif
+        pinhole_camera&                                          cam,
+        unsigned&                                                frame_num,
+        algorithm                                                algo,
+        unsigned                                                 ssaa_samples
+        );
 
 } // visionaray
 

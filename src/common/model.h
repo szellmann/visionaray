@@ -19,6 +19,11 @@
 namespace visionaray
 {
 
+namespace sg
+{
+class node;
+} // sg
+
 class model
 {
 public:
@@ -76,6 +81,11 @@ public:
 
 public:
 
+    // Scene graph
+    std::shared_ptr<sg::node> scene_graph = nullptr;
+
+    // These lists will be filled if the file format is so simple
+    // that no scene graph is required (i.e. scene_graph == nullptr)
     triangle_list   primitives;
     normal_list     shading_normals;
     normal_list     geometric_normals;

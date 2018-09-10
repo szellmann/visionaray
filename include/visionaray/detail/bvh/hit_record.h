@@ -28,6 +28,7 @@ struct hit_record_bvh : Base
 {
     using scalar_type = typename R::scalar_type;
     using int_type    = simd::int_type_t<scalar_type>;
+    using base_type   = Base;
 
     hit_record_bvh() = default;
     VSNRAY_FUNC explicit hit_record_bvh(Base const& base, int_type i)
@@ -52,6 +53,7 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
 {
     using scalar_type = typename R::scalar_type;
     using int_type    = simd::int_type_t<scalar_type>;
+    using base_type   = Base;
 
     hit_record_bvh_inst() = default;
     VSNRAY_FUNC explicit hit_record_bvh_inst(

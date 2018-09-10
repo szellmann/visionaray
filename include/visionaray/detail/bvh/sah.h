@@ -8,6 +8,7 @@
 
 #include <cassert>
 #include <array>
+#include <type_traits>
 #include <vector>
 
 #include <visionaray/math/aabb.h>
@@ -126,7 +127,26 @@ void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_sphere<T, P>
     }
 }
 
-template <typename Primitive>
+template <
+    typename BVH,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type
+    >
+void split_primitive(aabb& L, aabb& R, float plane, int axis, BVH const& bvh)
+{
+    VSNRAY_UNUSED(L);
+    VSNRAY_UNUSED(R);
+    VSNRAY_UNUSED(plane);
+    VSNRAY_UNUSED(axis);
+    VSNRAY_UNUSED(bvh);
+
+    assert(0 && "not implemented");
+}
+
+template <
+    typename Primitive,
+    typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type,
+    typename = void
+    >
 void split_primitive(aabb& L, aabb& R, float plane, int axis, Primitive const& prim)
 {
     VSNRAY_UNUSED(L);

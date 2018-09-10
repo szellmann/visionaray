@@ -65,6 +65,7 @@
 #include <common/manip/zoom_manipulator.h>
 #include <common/make_materials.h>
 #include <common/model.h>
+#include <common/sg.h>
 #include <common/timer.h>
 #include <common/viewer_glut.h>
 
@@ -238,7 +239,9 @@ struct renderer : viewer_type
     model                                       mod;
     vec3                                        ambient         = vec3(-1.0f);
 
-    host_bvh_type                               host_bvh;
+    index_bvh<host_bvh_type::bvh_inst>          host_top_level_bvh;
+    aligned_vector<host_bvh_type>               host_bvhs;
+    aligned_vector<host_bvh_type::bvh_inst>     host_instances;
     aligned_vector<plastic<float>>              plastic_materials;
     aligned_vector<generic_material_t>          generic_materials;
     aligned_vector<point_light<float>>          point_lights;
@@ -271,6 +274,8 @@ struct renderer : viewer_type
     visionaray::frame_counter                   counter;
     gl::bvh_outline_renderer                    outlines;
     gl::debug_callback                          gl_debug_callback;
+
+    void build_bvhs();
 
 protected:
 
@@ -314,6 +319,251 @@ std::ostream& operator<<(std::ostream& out, pinhole_camera const& cam)
 
 
 //-------------------------------------------------------------------------------------------------
+// Reset triangle mesh flags to 0
+//
+
+struct reset_flags_visitor : sg::node_visitor
+{
+    void apply(sg::triangle_mesh& tm)
+    {
+        tm.flags() = 0;
+
+        node_visitor::apply(tm);
+    }
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Traverse the scene graph to construct geometry, materials and BVH instances
+//
+
+struct build_bvhs_visitor : sg::node_visitor
+{
+    build_bvhs_visitor(
+            aligned_vector<renderer::host_bvh_type>& bvhs,
+            aligned_vector<size_t>& instance_indices,
+            aligned_vector<mat4>& instance_transforms,
+            aligned_vector<vec3>& shading_normals,
+            aligned_vector<vec3>& geometric_normals,
+            aligned_vector<vec2>& tex_coords
+            )
+        : bvhs_(bvhs)
+        , instance_indices_(instance_indices)
+        , instance_transforms_(instance_transforms)
+        , shading_normals_(shading_normals)
+        , geometric_normals_(geometric_normals)
+        , tex_coords_(tex_coords)
+    {
+    }
+
+    void apply(sg::transform& t)
+    {
+        mat4 prev = current_transform_;
+
+        current_transform_ = current_transform_ * t.matrix();
+
+        node_visitor::apply(t);
+
+        current_transform_ = prev;
+    }
+
+    void apply(sg::surface_properties& sp)
+    {
+        unsigned prev = current_geom_id_;
+
+        if (sp.material())
+        {
+            auto it = std::find(materials.begin(), materials.end(), sp.material());
+            if (it == materials.end())
+            {
+                current_geom_id_ = static_cast<unsigned>(materials.size());
+                materials.push_back(sp.material());
+            }
+            else
+            {
+                current_geom_id_ = static_cast<unsigned>(std::distance(materials.begin(), it));
+            }
+        }
+
+        node_visitor::apply(sp);
+
+        current_geom_id_ = prev;
+    }
+
+    void apply(sg::triangle_mesh& tm)
+    {
+        if (tm.flags() == 0 && tm.indices.size() > 0)
+        {
+            aligned_vector<basic_triangle<3, float>> triangles;
+
+            for (size_t i = 0; i < tm.indices.size(); i += 3)
+            {
+                vec3 v1 = tm.vertices[tm.indices[i]].pos;
+                vec3 v2 = tm.vertices[tm.indices[i + 1]].pos;
+                vec3 v3 = tm.vertices[tm.indices[i + 2]].pos;
+
+                vec3 n1 = tm.vertices[tm.indices[i]].normal;
+                vec3 n2 = tm.vertices[tm.indices[i + 1]].normal;
+                vec3 n3 = tm.vertices[tm.indices[i + 2]].normal;
+
+                vec3 gn = normalize(cross(v2 - v1, v3 - v1));
+
+                vec2 tc1 = tm.vertices[tm.indices[i]].tex_coord;
+                vec2 tc2 = tm.vertices[tm.indices[i + 1]].tex_coord;
+                vec2 tc3 = tm.vertices[tm.indices[i + 2]].tex_coord;
+
+                basic_triangle<3, float> tri(v1, v2 - v1, v3 - v1);
+                tri.prim_id = current_prim_id_++;
+                tri.geom_id = current_geom_id_;
+
+                triangles.push_back(tri);
+
+                shading_normals_.push_back(n1);
+                shading_normals_.push_back(n2);
+                shading_normals_.push_back(n3);
+
+                geometric_normals_.push_back(gn);
+
+                tex_coords_.push_back(tc1);
+                tex_coords_.push_back(tc2);
+                tex_coords_.push_back(tc3);
+            }
+
+            // Build single bvh
+            bvhs_.emplace_back(build<renderer::host_bvh_type>(
+                    triangles.data(),
+                    triangles.size(),
+                    false//builder == Split
+                    ));
+
+            tm.flags() = ~(bvhs_.size() - 1);
+        }
+
+        instance_indices_.push_back(~tm.flags());
+        instance_transforms_.push_back(current_transform_);
+
+        node_visitor::apply(tm);
+    }
+
+    // List of materials to derive geom_ids from
+    std::vector<std::shared_ptr<sg::material>> materials;
+
+    // Current transform along the path
+    mat4 current_transform_ = mat4::identity();
+
+
+    // Storage bvhs
+    aligned_vector<renderer::host_bvh_type>& bvhs_;
+
+    // Indices to construct instances from
+    aligned_vector<size_t>& instance_indices_;
+
+    // Transforms to construct instances from
+    aligned_vector<mat4>& instance_transforms_;
+
+    // Shading normals
+    aligned_vector<vec3>& shading_normals_;
+
+    // Geometric normals
+    aligned_vector<vec3>& geometric_normals_;
+
+    // Texture coordinates
+    aligned_vector<vec2>& tex_coords_;
+
+    // Assign consecutive prim ids
+    unsigned current_prim_id_ = 0;
+
+    // Assign consecutive geom ids for each encountered material
+    unsigned current_geom_id_ = 0;
+
+    // Index into the bvh list
+    unsigned current_bvh_index_ = 0;
+
+    // Index into the instance list
+    unsigned current_instance_index_ = 0;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Build bvhs
+//
+
+void renderer::build_bvhs()
+{
+//  timer t;
+
+    std::cout << "Creating BVH...\n";
+
+    if (mod.scene_graph == nullptr)
+    {
+        // Single BVH
+        host_bvhs.resize(1);
+        host_bvhs[0] = build<host_bvh_type>(
+                mod.primitives.data(),
+                mod.primitives.size(),
+                builder == Split
+                );
+    }
+    else
+    {
+        unsigned mesh_count = 0;
+        unsigned inst_count = 0;
+
+        //count_mesh_visitor count_visitor(mesh_count, inst_count);
+        //mod.scene_graph->accept(count_visitor);
+
+        //std::cout << "Counts: " << mesh_count << ' ' << inst_count << '\n';
+
+        reset_flags_visitor reset_visitor;
+        mod.scene_graph->accept(reset_visitor);
+
+        aligned_vector<size_t> instance_indices;
+        aligned_vector<mat4> instance_transforms;
+
+        build_bvhs_visitor build_visitor(
+                host_bvhs,
+                instance_indices,
+                instance_transforms,
+                mod.shading_normals, // TODO!!!
+                mod.geometric_normals,
+                mod.tex_coords
+                );
+        mod.scene_graph->accept(build_visitor);
+
+        host_instances.resize(instance_indices.size());
+        for (size_t i = 0; i < instance_indices.size(); ++i)
+        {
+            size_t index = instance_indices[i];
+            host_instances[i] = host_bvhs[index].inst(instance_transforms[i]);
+        }
+
+        host_top_level_bvh = build<index_bvh<host_bvh_type::bvh_inst>>(
+                host_instances.data(),
+                host_instances.size(),
+                false
+                );
+
+
+        for (auto& mat : build_visitor.materials)
+        {
+            model::material_type newmat = {};
+            auto disney = std::dynamic_pointer_cast<sg::disney_material>(mat);
+            assert(disney != nullptr);
+            newmat.cd = disney->base_color.xyz();
+            newmat.cs = vec3(0.0f);
+            mod.materials.push_back(newmat); // TODO
+        }
+
+        mod.bbox = host_top_level_bvh.node(0).get_bounds();
+        mod.materials.push_back({});
+    }
+
+//  std::cout << t.elapsed() << std::endl;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // If path tracing, clear frame buffer and reset frame counter
 //
 
@@ -348,7 +598,7 @@ void renderer::render_hud()
     int num_leaves = 0;
 
     traverse_depth_first(
-        host_bvh,
+        host_bvhs[0],
         [&](renderer::host_bvh_type::node_type const& node)
         {
             ++num_nodes;
@@ -447,10 +697,38 @@ void renderer::on_display()
 
     if (rt.mode() == host_device_rt::CPU)
     {
-        if (area_lights.size() > 0 && algo == Pathtracing)
+        if (mod.scene_graph != nullptr)
+        {
+            aligned_vector<generic_light_t> temp_lights;
+            for (auto pl : point_lights)
+            {
+                temp_lights.push_back(pl);
+            }
+
+            render_instances_cpp(
+                    host_top_level_bvh,
+                    mod.geometric_normals,
+                    mod.shading_normals,
+                    mod.tex_coords,
+                    generic_materials,
+                    mod.textures,
+                    temp_lights,
+                    bounces,
+                    epsilon,
+                    vec4(background_color(), 1.0f),
+                    amb,
+                    rt,
+                    host_sched,
+                    cam,
+                    frame_num,
+                    algo,
+                    ssaa_samples
+                    );
+        }
+        else if (area_lights.size() > 0 && algo == Pathtracing)
         {
             render_generic_material_cpp(
-                    host_bvh,
+                    host_bvhs[0],
                     mod.geometric_normals,
                     mod.shading_normals,
                     mod.tex_coords,
@@ -472,7 +750,7 @@ void renderer::on_display()
         else
         {
             render_plastic_cpp(
-                    host_bvh,
+                    host_bvhs[0],
                     mod.geometric_normals,
                     mod.shading_normals,
                     mod.tex_coords,
@@ -590,7 +868,7 @@ void renderer::on_key_press(key_event const& event)
 
         if (show_bvh)
         {
-            outlines.init(host_bvh);
+            outlines.init(host_bvhs[0]);
         }
 
         break;
@@ -727,17 +1005,7 @@ int main(int argc, char** argv)
         }
     }
 
-//  timer t;
-
-    std::cout << "Creating BVH...\n";
-
-    // Create the BVH on the host
-    rend.host_bvh = build<renderer::host_bvh_type>(
-            rend.mod.primitives.data(),
-            rend.mod.primitives.size(),
-            rend.builder == renderer::Split
-            );
-
+    rend.build_bvhs();
 
     // Generate a list with plastic materials
     rend.plastic_materials = make_materials(
@@ -862,7 +1130,7 @@ int main(int argc, char** argv)
     // Copy data to GPU
     try
     {
-        rend.device_bvh = renderer::device_bvh_type(rend.host_bvh);
+        rend.device_bvh = renderer::device_bvh_type(rend.host_bvhs[0]);
         rend.device_geometric_normals = rend.mod.geometric_normals;
         rend.device_shading_normals = rend.mod.shading_normals;
         rend.device_tex_coords = rend.mod.tex_coords;
@@ -946,8 +1214,6 @@ int main(int argc, char** argv)
         rend.device_textures.shrink_to_fit();
     }
 #endif
-
-//  std::cout << t.elapsed() << std::endl;
 
     float aspect = rend.width() / static_cast<float>(rend.height());
 
