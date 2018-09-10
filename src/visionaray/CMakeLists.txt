@@ -119,6 +119,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/cuda_sched.h
     ${HEADER_DIR}/detail/cuda_sched.inl
     ${HEADER_DIR}/detail/exit_traversal.h
+    ${HEADER_DIR}/detail/generic_light.inl
     ${HEADER_DIR}/detail/generic_material.inl
     ${HEADER_DIR}/detail/generic_primitive.inl
     ${HEADER_DIR}/detail/gpu_buffer_rt.inl
@@ -298,8 +299,9 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/cpu_buffer_rt.h
     ${HEADER_DIR}/export.h
     ${HEADER_DIR}/fresnel.h
-    ${HEADER_DIR}/generic_primitive.h
+    ${HEADER_DIR}/generic_light.h
     ${HEADER_DIR}/generic_material.h
+    ${HEADER_DIR}/generic_primitive.h
     ${HEADER_DIR}/get_area.h
     ${HEADER_DIR}/get_color.h
     ${HEADER_DIR}/get_normal.h
