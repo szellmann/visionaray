@@ -40,29 +40,12 @@ inline vector<3, U> spot_light<T>::intensity(vector<3, U> const& pos) const
 }
 
 template <typename T>
-template <typename U, typename Generator>
+template <typename Generator, typename U>
 VSNRAY_FUNC
-inline vector<3, U> spot_light<T>::sample(U& pdf, Generator& gen) const
+inline light_sample<U> spot_light<T>::sample(Generator& gen) const
 {
-    VSNRAY_UNUSED(gen);
-
-    pdf = U(1.0);
-    return vector<3, U>(position());
-}
-
-template <typename T>
-template <typename U, size_t N, typename Generator>
-VSNRAY_FUNC
-inline void spot_light<T>::sample(
-        array<U, N>& pdfs,
-        array<vector<3, U>, N>& result,
-        Generator& gen
-        ) const
-{
-    for (size_t i = 0; i < N; ++i)
-    {
-        result[i] = sample(pdfs[i], gen);
-    }
+    // Not implemented yet!
+    return {};
 }
 
 template <typename T>
