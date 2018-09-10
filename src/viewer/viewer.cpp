@@ -531,29 +531,7 @@ void renderer::on_display()
                             : algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                             ;
 
-    if (rt.mode() == host_device_rt::GPU)
-    {
-        render_plastic_cu(
-                device_bvh,
-                device_geometric_normals,
-                device_shading_normals,
-                device_tex_coords,
-                device_materials,
-                device_textures,
-                host_lights,
-                bounces,
-                epsilon,
-                vec4(background_color(), 1.0f),
-                amb,
-                rt,
-                device_sched,
-                cam,
-                frame_num,
-                algo,
-                ssaa_samples
-                );
-    }
-    else if (rt.mode() == host_device_rt::CPU)
+    if (rt.mode() == host_device_rt::CPU)
     {
         render_plastic_cpp(
                 host_bvh,
@@ -575,6 +553,30 @@ void renderer::on_display()
                 ssaa_samples
                 );
     }
+#ifdef __CUDACC__
+    else if (rt.mode() == host_device_rt::GPU)
+    {
+        render_plastic_cu(
+                device_bvh,
+                device_geometric_normals,
+                device_shading_normals,
+                device_tex_coords,
+                device_materials,
+                device_textures,
+                host_lights,
+                bounces,
+                epsilon,
+                vec4(background_color(), 1.0f),
+                amb,
+                rt,
+                device_sched,
+                cam,
+                frame_num,
+                algo,
+                ssaa_samples
+                );
+    }
+#endif
 
     rt.display_color_buffer();
 
