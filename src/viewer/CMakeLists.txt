@@ -70,6 +70,9 @@ include_directories(${CMD_LINE_INCLUDE_DIR})
 set(VIEWER_HEADERS
     call_kernel.h
     host_device_rt.h
+    host_device_sched.h
+    host_device_sched.inl
+    render_state.h
 )
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)

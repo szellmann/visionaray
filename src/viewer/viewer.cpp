@@ -51,11 +51,6 @@
 #include <visionaray/material.h>
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/point_light.h>
-#include <visionaray/scheduler.h>
-
-#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-#include <visionaray/detail/tbb_sched.h>
-#endif
 
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
@@ -71,6 +66,7 @@
 
 #include "call_kernel.h"
 #include "host_device_rt.h"
+#include "host_device_sched.h"
 
 
 using namespace visionaray;
@@ -148,14 +144,15 @@ struct renderer : viewer_type
 
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
-        , host_sched(std::thread::hardware_concurrency())
-        , rt(host_device_rt::CPU, true /* direct rendering */, host_device_rt::SRGB)
-#ifdef __CUDACC__
-        , device_sched(8, 8)
-#endif
+        , rt(state)
+        , sched(state)
         , mouse_pos(0)
     {
         using namespace support;
+
+        state.mode = render_state::CPU;
+        state.direct_rendering = true;
+        state.color_space = render_state::SRGB;
 
         add_cmdline_option( cl::makeOption<std::string&>(
             cl::Parser<>(),
@@ -228,30 +225,31 @@ struct renderer : viewer_type
             cl::init(this->ambient)
             ) );
 
-        add_cmdline_option( cl::makeOption<host_device_rt::color_space_type&>({
-                { "rgb",  host_device_rt::RGB,  "RGB color space for display" },
-                { "srgb", host_device_rt::SRGB, "sRGB color space for display" },
+        add_cmdline_option( cl::makeOption<render_state::color_space_type&>({
+                { "rgb",  render_state::RGB,  "RGB color space for display" },
+                { "srgb", render_state::SRGB, "sRGB color space for display" },
             },
             "colorspace",
             cl::Desc("Color space"),
             cl::ArgRequired,
-            cl::init(rt.color_space())
+            cl::init(state.color_space)
             ) );
 
 #ifdef __CUDACC__
-        add_cmdline_option( cl::makeOption<host_device_rt::mode_type&>({
-                { "cpu", host_device_rt::CPU, "Rendering on the CPU" },
-                { "gpu", host_device_rt::GPU, "Rendering on the GPU" },
+        add_cmdline_option( cl::makeOption<render_state::mode_type&>({
+                { "cpu", render_state::CPU, "Rendering on the CPU" },
+                { "gpu", render_state::GPU, "Rendering on the GPU" },
             },
             "device",
             cl::Desc("Rendering device"),
             cl::ArgRequired,
-            cl::init(rt.mode())
+            cl::init(state.mode)
             ) );
 #endif
     }
 
 
+    render_state                                state;
     int                                         w               = 800;
     int                                         h               = 800;
     unsigned                                    frame_num       = 0;
@@ -282,15 +280,8 @@ struct renderer : viewer_type
     thrust::device_vector<device_tex_ref_type>  device_textures;
 #endif
 
-#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-    tbb_sched<ray_type_cpu>                     host_sched;
-#else
-    tiled_sched<ray_type_cpu>                   host_sched;
-#endif
     host_device_rt                              rt;
-#ifdef __CUDACC__
-    cuda_sched<ray_type_gpu>                    device_sched;
-#endif
+    host_device_sched                           sched;
     pinhole_camera                              cam;
 
     mouse::pos                                  mouse_pos;
@@ -490,7 +481,7 @@ void renderer::render_hud()
     hud.print_buffer(300, h * 2 - 102);
     hud.clear_buffer();
 
-    hud.buffer() << "Device: " << ( (rt.mode() == host_device_rt::GPU) ? "GPU" : "CPU" );
+    hud.buffer() << "Device: " << ( (state.mode == render_state::GPU) ? "GPU" : "CPU" );
     hud.print_buffer(300, h * 2 - 136);
     hud.clear_buffer();
 
@@ -529,7 +520,7 @@ void renderer::on_display()
                             : algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                             ;
 
-    if (rt.mode() == host_device_rt::GPU)
+    if (state.mode == render_state::GPU)
     {
 #ifdef __CUDACC__
         thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
@@ -554,10 +545,10 @@ void renderer::on_display()
                 amb
                 );
 
-        call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, rt );
+        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
 #endif
     }
-    else if (rt.mode() == host_device_rt::CPU)
+    else if (state.mode == render_state::CPU)
     {
 #ifndef __CUDA_ARCH__
         aligned_vector<renderer::host_bvh_type::bvh_ref> host_primitives;
@@ -580,7 +571,7 @@ void renderer::on_display()
                 amb
                 );
 
-        call_kernel( algo, host_sched, kparams, frame_num, ssaa_samples, cam, rt );
+        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
 #endif
     }
 
@@ -638,13 +629,13 @@ void renderer::on_key_press(key_event const& event)
         break;
 
     case 'c':
-        if (rt.color_space() == host_device_rt::RGB)
+        if (state.color_space == render_state::RGB)
         {
-            rt.color_space() = host_device_rt::SRGB;
+            state.color_space = render_state::SRGB;
         }
         else
         {
-            rt.color_space() = host_device_rt::RGB;
+            state.color_space = render_state::RGB;
         }
         break;
 
@@ -654,13 +645,13 @@ void renderer::on_key_press(key_event const& event)
 
    case 'm':
 #ifdef __CUDACC__
-        if (rt.mode() == host_device_rt::CPU)
+        if (state.mode == render_state::CPU)
         {
-            rt.mode() = host_device_rt::GPU;
+            state.mode = render_state::GPU;
         }
         else
         {
-            rt.mode() = host_device_rt::CPU;
+            state.mode = render_state::CPU;
         }
         counter.reset();
         clear_frame();
@@ -738,7 +729,7 @@ int main(int argc, char** argv)
     renderer rend;
 
 #ifdef __CUDACC__
-    if (rend.rt.direct_rendering() && cuda::init_gl_interop() != cudaSuccess)
+    if (rend.state.direct_rendering && cuda::init_gl_interop() != cudaSuccess)
     {
         std::cerr << "Cannot initialize CUDA OpenGL interop\n";
         return EXIT_FAILURE;

@@ -23,14 +23,13 @@ namespace visionaray
 
 struct host_device_rt::impl
 {
-    // CPU or GPU rendering
-    mode_type mode;
+    impl(render_state const& s)
+        : state(s)
+    {
+    }
 
-    // If true, use PBO, otherwise copy over host
-    bool direct_rendering;
-
-    // Framebuffer color space, either RGB or SRGB
-    color_space_type color_space;
+    // Render state object
+    render_state const& state;
 
     // Host render target
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> host_rt;
@@ -49,46 +48,13 @@ struct host_device_rt::impl
 // host_device_rt
 //
 
-host_device_rt::host_device_rt(mode_type mode, bool direct_rendering, color_space_type color_space)
-    : impl_(new impl)
+host_device_rt::host_device_rt(render_state const& state)
+    : impl_(new impl(state))
 {
-    impl_->mode = mode;
-    impl_->direct_rendering = direct_rendering;
-    impl_->color_space = color_space;
 }
 
 host_device_rt::~host_device_rt()
 {
-}
-
-host_device_rt::mode_type& host_device_rt::mode()
-{
-    return impl_->mode;
-}
-
-host_device_rt::mode_type const& host_device_rt::mode() const
-{
-    return impl_->mode;
-}
-
-bool& host_device_rt::direct_rendering()
-{
-    return impl_->direct_rendering;
-}
-
-bool const& host_device_rt::direct_rendering() const
-{
-    return impl_->direct_rendering;
-}
-
-host_device_rt::color_space_type& host_device_rt::color_space()
-{
-    return impl_->color_space;
-}
-
-host_device_rt::color_space_type const& host_device_rt::color_space() const
-{
-    return impl_->color_space;
 }
 
 host_device_rt::color_type const* host_device_rt::color() const
@@ -98,14 +64,14 @@ host_device_rt::color_type const* host_device_rt::color() const
 
 host_device_rt::ref_type host_device_rt::ref()
 {
-    if (impl_->mode == CPU)
+    if (impl_->state.mode == render_state::CPU)
     {
         return impl_->host_rt.ref();
     }
     else
     {
 #ifdef __CUDACC__
-        if (impl_->direct_rendering)
+        if (impl_->state.direct_rendering)
         {
             return impl_->direct_rt.ref();
         }
@@ -124,7 +90,7 @@ void host_device_rt::clear_color_buffer(vec4 const& color)
 {
     impl_->host_rt.clear_color_buffer(color);
 #ifdef __CUDACC__
-    if (impl_->direct_rendering)
+    if (impl_->state.direct_rendering)
     {
         impl_->direct_rt.clear_color_buffer(color);
     }
@@ -137,14 +103,14 @@ void host_device_rt::clear_color_buffer(vec4 const& color)
 
 void host_device_rt::begin_frame()
 {
-    if (impl_->mode == CPU)
+    if (impl_->state.mode == render_state::CPU)
     {
         impl_->host_rt.begin_frame();
     }
 #ifdef __CUDACC__
     else
     {
-        if (impl_->direct_rendering)
+        if (impl_->state.direct_rendering)
         {
             impl_->direct_rt.begin_frame();
         }
@@ -158,14 +124,14 @@ void host_device_rt::begin_frame()
 
 void host_device_rt::end_frame()
 {
-    if (impl_->mode == CPU)
+    if (impl_->state.mode == render_state::CPU)
     {
         impl_->host_rt.end_frame();
     }
 #ifdef __CUDACC__
     else
     {
-        if (impl_->direct_rendering)
+        if (impl_->state.direct_rendering)
         {
             impl_->direct_rt.end_frame();
         }
@@ -183,7 +149,7 @@ void host_device_rt::resize(int w, int h)
 
     impl_->host_rt.resize(w, h);
 #ifdef __CUDACC__
-    if (impl_->direct_rendering)
+    if (impl_->state.direct_rendering)
     {
         impl_->direct_rt.resize(w, h);
     }
@@ -199,7 +165,7 @@ void host_device_rt::display_color_buffer() const
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    if (impl_->color_space == SRGB)
+    if (impl_->state.color_space == render_state::SRGB)
     {
         glEnable(GL_FRAMEBUFFER_SRGB);
     }
@@ -209,14 +175,14 @@ void host_device_rt::display_color_buffer() const
     }
 
 
-    if (impl_->mode == CPU)
+    if (impl_->state.mode == render_state::CPU)
     {
         impl_->host_rt.display_color_buffer();
     }
 #ifdef __CUDACC__
     else
     {
-        if (impl_->direct_rendering)
+        if (impl_->state.direct_rendering)
         {
             impl_->direct_rt.display_color_buffer();
         }
