@@ -28,7 +28,7 @@ namespace visionaray
 struct host_device_rt::impl
 {
     // CPU or GPU rendering
-    mode current_mode;
+    mode_type mode;
 
     // If true, use PBO, otherwise copy over host
     bool direct_rendering;
@@ -53,10 +53,10 @@ struct host_device_rt::impl
 // host_device_rt
 //
 
-host_device_rt::host_device_rt(mode m, bool direct_rendering, color_space_type color_space)
+host_device_rt::host_device_rt(mode_type mode, bool direct_rendering, color_space_type color_space)
     : impl_(new impl)
 {
-    impl_->current_mode = m;
+    impl_->mode = mode;
     impl_->direct_rendering = direct_rendering;
     impl_->color_space = color_space;
 }
@@ -65,14 +65,14 @@ host_device_rt::~host_device_rt()
 {
 }
 
-host_device_rt::mode& host_device_rt::current_mode()
+host_device_rt::mode_type& host_device_rt::mode()
 {
-    return impl_->current_mode;
+    return impl_->mode;
 }
 
-host_device_rt::mode const& host_device_rt::current_mode() const
+host_device_rt::mode_type const& host_device_rt::mode() const
 {
-    return impl_->current_mode;
+    return impl_->mode;
 }
 
 bool& host_device_rt::direct_rendering()
@@ -102,7 +102,7 @@ host_device_rt::color_type const* host_device_rt::color() const
 
 host_device_rt::ref_type host_device_rt::ref()
 {
-    if (impl_->current_mode == CPU)
+    if (impl_->mode == CPU)
     {
         return impl_->host_rt.ref();
     }
@@ -141,7 +141,7 @@ void host_device_rt::clear_color_buffer(vec4 const& color)
 
 void host_device_rt::begin_frame()
 {
-    if (impl_->current_mode == CPU)
+    if (impl_->mode == CPU)
     {
         impl_->host_rt.begin_frame();
     }
@@ -162,7 +162,7 @@ void host_device_rt::begin_frame()
 
 void host_device_rt::end_frame()
 {
-    if (impl_->current_mode == CPU)
+    if (impl_->mode == CPU)
     {
         impl_->host_rt.end_frame();
     }
@@ -215,7 +215,7 @@ void host_device_rt::display_color_buffer() const
 #endif
 
 
-    if (impl_->current_mode == CPU)
+    if (impl_->mode == CPU)
     {
         impl_->host_rt.display_color_buffer();
     }

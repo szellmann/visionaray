@@ -239,14 +239,14 @@ struct renderer : viewer_type
             ) );
 
 #ifdef __CUDACC__
-        add_cmdline_option( cl::makeOption<host_device_rt::mode&>({
+        add_cmdline_option( cl::makeOption<host_device_rt::mode_type&>({
                 { "cpu", host_device_rt::CPU, "Rendering on the CPU" },
                 { "gpu", host_device_rt::GPU, "Rendering on the GPU" },
             },
             "device",
             cl::Desc("Rendering device"),
             cl::ArgRequired,
-            cl::init(rt.current_mode())
+            cl::init(rt.mode())
             ) );
 #endif
     }
@@ -490,7 +490,7 @@ void renderer::render_hud()
     hud.print_buffer(300, h * 2 - 102);
     hud.clear_buffer();
 
-    hud.buffer() << "Device: " << ( (rt.current_mode() == host_device_rt::GPU) ? "GPU" : "CPU" );
+    hud.buffer() << "Device: " << ( (rt.mode() == host_device_rt::GPU) ? "GPU" : "CPU" );
     hud.print_buffer(300, h * 2 - 136);
     hud.clear_buffer();
 
@@ -529,7 +529,7 @@ void renderer::on_display()
                             : algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                             ;
 
-    if (rt.current_mode() == host_device_rt::GPU)
+    if (rt.mode() == host_device_rt::GPU)
     {
 #ifdef __CUDACC__
         thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
@@ -557,7 +557,7 @@ void renderer::on_display()
         call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, rt );
 #endif
     }
-    else if (rt.current_mode() == host_device_rt::CPU)
+    else if (rt.mode() == host_device_rt::CPU)
     {
 #ifndef __CUDA_ARCH__
         aligned_vector<renderer::host_bvh_type::bvh_ref> host_primitives;
@@ -654,13 +654,13 @@ void renderer::on_key_press(key_event const& event)
 
    case 'm':
 #ifdef __CUDACC__
-        if (rt.current_mode() == host_device_rt::CPU)
+        if (rt.mode() == host_device_rt::CPU)
         {
-            rt.current_mode() = host_device_rt::GPU;
+            rt.mode() = host_device_rt::GPU;
         }
         else
         {
-            rt.current_mode() = host_device_rt::CPU;
+            rt.mode() = host_device_rt::CPU;
         }
         counter.reset();
         clear_frame();
