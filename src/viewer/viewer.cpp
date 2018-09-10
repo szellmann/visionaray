@@ -489,7 +489,7 @@ void renderer::on_display()
     auto epsilon    = std::max( 1E-3f, length(diagonal) * 1E-5f );
     auto amb        = ambient.x >= 0.0f // if set via cmdline
                             ? vec4(ambient, 1.0f)
-                            : algo == Pathtracing ? vec4(1.0) : vec4(0.0)
+                            : vec4(0.0)
                             ;
 
     if (rt.mode() == host_device_rt::CPU)
