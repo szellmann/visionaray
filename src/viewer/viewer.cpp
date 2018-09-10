@@ -141,12 +141,6 @@ struct renderer : viewer_type
     using device_tex_ref_type       = typename device_tex_type::ref_type;
 #endif
 
-    enum device_type
-    {
-        CPU = 0,
-        GPU
-    };
-
     enum bvh_build_strategy
     {
         Binned = 0,  // Binned SAH builder, no spatial splits
