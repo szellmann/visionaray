@@ -69,14 +69,17 @@ include_directories(${CMD_LINE_INCLUDE_DIR})
 
 set(VIEWER_HEADERS
     call_kernel.h
+    host_device_rt.h
 )
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     visionaray_cuda_compile(VIEWER_CUDA_SOURCES
+        host_device_rt.cu
         viewer.cu
     )
 else()
     set(VIEWER_SOURCES
+        host_device_rt.cpp
         viewer.cpp
     )
 endif()

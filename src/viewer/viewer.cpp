@@ -60,7 +60,6 @@
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
-#include <common/host_device_rt.h>
 #include <common/make_materials.h>
 #include <common/model.h>
 #include <common/timer.h>
@@ -71,6 +70,7 @@
 #endif
 
 #include "call_kernel.h"
+#include "host_device_rt.h"
 
 
 using namespace visionaray;

@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_COMMON_HOST_DEVICE_RT_H
-#define VSNRAY_COMMON_HOST_DEVICE_RT_H 1
+#ifndef VSNRAY_VIEWER_HOST_DEVICE_RT_H
+#define VSNRAY_VIEWER_HOST_DEVICE_RT_H 1
 
 #include <memory>
 
@@ -69,4 +69,4 @@ private:
 
 } // visionaray
 
-#endif // VSNRAY_COMMON_HOST_DEVICE_RT_H
+#endif // VSNRAY_VIEWER_HOST_DEVICE_RT_H

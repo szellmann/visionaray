@@ -1,13 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <common/config.h>
-
 #include <cassert>
 
-#if VSNRAY_COMMON_HAVE_GLEW
 #include <GL/glew.h>
-#endif
 
 #include <visionaray/cpu_buffer_rt.h>
 
@@ -203,7 +199,6 @@ void host_device_rt::display_color_buffer() const
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#if VSNRAY_COMMON_HAVE_GLEW
     if (impl_->color_space == SRGB)
     {
         glEnable(GL_FRAMEBUFFER_SRGB);
@@ -212,7 +207,6 @@ void host_device_rt::display_color_buffer() const
     {
         glDisable(GL_FRAMEBUFFER_SRGB);
     }
-#endif
 
 
     if (impl_->mode == CPU)
