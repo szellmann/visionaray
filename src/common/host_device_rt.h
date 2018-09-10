@@ -20,11 +20,25 @@ public:
     using color_type = typename pixel_traits<PF_RGBA32F>::type;
     using ref_type = render_target_ref<PF_RGBA32F, PF_UNSPECIFIED>;
 
-    enum mode { CPU, GPU };
+    enum mode
+    {
+        CPU,
+        GPU
+    };
+
+    enum color_space_type
+    {
+        RGB,
+        SRGB
+    };
 
 public:
 
-    host_device_rt(mode m, bool direct_rendering = true);
+    host_device_rt(
+            mode m,
+            bool direct_rendering = true,
+            color_space_type color_space = RGB
+            );
    ~host_device_rt();
 
     mode& current_mode();
@@ -32,6 +46,9 @@ public:
 
     bool& direct_rendering();
     bool const& direct_rendering() const;
+
+    color_space_type& color_space();
+    color_space_type const& color_space() const;
 
     color_type const* color() const;
 

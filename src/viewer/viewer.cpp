@@ -16,8 +16,6 @@
 #include <string>
 #include <thread>
 
-#include <GL/glew.h>
-
 #include <visionaray/detail/platform.h>
 
 #if defined(VSNRAY_OS_DARWIN)
@@ -147,17 +145,11 @@ struct renderer : viewer_type
         Split        // Split BVH, also binned and with SAH
     };
 
-    enum color_space
-    {
-        RGB = 0,
-        SRGB
-    };
-
 
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
         , host_sched(std::thread::hardware_concurrency())
-        , rt(host_device_rt::CPU, true /* direct rendering */)
+        , rt(host_device_rt::CPU, true /* direct rendering */, host_device_rt::SRGB)
 #ifdef __CUDACC__
         , device_sched(8, 8)
 #endif
@@ -236,14 +228,14 @@ struct renderer : viewer_type
             cl::init(this->ambient)
             ) );
 
-        add_cmdline_option( cl::makeOption<color_space&>({
-                { "rgb",                RGB,            "RGB color space for display" },
-                { "srgb",               SRGB,           "sRGB color space for display" },
+        add_cmdline_option( cl::makeOption<host_device_rt::color_space_type&>({
+                { "rgb",  host_device_rt::RGB,  "RGB color space for display" },
+                { "srgb", host_device_rt::SRGB, "sRGB color space for display" },
             },
             "colorspace",
             cl::Desc("Color space"),
             cl::ArgRequired,
-            cl::init(this->col_space)
+            cl::init(rt.color_space())
             ) );
 
 #ifdef __CUDACC__
@@ -267,7 +259,6 @@ struct renderer : viewer_type
     unsigned                                    ssaa_samples    = 1;
     algorithm                                   algo            = Simple;
     bvh_build_strategy                          builder         = Binned;
-    color_space                                 col_space       = SRGB;
     bool                                        show_hud        = true;
     bool                                        show_hud_ext    = true;
     bool                                        show_bvh        = false;
@@ -593,18 +584,6 @@ void renderer::on_display()
 #endif
     }
 
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    if (col_space == SRGB)
-    {
-        glEnable(GL_FRAMEBUFFER_SRGB);
-    }
-    else
-    {
-        glDisable(GL_FRAMEBUFFER_SRGB);
-    }
-
     rt.display_color_buffer();
 
 
@@ -659,13 +638,13 @@ void renderer::on_key_press(key_event const& event)
         break;
 
     case 'c':
-        if (col_space == renderer::RGB)
+        if (rt.color_space() == host_device_rt::RGB)
         {
-            col_space = renderer::SRGB;
+            rt.color_space() = host_device_rt::SRGB;
         }
         else
         {
-            col_space = renderer::RGB;
+            rt.color_space() = host_device_rt::RGB;
         }
         break;
 
