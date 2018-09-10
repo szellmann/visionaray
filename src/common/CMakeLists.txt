@@ -141,6 +141,7 @@ set(COMMON_HEADERS
     dds_image.h
     exception.h
     hdr_image.h
+    host_device_rt.h
     image.h
     image_base.h
     jpeg_image.h
@@ -198,6 +199,11 @@ set(COMMON_SOURCES
 if (VSNRAY_ENABLE_CUDA AND CUDA_FOUND)
     set(COMMON_HEADERS ${COMMON_HEADERS} cuda.h)
     set(COMMON_SOURCES ${COMMON_SOURCES} cuda.cpp)
+    visionaray_cuda_compile(COMMON_CUDA_SOURCES
+        host_device_rt.cu
+    )
+else()
+    set(COMMON_SOURCES ${COMMON_SOURCES} host_device_rt.cpp)
 endif()
 
 if (APPLE AND VSNRAY_ENABLE_COCOA)
@@ -250,6 +256,7 @@ visionaray_add_library(visionaray_common
     STATIC
     ${COMMON_HEADERS}
     ${COMMON_SOURCES}
+    ${COMMON_CUDA_SOURCES}
     ${CMD_LINE_HEADERS}
     ${CMD_LINE_SOURCES}
     ${TINYPLY_HEADERS}

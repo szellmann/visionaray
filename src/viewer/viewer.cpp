@@ -48,7 +48,6 @@
 #include <visionaray/aligned_vector.h>
 #include <visionaray/area_light.h>
 #include <visionaray/bvh.h>
-#include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
@@ -60,14 +59,10 @@
 #include <visionaray/detail/tbb_sched.h>
 #endif
 
-#ifdef __CUDACC__
-#include <visionaray/gpu_buffer_rt.h>
-#include <visionaray/pixel_unpack_buffer_rt.h>
-#endif
-
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/host_device_rt.h>
 #include <common/make_materials.h>
 #include <common/model.h>
 #include <common/timer.h>
@@ -139,10 +134,8 @@ struct renderer : viewer_type
     using light_type                = point_light<float>;
 #endif
 
-    using host_render_target_type   = cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
     using host_bvh_type             = index_bvh<primitive_type>;
 #ifdef __CUDACC__
-    using device_render_target_type = pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>;
     using device_bvh_type           = cuda_index_bvh<primitive_type>;
     using device_tex_type           = cuda_texture<vector<4, unorm<8>>, 2>;
     using device_tex_ref_type       = typename device_tex_type::ref_type;
@@ -170,6 +163,7 @@ struct renderer : viewer_type
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
         , host_sched(std::thread::hardware_concurrency())
+        , rt(host_device_rt::CPU, true /* direct rendering */)
 #ifdef __CUDACC__
         , device_sched(8, 8)
 #endif
@@ -259,14 +253,14 @@ struct renderer : viewer_type
             ) );
 
 #ifdef __CUDACC__
-        add_cmdline_option( cl::makeOption<device_type&>({
-                { "cpu",                CPU,            "Rendering on the CPU" },
-                { "gpu",                GPU,            "Rendering on the GPU" },
+        add_cmdline_option( cl::makeOption<host_device_rt::mode&>({
+                { "cpu", host_device_rt::CPU, "Rendering on the CPU" },
+                { "gpu", host_device_rt::GPU, "Rendering on the GPU" },
             },
             "device",
             cl::Desc("Rendering device"),
             cl::ArgRequired,
-            cl::init(this->dev_type)
+            cl::init(rt.current_mode())
             ) );
 #endif
     }
@@ -279,7 +273,6 @@ struct renderer : viewer_type
     unsigned                                    ssaa_samples    = 1;
     algorithm                                   algo            = Simple;
     bvh_build_strategy                          builder         = Binned;
-    device_type                                 dev_type        = CPU;
     color_space                                 col_space       = SRGB;
     bool                                        show_hud        = true;
     bool                                        show_hud_ext    = true;
@@ -309,14 +302,9 @@ struct renderer : viewer_type
 #else
     tiled_sched<ray_type_cpu>                   host_sched;
 #endif
-    host_render_target_type                     host_rt;
+    host_device_rt                              rt;
 #ifdef __CUDACC__
     cuda_sched<ray_type_gpu>                    device_sched;
-    bool                                        direct_rendering = true;
-    pixel_unpack_buffer_rt<
-        PF_RGBA32F, PF_UNSPECIFIED>             direct_rendering_rt;
-    gpu_buffer_rt<
-        PF_RGBA32F, PF_UNSPECIFIED>             indirect_rendering_rt;
 #endif
     pinhole_camera                              cam;
 
@@ -419,17 +407,7 @@ void renderer::clear_frame()
 
     if (algo == Pathtracing)
     {
-        host_rt.clear_color_buffer();
-#ifdef __CUDACC__
-        if (direct_rendering)
-        {
-            direct_rendering_rt.clear_color_buffer();
-        }
-        else
-        {
-            indirect_rendering_rt.clear_color_buffer();
-        }
-#endif
+        rt.clear_color_buffer();
     }
 }
 
@@ -447,7 +425,7 @@ void renderer::render_hud()
 
     int x = visionaray::clamp( mouse_pos.x, 0, w - 1 );
     int y = visionaray::clamp( mouse_pos.y, 0, h - 1 );
-    auto color = host_rt.color();
+    auto color = rt.color();
     auto rgba = color[(h - 1 - y) * w + x];
 
     int num_nodes = 0;
@@ -527,7 +505,7 @@ void renderer::render_hud()
     hud.print_buffer(300, h * 2 - 102);
     hud.clear_buffer();
 
-    hud.buffer() << "Device: " << ( (dev_type == renderer::GPU) ? "GPU" : "CPU" );
+    hud.buffer() << "Device: " << ( (rt.current_mode() == host_device_rt::GPU) ? "GPU" : "CPU" );
     hud.print_buffer(300, h * 2 - 136);
     hud.clear_buffer();
 
@@ -566,7 +544,7 @@ void renderer::on_display()
                             : algo == Pathtracing ? vec4(1.0) : vec4(0.0)
                             ;
 
-    if (dev_type == renderer::GPU)
+    if (rt.current_mode() == host_device_rt::GPU)
     {
 #ifdef __CUDACC__
         thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
@@ -591,17 +569,10 @@ void renderer::on_display()
                 amb
                 );
 
-        if (direct_rendering)
-        {
-            call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, direct_rendering_rt );
-        }
-        else
-        {
-            call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, indirect_rendering_rt );
-        }
+        call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, rt );
 #endif
     }
-    else if (dev_type == renderer::CPU)
+    else if (rt.current_mode() == host_device_rt::CPU)
     {
 #ifndef __CUDA_ARCH__
         aligned_vector<renderer::host_bvh_type::bvh_ref> host_primitives;
@@ -624,7 +595,7 @@ void renderer::on_display()
                 amb
                 );
 
-        call_kernel( algo, host_sched, kparams, frame_num, ssaa_samples, cam, host_rt );
+        call_kernel( algo, host_sched, kparams, frame_num, ssaa_samples, cam, rt );
 #endif
     }
 
@@ -640,20 +611,7 @@ void renderer::on_display()
         glDisable(GL_FRAMEBUFFER_SRGB);
     }
 
-#ifdef __CUDACC__
-    if (dev_type == renderer::GPU && direct_rendering)
-    {
-        direct_rendering_rt.display_color_buffer();
-    }
-    else if (dev_type == renderer::GPU && !direct_rendering)
-    {
-        indirect_rendering_rt.display_color_buffer();
-    }
-    else
-#endif
-    {
-        host_rt.display_color_buffer();
-    }
+    rt.display_color_buffer();
 
 
     // OpenGL overlay rendering
@@ -723,13 +681,13 @@ void renderer::on_key_press(key_event const& event)
 
    case 'm':
 #ifdef __CUDACC__
-        if (dev_type == renderer::CPU)
+        if (rt.current_mode() == host_device_rt::CPU)
         {
-            dev_type = renderer::GPU;
+            rt.current_mode() = host_device_rt::GPU;
         }
         else
         {
-            dev_type = renderer::CPU;
+            rt.current_mode() = host_device_rt::CPU;
         }
         counter.reset();
         clear_frame();
@@ -797,17 +755,7 @@ void renderer::on_resize(int w, int h)
     cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
     cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-    host_rt.resize(w, h);
-#ifdef __CUDACC__
-    if (direct_rendering)
-    {
-        direct_rendering_rt.resize(w, h);
-    }
-    else
-    {
-        indirect_rendering_rt.resize(w, h);
-    }
-#endif
+    rt.resize(w, h);
     clear_frame();
     viewer_type::on_resize(w, h);
 }
@@ -817,7 +765,7 @@ int main(int argc, char** argv)
     renderer rend;
 
 #ifdef __CUDACC__
-    if (rend.direct_rendering && cuda::init_gl_interop() != cudaSuccess)
+    if (rend.rt.direct_rendering() && cuda::init_gl_interop() != cudaSuccess)
     {
         std::cerr << "Cannot initialize CUDA OpenGL interop\n";
         return EXIT_FAILURE;
