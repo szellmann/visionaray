@@ -10,6 +10,7 @@
 
 #include <visionaray/math/simd/type_traits.h>
 #include <visionaray/math/array.h>
+#include <visionaray/math/matrix.h>
 #include <visionaray/math/ray.h>
 #include <visionaray/update_if.h>
 
@@ -42,6 +43,37 @@ struct hit_record_bvh : Base
 
 
 //-------------------------------------------------------------------------------------------------
+// A special hit record for BVH instances
+// Stores the transform matrices necessary to transform points and vectors into object space
+//
+
+template <typename R, typename Base>
+struct hit_record_bvh_inst : hit_record_bvh<R, Base>
+{
+    using scalar_type = typename R::scalar_type;
+    using int_type    = simd::int_type_t<scalar_type>;
+
+    hit_record_bvh_inst() = default;
+    VSNRAY_FUNC explicit hit_record_bvh_inst(
+            hit_record_bvh<R, Base> const& base,
+            int_type id,
+            matrix<4, 4, scalar_type> const& trans_inv
+            )
+        : hit_record_bvh<R, Base>(base)
+        , inst_id(id)
+        , transform_inv(trans_inv)
+    {
+    }
+
+    // Unique instance id
+    int_type inst_id = int_type(0);
+
+    // Inverse transformation matrix
+    matrix<4, 4, scalar_type> transform_inv = matrix<4, 4, scalar_type>::identity();
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // update_if() overload that dispatches to update_if() for Base in addition
 // to store BVH hit information
 //
@@ -56,6 +88,20 @@ void update_if(
 {
     update_if(static_cast<Base&>(dst), static_cast<Base const&>(src), cond);
     dst.primitive_list_index = select( cond, src.primitive_list_index, dst.primitive_list_index );
+}
+
+// Overload for bvh inst record
+template <typename R, typename Base, typename Cond>
+VSNRAY_FUNC
+void update_if(
+    hit_record_bvh_inst<R, Base>&       dst,
+    hit_record_bvh_inst<R, Base> const& src,
+    Cond const&                         cond
+    )
+{
+    update_if(static_cast<hit_record_bvh<R, Base>&>(dst), static_cast<hit_record_bvh<R, Base> const&>(src), cond);
+    dst.inst_id = select( cond, src.inst_id, dst.inst_id );
+    dst.transform_inv = select( cond, src.transform_inv, dst.transform_inv );
 }
 
 
@@ -133,6 +179,48 @@ inline auto unpack(
                 primitive_list_index[i]
                 );
     }
+    return result;
+}
+
+template <
+    typename FloatT,
+    typename Base,
+    typename UnpackedBase = decltype(unpack(Base{})),
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+VSNRAY_FUNC
+inline auto unpack(
+        hit_record_bvh_inst<basic_ray<FloatT>, Base> const& hr
+        )
+    -> array<
+            hit_record_bvh_inst<ray, typename UnpackedBase::value_type>,
+            num_elements<FloatT>::value
+            >
+{
+    using int_array        = aligned_array_t<int_type_t<FloatT>>;
+    using scalar_base_type = typename UnpackedBase::value_type;
+
+    auto base = simd::unpack(static_cast<hit_record_bvh<basic_ray<FloatT>, Base> const&>(hr));
+
+    array<
+        hit_record_bvh_inst<ray, scalar_base_type>,
+        num_elements<FloatT>::value
+        > result;
+
+    int_array inst_id = {};
+    store(inst_id, hr.inst_id);
+
+    auto transform_inv = unpack(hr.transform_inv);
+
+    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    {
+        result[i] = hit_record_bvh_inst<ray, scalar_base_type>(
+                hit_record_bvh<basic_ray<float>, scalar_base_type>(base[i]),
+                inst_id[i],
+                transform_inv[i]
+                );
+    }
+
     return result;
 }
 

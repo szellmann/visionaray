@@ -19,6 +19,8 @@
 #endif
 
 #include "math/aabb.h"
+#include "math/forward.h"
+#include "math/matrix.h"
 #include "aligned_vector.h"
 #include "tags.h"
 
@@ -241,6 +243,154 @@ public:
 
 };
 
+
+//--------------------------------------------------------------------------------------------------
+// [index_]bvh_inst_t
+//
+
+template <typename PrimitiveType>
+class bvh_inst_t
+{
+public:
+
+    using primitive_type = PrimitiveType;
+
+private:
+
+    using P = const PrimitiveType;
+    using N = const bvh_node;
+
+public:
+
+    bvh_inst_t() = default;
+
+    bvh_inst_t(bvh_ref_t<PrimitiveType> const& ref, unsigned inst_id, mat4 const& transform)
+        : inst_id_(inst_id)
+        , ref_(ref)
+        , transform_inv_(inverse(transform))
+    {
+    }
+
+    VSNRAY_FUNC size_t num_primitives() const
+    {
+        return ref_.num_primitives();
+    }
+
+    VSNRAY_FUNC size_t num_nodes() const
+    {
+        return ref_.num_nodes();
+    }
+
+    VSNRAY_FUNC P& primitive(size_t index) const
+    {
+        return ref_.primitive(index);
+    }
+
+    VSNRAY_FUNC N& node(size_t index) const
+    {
+        return ref_.node(index);
+    }
+
+    VSNRAY_FUNC unsigned get_inst_id() const
+    {
+        return inst_id_;
+    }
+
+    VSNRAY_FUNC bvh_ref_t<PrimitiveType> get_ref() const
+    {
+        return ref_;
+    }
+
+    VSNRAY_FUNC mat4 const& transform_inv() const
+    {
+        return transform_inv_;
+    }
+
+private:
+
+    // Unique id
+    unsigned inst_id_;
+
+    // BVH ref
+    bvh_ref_t<PrimitiveType> ref_;
+
+    // Inverse transformation matrix
+    mat4 transform_inv_;
+
+};
+
+template <typename PrimitiveType>
+class index_bvh_inst_t
+{
+public:
+
+    using primitive_type = PrimitiveType;
+
+private:
+
+    using P = const PrimitiveType;
+    using N = const bvh_node;
+
+public:
+
+    index_bvh_inst_t() = default;
+
+    index_bvh_inst_t(index_bvh_ref_t<PrimitiveType> const& ref, unsigned inst_id, mat4 const& transform)
+        : inst_id_(inst_id)
+        , ref_(ref)
+        , transform_inv_(inverse(transform))
+    {
+    }
+
+    VSNRAY_FUNC size_t num_primitives() const
+    {
+        return ref_.num_primitives();
+    }
+
+    VSNRAY_FUNC size_t num_nodes() const
+    {
+        return ref_.num_nodes();
+    }
+
+    VSNRAY_FUNC P& primitive(size_t indirect_index) const
+    {
+        return ref_.primitive(indirect_index);
+    }
+
+    VSNRAY_FUNC N& node(size_t index) const
+    {
+        return ref_.node(index);
+    }
+
+    VSNRAY_FUNC unsigned get_inst_id() const
+    {
+        return inst_id_;
+    }
+
+    VSNRAY_FUNC index_bvh_ref_t<PrimitiveType> get_ref() const
+    {
+        return ref_;
+    }
+
+    VSNRAY_FUNC mat4 const& transform_inv() const
+    {
+        return transform_inv_;
+    }
+
+private:
+
+    // Unique id
+    unsigned inst_id_;
+
+    // BVH ref
+    index_bvh_ref_t<PrimitiveType> ref_;
+
+    // Inverse transformation matrix
+    mat4 transform_inv_;
+
+};
+
+
 //--------------------------------------------------------------------------------------------------
 // [index_]bvh_t
 //
@@ -255,7 +405,8 @@ public:
     using node_type         = typename NodeVector::value_type;
     using node_vector       = NodeVector;
 
-    using bvh_ref = bvh_ref_t<primitive_type>;
+    using bvh_ref  = bvh_ref_t<primitive_type>;
+    using bvh_inst = bvh_inst_t<primitive_type>;
 
 public:
 
@@ -265,6 +416,7 @@ public:
     explicit bvh_t(P* prims, size_t count)
         : primitives_(prims, prims + count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
+        , num_instances_(0)
     {
     }
 
@@ -272,6 +424,7 @@ public:
     explicit bvh_t(bvh_t<PV, NV> const& rhs)
         : primitives_(rhs.primitives())
         , nodes_(rhs.nodes())
+        , num_instances_(0)
     {
     }
 
@@ -295,6 +448,11 @@ public:
         return { p0, p1, n0, n1 };
     }
 
+    bvh_inst inst(mat4 const& transform)
+    {
+        return bvh_inst(ref(), num_instances_++, transform);
+    }
+
     primitive_type const& primitive(size_t index) const
     {
         return primitives_[index];
@@ -315,6 +473,7 @@ private:
 
     primitive_vector primitives_;
     node_vector nodes_;
+    unsigned num_instances_;
 
 };
 
@@ -329,7 +488,8 @@ public:
     using node_vector       = NodeVector;
     using index_vector      = IndexVector;
 
-    using bvh_ref = index_bvh_ref_t<primitive_type>;
+    using bvh_ref  = index_bvh_ref_t<primitive_type>;
+    using bvh_inst = index_bvh_inst_t<primitive_type>;
 
 public:
 
@@ -340,6 +500,7 @@ public:
         : primitives_(prims, prims + count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
         , indices_(count)
+        , num_instances_(0)
     {
     }
 
@@ -348,6 +509,7 @@ public:
         : primitives_(rhs.primitives())
         , nodes_(rhs.nodes())
         , indices_(rhs.indices())
+        , num_instances_(0)
     {
     }
 
@@ -377,6 +539,11 @@ public:
         return { p0, p1, n0, n1, i0, i1 };
     }
 
+    bvh_inst inst(mat4 const& transform)
+    {
+        return bvh_inst(ref(), num_instances_++, transform);
+    }
+
     primitive_type const& primitive(size_t indirect_index) const
     {
         return primitives_[indices_[indirect_index]];
@@ -401,6 +568,7 @@ private:
     primitive_vector primitives_;
     node_vector nodes_;
     index_vector indices_;
+    unsigned num_instances_;
 
 };
 
@@ -419,6 +587,9 @@ template <typename T>
 struct is_bvh<bvh_ref_t<T>> : std::true_type {};
 
 template <typename T>
+struct is_bvh<bvh_inst_t<T>> : std::true_type {};
+
+template <typename T>
 struct is_index_bvh : std::false_type {};
 
 template <typename T1, typename T2, typename T3>
@@ -428,7 +599,28 @@ template <typename T>
 struct is_index_bvh<index_bvh_ref_t<T>> : std::true_type {};
 
 template <typename T>
+struct is_index_bvh<index_bvh_inst_t<T>> : std::true_type {};
+
+template <typename T>
 struct is_any_bvh : std::integral_constant<bool, is_bvh<T>::value || is_index_bvh<T>::value>
+{
+};
+
+
+template <typename T>
+struct is_bvh_inst : std::false_type {};
+
+template <typename T>
+struct is_bvh_inst<bvh_inst_t<T>> : std::true_type {};
+
+template <typename T>
+struct is_index_bvh_inst : std::false_type {};
+
+template <typename T>
+struct is_index_bvh_inst<index_bvh_inst_t<T>> : std::true_type {};
+
+template <typename T>
+struct is_any_bvh_inst : std::integral_constant<bool, is_bvh_inst<T>::value || is_index_bvh_inst<T>::value>
 {
 };
 

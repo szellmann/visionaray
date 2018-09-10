@@ -6,6 +6,7 @@
 #include <utility>
 
 #include <visionaray/math/limits.h>
+#include <visionaray/math/matrix.h>
 #include <visionaray/math/ray.h>
 #include <visionaray/intersector.h>
 #include <visionaray/update_if.h>
@@ -30,6 +31,7 @@ template <
     typename T,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename = typename std::enable_if<!is_any_bvh_inst<BVH>::value>::type,
     typename Intersector,
     typename Cond = is_closer_t
     >
@@ -131,6 +133,56 @@ next:
 
     return result;
 
+}
+
+
+// Overload for instances ---------------------------------
+
+template <
+    detail::traversal_type Traversal,
+    size_t MultiHitMax = 1,             // Max hits for multi-hit traversal
+    typename T,
+    typename BVH,
+    typename = typename std::enable_if<is_any_bvh_inst<BVH>::value>::type,
+    typename Intersector,
+    typename Cond = is_closer_t
+    >
+VSNRAY_FUNC
+inline auto intersect(
+        basic_ray<T> const& ray,
+        BVH const&          b,
+        Intersector&        isect,
+        T                   max_t = numeric_limits<T>::max(),
+        Cond                update_cond = Cond()
+        )
+    -> typename detail::traversal_result< hit_record_bvh_inst<
+            basic_ray<T>,
+            decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+            >, Traversal, MultiHitMax>::type
+{
+    using namespace detail;
+    using HR = hit_record_bvh_inst<
+        basic_ray<T>,
+        decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+        >;
+
+    using RT = typename detail::traversal_result<HR, Traversal, MultiHitMax>::type;
+
+    basic_ray<T> transformed_ray = ray;
+    transformed_ray.ori = (matrix<4, 4, T>(b.transform_inv()) * vector<4, T>(ray.ori, T(1.0))).xyz();
+    auto p2 = (matrix<4, 4, T>(b.transform_inv()) * vector<4, T>(ray.ori + ray.dir, T(1.0))).xyz();
+    transformed_ray.dir = (p2 - transformed_ray.ori);
+    // NOTE: dir is in general *not* normalized!
+
+    auto hr = intersect<Traversal, MultiHitMax>(
+            transformed_ray,
+            b.get_ref(),
+            isect,
+            max_t,
+            update_cond
+            );
+
+    return RT(hr, b.get_inst_id(), matrix<4, 4, T>(b.transform_inv()));
 }
 
 

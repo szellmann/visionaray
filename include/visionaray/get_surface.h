@@ -354,6 +354,29 @@ inline auto get_normal_dispatch(
             );
 }
 
+// overload for BVH instances
+template <
+    typename Params,
+    typename Normals,
+    typename R,
+    typename Base
+    >
+VSNRAY_FUNC
+inline auto get_normal_dispatch(
+        Params const& params,
+        Normals normals,
+        hit_record_bvh_inst<R, Base> const& hr
+        )
+    -> decltype(get_normal_dispatch(params, normals, static_cast<hit_record_bvh<R, Base> const&>(hr)))
+{
+    using T = typename R::scalar_type;
+
+    auto np = get_normal_dispatch(params, normals, static_cast<hit_record_bvh<R, Base> const&>(hr));
+    np.geometric_normal = normalize((transpose(hr.transform_inv) * vector<4, T>(np.geometric_normal, T(1.0))).xyz());
+    np.shading_normal = normalize((transpose(hr.transform_inv) * vector<4, T>(np.shading_normal, T(1.0))).xyz());
+    return np;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Sample textures with range check
