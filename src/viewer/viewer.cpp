@@ -80,25 +80,6 @@ using viewer_type = viewer_glut;
 
 
 //-------------------------------------------------------------------------------------------------
-// Switch to use simple but fast plastic material, or a generic material container with
-// support for emissive objects
-//
-
-#define USE_PLASTIC_MATERIAL 1
-
-
-//-------------------------------------------------------------------------------------------------
-// With emissive materials enabled, assemble light sources from emissive surfaces for
-// direct light sampling
-//
-
-#define USE_AREA_LIGHT_SAMPLING 0
-
-
-static_assert(!(USE_PLASTIC_MATERIAL & USE_AREA_LIGHT_SAMPLING), "Invalid configuration");
-
-
-//-------------------------------------------------------------------------------------------------
 // Renderer, stores state, geometry, normals, ...
 //
 
@@ -116,23 +97,6 @@ struct renderer : viewer_type
     using primitive_type            = model::triangle_type;
     using normal_type               = model::normal_type;
     using tex_coord_type            = model::tex_coord_type;
-#if USE_PLASTIC_MATERIAL
-    using material_type             = plastic<float>;
-#else
-    using material_type             = generic_material<
-                                            emissive<float>,
-                                            glass<float>,
-                                            matte<float>,
-                                            mirror<float>,
-                                            plastic<float>
-                                            >;
-#endif
-#if USE_AREA_LIGHT_SAMPLING
-    using light_type                = area_light<float, basic_triangle<3, float>>;
-#else
-    using light_type                = point_light<float>;
-#endif
-
     using host_bvh_type             = index_bvh<primitive_type>;
 #ifdef __CUDACC__
     using device_bvh_type           = cuda_index_bvh<primitive_type>;
@@ -272,14 +236,18 @@ struct renderer : viewer_type
     vec3                                        ambient         = vec3(-1.0f);
 
     host_bvh_type                               host_bvh;
-    aligned_vector<material_type>               host_materials;
-    aligned_vector<light_type>                  host_lights;
+    aligned_vector<plastic<float>>              plastic_materials;
+    aligned_vector<generic_material_t>          generic_materials;
+    aligned_vector<point_light<float>>          point_lights;
+    aligned_vector<area_light<float,
+                   basic_triangle<3, float>>>   area_lights;
 #ifdef __CUDACC__
     device_bvh_type                             device_bvh;
     thrust::device_vector<normal_type>          device_geometric_normals;
     thrust::device_vector<normal_type>          device_shading_normals;
     thrust::device_vector<tex_coord_type>       device_tex_coords;
-    thrust::device_vector<material_type>        device_materials;
+    thrust::device_vector<plastic<float>>       device_plastic_materials;
+    thrust::device_vector<generic_material_t>   device_generic_materials;
     std::map<std::string, device_tex_type>      device_texture_map;
     thrust::device_vector<device_tex_ref_type>  device_textures;
 #endif
@@ -510,17 +478,10 @@ void renderer::on_close()
 
 void renderer::on_display()
 {
-#if !USE_AREA_LIGHT_SAMPLING
-    using light_type = point_light<float>;
-
-    light_type light;
-    light.set_cl( vec3(1.0, 1.0, 1.0) );
-    light.set_kl(1.0);
-    light.set_position( cam.eye() );
-
-    host_lights[0] = light;
-#endif
-
+    point_light<float>& headlight = point_lights[0];
+    headlight.set_cl( vec3(1.0, 1.0, 1.0) );
+    headlight.set_kl(1.0);
+    headlight.set_position( cam.eye() );
 
     auto bounds     = mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
@@ -533,48 +494,98 @@ void renderer::on_display()
 
     if (rt.mode() == host_device_rt::CPU)
     {
-        render_plastic_cpp(
-                host_bvh,
-                mod.geometric_normals,
-                mod.shading_normals,
-                mod.tex_coords,
-                host_materials,
-                mod.textures,
-                host_lights,
-                bounces,
-                epsilon,
-                vec4(background_color(), 1.0f),
-                amb,
-                rt,
-                host_sched,
-                cam,
-                frame_num,
-                algo,
-                ssaa_samples
-                );
+        if (area_lights.size() > 0 && algo == Pathtracing)
+        {
+            render_generic_material_cpp(
+                    host_bvh,
+                    mod.geometric_normals,
+                    mod.shading_normals,
+                    mod.tex_coords,
+                    generic_materials,
+                    mod.textures,
+                    area_lights,
+                    bounces,
+                    epsilon,
+                    vec4(background_color(), 1.0f),
+                    amb,
+                    rt,
+                    host_sched,
+                    cam,
+                    frame_num,
+                    algo,
+                    ssaa_samples
+                    );
+        }
+        else
+        {
+            render_plastic_cpp(
+                    host_bvh,
+                    mod.geometric_normals,
+                    mod.shading_normals,
+                    mod.tex_coords,
+                    plastic_materials,
+                    mod.textures,
+                    point_lights,
+                    bounces,
+                    epsilon,
+                    vec4(background_color(), 1.0f),
+                    amb,
+                    rt,
+                    host_sched,
+                    cam,
+                    frame_num,
+                    algo,
+                    ssaa_samples
+                    );
+        }
     }
 #ifdef __CUDACC__
     else if (rt.mode() == host_device_rt::GPU)
     {
-        render_plastic_cu(
-                device_bvh,
-                device_geometric_normals,
-                device_shading_normals,
-                device_tex_coords,
-                device_materials,
-                device_textures,
-                host_lights,
-                bounces,
-                epsilon,
-                vec4(background_color(), 1.0f),
-                amb,
-                rt,
-                device_sched,
-                cam,
-                frame_num,
-                algo,
-                ssaa_samples
-                );
+        if (area_lights.size() > 0 && algo == Pathtracing)
+        {
+            render_generic_material_cu(
+                    device_bvh,
+                    device_geometric_normals,
+                    device_shading_normals,
+                    device_tex_coords,
+                    device_generic_materials,
+                    device_textures,
+                    area_lights,
+                    bounces,
+                    epsilon,
+                    vec4(background_color(), 1.0f),
+                    amb,
+                    rt,
+                    device_sched,
+                    cam,
+                    frame_num,
+                    algo,
+                    ssaa_samples
+                    );
+        }
+        else
+        {
+            render_plastic_cu(
+                    device_bvh,
+                    device_geometric_normals,
+                    device_shading_normals,
+                    device_tex_coords,
+                    device_plastic_materials,
+                    device_textures,
+                    point_lights,
+                    bounces,
+                    epsilon,
+                    vec4(background_color(), 1.0f),
+                    amb,
+                    rt,
+                    device_sched,
+                    cam,
+                    frame_num,
+                    algo,
+                    ssaa_samples
+                    );
+        }
     }
 #endif
 
@@ -760,17 +771,29 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    // Convert generic materials to viewer's material type
-#if USE_PLASTIC_MATERIAL
-    rend.host_materials = make_materials(
-            renderer::material_type{},
+//  timer t;
+
+    std::cout << "Creating BVH...\n";
+
+    // Create the BVH on the host
+    rend.host_bvh = build<renderer::host_bvh_type>(
+            rend.mod.primitives.data(),
+            rend.mod.primitives.size(),
+            rend.builder == renderer::Split
+            );
+
+
+    // Generate a list with plastic materials
+    rend.plastic_materials = make_materials(
+            plastic<float>{},
             rend.mod.materials
             );
-#else
-    rend.host_materials = make_materials(
-            renderer::material_type{},
+
+    // Generate another list with generic materials
+    rend.generic_materials = make_materials(
+            generic_material_t{},
             rend.mod.materials,
-            [](aligned_vector<renderer::material_type>& cont, model::material_type mat)
+            [](aligned_vector<generic_material_t>& cont, model::material_type mat)
             {
                 // Add emissive material if emissive component > 0
                 if (length(mat.ce) > 0.0f)
@@ -822,20 +845,8 @@ int main(int argc, char** argv)
                 }
             }
             );
-#endif
 
-//  timer t;
 
-    std::cout << "Creating BVH...\n";
-
-    // Create the BVH on the host
-    rend.host_bvh = build<renderer::host_bvh_type>(
-            rend.mod.primitives.data(),
-            rend.mod.primitives.size(),
-            rend.builder == renderer::Split
-            );
-
-#if USE_AREA_LIGHT_SAMPLING
     // Loop over all triangles, check if their
     // material is emissive, and if so, build
     // BVHs to create area lights from.
@@ -852,7 +863,7 @@ int main(int argc, char** argv)
     for (std::size_t i = 0; i < rend.mod.primitives.size(); ++i)
     {
         auto pi = rend.mod.primitives[i];
-        if (rend.host_materials[pi.geom_id].as<emissive<float>>() != nullptr)
+        if (rend.generic_materials[pi.geom_id].as<emissive<float>>() != nullptr)
         {
             range r;
             r.begin = i;
@@ -861,7 +872,7 @@ int main(int argc, char** argv)
             for (;j < rend.mod.primitives.size(); ++j)
             {
                 auto pii = rend.mod.primitives[j];
-                if (rend.host_materials[pii.geom_id].as<emissive<float>>() == nullptr
+                if (rend.generic_materials[pii.geom_id].as<emissive<float>>() == nullptr
                                 || pii.geom_id != pi.geom_id)
                 {
                     break;
@@ -876,20 +887,21 @@ int main(int argc, char** argv)
         }
     }
 
+    // Build vector with area light sources
     for (auto r : ranges)
     {
         for (std::size_t i = r.begin; i != r.end; ++i)
         {
             area_light<float, basic_triangle<3, float>> light(rend.mod.primitives[i]);
-            auto mat = *rend.host_materials[r.geom_id].as<emissive<float>>();
+            auto mat = *rend.generic_materials[r.geom_id].as<emissive<float>>();
             light.set_cl(to_rgb(mat.ce()));
             light.set_kl(mat.ls());
-            rend.host_lights.push_back(light);
+            rend.area_lights.push_back(light);
         }
     }
-#else
-    rend.host_lights.resize(1);
-#endif
+
+    // Make room for one (head) light
+    rend.point_lights.resize(1);
 
     std::cout << "Ready\n";
 
@@ -901,7 +913,8 @@ int main(int argc, char** argv)
         rend.device_geometric_normals = rend.mod.geometric_normals;
         rend.device_shading_normals = rend.mod.shading_normals;
         rend.device_tex_coords = rend.mod.tex_coords;
-        rend.device_materials = rend.host_materials;
+        rend.device_plastic_materials = rend.plastic_materials;
+        rend.device_generic_materials = rend.generic_materials;
 
 
         // Copy textures and texture references to the GPU
@@ -971,8 +984,10 @@ int main(int argc, char** argv)
         rend.device_shading_normals.shrink_to_fit();
         rend.device_tex_coords.clear();
         rend.device_tex_coords.shrink_to_fit();
-        rend.device_materials.clear();
-        rend.device_materials.shrink_to_fit();
+        rend.device_plastic_materials.clear();
+        rend.device_plastic_materials.shrink_to_fit();
+        rend.device_generic_materials.clear();
+        rend.device_generic_materials.shrink_to_fit();
         rend.device_texture_map.clear();
         rend.device_textures.clear();
         rend.device_textures.shrink_to_fit();

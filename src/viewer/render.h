@@ -14,6 +14,7 @@
 #include <visionaray/math/forward.h>
 #include <visionaray/math/ray.h>
 #include <visionaray/aligned_vector.h>
+#include <visionaray/area_light.h>
 #include <visionaray/bvh.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/material.h>
@@ -108,12 +109,48 @@ void render_plastic_cu(
 //
 
 void render_generic_material_cpp(
-        index_bvh<basic_triangle<3, float>>& bvh
+        index_bvh<basic_triangle<3, float>> const&                         bvh,
+        aligned_vector<vec3> const&                                        geometric_normals,
+        aligned_vector<vec3> const&                                        shading_normals,
+        aligned_vector<vec2> const&                                        tex_coords,
+        aligned_vector<generic_material_t> const&                          materials,
+        aligned_vector<texture_t> const&                                   textures,
+        aligned_vector<area_light<float, basic_triangle<3, float>>> const& lights,
+        unsigned                                                           bounces,
+        float                                                              epsilon,
+        vec4                                                               bgcolor,
+        vec4                                                               ambient,
+        host_device_rt&                                                    rt,
+#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
+        tbb_sched<basic_ray<simd::float4>>&                                sched,
+#else
+        tiled_sched<basic_ray<simd::float4>>&                              sched,
+#endif
+        pinhole_camera&                                                    cam,
+        unsigned&                                                          frame_num,
+        algorithm                                                          algo,
+        unsigned                                                           ssaa_samples
         );
 
 #ifdef __CUDACC__
 void render_generic_material_cu(
-        cuda_index_bvh<basic_triangle<3, float>>& bvh
+        cuda_index_bvh<basic_triangle<3, float>>&                          bvh,
+        thrust::device_vector<vec3> const&                                 geometric_normals,
+        thrust::device_vector<vec3> const&                                 shading_normals,
+        thrust::device_vector<vec2> const&                                 tex_coords,
+        thrust::device_vector<generic_material_t> const&                   materials,
+        thrust::device_vector<cuda_texture_t> const&                       textures,
+        aligned_vector<area_light<float, basic_triangle<3, float>>> const& lights,
+        unsigned                                                           bounces,
+        float                                                              epsilon,
+        vec4                                                               bgcolor,
+        vec4                                                               ambient,
+        host_device_rt&                                                    rt,
+        cuda_sched<basic_ray<float>>&                                      sched,
+        pinhole_camera&                                                    cam,
+        unsigned&                                                          frame_num,
+        algorithm                                                          algo,
+        unsigned                                                           ssaa_samples
         );
 #endif
 

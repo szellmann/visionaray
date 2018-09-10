@@ -73,12 +73,14 @@ set(VIEWER_HEADERS
 )
 
 set(VIEWER_SOURCES
+    render_generic_material.cpp
     render_plastic.cpp
 )
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     visionaray_cuda_compile(VIEWER_CUDA_SOURCES
         host_device_rt.cu
+        render_generic_material.cu
         render_plastic.cu
         viewer.cu
     )
