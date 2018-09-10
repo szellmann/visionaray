@@ -71,6 +71,7 @@
 
 #include "call_kernel.h"
 #include "host_device_rt.h"
+#include "render.h"
 
 
 using namespace visionaray;
@@ -275,7 +276,8 @@ struct renderer : viewer_type
     aligned_vector<light_type>                  host_lights;
 #ifdef __CUDACC__
     device_bvh_type                             device_bvh;
-    thrust::device_vector<normal_type>          device_normals;
+    thrust::device_vector<normal_type>          device_geometric_normals;
+    thrust::device_vector<normal_type>          device_shading_normals;
     thrust::device_vector<tex_coord_type>       device_tex_coords;
     thrust::device_vector<material_type>        device_materials;
     std::map<std::string, device_tex_type>      device_texture_map;
@@ -531,57 +533,47 @@ void renderer::on_display()
 
     if (rt.mode() == host_device_rt::GPU)
     {
-#ifdef __CUDACC__
-        thrust::device_vector<renderer::device_bvh_type::bvh_ref> device_primitives;
-
-        device_primitives.push_back(device_bvh.ref());
-
-        thrust::device_vector<light_type> device_lights = host_lights;
-
-        auto kparams = make_kernel_params(
-                normals_per_face_binding{},
-                thrust::raw_pointer_cast(device_primitives.data()),
-                thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
-                thrust::raw_pointer_cast(device_normals.data()),
-//              thrust::raw_pointer_cast(device_tex_coords.data()),
-                thrust::raw_pointer_cast(device_materials.data()),
-//              thrust::raw_pointer_cast(device_textures.data()),
-                thrust::raw_pointer_cast(device_lights.data()),
-                thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+        render_plastic_cu(
+                device_bvh,
+                device_geometric_normals,
+                device_shading_normals,
+                device_tex_coords,
+                device_materials,
+                device_textures,
+                host_lights,
                 bounces,
                 epsilon,
                 vec4(background_color(), 1.0f),
-                amb
+                amb,
+                rt,
+                device_sched,
+                cam,
+                frame_num,
+                algo,
+                ssaa_samples
                 );
-
-        call_kernel( algo, device_sched, kparams, frame_num, ssaa_samples, cam, rt );
-#endif
     }
     else if (rt.mode() == host_device_rt::CPU)
     {
-#ifndef __CUDA_ARCH__
-        aligned_vector<renderer::host_bvh_type::bvh_ref> host_primitives;
-
-        host_primitives.push_back(host_bvh.ref());
-
-        auto kparams = make_kernel_params(
-                normals_per_face_binding{},
-                host_primitives.data(),
-                host_primitives.data() + host_primitives.size(),
-                mod.geometric_normals.data(),
-//              mod.tex_coords.data(),
-                host_materials.data(),
-//              mod.textures.data(),
-                host_lights.data(),
-                host_lights.data() + host_lights.size(),
+        render_plastic_cpp(
+                host_bvh,
+                mod.geometric_normals,
+                mod.shading_normals,
+                mod.tex_coords,
+                host_materials,
+                mod.textures,
+                host_lights,
                 bounces,
                 epsilon,
                 vec4(background_color(), 1.0f),
-                amb
+                amb,
+                rt,
+                host_sched,
+                cam,
+                frame_num,
+                algo,
+                ssaa_samples
                 );
-
-        call_kernel( algo, host_sched, kparams, frame_num, ssaa_samples, cam, rt );
-#endif
     }
 
     rt.display_color_buffer();
@@ -904,7 +896,8 @@ int main(int argc, char** argv)
     try
     {
         rend.device_bvh = renderer::device_bvh_type(rend.host_bvh);
-        rend.device_normals = rend.mod.geometric_normals;
+        rend.device_geometric_normals = rend.mod.geometric_normals;
+        rend.device_shading_normals = rend.mod.shading_normals;
         rend.device_tex_coords = rend.mod.tex_coords;
         rend.device_materials = rend.host_materials;
 
@@ -970,8 +963,10 @@ int main(int argc, char** argv)
     {
         std::cerr << "GPU memory allocation failed" << std::endl;
         rend.device_bvh = renderer::device_bvh_type();
-        rend.device_normals.clear();
-        rend.device_normals.shrink_to_fit();
+        rend.device_geometric_normals.clear();
+        rend.device_geometric_normals.shrink_to_fit();
+        rend.device_shading_normals.clear();
+        rend.device_shading_normals.shrink_to_fit();
         rend.device_tex_coords.clear();
         rend.device_tex_coords.shrink_to_fit();
         rend.device_materials.clear();
