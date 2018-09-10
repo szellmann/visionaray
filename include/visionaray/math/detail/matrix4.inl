@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include "../array.h"
+
 namespace MATH_NAMESPACE
 {
 
@@ -421,4 +423,71 @@ matrix<4, 4, T> select(M const& m, matrix<4, 4, T> const& u, matrix<4, 4, T> con
             );  
 }
 
+namespace simd
+{
+
+//-------------------------------------------------------------------------------------------------
+// SIMD conversions
+//
+
+// unpack -------------------------------------------------
+
+template <
+    typename T,
+    typename = typename std::enable_if<is_simd_vector<T>::value>::type
+    >
+MATH_FUNC
+inline array<matrix<4, 4, element_type_t<T>>, num_elements<T>::value> unpack(matrix<4, 4, T> const& m)
+{
+    using U = element_type_t<T>;
+
+    U const* c0x = reinterpret_cast<U const*>(&m.col0.x);
+    U const* c1x = reinterpret_cast<U const*>(&m.col1.x);
+    U const* c2x = reinterpret_cast<U const*>(&m.col2.x);
+    U const* c3x = reinterpret_cast<U const*>(&m.col3.x);
+
+    U const* c0y = reinterpret_cast<U const*>(&m.col0.y);
+    U const* c1y = reinterpret_cast<U const*>(&m.col1.y);
+    U const* c2y = reinterpret_cast<U const*>(&m.col2.y);
+    U const* c3y = reinterpret_cast<U const*>(&m.col3.y);
+
+    U const* c0z = reinterpret_cast<U const*>(&m.col0.z);
+    U const* c1z = reinterpret_cast<U const*>(&m.col1.z);
+    U const* c2z = reinterpret_cast<U const*>(&m.col2.z);
+    U const* c3z = reinterpret_cast<U const*>(&m.col3.z);
+
+    U const* c0w = reinterpret_cast<U const*>(&m.col0.w);
+    U const* c1w = reinterpret_cast<U const*>(&m.col1.w);
+    U const* c2w = reinterpret_cast<U const*>(&m.col2.w);
+    U const* c3w = reinterpret_cast<U const*>(&m.col3.w);
+
+    array<matrix<4, 4, U>, num_elements<T>::value> result;
+
+    for (int i = 0; i < num_elements<T>::value; ++i)
+    {
+        result[i].col0.x = c0x[i];
+        result[i].col0.y = c0y[i];
+        result[i].col0.z = c0z[i];
+        result[i].col0.w = c0w[i];
+
+        result[i].col1.x = c1x[i];
+        result[i].col1.y = c1y[i];
+        result[i].col1.z = c1z[i];
+        result[i].col1.w = c1w[i];
+
+        result[i].col2.x = c2x[i];
+        result[i].col2.y = c2y[i];
+        result[i].col2.z = c2z[i];
+        result[i].col2.w = c2w[i];
+
+        result[i].col3.x = c3x[i];
+        result[i].col3.y = c3y[i];
+        result[i].col3.z = c3z[i];
+        result[i].col3.w = c3w[i];
+    }
+
+    return result;
+}
+
+} // simd
 } // MATH_NAMESPACE
