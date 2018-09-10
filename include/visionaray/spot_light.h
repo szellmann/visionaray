@@ -74,9 +74,9 @@ private:
     scalar_type spot_cos_cutoff_;
     scalar_type spot_exponent_;
 
-    T constant_attenuation_     = T(1.0);
-    T linear_attenuation_       = T(0.0);
-    T quadratic_attenuation_    = T(0.0);
+    T constant_attenuation_;
+    T linear_attenuation_;
+    T quadratic_attenuation_;
 };
 
 } // visionaray

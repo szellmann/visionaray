@@ -244,6 +244,9 @@ void renderer::on_display()
     light.set_cl( vec3(1.0f, 1.0f, 1.0f) );
     light.set_kl( 1.0f );
     light.set_position( vec3(0.0f, 10.0f, 10.0f) );
+    light.set_constant_attenuation(1.0f);
+    light.set_linear_attenuation(0.0f);
+    light.set_quadratic_attenuation(0.0f);
 
     std::vector<point_light<float>> lights;
     lights.push_back(light);

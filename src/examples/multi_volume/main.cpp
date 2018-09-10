@@ -698,6 +698,9 @@ void renderer::on_display()
     kern.light.set_cl( vec3(1.0f, 1.0f, 1.0f) );
     kern.light.set_kl( 1.0f );
     kern.light.set_position( cam.eye() );
+    kern.light.set_constant_attenuation(1.0f);
+    kern.light.set_linear_attenuation(0.0f);
+    kern.light.set_quadratic_attenuation(0.0f);
 
 
     // call kernel in schedulers' frame() method

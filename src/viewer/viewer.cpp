@@ -482,6 +482,9 @@ void renderer::on_display()
     headlight.set_cl( vec3(1.0, 1.0, 1.0) );
     headlight.set_kl(1.0);
     headlight.set_position( cam.eye() );
+    headlight.set_constant_attenuation(1.0);
+    headlight.set_linear_attenuation(0.0);
+    headlight.set_quadratic_attenuation(0.0);
 
     auto bounds     = mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
