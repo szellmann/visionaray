@@ -38,10 +38,10 @@ void render_plastic_cpp(
 
     primitives.push_back(bvh.ref());
 
-    bool has_shading_normals = shading_normals.size() >= bvh.num_primitives() * 3;
-    bool has_tex_coords = tex_coords.size() >= bvh.num_primitives() * 3;
+    bool use_shading_normals = shading_normals.size() >= bvh.num_primitives() * 3;
+    bool use_textures = textures.size() > 0 && tex_coords.size() >= bvh.num_primitives() * 3;
 
-    if (has_shading_normals && has_tex_coords)
+    if (use_shading_normals && use_textures)
     {
         auto kparams = make_kernel_params(
                 normals_per_vertex_binding{},
@@ -61,7 +61,7 @@ void render_plastic_cpp(
 
         call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
     }
-    else if (has_shading_normals && !has_tex_coords)
+    else if (use_shading_normals && !use_textures)
     {
         auto kparams = make_kernel_params(
                 normals_per_vertex_binding{},
@@ -79,7 +79,7 @@ void render_plastic_cpp(
 
         call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
     }
-    else if (!has_shading_normals && has_tex_coords)
+    else if (!use_shading_normals && use_textures)
     {
         auto kparams = make_kernel_params(
                 normals_per_face_binding{},
@@ -99,7 +99,7 @@ void render_plastic_cpp(
 
         call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
     }
-    else if (!has_shading_normals && !has_tex_coords)
+    else if (!use_shading_normals && !use_textures)
     {
         auto kparams = make_kernel_params(
                 normals_per_face_binding{},
