@@ -206,10 +206,7 @@ inline auto intersect(
         Intersector&        isect,
         Cond                update_cond = Cond()
         )
-    -> hit_record_bvh<
-        basic_ray<T>,
-        decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
-        >
+    -> decltype(intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<T>::max(), update_cond))
 {
     return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<T>::max(), update_cond);
 }
@@ -228,10 +225,7 @@ inline auto intersect(
         BVH const&          b,
         Cond                update_cond = Cond()
         )
-    -> hit_record_bvh<
-        basic_ray<T>,
-        decltype( intersect(ray, std::declval<typename BVH::primitive_type>()) )
-        >
+    -> decltype(intersect<detail::ClosestHit>(ray, b, std::declval<default_intersector&>(), numeric_limits<T>::max(), update_cond))
 {
     default_intersector isect;
     return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<T>::max(), update_cond);

@@ -152,6 +152,54 @@ template <
     >
 VSNRAY_FUNC
 inline auto unpack(
+        hit_record_bvh_inst<basic_ray<FloatT>, Base> const& hr
+        )
+    -> array<
+            hit_record_bvh_inst<ray, typename UnpackedBase::value_type>,
+            num_elements<FloatT>::value
+            >
+{
+    using int_array        = aligned_array_t<int_type_t<FloatT>>;
+    using scalar_base_type = typename UnpackedBase::value_type;
+
+    auto base = simd::unpack(static_cast<Base const&>(hr));
+
+    int_array primitive_list_index;
+    store(primitive_list_index, hr.primitive_list_index);
+
+    array<
+        hit_record_bvh_inst<ray, scalar_base_type>,
+        num_elements<FloatT>::value
+        > result;
+
+    int_array inst_id = {};
+    store(inst_id, hr.inst_id);
+
+    auto transform_inv = unpack(hr.transform_inv);
+
+    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    {
+        result[i] = hit_record_bvh_inst<ray, scalar_base_type>(
+                hit_record_bvh<basic_ray<float>, scalar_base_type>(
+                        scalar_base_type(base[i]),
+                        primitive_list_index[i]
+                        ),
+                inst_id[i],
+                transform_inv[i]
+                );
+    }
+
+    return result;
+}
+
+template <
+    typename FloatT,
+    typename Base,
+    typename UnpackedBase = decltype(unpack(Base{})),
+    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
+    >
+VSNRAY_FUNC
+inline auto unpack(
         hit_record_bvh<basic_ray<FloatT>, Base> const& hr
         )
     -> array<
@@ -179,48 +227,6 @@ inline auto unpack(
                 primitive_list_index[i]
                 );
     }
-    return result;
-}
-
-template <
-    typename FloatT,
-    typename Base,
-    typename UnpackedBase = decltype(unpack(Base{})),
-    typename = typename std::enable_if<is_simd_vector<FloatT>::value>::type
-    >
-VSNRAY_FUNC
-inline auto unpack(
-        hit_record_bvh_inst<basic_ray<FloatT>, Base> const& hr
-        )
-    -> array<
-            hit_record_bvh_inst<ray, typename UnpackedBase::value_type>,
-            num_elements<FloatT>::value
-            >
-{
-    using int_array        = aligned_array_t<int_type_t<FloatT>>;
-    using scalar_base_type = typename UnpackedBase::value_type;
-
-    auto base = simd::unpack(static_cast<hit_record_bvh<basic_ray<FloatT>, Base> const&>(hr));
-
-    array<
-        hit_record_bvh_inst<ray, scalar_base_type>,
-        num_elements<FloatT>::value
-        > result;
-
-    int_array inst_id = {};
-    store(inst_id, hr.inst_id);
-
-    auto transform_inv = unpack(hr.transform_inv);
-
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
-    {
-        result[i] = hit_record_bvh_inst<ray, scalar_base_type>(
-                hit_record_bvh<basic_ray<float>, scalar_base_type>(base[i]),
-                inst_id[i],
-                transform_inv[i]
-                );
-    }
-
     return result;
 }
 
