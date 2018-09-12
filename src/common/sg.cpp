@@ -167,7 +167,7 @@ struct flatten_visitor : node_visitor
     {
         mat4 prev = current_transform;
 
-        current_transform = t.matrix() * current_transform;
+        current_transform = current_transform * t.matrix();
 
         node_visitor::apply(t);
 
