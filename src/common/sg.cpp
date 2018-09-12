@@ -46,6 +46,16 @@ std::vector<node::node_pointer> const& node::children() const
     return children_;
 }
 
+uint64_t& node::flags()
+{
+    return flags_;
+}
+
+uint64_t const& node::flags() const
+{
+    return flags_;
+}
+
 void node::add_child(node_pointer child)
 {
     child->parents_.push_back(shared_from_this());

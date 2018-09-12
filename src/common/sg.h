@@ -6,6 +6,7 @@
 #ifndef VSNRAY_COMMON_SG_H
 #define VSNRAY_COMMON_SG_H 1
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -100,6 +101,9 @@ public:
     std::vector<node_pointer>& children();
     std::vector<node_pointer> const& children() const;
 
+    uint64_t& flags();
+    uint64_t const& flags() const;
+
     void add_child(node_pointer child);
 
 protected:
@@ -107,6 +111,8 @@ protected:
     std::string name_;
     std::vector<node_pointer> parents_;
     std::vector<node_pointer> children_;
+
+    uint64_t flags_ = 0;
 
 };
 
