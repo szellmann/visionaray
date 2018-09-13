@@ -37,6 +37,8 @@
 
 #endif
 
+#include <imgui.h>
+
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
@@ -286,48 +288,6 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
-// Utility for HUD rendering
-//
-
-class hud_util
-{
-public:
-
-    // Stream to buffer string that will be printed
-    std::stringstream& buffer()
-    {
-        return buffer_;
-    }
-
-    // Clear string buffer
-    void clear_buffer()
-    {
-        buffer_.str(std::string());
-    }
-
-    // Print buffer with origin at pixel (x,y)
-    void print_buffer(int x, int y)
-    {
-        glRasterPos2i(x, y);
-
-        std::string str = buffer_.str();
-
-        glColor3f(1.0f, 1.0f, 1.0f);
-
-        for (size_t i = 0; i < str.length(); ++i)
-        {
-            glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
-        }
-    }
-
-private:
-
-    std::stringstream buffer_;
-
-};
-
-
-//-------------------------------------------------------------------------------------------------
 // I/O utility for camera lookat only - not fit for the general case!
 //
 
@@ -400,75 +360,44 @@ void renderer::render_hud()
         );
 
 
-    // render
+    ImGui::NewFrame();
 
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glLoadIdentity();
-    gluOrtho2D(0, w * 2, 0, h * 2);
+    ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Settings", &show_hud);
 
-    glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
-    glLoadIdentity();
+    ImGui::Text("X: %4d", x);
+    ImGui::SameLine();
+    ImGui::Text("W: %4d", w);
+    ImGui::SameLine();
+    ImGui::Spacing();
+    ImGui::SameLine();
+    ImGui::Text("# Triangles: %zu", mod.primitives.size());
 
+    ImGui::Text("Y: %4d", y);
+    ImGui::SameLine();
+    ImGui::Text("H: %4d", h);
+    ImGui::SameLine();
+    ImGui::Spacing();
+    ImGui::SameLine();
+    ImGui::Text("# BVH Nodes/Leaves: %d/%d", num_nodes, num_leaves);
 
-    hud_util hud;
+    ImGui::Text("R: %5.2f", rgba.x);
+    ImGui::SameLine();
+    ImGui::Text("G: %5.2f", rgba.y);
+    ImGui::SameLine();
+    ImGui::Text("B: %5.2f", rgba.z);
 
-    hud.buffer() << "X: " << x;
-    hud.print_buffer(10, h * 2 - 34);
-    hud.clear_buffer();
+    ImGui::Text("FPS: %5.2f", counter.register_frame());
+    ImGui::SameLine();
+    ImGui::Spacing();
+    ImGui::SameLine();
+    ImGui::Text("SPP: %6u", std::max(1U, frame_num));
+    ImGui::SameLine();
+    ImGui::Spacing();
+    ImGui::SameLine();
+    ImGui::Text("Device: %s", rt.mode() == host_device_rt::GPU ? "GPU" : "CPU");
 
-    hud.buffer() << "Y: " << y;
-    hud.print_buffer(10, h * 2 - 68);
-    hud.clear_buffer();
-
-    hud.buffer() << "W: " << w;
-    hud.print_buffer(100, h * 2 - 34);
-    hud.clear_buffer();
-
-    hud.buffer() << "H: " << h;
-    hud.print_buffer(100, h * 2 - 68);
-    hud.clear_buffer();
-
-    hud.buffer() << std::fixed << std::setprecision(2);
-
-    hud.buffer() << "R: " << rgba.x;
-    hud.print_buffer(10, h * 2 - 102);
-    hud.clear_buffer();
-
-    hud.buffer() << "G: " << rgba.y;
-    hud.print_buffer(100, h * 2 - 102);
-    hud.clear_buffer();
-
-    hud.buffer() << "B: " << rgba.z;
-    hud.print_buffer(190, h * 2 - 102);
-    hud.clear_buffer();
-
-    hud.buffer() << "FPS: " << counter.register_frame();
-    hud.print_buffer(10, h * 2 - 136);
-    hud.clear_buffer();
-
-    hud.buffer() << "# Triangles: " << mod.primitives.size();
-    hud.print_buffer(300, h * 2 - 34);
-    hud.clear_buffer();
-
-    hud.buffer() << "# BVH Nodes/Leaves: " << num_nodes << '/' << num_leaves;
-    hud.print_buffer(300, h * 2 - 68);
-    hud.clear_buffer();
-
-    hud.buffer() << "SPP: " << std::max(1U, frame_num);
-    hud.print_buffer(300, h * 2 - 102);
-    hud.clear_buffer();
-
-    hud.buffer() << "Device: " << ( (rt.mode() == host_device_rt::GPU) ? "GPU" : "CPU" );
-    hud.print_buffer(300, h * 2 - 136);
-    hud.clear_buffer();
-
-
-    glPopMatrix();
-    glMatrixMode(GL_PROJECTION);
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
+    ImGui::End();
 }
 
 void renderer::on_close()

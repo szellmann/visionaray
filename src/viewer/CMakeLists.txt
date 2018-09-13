@@ -5,6 +5,9 @@ set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/CmdLine)
 set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
 set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
 
+set(IMGUI_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/imgui)
+set(IMGUI_INCLUDE_DIR ${IMGUI_DIR})
+
 if (NOT EXISTS ${CMD_LINE_DIR}/.git)
     message(SEND_ERROR "Git submodules not initialized.\nPlease run \"git submodule update --init --recursive\"")
     return()
@@ -66,6 +69,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${__VSNRAY_CONFIG_DIR})
 include_directories(${CMD_LINE_INCLUDE_DIR})
+include_directories(${IMGUI_INCLUDE_DIR})
 
 set(VIEWER_HEADERS
     call_kernel.h
