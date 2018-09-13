@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 #include <new>
+#include <set>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -124,13 +125,12 @@ struct renderer : viewer_type
     {
         using namespace support;
 
-        add_cmdline_option( cl::makeOption<std::string&>(
+        add_cmdline_option( cl::makeOption<std::set<std::string>&>(
             cl::Parser<>(),
-            "filename",
-            cl::Desc("Input file in wavefront obj format"),
+            "filenames",
+            cl::Desc("Input files in wavefront obj format"),
             cl::Positional,
-            cl::Required,
-            cl::init(this->filename)
+            cl::init(filenames)
             ) );
 
         add_cmdline_option( cl::makeOption<std::string&>(
@@ -232,7 +232,7 @@ struct renderer : viewer_type
     bool                                        show_bvh        = false;
 
 
-    std::string                                 filename;
+    std::set<std::string>                       filenames;
     std::string                                 initial_camera;
 
     model                                       mod;
@@ -718,10 +718,13 @@ int main(int argc, char** argv)
     // Load the scene
     std::cout << "Loading model...\n";
 
-    if (!rend.mod.load(rend.filename))
+    for (auto filename : rend.filenames)
     {
-        std::cerr << "Failed loading model\n";
-        return EXIT_FAILURE;
+        if (!rend.mod.load(filename))
+        {
+            std::cerr << "Failed loading model\n";
+            return EXIT_FAILURE;
+        }
     }
 
 //  timer t;
