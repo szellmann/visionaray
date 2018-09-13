@@ -5,10 +5,10 @@ Visionaray Viewer
 
 ```
 Usage:
-   vsnray-viewer [OPTIONS] filename
+   src/viewer/viewer [OPTIONS] [filenames...]
 
 Positional options:
-   filename               Input file in wavefront obj format
+   [filenames...]         Input files in wavefront obj format
 
 Options:
    -algorithm=<ARG>       Rendering algorithm:
