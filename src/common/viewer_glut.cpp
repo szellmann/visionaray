@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cassert>
+#include <cstdint>
 #include <cstdlib>
 #include <stdexcept>
 #include <string>
@@ -46,6 +48,8 @@
 
 #endif
 
+#include <imgui.h>
+
 #include "input/glut.h"
 #include "input/key_event.h"
 #include "input/keyboard.h"
@@ -61,6 +65,7 @@ struct viewer_glut::impl
     static viewer_glut*     viewer;
     static mouse::button    down_button;
     static int              win_id;
+    static GLuint           imgui_font_texture;
 
     impl(viewer_glut* instance);
 
@@ -72,6 +77,7 @@ struct viewer_glut::impl
             int width,
             int height
             );
+    void cleanup();
 
     static void close_func();
     static void display_func();
@@ -84,11 +90,16 @@ struct viewer_glut::impl
     static void reshape_func(int w, int h);
     static void special_func(int key, int, int);
     static void special_up_func(int key, int, int);
+
+    static void imgui_create_font_texture();
+    static void imgui_destroy_font_texture();
+    static void imgui_draw(ImDrawData* draw_data);
 };
 
-viewer_glut*    viewer_glut::impl::viewer       = nullptr;
-mouse::button   viewer_glut::impl::down_button  = mouse::NoButton;
-int             viewer_glut::impl::win_id       = 0;
+viewer_glut*    viewer_glut::impl::viewer             = nullptr;
+mouse::button   viewer_glut::impl::down_button        = mouse::NoButton;
+int             viewer_glut::impl::win_id             = 0;
+GLuint          viewer_glut::impl::imgui_font_texture = 0;
 
 
 //-------------------------------------------------------------------------------------------------
@@ -98,6 +109,194 @@ int             viewer_glut::impl::win_id       = 0;
 viewer_glut::impl::impl(viewer_glut* instance)
 {
     viewer_glut::impl::viewer = instance;
+}
+
+
+void viewer_glut::impl::imgui_create_font_texture()
+{
+    ImGuiIO& io = ImGui::GetIO();
+
+    unsigned char* pixels = nullptr;
+    int width = 0;
+    int height = 0;
+    io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
+
+    GLint prev_tex = 0;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &prev_tex);
+    glGenTextures(1, &imgui_font_texture);
+    glBindTexture(GL_TEXTURE_2D, imgui_font_texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0); 
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+    io.Fonts->TexID = reinterpret_cast<ImTextureID>(static_cast<intptr_t>(imgui_font_texture));
+
+    glBindTexture(GL_TEXTURE_2D, prev_tex);
+}
+
+void viewer_glut::impl::imgui_destroy_font_texture()
+{
+    assert(imgui_font_texture);
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    glDeleteTextures(1, &imgui_font_texture);
+    io.Fonts->TexID = nullptr;
+    imgui_font_texture = 0;
+}
+
+void viewer_glut::impl::imgui_draw(ImDrawData* draw_data)
+{
+    ImGuiIO& io = ImGui::GetIO();
+
+    int width = static_cast<int>(draw_data->DisplaySize.x * io.DisplayFramebufferScale.x);
+    int height = static_cast<int>(draw_data->DisplaySize.y * io.DisplayFramebufferScale.y);
+
+    if (width == 0 || height == 0)
+    {
+        return;
+    }
+
+    draw_data->ScaleClipRects(io.DisplayFramebufferScale);
+
+    // Store OpenGL state
+    GLint prev_texture = 0;
+    GLint prev_polygon_mode[2] = {};
+    GLint prev_viewport[4] = {};
+    GLint prev_scissor_box[4] = {};
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, &prev_texture);
+    glGetIntegerv(GL_POLYGON_MODE, prev_polygon_mode);
+    glGetIntegerv(GL_VIEWPORT, prev_viewport);
+    glGetIntegerv(GL_SCISSOR_BOX, prev_scissor_box); 
+
+    glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TRANSFORM_BIT);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_COLOR_MATERIAL);
+    glEnable(GL_SCISSOR_TEST);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glEnable(GL_TEXTURE_2D);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    //glUseProgram(0);
+
+    glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(
+        draw_data->DisplayPos.x,
+        draw_data->DisplayPos.x + draw_data->DisplaySize.x,
+        draw_data->DisplayPos.y + draw_data->DisplaySize.y,
+        draw_data->DisplayPos.y,
+        -1.0f,
+        1.0f
+        );
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    ImVec2 pos = draw_data->DisplayPos;
+    for (int n = 0; n < draw_data->CmdListsCount; ++n)
+    {
+        ImDrawList const* cmd_list = draw_data->CmdLists[n];
+        ImDrawVert const* vtx_buffer = cmd_list->VtxBuffer.Data;
+        ImDrawIdx const* idx_buffer = cmd_list->IdxBuffer.Data;
+
+        glVertexPointer(
+            2,
+            GL_FLOAT,
+            sizeof(ImDrawVert),
+            static_cast<GLvoid const*>(reinterpret_cast<char const*>(vtx_buffer) + IM_OFFSETOF(ImDrawVert, pos))
+            );
+
+        glTexCoordPointer(
+            2,
+            GL_FLOAT,
+            sizeof(ImDrawVert),
+            static_cast<GLvoid const*>(reinterpret_cast<char const*>(vtx_buffer) + IM_OFFSETOF(ImDrawVert, uv))
+            );
+
+        glColorPointer(
+            4,
+            GL_UNSIGNED_BYTE,
+            sizeof(ImDrawVert),
+            static_cast<GLvoid const*>(reinterpret_cast<char const*>(vtx_buffer) + IM_OFFSETOF(ImDrawVert, col))
+            );
+
+        for (int i = 0; i < cmd_list->CmdBuffer.Size; ++i)
+        {
+            ImDrawCmd const* pcmd = &cmd_list->CmdBuffer[i];
+
+            if (pcmd->UserCallback)
+            {
+                pcmd->UserCallback(cmd_list, pcmd);
+            }
+            else
+            {
+                ImVec4 clip_rect(
+                    pcmd->ClipRect.x - pos.x,
+                    pcmd->ClipRect.y - pos.y,
+                    pcmd->ClipRect.z - pos.x,
+                    pcmd->ClipRect.w - pos.y
+                    );
+
+                if (clip_rect.x < width && clip_rect.y < height && clip_rect.z >= 0.0f && clip_rect.w >= 0.0f)
+                {
+                    glScissor(
+                        static_cast<int>(clip_rect.x),
+                        static_cast<int>(width - clip_rect.w),
+                        static_cast<int>(clip_rect.z - clip_rect.x),
+                        static_cast<int>(clip_rect.w - clip_rect.y)
+                        );
+
+                    glBindTexture(
+                        GL_TEXTURE_2D,
+                        static_cast<GLuint>(reinterpret_cast<intptr_t>(pcmd->TextureId))
+                        );
+
+                    glDrawElements(
+                        GL_TRIANGLES,
+                        static_cast<GLsizei>(pcmd->ElemCount),
+                        sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT,
+                        idx_buffer
+                        );
+                }
+            }
+
+            idx_buffer += pcmd->ElemCount;
+        }
+    }
+
+    // Restore OpenGL state
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glBindTexture(GL_TEXTURE_2D, static_cast<GLuint>(prev_texture));
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glPopAttrib();
+    glPolygonMode(GL_FRONT, static_cast<GLenum>(prev_polygon_mode[0]));
+    glPolygonMode(GL_BACK,  static_cast<GLenum>(prev_polygon_mode[1]));
+    glViewport(
+        prev_viewport[0],
+        prev_viewport[1],
+        static_cast<GLsizei>(prev_viewport[2]),
+        static_cast<GLsizei>(prev_viewport[3])
+        );
+    glScissor(
+        prev_scissor_box[0],
+        prev_scissor_box[1],
+        static_cast<GLsizei>(prev_scissor_box[2]),
+        static_cast<GLsizei>(prev_scissor_box[3])
+        );
 }
 
 
@@ -126,6 +325,35 @@ void viewer_glut::impl::init(
         glutFullScreen();
     }
 
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+
+    imgui_create_font_texture();
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    io.KeyMap[ImGuiKey_Tab]         = '\t';
+    io.KeyMap[ImGuiKey_LeftArrow]   = 256 + GLUT_KEY_LEFT;
+    io.KeyMap[ImGuiKey_RightArrow]  = 256 + GLUT_KEY_RIGHT;
+    io.KeyMap[ImGuiKey_UpArrow]     = 256 + GLUT_KEY_UP;
+    io.KeyMap[ImGuiKey_DownArrow]   = 256 + GLUT_KEY_DOWN;
+    io.KeyMap[ImGuiKey_PageUp]      = 256 + GLUT_KEY_PAGE_UP;
+    io.KeyMap[ImGuiKey_PageDown]    = 256 + GLUT_KEY_PAGE_DOWN;
+    io.KeyMap[ImGuiKey_Home]        = 256 + GLUT_KEY_HOME;
+    io.KeyMap[ImGuiKey_End]         = 256 + GLUT_KEY_END;
+    io.KeyMap[ImGuiKey_Insert]      = 256 + GLUT_KEY_INSERT;
+    io.KeyMap[ImGuiKey_Delete]      = 127;
+    io.KeyMap[ImGuiKey_Backspace]   = 8;
+    io.KeyMap[ImGuiKey_Space]       = ' ';
+    io.KeyMap[ImGuiKey_Enter]       = 13;
+    io.KeyMap[ImGuiKey_Escape]      = 27;
+    io.KeyMap[ImGuiKey_A]           = 'A';
+    io.KeyMap[ImGuiKey_C]           = 'C';
+    io.KeyMap[ImGuiKey_V]           = 'V';
+    io.KeyMap[ImGuiKey_X]           = 'X';
+    io.KeyMap[ImGuiKey_Y]           = 'Y';
+    io.KeyMap[ImGuiKey_Z]           = 'Z';
+
     glutDisplayFunc(display_func);
     glutIdleFunc(idle_func);
     glutKeyboardFunc(keyboard_func);
@@ -151,6 +379,11 @@ void viewer_glut::impl::init(
     }
 }
 
+void viewer_glut::impl::cleanup()
+{
+    imgui_destroy_font_texture();
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Dispatch to virtual event handlers
@@ -164,6 +397,9 @@ void viewer_glut::impl::close_func()
 void viewer_glut::impl::display_func()
 {
     viewer->on_display();
+
+    ImGui::Render();
+    imgui_draw(ImGui::GetDrawData());
 
     glutSwapBuffers();
 }
@@ -191,6 +427,9 @@ void viewer_glut::impl::keyboard_up_func(unsigned char key, int, int)
 
 void viewer_glut::impl::motion_func(int x, int y)
 {
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos = ImVec2(static_cast<float>(x), static_cast<float>(y));
+
     mouse::pos p = { x, y };
 
     mouse_event event(
@@ -205,6 +444,22 @@ void viewer_glut::impl::motion_func(int x, int y)
 
 void viewer_glut::impl::mouse_func(int button, int state, int x, int y)
 {
+    // imgui
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos = ImVec2(static_cast<float>(x), static_cast<float>(y));
+    int imgui_button = button == GLUT_LEFT_BUTTON ? 0 : button == GLUT_RIGHT_BUTTON ? 1 : 2;
+
+    if (state == GLUT_DOWN)
+    {
+        io.MouseDown[imgui_button] = true;
+    }
+    else if (state == GLUT_UP)
+    {
+        io.MouseDown[imgui_button] = false;
+    }
+
+
+    // viewer
     mouse::pos p = { x, y };
 
     auto b = mouse::map_glut_button(button);
@@ -224,6 +479,12 @@ void viewer_glut::impl::mouse_func(int button, int state, int x, int y)
 
 void viewer_glut::impl::passive_motion_func(int x, int y)
 {
+    // imgui
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos = ImVec2(static_cast<float>(x), static_cast<float>(y));
+
+
+    // viewer
     mouse::pos p = { x, y };
 
     mouse_event event(
@@ -238,6 +499,12 @@ void viewer_glut::impl::passive_motion_func(int x, int y)
 
 void viewer_glut::impl::reshape_func(int w, int h)
 {
+    // imgui
+    ImGuiIO& io = ImGui::GetIO();
+    io.DisplaySize = ImVec2(static_cast<float>(w), static_cast<float>(h));
+
+
+    // viewer
     viewer->on_resize(w, h);
 }
 
@@ -331,6 +598,7 @@ void viewer_glut::quit()
     glutLeaveMainLoop();
     viewer_base::quit();
 #else
+    impl_->cleanup();
     viewer_base::quit();
     exit(EXIT_SUCCESS); // TODO
 #endif
