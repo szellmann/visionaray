@@ -445,6 +445,7 @@ void depth_compositor::display_color_texture() const
 {
 #if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
+    GLint array_buffer = 0;
     GLint active_texture = GL_TEXTURE0;
     GLuint bound_texture = 0;
     GLboolean blend = glIsEnabled(GL_BLEND);
@@ -452,6 +453,7 @@ void depth_compositor::display_color_texture() const
     GLenum dfactor_rgb = GL_ONE_MINUS_SRC_ALPHA;
     GLenum sfactor_alpha = GL_ONE;
     GLenum dfactor_alpha = GL_ONE_MINUS_SRC_ALPHA;
+    glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer);
     glGetIntegerv(GL_ACTIVE_TEXTURE, &active_texture);
     glGetIntegerv(GL_TEXTURE_BINDING_2D, reinterpret_cast<GLint*>(&bound_texture));
     glGetIntegerv(GL_BLEND_SRC_RGB, reinterpret_cast<GLint*>(&sfactor_rgb));
@@ -482,6 +484,7 @@ void depth_compositor::display_color_texture() const
 
 
     // Restore OpenGL state
+    glBindBuffer(GL_ARRAY_BUFFER, array_buffer);
     glActiveTexture(active_texture);
     glBindTexture(GL_TEXTURE_2D, bound_texture);
     glBlendFuncSeparate(sfactor_rgb, dfactor_rgb, sfactor_alpha, dfactor_alpha);
