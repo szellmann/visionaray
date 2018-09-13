@@ -199,6 +199,9 @@ void host_device_rt::display_color_buffer() const
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // Store OpenGL state
+    GLboolean prev_srgb_enabled = glIsEnabled(GL_FRAMEBUFFER_SRGB);
+
     if (impl_->color_space == SRGB)
     {
         glEnable(GL_FRAMEBUFFER_SRGB);
@@ -226,6 +229,15 @@ void host_device_rt::display_color_buffer() const
         }
     }
 #endif
+
+    if (prev_srgb_enabled)
+    {
+        glEnable(GL_FRAMEBUFFER_SRGB);
+    }
+    else
+    {
+        glDisable(GL_FRAMEBUFFER_SRGB);
+    }
 }
 
 } // visionaray
