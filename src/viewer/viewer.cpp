@@ -405,6 +405,13 @@ void renderer::render_hud()
         clear_frame();
     }
 
+    vec3 amb = ambient.x < 0.0f ? vec3(0.0f) : ambient;
+    if (ImGui::InputFloat3("Ambient Intensity", amb.data()))
+    {
+        ambient = amb;
+        clear_frame();
+    }
+
     ImGui::End();
 }
 
