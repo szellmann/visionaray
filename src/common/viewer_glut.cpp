@@ -411,6 +411,43 @@ void viewer_glut::impl::idle_func()
 
 void viewer_glut::impl::keyboard_func(unsigned char key, int, int)
 {
+    // imgui
+    ImGuiIO& io = ImGui::GetIO();
+
+    if (key >= 32)
+    {
+        io.AddInputCharacter(key);
+    }
+
+    if (key >= 1 && key <= 26)
+    {
+        io.KeysDown[key] = io.KeysDown[key - 1 + 'a'] = io.KeysDown[key - 1 + 'A'] = true;
+    }
+    else if (key >= 'a' && key <= 'z')
+    {
+        io.KeysDown[key] = io.KeysDown[key - 'a' + 'A'] = true;
+    }
+    else if (key >= 'A' && key <= 'Z')
+    {
+        io.KeysDown[key] = io.KeysDown[key - 'A' + 'a'] = true;
+    }
+    else
+    {
+        io.KeysDown[key] = true;
+    }
+
+    int modifiers = glutGetModifiers();
+    io.KeyCtrl = (modifiers & GLUT_ACTIVE_CTRL) != 0;
+    io.KeyShift = (modifiers & GLUT_ACTIVE_SHIFT) != 0;
+    io.KeyAlt = (modifiers & GLUT_ACTIVE_ALT) != 0;
+
+    if (io.WantCaptureKeyboard)
+    {
+        return;
+    }
+
+
+    // viewer
     auto k = keyboard::map_glut_key(key);
     auto m = keyboard::map_glut_modifiers(glutGetModifiers());
 
@@ -419,6 +456,38 @@ void viewer_glut::impl::keyboard_func(unsigned char key, int, int)
 
 void viewer_glut::impl::keyboard_up_func(unsigned char key, int, int)
 {
+    // imgui
+    ImGuiIO& io = ImGui::GetIO();
+
+    if (key >= 1 && key <= 26)
+    {
+        io.KeysDown[key] = io.KeysDown[key - 1 + 'a'] = io.KeysDown[key - 1 + 'A'] = false;
+    }
+    else if (key >= 'a' && key <= 'z')
+    {
+        io.KeysDown[key] = io.KeysDown[key - 'a' + 'A'] = false;
+    }
+    else if (key >= 'A' && key <= 'Z')
+    {
+        io.KeysDown[key] = io.KeysDown[key - 'A' + 'a'] = false;
+    }
+    else
+    {
+        io.KeysDown[key] = false;
+    }
+
+    int modifiers = glutGetModifiers();
+    io.KeyCtrl = (modifiers & GLUT_ACTIVE_CTRL) != 0;
+    io.KeyShift = (modifiers & GLUT_ACTIVE_SHIFT) != 0;
+    io.KeyAlt = (modifiers & GLUT_ACTIVE_ALT) != 0;
+
+    if (io.WantCaptureKeyboard)
+    {
+        return;
+    }
+
+
+    // viewer
     auto k = keyboard::map_glut_key(key);
     auto m = keyboard::map_glut_modifiers(glutGetModifiers());
 
