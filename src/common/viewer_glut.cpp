@@ -427,9 +427,17 @@ void viewer_glut::impl::keyboard_up_func(unsigned char key, int, int)
 
 void viewer_glut::impl::motion_func(int x, int y)
 {
+    // imgui
     ImGuiIO& io = ImGui::GetIO();
     io.MousePos = ImVec2(static_cast<float>(x), static_cast<float>(y));
 
+    if (io.WantCaptureMouse)
+    {
+        return;
+    }
+
+
+    // viewer
     mouse::pos p = { x, y };
 
     mouse_event event(
@@ -482,6 +490,11 @@ void viewer_glut::impl::passive_motion_func(int x, int y)
     // imgui
     ImGuiIO& io = ImGui::GetIO();
     io.MousePos = ImVec2(static_cast<float>(x), static_cast<float>(y));
+
+    if (io.WantCaptureMouse)
+    {
+        return;
+    }
 
 
     // viewer
