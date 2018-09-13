@@ -226,6 +226,7 @@ struct renderer : viewer_type
     unsigned                                    ssaa_samples    = 1;
     algorithm                                   algo            = Simple;
     bvh_build_strategy                          builder         = Binned;
+    bool                                        use_headlight   = true;
     bool                                        show_hud        = true;
     bool                                        show_hud_ext    = true;
     bool                                        show_bvh        = false;
@@ -397,6 +398,13 @@ void renderer::render_hud()
     ImGui::SameLine();
     ImGui::Text("Device: %s", rt.mode() == host_device_rt::GPU ? "GPU" : "CPU");
 
+    ImGui::Spacing();
+
+    if (ImGui::Checkbox("Headlight", &use_headlight))
+    {
+        clear_frame();
+    }
+
     ImGui::End();
 }
 
@@ -407,13 +415,19 @@ void renderer::on_close()
 
 void renderer::on_display()
 {
-    point_light<float>& headlight = point_lights[0];
-    headlight.set_cl( vec3(1.0, 1.0, 1.0) );
-    headlight.set_kl(1.0);
-    headlight.set_position( cam.eye() );
-    headlight.set_constant_attenuation(1.0);
-    headlight.set_linear_attenuation(0.0);
-    headlight.set_quadratic_attenuation(0.0);
+    point_lights.clear();
+
+    if (use_headlight)
+    {
+        point_light<float> headlight;
+        headlight.set_cl( vec3(1.0, 1.0, 1.0) );
+        headlight.set_kl(1.0);
+        headlight.set_position( cam.eye() );
+        headlight.set_constant_attenuation(1.0);
+        headlight.set_linear_attenuation(0.0);
+        headlight.set_quadratic_attenuation(0.0);
+        point_lights.push_back(headlight);
+    }
 
     auto bounds     = mod.bbox;
     auto diagonal   = bounds.max - bounds.min;
@@ -831,9 +845,6 @@ int main(int argc, char** argv)
             rend.area_lights.push_back(light);
         }
     }
-
-    // Make room for one (head) light
-    rend.point_lights.resize(1);
 
     std::cout << "Ready\n";
 
