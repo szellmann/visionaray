@@ -170,8 +170,7 @@ inline auto intersect(
 
     basic_ray<T> transformed_ray = ray;
     transformed_ray.ori = (matrix<4, 4, T>(b.transform_inv()) * vector<4, T>(ray.ori, T(1.0))).xyz();
-    auto p2 = (matrix<4, 4, T>(b.transform_inv()) * vector<4, T>(ray.ori + ray.dir, T(1.0))).xyz();
-    transformed_ray.dir = (p2 - transformed_ray.ori);
+    transformed_ray.dir = (matrix<4, 4, T>(b.transform_inv()) * vector<4, T>(ray.dir, T(0.0))).xyz();
     // NOTE: dir is in general *not* normalized!
 
     auto hr = intersect<Traversal, MultiHitMax>(
