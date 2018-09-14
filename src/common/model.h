@@ -7,6 +7,7 @@
 #define VSNRAY_COMMON_MODEL_H 1
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include <visionaray/math/forward.h>
