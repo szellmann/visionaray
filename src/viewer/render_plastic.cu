@@ -28,7 +28,7 @@ void render_plastic_cu(
         unsigned                                          ssaa_samples
         )
 {
-    using bvh_ref = index_bvh<basic_triangle<3, float>>::bvh_ref;
+    using bvh_ref = cuda_index_bvh<basic_triangle<3, float>>::bvh_ref;
 
     thrust::device_vector<bvh_ref> primitives;
 
@@ -44,7 +44,7 @@ void render_plastic_cu(
         auto kparams = make_kernel_params(
                 normals_per_vertex_binding{},
                 thrust::raw_pointer_cast(primitives.data()),
-                thrust::raw_pointer_cast(primitives.data() + primitives.size()),
+                thrust::raw_pointer_cast(primitives.data()) + primitives.size(),
                 thrust::raw_pointer_cast(shading_normals.data()),
                 thrust::raw_pointer_cast(tex_coords.data()),
                 thrust::raw_pointer_cast(materials.data()),
@@ -64,7 +64,7 @@ void render_plastic_cu(
         auto kparams = make_kernel_params(
                 normals_per_vertex_binding{},
                 thrust::raw_pointer_cast(primitives.data()),
-                thrust::raw_pointer_cast(primitives.data() + primitives.size()),
+                thrust::raw_pointer_cast(primitives.data()) + primitives.size(),
                 thrust::raw_pointer_cast(shading_normals.data()),
                 thrust::raw_pointer_cast(materials.data()),
                 thrust::raw_pointer_cast(device_lights.data()),
