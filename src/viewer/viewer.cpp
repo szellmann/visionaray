@@ -860,7 +860,14 @@ void renderer::on_key_press(key_event const& event)
 
         if (show_bvh)
         {
-            outlines.init(host_bvhs[0]);
+            if (mod.scene_graph != nullptr)
+            {
+                outlines.init(host_top_level_bvh);
+            }
+            else
+            {
+                outlines.init(host_bvhs[0]);
+            }
         }
 
         break;
