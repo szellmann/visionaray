@@ -630,11 +630,18 @@ void renderer::render_hud()
     ImGui::SameLine();
     ImGui::Text("B: %5.2f", rgba.z);
 
-    ImGui::Text("FPS: %5.2f", counter.register_frame());
+    ImGui::Text("FPS: %6.2f", counter.register_frame());
     ImGui::SameLine();
     ImGui::Spacing();
     ImGui::SameLine();
-    ImGui::Text("SPP: %6u", std::max(1U, frame_num));
+    if (algo == Pathtracing)
+    {
+        ImGui::Text("SPP: %7u", std::max(1U, frame_num));
+    }
+    else
+    {
+        ImGui::Text("SPP: %dx SSAA", ssaa_samples);
+    }
     ImGui::SameLine();
     ImGui::Spacing();
     ImGui::SameLine();
@@ -908,7 +915,7 @@ void renderer::on_key_press(key_event const& event)
         {
             ssaa_samples = 1;
         }
-        std::cout << "Use " << ssaa_samples << "x supersampling anti-aliasing\n";
+
         if (algo != Pathtracing)
         {
             counter.reset();
