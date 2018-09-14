@@ -5,6 +5,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "moana_loader.h"
 #include "model.h"
 #include "obj_loader.h"
 #include "ply_loader.h"
@@ -13,11 +14,22 @@
 // Helpers
 //
 
-enum model_type { OBJ, PLY, Unknown };
+enum model_type { Moana, OBJ, PLY, Unknown };
 
 static model_type get_type(std::string const& filename)
 {
     boost::filesystem::path p(filename);
+
+
+    // Moana (json files)
+    // TODO: check here if this is really a "moana" file
+
+    static const std::string moana_extensions[] = { ".json" };
+
+    if (std::find(moana_extensions, moana_extensions + 1, p.extension()) != moana_extensions + 1)
+    {
+        return Moana;
+    }
 
 
     // OBJ
@@ -55,6 +67,10 @@ bool model::load(std::string const& filename)
     {
         switch (mt)
         {
+        case Moana:
+            load_moana(filename, *this);
+            return true;
+
         case OBJ:
             load_obj(filename, *this);
             return true;

@@ -150,6 +150,7 @@ set(COMMON_HEADERS
     jpeg_image.h
     make_unique.h
     make_materials.h
+    moana_loader.h
     model.h
     obj_grammar.h
     obj_loader.h
@@ -185,6 +186,7 @@ set(COMMON_SOURCES
     image.cpp
     image_base.cpp
     jpeg_image.cpp
+    moana_loader.cpp
     model.cpp
     obj_grammar.cpp
     obj_loader.cpp
