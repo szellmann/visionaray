@@ -507,14 +507,6 @@ void renderer::build_bvhs()
     }
     else
     {
-        unsigned mesh_count = 0;
-        unsigned inst_count = 0;
-
-        //count_mesh_visitor count_visitor(mesh_count, inst_count);
-        //mod.scene_graph->accept(count_visitor);
-
-        //std::cout << "Counts: " << mesh_count << ' ' << inst_count << '\n';
-
         reset_flags_visitor reset_visitor;
         mod.scene_graph->accept(reset_visitor);
 
