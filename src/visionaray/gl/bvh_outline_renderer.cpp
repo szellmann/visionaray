@@ -51,7 +51,10 @@ void bvh_outline_renderer::frame(mat4 const& view, mat4 const& proj) const
     // Store OpenGL state
     GLint array_buffer_binding = 0;
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer_binding);
+    GLboolean depth_clamp_enabled = glIsEnabled(GL_DEPTH_CLAMP);
 
+
+    glEnable(GL_DEPTH_CLAMP);
 
     impl_->prog.enable();
 
@@ -70,6 +73,14 @@ void bvh_outline_renderer::frame(mat4 const& view, mat4 const& proj) const
 
 
     // Restore OpenGL state
+    if (depth_clamp_enabled)
+    {
+        glEnable(GL_DEPTH_CLAMP);
+    }
+    else
+    {
+        glDisable(GL_DEPTH_CLAMP);
+    }
     glBindBuffer(GL_ARRAY_BUFFER, array_buffer_binding);
 }
 
