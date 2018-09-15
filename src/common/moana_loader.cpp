@@ -30,7 +30,7 @@ namespace visionaray
 // The parent folder of the latter is the base path
 //
 
-inline std::string get_base_path(std::string const& filename)
+inline boost::filesystem::path get_base_path(std::string const& filename)
 {
     boost::filesystem::path p(filename);
 
@@ -39,7 +39,7 @@ inline std::string get_base_path(std::string const& filename)
         p = p.parent_path();
     }
 
-    return p.parent_path().string();
+    return p.parent_path();
 }
 
 
@@ -191,14 +191,14 @@ static void load_obj(
 }
 
 static void load_instanced_primitive_json_file(
-        std::string const& island_base_path,
+        boost::filesystem::path const& island_base_path,
         std::string const& filename,
         std::shared_ptr<sg::node> root,
         std::map<std::string, std::shared_ptr<sg::disney_material>>& materials
         )
 {
-    std::cout << "Load instanced primitive json file: " << (island_base_path + filename) << '\n';
-    std::ifstream stream(island_base_path + filename);
+    std::cout << "Load instanced primitive json file: " << (island_base_path / filename).string() << '\n';
+    std::ifstream stream((island_base_path / filename).string());
     if (stream.fail())
     {
         std::cerr << "Cannot open " << filename << '\n';
@@ -213,7 +213,7 @@ static void load_instanced_primitive_json_file(
         // Instance geometry
         std::string obj_file = v.first.data();
         std::vector<std::shared_ptr<sg::node>> objs;
-        load_obj(island_base_path + obj_file, materials, objs);
+        load_obj((island_base_path / obj_file).string(), materials, objs);
 
         // Instance transforms
         for (auto& t : v.second)
@@ -280,7 +280,7 @@ void load_moana(std::string const& filename, model& mod)
         return;
     }
 
-    auto island_base_path = get_base_path(filename) + boost::filesystem::path::preferred_separator;
+    boost::filesystem::path island_base_path = get_base_path(filename);
 
     if (island_base_path.empty())
     {
@@ -297,7 +297,7 @@ void load_moana(std::string const& filename, model& mod)
     // matFile
     std::string mat_file = pt.get<std::string>("matFile");
     std::map<std::string, std::shared_ptr<sg::disney_material>> materials;
-    load_material_file(island_base_path + mat_file, materials);
+    load_material_file((island_base_path / mat_file).string(), materials);
 
 
     // transformMatrix
@@ -316,7 +316,7 @@ void load_moana(std::string const& filename, model& mod)
     std::string geom_obj_file = pt.get<std::string>("geomObjFile");
     std::string usemtl = "";
     std::vector<std::shared_ptr<sg::node>> objs;
-    load_obj(island_base_path + geom_obj_file, materials, objs);
+    load_obj((island_base_path / geom_obj_file).string(), materials, objs);
     for (auto obj : objs)
     {
         base_transform->add_child(obj);
