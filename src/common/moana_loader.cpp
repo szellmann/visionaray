@@ -314,7 +314,6 @@ void load_moana(std::string const& filename, model& mod)
 
     // geomObjFile
     std::string geom_obj_file = pt.get<std::string>("geomObjFile");
-    std::string usemtl = "";
     std::vector<std::shared_ptr<sg::node>> objs;
     load_obj((island_base_path / geom_obj_file).string(), materials, objs);
     for (auto obj : objs)
@@ -333,7 +332,6 @@ void load_moana(std::string const& filename, model& mod)
             if (type == "archive")
             {
                 std::string inst_json_file = v.second.get<std::string>("jsonFile");
-                std::string usemtl = "";
                 load_instanced_primitive_json_file(island_base_path, inst_json_file, base_transform, materials);
             }
         }
