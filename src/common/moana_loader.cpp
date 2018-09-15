@@ -324,16 +324,24 @@ void load_moana(std::string const& filename, model& mod)
 
 
     // instancedPrimitiveJsonFiles
-    for (auto& v : pt.get_child("instancedPrimitiveJsonFiles"))
+    try
     {
-        std::string type = v.second.get<std::string>("type");
-
-        if (type == "archive")
+        for (auto& v : pt.get_child("instancedPrimitiveJsonFiles"))
         {
-            std::string inst_json_file = v.second.get<std::string>("jsonFile");
-            std::string usemtl = "";
-            load_instanced_primitive_json_file(island_base_path, inst_json_file, base_transform, materials);
+            std::string type = v.second.get<std::string>("type");
+
+            if (type == "archive")
+            {
+                std::string inst_json_file = v.second.get<std::string>("jsonFile");
+                std::string usemtl = "";
+                load_instanced_primitive_json_file(island_base_path, inst_json_file, base_transform, materials);
+            }
         }
+    }
+    catch (...)
+    {
+        // Nothing to handle, just no instancedPrimitiveJsonFiles present
+        // (property_tree.get_child() throws)
     }
 
 
