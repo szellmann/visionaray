@@ -360,9 +360,45 @@ void load_moana(std::string const& filename, model& mod)
                 assert(i <= 16);
             }
 
-            for (auto c : base_transform->children())
+            // Check if the copy has its own geomObjFile
+            // (i.e. only texture and material are copied)
+            try
             {
-                transform->add_child(c);
+                std::string geom_obj_file = v.second.get<std::string>("geomObjFile");
+                std::vector<std::shared_ptr<sg::node>> objs;
+                load_obj((island_base_path / geom_obj_file).string(), materials, objs);
+                for (auto obj : objs)
+                {
+                    transform->add_child(obj);
+                }
+            }
+            catch (...)
+            {
+                // Rather the default case, add the top level
+                // json file's geomObjFile content as an instance
+                for (auto c : base_transform->children())
+                {
+                    transform->add_child(c);
+                }
+            }
+
+            // Copies may also have their own instancedPrimitiveJsonFiles
+            try
+            {
+                for (auto& item : v.second.get_child("instancedPrimitiveJsonFiles"))
+                {
+                    std::string type = item.second.get<std::string>("type");
+
+                    if (type == "archive")
+                    {
+                        std::string inst_json_file = item.second.get<std::string>("jsonFile");
+                        load_instanced_primitive_json_file(island_base_path, inst_json_file, transform, materials);
+                    }
+                }
+            }
+            catch (...)
+            {
+                // But they don't have to
             }
         }
     }
