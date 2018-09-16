@@ -299,11 +299,10 @@ void load_moana(std::string const& filename, model& mod)
     std::map<std::string, std::shared_ptr<sg::disney_material>> materials;
     load_material_file((island_base_path / mat_file).string(), materials);
 
-
-    // transformMatrix
     auto base_transform = std::make_shared<sg::transform>();
     root->add_child(base_transform);
 
+    // transformMatrix
     int i = 0;
     for (auto& item : pt.get_child("transformMatrix"))
     {
@@ -313,12 +312,19 @@ void load_moana(std::string const& filename, model& mod)
 
 
     // geomObjFile
-    std::string geom_obj_file = pt.get<std::string>("geomObjFile");
-    std::vector<std::shared_ptr<sg::node>> objs;
-    load_obj((island_base_path / geom_obj_file).string(), materials, objs);
-    for (auto obj : objs)
+    try
     {
-        base_transform->add_child(obj);
+        std::string geom_obj_file = pt.get<std::string>("geomObjFile");
+        std::vector<std::shared_ptr<sg::node>> objs;
+        load_obj((island_base_path / geom_obj_file).string(), materials, objs);
+        for (auto obj : objs)
+        {
+            base_transform->add_child(obj);
+        }
+    }
+    catch (...)
+    {
+        // No geomObjFile
     }
 
 
@@ -338,8 +344,7 @@ void load_moana(std::string const& filename, model& mod)
     }
     catch (...)
     {
-        // Nothing to handle, just no instancedPrimitiveJsonFiles present
-        // (property_tree.get_child() throws)
+        // No instancedPrimitiveJsonFiles
     }
 
 
@@ -372,7 +377,7 @@ void load_moana(std::string const& filename, model& mod)
             }
             catch (...)
             {
-                // Rather the default case, add the top level
+                // No. Rather the default case, add the top level
                 // json file's geomObjFile content as an instance
                 for (auto c : base_transform->children())
                 {
@@ -402,8 +407,7 @@ void load_moana(std::string const& filename, model& mod)
     }
     catch (...)
     {
-        // Nothing to handle, just no instancedCopies present
-        // (property_tree.get_child() throws)
+        // No instancedCopies
     }
 
 
