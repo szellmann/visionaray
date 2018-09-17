@@ -267,12 +267,15 @@ void load_material_file(
 
         std::shared_ptr<sg::disney_material> mat = std::make_shared<sg::disney_material>();
 
-        int i = 0;
-        rapidjson::Value const& bc = entry["baseColor"];
-        for (auto& item : bc.GetArray())
+        if (entry.HasMember("baseColor"))
         {
-            mat->base_color[i++] = item.GetFloat();
-            assert(i <= 4);
+            int i = 0;
+            rapidjson::Value const& bc = entry["baseColor"];
+            for (auto& item : bc.GetArray())
+            {
+                mat->base_color[i++] = item.GetFloat();
+                assert(i <= 4);
+            }
         }
 
         materials.insert({ material_name, mat });
