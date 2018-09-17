@@ -78,6 +78,9 @@ set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
 set(IMGUI_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/imgui)
 set(IMGUI_INCLUDE_DIR ${IMGUI_DIR})
 
+set(RAPID_JSON_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/rapidjson)
+set(RAPID_JSON_INCLUDE_DIR ${RAPID_JSON_DIR}/include)
+
 set(TINYPLY_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/tinyply)
 set(TINYPLY_INCLUDE_DIR ${TINYPLY_DIR}/source)
 
@@ -110,6 +113,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${CMD_LINE_INCLUDE_DIR})
 include_directories(${IMGUI_INCLUDE_DIR})
+include_directories(${RAPID_JSON_INCLUDE_DIR})
 include_directories(${TINYPLY_INCLUDE_DIR})
 
 set(CMAKE_AUTOMOC ON)
