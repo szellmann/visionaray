@@ -98,6 +98,7 @@ struct obj_grammar
     // obj rules
 
     boost::spirit::qi::rule<It>                   r_comment;
+    boost::spirit::qi::rule<It, sref_t(), skip_t> r_g;
     boost::spirit::qi::rule<It, sref_t(), skip_t> r_mtllib;
     boost::spirit::qi::rule<It, sref_t(), skip_t> r_usemtl;
 

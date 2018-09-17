@@ -48,6 +48,7 @@ obj_grammar::obj_grammar()
     , r_map_kd("map_Kd" >> r_text_to_eol >> qi::eol)
     , r_illum("illum" >> qi::int_ >> qi::eol)
     , r_comment("#" >> r_text_to_eol >> qi::eol)
+    , r_g("g" >> r_text_to_eol >> qi::eol)
     , r_mtllib("mtllib" >> r_text_to_eol >> qi::eol)
     , r_usemtl("usemtl" >> r_text_to_eol >> qi::eol)
     , r_v("v" >> qi::float_ >> qi::float_ >> qi::float_ >> -qi::float_ >> qi::eol // TODO: mind w

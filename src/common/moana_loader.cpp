@@ -135,6 +135,7 @@ static void load_obj(
 
     string_ref comment;
     string_ref mtl_file;
+    string_ref group_name;
     string_ref mtl_name;
 
     std::shared_ptr<sg::surface_properties> surf = nullptr;
@@ -143,14 +144,22 @@ static void load_obj(
     while (it != text.cend())
     {
         faces.clear();
-        if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
+        if ( qi::phrase_parse(it, text.cend(), grammar.r_g, qi::blank, group_name) )
         {
-            objs.push_back(std::make_shared<sg::surface_properties>());
-            objs.back()->add_child(std::make_shared<sg::triangle_mesh>());
+            if (group_name != "default")
+            {
+                objs.push_back(std::make_shared<sg::surface_properties>());
+                objs.back()->add_child(std::make_shared<sg::triangle_mesh>());
 
-            surf = std::dynamic_pointer_cast<sg::surface_properties>(objs.back());
-            tm = std::dynamic_pointer_cast<sg::triangle_mesh>(surf->children().back());
+                surf = std::dynamic_pointer_cast<sg::surface_properties>(objs.back());
+                tm = std::dynamic_pointer_cast<sg::triangle_mesh>(surf->children().back());
 
+                // Store group name to later retrieve texture file from
+                surf->name() = std::string(group_name.begin(), group_name.length());
+            }
+        }
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
+        {
             std::string usemtl = mtl_name.to_string();
             auto it = materials.find(usemtl);
             if (it != materials.end())
