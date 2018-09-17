@@ -315,10 +315,13 @@ void load_moana(std::string const& filename, model& mod)
     // transformMatrix
     int i = 0;
     rapidjson::Value const& tm = doc["transformMatrix"];
-    for (auto& item : tm.GetArray())
+    if (tm.IsArray())
     {
-        base_transform->matrix().data()[i++] = item.GetFloat();
-        assert(i <= 16);
+        for (auto& item : tm.GetArray())
+        {
+            base_transform->matrix().data()[i++] = item.GetFloat();
+            assert(i <= 16);
+        }
     }
 
 
