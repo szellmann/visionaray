@@ -427,11 +427,24 @@ void load_obj(std::string const& filename, model& mod)
                     }
                 }
 
-                // if no texture was loaded, insert an empty dummy
+                // if no texture was loaded, insert a dummy
                 if (mod.textures.size() < mod.materials.size())
                 {
-                    tex_type::ref_type tex(0, 0);
-                    mod.textures.push_back(tex);
+                    tex_type tex(1, 1);
+                    tex.set_address_mode(Wrap);
+                    tex.set_filter_mode(Nearest);
+
+                    vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
+                    tex.reset(&dummy_texel);
+
+                    mod.texture_map.insert(std::make_pair("null", std::move(tex)));
+
+                    // Maybe a "null" texture was already present and thus not inserted
+                    //  ==> find the one that was already inserted
+                    auto it = mod.texture_map.find("null");
+
+                    // Insert a ref
+                    mod.textures.push_back(tex_type::ref_type(it->second));
                 }
 
                 assert( mod.textures.size() == mod.materials.size() );

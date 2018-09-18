@@ -396,7 +396,7 @@ inline typename Params::color_type get_tex_color(
     auto coord = get_tex_coord(params.tex_coords, hr, P{});
 
     auto const& tex = params.textures[hr.geom_id];
-    return tex.width() > 0 ? C(visionaray::tex1D(tex, coord)) : C(1.0);
+    return C(visionaray::tex1D(tex, coord));
 }
 
 template <typename HR, typename Params>
@@ -413,9 +413,7 @@ inline typename Params::color_type get_tex_color(
     auto coord = get_tex_coord(params.tex_coords, hr, P{});
 
     auto const& tex = params.textures[hr.geom_id];
-    return tex.width() > 0 && tex.height() > 0
-            ? C(visionaray::tex2D(tex, coord))
-            : C(1.0);
+    return C(visionaray::tex2D(tex, coord));
 }
 
 template <typename HR, typename Params>
@@ -432,9 +430,7 @@ inline typename Params::color_type get_tex_color(
     auto coord = get_tex_coord(params.tex_coords, hr, P{});
 
     auto const& tex = params.textures[hr.geom_id];
-    return tex.width() > 0 && tex.height() > 0 && tex.depth() > 0
-            ? C(visionaray::tex3D(tex, coord))
-            : C(1.0);
+    return C(visionaray::tex3D(tex, coord));
 }
 
 
