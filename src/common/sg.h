@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include <visionaray/texture/detail/texture_common.h> // detail!
 #include <visionaray/math/forward.h>
 #include <visionaray/math/matrix.h>
 #include <visionaray/aligned_vector.h>
@@ -66,6 +67,11 @@ struct vertex
     vec4 color;
 };
 
+
+//-------------------------------------------------------------------------------------------------
+// Material base class
+//
+
 struct material
 {
     virtual ~material() {}
@@ -81,6 +87,52 @@ struct disney_material : material
     vec4 base_color;
     // TODO..
 };
+
+
+//-------------------------------------------------------------------------------------------------
+// Texture base class
+//
+
+struct texture
+{
+    virtual ~texture() {}
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// 2D texture class
+//
+
+template <typename T>
+class texture2d : public texture, public texture_base<T, 2>
+{
+public:
+
+    using ref_type = texture_ref_base<T, 2>;
+    using value_type = T;
+
+public:
+
+    void resize(int w, int h)
+    {
+        width_ = w;
+        height_ = h;
+    }
+
+    int width() const { return width_; }
+    int height() const { return height_; }
+
+private:
+
+    int width_;
+    int height_;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Node base class
+//
 
 class node : public std::enable_shared_from_this<node>
 {
@@ -116,6 +168,11 @@ protected:
 
 };
 
+
+//-------------------------------------------------------------------------------------------------
+// Transform node
+//
+
 class transform : public node
 {
 public:
@@ -149,11 +206,21 @@ public:
     std::shared_ptr<sg::material>& material();
     std::shared_ptr<sg::material> const& material() const;
 
+    void add_texture(std::shared_ptr<sg::texture> texture);
+
 private:
 
+    // Material
     std::shared_ptr<sg::material> material_ = nullptr;
+
+    // List of textures with user definable interpretation (e.g. bump, diffuse, roughness, etc.)
+    std::vector<std::shared_ptr<sg::texture>> textures_;
 };
 
+
+//-------------------------------------------------------------------------------------------------
+// Triangle mesh node
+//
 
 class triangle_mesh : public node
 {
@@ -169,6 +236,10 @@ public:
 
 };
 
+
+//-------------------------------------------------------------------------------------------------
+// Sphere node
+//
 
 class sphere : public node
 {

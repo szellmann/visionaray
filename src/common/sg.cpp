@@ -102,6 +102,11 @@ std::shared_ptr<material> const& surface_properties::material() const
     return material_;
 }
 
+void surface_properties::add_texture(std::shared_ptr<sg::texture> texture)
+{
+    textures_.push_back(texture);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // node_visitor
