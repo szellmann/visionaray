@@ -11,7 +11,6 @@
 
 #include "math/simd/type_traits.h"
 #include "math/array.h"
-#include "math/ray.h"
 #include "math/triangle.h"
 #include "math/vector.h"
 #include "tags.h"

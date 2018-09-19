@@ -13,9 +13,6 @@
 #include "detail/macros.h"
 #include "math/detail/math.h"
 #include "math/simd/type_traits.h"
-#include "math/intersect.h"
-#include "math/primitive.h"
-#include "math/ray.h"
 #include "math/triangle.h"
 #include "get_normal.h"
 #include "prim_traits.h"
@@ -70,7 +67,12 @@ inline auto get_shading_normal(HR const& hr, Primitive prim)
 // get_shading_normal for triangles with normals_per_vertex_binding
 //
 
-template <typename Normals, typename HR, typename T>
+template <
+    typename Normals,
+    typename HR,
+    typename T,
+    typename = typename std::enable_if<!simd::is_simd_vector<typename HR::scalar_type>::value>::type
+    >
 VSNRAY_FUNC
 inline auto get_shading_normal(
         Normals                     normals,
@@ -96,20 +98,22 @@ inline auto get_shading_normal(
 
 template <
     typename Normals,
+    typename HR,
     typename T,
-    typename U,
-    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type
     >
 VSNRAY_FUNC
-inline vector<3, T> get_shading_normal(
-        Normals                                                 normals,
-        hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
-        basic_triangle<3, U>                                    /* */,
-        normals_per_vertex_binding                              /* */
+inline auto get_shading_normal(
+        Normals                    normals,
+        HR const&                  hr,
+        basic_triangle<3, T>       /* */,
+        normals_per_vertex_binding /* */
         )
+    -> typename HR::scalar_type
 {
+    using U = typename HR::scalar_type;
     using N = typename std::iterator_traits<Normals>::value_type;
-    using float_array = simd::aligned_array_t<T>;
+    using float_array = simd::aligned_array_t<U>;
 
     auto hrs = unpack(hr);
 
@@ -130,7 +134,7 @@ inline vector<3, T> get_shading_normal(
     float_array y3;
     float_array z3;
 
-    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    for (size_t i = 0; i < simd::num_elements<U>::value; ++i)
     {
         auto nn1 = get_norm(i, 0);
         auto nn2 = get_norm(i, 1);
@@ -149,9 +153,9 @@ inline vector<3, T> get_shading_normal(
         z3[i] = nn3.z;
     }
 
-    vector<3, T> n1(x1, y1, z1);
-    vector<3, T> n2(x2, y2, z2);
-    vector<3, T> n3(x3, y3, z3);
+    vector<3, U> n1(x1, y1, z1);
+    vector<3, U> n2(x2, y2, z2);
+    vector<3, U> n3(x3, y3, z3);
 
     return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
 }

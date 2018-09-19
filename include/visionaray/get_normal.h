@@ -12,7 +12,6 @@
 
 #include "math/simd/type_traits.h"
 #include "math/plane.h"
-#include "math/ray.h"
 #include "math/sphere.h"
 #include "math/triangle.h"
 #include "math/vector.h"
