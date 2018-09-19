@@ -49,7 +49,7 @@ inline auto tex2D(Tex const& tex, vector<2, FloatT> const& coord)
 
 
 template <typename Tex, typename FloatT>
-inline auto tex3D_impl(Tex const& tex, vector<3, FloatT> const& coord)
+inline auto tex3D(Tex const& tex, vector<3, FloatT> const& coord)
     -> decltype( detail::tex3D_impl(tex, coord) )
 {
     static_assert(Tex::dimensions == 3, "Incompatible texture type");
