@@ -12,6 +12,7 @@
 
 #include "math/array.h"
 #include "texture/texture.h"
+#include "texture/texture_traits.h"
 #include "bvh.h"
 #include "generic_primitive.h"
 #include "get_color.h"
@@ -495,7 +496,7 @@ inline auto get_surface_impl(
     auto tc = get_tex_color(
                     hr,
                     params,
-                    std::integral_constant<int, Params::texture_type::dimensions>{}
+                    std::integral_constant<int, texture_dimensions<typename Params::texture_type>::value>{}
                     );
 
     return {
@@ -528,7 +529,7 @@ inline auto get_surface_impl(
     auto tc    = get_tex_color(
                         hr,
                         params,
-                        std::integral_constant<int, Params::texture_type::dimensions>{}
+                        std::integral_constant<int, texture_dimensions<typename Params::texture_type>::value>{}
                         );
 
     return {
@@ -561,7 +562,7 @@ inline auto get_surface_impl(
     auto tc    = get_tex_color(
                         hr,
                         params,
-                        std::integral_constant<int, Params::texture_type::dimensions>{}
+                        std::integral_constant<int, texture_dimensions<typename Params::texture_type>::value>{}
                         );
 
     return {
