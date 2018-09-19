@@ -6,6 +6,10 @@
 #ifndef VSNRAY_VIEWER_RENDER_H
 #define VSNRAY_VIEWER_RENDER_H 1
 
+#include <common/config.h>
+
+#include <deque>
+
 #ifdef __CUDACC__
 #include <thrust/device_vector.h>
 #endif
@@ -28,6 +32,10 @@
 
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <visionaray/detail/tbb_sched.h>
+#endif
+
+#if VSNRAY_COMMON_HAVE_PTEX
+#include <common/ptex.h>
 #endif
 
 #include "call_kernel.h" // algorithm
@@ -171,27 +179,54 @@ void render_generic_material_cu(
 
 void render_instances_cpp(
         index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
-        aligned_vector<vec3> const&                              geometric_normals,
-        aligned_vector<vec3> const&                              shading_normals,
-        aligned_vector<vec2> const&                              tex_coords,
-        aligned_vector<generic_material_t> const&                materials,
-        aligned_vector<texture_t> const&                         textures,
-        aligned_vector<generic_light_t> const&                   lights,
-        unsigned                                                 bounces,
-        float                                                    epsilon,
-        vec4                                                     bgcolor,
-        vec4                                                     ambient,
-        host_device_rt&                                          rt,
+        aligned_vector<vec3> const&                               geometric_normals,
+        aligned_vector<vec3> const&                               shading_normals,
+        aligned_vector<vec2> const&                               tex_coords,
+        aligned_vector<generic_material_t> const&                 materials,
+        aligned_vector<texture_t> const&                          textures,
+        aligned_vector<generic_light_t> const&                    lights,
+        unsigned                                                  bounces,
+        float                                                     epsilon,
+        vec4                                                      bgcolor,
+        vec4                                                      ambient,
+        host_device_rt&                                           rt,
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<basic_ray<simd::float4>>&                                sched,
+        tbb_sched<basic_ray<simd::float4>>&                       sched,
 #else
-        tiled_sched<basic_ray<simd::float4>>&                              sched,
+        tiled_sched<basic_ray<simd::float4>>&                     sched,
 #endif
-        pinhole_camera&                                          cam,
-        unsigned&                                                frame_num,
-        algorithm                                                algo,
-        unsigned                                                 ssaa_samples
+        pinhole_camera&                                           cam,
+        unsigned&                                                 frame_num,
+        algorithm                                                 algo,
+        unsigned                                                  ssaa_samples
         );
+
+#if VSNRAY_COMMON_HAVE_PTEX
+// With ptex textures
+void render_instances_ptex_cpp(
+        index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
+        aligned_vector<vec3> const&                               geometric_normals,
+        aligned_vector<vec3> const&                               shading_normals,
+        aligned_vector<ptex::face_id_t> const&                    face_ids,
+        aligned_vector<generic_material_t> const&                 materials,
+        std::deque<PtexPtr<PtexTexture>> const&                   textures,
+        aligned_vector<generic_light_t> const&                    lights,
+        unsigned                                                  bounces,
+        float                                                     epsilon,
+        vec4                                                      bgcolor,
+        vec4                                                      ambient,
+        host_device_rt&                                           rt,
+#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
+        tbb_sched<basic_ray<simd::float4>>&                       sched,
+#else
+        tiled_sched<basic_ray<simd::float4>>&                     sched,
+#endif
+        pinhole_camera&                                           cam,
+        unsigned&                                                 frame_num,
+        algorithm                                                 algo,
+        unsigned                                                  ssaa_samples
+        );
+#endif
 
 } // visionaray
 

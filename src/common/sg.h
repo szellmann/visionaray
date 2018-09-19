@@ -6,6 +6,8 @@
 #ifndef VSNRAY_COMMON_SG_H
 #define VSNRAY_COMMON_SG_H 1
 
+#include <common/config.h>
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -16,6 +18,10 @@
 #include <visionaray/math/matrix.h>
 #include <visionaray/aligned_vector.h>
 #include <visionaray/spectrum.h>
+
+#if VSNRAY_COMMON_HAVE_PTEX
+#include "ptex.h"
+#endif
 
 #define VSNRAY_SG_NODE                                                          \
     virtual void accept(node_visitor& visitor)                                  \
@@ -65,6 +71,7 @@ struct vertex
     vec3 normal;
     vec2 tex_coord;
     vec4 color;
+    int face_id;
 };
 
 
@@ -128,6 +135,32 @@ private:
     int height_;
 
 };
+
+#if VSNRAY_COMMON_HAVE_PTEX
+
+//-------------------------------------------------------------------------------------------------
+// WDAS Ptex node
+//
+
+class ptex_texture : public texture
+{
+public:
+
+    using ref_type = PtexPtr<PtexTexture>;
+
+public:
+
+    ptex_texture(PtexPtr<PtexTexture>& texture);
+
+    PtexPtr<PtexTexture> const& get() const;
+
+private:
+
+    PtexPtr<PtexTexture> texture_;
+
+};
+
+#endif // VSNRAY_COMMON_HAVE_PTEX
 
 
 //-------------------------------------------------------------------------------------------------

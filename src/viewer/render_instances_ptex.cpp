@@ -1,20 +1,26 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <common/config.h>
+
+#if VSNRAY_COMMON_HAVE_PTEX
+
 #include <visionaray/kernels.h> // make_kernel_params()
+
+#include <common/ptex.h>
 
 #include "render.h"
 
 namespace visionaray
 {
 
-void render_instances_cpp(
+void render_instances_ptex_cpp(
         index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
         aligned_vector<vec3> const&                               geometric_normals,
         aligned_vector<vec3> const&                               shading_normals,
-        aligned_vector<vec2> const&                               tex_coords,
+        aligned_vector<ptex::face_id_t> const&                    face_ids,
         aligned_vector<generic_material_t> const&                 materials,
-        aligned_vector<texture_t> const&                          textures,
+        std::deque<PtexPtr<PtexTexture>> const&                   textures,
         aligned_vector<generic_light_t> const&                    lights,
         unsigned                                                  bounces,
         float                                                     epsilon,
@@ -43,9 +49,9 @@ void render_instances_cpp(
             primitives.data(),
             primitives.data() + primitives.size(),
             geometric_normals.data(),
-            tex_coords.data(),
+            face_ids.data(),
             materials.data(),
-            textures.data(),
+            textures.begin(),
             lights.data(),
             lights.data() + lights.size(),
             bounces,
@@ -58,3 +64,5 @@ void render_instances_cpp(
 }
 
 } // visionaray
+
+#endif // VSNRAY_COMMON_HAVE_PTEX

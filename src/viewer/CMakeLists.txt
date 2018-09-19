@@ -79,6 +79,7 @@ set(VIEWER_HEADERS
 set(VIEWER_SOURCES
     render_generic_material.cpp
     render_instances.cpp
+    render_instances_ptex.cpp
     render_plastic.cpp
 )
 

@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <common/config.h>
+
 #include <cassert>
 #include <cmath>
 #include <exception>
@@ -346,6 +348,9 @@ struct build_bvhs_visitor : sg::node_visitor
             aligned_vector<vec3>& shading_normals,
             aligned_vector<vec3>& geometric_normals,
             aligned_vector<vec2>& tex_coords
+#if VSNRAY_COMMON_HAVE_PTEX
+          , aligned_vector<ptex::face_id_t>& face_ids
+#endif
             )
         : bvhs_(bvhs)
         , instance_indices_(instance_indices)
@@ -353,6 +358,9 @@ struct build_bvhs_visitor : sg::node_visitor
         , shading_normals_(shading_normals)
         , geometric_normals_(geometric_normals)
         , tex_coords_(tex_coords)
+#if VSNRAY_COMMON_HAVE_PTEX
+        , face_ids_(face_ids)
+#endif
     {
     }
 
@@ -371,17 +379,22 @@ struct build_bvhs_visitor : sg::node_visitor
     {
         unsigned prev = current_geom_id_;
 
-        if (sp.material())
+        if (sp.material() && sp.textures().size() > 0)
         {
-            auto it = std::find(materials.begin(), materials.end(), sp.material());
-            if (it == materials.end())
+            std::shared_ptr<sg::material> material = sp.material();
+            std::shared_ptr<sg::texture> texture = sp.textures()[0];
+
+            auto surf = std::make_pair(material, texture);
+
+            auto it = std::find(surfaces.begin(), surfaces.end(), surf);
+            if (it == surfaces.end())
             {
-                current_geom_id_ = static_cast<unsigned>(materials.size());
-                materials.push_back(sp.material());
+                current_geom_id_ = static_cast<unsigned>(surfaces.size());
+                surfaces.push_back(surf);
             }
             else
             {
-                current_geom_id_ = static_cast<unsigned>(std::distance(materials.begin(), it));
+                current_geom_id_ = static_cast<unsigned>(std::distance(surfaces.begin(), it));
             }
         }
 
@@ -412,6 +425,11 @@ struct build_bvhs_visitor : sg::node_visitor
                 vec2 tc2 = tm.vertices[tm.indices[i + 1]].tex_coord;
                 vec2 tc3 = tm.vertices[tm.indices[i + 2]].tex_coord;
 
+#if VSNRAY_COMMON_HAVE_PTEX
+                int fid1 = tm.vertices[tm.indices[i]].face_id;
+                int fid2 = tm.vertices[tm.indices[i + 1]].face_id;
+                int fid3 = tm.vertices[tm.indices[i + 2]].face_id;
+#endif
                 basic_triangle<3, float> tri(v1, v2 - v1, v3 - v1);
                 tri.prim_id = current_prim_id_++;
                 tri.geom_id = current_geom_id_;
@@ -427,6 +445,14 @@ struct build_bvhs_visitor : sg::node_visitor
                 tex_coords_.push_back(tc1);
                 tex_coords_.push_back(tc2);
                 tex_coords_.push_back(tc3);
+
+#if VSNRAY_COMMON_HAVE_PTEX
+                assert(fid1 == fid2 && fid1 == fid3);
+
+                face_ids_.push_back(fid1);
+
+                VSNRAY_UNUSED(fid2, fid3);
+#endif
             }
 
             // Build single bvh
@@ -445,8 +471,8 @@ struct build_bvhs_visitor : sg::node_visitor
         node_visitor::apply(tm);
     }
 
-    // List of materials to derive geom_ids from
-    std::vector<std::shared_ptr<sg::material>> materials;
+    // List of surface properties to derive geom_ids from
+    std::vector<std::pair<std::shared_ptr<sg::material>, std::shared_ptr<sg::texture>>> surfaces;
 
     // Current transform along the path
     mat4 current_transform_ = mat4::identity();
@@ -469,6 +495,10 @@ struct build_bvhs_visitor : sg::node_visitor
 
     // Texture coordinates
     aligned_vector<vec2>& tex_coords_;
+
+#if VSNRAY_COMMON_HAVE_PTEX
+    aligned_vector<ptex::face_id_t>& face_ids_;
+#endif
 
     // Assign consecutive prim ids
     unsigned current_prim_id_ = 0;
@@ -520,6 +550,9 @@ void renderer::build_bvhs()
                 mod.shading_normals, // TODO!!!
                 mod.geometric_normals,
                 mod.tex_coords
+#if VSNRAY_COMMON_HAVE_PTEX
+              , mod.ptex_tex_coords
+#endif
                 );
         mod.scene_graph->accept(build_visitor);
 
@@ -537,14 +570,28 @@ void renderer::build_bvhs()
                 );
 
 
-        for (auto& mat : build_visitor.materials)
+#if VSNRAY_COMMON_HAVE_PTEX
+        mod.ptex_textures.resize(build_visitor.surfaces.size());
+#endif
+
+        for (size_t i = 0; i < build_visitor.surfaces.size(); ++i)
         {
-            model::material_type newmat = {};
-            auto disney = std::dynamic_pointer_cast<sg::disney_material>(mat);
+            auto const& surf = build_visitor.surfaces[i];
+
+            auto disney = std::dynamic_pointer_cast<sg::disney_material>(surf.first);
             assert(disney != nullptr);
+
+            model::material_type newmat = {};
             newmat.cd = disney->base_color.xyz();
             newmat.cs = vec3(0.0f);
-            mod.materials.push_back(newmat); // TODO
+            mod.materials.emplace_back(newmat); // TODO
+
+#if VSNRAY_COMMON_HAVE_PTEX
+            auto ptex_tex = std::dynamic_pointer_cast<sg::ptex_texture>(surf.second);
+            assert(ptex_tex != nullptr);
+
+            mod.ptex_textures[i].swap(const_cast<PtexPtr<PtexTexture>&>(ptex_tex->get())); // Transfer of ownership!
+#endif
         }
 
         mod.bbox = host_top_level_bvh.node(0).get_bounds();
@@ -704,25 +751,52 @@ void renderer::on_display()
                 temp_lights.push_back(pl);
             }
 
-            render_instances_cpp(
-                    host_top_level_bvh,
-                    mod.geometric_normals,
-                    mod.shading_normals,
-                    mod.tex_coords,
-                    generic_materials,
-                    mod.textures,
-                    temp_lights,
-                    bounces,
-                    epsilon,
-                    vec4(background_color(), 1.0f),
-                    amb,
-                    rt,
-                    host_sched,
-                    cam,
-                    frame_num,
-                    algo,
-                    ssaa_samples
-                    );
+            if (mod.tex_format == model::UV)
+            {
+                render_instances_cpp(
+                        host_top_level_bvh,
+                        mod.geometric_normals,
+                        mod.shading_normals,
+                        mod.tex_coords,
+                        generic_materials,
+                        mod.textures,
+                        temp_lights,
+                        bounces,
+                        epsilon,
+                        vec4(background_color(), 1.0f),
+                        amb,
+                        rt,
+                        host_sched,
+                        cam,
+                        frame_num,
+                        algo,
+                        ssaa_samples
+                        );
+            }
+#if VSNRAY_COMMON_HAVE_PTEX
+            else if (mod.tex_format == model::Ptex)
+            {
+                render_instances_ptex_cpp(
+                        host_top_level_bvh,
+                        mod.geometric_normals,
+                        mod.shading_normals,
+                        mod.ptex_tex_coords,
+                        generic_materials,
+                        mod.ptex_textures,
+                        temp_lights,
+                        bounces,
+                        epsilon,
+                        vec4(background_color(), 1.0f),
+                        amb,
+                        rt,
+                        host_sched,
+                        cam,
+                        frame_num,
+                        algo,
+                        ssaa_samples
+                        );
+            }
+#endif
         }
         else if (area_lights.size() > 0 && algo == Pathtracing)
         {

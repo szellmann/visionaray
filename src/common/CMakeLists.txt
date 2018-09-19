@@ -12,6 +12,7 @@ find_package(GLUT REQUIRED)
 find_package(JPEG)
 find_package(OpenGL REQUIRED)
 find_package(PNG)
+find_package(Ptex)
 find_package(Threads REQUIRED)
 find_package(TIFF)
 
@@ -21,6 +22,7 @@ visionaray_use_package(GLUT)
 visionaray_use_package(JPEG)
 visionaray_use_package(OpenGL)
 visionaray_use_package(PNG)
+visionaray_use_package(Ptex)
 visionaray_use_package(Threads)
 visionaray_use_package(TIFF)
 
@@ -161,6 +163,8 @@ set(COMMON_HEADERS
     ply_loader.h
     png_image.h
     pnm_image.h
+    ptex.h
+    ptex.inl
     sg.h
     tga_image.h
     tiff_image.h

@@ -89,6 +89,22 @@ mat4 const& transform::matrix() const
 
 
 //-------------------------------------------------------------------------------------------------
+// ptex_texture
+//
+
+ptex_texture::ptex_texture(PtexPtr<PtexTexture>& texture)
+    : texture_(nullptr)
+{
+    texture_.swap(texture);
+}
+
+PtexPtr<PtexTexture> const& ptex_texture::get() const
+{
+    return texture_;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // surface_properties
 //
 

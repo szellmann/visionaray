@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <common/config.h>
+
 #include <cassert>
 #include <fstream>
 #include <iostream>
@@ -15,6 +17,10 @@
 #include <boost/utility/string_ref.hpp>
 #include <boost/filesystem.hpp>
 
+#if VSNRAY_COMMON_HAVE_PTEX
+#include <Ptexture.h>
+#endif
+
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
 
@@ -25,6 +31,23 @@
 
 namespace visionaray
 {
+
+//-------------------------------------------------------------------------------------------------
+// Remove first element from path
+//
+
+boost::filesystem::path remove_first(boost::filesystem::path const& p)
+{
+    auto parent_path = p.parent_path();
+    if (parent_path.empty())
+    {
+        return boost::filesystem::path();
+    }
+    else
+    {
+        return remove_first(parent_path) / p.filename();
+    }
+}
 
 //-------------------------------------------------------------------------------------------------
 // Extract base path from json file
@@ -59,13 +82,24 @@ static void store_faces(
         std::shared_ptr<sg::triangle_mesh>& tm,
         vertex_vector const&                vertices,
         normal_vector const&                normals,
-        face_vector const&                  faces
+        face_vector const&                  faces,
+        int                                 face_id
         )
 {
+    // Ptex is a per-face texture format. We convert into one
+    // with UVs for compatibility with Visionaray: assign simple
+    // [0..1/0..1] UVs for quads
+    vec2 tex_coords[] = {
+        vec2(0.0f, 0.0f),
+        vec2(1.0f, 0.0f),
+        vec2(1.0f, 1.0f),
+        vec2(0.0f, 1.0f)
+        };
 
     auto vertices_size = static_cast<int>(vertices.size());
     size_t last = 2;
     auto i1 = remap_index(faces[0].vertex_index, vertices_size);
+    auto tc1 = tex_coords[0];
 
     // simply construct new vertices for each obj face we encounter
     // ..too hard to keep track of v/vn combinations..
@@ -75,8 +109,9 @@ static void store_faces(
         auto i2 = remap_index(faces[last - 1].vertex_index, vertices_size);
         auto i3 = remap_index(faces[last].vertex_index, vertices_size);
 
-        // no texture coordinates
-        // ...
+        // texture coordinates
+        auto tc2 = tex_coords[last - 1];
+        auto tc3 = tex_coords[last];
 
         // normal indices
         auto normals_size = static_cast<int>(normals.size());
@@ -87,31 +122,86 @@ static void store_faces(
         tm->vertices.push_back({
             vertices[i1],
             normals[ni1],
-            vec2(0.0f), // no tex coords
-            vec4(0.0f)  // base color undefined
+            tc1,
+            vec4(0.0f),  // base color undefined
+            face_id
             });
 
         tm->vertices.push_back({
             vertices[i2],
             normals[ni2],
-            vec2(0.0f), // no tex coords
-            vec4(0.0f)  // base color undefined
+            tc2,
+            vec4(0.0f),  // base color undefined
+            face_id
             });
 
         tm->vertices.push_back({
             vertices[i3],
             normals[ni3],
-            vec2(0.0f), // no tex coords
-            vec4(0.0f)  // base color undefined
+            tc3,
+            vec4(0.0f),  // base color undefined
+            face_id
             });
 
         ++last;
     }
+
+    // Should all be quad faces for subdiv
+    assert(last == 4);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Load ptx texture
+//
+
+static std::shared_ptr<sg::ptex_texture> load_texture(
+        boost::filesystem::path const& texture_base_path,
+        std::string const& filename
+        )
+{
+    auto fn = (texture_base_path / filename).string();
+
+    if (!boost::filesystem::exists(fn))
+    {
+        return nullptr;
+    }
+
+#if VSNRAY_COMMON_HAVE_PTEX
+
+    Ptex::String error = "";
+    PtexPtr<PtexTexture> tex(PtexTexture::open(fn.c_str(), error));
+
+    if (tex == nullptr)
+    {
+        std::cerr << "Error: " << error << '\n';
+        return nullptr;
+    }
+    else
+    {
+        // sg::ptex_texture's ctor transfers ownership of texptr
+        auto tex_node = std::make_shared<sg::ptex_texture>(tex);
+
+        return tex_node;
+    }
+#else
+
+    std::cerr << "Warning: not compiled with Ptex support\n";
+
+    return nullptr;
+#endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Load obj file
+//
+
 static void load_obj(
+        boost::filesystem::path const& island_base_path,
         std::string const& filename,
         std::map<std::string, std::shared_ptr<sg::disney_material>> const& materials,
+        std::map<std::string, std::shared_ptr<sg::ptex_texture>>& textures,
         std::vector<std::shared_ptr<sg::node>>& objs
         )
 {
@@ -119,7 +209,7 @@ static void load_obj(
 
     using boost::string_ref;
 
-    boost::iostreams::mapped_file_source file(filename);
+    boost::iostreams::mapped_file_source file((island_base_path / filename).string());
 
     obj_grammar grammar;
 
@@ -141,6 +231,9 @@ static void load_obj(
     std::shared_ptr<sg::surface_properties> surf = nullptr;
     std::shared_ptr<sg::triangle_mesh> tm = nullptr;
 
+    // Face ID for ptex
+    int face_id = 0;
+
     while (it != text.cend())
     {
         faces.clear();
@@ -154,8 +247,38 @@ static void load_obj(
                 surf = std::dynamic_pointer_cast<sg::surface_properties>(objs.back());
                 tm = std::dynamic_pointer_cast<sg::triangle_mesh>(surf->children().back());
 
-                // Store group name to later retrieve texture file from
                 surf->name() = std::string(group_name.begin(), group_name.length());
+
+                std::string group = group_name.to_string();
+                auto it = textures.find(group);
+                if (it != textures.end())
+                {
+                    surf->add_texture(std::static_pointer_cast<sg::texture>(it->second));
+                }
+                else
+                {
+                    // Extract element base name from obj file path
+                    boost::filesystem::path obj_path(filename);
+                    // Remove obj file name
+                    boost::filesystem::path texture_base_path = obj_path.parent_path();
+                    // If archive, remove archives/
+                    if (texture_base_path.filename().string() == "archives")
+                    {
+                        texture_base_path = texture_base_path.parent_path();
+                    }
+                    // Remove leading obj/
+                    texture_base_path = remove_first(texture_base_path);
+                    // Combine with base path, add textures/ and Color/
+                    texture_base_path = island_base_path / "textures" / texture_base_path / "Color";
+
+                    auto tex = load_texture(texture_base_path, group + ".ptx");
+
+                    if (tex != nullptr)
+                    {
+                        textures.insert(std::make_pair(group, tex));
+                        surf->add_texture(std::static_pointer_cast<sg::texture>(tex));
+                    }
+                }
             }
         }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
@@ -175,7 +298,7 @@ static void load_obj(
         }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_face, qi::blank, faces) )
         {
-            store_faces(tm, vertices, normals, faces);
+            store_faces(tm, vertices, normals, faces, face_id++);
         }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_unhandled, qi::blank) )
         {
@@ -189,6 +312,12 @@ static void load_obj(
     for (auto obj : objs)
     {
         auto surf = std::dynamic_pointer_cast<sg::surface_properties>(obj);
+
+        if (surf->textures().size() == 0)
+        {
+            auto it = textures.find("null");
+            surf->add_texture(it->second);
+        }
 
         for (auto c : surf->children())
         {
@@ -205,7 +334,8 @@ static void load_instanced_primitive_json_file(
         boost::filesystem::path const& island_base_path,
         std::string const& filename,
         std::shared_ptr<sg::node> root,
-        std::map<std::string, std::shared_ptr<sg::disney_material>>& materials
+        std::map<std::string, std::shared_ptr<sg::disney_material>>& materials,
+        std::map<std::string, std::shared_ptr<sg::ptex_texture>>& textures
         )
 {
     std::cout << "Load instanced primitive json file: " << (island_base_path / filename).string() << '\n';
@@ -227,7 +357,7 @@ static void load_instanced_primitive_json_file(
         // Instance geometry
         std::string obj_file = it->name.GetString();
         std::vector<std::shared_ptr<sg::node>> objs;
-        load_obj((island_base_path / obj_file).string(), materials, objs);
+        load_obj(island_base_path, obj_file, materials, textures, objs);
 
         // Instance transforms
         auto entries = it->value.GetObject();
@@ -252,15 +382,18 @@ static void load_instanced_primitive_json_file(
 }
 
 void load_material_file(
+        boost::filesystem::path const& island_base_path,
         std::string const& filename,
         std::map<std::string, std::shared_ptr<sg::disney_material>>& materials
         )
 {
-    std::cout << "Load material file: " << filename << '\n';
-    std::ifstream stream(filename);
+    std::string fn = (island_base_path / filename).string();
+
+    std::cout << "Load material file: " << fn << '\n';
+    std::ifstream stream(fn);
     if (stream.fail())
     {
-        std::cerr << "Cannot open " << filename << '\n';
+        std::cerr << "Cannot open " << fn << '\n';
         return;
     }
 
@@ -284,6 +417,15 @@ void load_material_file(
             {
                 mat->base_color[i++] = item.GetFloat();
                 assert(i <= 4);
+            }
+        }
+
+        if (entry.HasMember("colorMap"))
+        {
+            std::string path = entry["colorMap"].GetString();
+
+            if (!path.empty())
+            {
             }
         }
 
@@ -319,7 +461,12 @@ void load_moana(std::string const& filename, model& mod)
     // matFile
     std::string mat_file = doc["matFile"].GetString();
     std::map<std::string, std::shared_ptr<sg::disney_material>> materials;
-    load_material_file((island_base_path / mat_file).string(), materials);
+    load_material_file(island_base_path, mat_file, materials);
+
+    // Textures, init with one empty texture
+    std::map<std::string, std::shared_ptr<sg::ptex_texture>> textures;
+    PtexPtr<PtexTexture> dummy(nullptr);
+    textures.insert(std::make_pair("null", std::make_shared<sg::ptex_texture>(dummy)));
 
     auto base_transform = std::make_shared<sg::transform>();
     root->add_child(base_transform);
@@ -342,7 +489,7 @@ void load_moana(std::string const& filename, model& mod)
     {
         std::string geom_obj_file = doc["geomObjFile"].GetString();
         std::vector<std::shared_ptr<sg::node>> objs;
-        load_obj((island_base_path / geom_obj_file).string(), materials, objs);
+        load_obj(island_base_path, geom_obj_file, materials, textures, objs);
         for (auto obj : objs)
         {
             base_transform->add_child(obj);
@@ -362,7 +509,13 @@ void load_moana(std::string const& filename, model& mod)
             if (type == "archive")
             {
                 std::string inst_json_file = entry["jsonFile"].GetString();
-                load_instanced_primitive_json_file(island_base_path, inst_json_file, base_transform, materials);
+                load_instanced_primitive_json_file(
+                        island_base_path,
+                        inst_json_file,
+                        base_transform,
+                        materials,
+                        textures
+                        );
             }
         }
     }
@@ -393,7 +546,7 @@ void load_moana(std::string const& filename, model& mod)
             {
                 std::string geom_obj_file = entry["geomObjFile"].GetString();
                 std::vector<std::shared_ptr<sg::node>> objs;
-                load_obj((island_base_path / geom_obj_file).string(), materials, objs);
+                load_obj(island_base_path, geom_obj_file, materials, textures, objs);
                 for (auto obj : objs)
                 {
                     transform->add_child(obj);
@@ -422,13 +575,20 @@ void load_moana(std::string const& filename, model& mod)
                     if (type == "archive")
                     {
                         std::string inst_json_file = entry["jsonFile"].GetString();
-                        load_instanced_primitive_json_file(island_base_path, inst_json_file, transform, materials);
+                        load_instanced_primitive_json_file(
+                                island_base_path,
+                                inst_json_file,
+                                transform,
+                                materials,
+                                textures
+                                );
                     }
                 }
             }
         }
     }
 
+    mod.tex_format = model::Ptex;
 
 #if 0
     flatten(mod, *root);std::cout << mod.primitives.size() << '\n';
