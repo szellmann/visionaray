@@ -396,6 +396,8 @@ void viewer_glut::impl::close_func()
 
 void viewer_glut::impl::display_func()
 {
+    ImGui::NewFrame();
+
     viewer->on_display();
 
     ImGui::Render();

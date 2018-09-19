@@ -650,8 +650,6 @@ void renderer::render_hud()
         );
 
 
-    ImGui::NewFrame();
-
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
     ImGui::Begin("Settings", &show_hud);
 
