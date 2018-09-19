@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "math/array.h"
-#include "texture/texture.h"
 #include "texture/texture_traits.h"
 #include "bvh.h"
 #include "generic_primitive.h"
