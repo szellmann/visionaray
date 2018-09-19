@@ -206,6 +206,9 @@ public:
     std::shared_ptr<sg::material>& material();
     std::shared_ptr<sg::material> const& material() const;
 
+    std::vector<std::shared_ptr<sg::texture>>& textures();
+    std::vector<std::shared_ptr<sg::texture>> const& textures() const;
+
     void add_texture(std::shared_ptr<sg::texture> texture);
 
 private:
