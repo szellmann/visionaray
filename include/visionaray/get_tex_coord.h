@@ -12,8 +12,6 @@
 #include "math/detail/math.h"
 #include "math/simd/type_traits.h"
 #include "math/array.h"
-#include "math/intersect.h"
-#include "math/primitive.h"
 #include "math/triangle.h"
 #include "math/vector.h"
 
@@ -25,13 +23,14 @@ namespace visionaray
 // Triangle
 //
 
-template <typename TexCoords, typename R, typename T>
+template <
+    typename TexCoords,
+    typename HR,
+    typename T,
+    typename = typename std::enable_if<!simd::is_simd_vector<typename HR::scalar_type>::value>::type
+    >
 VSNRAY_FUNC
-inline auto get_tex_coord(
-        TexCoords                                   tex_coords,
-        hit_record<R, primitive<unsigned>> const&   hr,
-        basic_triangle<3, T>                        /* */
-        )
+inline auto get_tex_coord(TexCoords tex_coords, HR const& hr, basic_triangle<3, T> /* */)
     -> typename std::iterator_traits<TexCoords>::value_type
 {
     return lerp(
@@ -50,25 +49,23 @@ inline auto get_tex_coord(
 
 template <
     typename TexCoords,
+    typename HR,
     typename T,
-    typename U,
-    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type
     >
 VSNRAY_FUNC
-inline vector<2, T> get_tex_coord(
-        TexCoords                                               coords,
-        hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
-        basic_triangle<3, U>                                    /* */
-        )
+inline auto get_tex_coord(TexCoords tex_coords, HR const& hr, basic_triangle<3, T> /* */)
+    -> vector<2, typename HR::scalar_type>
 {
+    using U = typename HR::scalar_type;
     using TC = typename std::iterator_traits<TexCoords>::value_type;
-    using float_array = simd::aligned_array_t<T>;
+    using float_array = simd::aligned_array_t<U>;
 
     auto hrs = unpack(hr);
 
     auto get_coord = [&](int x, int y)
     {
-        return hrs[x].hit ? coords[hrs[x].prim_id * 3 + y] : TC();
+        return hrs[x].hit ? tex_coords[hrs[x].prim_id * 3 + y] : TC();
     };
 
 
@@ -79,7 +76,7 @@ inline vector<2, T> get_tex_coord(
     float_array x3;
     float_array y3;
 
-    for (int i = 0; i < simd::num_elements<T>::value; ++i)
+    for (int i = 0; i < simd::num_elements<U>::value; ++i)
     {
         x1[i] = get_coord(i, 0).x;
         y1[i] = get_coord(i, 0).y;
@@ -91,9 +88,9 @@ inline vector<2, T> get_tex_coord(
         y3[i] = get_coord(i, 2).y;
     }
 
-    vector<2, T> tc1(x1, y1);
-    vector<2, T> tc2(x2, y2);
-    vector<2, T> tc3(x3, y3);
+    vector<2, U> tc1(x1, y1);
+    vector<2, U> tc2(x2, y2);
+    vector<2, U> tc3(x3, y3);
 
     return lerp( tc1, tc2, tc3, hr.u, hr.v );
 }

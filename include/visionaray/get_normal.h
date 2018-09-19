@@ -11,9 +11,7 @@
 #include <type_traits>
 
 #include "math/simd/type_traits.h"
-#include "math/intersect.h"
 #include "math/plane.h"
-#include "math/primitive.h"
 #include "math/ray.h"
 #include "math/sphere.h"
 #include "math/triangle.h"
@@ -30,7 +28,12 @@ namespace visionaray
 
 // TODO: generalize this to primitives with num_normals<Primitive, NormalBinding>::value == 1 ?
 
-template <typename Normals, typename HR, typename T>
+template <
+    typename Normals,
+    typename HR,
+    typename T,
+    typename = typename std::enable_if<!simd::is_simd_vector<typename HR::scalar_type>::value>::type
+    >
 VSNRAY_FUNC
 inline auto get_normal(
         Normals                     normals,
@@ -49,19 +52,22 @@ inline auto get_normal(
 
 template <
     typename Normals,
+    typename HR,
     typename T,
-    typename U,
-    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type,
+    typename = void
     >
-inline vector<3, T> get_normal(
-        Normals                                                 normals,
-        hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
-        basic_triangle<3, U>                                    /* */,
-        normals_per_face_binding                                /* */
+inline auto get_normal(
+        Normals                     normals,
+        HR const&                   hr,
+        basic_triangle<3, T>        /* */,
+        normals_per_face_binding    /* */
         )
+    -> vector<3, typename HR::scalar_type>
 {
+    using U = typename HR::scalar_type;
     using N = typename std::iterator_traits<Normals>::value_type;
-    using float_array = simd::aligned_array_t<T>;
+    using float_array = simd::aligned_array_t<U>;
 
     auto hrs = unpack(hr);
 
@@ -69,7 +75,7 @@ inline vector<3, T> get_normal(
     float_array y;
     float_array z;
 
-    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    for (size_t i = 0; i < simd::num_elements<U>::value; ++i)
     {
         auto n = hrs[i].hit ? normals[hrs[i].prim_id] : N();
         x[i] = n.x;
@@ -77,10 +83,10 @@ inline vector<3, T> get_normal(
         z[i] = n.z;
     }
 
-    return vector<3, T>(
-            T(x),
-            T(y),
-            T(z)
+    return vector<3, U>(
+            U(x),
+            U(y),
+            U(z)
             );
 }
 

@@ -11,8 +11,6 @@
 
 #include "math/simd/type_traits.h"
 #include "math/array.h"
-#include "math/intersect.h"
-#include "math/primitive.h"
 #include "math/ray.h"
 #include "math/triangle.h"
 #include "math/vector.h"
@@ -118,19 +116,21 @@ inline vector<3, T> get_color(
 
 template <
     typename Colors,
+    typename HR,
     typename T,
-    typename U,
-    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type
     >
-inline vector<3, T> get_color(
-        Colors                                                  colors,
-        hit_record<basic_ray<T>, primitive<unsigned>> const&    hr,
-        basic_triangle<3, U>                                    /* */,
-        colors_per_vertex_binding                               /* */
+inline auto get_color(
+        Colors                    colors,
+        HR const&                 hr,
+        basic_triangle<3, T>      /* */,
+        colors_per_vertex_binding /* */
         )
+    -> vector<3, typename HR::scalar_type>
 {
+    using U = typename HR::scalar_type;
     using C = typename std::iterator_traits<Colors>::value_type;
-    using float_array = simd::aligned_array_t<T>;
+    using float_array = simd::aligned_array_t<U>;
 
     auto hrs = unpack(hr);
 
@@ -151,7 +151,7 @@ inline vector<3, T> get_color(
     float_array y3;
     float_array z3;
 
-    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    for (size_t i = 0; i < simd::num_elements<U>::value; ++i)
     {
         auto cc1 = get_clr(i, 0);
         auto cc2 = get_clr(i, 1);
@@ -170,9 +170,9 @@ inline vector<3, T> get_color(
         z3[i] = cc3.z;
     }
 
-    vector<3, T> c1(x1, y1, z1);
-    vector<3, T> c2(x2, y2, z2);
-    vector<3, T> c3(x3, y3, z3);
+    vector<3, U> c1(x1, y1, z1);
+    vector<3, U> c2(x2, y2, z2);
+    vector<3, U> c3(x3, y3, z3);
 
     return lerp( c1, c2, c3, hr.u, hr.v );
 }
