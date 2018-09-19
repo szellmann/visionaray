@@ -169,7 +169,7 @@ inline FloatT tex2D_impl_expand_types(
 //
 
 template <typename Tex, typename FloatT>
-inline auto tex2D(Tex const& tex, vector<2, FloatT> coord)
+inline auto tex2D_impl(Tex const& tex, vector<2, FloatT> coord)
     -> decltype( tex2D_impl_expand_types(
             tex.data(),
             coord,

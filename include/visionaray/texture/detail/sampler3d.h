@@ -227,7 +227,7 @@ inline simd::int_type_t<FloatT> tex3D_impl_expand_types(
 //
 
 template <typename Tex, typename FloatT>
-inline auto tex3D(Tex const& tex, vector<3, FloatT> coord)
+inline auto tex3D_impl(Tex const& tex, vector<3, FloatT> coord)
     -> decltype( tex3D_impl_expand_types(
             tex.data(),
             coord,

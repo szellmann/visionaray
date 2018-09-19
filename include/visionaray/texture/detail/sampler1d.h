@@ -190,7 +190,7 @@ inline simd::float8 tex1D_impl_expand_types(
 //
 
 template <typename Tex, typename FloatT>
-inline auto tex1D(Tex const& tex, FloatT coord)
+inline auto tex1D_impl(Tex const& tex, FloatT coord)
     -> decltype( tex1D_impl_expand_types(
             tex.data(),
             coord,
