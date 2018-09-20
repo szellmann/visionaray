@@ -326,6 +326,8 @@ std::ostream& operator<<(std::ostream& out, pinhole_camera const& cam)
 
 struct reset_flags_visitor : sg::node_visitor
 {
+    using node_visitor::node_visitor;
+
     void apply(sg::triangle_mesh& tm)
     {
         tm.flags() = 0;
@@ -341,6 +343,8 @@ struct reset_flags_visitor : sg::node_visitor
 
 struct build_bvhs_visitor : sg::node_visitor
 {
+    using node_visitor::node_visitor;
+
     build_bvhs_visitor(
             aligned_vector<renderer::host_bvh_type>& bvhs,
             aligned_vector<size_t>& instance_indices,
