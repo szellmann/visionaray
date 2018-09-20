@@ -6,7 +6,7 @@
 # External libraries
 #
 
-find_package(Boost COMPONENTS chrono filesystem iostreams system thread REQUIRED)
+find_package(Boost COMPONENTS filesystem iostreams system thread REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(JPEG)
