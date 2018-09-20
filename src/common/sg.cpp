@@ -88,6 +88,8 @@ mat4 const& transform::matrix() const
 }
 
 
+#if VSNRAY_COMMON_HAVE_PTEX
+
 //-------------------------------------------------------------------------------------------------
 // ptex_texture
 //
@@ -102,6 +104,8 @@ PtexPtr<PtexTexture> const& ptex_texture::get() const
 {
     return texture_;
 }
+
+#endif // VSNRAY_COMMON_HAVE_PTEX
 
 
 //-------------------------------------------------------------------------------------------------
