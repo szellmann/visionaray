@@ -420,6 +420,24 @@ void load_material_file(
             }
         }
 
+        if (entry.HasMember("specTrans"))
+        {
+            rapidjson::Value const& spec_trans = entry["specTrans"];
+            mat->spec_trans = spec_trans.GetFloat();
+        }
+
+        if (entry.HasMember("ior"))
+        {
+            rapidjson::Value const& ior = entry["ior"];
+            mat->ior = ior.GetFloat();
+        }
+
+        if (entry.HasMember("refractive"))
+        {
+            rapidjson::Value const& refractive = entry["refractive"];
+            mat->refractive = refractive.GetFloat();
+        }
+
         if (entry.HasMember("colorMap"))
         {
             std::string path = entry["colorMap"].GetString();

@@ -91,7 +91,19 @@ struct material
 
 struct disney_material : material
 {
-    vec4 base_color;
+    // Base color
+    vec4 base_color = vec4(0.0f);
+
+    // Specular transmission
+    float spec_trans = 0.0f;
+
+    // Index of refraction
+    float ior = 1.0f;
+
+    // Refractivity
+    float refractive = 0.0f;
+
+
     // TODO..
 };
 

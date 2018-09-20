@@ -584,6 +584,13 @@ void renderer::build_bvhs()
             model::material_type newmat = {};
             newmat.cd = disney->base_color.xyz();
             newmat.cs = vec3(0.0f);
+            newmat.ior = vec3(disney->ior);
+            newmat.transmission = disney->refractive; // TODO
+            if (newmat.transmission > 0.0f)
+            {
+                newmat.illum = 4;
+                newmat.cs = vec3(disney->spec_trans);
+            }
             mod.materials.emplace_back(newmat); // TODO
 
 #if VSNRAY_COMMON_HAVE_PTEX
