@@ -302,7 +302,15 @@ void load_obj(std::string const& filename, model& mod)
             boost::filesystem::path p(filename);
             std::string mtl_dir = p.parent_path().string();
 
-            std::string mtl_path = mtl_dir + "/" + std::string(mtl_file.begin(), mtl_file.length());
+            std::string mtl_path = "";
+            if (mtl_dir.empty())
+            {
+                mtl_path = std::string(mtl_file.begin(), mtl_file.length());
+            }
+            else
+            {
+                mtl_path = mtl_dir + "/" + std::string(mtl_file.begin(), mtl_file.length());
+            }
 
             if (boost::filesystem::exists(mtl_path))
             {
