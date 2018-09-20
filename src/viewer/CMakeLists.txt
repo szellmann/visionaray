@@ -22,12 +22,14 @@ find_package(Boost COMPONENTS chrono filesystem iostreams system thread REQUIRED
 find_package(GLEW REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(Ptex)
 find_package(Threads REQUIRED)
 
 visionaray_use_package(Boost)
 visionaray_use_package(GLEW)
 visionaray_use_package(GLUT)
 visionaray_use_package(OpenGL)
+visionaray_use_package(Ptex)
 visionaray_use_package(Threads)
 
 # CUDA
