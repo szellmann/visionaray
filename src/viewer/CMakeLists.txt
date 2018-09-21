@@ -22,23 +22,28 @@ find_package(Boost COMPONENTS filesystem iostreams system thread REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(Ptex)
 find_package(Threads REQUIRED)
-find_package(ZLIB) # Ptex links with libz
 
 visionaray_use_package(Boost)
 visionaray_use_package(GLEW)
 visionaray_use_package(GLUT)
 visionaray_use_package(OpenGL)
-visionaray_use_package(Ptex)
 visionaray_use_package(Threads)
-visionaray_use_package(ZLIB)
 
 # CUDA
 
 if (VSNRAY_ENABLE_CUDA)
     find_package(CUDA)
     visionaray_use_package(CUDA)
+endif()
+
+# Ptex
+
+if(VSNRAY_ENABLE_PTEX)
+    find_package(Ptex)
+    find_package(ZLIB)
+    visionaray_use_package(Ptex)
+    visionaray_use_package(ZLIB)
 endif()
 
 # Qt5

@@ -56,6 +56,7 @@ option(VSNRAY_ENABLE_PEDANTIC "Compile with pedantic enabled (Ignored if warning
 option(VSNRAY_ENABLE_COCOA "Use Cocoa, if available" OFF)
 option(VSNRAY_ENABLE_CUDA "Use CUDA, if available" ON)
 option(VSNRAY_ENABLE_EXAMPLES "Build the programming examples" OFF)
+option(VSNRAY_ENABLE_PTEX "Use Ptex, if available" ON)
 option(VSNRAY_ENABLE_QT5 "Use Qt5, if available" OFF)
 option(VSNRAY_ENABLE_SDL2 "Use SDL2, if available" OFF)
 option(VSNRAY_ENABLE_TBB "Use TBB, if available" ON)

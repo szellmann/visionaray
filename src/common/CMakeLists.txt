@@ -12,7 +12,6 @@ find_package(GLUT REQUIRED)
 find_package(JPEG)
 find_package(OpenGL REQUIRED)
 find_package(PNG)
-find_package(Ptex)
 find_package(Threads REQUIRED)
 find_package(TIFF)
 
@@ -22,7 +21,6 @@ visionaray_use_package(GLUT)
 visionaray_use_package(JPEG)
 visionaray_use_package(OpenGL)
 visionaray_use_package(PNG)
-visionaray_use_package(Ptex)
 visionaray_use_package(Threads)
 visionaray_use_package(TIFF)
 
@@ -40,6 +38,15 @@ if (APPLE AND VSNRAY_ENABLE_COCOA)
     find_library(CORE_VIDEO_LIBRARY CoreVideo)
     visionaray_link_libraries(${COCOA_LIBRARY})
     visionaray_link_libraries(${CORE_VIDEO_LIBRARY})
+endif()
+
+# Ptex
+
+if(VSNRAY_ENABLE_PTEX)
+    find_package(Ptex)
+    find_package(ZLIB)
+    visionaray_use_package(Ptex)
+    visionaray_use_package(ZLIB)
 endif()
 
 # Qt5
