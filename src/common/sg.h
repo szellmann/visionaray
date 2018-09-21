@@ -136,6 +136,9 @@ public:
     {
         width_ = w;
         height_ = h;
+
+        // Resize data vector from base
+        texture_base<T, 2>::data_.resize(w * h);
     }
 
     int width() const { return width_; }
