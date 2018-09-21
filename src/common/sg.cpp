@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 
+#include "make_unique.h"
 #include "model.h"
 #include "sg.h"
 
@@ -18,12 +19,22 @@ namespace sg
 
 std::string& node::name()
 {
-    return name_;
+    if (meta_data_ == nullptr)
+    {
+        meta_data_ = make_unique<meta_data>();
+    }
+
+    return meta_data_->name;
 }
 
 std::string const& node::name() const
 {
-    return name_;
+    if (meta_data_ == nullptr)
+    {
+        const_cast<node*>(this)->meta_data_ = make_unique<meta_data>();
+    }
+
+    return meta_data_->name;
 }
 
 std::vector<node::node_pointer>& node::parents()

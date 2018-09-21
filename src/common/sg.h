@@ -224,7 +224,12 @@ public:
 
 protected:
 
-    std::string name_;
+    struct meta_data
+    {
+        std::string name;
+    };
+
+    std::unique_ptr<meta_data> meta_data_ = nullptr;
     std::vector<node_pointer> parents_;
     std::vector<node_pointer> children_;
 
