@@ -16,10 +16,8 @@ int main()
 
 #elif defined SPECTRUM_PACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     array<spectrum<float>, 8> spec_array;
     spectrum<simd::float8> spec = simd::pack(spec_array);
-#endif
 
 #elif defined SPECTRUM_PACK_ILLEGAL_LENGTH_1
 

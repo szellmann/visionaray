@@ -19,10 +19,8 @@ int main()
 
 #elif defined GENMAT_PACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     array<generic_material<matte<float>,emissive<float>,mirror<float>>, 8> gm_array;
     simd::generic_material<8, matte<float>,emissive<float>,mirror<float>> gm = simd::pack(gm_array);
-#endif
 
 #elif defined GENMAT_PACK_ILLEGAL_LENGTH_1
 
@@ -46,10 +44,8 @@ int main()
 
 #elif defined GENMAT_UNPACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     simd::generic_material<8, matte<float>,emissive<float>,mirror<float>> gm({});
     array<generic_material<matte<float>,emissive<float>,mirror<float>>, 8> gm_array = simd::unpack(gm);
-#endif
 
 #elif defined GENMAT_UNPACK_ILLEGAL_LENGTH
 

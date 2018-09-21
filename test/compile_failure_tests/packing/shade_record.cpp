@@ -17,10 +17,8 @@ int main()
 
 #elif defined SHADE_RECORD_UNPACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     shade_record<simd::float8> sr;
     array<shade_record<float>, 8> sr_array = simd::unpack(sr);
-#endif
 
 #elif defined SHADE_RECORD_UNPACK_ILLEGAL_LENGTH
 

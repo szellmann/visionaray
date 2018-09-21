@@ -21,10 +21,8 @@ int main()
 
 #elif defined VECTOR_PACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     array<vector<LEN, float>, 8> v_array;
     vector<LEN, simd::float8> v = simd::pack(v_array);
-#endif
 
 #elif defined VECTOR_PACK_ILLEGAL_LENGTH_1
 
@@ -48,10 +46,8 @@ int main()
 
 #elif defined VECTOR_UNPACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     vector<LEN, simd::float8> v;
     array<vector<LEN, float>, 8> v_array = simd::unpack(v);
-#endif
 
 #elif defined VECTOR_UNPACK_ILLEGAL_LENGTH
 

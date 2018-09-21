@@ -33,10 +33,8 @@ int main()
 
 #elif defined MATERIAL_PACK_FLOAT8
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     array<mat_type<float>, 8> mat_array;
     mat_type<simd::float8> mat = simd::pack(mat_array);
-#endif
 
 #elif defined MATERIAL_PACK_ILLEGAL_LENGTH_1
 

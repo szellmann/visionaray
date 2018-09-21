@@ -22,10 +22,8 @@ int main()
 
 #elif defined TRANS_FLOAT8
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     simd::float8 f;
     simd::float8 g = TEST_FUNC(f);
-#endif
 
 #elif defined TRANS_FLOAT
 

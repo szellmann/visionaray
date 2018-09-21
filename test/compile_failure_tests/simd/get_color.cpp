@@ -17,11 +17,9 @@ int main()
 
 #elif defined GET_COLOR_FLOAT8
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     vector<3, float>* colors;
     hit_record<basic_ray<simd::float8>, primitive<unsigned>> hr;
     vector<3, simd::float8> c = get_color(colors, hr, primitive<unsigned>{}, colors_per_face_binding{});
-#endif
 
 #elif defined GET_COLOR_INT4
 
@@ -43,11 +41,9 @@ int main()
 
 #elif defined GET_COLOR_TRI_FLOAT8
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
     vector<3, float>* colors;
     hit_record<basic_ray<simd::float8>, primitive<unsigned>> hr;
     vector<3, simd::float8> c = get_color(colors, hr, basic_triangle<3, float, unsigned>{}, colors_per_vertex_binding{});
-#endif
 
 #elif defined GET_COLOR_TRI_INT4
 
