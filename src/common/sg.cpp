@@ -193,6 +193,8 @@ void node_visitor::apply(sphere& s)
 
 struct flatten_visitor : node_visitor
 {
+    using node_visitor::apply;
+
     flatten_visitor(model& mod)
         : model_(mod)
     {
