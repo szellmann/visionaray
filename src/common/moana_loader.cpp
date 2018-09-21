@@ -244,6 +244,8 @@ static void load_obj(
                 objs.push_back(std::make_shared<sg::surface_properties>());
                 objs.back()->add_child(std::make_shared<sg::triangle_mesh>());
 
+                face_id = 0;
+
                 surf = std::dynamic_pointer_cast<sg::surface_properties>(objs.back());
                 tm = std::dynamic_pointer_cast<sg::triangle_mesh>(surf->children().back());
 
