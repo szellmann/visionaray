@@ -493,8 +493,8 @@ void load_moana(std::string const& filename, model& mod)
     // Textures, init with one empty texture
     std::map<std::string, std::shared_ptr<sg::texture>> textures;
 #if VSNRAY_COMMON_HAVE_PTEX
-    PtexPtr<PtexTexture> dummy(nullptr);
-    auto dummy = std::make_shared<sg::ptex_texture>(dummy);
+    PtexPtr<PtexTexture> dummy_tex(nullptr);
+    auto dummy = std::make_shared<sg::ptex_texture>(dummy_tex);
 #else
     // Add a 2D dummy texture
     auto dummy = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
