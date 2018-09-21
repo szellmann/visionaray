@@ -4,7 +4,6 @@
 #include <common/config.h>
 
 #include <cassert>
-#include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -22,8 +21,9 @@
 #endif
 
 #include <rapidjson/document.h>
-#include <rapidjson/istreamwrapper.h>
+#include <rapidjson/filereadstream.h>
 
+#include "cfile.h"
 #include "moana_loader.h"
 #include "model.h"
 #include "obj_grammar.h"
@@ -342,16 +342,17 @@ static void load_instanced_primitive_json_file(
         )
 {
     std::cout << "Load instanced primitive json file: " << (island_base_path / filename).string() << '\n';
-    std::ifstream stream((island_base_path / filename).string());
-    if (stream.fail())
+    cfile file((island_base_path / filename).string(), "r");
+    if (!file.good())
     {
         std::cerr << "Cannot open " << filename << '\n';
         return;
     }
 
-    rapidjson::IStreamWrapper isw(stream);
+    char buffer[65536];
+    rapidjson::FileReadStream frs(file.get(), buffer, sizeof(buffer));
     rapidjson::Document doc;
-    doc.ParseStream(isw);
+    doc.ParseStream(frs);
 
     for (auto it = doc.MemberBegin(); it != doc.MemberEnd(); ++it)
     {
@@ -393,16 +394,17 @@ void load_material_file(
     std::string fn = (island_base_path / filename).string();
 
     std::cout << "Load material file: " << fn << '\n';
-    std::ifstream stream(fn);
-    if (stream.fail())
+    cfile file(fn, "r");
+    if (!file.good())
     {
         std::cerr << "Cannot open " << fn << '\n';
         return;
     }
 
-    rapidjson::IStreamWrapper isw(stream);
+    char buffer[65536];
+    rapidjson::FileReadStream frs(file.get(), buffer, sizeof(buffer));
     rapidjson::Document doc;
-    doc.ParseStream(isw);
+    doc.ParseStream(frs);
 
     for (auto it = doc.MemberBegin(); it != doc.MemberEnd(); ++it)
     {
@@ -463,8 +465,8 @@ void load_material_file(
 void load_moana(std::string const& filename, model& mod)
 {
     std::cout << "Load moana file: " << filename << '\n';
-    std::ifstream stream(filename);
-    if (stream.fail())
+    cfile file(filename, "r");
+    if (!file.good())
     {
         std::cerr << "Cannot open " << filename << '\n';
         return;
@@ -478,9 +480,10 @@ void load_moana(std::string const& filename, model& mod)
         return;
     }
 
-    rapidjson::IStreamWrapper isw(stream);
+    char buffer[65536];
+    rapidjson::FileReadStream frs(file.get(), buffer, sizeof(buffer));
     rapidjson::Document doc;
-    doc.ParseStream(isw);
+    doc.ParseStream(frs);
 
     auto root = std::make_shared<sg::node>();
 
