@@ -277,6 +277,7 @@ static void load_obj(
 
                     if (tex != nullptr)
                     {
+                        tex->name() = group;
                         textures.insert(std::make_pair(group, tex));
                         surf->add_texture(tex);
                     }
@@ -493,15 +494,16 @@ void load_moana(std::string const& filename, model& mod)
     std::map<std::string, std::shared_ptr<sg::texture>> textures;
 #if VSNRAY_COMMON_HAVE_PTEX
     PtexPtr<PtexTexture> dummy(nullptr);
-    textures.insert(std::make_pair("null", std::make_shared<sg::ptex_texture>(dummy)));
+    auto dummy = std::make_shared<sg::ptex_texture>(dummy);
 #else
     // Add a 2D dummy texture
     auto dummy = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
     dummy->resize(1, 1);
     vector<4, unorm<8>> white(1.0f);
     dummy->reset(&white);
-    textures.insert(std::make_pair("null", dummy));
 #endif
+    dummy->name() = "null";
+    textures.insert(std::make_pair("null", dummy));
 
     auto base_transform = std::make_shared<sg::transform>();
     root->add_child(base_transform);

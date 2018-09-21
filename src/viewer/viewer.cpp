@@ -624,9 +624,9 @@ void renderer::build_bvhs()
                 model::texture_type texture(tex->width(), tex->height());
                 texture.set_address_mode(tex->get_address_mode());
                 texture.set_filter_mode(tex->get_filter_mode());
-                texture.reset(tex->data());
+                texture.reset(tex->data());std::cout << tex->name() << '\n';
 
-                auto it = mod.texture_map.insert(std::make_pair(std::to_string(i) /*TODO!!!*/, std::move(texture)));
+                auto it = mod.texture_map.insert(std::make_pair(tex->name(), std::move(texture)));
                 mod.textures[i] = model::texture_type::ref_type(it.first->second);
             }
 #endif
