@@ -230,6 +230,7 @@ public:
 
     VSNRAY_FUNC size_t num_primitives() const { return primitives_last - primitives_first; }
     VSNRAY_FUNC size_t num_nodes() const { return nodes_last - nodes_first; }
+    VSNRAY_FUNC size_t num_indices() const { return indices_last - indices_first; }
 
     VSNRAY_FUNC P& primitive(size_t indirect_index) const
     {
@@ -350,6 +351,11 @@ public:
     VSNRAY_FUNC size_t num_nodes() const
     {
         return ref_.num_nodes();
+    }
+
+    VSNRAY_FUNC size_t num_indices() const
+    {
+        return ref_.num_indices();
     }
 
     VSNRAY_FUNC P& primitive(size_t indirect_index) const
@@ -524,6 +530,7 @@ public:
 
     size_t num_primitives() const               { return primitives_.size(); }
     size_t num_nodes() const                    { return nodes_.size(); }
+    size_t num_indices() const                  { return indices_.size(); }
 
     bvh_ref ref() const
     {
