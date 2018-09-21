@@ -155,7 +155,7 @@ static void store_faces(
 // Load ptx texture
 //
 
-static std::shared_ptr<sg::ptex_texture> load_texture(
+static std::shared_ptr<sg::texture> load_texture(
         boost::filesystem::path const& texture_base_path,
         std::string const& filename
         )
@@ -201,7 +201,7 @@ static void load_obj(
         boost::filesystem::path const& island_base_path,
         std::string const& filename,
         std::map<std::string, std::shared_ptr<sg::disney_material>> const& materials,
-        std::map<std::string, std::shared_ptr<sg::ptex_texture>>& textures,
+        std::map<std::string, std::shared_ptr<sg::texture>>& textures,
         std::vector<std::shared_ptr<sg::node>>& objs
         )
 {
@@ -276,7 +276,7 @@ static void load_obj(
                     if (tex != nullptr)
                     {
                         textures.insert(std::make_pair(group, tex));
-                        surf->add_texture(std::static_pointer_cast<sg::texture>(tex));
+                        surf->add_texture(tex);
                     }
                 }
             }
@@ -335,7 +335,7 @@ static void load_instanced_primitive_json_file(
         std::string const& filename,
         std::shared_ptr<sg::node> root,
         std::map<std::string, std::shared_ptr<sg::disney_material>>& materials,
-        std::map<std::string, std::shared_ptr<sg::ptex_texture>>& textures
+        std::map<std::string, std::shared_ptr<sg::texture>>& textures
         )
 {
     std::cout << "Load instanced primitive json file: " << (island_base_path / filename).string() << '\n';
@@ -482,9 +482,11 @@ void load_moana(std::string const& filename, model& mod)
     load_material_file(island_base_path, mat_file, materials);
 
     // Textures, init with one empty texture
-    std::map<std::string, std::shared_ptr<sg::ptex_texture>> textures;
+    std::map<std::string, std::shared_ptr<sg::texture>> textures;
+#if VSNRAY_COMMON_HAVE_PTEX
     PtexPtr<PtexTexture> dummy(nullptr);
     textures.insert(std::make_pair("null", std::make_shared<sg::ptex_texture>(dummy)));
+#endif
 
     auto base_transform = std::make_shared<sg::transform>();
     root->add_child(base_transform);
