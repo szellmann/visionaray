@@ -211,14 +211,14 @@ public:
     std::string& name();
     std::string const& name() const;
 
+    uint64_t& flags();
+    uint64_t const& flags() const;
+
     std::vector<node_pointer>& parents();
     std::vector<node_pointer> const& parents() const;
 
     std::vector<node_pointer>& children();
     std::vector<node_pointer> const& children() const;
-
-    uint64_t& flags();
-    uint64_t const& flags() const;
 
     void add_child(node_pointer child);
 
@@ -227,13 +227,12 @@ protected:
     struct meta_data
     {
         std::string name;
+        uint64_t flags = 0;
     };
 
     std::unique_ptr<meta_data> meta_data_ = nullptr;
     std::vector<node_pointer> parents_;
     std::vector<node_pointer> children_;
-
-    uint64_t flags_ = 0;
 
 };
 

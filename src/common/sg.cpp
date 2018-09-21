@@ -37,6 +37,26 @@ std::string const& node::name() const
     return meta_data_->name;
 }
 
+uint64_t& node::flags()
+{
+    if (meta_data_ == nullptr)
+    {
+        meta_data_ = make_unique<meta_data>();
+    }
+
+    return meta_data_->flags;
+}
+
+uint64_t const& node::flags() const
+{
+    if (meta_data_ == nullptr)
+    {
+        const_cast<node*>(this)->meta_data_ = make_unique<meta_data>();
+    }
+
+    return meta_data_->flags;
+}
+
 std::vector<node::node_pointer>& node::parents()
 {
     return parents_;
@@ -55,16 +75,6 @@ std::vector<node::node_pointer>& node::children()
 std::vector<node::node_pointer> const& node::children() const
 {
     return children_;
-}
-
-uint64_t& node::flags()
-{
-    return flags_;
-}
-
-uint64_t const& node::flags() const
-{
-    return flags_;
 }
 
 void node::add_child(node_pointer child)
