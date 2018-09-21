@@ -188,6 +188,36 @@ void node_visitor::apply(sphere& s)
 
 
 //-------------------------------------------------------------------------------------------------
+// material
+//
+
+std::string& material::name()
+{
+    return name_;
+}
+
+std::string const& material::name() const
+{
+    return name_;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// texture
+//
+
+std::string& texture::name()
+{
+    return name_;
+}
+
+std::string const& texture::name() const
+{
+    return name_;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // flatten
 //
 

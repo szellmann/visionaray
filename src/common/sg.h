@@ -79,9 +79,17 @@ struct vertex
 // Material base class
 //
 
-struct material
+class material
 {
+public:
     virtual ~material() {}
+
+    std::string& name();
+    std::string const& name() const;
+
+private:
+
+    std::string name_;
 };
 
 
@@ -112,9 +120,17 @@ struct disney_material : material
 // Texture base class
 //
 
-struct texture
+class texture
 {
+public:
     virtual ~texture() {}
+
+    std::string& name();
+    std::string const& name() const;
+
+private:
+
+    std::string name_;
 };
 
 
