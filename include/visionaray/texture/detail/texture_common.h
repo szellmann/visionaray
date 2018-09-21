@@ -45,6 +45,11 @@ public:
         }
     }
 
+    void set_address_mode(std::array<tex_address_mode, Dim> const& mode)
+    {
+        address_mode_ = mode;
+    }
+
     tex_address_mode get_address_mode(size_t index) const
     {
         assert( index < Dim );
