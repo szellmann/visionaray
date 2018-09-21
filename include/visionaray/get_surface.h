@@ -599,7 +599,7 @@ inline auto get_surface_impl(
 
     auto hrs = unpack(hr);
 
-    typename simd_decl_surface<Params, T>::array_type surfs;
+    typename simd_decl_surface<Params, T>::array_type surfs = {};
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
