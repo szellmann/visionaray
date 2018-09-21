@@ -24,8 +24,6 @@ inline spectrum<typename SR::scalar_type> matte<T>::shade(SR const& sr) const
 {
     using U = typename SR::scalar_type;
 
-    spectrum<U> result(0.0);
-
     auto wi = sr.light_dir;
     auto wo = sr.view_dir;
     auto n = sr.normal;
