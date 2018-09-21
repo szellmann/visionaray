@@ -447,6 +447,12 @@ void load_material_file(
             }
         }
 
+        // Replace red or magenta with white, these colors are *replaced* with the texture color
+        if (mat->base_color.xyz() == vec3(1.0f, 0.0f, 0.0f) || mat->base_color.xyz() == vec3(1.0f, 0.0f, 1.0f))
+        {
+            mat->base_color.xyz() = vec3(1.0f, 1.0f, 1.0f);
+        }
+
         materials.insert({ material_name, mat });
     }
 }
