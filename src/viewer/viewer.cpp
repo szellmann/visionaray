@@ -411,7 +411,23 @@ struct build_bvhs_visitor : sg::node_visitor
     {
         if (tm.flags() == 0 && tm.indices.size() > 0)
         {
-            aligned_vector<basic_triangle<3, float>> triangles;
+            assert(tm.indices.size() % 3 == 0);
+
+            aligned_vector<basic_triangle<3, float>> triangles(tm.indices.size() / 3);
+
+            size_t first_shading_normal = shading_normals_.size();
+            shading_normals_.resize(shading_normals_.size() + tm.indices.size());
+
+            size_t first_geometric_normal = geometric_normals_.size();
+            geometric_normals_.resize(geometric_normals_.size() + tm.indices.size() / 3);
+
+            size_t first_tex_coord = tex_coords_.size();
+            tex_coords_.resize(tex_coords_.size() + tm.indices.size());
+
+#if VSNRAY_COMMON_HAVE_PTEX
+            size_t first_face_id = face_ids_.size();
+            face_ids_.resize(face_ids_.size() + tm.indices.size() / 3);
+#endif
 
             for (size_t i = 0; i < tm.indices.size(); i += 3)
             {
@@ -437,23 +453,22 @@ struct build_bvhs_visitor : sg::node_visitor
                 basic_triangle<3, float> tri(v1, v2 - v1, v3 - v1);
                 tri.prim_id = current_prim_id_++;
                 tri.geom_id = current_geom_id_;
+                triangles[i / 3] = tri;
 
-                triangles.push_back(tri);
+                shading_normals_[first_shading_normal + i]     = n1;
+                shading_normals_[first_shading_normal + i + 1] = n2;
+                shading_normals_[first_shading_normal + i + 2] = n3;
 
-                shading_normals_.push_back(n1);
-                shading_normals_.push_back(n2);
-                shading_normals_.push_back(n3);
+                geometric_normals_[first_geometric_normal + i / 3] = gn;
 
-                geometric_normals_.push_back(gn);
-
-                tex_coords_.push_back(tc1);
-                tex_coords_.push_back(tc2);
-                tex_coords_.push_back(tc3);
+                tex_coords_[first_tex_coord + i]     = tc1;
+                tex_coords_[first_tex_coord + i + 1] = tc2;
+                tex_coords_[first_tex_coord + i + 2] = tc3;
 
 #if VSNRAY_COMMON_HAVE_PTEX
                 assert(fid1 == fid2 && fid1 == fid3);
 
-                face_ids_.push_back(fid1);
+                face_ids_[first_face_id + i / 3] = fid1;
 
                 VSNRAY_UNUSED(fid2, fid3);
 #endif
