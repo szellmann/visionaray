@@ -574,9 +574,23 @@ void renderer::build_bvhs()
                 );
 
 
+        mod.tex_format = model::UV;
+
 #if VSNRAY_COMMON_HAVE_PTEX
-        mod.ptex_textures.resize(build_visitor.surfaces.size());
+        // Simply check the first texture of the first surface
+        // Scene has either Ptex textures, or it doesn't
+        if (build_visitor.surfaces.size() > 0
+            && std::dynamic_pointer_cast<sg::ptex_texture>(build_visitor.surfaces[0].second) != nullptr)
+        {
+            mod.tex_format = model::Ptex;
+            mod.ptex_textures.resize(build_visitor.surfaces.size());
+        }
 #endif
+
+        if (mod.tex_format == model::UV)
+        {
+            mod.textures.resize(build_visitor.surfaces.size());
+        }
 
         for (size_t i = 0; i < build_visitor.surfaces.size(); ++i)
         {
@@ -599,9 +613,22 @@ void renderer::build_bvhs()
 
 #if VSNRAY_COMMON_HAVE_PTEX
             auto ptex_tex = std::dynamic_pointer_cast<sg::ptex_texture>(surf.second);
-            assert(ptex_tex != nullptr);
+            if (ptex_tex != nullptr)
+            {
+                mod.ptex_textures[i].swap(const_cast<PtexPtr<PtexTexture>&>(ptex_tex->get())); // Transfer of ownership!
+            }
+#else
+            auto tex = std::dynamic_pointer_cast<sg::texture2d<vector<4, unorm<8>>>>(surf.second);
+            if (tex != nullptr)
+            {
+                model::texture_type texture(tex->width(), tex->height());
+                texture.set_address_mode(tex->get_address_mode());
+                texture.set_filter_mode(tex->get_filter_mode());
+                texture.reset(tex->data());
 
-            mod.ptex_textures[i].swap(const_cast<PtexPtr<PtexTexture>&>(ptex_tex->get())); // Transfer of ownership!
+                auto it = mod.texture_map.insert(std::make_pair(std::to_string(i) /*TODO!!!*/, std::move(texture)));
+                mod.textures[i] = model::texture_type::ref_type(it.first->second);
+            }
 #endif
         }
 
