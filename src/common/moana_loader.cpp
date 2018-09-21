@@ -365,6 +365,15 @@ static void load_instanced_primitive_json_file(
 
         // Instance transforms
         auto entries = it->value.GetObject();
+
+        // Make room for child nodes
+        size_t num_entries = entries.MemberEnd() - entries.MemberBegin();
+
+        size_t root_first_child = root->children().size();
+        size_t root_child_index = 0;
+
+        root->children().resize(root->children().size() + num_entries);
+
         for (auto it = entries.MemberBegin(); it != entries.MemberEnd(); ++it)
         {
             auto transform = std::make_shared<sg::transform>();
@@ -376,11 +385,12 @@ static void load_instanced_primitive_json_file(
                 assert(i <= 16);
             }
 
-            for (auto obj : objs)
+            transform->children().resize(objs.size());
+            for (size_t j = 0; j < objs.size(); ++j)
             {
-                transform->add_child(obj);
+                transform->children()[j] = objs[j];
             }
-            root->add_child(transform);
+            root->children()[root_first_child + root_child_index++] = transform;
         }
     }
 }
