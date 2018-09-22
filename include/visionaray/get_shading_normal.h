@@ -109,7 +109,7 @@ inline auto get_shading_normal(
         basic_triangle<3, T>       /* */,
         normals_per_vertex_binding /* */
         )
-    -> typename HR::scalar_type
+    -> vector<3, typename HR::scalar_type>
 {
     using U = typename HR::scalar_type;
     using N = typename std::iterator_traits<Normals>::value_type;
