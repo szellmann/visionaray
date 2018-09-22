@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/math/intersect.h> // hit_record
 #include <visionaray/get_color.h>
 
 using namespace visionaray;
