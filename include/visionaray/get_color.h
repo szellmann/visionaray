@@ -46,7 +46,12 @@ inline auto get_color(
 // Get triangle vertex color from array
 //
 
-template <typename Colors, typename HR, typename T>
+template <
+    typename Colors,
+    typename HR,
+    typename T,
+    typename = typename std::enable_if<!simd::is_simd_vector<typename HR::scalar_type>::value>::type
+    >
 VSNRAY_FUNC
 inline auto get_color(
         Colors                      colors,
