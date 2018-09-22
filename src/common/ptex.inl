@@ -42,8 +42,8 @@ inline vector<4, unorm<8>> tex2D(PtexPtr<PtexTexture> const& tex, coordinate<flo
             coord.u,
             coord.v,
             1.0f,
-            1.0f,
-            1.0f,
+            0.0f,
+            0.0f,
             1.0f
             );
 
@@ -100,9 +100,27 @@ inline auto get_tex_coord(
 {
     ptex::coordinate<typename HR::scalar_type> result;
 
+    vec2 tc1(0.0f, 0.0f);
+    vec2 tc2(1.0f, 0.0f);
+    vec2 tc3(1.0f, 1.0f);
+    vec2 tc4(0.0f, 1.0f);
+
     result.face_id = face_ids[hr.prim_id];
-    result.u = hr.u;
-    result.v = hr.v;
+
+    vec2 uv;
+
+    if (result.face_id >= 0)
+    {
+        uv = lerp(tc1, tc2, tc3, hr.u, hr.v);
+    }
+    else
+    {
+        result.face_id = ~result.face_id;
+        uv = lerp(tc1, tc3, tc4, hr.u, hr.v);
+    }
+
+    result.u = uv.x;
+    result.v = uv.y;
 
     return result;
 }

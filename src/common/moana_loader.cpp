@@ -86,20 +86,9 @@ static void store_faces(
         int                                 face_id
         )
 {
-    // Ptex is a per-face texture format. We convert into one
-    // with UVs for compatibility with Visionaray: assign simple
-    // [0..1/0..1] UVs for quads
-    vec2 tex_coords[] = {
-        vec2(0.0f, 0.0f),
-        vec2(1.0f, 0.0f),
-        vec2(1.0f, 1.0f),
-        vec2(0.0f, 1.0f)
-        };
-
     auto vertices_size = static_cast<int>(vertices.size());
     size_t last = 2;
     auto i1 = remap_index(faces[0].vertex_index, vertices_size);
-    auto tc1 = tex_coords[0];
 
     // simply construct new vertices for each obj face we encounter
     // ..too hard to keep track of v/vn combinations..
@@ -109,9 +98,7 @@ static void store_faces(
         auto i2 = remap_index(faces[last - 1].vertex_index, vertices_size);
         auto i3 = remap_index(faces[last].vertex_index, vertices_size);
 
-        // texture coordinates
-        auto tc2 = tex_coords[last - 1];
-        auto tc3 = tex_coords[last];
+        // no texture coordinates but face ids
 
         // normal indices
         auto normals_size = static_cast<int>(normals.size());
@@ -122,7 +109,7 @@ static void store_faces(
         tm->vertices.emplace_back(
             vertices[i1],
             normals[ni1],
-            tc1,
+            vec2(0.0f),
             vec3(0.0f),  // base color undefined
             face_id
             );
@@ -130,7 +117,7 @@ static void store_faces(
         tm->vertices.emplace_back(
             vertices[i2],
             normals[ni2],
-            tc2,
+            vec2(0.0f),
             vec3(0.0f),  // base color undefined
             face_id
             );
@@ -138,12 +125,13 @@ static void store_faces(
         tm->vertices.emplace_back(
             vertices[i3],
             normals[ni3],
-            tc3,
+            vec2(0.0f),
             vec3(0.0f),  // base color undefined
             face_id
             );
 
         ++last;
+        face_id = ~face_id; // indicates 2nd triangle in quad
     }
 
     // Should all be quad faces for subdiv
