@@ -328,6 +328,13 @@ struct reset_flags_visitor : sg::node_visitor
 {
     using node_visitor::apply;
 
+    void apply(sg::surface_properties& sp)
+    {
+        sp.flags() = 0;
+
+        node_visitor::apply(sp);
+    }
+
     void apply(sg::triangle_mesh& tm)
     {
         tm.flags() = 0;
@@ -383,7 +390,7 @@ struct build_bvhs_visitor : sg::node_visitor
     {
         unsigned prev = current_geom_id_;
 
-        if (sp.material() && sp.textures().size() > 0)
+        if (sp.flags() == 0 && sp.material() && sp.textures().size() > 0)
         {
             std::shared_ptr<sg::material> material = sp.material();
             std::shared_ptr<sg::texture> texture = sp.textures()[0];
@@ -400,6 +407,8 @@ struct build_bvhs_visitor : sg::node_visitor
             {
                 current_geom_id_ = static_cast<unsigned>(std::distance(surfaces.begin(), it));
             }
+
+            sp.flags() = ~sp.flags();
         }
 
         node_visitor::apply(sp);
