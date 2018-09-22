@@ -36,7 +36,7 @@ namespace visionaray
 //
 
 template <typename Int>
-Int remap_index(Int idx, Int size)
+inline Int remap_index(Int idx, Int size)
 {
     return idx < 0 ? size + idx : idx - 1;
 }
@@ -46,7 +46,7 @@ Int remap_index(Int idx, Int size)
 // Store a triangle and assign visionaray-internal ids
 //
 
-bool store_triangle(model& result, vertex_vector const& vertices, int i1, int i2, int i3)
+static bool store_triangle(model& result, vertex_vector const& vertices, int i1, int i2, int i3)
 {
     model::triangle_type tri;
 
@@ -76,7 +76,7 @@ bool store_triangle(model& result, vertex_vector const& vertices, int i1, int i2
 // Store obj faces (i.e. triangle fans) in vertex|tex_coords|normals lists
 //
 
-void store_faces(
+static void store_faces(
         model&                  result,
         vertex_vector const&    vertices,
         tex_coord_vector const& tex_coords,
@@ -134,7 +134,7 @@ void store_faces(
 // aabb of a list of triangles
 //
 
-aabb bounds(model::triangle_list const& tris)
+inline aabb bounds(model::triangle_list const& tris)
 {
     aabb result;
     result.invalidate();
@@ -177,7 +177,7 @@ struct mtl
 // Parse mtllib
 //
 
-void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib, obj_grammar const& grammar)
+static void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib, obj_grammar const& grammar)
 {
     boost::iostreams::mapped_file_source file(filename);
 
