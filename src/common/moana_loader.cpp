@@ -472,6 +472,117 @@ void load_material_file(
     }
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Reset triangle mesh flags to 0
+//
+
+struct reset_flags_visitor : sg::node_visitor
+{
+    using node_visitor::apply;
+
+    void apply(sg::surface_properties& sp)
+    {
+        sp.flags() = 0;
+
+        node_visitor::apply(sp);
+    }
+
+    void apply(sg::triangle_mesh& tm)
+    {
+        tm.flags() = 0;
+
+        node_visitor::apply(tm);
+    }
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Gather statistics
+//
+
+struct statistics_visitor : sg::node_visitor
+{
+    using node_visitor::apply;
+
+    void apply(sg::node& n)
+    {
+        child_pointer_bytes += n.children().size() * sizeof(sg::node::node_pointer);
+        parent_pointer_bytes += n.parents().size() * sizeof(sg::node::node_pointer);
+
+        // Don't count twice (number of pure nodes is insignifanct)
+        //node_bytes_total += sizeof(sg::node);
+
+        node_visitor::apply(n);
+    }
+
+    void apply(sg::transform& tr)
+    {
+        matrix_bytes += sizeof(mat4);
+
+        transform_node_bytes += sizeof(sg::transform);
+        node_bytes_total += sizeof(sg::transform);
+
+        apply(static_cast<sg::node&>(tr));
+    }
+
+    void apply(sg::surface_properties& sp)
+    {
+        if (sp.flags() == 0)
+        {
+            material_pointer_bytes += sizeof(std::shared_ptr<sg::material>);
+            texture_pointer_bytes += sp.textures().size() * sizeof(std::shared_ptr<sg::texture>);
+
+            if (std::dynamic_pointer_cast<sg::disney_material>(sp.material()))
+            {
+                material_bytes += sizeof(sg::disney_material);
+            }
+            else
+            {
+                material_bytes += sizeof(sg::material);
+            }
+
+            // TODO: textures
+
+            surf_node_bytes += sizeof(sg::surface_properties);
+            node_bytes_total += sizeof(sg::surface_properties);
+
+            sp.flags() = ~sp.flags();
+        }
+
+        apply(static_cast<sg::node&>(sp));
+    }
+
+    void apply(sg::triangle_mesh& tm)
+    {
+        if (tm.flags() == 0)
+        {
+            vertices_bytes += tm.vertices.size() * sizeof(sg::vertex);
+            indices_bytes += tm.indices.size() * sizeof(int);
+
+            mesh_node_bytes += sizeof(sg::triangle_mesh);
+            node_bytes_total += sizeof(sg::triangle_mesh);
+
+            tm.flags() = ~tm.flags(); // Don't count twice
+        }
+
+        apply(static_cast<sg::node&>(tm));
+    }
+
+    size_t vertices_bytes = 0;
+    size_t indices_bytes = 0;
+    size_t matrix_bytes = 0;
+    size_t material_bytes = 0;
+    size_t material_pointer_bytes = 0;
+    size_t texture_pointer_bytes = 0;
+    size_t child_pointer_bytes = 0;
+    size_t parent_pointer_bytes = 0;
+    size_t transform_node_bytes = 0;
+    size_t surf_node_bytes = 0;
+    size_t mesh_node_bytes = 0;
+    size_t node_bytes_total = 0;
+};
+
 void load_moana(std::string const& filename, model& mod)
 {
     std::cout << "Load moana file: " << filename << '\n';
@@ -638,15 +749,32 @@ void load_moana(std::string const& filename, model& mod)
         }
     }
 
-#if 0
-    flatten(mod, *root);std::cout << mod.primitives.size() << '\n';
-#else
     if (mod.scene_graph == nullptr)
     {
         mod.scene_graph = std::make_shared<sg::node>();
     }
 
     mod.scene_graph->add_child(root);
+
+#if 1
+    statistics_visitor stats_visitor;
+    mod.scene_graph->accept(stats_visitor);
+
+    std::cout << "Vertices          (MB): " << stats_visitor.vertices_bytes / (1024 * 1024) << '\n';
+    std::cout << "Indices           (MB): " << stats_visitor.indices_bytes / (1024 * 1024) << '\n';
+    std::cout << "Matrices          (MB): " << stats_visitor.matrix_bytes / (1024 * 1024) << '\n';
+    std::cout << "Materials         (MB): " << stats_visitor.material_bytes / (1024 * 1024) << '\n';
+    std::cout << "Material pointers (MB): " << stats_visitor.material_pointer_bytes / (1024 * 1024) << '\n';
+    std::cout << "Texture pointers  (MB): " << stats_visitor.texture_pointer_bytes / (1024 * 1024) << '\n';
+    std::cout << "Child pointers    (MB): " << stats_visitor.child_pointer_bytes / (1024 * 1024) << '\n';
+    std::cout << "Parent pointers   (MB): " << stats_visitor.parent_pointer_bytes / (1024 * 1024) << '\n';
+    std::cout << "Transform nodes   (MB): " << stats_visitor.transform_node_bytes / (1024 * 1024) << '\n';
+    std::cout << "Surface nodes     (MB): " << stats_visitor.surf_node_bytes / (1024 * 1024) << '\n';
+    std::cout << "Mesh nodes        (MB): " << stats_visitor.mesh_node_bytes / (1024 * 1024) << '\n';
+    std::cout << "Nodes total       (MB): " << stats_visitor.node_bytes_total / (1024 * 1024) << '\n';
+
+    reset_flags_visitor reset_visitor;
+    mod.scene_graph->accept(reset_visitor);
 #endif
 }
 
