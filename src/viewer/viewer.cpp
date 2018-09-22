@@ -440,24 +440,24 @@ struct build_bvhs_visitor : sg::node_visitor
 
             for (size_t i = 0; i < tm.indices.size(); i += 3)
             {
-                vec3 v1 = tm.vertices[tm.indices[i]].pos;
-                vec3 v2 = tm.vertices[tm.indices[i + 1]].pos;
-                vec3 v3 = tm.vertices[tm.indices[i + 2]].pos;
+                vec3 v1 = tm.vertices[tm.indices[i]].pos();
+                vec3 v2 = tm.vertices[tm.indices[i + 1]].pos();
+                vec3 v3 = tm.vertices[tm.indices[i + 2]].pos();
 
-                vec3 n1 = tm.vertices[tm.indices[i]].normal;
-                vec3 n2 = tm.vertices[tm.indices[i + 1]].normal;
-                vec3 n3 = tm.vertices[tm.indices[i + 2]].normal;
+                vec3 n1 = tm.vertices[tm.indices[i]].normal();
+                vec3 n2 = tm.vertices[tm.indices[i + 1]].normal();
+                vec3 n3 = tm.vertices[tm.indices[i + 2]].normal();
 
                 vec3 gn = normalize(cross(v2 - v1, v3 - v1));
 
-                vec2 tc1 = tm.vertices[tm.indices[i]].tex_coord;
-                vec2 tc2 = tm.vertices[tm.indices[i + 1]].tex_coord;
-                vec2 tc3 = tm.vertices[tm.indices[i + 2]].tex_coord;
+                vec2 tc1 = tm.vertices[tm.indices[i]].tex_coord();
+                vec2 tc2 = tm.vertices[tm.indices[i + 1]].tex_coord();
+                vec2 tc3 = tm.vertices[tm.indices[i + 2]].tex_coord();
 
 #if VSNRAY_COMMON_HAVE_PTEX
-                int fid1 = tm.vertices[tm.indices[i]].face_id;
-                int fid2 = tm.vertices[tm.indices[i + 1]].face_id;
-                int fid3 = tm.vertices[tm.indices[i + 2]].face_id;
+                int fid1 = tm.vertices[tm.indices[i]].face_id();
+                int fid2 = tm.vertices[tm.indices[i + 1]].face_id();
+                int fid3 = tm.vertices[tm.indices[i + 2]].face_id();
 #endif
                 basic_triangle<3, float> tri(v1, v2 - v1, v3 - v1);
                 tri.prim_id = current_prim_id_++;

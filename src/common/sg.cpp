@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 
 #include "make_unique.h"
 #include "model.h"
@@ -209,6 +210,45 @@ void node_visitor::apply(sphere& s)
 
 
 //-------------------------------------------------------------------------------------------------
+// vertex
+//
+
+vertex::vertex(vec3 p, vec3 n, vec2 tc, vec3 col, int fid)
+{
+    std::memcpy(data_, p.data(), sizeof(float) * 3);
+    std::memcpy(data_ + 3, n.data(), sizeof(float) * 3);
+    std::memcpy(data_ + 6, tc.data(), sizeof(float) * 2);
+    std::memcpy(data_ + 8, col.data(), sizeof(float) * 3);
+    std::memcpy(data_ + 11, &fid, sizeof(int));
+}
+
+vec3 vertex::pos() const
+{
+    return vec3(data_);
+}
+
+vec3 vertex::normal() const
+{
+    return vec3(data_ + 3);
+}
+
+vec2 vertex::tex_coord() const
+{
+    return vec2(data_ + 6);
+}
+
+vec3 vertex::color() const
+{
+    return vec3(data_ + 8);
+}
+
+int vertex::face_id() const
+{
+    return *reinterpret_cast<int const*>(data_ + 11);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // material
 //
 
@@ -306,19 +346,19 @@ struct flatten_visitor : node_visitor
 
         for (size_t i = 0; i < tm.indices.size(); i += 3)
         {
-            vec3 v1 = tm.vertices[tm.indices[i]].pos;
-            vec3 v2 = tm.vertices[tm.indices[i + 1]].pos;
-            vec3 v3 = tm.vertices[tm.indices[i + 2]].pos;
+            vec3 v1 = tm.vertices[tm.indices[i]].pos();
+            vec3 v2 = tm.vertices[tm.indices[i + 1]].pos();
+            vec3 v3 = tm.vertices[tm.indices[i + 2]].pos();
 
-            vec3 n1 = tm.vertices[tm.indices[i]].normal;
-            vec3 n2 = tm.vertices[tm.indices[i + 1]].normal;
-            vec3 n3 = tm.vertices[tm.indices[i + 2]].normal;
+            vec3 n1 = tm.vertices[tm.indices[i]].normal();
+            vec3 n2 = tm.vertices[tm.indices[i + 1]].normal();
+            vec3 n3 = tm.vertices[tm.indices[i + 2]].normal();
 
             vec3 gn = normalize(cross(v2 - v1, v3 - v1));
 
-            vec2 tc1 = tm.vertices[tm.indices[i]].tex_coord;
-            vec2 tc2 = tm.vertices[tm.indices[i + 1]].tex_coord;
-            vec2 tc3 = tm.vertices[tm.indices[i + 2]].tex_coord;
+            vec2 tc1 = tm.vertices[tm.indices[i]].tex_coord();
+            vec2 tc2 = tm.vertices[tm.indices[i + 1]].tex_coord();
+            vec2 tc3 = tm.vertices[tm.indices[i + 2]].tex_coord();
 
             v1 = (current_transform * vec4(v1, 1.0f)).xyz();
             v2 = (current_transform * vec4(v2, 1.0f)).xyz();

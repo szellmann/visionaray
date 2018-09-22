@@ -119,29 +119,29 @@ static void store_faces(
         auto ni2 = remap_index(*faces[last - 1].normal_index, normals_size);
         auto ni3 = remap_index(*faces[last].normal_index, normals_size);
 
-        tm->vertices.push_back({
+        tm->vertices.emplace_back(
             vertices[i1],
             normals[ni1],
             tc1,
-            vec4(0.0f),  // base color undefined
+            vec3(0.0f),  // base color undefined
             face_id
-            });
+            );
 
-        tm->vertices.push_back({
+        tm->vertices.emplace_back(
             vertices[i2],
             normals[ni2],
             tc2,
-            vec4(0.0f),  // base color undefined
+            vec3(0.0f),  // base color undefined
             face_id
-            });
+            );
 
-        tm->vertices.push_back({
+        tm->vertices.emplace_back(
             vertices[i3],
             normals[ni3],
             tc3,
-            vec4(0.0f),  // base color undefined
+            vec3(0.0f),  // base color undefined
             face_id
-            });
+            );
 
         ++last;
     }

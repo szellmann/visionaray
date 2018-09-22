@@ -65,13 +65,23 @@ protected:
     traversal_type traversal_type_ = TraverseChildren;
 };
 
-struct vertex
+class vertex
 {
-    vec3 pos;
-    vec3 normal;
-    vec2 tex_coord;
-    vec4 color;
-    int face_id;
+public:
+
+    vertex() = default;
+
+    vertex(vec3 p, vec3 n, vec2 tc, vec3 col, int fid);
+
+    vec3 pos() const;
+    vec3 normal() const;
+    vec2 tex_coord() const;
+    vec3 color() const;
+    int face_id() const;
+
+private:
+
+    VSNRAY_ALIGN(16) float data_[12];
 };
 
 
