@@ -66,6 +66,11 @@ struct viewer_glut::impl
     static mouse::button    down_button;
     static int              win_id;
     static GLuint           imgui_font_texture;
+    // Defer mouse-down events so they are not immediately reset
+    // when the mouse button was released in the same frame
+    // See: https://github.com/ocornut/imgui/issues/1992
+    // TODO: check if new ImGui API has better support for this
+    static bool             imgui_was_mouse_down[5];
 
     impl(viewer_glut* instance);
 
@@ -96,10 +101,11 @@ struct viewer_glut::impl
     static void imgui_draw(ImDrawData* draw_data);
 };
 
-viewer_glut*    viewer_glut::impl::viewer             = nullptr;
-mouse::button   viewer_glut::impl::down_button        = mouse::NoButton;
-int             viewer_glut::impl::win_id             = 0;
-GLuint          viewer_glut::impl::imgui_font_texture = 0;
+viewer_glut*    viewer_glut::impl::viewer                 = nullptr;
+mouse::button   viewer_glut::impl::down_button            = mouse::NoButton;
+int             viewer_glut::impl::win_id                 = 0;
+GLuint          viewer_glut::impl::imgui_font_texture     = 0;
+bool            viewer_glut::impl::imgui_was_mouse_down[] = { false };
 
 
 //-------------------------------------------------------------------------------------------------
@@ -396,6 +402,14 @@ void viewer_glut::impl::close_func()
 
 void viewer_glut::impl::display_func()
 {
+    ImGuiIO& io = ImGui::GetIO();
+
+    for (int i = 0; i < 5; ++i)
+    {
+        io.MouseDown[i] = imgui_was_mouse_down[i];
+        imgui_was_mouse_down[i] = false;
+    }
+
     ImGui::NewFrame();
 
     viewer->on_display();
@@ -530,7 +544,7 @@ void viewer_glut::impl::mouse_func(int button, int state, int x, int y)
 
     if (state == GLUT_DOWN)
     {
-        io.MouseDown[imgui_button] = true;
+        imgui_was_mouse_down[imgui_button] = true;
     }
     else if (state == GLUT_UP)
     {
