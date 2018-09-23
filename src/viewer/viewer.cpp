@@ -121,7 +121,12 @@ struct renderer : viewer_type
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
         , host_sched(std::thread::hardware_concurrency())
-        , rt(host_device_rt::CPU, true /* direct rendering */, host_device_rt::SRGB)
+        , rt(
+            host_device_rt::CPU,
+            true /* double buffering */,
+            true /* direct rendering */,
+            host_device_rt::SRGB
+            )
 #ifdef __CUDACC__
         , device_sched(8, 8)
 #endif
@@ -1007,6 +1012,8 @@ void renderer::on_display()
         }
     }
 #endif
+
+    rt.swap_buffers();
 
     rt.display_color_buffer();
 

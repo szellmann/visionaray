@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <cassert>
+#include <utility>
 
 #include <GL/glew.h>
 
@@ -26,6 +27,9 @@ struct host_device_rt::impl
     // CPU or GPU rendering
     mode_type mode;
 
+    // If true, render target uses double buffering
+    bool double_buffering;
+
     // If true, use PBO, otherwise copy over host
     bool direct_rendering;
 
@@ -33,15 +37,18 @@ struct host_device_rt::impl
     color_space_type color_space;
 
     // Host render target
-    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> host_rt;
+    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> host_rt[2];
 
 #ifdef __CUDACC__
     // Device render target, uses PBO
-    pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> direct_rt;
+    pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> direct_rt[2];
 
     // Device render target, copy pixels over host
-    gpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> indirect_rt;
+    gpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> indirect_rt[2];
 #endif
+
+    // Index of front and back buffer, either 0 or 1
+    bool buffer_index[2];
 };
 
 
@@ -49,12 +56,19 @@ struct host_device_rt::impl
 // host_device_rt
 //
 
-host_device_rt::host_device_rt(mode_type mode, bool direct_rendering, color_space_type color_space)
+host_device_rt::host_device_rt(
+        mode_type mode,
+        bool double_buffering,
+        bool direct_rendering,
+        color_space_type color_space
+        )
     : impl_(new impl)
 {
     impl_->mode = mode;
+    set_double_buffering(double_buffering);
     impl_->direct_rendering = direct_rendering;
     impl_->color_space = color_space;
+
 }
 
 host_device_rt::~host_device_rt()
@@ -69,6 +83,24 @@ host_device_rt::mode_type& host_device_rt::mode()
 host_device_rt::mode_type const& host_device_rt::mode() const
 {
     return impl_->mode;
+}
+
+void host_device_rt::set_double_buffering(bool double_buffering)
+{
+    impl_->double_buffering = double_buffering;
+
+    if (impl_->double_buffering)
+    {
+        impl_->buffer_index[0] = 0;
+        impl_->buffer_index[1] = 1;
+    }
+    else
+    {
+        // Both indices the same, so when we swap buffers, in
+        // the single buffering case nothing gets ever swapped
+        impl_->buffer_index[0] = 0;
+        impl_->buffer_index[1] = 0;
+    }
 }
 
 bool& host_device_rt::direct_rendering()
@@ -91,27 +123,32 @@ host_device_rt::color_space_type const& host_device_rt::color_space() const
     return impl_->color_space;
 }
 
-host_device_rt::color_type const* host_device_rt::color() const
+void host_device_rt::swap_buffers()
 {
-    return impl_->host_rt.color();
+    std::swap(impl_->buffer_index[Front], impl_->buffer_index[Back]);
 }
 
-host_device_rt::ref_type host_device_rt::ref()
+host_device_rt::color_type const* host_device_rt::color(buffer buf) const
+{
+    return impl_->host_rt[impl_->buffer_index[buf]].color();
+}
+
+host_device_rt::ref_type host_device_rt::ref(buffer buf)
 {
     if (impl_->mode == CPU)
     {
-        return impl_->host_rt.ref();
+        return impl_->host_rt[impl_->buffer_index[buf]].ref();
     }
     else
     {
 #ifdef __CUDACC__
         if (impl_->direct_rendering)
         {
-            return impl_->direct_rt.ref();
+            return impl_->direct_rt[impl_->buffer_index[buf]].ref();
         }
         else
         {
-            return impl_->indirect_rt.ref();
+            return impl_->indirect_rt[impl_->buffer_index[buf]].ref();
         }
 #else
         assert(0);
@@ -120,58 +157,58 @@ host_device_rt::ref_type host_device_rt::ref()
     }
 }
 
-void host_device_rt::clear_color_buffer(vec4 const& color)
+void host_device_rt::clear_color_buffer(vec4 const& color, buffer buf)
 {
-    impl_->host_rt.clear_color_buffer(color);
+    impl_->host_rt[impl_->buffer_index[buf]].clear_color_buffer(color);
 #ifdef __CUDACC__
     if (impl_->direct_rendering)
     {
-        impl_->direct_rt.clear_color_buffer(color);
+        impl_->direct_rt[impl_->buffer_index[buf]].clear_color_buffer(color);
     }
     else
     {
-        impl_->indirect_rt.clear_color_buffer(color);
+        impl_->indirect_rt[impl_->buffer_index[buf]].clear_color_buffer(color);
     }
 #endif
 }
 
-void host_device_rt::begin_frame()
+void host_device_rt::begin_frame(buffer buf)
 {
     if (impl_->mode == CPU)
     {
-        impl_->host_rt.begin_frame();
+        impl_->host_rt[impl_->buffer_index[buf]].begin_frame();
     }
 #ifdef __CUDACC__
     else
     {
         if (impl_->direct_rendering)
         {
-            impl_->direct_rt.begin_frame();
+            impl_->direct_rt[impl_->buffer_index[buf]].begin_frame();
         }
         else
         {
-            impl_->indirect_rt.begin_frame();
+            impl_->indirect_rt[impl_->buffer_index[buf]].begin_frame();
         }
     }
 #endif
 }
 
-void host_device_rt::end_frame()
+void host_device_rt::end_frame(buffer buf)
 {
     if (impl_->mode == CPU)
     {
-        impl_->host_rt.end_frame();
+        impl_->host_rt[impl_->buffer_index[buf]].end_frame();
     }
 #ifdef __CUDACC__
     else
     {
         if (impl_->direct_rendering)
         {
-            impl_->direct_rt.end_frame();
+            impl_->direct_rt[impl_->buffer_index[buf]].end_frame();
         }
         else
         {
-            impl_->indirect_rt.end_frame();
+            impl_->indirect_rt[impl_->buffer_index[buf]].end_frame();
         }
     }
 #endif
@@ -181,20 +218,24 @@ void host_device_rt::resize(int w, int h)
 {
     render_target::resize(w, h);
 
-    impl_->host_rt.resize(w, h);
+    int num_buffers = impl_->double_buffering ? 2 : 1;
+    for (int buf = 0; buf < num_buffers; ++buf)
+    {
+        impl_->host_rt[buf].resize(w, h);
 #ifdef __CUDACC__
-    if (impl_->direct_rendering)
-    {
-        impl_->direct_rt.resize(w, h);
-    }
-    else
-    {
-        impl_->indirect_rt.resize(w, h);
-    }
+        if (impl_->direct_rendering)
+        {
+            impl_->direct_rt[buf].resize(w, h);
+        }
+        else
+        {
+            impl_->indirect_rt[buf].resize(w, h);
+        }
 #endif
+    }
 }
 
-void host_device_rt::display_color_buffer() const
+void host_device_rt::display_color_buffer(buffer buf) const
 {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -214,18 +255,18 @@ void host_device_rt::display_color_buffer() const
 
     if (impl_->mode == CPU)
     {
-        impl_->host_rt.display_color_buffer();
+        impl_->host_rt[impl_->buffer_index[buf]].display_color_buffer();
     }
 #ifdef __CUDACC__
     else
     {
         if (impl_->direct_rendering)
         {
-            impl_->direct_rt.display_color_buffer();
+            impl_->direct_rt[impl_->buffer_index[buf]].display_color_buffer();
         }
         else
         {
-            impl_->indirect_rt.display_color_buffer();
+            impl_->indirect_rt[impl_->buffer_index[buf]].display_color_buffer();
         }
     }
 #endif

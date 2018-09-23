@@ -20,6 +20,12 @@ public:
     using color_type = typename pixel_traits<PF_RGBA32F>::type;
     using ref_type = render_target_ref<PF_RGBA32F, PF_UNSPECIFIED>;
 
+    enum buffer
+    {
+        Front,
+        Back
+    };
+
     enum mode_type
     {
         CPU,
@@ -36,6 +42,7 @@ public:
 
     host_device_rt(
             mode_type mode,
+            bool double_buffering = true,
             bool direct_rendering = true,
             color_space_type color_space = RGB
             );
@@ -44,21 +51,25 @@ public:
     mode_type& mode();
     mode_type const& mode() const;
 
+    void set_double_buffering(bool double_buffering);
+
     bool& direct_rendering();
     bool const& direct_rendering() const;
 
     color_space_type& color_space();
     color_space_type const& color_space() const;
 
-    color_type const* color() const;
+    void swap_buffers();
 
-    ref_type ref();
+    color_type const* color(buffer buf = Back) const;
 
-    void clear_color_buffer(vec4 const& color = vec4(0.0f));
-    void begin_frame();
-    void end_frame();
+    ref_type ref(buffer buf = Back);
+
+    void clear_color_buffer(vec4 const& color = vec4(0.0f), buffer buf = Back);
+    void begin_frame(buffer buf = Back);
+    void end_frame(buffer buf = Back);
     void resize(int w, int h);
-    void display_color_buffer() const;
+    void display_color_buffer(buffer buf = Front) const;
 
 private:
 
