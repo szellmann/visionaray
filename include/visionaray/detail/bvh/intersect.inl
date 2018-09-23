@@ -181,7 +181,7 @@ inline auto intersect(
             update_cond
             );
 
-    return RT(hr, b.get_inst_id(), matrix<4, 4, T>(b.transform_inv()));
+    return RT(hr, hr.primitive_list_index, matrix<4, 4, T>(b.transform_inv()));
 }
 
 
