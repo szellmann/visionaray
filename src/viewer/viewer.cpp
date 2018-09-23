@@ -4,15 +4,18 @@
 #include <common/config.h>
 
 #include <cassert>
+#include <chrono>
 #include <cmath>
 #include <exception>
 #include <fstream>
+#include <future>
 #include <iomanip>
 #include <iostream>
 #include <istream>
 #include <ostream>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <new>
 #include <set>
 #include <sstream>
@@ -284,6 +287,10 @@ struct renderer : viewer_type
     gl::bvh_outline_renderer                    outlines;
     gl::debug_callback                          gl_debug_callback;
 
+    bool                                        render_async  = false;
+    std::future<void>                           render_future;
+    std::mutex                                  display_mutex;
+
     void build_bvhs();
 
 protected:
@@ -298,6 +305,7 @@ private:
 
     void clear_frame();
     void render_hud();
+    void render_impl();
 
 };
 
@@ -677,6 +685,11 @@ void renderer::build_bvhs()
 
 void renderer::clear_frame()
 {
+    if (render_future.valid() && render_async)
+    {
+        render_future.wait();
+    }
+
     frame_num = 0;
 
     if (algo == Pathtracing)
@@ -770,6 +783,14 @@ void renderer::render_hud()
     {
         clear_frame();
     }
+    ImGui::SameLine();
+    if (ImGui::Checkbox("Render async", &render_async))
+    {
+        if (render_future.valid() && !render_async)
+        {
+            render_future.wait();
+        }
+    }
 
     vec3 amb = ambient.x < 0.0f ? vec3(0.0f) : ambient;
     if (ImGui::InputFloat3("Ambient Intensity", amb.data()))
@@ -821,12 +842,7 @@ void renderer::render_hud()
     ImGui::End();
 }
 
-void renderer::on_close()
-{
-    outlines.destroy();
-}
-
-void renderer::on_display()
+void renderer::render_impl()
 {
     point_lights.clear();
 
@@ -1012,10 +1028,45 @@ void renderer::on_display()
         }
     }
 #endif
+}
 
-    rt.swap_buffers();
+void renderer::on_close()
+{
+    outlines.destroy();
+}
 
-    rt.display_color_buffer();
+void renderer::on_display()
+{
+    if (render_async)
+    {
+        if (!render_future.valid() || render_future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+        {
+            render_future = std::async(
+                    std::launch::async,
+                    [this]()
+                    {
+                        render_impl();
+
+                        std::unique_lock<std::mutex> l(display_mutex);
+                        rt.swap_buffers();
+                    }
+                    );
+        }
+
+        if (rt.width() == width() && rt.height() == height())
+        {
+            std::unique_lock<std::mutex> l(display_mutex);
+            rt.display_color_buffer();
+        }
+    }
+    else
+    {
+        render_impl();
+
+        rt.swap_buffers();
+
+        rt.display_color_buffer();
+    }
 
 
     // OpenGL overlay rendering
@@ -1039,6 +1090,7 @@ void renderer::on_key_press(key_event const& event)
     {
     case '1':
         std::cout << "Switching algorithm: simple\n";
+        rt.set_double_buffering(true);
         algo = Simple;
         counter.reset();
         clear_frame();
@@ -1046,6 +1098,7 @@ void renderer::on_key_press(key_event const& event)
 
     case '2':
         std::cout << "Switching algorithm: whitted\n";
+        rt.set_double_buffering(true);
         algo = Whitted;
         counter.reset();
         clear_frame();
@@ -1053,6 +1106,13 @@ void renderer::on_key_press(key_event const& event)
 
     case '3':
         std::cout << "Switching algorithm: path tracing\n";
+        if (render_future.valid())
+        {
+            render_future.wait();
+        }
+        // Double buffering does not work in case of pathtracing
+        // because destination and source buffers need to be the same
+        rt.set_double_buffering(false);
         algo = Pathtracing;
         counter.reset();
         clear_frame();
@@ -1163,6 +1223,11 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 
 void renderer::on_resize(int w, int h)
 {
+    if (render_future.valid() && algo != Pathtracing)
+    {
+        render_future.wait();
+    }
+
     cam.set_viewport(0, 0, w, h);
     float aspect = w / static_cast<float>(h);
     cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
