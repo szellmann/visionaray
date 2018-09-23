@@ -9,8 +9,11 @@
 #include <utility>
 
 #include <visionaray/kernels.h>
+#include <visionaray/pinhole_camera.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/tags.h>
+#include <visionaray/thin_lens_camera.h>
+#include <visionaray/variant.h>
 
 namespace visionaray
 {
@@ -27,6 +30,48 @@ namespace visionaray
 
 
 enum algorithm { Simple, Whitted, Pathtracing };
+
+
+//-------------------------------------------------------------------------------------------------
+// Pinhole camera vs. thin lens camera
+//
+
+template <typename Sched, typename KParams, typename RT>
+inline void call_kernel(
+        algorithm                                        algo,
+        Sched&                                           sched,
+        KParams const&                                   kparams,
+        unsigned&                                        frame_num,
+        unsigned                                         ssaa_samples,
+        variant<pinhole_camera, thin_lens_camera> const& cam,
+        RT&                                              rt
+        )
+{
+    if (cam.as<thin_lens_camera>())
+    {
+        call_kernel(
+                algo,
+                sched,
+                kparams,
+                frame_num,
+                ssaa_samples,
+                *cam.as<thin_lens_camera>(),
+                rt
+                );
+    }
+    else
+    {
+        call_kernel(
+                algo,
+                sched,
+                kparams,
+                frame_num,
+                ssaa_samples,
+                *cam.as<pinhole_camera>(),
+                rt
+                );
+    }
+}
 
 
 //-------------------------------------------------------------------------------------------------

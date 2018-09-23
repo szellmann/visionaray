@@ -29,6 +29,8 @@
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/spot_light.h>
+#include <visionaray/thin_lens_camera.h>
+#include <visionaray/variant.h>
 
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <visionaray/detail/tbb_sched.h>
@@ -52,6 +54,7 @@ namespace visionaray
 // Helper types
 //
 
+using camera_t = variant<pinhole_camera, thin_lens_camera>;
 using plastic_t = plastic<float>;
 using generic_light_t = generic_light<
         point_light<float>,
@@ -93,7 +96,7 @@ void render_plastic_cpp(
 #else
         tiled_sched<basic_ray<simd::float4>>&      sched,
 #endif
-        pinhole_camera&                            cam,
+        camera_t const&                            cam,
         unsigned&                                  frame_num,
         algorithm                                  algo,
         unsigned                                   ssaa_samples
@@ -114,7 +117,7 @@ void render_plastic_cu(
         vec4                                              ambient,
         host_device_rt&                                   rt,
         cuda_sched<basic_ray<float>>&                     sched,
-        pinhole_camera&                                   cam,
+        camera_t const&                                   cam,
         unsigned&                                         frame_num,
         algorithm                                         algo,
         unsigned                                          ssaa_samples
@@ -144,7 +147,7 @@ void render_generic_material_cpp(
 #else
         tiled_sched<basic_ray<simd::float4>>&                              sched,
 #endif
-        pinhole_camera&                                                    cam,
+        camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
         algorithm                                                          algo,
         unsigned                                                           ssaa_samples
@@ -165,7 +168,7 @@ void render_generic_material_cu(
         vec4                                                               ambient,
         host_device_rt&                                                    rt,
         cuda_sched<basic_ray<float>>&                                      sched,
-        pinhole_camera&                                                    cam,
+        camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
         algorithm                                                          algo,
         unsigned                                                           ssaa_samples
@@ -195,7 +198,7 @@ void render_instances_cpp(
 #else
         tiled_sched<basic_ray<simd::float4>>&                     sched,
 #endif
-        pinhole_camera&                                           cam,
+        camera_t const&                                           cam,
         unsigned&                                                 frame_num,
         algorithm                                                 algo,
         unsigned                                                  ssaa_samples
@@ -221,7 +224,7 @@ void render_instances_ptex_cpp(
 #else
         tiled_sched<basic_ray<simd::float4>>&                     sched,
 #endif
-        pinhole_camera&                                           cam,
+        camera_t const&                                           cam,
         unsigned&                                                 frame_num,
         algorithm                                                 algo,
         unsigned                                                  ssaa_samples

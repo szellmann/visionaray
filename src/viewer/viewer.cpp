@@ -57,6 +57,7 @@
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
+#include <visionaray/thin_lens_camera.h>
 
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <visionaray/detail/tbb_sched.h>
@@ -230,6 +231,7 @@ struct renderer : viewer_type
     algorithm                                   algo            = Simple;
     bvh_build_strategy                          builder         = Binned;
     bool                                        use_headlight   = true;
+    bool                                        use_dof         = false;
     bool                                        show_hud        = true;
     bool                                        show_hud_ext    = true;
     bool                                        show_bvh        = false;
@@ -269,7 +271,7 @@ struct renderer : viewer_type
 #ifdef __CUDACC__
     cuda_sched<ray_type_gpu>                    device_sched;
 #endif
-    pinhole_camera                              cam;
+    thin_lens_camera                            cam;
 
     mouse::pos                                  mouse_pos;
 
@@ -698,6 +700,9 @@ void renderer::render_hud()
     int num_nodes = 0;
     int num_leaves = 0;
 
+    float focal_dist = cam.get_focal_distance();
+    float lens_radius = cam.get_lens_radius();
+
     traverse_depth_first(
         host_bvhs[0],
         [&](renderer::host_bvh_type::node_type const& node)
@@ -768,6 +773,46 @@ void renderer::render_hud()
         clear_frame();
     }
 
+    if (ImGui::Checkbox("DoF", &use_dof) && algo == Pathtracing)
+    {
+        clear_frame();
+
+        if (algo != Pathtracing)
+        {
+            std::cerr << "Warning: setting only affects pathtracing algorithm\n";
+        }
+    }
+    ImGui::SameLine();
+    ImGui::PushItemWidth(200);
+    if (ImGui::SliderFloat("", &focal_dist, 0.1, 100.0f, "Focal Dist. %.1f"))
+    {
+        cam.set_focal_distance(focal_dist);
+        if (use_dof && algo == Pathtracing)
+        {
+            clear_frame();
+        }
+
+        if (algo != Pathtracing)
+        {
+            std::cerr << "Warning: setting only affects pathtracing algorithm\n";
+        }
+    }
+    ImGui::SameLine();
+    ImGui::PushItemWidth(50);
+    if (ImGui::InputFloat("Lens radius", &lens_radius))
+    {
+        cam.set_lens_radius(lens_radius);
+        if (use_dof && algo == Pathtracing)
+        {
+            clear_frame();
+        }
+
+        if (algo != Pathtracing)
+        {
+            std::cerr << "Warning: setting only affects pathtracing algorithm\n";
+        }
+    }
+
     ImGui::End();
 }
 
@@ -801,6 +846,16 @@ void renderer::on_display()
                             : vec4(0.0)
                             ;
 
+    camera_t camx;
+    if (use_dof && algo == Pathtracing)
+    {
+        camx = cam;
+    }
+    else
+    {
+        camx = static_cast<pinhole_camera>(cam);
+    }
+
     if (rt.mode() == host_device_rt::CPU)
     {
         if (mod.scene_graph != nullptr)
@@ -827,7 +882,7 @@ void renderer::on_display()
                         amb,
                         rt,
                         host_sched,
-                        cam,
+                        camx,
                         frame_num,
                         algo,
                         ssaa_samples
@@ -850,7 +905,7 @@ void renderer::on_display()
                         amb,
                         rt,
                         host_sched,
-                        cam,
+                        camx,
                         frame_num,
                         algo,
                         ssaa_samples
@@ -874,7 +929,7 @@ void renderer::on_display()
                     amb,
                     rt,
                     host_sched,
-                    cam,
+                    camx,
                     frame_num,
                     algo,
                     ssaa_samples
@@ -896,7 +951,7 @@ void renderer::on_display()
                     amb,
                     rt,
                     host_sched,
-                    cam,
+                    camx,
                     frame_num,
                     algo,
                     ssaa_samples
@@ -922,7 +977,7 @@ void renderer::on_display()
                     amb,
                     rt,
                     device_sched,
-                    cam,
+                    camx,
                     frame_num,
                     algo,
                     ssaa_samples
@@ -944,7 +999,7 @@ void renderer::on_display()
                     amb,
                     rt,
                     device_sched,
-                    cam,
+                    camx,
                     frame_num,
                     algo,
                     ssaa_samples
@@ -1358,6 +1413,8 @@ int main(int argc, char** argv)
     float aspect = rend.width() / static_cast<float>(rend.height());
 
     rend.cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    rend.cam.set_lens_radius(0.1f);
+    rend.cam.set_focal_distance(10.0f);
 
     // Load camera from file or set view-all
     std::ifstream file(rend.initial_camera);

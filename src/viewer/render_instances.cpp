@@ -26,7 +26,7 @@ void render_instances_cpp(
 #else
         tiled_sched<basic_ray<simd::float4>>&                     sched,
 #endif
-        pinhole_camera&                                           cam,
+        camera_t const&                                           cam,
         unsigned&                                                 frame_num,
         algorithm                                                 algo,
         unsigned                                                  ssaa_samples

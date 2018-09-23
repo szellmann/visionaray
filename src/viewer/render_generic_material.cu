@@ -22,7 +22,7 @@ void render_generic_material_cu(
         vec4                                                               ambient,
         host_device_rt&                                                    rt,
         cuda_sched<basic_ray<float>>&                                      sched,
-        pinhole_camera&                                                    cam,
+        camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
         algorithm                                                          algo,
         unsigned                                                           ssaa_samples
