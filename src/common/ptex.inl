@@ -33,6 +33,9 @@ inline vector<4, unorm<8>> tex2D(PtexPtr<PtexTexture> const& tex, coordinate<flo
     Ptex::PtexFilter::Options opts(Ptex::PtexFilter::FilterType::f_bspline);
     PtexPtr<Ptex::PtexFilter> filter(Ptex::PtexFilter::getFilter(mutable_tex.get(), opts));
 
+    auto face_data = mutable_tex->getData(coord.face_id);
+    auto res = face_data->res();
+
     vec3 rgb;
     filter->eval(
             rgb.data(),
@@ -41,10 +44,10 @@ inline vector<4, unorm<8>> tex2D(PtexPtr<PtexTexture> const& tex, coordinate<flo
             coord.face_id,
             coord.u,
             coord.v,
-            1.0f,
+            1.0f / res.u(),
             0.0f,
             0.0f,
-            1.0f
+            1.0f / res.v()
             );
 
     return vector<4, unorm<8>>(rgb.x, rgb.y, rgb.z, 1.0f);
