@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cmath>
 #include <cstddef>
 
 #include <visionaray/math/simd/type_traits.h>
@@ -50,7 +51,15 @@ inline vector<4, unorm<8>> tex2D(PtexPtr<PtexTexture> const& tex, coordinate<flo
             1.0f / res.v()
             );
 
-    return vector<4, unorm<8>>(rgb.x, rgb.y, rgb.z, 1.0f);
+    // TODO: Ptex is agnostic of linear vs. non-linear color spaces
+    // The following conversion from non-linear to Visionaray's internal
+    // linear color space is specific to Disney's Moana Island Scene
+    return vector<4, unorm<8>>(
+            std::pow(rgb.x, 2.2f),
+            std::pow(rgb.y, 2.2f),
+            std::pow(rgb.z, 2.2f),
+            1.0f
+            );
 }
 
 } // ptex

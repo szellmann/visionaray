@@ -4,6 +4,7 @@
 #include <common/config.h>
 
 #include <cassert>
+#include <cmath>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -418,7 +419,8 @@ void load_material_file(
             rapidjson::Value const& bc = entry["baseColor"];
             for (auto& item : bc.GetArray())
             {
-                mat->base_color[i++] = item.GetFloat();
+                // All Moana colors are sRGB
+                mat->base_color[i++] = std::pow(item.GetFloat(), 2.2f);
                 assert(i <= 4);
             }
         }
