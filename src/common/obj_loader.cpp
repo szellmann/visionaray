@@ -512,7 +512,7 @@ void load_obj(std::string const& filename, model& mod)
     for (size_t i = mod.textures.size(); i <= geom_id; ++i)
     {
         using tex_type = model::texture_type;
-        tex_type::ref_type tex(0, 0);
+        tex_type::ref_type tex(1, 1);
         mod.textures.push_back(tex);
     }
 
