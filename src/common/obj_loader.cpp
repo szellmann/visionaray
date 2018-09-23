@@ -261,6 +261,28 @@ void add_material(Container& cont, mtl m, string_ref name)
 }
 
 
+static void insert_dummy_texture(model& mod)
+{
+    using tex_type = model::texture_type;
+
+    tex_type tex(1, 1);
+    tex.set_address_mode(Wrap);
+    tex.set_filter_mode(Nearest);
+
+    vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
+    tex.reset(&dummy_texel);
+
+    mod.texture_map.insert(std::make_pair("null", std::move(tex)));
+
+    // Maybe a "null" texture was already present and thus not inserted
+    //  ==> find the one that was already inserted
+    auto it = mod.texture_map.find("null");
+
+    // Insert a ref
+    mod.textures.push_back(tex_type::ref_type(it->second));
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // Load obj file
 //
@@ -438,21 +460,7 @@ void load_obj(std::string const& filename, model& mod)
                 // if no texture was loaded, insert a dummy
                 if (mod.textures.size() < mod.materials.size())
                 {
-                    tex_type tex(1, 1);
-                    tex.set_address_mode(Wrap);
-                    tex.set_filter_mode(Nearest);
-
-                    vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
-                    tex.reset(&dummy_texel);
-
-                    mod.texture_map.insert(std::make_pair("null", std::move(tex)));
-
-                    // Maybe a "null" texture was already present and thus not inserted
-                    //  ==> find the one that was already inserted
-                    auto it = mod.texture_map.find("null");
-
-                    // Insert a ref
-                    mod.textures.push_back(tex_type::ref_type(it->second));
+                    insert_dummy_texture(mod);
                 }
 
                 assert( mod.textures.size() == mod.materials.size() );
@@ -511,9 +519,7 @@ void load_obj(std::string const& filename, model& mod)
     // See that there is a (at least dummy) texture for each geometry
     for (size_t i = mod.textures.size(); i <= geom_id; ++i)
     {
-        using tex_type = model::texture_type;
-        tex_type::ref_type tex(1, 1);
-        mod.textures.push_back(tex);
+        insert_dummy_texture(mod);
     }
 
     mod.bbox = bounds(mod.primitives);
