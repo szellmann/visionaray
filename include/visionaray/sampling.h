@@ -133,14 +133,11 @@ inline vector<3, T> cosine_sample_hemisphere(T const& u1, T const& u2)
 namespace detail
 {
 
-template <typename T>
+template <typename T, typename Generator>
 struct has_sample_impl
 {
-    struct Generator {};
-    struct U {};
-
     template <typename U>
-    static std::true_type test(decltype(&U::template sample<Generator, U>)*);
+    static std::true_type test(decltype(&U::template sample<Generator, typename Generator::value_type>)*);
 
     template <typename U>
     static std::false_type test(...);
@@ -148,8 +145,8 @@ struct has_sample_impl
     using type = decltype( test<typename std::decay<T>::type>(nullptr) );
 };
 
-template <typename T>
-struct has_sample : has_sample_impl<T>::type
+template <typename T, typename Generator>
+struct has_sample : has_sample_impl<T, Generator>::type
 {
 };
 
@@ -161,7 +158,7 @@ template <
     typename Generator,
     typename T = typename Generator::value_type,
     typename = typename std::enable_if<
-        !detail::has_sample<typename std::iterator_traits<Lights>::value_type>::value>::type
+        !detail::has_sample<typename std::iterator_traits<Lights>::value_type, Generator>::value>::type
     >
 VSNRAY_FUNC
 light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen)
@@ -178,7 +175,7 @@ template <
     typename T = typename Generator::value_type,
     typename = typename std::enable_if<!simd::is_simd_vector<T>::value>::type,
     typename = typename std::enable_if<
-        detail::has_sample<typename std::iterator_traits<Lights>::value_type>::value>::type
+        detail::has_sample<typename std::iterator_traits<Lights>::value_type, Generator>::value>::type
     >
 VSNRAY_FUNC
 light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen)
@@ -199,7 +196,7 @@ template <
     typename T = typename Generator::value_type,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type,
     typename = typename std::enable_if<
-        detail::has_sample<typename std::iterator_traits<Lights>::value_type>::value>::type
+        detail::has_sample<typename std::iterator_traits<Lights>::value_type, Generator>::value>::type
     >
 light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen, T = T())
 {
