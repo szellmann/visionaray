@@ -187,17 +187,18 @@ class ptex_texture : public texture
 {
 public:
 
-    using ref_type = PtexPtr<PtexTexture>;
+    ptex_texture(std::string filename, std::shared_ptr<PtexPtr<PtexCache>> cache);
 
-public:
+    std::string& filename();
+    std::string const& filename() const;
 
-    ptex_texture(PtexPtr<PtexTexture>& texture);
-
-    PtexPtr<PtexTexture> const& get() const;
+    std::shared_ptr<PtexPtr<PtexCache>>& cache();
+    std::shared_ptr<PtexPtr<PtexCache>> const& cache() const;
 
 private:
 
-    PtexPtr<PtexTexture> texture_;
+    std::string filename_;
+    std::shared_ptr<PtexPtr<PtexCache>> cache_;
 
 };
 

@@ -8,7 +8,6 @@
 
 #include <common/config.h>
 
-#include <deque>
 #include <map>
 #include <memory>
 #include <string>
@@ -90,7 +89,7 @@ public:
     using tex_list          = aligned_vector<typename texture_type::ref_type>;
 #if VSNRAY_COMMON_HAVE_PTEX
     using ptex_coord_list   = aligned_vector<ptex::face_id_t>;
-    using ptex_list         = std::deque<PtexPtr<PtexTexture>>; // PtexPtr is not copyable
+    using ptex_list         = aligned_vector<ptex::texture>; // PtexPtr is not copyable
 #endif
 
 public:

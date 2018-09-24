@@ -21,27 +21,27 @@ namespace ptex
 {
 
 // tex2D
-inline vector<4, unorm<8>> tex2D(PtexPtr<PtexTexture> const& tex, coordinate<float> const& coord)
+inline vector<4, unorm<8>> tex2D(texture const& tex, coordinate<float> const& coord)
 {
-    // Older versions of Ptex have only non-const PtexPtr accessors
-    PtexPtr<Ptex::PtexTexture>& mutable_tex = const_cast<PtexPtr<PtexTexture>&>(tex);
+    Ptex::String error = "";
+    PtexPtr<PtexTexture> ptex_tex(tex.cache->get()->get(tex.filename.c_str(), error));
 
-    if (mutable_tex == nullptr)
+    if (ptex_tex == nullptr)
     {
-        return vector<4, unorm<8>>(1.0f);
+        return vector<4, unorm<8>>(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     Ptex::PtexFilter::Options opts(Ptex::PtexFilter::FilterType::f_bspline);
-    PtexPtr<Ptex::PtexFilter> filter(Ptex::PtexFilter::getFilter(mutable_tex.get(), opts));
+    PtexPtr<Ptex::PtexFilter> filter(Ptex::PtexFilter::getFilter(ptex_tex.get(), opts));
 
-    auto face_data = mutable_tex->getData(coord.face_id);
+    auto face_data = ptex_tex->getData(coord.face_id);
     auto res = face_data->res();
 
     vec3 rgb;
     filter->eval(
             rgb.data(),
             0,
-            mutable_tex->numChannels(),
+            ptex_tex->numChannels(),
             coord.face_id,
             coord.u,
             coord.v,
@@ -168,7 +168,7 @@ inline auto get_tex_coord(
 }
 
 template <>
-struct texture_dimensions<PtexPtr<PtexTexture>>
+struct texture_dimensions<ptex::texture>
 {
     enum { value = 2 };
 };

@@ -146,7 +146,12 @@ static void store_faces(
 
 static std::shared_ptr<sg::texture> load_texture(
         boost::filesystem::path const& texture_base_path,
-        std::string const& filename
+        std::string const& filename,
+#if VSNRAY_COMMON_HAVE_PTEX
+        std::shared_ptr<PtexPtr<PtexCache>> texture_cache
+#else
+        void* texture_cache
+#endif
         )
 {
     auto fn = (texture_base_path / filename).string();
@@ -159,7 +164,7 @@ static std::shared_ptr<sg::texture> load_texture(
 #if VSNRAY_COMMON_HAVE_PTEX
 
     Ptex::String error = "";
-    PtexPtr<PtexTexture> tex(PtexTexture::open(fn.c_str(), error));
+    PtexPtr<PtexTexture> tex(texture_cache->get()->get(fn.c_str(), error));
 
     if (tex == nullptr)
     {
@@ -169,7 +174,7 @@ static std::shared_ptr<sg::texture> load_texture(
     else
     {
         // sg::ptex_texture's ctor transfers ownership of texptr
-        auto tex_node = std::make_shared<sg::ptex_texture>(tex);
+        auto tex_node = std::make_shared<sg::ptex_texture>(fn.c_str(), texture_cache);
 
         return tex_node;
     }
@@ -191,6 +196,11 @@ static void load_obj(
         std::string const& filename,
         std::map<std::string, std::shared_ptr<sg::disney_material>> const& materials,
         std::map<std::string, std::shared_ptr<sg::texture>>& textures,
+#if VSNRAY_COMMON_HAVE_PTEX
+        std::shared_ptr<PtexPtr<PtexCache>> texture_cache,
+#else
+        void* texture_cache,
+#endif
         std::vector<std::shared_ptr<sg::node>>& objs
         )
 {
@@ -262,7 +272,7 @@ static void load_obj(
                     // Combine with base path, add textures/ and Color/
                     texture_base_path = island_base_path / "textures" / texture_base_path / "Color";
 
-                    auto tex = load_texture(texture_base_path, group + ".ptx");
+                    auto tex = load_texture(texture_base_path, group + ".ptx", texture_cache);
 
                     if (tex != nullptr)
                     {
@@ -327,7 +337,12 @@ static void load_instanced_primitive_json_file(
         std::string const& filename,
         std::shared_ptr<sg::node> root,
         std::map<std::string, std::shared_ptr<sg::disney_material>>& materials,
-        std::map<std::string, std::shared_ptr<sg::texture>>& textures
+        std::map<std::string, std::shared_ptr<sg::texture>>& textures,
+#if VSNRAY_COMMON_HAVE_PTEX
+        std::shared_ptr<PtexPtr<PtexCache>> texture_cache
+#else
+        void* texture_cache
+#endif
         )
 {
     std::cout << "Load instanced primitive json file: " << (island_base_path / filename).string() << '\n';
@@ -350,7 +365,7 @@ static void load_instanced_primitive_json_file(
         // Instance geometry
         std::string obj_file = it->name.GetString();
         std::vector<std::shared_ptr<sg::node>> objs;
-        load_obj(island_base_path, obj_file, materials, textures, objs);
+        load_obj(island_base_path, obj_file, materials, textures, texture_cache, objs);
 
         // Instance transforms
         auto entries = it->value.GetObject();
@@ -607,9 +622,18 @@ void load_moana(std::string const& filename, model& mod)
     // Textures, init with one empty texture
     std::map<std::string, std::shared_ptr<sg::texture>> textures;
 #if VSNRAY_COMMON_HAVE_PTEX
-    PtexPtr<PtexTexture> dummy_tex(nullptr);
-    auto dummy = std::make_shared<sg::ptex_texture>(dummy_tex);
+    std::shared_ptr<PtexPtr<PtexCache>> texture_cache = std::make_shared<PtexPtr<PtexCache>>(
+        Ptex::PtexCache::create(
+            128,
+            1ULL << 32, // 4GB
+            true,       // premultiply (no alpha channel anyway)
+            nullptr
+            )
+        );
+    auto dummy = std::make_shared<sg::ptex_texture>("null", texture_cache);
 #else
+    // No texture cache..
+    void* texture_cache = nullptr;
     // Add a 2D dummy texture
     auto dummy = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
     dummy->resize(1, 1);
@@ -640,7 +664,7 @@ void load_moana(std::string const& filename, model& mod)
     {
         std::string geom_obj_file = doc["geomObjFile"].GetString();
         std::vector<std::shared_ptr<sg::node>> objs;
-        load_obj(island_base_path, geom_obj_file, materials, textures, objs);
+        load_obj(island_base_path, geom_obj_file, materials, textures, texture_cache, objs);
         for (auto obj : objs)
         {
             base_transform->add_child(obj);
@@ -665,7 +689,8 @@ void load_moana(std::string const& filename, model& mod)
                         inst_json_file,
                         base_transform,
                         materials,
-                        textures
+                        textures,
+                        texture_cache
                         );
             }
         }
@@ -697,7 +722,7 @@ void load_moana(std::string const& filename, model& mod)
             {
                 std::string geom_obj_file = entry["geomObjFile"].GetString();
                 std::vector<std::shared_ptr<sg::node>> objs;
-                load_obj(island_base_path, geom_obj_file, materials, textures, objs);
+                load_obj(island_base_path, geom_obj_file, materials, textures, texture_cache, objs);
                 for (auto obj : objs)
                 {
                     transform->add_child(obj);
@@ -731,7 +756,8 @@ void load_moana(std::string const& filename, model& mod)
                                 inst_json_file,
                                 transform,
                                 materials,
-                                textures
+                                textures,
+                                texture_cache
                                 );
                     }
                 }

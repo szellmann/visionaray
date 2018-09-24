@@ -654,7 +654,7 @@ void renderer::build_bvhs()
             auto ptex_tex = std::dynamic_pointer_cast<sg::ptex_texture>(surf.second);
             if (ptex_tex != nullptr)
             {
-                mod.ptex_textures[i].swap(const_cast<PtexPtr<PtexTexture>&>(ptex_tex->get())); // Transfer of ownership!
+                mod.ptex_textures[i] = { ptex_tex->filename(), ptex_tex->cache() };
             }
 #else
             auto tex = std::dynamic_pointer_cast<sg::texture2d<vector<4, unorm<8>>>>(surf.second);

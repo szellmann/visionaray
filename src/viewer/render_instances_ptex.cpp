@@ -20,7 +20,7 @@ void render_instances_ptex_cpp(
         aligned_vector<vec3> const&                               shading_normals,
         aligned_vector<ptex::face_id_t> const&                    face_ids,
         aligned_vector<generic_material_t> const&                 materials,
-        std::deque<PtexPtr<PtexTexture>> const&                   textures,
+        aligned_vector<ptex::texture> const&                      textures,
         aligned_vector<generic_light_t> const&                    lights,
         unsigned                                                  bounces,
         float                                                     epsilon,

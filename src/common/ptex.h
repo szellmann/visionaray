@@ -8,6 +8,9 @@
 
 #include <common/config.h>
 
+#include <memory>
+#include <string>
+
 #if VSNRAY_COMMON_HAVE_PTEX
 #include <Ptexture.h>
 #endif
@@ -19,6 +22,13 @@ namespace visionaray
 {
 namespace ptex
 {
+
+struct texture
+{
+    std::string filename;
+    std::shared_ptr<PtexPtr<PtexCache>> cache;
+};
+
 
 //-------------------------------------------------------------------------------------------------
 // Wrapper for face id for ADL

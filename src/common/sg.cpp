@@ -116,16 +116,32 @@ mat4 const& transform::matrix() const
 // ptex_texture
 //
 
-ptex_texture::ptex_texture(PtexPtr<PtexTexture>& texture)
-    : texture_(nullptr)
+ptex_texture::ptex_texture(std::string filename, std::shared_ptr<PtexPtr<PtexCache>> cache)
+    : filename_(filename)
+    , cache_(cache)
 {
-    texture_.swap(texture);
 }
 
-PtexPtr<PtexTexture> const& ptex_texture::get() const
+std::string& ptex_texture::filename()
 {
-    return texture_;
+    return filename_;
 }
+
+std::string const& ptex_texture::filename() const
+{
+    return filename_;
+}
+
+std::shared_ptr<PtexPtr<PtexCache>>& ptex_texture::cache()
+{
+    return cache_;
+}
+
+std::shared_ptr<PtexPtr<PtexCache>> const& ptex_texture::cache() const
+{
+    return cache_;
+}
+
 
 #endif // VSNRAY_COMMON_HAVE_PTEX
 
