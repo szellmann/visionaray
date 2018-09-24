@@ -234,8 +234,8 @@ vertex::vertex(vec3 p, vec3 n, vec2 tc, vec3 col, int fid)
     std::memcpy(data_, p.data(), sizeof(float) * 3);
     std::memcpy(data_ + 3, n.data(), sizeof(float) * 3);
     std::memcpy(data_ + 6, tc.data(), sizeof(float) * 2);
-    std::memcpy(data_ + 8, col.data(), sizeof(float) * 3);
-    std::memcpy(data_ + 11, &fid, sizeof(int));
+    std::memcpy(data_ + 8, col.data(), sizeof(vector<4, unorm<8>>));
+    std::memcpy(data_ + 9, &fid, sizeof(int));
 }
 
 vec3 vertex::pos() const
@@ -253,14 +253,14 @@ vec2 vertex::tex_coord() const
     return vec2(data_ + 6);
 }
 
-vec3 vertex::color() const
+vector<4, unorm<8>> vertex::color() const
 {
-    return vec3(data_ + 8);
+    return *reinterpret_cast<vector<4, unorm<8>> const*>(data_ + 8);
 }
 
 int vertex::face_id() const
 {
-    return *reinterpret_cast<int const*>(data_ + 11);
+    return *reinterpret_cast<int const*>(data_ + 9);
 }
 
 

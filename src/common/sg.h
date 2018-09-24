@@ -16,6 +16,8 @@
 #include <visionaray/texture/detail/texture_common.h> // detail!
 #include <visionaray/math/forward.h>
 #include <visionaray/math/matrix.h>
+#include <visionaray/math/unorm.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/aligned_vector.h>
 #include <visionaray/spectrum.h>
 
@@ -76,12 +78,12 @@ public:
     vec3 pos() const;
     vec3 normal() const;
     vec2 tex_coord() const;
-    vec3 color() const;
+    vector<4, unorm<8>> color() const;
     int face_id() const;
 
 private:
 
-    VSNRAY_ALIGN(16) float data_[12];
+    float data_[10];
 };
 
 
