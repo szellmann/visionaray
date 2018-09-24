@@ -135,8 +135,8 @@ static void store_faces(
         face_id = ~face_id; // indicates 2nd triangle in quad
     }
 
-    // Should all be quad faces for subdiv
-    assert(last == 4);
+    // Usually, but not always last == 4 (quads)
+    // osOcean e.g. contains triangles
 }
 
 
