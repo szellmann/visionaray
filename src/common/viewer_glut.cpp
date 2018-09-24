@@ -256,7 +256,7 @@ void viewer_glut::impl::imgui_draw(ImDrawData* draw_data)
                 {
                     glScissor(
                         static_cast<int>(clip_rect.x),
-                        static_cast<int>(width - clip_rect.w),
+                        static_cast<int>(height - clip_rect.w),
                         static_cast<int>(clip_rect.z - clip_rect.x),
                         static_cast<int>(clip_rect.w - clip_rect.y)
                         );
