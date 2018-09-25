@@ -362,6 +362,24 @@ struct reset_flags_visitor : sg::node_visitor
 
 
 //-------------------------------------------------------------------------------------------------
+// Clear all node parents to break up cycles in scene graph
+//
+
+struct clear_parents_visitor : sg::node_visitor
+{
+    using node_visitor::apply;
+
+    void apply(sg::node& n)
+    {
+        n.parents().clear();
+        n.parents().shrink_to_fit();
+
+        node_visitor::apply(n);
+    }
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Traverse the scene graph to construct geometry, materials and BVH instances
 //
 
@@ -675,6 +693,18 @@ void renderer::build_bvhs()
 
         mod.bbox = host_top_level_bvh.node(0).get_bounds();
         mod.materials.push_back({});
+
+#if 1
+        // First break up cycles
+        clear_parents_visitor visitor;
+        mod.scene_graph->accept(visitor);
+
+        // Should be max. one reference left
+        assert(mod.scene_graph.use_count() < 2);
+
+        // Delete scene graph from memory
+        mod.scene_graph.reset();
+#endif
     }
 
 //  std::cout << t.elapsed() << std::endl;
