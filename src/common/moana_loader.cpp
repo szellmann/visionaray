@@ -590,41 +590,21 @@ struct statistics_visitor : sg::node_visitor
 
 void load_moana(std::string const& filename, model& mod)
 {
-    std::cout << "Load moana file: " << filename << '\n';
-    cfile file(filename, "r");
-    if (!file.good())
-    {
-        std::cerr << "Cannot open " << filename << '\n';
-        return;
-    }
+    std::vector<std::string> filenames(1);
 
-    boost::filesystem::path island_base_path = get_base_path(filename);
+    filenames[0] = filename;
 
-    if (island_base_path.empty())
-    {
-        std::cerr << "Cannot extract Moana Island Scene base path from " << filename << '\n';
-        return;
-    }
+    load_moana(filenames, mod);
+}
 
-    char buffer[65536];
-    rapidjson::FileReadStream frs(file.get(), buffer, sizeof(buffer));
-    rapidjson::Document doc;
-    doc.ParseStream(frs);
-
-    auto root = std::make_shared<sg::node>();
-
-
-    // matFile
-    std::string mat_file = doc["matFile"].GetString();
-    std::map<std::string, std::shared_ptr<sg::disney_material>> materials;
-    load_material_file(island_base_path, mat_file, materials);
-
+void load_moana(std::vector<std::string> const& filenames, model& mod)
+{
     // Textures, init with one empty texture
     std::map<std::string, std::shared_ptr<sg::texture>> textures;
 #if VSNRAY_COMMON_HAVE_PTEX
     std::shared_ptr<PtexPtr<PtexCache>> texture_cache = std::make_shared<PtexPtr<PtexCache>>(
         Ptex::PtexCache::create(
-            128,
+            1024,
             1ULL << 32, // 4GB
             true,       // premultiply (no alpha channel anyway)
             nullptr
@@ -643,122 +623,157 @@ void load_moana(std::string const& filename, model& mod)
     dummy->name() = "null";
     textures.insert(std::make_pair("null", dummy));
 
-    auto base_transform = std::make_shared<sg::transform>();
-    root->add_child(base_transform);
 
-    // transformMatrix
-    int i = 0;
-    rapidjson::Value const& tm = doc["transformMatrix"];
-    if (tm.IsArray())
+    auto root = std::make_shared<sg::node>();
+
+    for (auto filename : filenames)
     {
-        for (auto& item : tm.GetArray())
+        // Materials map
+        std::map<std::string, std::shared_ptr<sg::disney_material>> materials;
+
+        std::cout << "Load moana file: " << filename << '\n';
+        cfile file(filename, "r");
+        if (!file.good())
         {
-            base_transform->matrix().data()[i++] = item.GetFloat();
-            assert(i <= 16);
+            std::cerr << "Cannot open " << filename << '\n';
+            return;
         }
-    }
 
+        boost::filesystem::path island_base_path = get_base_path(filename);
 
-    // geomObjFile
-    if (doc.HasMember("geomObjFile"))
-    {
-        std::string geom_obj_file = doc["geomObjFile"].GetString();
-        std::vector<std::shared_ptr<sg::node>> objs;
-        load_obj(island_base_path, geom_obj_file, materials, textures, texture_cache, objs);
-        for (auto obj : objs)
+        if (island_base_path.empty())
         {
-            base_transform->add_child(obj);
+            std::cerr << "Cannot extract Moana Island Scene base path from " << filename << '\n';
+            return;
         }
-    }
+
+        char buffer[65536];
+        rapidjson::FileReadStream frs(file.get(), buffer, sizeof(buffer));
+        rapidjson::Document doc;
+        doc.ParseStream(frs);
 
 
-    // instancedPrimitiveJsonFiles
-    if (doc.HasMember("instancedPrimitiveJsonFiles"))
-    {
-        rapidjson::Value const& entries = doc["instancedPrimitiveJsonFiles"];
-        for (auto it = entries.MemberBegin(); it != entries.MemberEnd(); ++it)
+        // matFile
+        std::string mat_file = doc["matFile"].GetString();
+        load_material_file(island_base_path, mat_file, materials);
+
+        auto base_transform = std::make_shared<sg::transform>();
+        root->add_child(base_transform);
+
+        // transformMatrix
+        int i = 0;
+        rapidjson::Value const& tm = doc["transformMatrix"];
+        if (tm.IsArray())
         {
-            auto entry = it->value.GetObject();
-            std::string type = entry["type"].GetString();
-
-            if (type == "archive")
-            {
-                std::string inst_json_file = entry["jsonFile"].GetString();
-                load_instanced_primitive_json_file(
-                        island_base_path,
-                        inst_json_file,
-                        base_transform,
-                        materials,
-                        textures,
-                        texture_cache
-                        );
-            }
-        }
-    }
-
-
-    // instandedCopies (TODO: support copies with other geometry!)
-    if (doc.HasMember("instancedCopies"))
-    {
-        rapidjson::Value const& entries = doc["instancedCopies"];
-        for (auto it = entries.MemberBegin(); it != entries.MemberEnd(); ++it)
-        {
-            auto transform = std::make_shared<sg::transform>();
-            root->add_child(transform);
-
-            auto entry = it->value.GetObject();
-
-            int i = 0;
-            rapidjson::Value const& tm = entry["transformMatrix"];
             for (auto& item : tm.GetArray())
             {
-                transform->matrix().data()[i++] = item.GetFloat();
+                base_transform->matrix().data()[i++] = item.GetFloat();
                 assert(i <= 16);
             }
+        }
 
-            // Check if the copy has its own geomObjFile
-            // (i.e. only texture and material are copied)
-            if (entry.HasMember("geomObjFile"))
+
+        // geomObjFile
+        if (doc.HasMember("geomObjFile"))
+        {
+            std::string geom_obj_file = doc["geomObjFile"].GetString();
+            std::vector<std::shared_ptr<sg::node>> objs;
+            load_obj(island_base_path, geom_obj_file, materials, textures, texture_cache, objs);
+            for (auto obj : objs)
             {
-                std::string geom_obj_file = entry["geomObjFile"].GetString();
-                std::vector<std::shared_ptr<sg::node>> objs;
-                load_obj(island_base_path, geom_obj_file, materials, textures, texture_cache, objs);
-                for (auto obj : objs)
+                base_transform->add_child(obj);
+            }
+        }
+
+
+        // instancedPrimitiveJsonFiles
+        if (doc.HasMember("instancedPrimitiveJsonFiles"))
+        {
+            rapidjson::Value const& entries = doc["instancedPrimitiveJsonFiles"];
+            for (auto it = entries.MemberBegin(); it != entries.MemberEnd(); ++it)
+            {
+                auto entry = it->value.GetObject();
+                std::string type = entry["type"].GetString();
+
+                if (type == "archive")
                 {
-                    transform->add_child(obj);
+                    std::string inst_json_file = entry["jsonFile"].GetString();
+                    load_instanced_primitive_json_file(
+                            island_base_path,
+                            inst_json_file,
+                            base_transform,
+                            materials,
+                            textures,
+                            texture_cache
+                            );
                 }
             }
-            else
+        }
+
+
+        // instandedCopies (TODO: support copies with other geometry!)
+        if (doc.HasMember("instancedCopies"))
+        {
+            rapidjson::Value const& entries = doc["instancedCopies"];
+            for (auto it = entries.MemberBegin(); it != entries.MemberEnd(); ++it)
             {
-                // No. Rather the default case, add the top level
-                // json file's geomObjFile content as an instance
-                for (auto c : base_transform->children())
+                auto transform = std::make_shared<sg::transform>();
+                root->add_child(transform);
+
+                auto entry = it->value.GetObject();
+
+                int i = 0;
+                rapidjson::Value const& tm = entry["transformMatrix"];
+                for (auto& item : tm.GetArray())
                 {
-                    transform->add_child(c);
+                    transform->matrix().data()[i++] = item.GetFloat();
+                    assert(i <= 16);
                 }
-            }
 
-            // Copies may also have their own instancedPrimitiveJsonFiles
-            if (entry.HasMember("instancedPrimitiveJsonFiles"))
-            {
-                rapidjson::Value const& entries = entry["instancedPrimitiveJsonFiles"];
-                for (auto it = entries.MemberBegin(); it != entries.MemberEnd(); ++it)
+                // Check if the copy has its own geomObjFile
+                // (i.e. only texture and material are copied)
+                if (entry.HasMember("geomObjFile"))
                 {
-                    auto entry = it->value.GetObject();
-
-                    std::string type = entry["type"].GetString();
-
-                    if (type == "archive")
+                    std::string geom_obj_file = entry["geomObjFile"].GetString();
+                    std::vector<std::shared_ptr<sg::node>> objs;
+                    load_obj(island_base_path, geom_obj_file, materials, textures, texture_cache, objs);
+                    for (auto obj : objs)
                     {
-                        std::string inst_json_file = entry["jsonFile"].GetString();
-                        load_instanced_primitive_json_file(
-                                island_base_path,
-                                inst_json_file,
-                                transform,
-                                materials,
-                                textures,
-                                texture_cache
-                                );
+                        transform->add_child(obj);
+                    }
+                }
+                else
+                {
+                    // No. Rather the default case, add the top level
+                    // json file's geomObjFile content as an instance
+                    for (auto c : base_transform->children())
+                    {
+                        transform->add_child(c);
+                    }
+                }
+
+                // Copies may also have their own instancedPrimitiveJsonFiles
+                if (entry.HasMember("instancedPrimitiveJsonFiles"))
+                {
+                    rapidjson::Value const& entries = entry["instancedPrimitiveJsonFiles"];
+                    for (auto it = entries.MemberBegin(); it != entries.MemberEnd(); ++it)
+                    {
+                        auto entry = it->value.GetObject();
+
+                        std::string type = entry["type"].GetString();
+
+                        if (type == "archive")
+                        {
+                            std::string inst_json_file = entry["jsonFile"].GetString();
+                            load_instanced_primitive_json_file(
+                                    island_base_path,
+                                    inst_json_file,
+                                    transform,
+                                    materials,
+                                    textures,
+                                    texture_cache
+                                    );
+                        }
                     }
                 }
             }

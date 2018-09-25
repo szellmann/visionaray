@@ -138,4 +138,13 @@ void load_ply(std::string const& filename, model& mod)
     }
 }
 
+void load_ply(std::vector<std::string> const& filenames, model& mod)
+{
+    // TODO!
+    for (auto filename : filenames)
+    {
+        load_ply(filename, mod);
+    }
+}
+
 } // visionaray

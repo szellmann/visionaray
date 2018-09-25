@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <visionaray/math/forward.h>
 #include <visionaray/math/triangle.h>
@@ -94,6 +95,13 @@ public:
 
 public:
 
+    model();
+
+    bool load(std::string const& filename);
+    bool load(std::vector<std::string> const& filenames);
+
+public:
+
     // Scene graph
     std::shared_ptr<sg::node> scene_graph = nullptr;
 
@@ -113,8 +121,6 @@ public:
 #endif
 
     texture_format  tex_format = UV;
-
-    bool load(std::string const& filename);
 
 };
 

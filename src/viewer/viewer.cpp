@@ -3,6 +3,7 @@
 
 #include <common/config.h>
 
+#include <algorithm>
 #include <cassert>
 #include <chrono>
 #include <cmath>
@@ -12,11 +13,12 @@
 #include <iomanip>
 #include <iostream>
 #include <istream>
-#include <ostream>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <new>
+#include <ostream>
 #include <set>
 #include <sstream>
 #include <string>
@@ -1263,13 +1265,13 @@ int main(int argc, char** argv)
     // Load the scene
     std::cout << "Loading model...\n";
 
-    for (auto filename : rend.filenames)
+    std::vector<std::string> filenames;
+    std::copy(rend.filenames.begin(), rend.filenames.end(), std::back_inserter(filenames));
+
+    if (!rend.mod.load(filenames))
     {
-        if (!rend.mod.load(filename))
-        {
-            std::cerr << "Failed loading model\n";
-            return EXIT_FAILURE;
-        }
+        std::cerr << "Failed loading model\n";
+        return EXIT_FAILURE;
     }
 
     rend.build_bvhs();
