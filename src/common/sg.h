@@ -219,21 +219,19 @@ public:
 
     VSNRAY_SG_NODE
 
-    using node_pointer = std::shared_ptr<node>;
-
     std::string& name();
     std::string const& name() const;
 
     uint64_t& flags();
     uint64_t const& flags() const;
 
-    std::vector<node_pointer>& parents();
-    std::vector<node_pointer> const& parents() const;
+    std::vector<std::weak_ptr<node>>& parents();
+    std::vector<std::weak_ptr<node>> const& parents() const;
 
-    std::vector<node_pointer>& children();
-    std::vector<node_pointer> const& children() const;
+    std::vector<std::shared_ptr<node>>& children();
+    std::vector<std::shared_ptr<node>> const& children() const;
 
-    void add_child(node_pointer child);
+    void add_child(std::shared_ptr<node> child);
 
 protected:
 
@@ -244,8 +242,8 @@ protected:
     };
 
     std::unique_ptr<meta_data> meta_data_ = nullptr;
-    std::vector<node_pointer> parents_;
-    std::vector<node_pointer> children_;
+    std::vector<std::weak_ptr<node>> parents_;
+    std::vector<std::shared_ptr<node>> children_;
 
 };
 

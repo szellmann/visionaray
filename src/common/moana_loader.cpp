@@ -512,8 +512,8 @@ struct statistics_visitor : sg::node_visitor
 
     void apply(sg::node& n)
     {
-        child_pointer_bytes += n.children().size() * sizeof(sg::node::node_pointer);
-        parent_pointer_bytes += n.parents().size() * sizeof(sg::node::node_pointer);
+        child_pointer_bytes += n.children().size() * sizeof(std::shared_ptr<sg::node>);
+        parent_pointer_bytes += n.parents().size() * sizeof(std::weak_ptr<sg::node>);
 
         // Don't count twice (number of pure nodes is insignifanct)
         //node_bytes_total += sizeof(sg::node);

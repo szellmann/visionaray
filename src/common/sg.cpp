@@ -58,27 +58,27 @@ uint64_t const& node::flags() const
     return meta_data_->flags;
 }
 
-std::vector<node::node_pointer>& node::parents()
+std::vector<std::weak_ptr<node>>& node::parents()
 {
     return parents_;
 }
 
-std::vector<node::node_pointer> const& node::parents() const
+std::vector<std::weak_ptr<node>> const& node::parents() const
 {
     return parents_;
 }
 
-std::vector<node::node_pointer>& node::children()
+std::vector<std::shared_ptr<node>>& node::children()
 {
     return children_;
 }
 
-std::vector<node::node_pointer> const& node::children() const
+std::vector<std::shared_ptr<node>> const& node::children() const
 {
     return children_;
 }
 
-void node::add_child(node_pointer child)
+void node::add_child(std::shared_ptr<node> child)
 {
     child->parents_.push_back(shared_from_this());
     children_.push_back(child);
@@ -199,7 +199,8 @@ void node_visitor::apply(node& n)
 
         for (auto& p : n.parents_)
         {
-            p->accept(*this);
+            auto pp = p.lock();
+            pp->accept(*this);
         }
     }
 }
