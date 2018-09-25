@@ -599,8 +599,6 @@ void load_moana(std::string const& filename, model& mod)
 
 void load_moana(std::vector<std::string> const& filenames, model& mod)
 {
-    // Textures, init with one empty texture
-    std::map<std::string, std::shared_ptr<sg::texture>> textures;
 #if VSNRAY_COMMON_HAVE_PTEX
     std::shared_ptr<PtexPtr<PtexCache>> texture_cache = std::make_shared<PtexPtr<PtexCache>>(
         Ptex::PtexCache::create(
@@ -610,19 +608,7 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
             nullptr
             )
         );
-    auto dummy = std::make_shared<sg::ptex_texture>("null", texture_cache);
-#else
-    // No texture cache..
-    void* texture_cache = nullptr;
-    // Add a 2D dummy texture
-    auto dummy = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
-    dummy->resize(1, 1);
-    vector<4, unorm<8>> white(1.0f);
-    dummy->reset(&white);
 #endif
-    dummy->name() = "null";
-    textures.insert(std::make_pair("null", dummy));
-
 
     auto root = std::make_shared<sg::node>();
 
@@ -630,6 +616,24 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
     {
         // Materials map
         std::map<std::string, std::shared_ptr<sg::disney_material>> materials;
+
+        // Textures, init with one empty texture
+        std::map<std::string, std::shared_ptr<sg::texture>> textures;
+
+#if VSNRAY_COMMON_HAVE_PTEX
+        auto dummy = std::make_shared<sg::ptex_texture>("null", texture_cache);
+#else
+        // No texture cache..
+        void* texture_cache = nullptr;
+        // Add a 2D dummy texture
+        auto dummy = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
+        dummy->resize(1, 1);
+        vector<4, unorm<8>> white(1.0f);
+        dummy->reset(&white);
+#endif
+        dummy->name() = "null";
+        textures.insert(std::make_pair("null", dummy));
+
 
         std::cout << "Load moana file: " << filename << '\n';
         cfile file(filename, "r");
