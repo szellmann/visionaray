@@ -881,7 +881,7 @@ void renderer::render_impl()
 
     if (rt.mode() == host_device_rt::CPU)
     {
-        if (mod.scene_graph != nullptr)
+        if (host_top_level_bvh.num_primitives() > 0)
         {
             aligned_vector<generic_light_t> temp_lights;
             for (auto pl : point_lights)
@@ -1030,6 +1030,21 @@ void renderer::render_impl()
         }
     }
 #endif
+
+#if VSNRAY_COMMON_HAVE_PTEX
+//  if (mod.ptex_textures.size() > 0)
+//  {
+//      PtexCache::Stats stats;
+//      mod.ptex_textures[0].cache.get()->get()->getStats(stats);
+//      std::cout << "Mem used:        " << stats.memUsed << '\n';
+//      std::cout << "Peak mem used:   " << stats.peakMemUsed << '\n';
+//      std::cout << "Files open:      " << stats.filesOpen << '\n';
+//      std::cout << "Peak files open: " << stats.peakFilesOpen << '\n';
+//      std::cout << "Files accessed:  " << stats.filesAccessed << '\n';
+//      std::cout << "File reopens:    " << stats.fileReopens << '\n';
+//      std::cout << "Block reads:     " << stats.blockReads << '\n';
+//  }
+#endif
 }
 
 void renderer::on_close()
@@ -1125,7 +1140,7 @@ void renderer::on_key_press(key_event const& event)
 
         if (show_bvh)
         {
-            if (mod.scene_graph != nullptr)
+            if (host_top_level_bvh.num_nodes() > 0)
             {
                 outlines.init(host_top_level_bvh);
             }
