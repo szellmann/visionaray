@@ -547,7 +547,26 @@ struct statistics_visitor : sg::node_visitor
                 material_bytes += sizeof(sg::material);
             }
 
-            // TODO: textures
+            for (auto& t : sp.textures())
+            {
+#if VSNRAY_COMMON_HAVE_PTEX
+
+                auto tex = std::dynamic_pointer_cast<sg::ptex_texture>(t);
+
+                Ptex::String error = "";
+                PtexPtr<PtexTexture> ptex_tex(tex->cache()->get()->get(tex->filename().c_str(), error));
+
+                if (ptex_tex != nullptr)
+                {
+                    for (int faceid = 0; faceid < ptex_tex->numFaces(); ++faceid)
+                    {
+                        texture_bytes += Ptex::DataSize(ptex_tex->dataType())
+                                       * ptex_tex->numChannels()
+                                       * ptex_tex->getFaceInfo(faceid).res.size();
+                    }
+                }
+#endif
+            }
 
             surf_node_bytes += sizeof(sg::surface_properties);
             node_bytes_total += sizeof(sg::surface_properties);
@@ -578,6 +597,7 @@ struct statistics_visitor : sg::node_visitor
     size_t indices_bytes = 0;
     size_t matrix_bytes = 0;
     size_t material_bytes = 0;
+    size_t texture_bytes = 0;
     size_t material_pointer_bytes = 0;
     size_t texture_pointer_bytes = 0;
     size_t child_pointer_bytes = 0;
@@ -799,6 +819,7 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
     std::cout << "Indices           (MB): " << stats_visitor.indices_bytes / (1024 * 1024) << '\n';
     std::cout << "Matrices          (MB): " << stats_visitor.matrix_bytes / (1024 * 1024) << '\n';
     std::cout << "Materials         (MB): " << stats_visitor.material_bytes / (1024 * 1024) << '\n';
+    std::cout << "Textures          (MB): " << stats_visitor.texture_bytes / (1024 * 1024) << '\n';
     std::cout << "Material pointers (MB): " << stats_visitor.material_pointer_bytes / (1024 * 1024) << '\n';
     std::cout << "Texture pointers  (MB): " << stats_visitor.texture_pointer_bytes / (1024 * 1024) << '\n';
     std::cout << "Child pointers    (MB): " << stats_visitor.child_pointer_bytes / (1024 * 1024) << '\n';
