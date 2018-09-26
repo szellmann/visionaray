@@ -1173,6 +1173,12 @@ void renderer::on_key_press(key_event const& event)
         show_hud = !show_hud;
         break;
 
+    case 'l':
+        use_headlight = !use_headlight;
+        counter.reset();
+        clear_frame();
+        break;
+
    case 'm':
 #ifdef __CUDACC__
         if (rt.mode() == host_device_rt::CPU)
