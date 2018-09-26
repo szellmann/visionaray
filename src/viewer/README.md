@@ -48,6 +48,7 @@ The viewer supports the following mouse interaction modes and keyboard shortcuts
 * **Key-b**: Toggle displaying outlines of the BVH.
 * **Key-c**: Toggle color space (RGB|sRGB).
 * **Key-h**: Toggle visibility of head up display.
+* **Key-l**: Toggle headlight.
 * **Key-m**: **Switch** between **CPU** mode and **GPU** mode (must be [compiled with CUDA](#build-cuda)).
 * **Key-s**: Toggle supersampling anti-aliasing mode. Only applies to ray casting and ray tracing algorithm (simple|whitted). Supported modes: 1x, 2x, 4x, and 8x supersampling.
 * **Key-u**: **Store** the current **camera** in the working directory (visionaray-camera.txt). Be **careful**, **old** cameras are **overwritten**.
