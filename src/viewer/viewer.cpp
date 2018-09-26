@@ -678,8 +678,6 @@ void renderer::build_bvhs()
 
 #if 1
         mod.scene_graph.reset();
-        mod.primitives.clear();
-        mod.primitives.shrink_to_fit();
 #endif
     }
 
