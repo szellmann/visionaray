@@ -107,29 +107,29 @@ static void store_faces(
         auto ni2 = remap_index(*faces[last - 1].normal_index, normals_size);
         auto ni3 = remap_index(*faces[last].normal_index, normals_size);
 
-        tm->vertices.emplace_back(
+        tm->add_vertex(sg::vertex(
             vertices[i1],
             normals[ni1],
             vec2(0.0f),
             vec3(0.0f),  // base color undefined
             face_id
-            );
+            ));
 
-        tm->vertices.emplace_back(
+        tm->add_vertex(sg::vertex(
             vertices[i2],
             normals[ni2],
             vec2(0.0f),
             vec3(0.0f),  // base color undefined
             face_id
-            );
+            ));
 
-        tm->vertices.emplace_back(
+        tm->add_vertex(sg::vertex(
             vertices[i3],
             normals[ni3],
             vec2(0.0f),
             vec3(0.0f),  // base color undefined
             face_id
-            );
+            ));
 
         ++last;
         face_id = ~face_id; // indicates 2nd triangle in quad
@@ -315,7 +315,7 @@ static void load_obj(
     {
         auto surf = std::dynamic_pointer_cast<sg::surface_properties>(obj);
 
-        if (surf->textures().size() == 0)
+        if (surf->num_textures() == 0)
         {
             auto it = textures.find("null");
             surf->add_texture(it->second);
@@ -326,8 +326,8 @@ static void load_obj(
             auto tm = std::dynamic_pointer_cast<sg::triangle_mesh>(c);
 
             // Fill with 0,1,2,3,4,..
-            tm->indices.resize(tm->vertices.size());
-            std::iota(tm->indices.begin(), tm->indices.end(), 0);
+            tm->resize_indices(tm->num_vertices());
+            std::iota(tm->indices_begin(), tm->indices_end(), 0);
         }
     }
 }
@@ -536,7 +536,7 @@ struct statistics_visitor : sg::node_visitor
         if (sp.flags() == 0)
         {
             material_pointer_bytes += sizeof(std::shared_ptr<sg::material>);
-            texture_pointer_bytes += sp.textures().size() * sizeof(std::shared_ptr<sg::texture>);
+            texture_pointer_bytes += sp.num_textures() * sizeof(std::shared_ptr<sg::texture>);
 
             if (std::dynamic_pointer_cast<sg::disney_material>(sp.material()))
             {
@@ -547,11 +547,11 @@ struct statistics_visitor : sg::node_visitor
                 material_bytes += sizeof(sg::material);
             }
 
-            for (auto& t : sp.textures())
+            for (auto it = sp.textures_begin(); it != sp.textures_end(); ++it)
             {
 #if VSNRAY_COMMON_HAVE_PTEX
 
-                auto tex = std::dynamic_pointer_cast<sg::ptex_texture>(t);
+                auto tex = std::dynamic_pointer_cast<sg::ptex_texture>(*it);
 
                 Ptex::String error = "";
                 PtexPtr<PtexTexture> ptex_tex(tex->cache()->get()->get(tex->filename().c_str(), error));
@@ -581,8 +581,8 @@ struct statistics_visitor : sg::node_visitor
     {
         if (tm.flags() == 0)
         {
-            vertices_bytes += tm.vertices.size() * sizeof(sg::vertex);
-            indices_bytes += tm.indices.size() * sizeof(int);
+            vertices_bytes += tm.num_vertices() * sizeof(sg::vertex);
+            indices_bytes += tm.num_indices() * sizeof(int);
 
             mesh_node_bytes += sizeof(sg::triangle_mesh);
             node_bytes_total += sizeof(sg::triangle_mesh);
