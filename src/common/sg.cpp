@@ -308,25 +308,25 @@ struct flatten_visitor : node_visitor
         // Matrix to transform normals
         mat4 trans_inv = inverse(transpose(current_transform));
 
-        assert(tm.indices.size() % 3 == 0);
+        assert(tm.vertices.size() % 3 == 0);
 
         size_t first_primitive = model_.primitives.size();
-        model_.primitives.resize(model_.primitives.size() + tm.indices.size() / 3);
+        model_.primitives.resize(model_.primitives.size() + tm.vertices.size() / 3);
 
         size_t first_shading_normal = model_.shading_normals.size();
-        model_.shading_normals.resize(model_.shading_normals.size() + tm.indices.size());
+        model_.shading_normals.resize(model_.shading_normals.size() + tm.vertices.size());
 
         size_t first_geometric_normal = model_.geometric_normals.size();
-        model_.geometric_normals.resize(model_.geometric_normals.size() + tm.indices.size() / 3);
+        model_.geometric_normals.resize(model_.geometric_normals.size() + tm.vertices.size() / 3);
 
         size_t first_tex_coord = model_.tex_coords.size();
-        model_.tex_coords.resize(model_.tex_coords.size() + tm.indices.size());
+        model_.tex_coords.resize(model_.tex_coords.size() + tm.vertices.size());
 
-        for (size_t i = 0; i < tm.indices.size(); i += 3)
+        for (size_t i = 0; i < tm.vertices.size(); i += 3)
         {
-            vec3 v1 = tm.vertices[tm.indices[i]];
-            vec3 v2 = tm.vertices[tm.indices[i + 1]];
-            vec3 v3 = tm.vertices[tm.indices[i + 2]];
+            vec3 v1 = tm.vertices[i];
+            vec3 v2 = tm.vertices[i + 1];
+            vec3 v3 = tm.vertices[i + 2];
 
             v1 = (current_transform * vec4(v1, 1.0f)).xyz();
             v2 = (current_transform * vec4(v2, 1.0f)).xyz();
@@ -339,9 +339,9 @@ struct flatten_visitor : node_visitor
 
             if (!tm.normals.empty())
             {
-                vec3 n1 = tm.normals[tm.indices[i]];
-                vec3 n2 = tm.normals[tm.indices[i + 1]];
-                vec3 n3 = tm.normals[tm.indices[i + 2]];
+                vec3 n1 = tm.normals[i];
+                vec3 n2 = tm.normals[i + 1];
+                vec3 n3 = tm.normals[i + 2];
 
                 n1 = (trans_inv * vec4(n1, 1.0f)).xyz();
                 n2 = (trans_inv * vec4(n2, 1.0f)).xyz();
@@ -360,9 +360,9 @@ struct flatten_visitor : node_visitor
 
             if (!tm.tex_coords.empty())
             {
-                vec2 tc1 = tm.tex_coords[tm.indices[i]];
-                vec2 tc2 = tm.tex_coords[tm.indices[i + 1]];
-                vec2 tc3 = tm.tex_coords[tm.indices[i + 2]];
+                vec2 tc1 = tm.tex_coords[i];
+                vec2 tc2 = tm.tex_coords[i + 1];
+                vec2 tc3 = tm.tex_coords[i + 2];
 
                 model_.tex_coords[first_tex_coord + i]     = tc1;
                 model_.tex_coords[first_tex_coord + i + 1] = tc2;

@@ -291,9 +291,6 @@ public:
 
     VSNRAY_SG_NODE
 
-    // Triangle indices
-    aligned_vector<int> indices;
-
     // Vertex positions 
     aligned_vector<vec3> vertices;
 

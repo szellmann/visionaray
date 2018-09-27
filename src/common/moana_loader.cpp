@@ -8,7 +8,6 @@
 #include <iostream>
 #include <map>
 #include <memory>
-#include <numeric>
 #include <ostream>
 #include <vector>
 
@@ -306,15 +305,6 @@ static void load_obj(
             auto it = textures.find("null");
             surf->add_texture(it->second);
         }
-
-        for (auto c : surf->children())
-        {
-            auto tm = std::dynamic_pointer_cast<sg::triangle_mesh>(c);
-
-            // Fill with 0,1,2,3,4,..
-            tm->indices.resize(tm->vertices.size());
-            std::iota(tm->indices.begin(), tm->indices.end(), 0);
-        }
     }
 }
 
@@ -569,7 +559,7 @@ struct statistics_visitor : sg::node_visitor
         {
             // TODO
             //vertices_bytes += tm.vertices.size() * sizeof(sg::vertex);
-            indices_bytes += tm.indices.size() * sizeof(int);
+            //indices_bytes += tm.indices.size() * sizeof(int);
 
             mesh_node_bytes += sizeof(sg::triangle_mesh);
             node_bytes_total += sizeof(sg::triangle_mesh);

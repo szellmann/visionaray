@@ -435,77 +435,37 @@ struct build_bvhs_visitor : sg::node_visitor
 
     void apply(sg::triangle_mesh& tm)
     {
-        if (tm.flags() == 0 && tm.indices.size() > 0)
+        if (tm.flags() == 0 && tm.vertices.size() > 0)
         {
-            assert(tm.indices.size() % 3 == 0);
+            assert(tm.vertices.size() % 3 == 0);
 
-            aligned_vector<basic_triangle<3, float>> triangles(tm.indices.size() / 3);
-
-            size_t first_shading_normal = shading_normals_.size();
-            if (!tm.normals.empty())
-            {
-                shading_normals_.resize(shading_normals_.size() + tm.indices.size());
-            }
+            aligned_vector<basic_triangle<3, float>> triangles(tm.vertices.size() / 3);
 
             size_t first_geometric_normal = geometric_normals_.size();
-            geometric_normals_.resize(geometric_normals_.size() + tm.indices.size() / 3);
+            geometric_normals_.resize(geometric_normals_.size() + tm.vertices.size() / 3);
 
-            size_t first_tex_coord = tex_coords_.size();
-            if (!tm.tex_coords.empty())
-            {
-                tex_coords_.resize(tex_coords_.size() + tm.indices.size());
-            }
+            shading_normals_.insert(shading_normals_.end(), tm.normals.begin(), tm.normals.end());
+
+            tex_coords_.insert(tex_coords_.end(), tm.tex_coords.begin(), tm.tex_coords.end());
 
 #if VSNRAY_COMMON_HAVE_PTEX
-            size_t first_face_id = face_ids_.size();
-            if (!tm.face_ids.empty())
-            {
-                face_ids_.resize(face_ids_.size() + tm.indices.size() / 3);
-            }
+            face_ids_.insert(face_ids_.end(), tm.face_ids.begin(), tm.face_ids.end());
 #endif
 
-            for (size_t i = 0; i < tm.indices.size(); i += 3)
+            for (size_t i = 0; i < tm.vertices.size(); i += 3)
             {
-                vec3 v1 = tm.vertices[tm.indices[i]];
-                vec3 v2 = tm.vertices[tm.indices[i + 1]];
-                vec3 v3 = tm.vertices[tm.indices[i + 2]];
+                vec3 v1 = tm.vertices[i];
+                vec3 v2 = tm.vertices[i + 1];
+                vec3 v3 = tm.vertices[i + 2];
 
                 basic_triangle<3, float> tri(v1, v2 - v1, v3 - v1);
                 tri.prim_id = current_prim_id_++;
                 tri.geom_id = current_geom_id_;
                 triangles[i / 3] = tri;
 
-                if (!tm.normals.empty())
-                {
-                    vec3 n1 = tm.normals[tm.indices[i]];
-                    vec3 n2 = tm.normals[tm.indices[i + 1]];
-                    vec3 n3 = tm.normals[tm.indices[i + 2]];
-
-                    shading_normals_[first_shading_normal + i]     = n1;
-                    shading_normals_[first_shading_normal + i + 1] = n2;
-                    shading_normals_[first_shading_normal + i + 2] = n3;
-                }
-
                 vec3 gn = normalize(cross(v2 - v1, v3 - v1));
 
                 geometric_normals_[first_geometric_normal + i / 3] = gn;
-
-                if (!tm.tex_coords.empty())
-                {
-                    vec2 tc1 = tm.tex_coords[tm.indices[i]];
-                    vec2 tc2 = tm.tex_coords[tm.indices[i + 1]];
-                    vec2 tc3 = tm.tex_coords[tm.indices[i + 2]];
-
-                    tex_coords_[first_tex_coord + i]     = tc1;
-                    tex_coords_[first_tex_coord + i + 1] = tc2;
-                    tex_coords_[first_tex_coord + i + 2] = tc3;
-                }
-
-#if VSNRAY_COMMON_HAVE_PTEX
-                int fid = tm.face_ids[tm.indices[i / 3]];
-
-                face_ids_[first_face_id + i / 3] = fid;
-#endif
             }
 
             // Build single bvh
