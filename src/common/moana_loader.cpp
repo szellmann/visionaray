@@ -107,29 +107,15 @@ static void store_faces(
         auto ni2 = remap_index(*faces[last - 1].normal_index, normals_size);
         auto ni3 = remap_index(*faces[last].normal_index, normals_size);
 
-        tm->vertices.emplace_back(
-            vertices[i1],
-            normals[ni1],
-            vec2(0.0f),
-            vec3(0.0f),  // base color undefined
-            face_id
-            );
+        tm->vertices.emplace_back(vertices[i1]);
+        tm->vertices.emplace_back(vertices[i2]);
+        tm->vertices.emplace_back(vertices[i3]);
 
-        tm->vertices.emplace_back(
-            vertices[i2],
-            normals[ni2],
-            vec2(0.0f),
-            vec3(0.0f),  // base color undefined
-            face_id
-            );
+        tm->normals.emplace_back(normals[ni1]);
+        tm->normals.emplace_back(normals[ni2]);
+        tm->normals.emplace_back(normals[ni3]);
 
-        tm->vertices.emplace_back(
-            vertices[i3],
-            normals[ni3],
-            vec2(0.0f),
-            vec3(0.0f),  // base color undefined
-            face_id
-            );
+        tm->face_ids.emplace_back(face_id);
 
         ++last;
         face_id = ~face_id; // indicates 2nd triangle in quad
@@ -581,7 +567,8 @@ struct statistics_visitor : sg::node_visitor
     {
         if (tm.flags() == 0)
         {
-            vertices_bytes += tm.vertices.size() * sizeof(sg::vertex);
+            // TODO
+            //vertices_bytes += tm.vertices.size() * sizeof(sg::vertex);
             indices_bytes += tm.indices.size() * sizeof(int);
 
             mesh_node_bytes += sizeof(sg::triangle_mesh);

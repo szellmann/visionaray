@@ -227,45 +227,6 @@ void node_visitor::apply(sphere& s)
 
 
 //-------------------------------------------------------------------------------------------------
-// vertex
-//
-
-vertex::vertex(vec3 p, vec3 n, vec2 tc, vec3 col, int fid)
-{
-    std::memcpy(data_, p.data(), sizeof(float) * 3);
-    std::memcpy(data_ + 3, n.data(), sizeof(float) * 3);
-    std::memcpy(data_ + 6, tc.data(), sizeof(float) * 2);
-    std::memcpy(data_ + 8, col.data(), sizeof(vector<4, unorm<8>>));
-    std::memcpy(data_ + 9, &fid, sizeof(int));
-}
-
-vec3 vertex::pos() const
-{
-    return vec3(data_);
-}
-
-vec3 vertex::normal() const
-{
-    return vec3(data_ + 3);
-}
-
-vec2 vertex::tex_coord() const
-{
-    return vec2(data_ + 6);
-}
-
-vector<4, unorm<8>> vertex::color() const
-{
-    return *reinterpret_cast<vector<4, unorm<8>> const*>(data_ + 8);
-}
-
-int vertex::face_id() const
-{
-    return *reinterpret_cast<int const*>(data_ + 9);
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // material
 //
 
@@ -363,44 +324,51 @@ struct flatten_visitor : node_visitor
 
         for (size_t i = 0; i < tm.indices.size(); i += 3)
         {
-            vec3 v1 = tm.vertices[tm.indices[i]].pos();
-            vec3 v2 = tm.vertices[tm.indices[i + 1]].pos();
-            vec3 v3 = tm.vertices[tm.indices[i + 2]].pos();
-
-            vec3 n1 = tm.vertices[tm.indices[i]].normal();
-            vec3 n2 = tm.vertices[tm.indices[i + 1]].normal();
-            vec3 n3 = tm.vertices[tm.indices[i + 2]].normal();
-
-            vec3 gn = normalize(cross(v2 - v1, v3 - v1));
-
-            vec2 tc1 = tm.vertices[tm.indices[i]].tex_coord();
-            vec2 tc2 = tm.vertices[tm.indices[i + 1]].tex_coord();
-            vec2 tc3 = tm.vertices[tm.indices[i + 2]].tex_coord();
+            vec3 v1 = tm.vertices[tm.indices[i]];
+            vec3 v2 = tm.vertices[tm.indices[i + 1]];
+            vec3 v3 = tm.vertices[tm.indices[i + 2]];
 
             v1 = (current_transform * vec4(v1, 1.0f)).xyz();
             v2 = (current_transform * vec4(v2, 1.0f)).xyz();
             v3 = (current_transform * vec4(v3, 1.0f)).xyz();
-
-            n1 = (trans_inv * vec4(n1, 1.0f)).xyz();
-            n2 = (trans_inv * vec4(n2, 1.0f)).xyz();
-            n3 = (trans_inv * vec4(n3, 1.0f)).xyz();
-
-            gn = (trans_inv * vec4(gn, 1.0f)).xyz();
 
             auto& t = model_.primitives[first_primitive + i / 3];
             t = basic_triangle<3, float>(v1, v2 - v1, v3 - v1);
             t.prim_id = static_cast<unsigned>(first_primitive + i / 3);
             t.geom_id = current_geom_id;
 
-            model_.shading_normals[first_shading_normal + i]     = n1;
-            model_.shading_normals[first_shading_normal + i + 1] = n2;
-            model_.shading_normals[first_shading_normal + i + 2] = n3;
+            if (!tm.normals.empty())
+            {
+                vec3 n1 = tm.normals[tm.indices[i]];
+                vec3 n2 = tm.normals[tm.indices[i + 1]];
+                vec3 n3 = tm.normals[tm.indices[i + 2]];
+
+                n1 = (trans_inv * vec4(n1, 1.0f)).xyz();
+                n2 = (trans_inv * vec4(n2, 1.0f)).xyz();
+                n3 = (trans_inv * vec4(n3, 1.0f)).xyz();
+
+                model_.shading_normals[first_shading_normal + i]     = n1;
+                model_.shading_normals[first_shading_normal + i + 1] = n2;
+                model_.shading_normals[first_shading_normal + i + 2] = n3;
+            }
+
+            vec3 gn = normalize(cross(v2 - v1, v3 - v1));
+
+            gn = (trans_inv * vec4(gn, 1.0f)).xyz();
 
             model_.geometric_normals[first_geometric_normal + i / 3] = gn;
 
-            model_.tex_coords[first_tex_coord + i]     = tc1;
-            model_.tex_coords[first_tex_coord + i + 1] = tc2;
-            model_.tex_coords[first_tex_coord + i + 2] = tc3;
+            if (!tm.tex_coords.empty())
+            {
+                vec2 tc1 = tm.tex_coords[tm.indices[i]];
+                vec2 tc2 = tm.tex_coords[tm.indices[i + 1]];
+                vec2 tc3 = tm.tex_coords[tm.indices[i + 2]];
+
+                model_.tex_coords[first_tex_coord + i]     = tc1;
+                model_.tex_coords[first_tex_coord + i + 1] = tc2;
+                model_.tex_coords[first_tex_coord + i + 2] = tc3;
+            }
+
 
             model_.bbox.insert(v1);
             model_.bbox.insert(v2);

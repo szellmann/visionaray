@@ -67,25 +67,6 @@ protected:
     traversal_type traversal_type_ = TraverseChildren;
 };
 
-class vertex
-{
-public:
-
-    vertex() = default;
-
-    vertex(vec3 p, vec3 n, vec2 tc, vec3 col, int fid);
-
-    vec3 pos() const;
-    vec3 normal() const;
-    vec2 tex_coord() const;
-    vector<4, unorm<8>> color() const;
-    int face_id() const;
-
-private:
-
-    float data_[10];
-};
-
 
 //-------------------------------------------------------------------------------------------------
 // Material base class
@@ -313,8 +294,20 @@ public:
     // Triangle indices
     aligned_vector<int> indices;
 
-    // Triangle vertices
-    aligned_vector<vertex> vertices;
+    // Vertex positions 
+    aligned_vector<vec3> vertices;
+
+    // Shading normals
+    aligned_vector<vec3> normals;
+
+    // Texture coordinates
+    aligned_vector<vec2> tex_coords;
+
+    // Per-vertex colors
+    aligned_vector<vector<4, unorm<8>>> colors;
+
+    // Face IDs for Ptex
+    aligned_vector<int> face_ids;
 
 };
 
