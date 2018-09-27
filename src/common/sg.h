@@ -282,29 +282,13 @@ public:
 
     VSNRAY_SG_NODE
 
-    using texture_iterator       = std::vector<std::shared_ptr<sg::texture>>::iterator;
-    using const_texture_iterator = std::vector<std::shared_ptr<sg::texture>>::const_iterator;
-
-    using texture_pointer        = std::vector<std::shared_ptr<sg::texture>>::pointer;
-    using const_texture_pointer  = std::vector<std::shared_ptr<sg::texture>>::const_pointer;
-
-public:
-
     std::shared_ptr<sg::material>& material();
     std::shared_ptr<sg::material> const& material() const;
 
-    texture_pointer        textures();
-    const_texture_pointer  textures() const;
-
-    texture_iterator       textures_begin();
-    const_texture_iterator textures_begin() const;
-
-    texture_iterator       textures_end();
-    const_texture_iterator textures_end() const;
+    std::vector<std::shared_ptr<sg::texture>>& textures();
+    std::vector<std::shared_ptr<sg::texture>> const& textures() const;
 
     void add_texture(std::shared_ptr<sg::texture> texture);
-
-    size_t num_textures() const;
 
 private:
 
@@ -326,58 +310,11 @@ public:
 
     VSNRAY_SG_NODE
 
-    using index_iterator        = aligned_vector<int>::iterator;
-    using const_index_iterator  = aligned_vector<int>::const_iterator;
-
-    using index_pointer         = aligned_vector<int>::pointer;
-    using const_index_pointer   = aligned_vector<int>::const_pointer;
-
-    using vertex_iterator       = aligned_vector<vertex>::iterator;
-    using const_vertex_iterator = aligned_vector<vertex>::const_iterator;
-
-    using vertex_pointer        = aligned_vector<vertex>::pointer;
-    using const_vertex_pointer  = aligned_vector<vertex>::const_pointer;
-
-public:
-
-    index_pointer         indices();
-    const_index_pointer   indices() const;
-
-    index_iterator        indices_begin();
-    const_index_iterator  indices_begin() const;
-
-    index_iterator        indices_end();
-    const_index_iterator  indices_end() const;
-
-    void add_index(int i);
-
-    void resize_indices(size_t size);
-
-    size_t num_indices() const;
-
-
-    vertex_pointer        vertices();
-    const_vertex_pointer  vertices() const;
-
-    vertex_iterator       vertices_begin();
-    const_vertex_iterator vertices_begin() const;
-
-    vertex_iterator       vertices_end();
-    const_vertex_iterator vertices_end() const;
-
-    void add_vertex(vertex v);
-
-    void resize_vertices(size_t size);
-
-    size_t num_vertices() const;
-
-private:
-
     // Triangle indices
-    aligned_vector<int> indices_;
+    aligned_vector<int> indices;
 
     // Triangle vertices
-    aligned_vector<vertex> vertices_;
+    aligned_vector<vertex> vertices;
 
 };
 

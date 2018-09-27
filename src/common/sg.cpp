@@ -160,139 +160,19 @@ std::shared_ptr<material> const& surface_properties::material() const
     return material_;
 }
 
-surface_properties::texture_pointer surface_properties::textures()
+std::vector<std::shared_ptr<sg::texture>>& surface_properties::textures()
 {
-    return textures_.data();
+    return textures_;
 }
 
-surface_properties::const_texture_pointer surface_properties::textures() const
+std::vector<std::shared_ptr<sg::texture>> const& surface_properties::textures() const
 {
-    return textures_.data();
-}
-
-surface_properties::texture_iterator surface_properties::textures_begin()
-{
-    return textures_.begin();
-}
-
-surface_properties::const_texture_iterator surface_properties::textures_begin() const
-{
-    return textures_.cbegin();
-}
-
-surface_properties::texture_iterator surface_properties::textures_end()
-{
-    return textures_.end();
-}
-
-surface_properties::const_texture_iterator surface_properties::textures_end() const
-{
-    return textures_.cend();
+    return textures_;
 }
 
 void surface_properties::add_texture(std::shared_ptr<sg::texture> texture)
 {
     textures_.push_back(texture);
-}
-
-size_t surface_properties::num_textures() const
-{
-    return textures_.size();
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// triangle_mesh
-//
-
-triangle_mesh::index_pointer triangle_mesh::indices()
-{
-    return indices_.data();
-}
-
-triangle_mesh::const_index_pointer triangle_mesh::indices() const
-{
-    return indices_.data();
-}
-
-triangle_mesh::index_iterator triangle_mesh::indices_begin()
-{
-    return indices_.begin();
-}
-
-triangle_mesh::const_index_iterator triangle_mesh::indices_begin() const
-{
-    return indices_.cbegin();
-}
-
-triangle_mesh::index_iterator triangle_mesh::indices_end()
-{
-    return indices_.end();
-}
-
-triangle_mesh::const_index_iterator triangle_mesh::indices_end() const
-{
-    return indices_.cend();
-}
-
-void triangle_mesh::add_index(int i)
-{
-    indices_.push_back(i);
-}
-
-void triangle_mesh::resize_indices(size_t size)
-{
-    indices_.resize(size);
-}
-
-size_t triangle_mesh::num_indices() const
-{
-    return indices_.size();
-}
-
-triangle_mesh::vertex_pointer triangle_mesh::vertices()
-{
-    return vertices_.data();
-}
-
-triangle_mesh::const_vertex_pointer triangle_mesh::vertices() const
-{
-    return vertices_.data();
-}
-
-triangle_mesh::vertex_iterator triangle_mesh::vertices_begin()
-{
-    return vertices_.begin();
-}
-
-triangle_mesh::const_vertex_iterator triangle_mesh::vertices_begin() const
-{
-    return vertices_.cbegin();
-}
-
-triangle_mesh::vertex_iterator triangle_mesh::vertices_end()
-{
-    return vertices_.end();
-}
-
-triangle_mesh::const_vertex_iterator triangle_mesh::vertices_end() const
-{
-    return vertices_.cend();
-}
-
-void triangle_mesh::add_vertex(vertex v)
-{
-    vertices_.push_back(v);
-}
-
-void triangle_mesh::resize_vertices(size_t size)
-{
-    vertices_.resize(size);
-}
-
-size_t triangle_mesh::num_vertices() const
-{
-    return vertices_.size();
 }
 
 
@@ -467,35 +347,35 @@ struct flatten_visitor : node_visitor
         // Matrix to transform normals
         mat4 trans_inv = inverse(transpose(current_transform));
 
-        assert(tm.num_indices() % 3 == 0);
+        assert(tm.indices.size() % 3 == 0);
 
         size_t first_primitive = model_.primitives.size();
-        model_.primitives.resize(model_.primitives.size() + tm.num_indices() / 3);
+        model_.primitives.resize(model_.primitives.size() + tm.indices.size() / 3);
 
         size_t first_shading_normal = model_.shading_normals.size();
-        model_.shading_normals.resize(model_.shading_normals.size() + tm.num_indices());
+        model_.shading_normals.resize(model_.shading_normals.size() + tm.indices.size());
 
         size_t first_geometric_normal = model_.geometric_normals.size();
-        model_.geometric_normals.resize(model_.geometric_normals.size() + tm.num_indices() / 3);
+        model_.geometric_normals.resize(model_.geometric_normals.size() + tm.indices.size() / 3);
 
         size_t first_tex_coord = model_.tex_coords.size();
-        model_.tex_coords.resize(model_.tex_coords.size() + tm.num_indices());
+        model_.tex_coords.resize(model_.tex_coords.size() + tm.indices.size());
 
-        for (size_t i = 0; i < tm.num_indices(); i += 3)
+        for (size_t i = 0; i < tm.indices.size(); i += 3)
         {
-            vec3 v1 = tm.vertices()[tm.indices()[i]].pos();
-            vec3 v2 = tm.vertices()[tm.indices()[i + 1]].pos();
-            vec3 v3 = tm.vertices()[tm.indices()[i + 2]].pos();
+            vec3 v1 = tm.vertices[tm.indices[i]].pos();
+            vec3 v2 = tm.vertices[tm.indices[i + 1]].pos();
+            vec3 v3 = tm.vertices[tm.indices[i + 2]].pos();
 
-            vec3 n1 = tm.vertices()[tm.indices()[i]].normal();
-            vec3 n2 = tm.vertices()[tm.indices()[i + 1]].normal();
-            vec3 n3 = tm.vertices()[tm.indices()[i + 2]].normal();
+            vec3 n1 = tm.vertices[tm.indices[i]].normal();
+            vec3 n2 = tm.vertices[tm.indices[i + 1]].normal();
+            vec3 n3 = tm.vertices[tm.indices[i + 2]].normal();
 
             vec3 gn = normalize(cross(v2 - v1, v3 - v1));
 
-            vec2 tc1 = tm.vertices()[tm.indices()[i]].tex_coord();
-            vec2 tc2 = tm.vertices()[tm.indices()[i + 1]].tex_coord();
-            vec2 tc3 = tm.vertices()[tm.indices()[i + 2]].tex_coord();
+            vec2 tc1 = tm.vertices[tm.indices[i]].tex_coord();
+            vec2 tc2 = tm.vertices[tm.indices[i + 1]].tex_coord();
+            vec2 tc3 = tm.vertices[tm.indices[i + 2]].tex_coord();
 
             v1 = (current_transform * vec4(v1, 1.0f)).xyz();
             v2 = (current_transform * vec4(v2, 1.0f)).xyz();
