@@ -162,8 +162,8 @@ public:
 
 private:
 
-    detail::variant_storage<Ts...>  storage_;
     unsigned                        type_index_;
+    detail::variant_storage<Ts...>  storage_;
 
 };
 
