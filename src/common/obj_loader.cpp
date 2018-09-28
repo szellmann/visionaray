@@ -311,15 +311,9 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
 
     // containers for parsing
 
-    vertex_vector    vertices;
-    tex_coord_vector tex_coords;
-    normal_vector    normals;
-    face_vector      faces;
-
     string_ref comment;
     string_ref mtl_file;
     string_ref mtl_name;
-
 
     for (auto filename : filenames)
     {
@@ -327,6 +321,11 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
 
         string_ref text(file.data(), file.size());
         auto it = text.cbegin();
+
+		vertex_vector    vertices;
+		tex_coord_vector tex_coords;
+		normal_vector    normals;
+		face_vector      faces;
 
         while (it != text.cend())
         {
