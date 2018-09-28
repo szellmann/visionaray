@@ -311,15 +311,9 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
 
     // containers for parsing
 
-    vertex_vector    vertices;
-    tex_coord_vector tex_coords;
-    normal_vector    normals;
-    face_vector      faces;
-
     string_ref comment;
     string_ref mtl_file;
     string_ref mtl_name;
-
 
     for (auto filename : filenames)
     {
@@ -327,6 +321,11 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
 
         string_ref text(file.data(), file.size());
         auto it = text.cbegin();
+
+        vertex_vector    vertices;
+        tex_coord_vector tex_coords;
+        normal_vector    normals;
+        face_vector      faces;
 
         while (it != text.cend())
         {
@@ -510,22 +509,6 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
             }
         }
 
-
-        // Calculate geometric normals
-        for (auto const& tri : mod.primitives)
-        {
-            vec3 n = normalize( cross(tri.e1, tri.e2) );
-            mod.geometric_normals.push_back(n);
-        }
-
-        // See that each triangle has (potentially dummy) texture coordinates
-        for (size_t i = mod.tex_coords.size(); i < mod.primitives.size(); ++i)
-        {
-            mod.tex_coords.emplace_back(0.0f);
-            mod.tex_coords.emplace_back(0.0f);
-            mod.tex_coords.emplace_back(0.0f);
-        }
-
         // See that there is a material for each geometry
         for (size_t i = mod.materials.size(); i <= geom_id; ++i)
         {
@@ -537,9 +520,24 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
         {
             insert_dummy_texture(mod);
         }
-
-        mod.bbox.insert(bounds(mod.primitives));
     }
+
+	// Calculate geometric normals
+	for (auto const& tri : mod.primitives)
+	{
+		vec3 n = normalize(cross(tri.e1, tri.e2));
+		mod.geometric_normals.push_back(n);
+	}
+
+	// See that each triangle has (potentially dummy) texture coordinates
+	for (size_t i = mod.tex_coords.size(); i < mod.primitives.size(); ++i)
+	{
+		mod.tex_coords.emplace_back(0.0f);
+		mod.tex_coords.emplace_back(0.0f);
+		mod.tex_coords.emplace_back(0.0f);
+	}
+
+	mod.bbox.insert(bounds(mod.primitives));
 }
 
 } // visionaray
