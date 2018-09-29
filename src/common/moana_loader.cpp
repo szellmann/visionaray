@@ -557,9 +557,11 @@ struct statistics_visitor : sg::node_visitor
     {
         if (tm.flags() == 0)
         {
-            // TODO
-            //vertices_bytes += tm.vertices.size() * sizeof(sg::vertex);
-            //indices_bytes += tm.indices.size() * sizeof(int);
+            vertices_bytes += tm.vertices.size() * sizeof(vec3);
+            normals_bytes += tm.normals.size() * sizeof(vec3);
+            tex_coords_bytes += tm.tex_coords.size() * sizeof(vec2);
+            // No colors
+            face_ids_bytes += tm.face_ids.size() * sizeof(int);
 
             mesh_node_bytes += sizeof(sg::triangle_mesh);
             node_bytes_total += sizeof(sg::triangle_mesh);
@@ -571,7 +573,9 @@ struct statistics_visitor : sg::node_visitor
     }
 
     size_t vertices_bytes = 0;
-    size_t indices_bytes = 0;
+    size_t normals_bytes = 0;
+    size_t tex_coords_bytes = 0;
+    size_t face_ids_bytes = 0;
     size_t matrix_bytes = 0;
     size_t material_bytes = 0;
     size_t texture_bytes = 0;
@@ -792,19 +796,23 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
     statistics_visitor stats_visitor;
     mod.scene_graph->accept(stats_visitor);
 
-    std::cout << "Vertices          (MB): " << stats_visitor.vertices_bytes / (1024 * 1024) << '\n';
-    std::cout << "Indices           (MB): " << stats_visitor.indices_bytes / (1024 * 1024) << '\n';
-    std::cout << "Matrices          (MB): " << stats_visitor.matrix_bytes / (1024 * 1024) << '\n';
-    std::cout << "Materials         (MB): " << stats_visitor.material_bytes / (1024 * 1024) << '\n';
-    std::cout << "Textures          (MB): " << stats_visitor.texture_bytes / (1024 * 1024) << '\n';
-    std::cout << "Material pointers (MB): " << stats_visitor.material_pointer_bytes / (1024 * 1024) << '\n';
-    std::cout << "Texture pointers  (MB): " << stats_visitor.texture_pointer_bytes / (1024 * 1024) << '\n';
-    std::cout << "Child pointers    (MB): " << stats_visitor.child_pointer_bytes / (1024 * 1024) << '\n';
-    std::cout << "Parent pointers   (MB): " << stats_visitor.parent_pointer_bytes / (1024 * 1024) << '\n';
-    std::cout << "Transform nodes   (MB): " << stats_visitor.transform_node_bytes / (1024 * 1024) << '\n';
-    std::cout << "Surface nodes     (MB): " << stats_visitor.surf_node_bytes / (1024 * 1024) << '\n';
-    std::cout << "Mesh nodes        (MB): " << stats_visitor.mesh_node_bytes / (1024 * 1024) << '\n';
-    std::cout << "Nodes total       (MB): " << stats_visitor.node_bytes_total / (1024 * 1024) << '\n';
+    static const size_t MB = 1024 * 1024;
+
+    std::cout << "Vertices            (MB): " << stats_visitor.vertices_bytes / MB << '\n';
+    std::cout << "Normals             (MB): " << stats_visitor.normals_bytes / MB << '\n';
+    std::cout << "Texture coordinates (MB): " << stats_visitor.tex_coords_bytes / MB << '\n';
+    std::cout << "Face IDs            (MB): " << stats_visitor.face_ids_bytes / MB << '\n';
+    std::cout << "Matrices            (MB): " << stats_visitor.matrix_bytes / MB << '\n';
+    std::cout << "Materials           (MB): " << stats_visitor.material_bytes / MB << '\n';
+    std::cout << "Textures            (MB): " << stats_visitor.texture_bytes / MB << '\n';
+    std::cout << "Material pointers   (MB): " << stats_visitor.material_pointer_bytes / MB << '\n';
+    std::cout << "Texture pointers    (MB): " << stats_visitor.texture_pointer_bytes / MB << '\n';
+    std::cout << "Child pointers      (MB): " << stats_visitor.child_pointer_bytes / MB << '\n';
+    std::cout << "Parent pointers     (MB): " << stats_visitor.parent_pointer_bytes / MB << '\n';
+    std::cout << "Transform nodes     (MB): " << stats_visitor.transform_node_bytes / MB << '\n';
+    std::cout << "Surface nodes       (MB): " << stats_visitor.surf_node_bytes / MB << '\n';
+    std::cout << "Mesh nodes          (MB): " << stats_visitor.mesh_node_bytes / MB << '\n';
+    std::cout << "Nodes total         (MB): " << stats_visitor.node_bytes_total / MB << '\n';
 
     reset_flags_visitor reset_visitor;
     mod.scene_graph->accept(reset_visitor);
