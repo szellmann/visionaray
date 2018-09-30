@@ -1253,6 +1253,12 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+	if (rend.filenames.empty())
+	{
+		std::cout << rend.cmd_line_inst().help(argv[0]) << "\n";
+		return EXIT_FAILURE;
+	}
+
     rend.gl_debug_callback.activate();
 
     // Load the scene
