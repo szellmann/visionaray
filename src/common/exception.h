@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_EXCEPTION_H
-#define VSNRAY_EXCEPTION_H 1
+#ifndef VSNRAY_COMMON_EXCEPTION_H
+#define VSNRAY_COMMON_EXCEPTION_H 1
 
 #include <stdexcept>
 
@@ -25,4 +25,4 @@ public:
 
 } // visionaray
 
-#endif // VSNRAY_EXCEPTION_H
+#endif // VSNRAY_COMMON_EXCEPTION_H
