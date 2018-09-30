@@ -50,9 +50,8 @@ inline ReturnT linear(
             address_mode
             );
 
-    auto lo = convert_to_int(coord1 * convert_to_float(texsize));
-    auto hi = convert_to_int(coord2 * convert_to_float(texsize));
-
+    auto lo = min(convert_to_int(coord1 * convert_to_float(texsize)), texsize - SizeT(1));
+    auto hi = min(convert_to_int(coord2 * convert_to_float(texsize)), texsize - SizeT(1));
 
     InternalT samples[2] =
     {
@@ -98,8 +97,8 @@ inline ReturnT linear(
             address_mode
             );
 
-    auto lo = convert_to_int(coord1 * convert_to_float(texsize));
-    auto hi = convert_to_int(coord2 * convert_to_float(texsize));
+    auto lo = min(convert_to_int(coord1 * convert_to_float(texsize)), texsize - SizeT(1));
+    auto hi = min(convert_to_int(coord2 * convert_to_float(texsize)), texsize - SizeT(1));
 
     InternalT samples[4] =
     {
@@ -151,8 +150,8 @@ inline ReturnT linear(
             address_mode
             );
 
-    auto lo = convert_to_int(coord1 * convert_to_float(texsize));
-    auto hi = convert_to_int(coord2 * convert_to_float(texsize));
+    auto lo = min(convert_to_int(coord1 * convert_to_float(texsize)), texsize - SizeT(1));
+    auto hi = min(convert_to_int(coord2 * convert_to_float(texsize)), texsize - SizeT(1));
 
     InternalT samples[8] =
     {
