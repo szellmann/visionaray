@@ -9,6 +9,7 @@
 #include <boost/filesystem.hpp>
 
 #include "dds_image.h"
+#include "exr_image.h"
 #include "hdr_image.h"
 #include "image.h"
 #include "jpeg_image.h"
@@ -21,7 +22,7 @@
 // Helpers
 //
 
-enum image_type { DDS, HDR, JPEG, PNG, PNM, TGA, TIFF, Unknown };
+enum image_type { DDS, EXR, HDR, JPEG, PNG, PNM, TGA, TIFF, Unknown };
 
 static image_type get_type(std::string const& filename)
 {
@@ -35,6 +36,16 @@ static image_type get_type(std::string const& filename)
     if (std::find(dds_extensions, dds_extensions + 2, p.extension()) != dds_extensions + 2)
     {
         return DDS;
+    }
+
+
+    // EXR
+
+    static const std::string exr_extensions[] = { ".exr", ".EXR" };
+
+    if (std::find(exr_extensions, exr_extensions + 2, p.extension()) != exr_extensions + 2)
+    {
+        return EXR;
     }
 
 
@@ -120,6 +131,21 @@ bool image::load(std::string const& filename)
 
     switch (it)
     {
+#if VSNRAY_COMMON_HAVE_OPENEXR
+    case EXR:
+    {
+        exr_image exr;
+        if (exr.load(fn))
+        {
+            width_  = exr.width_;
+            height_ = exr.height_;
+            format_ = exr.format_;
+            data_   = std::move(exr.data_);
+            return true;
+        }
+    }
+#endif // VSNRAY_COMMON_HAVE_OPENEXR
+
 #if VSNRAY_COMMON_HAVE_JPEG
     case JPEG:
     {

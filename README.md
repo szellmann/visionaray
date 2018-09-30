@@ -45,6 +45,7 @@ Additionally, in order to compile the viewer application and the [examples](http
 - [Libjpeg][7] (optional)
 - [Libpng][8] (optional)
 - [LibTIFF][9] (optional)
+- [OpenEXR][10] (optional)
 
 
 
@@ -146,3 +147,4 @@ Visionaray is licensed under the MIT License (MIT)
 [7]:    http://libjpeg.sourceforge.net/
 [8]:    http://libpng.sourceforge.net
 [9]:    http://www.libtiff.org
+[10]:   http://www.openexr.com/

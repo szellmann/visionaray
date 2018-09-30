@@ -10,6 +10,7 @@ find_package(Boost COMPONENTS filesystem iostreams system thread REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(JPEG)
+find_package(OpenEXR)
 find_package(OpenGL REQUIRED)
 find_package(PNG)
 find_package(Threads REQUIRED)
@@ -19,6 +20,7 @@ visionaray_use_package(Boost)
 visionaray_use_package(GLEW)
 visionaray_use_package(GLUT)
 visionaray_use_package(JPEG)
+visionaray_use_package(OpenEXR)
 visionaray_use_package(OpenGL)
 visionaray_use_package(PNG)
 visionaray_use_package(Threads)
@@ -157,6 +159,7 @@ set(COMMON_HEADERS
     cfile.h
     dds_image.h
     exception.h
+    exr_image.h
     hdr_image.h
     image.h
     image_base.h
@@ -197,6 +200,7 @@ set(COMMON_SOURCES
     manip/zoom_manipulator.cpp
 
     dds_image.cpp
+    exr_image.cpp
     hdr_image.cpp
     image.cpp
     image_base.cpp
