@@ -1,15 +1,19 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <common/config.h>
+
 #include <cmath>
 #include <cstdint>
 #include <iostream>
 #include <ostream>
 
+#if VSNRAY_COMMON_HAVE_OPENEXR
 #include <ImfArray.h>
 #include <ImfFrameBuffer.h>
 #include <ImfRgba.h>
 #include <ImfRgbaFile.h>
+#endif
 
 #include <visionaray/math/forward.h>
 #include <visionaray/math/vector.h>
@@ -20,6 +24,7 @@
 namespace visionaray
 {
 
+#if VSNRAY_COMMON_HAVE_OPENEXR
 static void store_rgb32f(
         aligned_vector<uint8_t>&       dst,
         Imf::Array2D<Imf::Rgba> const& src,
@@ -66,9 +71,11 @@ static void store_rgba32f(
         }
     }
 }
+#endif // VSNRAY_COMMON_HAVE_OPENEXR
 
 bool exr_image::load(std::string const& filename)
 {
+#if VSNRAY_COMMON_HAVE_OPENEXR
     try
     {
         Imf::RgbaInputFile file(filename.c_str());
@@ -110,6 +117,11 @@ bool exr_image::load(std::string const& filename)
     }
 
     return false;
+#else
+    VSNRAY_UNUSED(filename);
+
+    return false;
+#endif
 }
 
 } // visionaray
