@@ -144,6 +144,7 @@ struct renderer : viewer_type
             "filenames",
             cl::Desc("Input files in wavefront obj format"),
             cl::Positional,
+            cl::OneOrMore,
             cl::init(filenames)
             ) );
 
