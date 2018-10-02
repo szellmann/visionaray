@@ -189,6 +189,14 @@ struct renderer : viewer_type
             cl::init(this->ssaa_samples)
             ) );
 
+        add_cmdline_option( cl::makeOption<bool&>(
+            cl::Parser<>(),
+            "headlight",
+            cl::Desc("Activate headlight"),
+            cl::ArgRequired,
+            cl::init(this->use_headlight)
+            ) );
+
         add_cmdline_option( cl::makeOption<unsigned&>(
             cl::Parser<>(),
             "bounces",

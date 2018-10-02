@@ -26,6 +26,7 @@ Options:
       =rgb                - RGB color space for display
       =srgb               - sRGB color space for display
    -fullscreen            Full screen window
+   -headlight=<ARG>       Activate headlight
    -height=<ARG>          Window height
    -ssaa=<ARG>            Supersampling anti-aliasing factor:
       =1                  - 1x supersampling
