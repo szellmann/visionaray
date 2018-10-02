@@ -295,6 +295,7 @@ struct renderer : viewer_type
     mouse::pos                                  mouse_pos;
 
     visionaray::frame_counter                   counter;
+    double                                      last_frame_time = 0.0;
     gl::bvh_outline_renderer                    outlines;
     gl::debug_callback                          gl_debug_callback;
 
@@ -743,7 +744,7 @@ void renderer::render_hud()
     ImGui::SameLine();
     ImGui::Text("B: %5.2f", rgba.z);
 
-    ImGui::Text("FPS: %6.2f", counter.register_frame());
+    ImGui::Text("FPS: %6.2f", last_frame_time);
     ImGui::SameLine();
     ImGui::Spacing();
     ImGui::SameLine();
@@ -1011,6 +1012,8 @@ void renderer::render_impl()
         }
     }
 #endif
+
+    last_frame_time = counter.register_frame();
 
 #if VSNRAY_COMMON_HAVE_PTEX
 //  if (mod.ptex_textures.size() > 0)
