@@ -1,9 +1,12 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cstddef>
 #include <vector>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/forward.h>
+#include <visionaray/math/unorm.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/swizzle.h>
 
 #include <gtest/gtest.h>
