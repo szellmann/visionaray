@@ -459,6 +459,26 @@ VSNRAY_FORCE_INLINE F atan(F const& x)
     return F(tmp);
 }
 
+template <typename F, typename = typename std::enable_if<is_simd_vector<F>::value>::type>
+MATH_FUNC
+VSNRAY_FORCE_INLINE F atan2(F const& y, F const& x)
+{
+    using float_array = aligned_array_t<F>;
+
+    float_array tmpx;
+    store(tmpx, x);
+
+    float_array tmpy;
+    store(tmpy, y);
+
+    for (size_t i = 0; i < num_elements<F>::value; ++i)
+    {
+        tmpy[i] = atan2f(tmpy[i], tmpx[i]);
+    }
+
+    return F(tmpy);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // exp() / log() / log2()

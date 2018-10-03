@@ -29,6 +29,7 @@ using ::abs;
 using ::acos;
 using ::asin;
 using ::atan;
+using ::atan2;
 using ::ceil;
 using ::copysign;
 using ::cos;
@@ -51,6 +52,7 @@ MATH_FUNC inline float abs(float x) { return hc::precise_math::fabsf(x); }
 MATH_FUNC inline float acos(float x) { return hc::precise_math::acosf(x); }
 MATH_FUNC inline float asin(float x) { return hc::precise_math::asinf(x); }
 MATH_FUNC inline float atan(float x) { return hc::precise_math::atanf(x); }
+MATH_FUNC inline float atan2(float y, float x) { return hc::precise_math::atanf(y, x); }
 MATH_FUNC inline float ceil(float x) { return hc::precise_math::ceilf(x); }
 MATH_FUNC inline float copysign(float x, float y) { return hc::precise_math::copysignf(x, y); }
 MATH_FUNC inline float cos(float x) { return hc::precise_math::cosf(x); }
@@ -73,6 +75,7 @@ using std::abs;
 using std::acos;
 using std::asin;
 using std::atan;
+using std::atan2;
 using std::ceil;
 using std::copysign;
 using std::cos;
