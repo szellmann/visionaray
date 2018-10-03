@@ -24,27 +24,6 @@
 #include <string>
 #include <thread>
 
-#include <visionaray/detail/platform.h>
-
-#if defined(VSNRAY_OS_DARWIN)
-
-#include <AvailabilityMacros.h>
-
-#if MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_9
-
-    #pragma GCC diagnostic ignored "-Wdeprecated"
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
-#endif
-
-#include <GLUT/glut.h>
-
-#else // VSNRAY_OS_DARWIN
-
-#include <GL/glut.h>
-
-#endif
-
 #include <imgui.h>
 
 #include <Support/CmdLine.h>
