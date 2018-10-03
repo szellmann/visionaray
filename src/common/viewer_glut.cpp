@@ -716,6 +716,11 @@ void viewer_glut::quit()
 #endif
 }
 
+bool viewer_glut::have_imgui_support()
+{
+    return true;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Event handlers

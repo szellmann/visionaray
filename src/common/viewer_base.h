@@ -61,6 +61,9 @@ public:
     virtual void toggle_full_screen();
     virtual void quit();
 
+    // Default: false. Reimplement if derived viewer has ImGui support
+    static bool have_imgui_support();
+
 protected:
 
     virtual void on_close();

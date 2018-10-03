@@ -668,6 +668,11 @@ void renderer::clear_frame()
 
 void renderer::render_hud()
 {
+    if (!have_imgui_support())
+    {
+        return;
+    }
+
     // gather data to render
 
     int w = width();

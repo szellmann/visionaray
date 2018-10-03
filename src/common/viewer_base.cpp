@@ -214,6 +214,11 @@ void viewer_base::quit()
 {
 }
 
+bool viewer_base::have_imgui_support()
+{
+    return false;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Event handlers
