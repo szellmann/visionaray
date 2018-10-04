@@ -520,22 +520,6 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
             }
         }
 
-
-        // Calculate geometric normals
-        for (auto const& tri : mod.primitives)
-        {
-            vec3 n = normalize( cross(tri.e1, tri.e2) );
-            mod.geometric_normals.push_back(n);
-        }
-
-        // See that each triangle has (potentially dummy) texture coordinates
-        for (size_t i = mod.tex_coords.size(); i < mod.primitives.size(); ++i)
-        {
-            mod.tex_coords.emplace_back(0.0f);
-            mod.tex_coords.emplace_back(0.0f);
-            mod.tex_coords.emplace_back(0.0f);
-        }
-
         // See that there is a material for each geometry
         for (size_t i = mod.materials.size(); i <= geom_id; ++i)
         {
@@ -547,9 +531,24 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
         {
             insert_dummy_texture(mod);
         }
-
-        mod.bbox.insert(bounds(mod.primitives));
     }
+
+	// Calculate geometric normals
+	for (auto const& tri : mod.primitives)
+	{
+		vec3 n = normalize(cross(tri.e1, tri.e2));
+		mod.geometric_normals.push_back(n);
+	}
+
+	// See that each triangle has (potentially dummy) texture coordinates
+	for (size_t i = mod.tex_coords.size(); i < mod.primitives.size(); ++i)
+	{
+		mod.tex_coords.emplace_back(0.0f);
+		mod.tex_coords.emplace_back(0.0f);
+		mod.tex_coords.emplace_back(0.0f);
+	}
+
+	mod.bbox.insert(bounds(mod.primitives));
 }
 
 } // visionaray
