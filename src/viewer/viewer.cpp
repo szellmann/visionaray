@@ -176,6 +176,14 @@ struct renderer : viewer_type
             cl::init(this->use_headlight)
             ) );
 
+        add_cmdline_option( cl::makeOption<bool&>(
+            cl::Parser<>(),
+            "dof",
+            cl::Desc("Activate depth of field"),
+            cl::ArgRequired,
+            cl::init(this->use_dof)
+            ) );
+
         add_cmdline_option( cl::makeOption<unsigned&>(
             cl::Parser<>(),
             "bounces",
