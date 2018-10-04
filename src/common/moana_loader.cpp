@@ -659,21 +659,27 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
 
 
         // matFile
-        std::string mat_file = doc["matFile"].GetString();
-        load_material_file(island_base_path, mat_file, materials);
+        if (doc.HasMember("matFile"))
+        {
+            std::string mat_file = doc["matFile"].GetString();
+            load_material_file(island_base_path, mat_file, materials);
+        }
 
         auto base_transform = std::make_shared<sg::transform>();
         root->add_child(base_transform);
 
         // transformMatrix
-        int i = 0;
-        rapidjson::Value const& tm = doc["transformMatrix"];
-        if (tm.IsArray())
+        if (doc.HasMember("transformMatrix"))
         {
-            for (auto& item : tm.GetArray())
+            int i = 0;
+            rapidjson::Value const& tm = doc["transformMatrix"];
+            if (tm.IsArray())
             {
-                base_transform->matrix().data()[i++] = item.GetFloat();
-                assert(i <= 16);
+                for (auto& item : tm.GetArray())
+                {
+                    base_transform->matrix().data()[i++] = item.GetFloat();
+                    assert(i <= 16);
+                }
             }
         }
 
