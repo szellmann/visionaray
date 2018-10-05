@@ -887,6 +887,9 @@ void renderer::render_hud()
                     cam.set_lens_radius(0.1f);
                     cam.set_focal_distance(10.0f);
                     cam.view_all(mod.bbox);
+
+                    counter.reset();
+                    clear_frame();
                 }
                 else if (boost::filesystem::exists(current))
                 {
