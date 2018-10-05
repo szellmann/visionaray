@@ -126,7 +126,7 @@ The viewer application and the examples statically link with the Visionaray-comm
 
 - `src/3rdparty`: third-party code goes in here
 
-Visionaray currently uses the following third-party libraries:
+The viewer application and the examples use the following third-party libraries (the Visionaray library can be built without these dependencies):
 - [CmdLine](https://github.com/abolz/CmdLine) library to handle command line arguments in the viewer and example applications.
 - [dear imgui](https://github.com/ocornut/imgui) library for GUI elements in the viewer and example applications.
 - [RapidJSON](http://rapidjson.org/) library for parsing JSON scene descriptions.
