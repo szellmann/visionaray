@@ -129,6 +129,7 @@ The viewer application and the examples statically link with the Visionaray-comm
 Visionaray currently uses the following third-party libraries:
 - [CmdLine](https://github.com/abolz/CmdLine) library to handle command line arguments in the viewer and example applications.
 - [dear imgui](https://github.com/ocornut/imgui) library for GUI elements in the viewer and example applications.
+- [RapidJSON](http://rapidjson.org/) library for parsing JSON scene descriptions.
 - [tinyply](https://github.com/ddiakopoulos/tinyply) library to load Stanford PLY models.
 
 
