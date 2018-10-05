@@ -24,6 +24,8 @@
 #include <string>
 #include <thread>
 
+#include <boost/filesystem.hpp>
+
 #include <imgui.h>
 
 #include <Support/CmdLine.h>
@@ -1077,7 +1079,8 @@ void renderer::on_display()
 
 void renderer::on_key_press(key_event const& event)
 {
-    static const std::string camera_filename = "visionaray-camera.txt";
+    static const std::string camera_file_base = "visionaray-camera";
+    static const std::string camera_file_suffix = ".txt";
 
     switch (event.key())
     {
@@ -1180,10 +1183,30 @@ void renderer::on_key_press(key_event const& event)
 
     case 'u':
         {
-            std::ofstream file( camera_filename );
+            int inc = 0;
+            std::string inc_str = "";
+
+            std::string filename = camera_file_base + inc_str + camera_file_suffix;
+
+            while (boost::filesystem::exists(filename))
+            {
+                ++inc;
+                inc_str = std::to_string(inc);
+
+                while (inc_str.length() < 4)
+                {
+                    inc_str = std::string("0") + inc_str;
+                }
+
+                inc_str = std::string("-") + inc_str;
+
+                filename = camera_file_base + inc_str + camera_file_suffix;
+            }
+
+            std::ofstream file(filename);
             if (file.good())
             {
-                std::cout << "Storing camera to file: " << camera_filename << '\n';
+                std::cout << "Storing camera to file: " << filename << '\n';
                 file << cam;
             }
         }
@@ -1191,13 +1214,15 @@ void renderer::on_key_press(key_event const& event)
 
     case 'v':
         {
-            std::ifstream file( camera_filename );
+            std::string filename = camera_file_base + camera_file_suffix;
+
+            std::ifstream file(filename);
             if (file.good())
             {
                 file >> cam;
                 counter.reset();
                 clear_frame();
-                std::cout << "Load camera from file: " << camera_filename << '\n';
+                std::cout << "Load camera from file: " << filename << '\n';
             }
         }
         break;
