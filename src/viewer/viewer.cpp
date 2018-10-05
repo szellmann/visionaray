@@ -869,7 +869,7 @@ void renderer::render_hud()
     // TODO: member?
     static std::string current = camera_filenames[0]; // <reset...>
 
-    if (ImGui::BeginCombo("Camera files", current.c_str()))
+    if (ImGui::BeginCombo("Cameras", current.c_str()))
     {
         for (size_t i = 0; i < camera_filenames.size(); ++i)
         {
