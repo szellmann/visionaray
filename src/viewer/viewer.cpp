@@ -881,6 +881,11 @@ void renderer::render_hud()
 
                 if (current == camera_filenames[0])
                 {
+                    float aspect = width() / static_cast<float>(height());
+
+                    cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+                    cam.set_lens_radius(0.1f);
+                    cam.set_focal_distance(10.0f);
                     cam.view_all(mod.bbox);
                 }
                 else if (boost::filesystem::exists(current))
