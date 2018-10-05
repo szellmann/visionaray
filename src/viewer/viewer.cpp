@@ -304,6 +304,7 @@ protected:
 
 private:
 
+    void load_camera(std::string filename);
     void clear_frame();
     void render_hud();
     void render_impl();
@@ -653,6 +654,23 @@ void renderer::build_bvhs()
 
 
 //-------------------------------------------------------------------------------------------------
+// Load camera from file, reset frame counter and clear frame
+//
+
+void renderer::load_camera(std::string filename)
+{
+    std::ifstream file(filename);
+    if (file.good())
+    {
+        file >> cam;
+        counter.reset();
+        clear_frame();
+        std::cout << "Load camera from file: " << filename << '\n';
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // If path tracing, clear frame buffer and reset frame counter
 //
 
@@ -711,6 +729,36 @@ void renderer::render_hud()
             }
         }
         );
+
+
+    static const std::string camera_file_base = "visionaray-camera";
+    static const std::string camera_file_suffix = ".txt";
+
+    std::vector<std::string> camera_filenames;
+
+    camera_filenames.push_back("<reset...>");
+
+    int inc = 0;
+    std::string inc_str = "";
+
+    std::string filename = camera_file_base + inc_str + camera_file_suffix;
+
+    while (boost::filesystem::exists(filename))
+    {
+        camera_filenames.push_back(filename);
+
+        ++inc;
+        inc_str = std::to_string(inc);
+
+        while (inc_str.length() < 4)
+        {
+            inc_str = std::string("0") + inc_str;
+        }
+
+        inc_str = std::string("-") + inc_str;
+
+        filename = camera_file_base + inc_str + camera_file_suffix;
+    }
 
 
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
@@ -815,6 +863,39 @@ void renderer::render_hud()
         {
             std::cerr << "Warning: setting only affects pathtracing algorithm\n";
         }
+    }
+    ImGui::PopItemWidth();
+
+    // TODO: member?
+    static std::string current = camera_filenames[0]; // <reset...>
+
+    if (ImGui::BeginCombo("Camera files", current.c_str()))
+    {
+        for (size_t i = 0; i < camera_filenames.size(); ++i)
+        {
+            bool selected = current == camera_filenames[i];
+
+            if (ImGui::Selectable(camera_filenames[i].c_str(), selected))
+            {
+                current = camera_filenames[i].c_str();
+
+                if (current == camera_filenames[0])
+                {
+                    cam.view_all(mod.bbox);
+                }
+                else if (boost::filesystem::exists(current))
+                {
+                    load_camera(current);
+                }
+            }
+
+            if (selected)
+            {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+
+        ImGui::EndCombo();
     }
 
     ImGui::End();
@@ -1216,14 +1297,7 @@ void renderer::on_key_press(key_event const& event)
         {
             std::string filename = camera_file_base + camera_file_suffix;
 
-            std::ifstream file(filename);
-            if (file.good())
-            {
-                file >> cam;
-                counter.reset();
-                clear_frame();
-                std::cout << "Load camera from file: " << filename << '\n';
-            }
+            load_camera(filename);
         }
         break;
 
