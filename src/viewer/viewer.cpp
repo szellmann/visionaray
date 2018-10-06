@@ -281,6 +281,11 @@ struct renderer : viewer_type
 #endif
     thin_lens_camera                            cam;
 
+
+    // List of cameras, e.g. read from scene graph
+    aligned_vector<std::pair<
+            std::string, thin_lens_camera>>     cameras;
+
     mouse::pos                                  mouse_pos;
 
     visionaray::frame_counter                   counter;
@@ -375,10 +380,11 @@ struct build_bvhs_visitor : sg::node_visitor
             aligned_vector<mat4>& instance_transforms,
             aligned_vector<vec3>& shading_normals,
             aligned_vector<vec3>& geometric_normals,
-            aligned_vector<vec2>& tex_coords
+            aligned_vector<vec2>& tex_coords,
 #if VSNRAY_COMMON_HAVE_PTEX
-          , aligned_vector<ptex::face_id_t>& face_ids
+            aligned_vector<ptex::face_id_t>& face_ids,
 #endif
+            aligned_vector<std::pair<std::string, thin_lens_camera>>& cameras
             )
         : bvhs_(bvhs)
         , instance_indices_(instance_indices)
@@ -389,7 +395,15 @@ struct build_bvhs_visitor : sg::node_visitor
 #if VSNRAY_COMMON_HAVE_PTEX
         , face_ids_(face_ids)
 #endif
+        , cameras_(cameras)
     {
+    }
+
+    void apply(sg::camera& c)
+    {
+        cameras_.push_back(std::make_pair(c.name(), static_cast<thin_lens_camera>(c)));
+
+        node_visitor::apply(c);
     }
 
     void apply(sg::transform& t)
@@ -510,8 +524,12 @@ struct build_bvhs_visitor : sg::node_visitor
     aligned_vector<vec2>& tex_coords_;
 
 #if VSNRAY_COMMON_HAVE_PTEX
+    // Ptex face ids
     aligned_vector<ptex::face_id_t>& face_ids_;
 #endif
+
+    // Cameras
+    aligned_vector<std::pair<std::string, thin_lens_camera>>& cameras_;
 
     // Assign consecutive prim ids
     unsigned current_prim_id_ = 0;
@@ -562,10 +580,11 @@ void renderer::build_bvhs()
                 instance_transforms,
                 mod.shading_normals, // TODO!!!
                 mod.geometric_normals,
-                mod.tex_coords
+                mod.tex_coords,
 #if VSNRAY_COMMON_HAVE_PTEX
-              , mod.ptex_tex_coords
+                mod.ptex_tex_coords,
 #endif
+                cameras
                 );
         mod.scene_graph->accept(build_visitor);
 
@@ -734,10 +753,19 @@ void renderer::render_hud()
     static const std::string camera_file_base = "visionaray-camera";
     static const std::string camera_file_suffix = ".txt";
 
-    std::vector<std::string> camera_filenames;
+    std::vector<std::string> camera_names;
 
-    camera_filenames.push_back("<reset...>");
+    camera_names.push_back("<reset...>");
 
+
+    // Cameras from scene graph
+    for (auto& c : cameras)
+    {
+        camera_names.push_back(c.first);
+    }
+
+
+    // Camera files
     int inc = 0;
     std::string inc_str = "";
 
@@ -745,7 +773,7 @@ void renderer::render_hud()
 
     while (boost::filesystem::exists(filename))
     {
-        camera_filenames.push_back(filename);
+        camera_names.push_back(filename);
 
         ++inc;
         inc_str = std::to_string(inc);
@@ -867,20 +895,44 @@ void renderer::render_hud()
     ImGui::PopItemWidth();
 
     // TODO: member?
-    static std::string current = camera_filenames[0]; // <reset...>
+    static std::string current = camera_names[0]; // <reset...>
 
     if (ImGui::BeginCombo("Cameras", current.c_str()))
     {
-        for (size_t i = 0; i < camera_filenames.size(); ++i)
+        for (size_t i = 0; i < camera_names.size(); ++i)
         {
-            bool selected = current == camera_filenames[i];
+            bool selected = current == camera_names[i];
 
-            if (ImGui::Selectable(camera_filenames[i].c_str(), selected))
+            if (ImGui::Selectable(camera_names[i].c_str(), selected))
             {
-                current = camera_filenames[i].c_str();
+                current = camera_names[i].c_str();
 
-                if (current == camera_filenames[0])
+                auto it = std::find_if(
+                        cameras.begin(),
+                        cameras.end(),
+                        [&](std::pair<std::string, thin_lens_camera> c)
+                        {
+                            return c.first == camera_names[i];
+                        }
+                        );
+
+                if (it != cameras.end())
                 {
+                    // Preloaded
+                    cam = it->second;
+
+                    // Reset viewport and aspect
+                    float fovy = cam.fovy();
+                    float aspect = width() / static_cast<float>(height());
+                    cam.set_viewport(0, 0, width(), height());
+                    cam.perspective(fovy, aspect, 0.001f, 1000.0f);
+
+                    counter.reset();
+                    clear_frame();
+                }
+                else if (current == camera_names[0])
+                {
+                    // Reset...
                     float aspect = width() / static_cast<float>(height());
 
                     cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
@@ -893,6 +945,7 @@ void renderer::render_hud()
                 }
                 else if (boost::filesystem::exists(current))
                 {
+                    // From file
                     load_camera(current);
                 }
             }
