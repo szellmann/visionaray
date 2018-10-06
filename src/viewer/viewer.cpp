@@ -1388,8 +1388,9 @@ void renderer::on_resize(int w, int h)
     }
 
     cam.set_viewport(0, 0, w, h);
+    float fovy = cam.fovy();
     float aspect = w / static_cast<float>(h);
-    cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    cam.perspective(fovy, aspect, 0.001f, 1000.0f);
     rt.resize(w, h);
     clear_frame();
     viewer_type::on_resize(w, h);
