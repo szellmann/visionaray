@@ -205,6 +205,11 @@ void node_visitor::apply(node& n)
     }
 }
 
+void node_visitor::apply(camera& c)
+{
+    apply(static_cast<camera&>(c));
+}
+
 void node_visitor::apply(transform& t)
 {
     apply(static_cast<node&>(t));

@@ -41,6 +41,7 @@ namespace sg
 {
 
 class node;
+class camera;
 class transform;
 class surface_properties;
 class triangle_mesh;
@@ -58,6 +59,7 @@ public:
     node_visitor(traversal_type tt);
 
     virtual void apply(node& n);
+    virtual void apply(camera& c);
     virtual void apply(transform& t);
     virtual void apply(surface_properties& sp);
     virtual void apply(triangle_mesh& tm);
