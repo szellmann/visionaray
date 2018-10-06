@@ -23,6 +23,10 @@
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
 
+#include <visionaray/math/forward.h>
+#include <visionaray/math/rectangle.h>
+#include <visionaray/math/vector.h>
+
 #include "cfile.h"
 #include "moana_loader.h"
 #include "model.h"
@@ -169,6 +173,152 @@ static std::shared_ptr<sg::texture> load_texture(
 
     return nullptr;
 #endif
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Load camera from json file
+//
+
+static void load_camera(std::string const& filename, std::shared_ptr<sg::node> root)
+{
+    std::cout << "Load camera json file: " << filename << '\n';
+    cfile file(filename, "r");
+    if (!file.good())
+    {
+        std::cerr << "Cannot open " << filename << '\n';
+        return;
+    }
+
+    char buffer[65536];
+    rapidjson::FileReadStream frs(file.get(), buffer, sizeof(buffer));
+    rapidjson::Document doc;
+    doc.ParseStream(frs);
+
+    auto cam = std::make_shared<sg::camera>();
+
+    // fov
+    float fovx = 0.0f;
+    if (doc.HasMember("fov"))
+    {
+        rapidjson::Value const& fov = doc["fov"];
+        fovx = fov.GetFloat();
+    }
+
+    // aspect ratio
+    float aspect = 0.0f;
+    if (doc.HasMember("ratio"))
+    {
+        rapidjson::Value const& ratio = doc["fov"];
+        aspect = ratio.GetFloat();
+    }
+
+    // name
+    if (doc.HasMember("name"))
+    {
+        rapidjson::Value const& name = doc["name"];
+        cam->name() = name.GetString();
+    }
+
+    // eye
+    vec3 eye;
+    if (doc.HasMember("eye"))
+    {
+        int i = 0;
+        rapidjson::Value const& vec = doc["eye"];
+        if (vec.IsArray())
+        {
+            for (auto& item : vec.GetArray())
+            {
+                eye[i++] = item.GetFloat();
+                assert(i <= 3);
+            }
+        }
+    }
+
+    // focal length
+    float focal_length = 0.0f;
+    if (doc.HasMember("focalLength"))
+    {
+        rapidjson::Value const& fl = doc["focalLength"];
+        focal_length = fl.GetFloat();
+    }
+
+    // center of interest / distance
+    float distance = 0.0f;
+    if (doc.HasMember("centerOfInterest"))
+    {
+        rapidjson::Value const& coi = doc["centerOfInterest"];
+        distance = coi.GetFloat();
+    }
+
+    // lens radius
+    float lens_radius = 0.0f;
+    if (doc.HasMember("lensRadius"))
+    {
+        rapidjson::Value const& lr = doc["lensRadius"];
+        lens_radius = lr.GetFloat();
+    }
+
+    // up
+    vec3 up;
+    if (doc.HasMember("up"))
+    {
+        int i = 0;
+        rapidjson::Value const& vec = doc["up"];
+        if (vec.IsArray())
+        {
+            for (auto& item : vec.GetArray())
+            {
+                up[i++] = item.GetFloat();
+                assert(i <= 3);
+            }
+        }
+    }
+
+    // screenwindow
+    if (doc.HasMember("screenwindow"))
+    {
+        float sw[4];
+
+        int i = 0;
+        rapidjson::Value const& vec = doc["screenwindow"];
+        if (vec.IsArray())
+        {
+            for (auto& item : vec.GetArray())
+            {
+                sw[i++] = item.GetFloat();
+                assert(i <= 4);
+            }
+        }
+    }
+
+    // look
+    vec3 center;
+    if (doc.HasMember("look"))
+    {
+        int i = 0;
+        rapidjson::Value const& vec = doc["look"];
+        if (vec.IsArray())
+        {
+            for (auto& item : vec.GetArray())
+            {
+                center[i++] = item.GetFloat();
+                assert(i <= 3);
+            }
+        }
+    }
+
+
+    // Apply parameters
+    float fovy = fovx / aspect;
+
+    cam->perspective(fovy * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    cam->set_lens_radius(lens_radius);
+    cam->set_focal_distance(focal_length);
+    cam->look_at(eye, center, up);
+
+    root->add_child(cam);
 }
 
 
@@ -615,6 +765,24 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
 
     for (auto filename : filenames)
     {
+        // Extract base path
+        boost::filesystem::path island_base_path = get_base_path(filename);
+
+        if (island_base_path.empty())
+        {
+            std::cerr << "Cannot extract Moana Island Scene base path from " << filename << '\n';
+            return;
+        }
+
+        // Handle special files
+        boost::filesystem::path p(filename);
+        boost::filesystem::path pp = p.parent_path();
+        if (pp.filename().string() == "cameras")
+        {
+            load_camera(filename, root);
+            continue;
+        }
+
         // Materials map
         std::map<std::string, std::shared_ptr<sg::disney_material>> materials;
 
@@ -641,14 +809,6 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
         if (!file.good())
         {
             std::cerr << "Cannot open " << filename << '\n';
-            return;
-        }
-
-        boost::filesystem::path island_base_path = get_base_path(filename);
-
-        if (island_base_path.empty())
-        {
-            std::cerr << "Cannot extract Moana Island Scene base path from " << filename << '\n';
             return;
         }
 
