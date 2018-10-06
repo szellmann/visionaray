@@ -20,6 +20,7 @@
 #include <visionaray/math/vector.h>
 #include <visionaray/aligned_vector.h>
 #include <visionaray/spectrum.h>
+#include <visionaray/thin_lens_camera.h>
 
 #if VSNRAY_COMMON_HAVE_PTEX
 #include "ptex.h"
@@ -225,6 +226,19 @@ protected:
     std::unique_ptr<meta_data> meta_data_ = nullptr;
     std::vector<std::weak_ptr<node>> parents_;
     std::vector<std::shared_ptr<node>> children_;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Camera node
+//
+
+class camera : public node, public thin_lens_camera
+{
+public:
+
+    VSNRAY_SG_NODE
 
 };
 
