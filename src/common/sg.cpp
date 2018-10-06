@@ -207,7 +207,7 @@ void node_visitor::apply(node& n)
 
 void node_visitor::apply(camera& c)
 {
-    apply(static_cast<camera&>(c));
+    apply(static_cast<node&>(c));
 }
 
 void node_visitor::apply(transform& t)
