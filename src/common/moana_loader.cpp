@@ -311,7 +311,7 @@ static void load_camera(std::string const& filename, std::shared_ptr<sg::node> r
 
 
     // Apply parameters
-    float fovy = fovx / aspect;
+    float fovy = fovx * aspect;
 
     cam->perspective(fovy * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
     cam->set_lens_radius(lens_radius);
