@@ -100,17 +100,14 @@ struct hit_record<basic_ray<T>, primitive<unsigned>>
 // ray / triangle
 //
 
-template <typename T, typename U>
+template <typename R, typename U>
 MATH_FUNC
-inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
-        basic_ray<T> const&                     ray,
-        basic_triangle<3, U, unsigned> const&   tri
-        )
+inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_triangle<3, U, unsigned> const& tri)
 {
+    using T = typename R::scalar_type;
+    using vec_type = vector<3, T>;
 
-    typedef vector<3, T> vec_type;
-
-    hit_record<basic_ray<T>, primitive<unsigned>> result;
+    hit_record<R, primitive<unsigned>> result;
     result.t = T(-1.0);
 
     // case T != U
@@ -156,7 +153,6 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
     result.u = b1;
     result.v = b2;
     return result;
-
 }
 
 
@@ -164,18 +160,14 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
 // ray / sphere
 //
 
-template <typename T, typename U>
+template <typename R, typename U>
 MATH_FUNC
-inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
-        basic_ray<T> const&                 ray,
-        basic_sphere<U, unsigned> const&    sphere
-        )
+inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_sphere<U, unsigned> const& sphere)
 {
+    using T = typename R::scalar_type;
+    using vec_type = vector<3, T>;
 
-    typedef basic_ray<T> ray_type;
-    typedef vector<3, T> vec_type;
-
-    ray_type r = ray;
+    R r = ray;
     r.ori -= vec_type( sphere.center );
 
     auto A = dot(r.dir, r.dir);
@@ -193,7 +185,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
     auto t1 = q / A;
     auto t2 = C / q;
 
-    hit_record<basic_ray<T>, primitive<unsigned>> result;
+    hit_record<R, primitive<unsigned>> result;
     result.hit = valid && (t1 >= T(0.0) || t2 >= T(0.0));
     result.prim_id = sphere.prim_id;
     result.geom_id = sphere.geom_id;
