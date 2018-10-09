@@ -8,7 +8,9 @@
 
 #include <GL/glew.h>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/forward.h>
+#include <visionaray/math/project.h>
+#include <visionaray/math/rectangle.h>
 #include <visionaray/pinhole_camera.h>
 
 #include "../input/mouse.h"

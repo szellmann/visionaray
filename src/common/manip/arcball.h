@@ -6,7 +6,10 @@
 #ifndef VSNRAY_COMMON_MANIP_ARCBALL_H
 #define VSNRAY_COMMON_MANIP_ARCBALL_H 1
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/forward.h>
+#include <visionaray/math/quaternion.h>
+#include <visionaray/math/rectangle.h>
+#include <visionaray/math/vector.h>
 
 namespace visionaray
 {

@@ -1,11 +1,11 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <iostream>
-#include <ostream>
-
 #include <GL/glew.h>
 
+#include <visionaray/math/forward.h>
+#include <visionaray/math/project.h>
+#include <visionaray/math/quaternion.h>
 #include <visionaray/pinhole_camera.h>
 
 #include "rotate_manipulator.h"

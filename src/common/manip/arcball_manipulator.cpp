@@ -1,11 +1,10 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#ifndef NDEBUG
-#include <iomanip>
-#include <iostream>
-#endif
-
+#include <visionaray/math/forward.h>
+#include <visionaray/math/matrix.h>
+#include <visionaray/math/quaternion.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/pinhole_camera.h>
 
 #include "arcball_manipulator.h"

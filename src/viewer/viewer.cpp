@@ -33,6 +33,7 @@
 
 #include <visionaray/gl/bvh_outline_renderer.h>
 #include <visionaray/gl/debug_callback.h>
+#include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
 #include <visionaray/area_light.h>

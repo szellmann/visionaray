@@ -6,7 +6,9 @@
 #ifndef VSNRAY_COMMON_MANIP_MODEL_MANIPULATOR_H
 #define VSNRAY_COMMON_MANIP_MODEL_MANIPULATOR_H 1
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/forward.h>
+#include <visionaray/math/matrix.h>
+#include <visionaray/math/vector.h>
 
 namespace visionaray
 {

@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/math/forward.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/pinhole_camera.h>
 
 #include "../input/mouse_event.h"

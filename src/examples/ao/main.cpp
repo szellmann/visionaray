@@ -15,6 +15,7 @@
 
 #include <visionaray/detail/platform.h>
 
+#include <visionaray/math/io.h>
 #include <visionaray/bvh.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/get_normal.h>

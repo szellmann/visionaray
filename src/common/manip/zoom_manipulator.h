@@ -6,8 +6,6 @@
 #ifndef VSNRAY_COMMON_MANIP_ZOOM_MANIPULATOR_H
 #define VSNRAY_COMMON_MANIP_ZOOM_MANIPULATOR_H 1
 
-#include <visionaray/math/math.h>
-
 #include "../input/keyboard.h"
 #include "../input/mouse.h"
 #include "camera_manipulator.h"
