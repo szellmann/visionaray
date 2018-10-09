@@ -201,14 +201,13 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_sphere<U
 // ray / plane
 //
 
-template <typename T, typename U>
+template <typename R, typename U>
 MATH_FUNC
-inline hit_record<basic_ray<T>, primitive<unsigned>> intersect(
-        basic_ray<T> const&                 ray,
-        basic_plane<3, U, unsigned> const&  p
-        )
+inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_plane<3, U, unsigned> const& p)
 {
-    hit_record<basic_ray<T>, primitive<unsigned>> result;
+    using T = typename R::scalar_type;
+
+    hit_record<R, primitive<unsigned>> result;
 
     vector<3, T> normal(p.normal);
     T offset(p.offset);
