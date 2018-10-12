@@ -390,6 +390,7 @@ public:
     T roughness;
 
     template <typename U>
+    VSNRAY_FUNC
     spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
         auto h = normalize(wo + wi);
