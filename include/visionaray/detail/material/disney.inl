@@ -46,7 +46,11 @@ inline spectrum<U> disney<T>::sample(
         Generator&      gen
         ) const
 {
-    return from_rgb(shade_rec.tex_color) * brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl_dir, pdf, inter, gen);
+    auto n = shade_rec.normal;
+#if 1 // two-sided
+    n = faceforward( n, shade_rec.view_dir, shade_rec.geometric_normal );
+#endif
+    return from_rgb(shade_rec.tex_color) * brdf_.sample_f(n, shade_rec.view_dir, refl_dir, pdf, inter, gen);
 }
 
 template <typename T>
