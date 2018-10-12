@@ -107,6 +107,9 @@ struct disney_material : material
     // Refractivity
     float refractive = 0.0f;
 
+    // Roughness
+    float roughness = 0.0f;
+
 
     // TODO..
 };

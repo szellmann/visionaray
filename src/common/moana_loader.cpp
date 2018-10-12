@@ -584,6 +584,12 @@ void load_material_file(
             mat->refractive = refractive.GetFloat();
         }
 
+        if (entry.HasMember("roughness"))
+        {
+            rapidjson::Value const& roughness = entry["roughness"];
+            mat->roughness = roughness.GetFloat();
+        }
+
         if (entry.HasMember("colorMap"))
         {
             std::string path = entry["colorMap"].GetString();
