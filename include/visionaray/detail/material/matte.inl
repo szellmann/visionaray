@@ -48,6 +48,7 @@ inline spectrum<U> matte<T>::sample(
         Generator&      gen
         ) const
 {
+    auto n = shade_rec.normal;
 #if 1 // two-sided
     n = faceforward( n, shade_rec.view_dir, shade_rec.geometric_normal );
 #endif
