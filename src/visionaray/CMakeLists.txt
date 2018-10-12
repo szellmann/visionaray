@@ -102,6 +102,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/generic_primitive/get_color.inl
     ${HEADER_DIR}/detail/generic_primitive/get_normal.inl
     ${HEADER_DIR}/detail/generic_primitive/get_tex_coord.inl
+    ${HEADER_DIR}/detail/material/disney.inl
     ${HEADER_DIR}/detail/material/emissive.inl
     ${HEADER_DIR}/detail/material/matte.inl
     ${HEADER_DIR}/detail/material/mirror.inl
