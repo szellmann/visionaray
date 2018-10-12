@@ -572,6 +572,18 @@ void load_material_file(
             mat->spec_trans = spec_trans.GetFloat();
         }
 
+        if (entry.HasMember("sheen"))
+        {
+            rapidjson::Value const& sheen = entry["sheen"];
+            mat->sheen = sheen.GetFloat();
+        }
+
+        if (entry.HasMember("sheenTint"))
+        {
+            rapidjson::Value const& sheen_tint = entry["sheenTint"];
+            mat->sheen_tint = sheen_tint.GetFloat();
+        }
+
         if (entry.HasMember("ior"))
         {
             rapidjson::Value const& ior = entry["ior"];

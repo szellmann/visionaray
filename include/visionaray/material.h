@@ -116,6 +116,12 @@ public:
     VSNRAY_FUNC spectrum<T>& base_color();
     VSNRAY_FUNC spectrum<T> const& base_color() const;
 
+    VSNRAY_FUNC T& sheen();
+    VSNRAY_FUNC T const& sheen() const;
+
+    VSNRAY_FUNC T& sheen_tint();
+    VSNRAY_FUNC T const& sheen_tint() const;
+
     VSNRAY_FUNC T& roughness();
     VSNRAY_FUNC T const& roughness() const;
 

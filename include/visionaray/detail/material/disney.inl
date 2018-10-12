@@ -79,6 +79,34 @@ inline spectrum<T> const& disney<T>::base_color() const
 
 template <typename T>
 VSNRAY_FUNC
+inline T& disney<T>::sheen()
+{
+    return brdf_.sheen;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T const& disney<T>::sheen() const
+{
+    return brdf_.sheen;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T& disney<T>::sheen_tint()
+{
+    return brdf_.sheen_tint;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T const& disney<T>::sheen_tint() const
+{
+    return brdf_.sheen_tint;
+}
+
+template <typename T>
+VSNRAY_FUNC
 inline T& disney<T>::roughness()
 {
     return brdf_.roughness;

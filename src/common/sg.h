@@ -101,6 +101,12 @@ struct disney_material : material
     // Specular transmission
     float spec_trans = 0.0f;
 
+    // Sheen
+    float sheen = 0.0f;
+
+    // Sheen tint
+    float sheen_tint = 0.0f;
+
     // Index of refraction
     float ior = 1.0f;
 
