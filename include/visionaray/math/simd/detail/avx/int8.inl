@@ -305,5 +305,28 @@ VSNRAY_FORCE_INLINE mask8 operator!=(int8 const& u, int8 const& v)
     return !(u == v);
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Math functions
+//
+
+VSNRAY_FORCE_INLINE int8 min(int8 const& u, int8 const& v)
+{
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX2)
+    return _mm256_min_epi32(u, v);
+#else
+    return select(mask8(u < v), u, v);
+#endif
+}
+
+VSNRAY_FORCE_INLINE int8 max(int8 const& u, int8 const& v)
+{
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX2)
+    return _mm256_max_epi32(u, v);
+#else
+    return select(mask8(u < v), u, v);
+#endif
+}
+
 } // simd
 } // MATH_NAMESPACE
