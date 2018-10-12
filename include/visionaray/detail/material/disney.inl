@@ -30,7 +30,7 @@ inline spectrum<typename SR::scalar_type> disney<T>::shade(SR const& sr) const
 #endif
     auto ndotl = max( U(0.0), dot(n, wi) );
 
-    spectrum<U> cd = from_rgb(sr.tex_color) * diffuse_brdf_.f(n, wo, wi);
+    spectrum<U> cd = from_rgb(sr.tex_color) * brdf_.f(n, wo, wi);
 
     return cd * constants::pi<U>() * from_rgb(sr.light_intensity) * ndotl;
 }
@@ -46,7 +46,7 @@ inline spectrum<U> disney<T>::sample(
         Generator&      gen
         ) const
 {
-    return from_rgb(shade_rec.tex_color) * diffuse_brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl_dir, pdf, inter, gen);
+    return from_rgb(shade_rec.tex_color) * brdf_.sample_f(shade_rec.normal, shade_rec.view_dir, refl_dir, pdf, inter, gen);
 }
 
 template <typename T>
@@ -60,35 +60,35 @@ inline typename SR::scalar_type disney<T>::pdf(SR const& sr, Interaction const& 
 #if 1 // two-sided
     n = faceforward( n, sr.view_dir, sr.geometric_normal );
 #endif
-    return diffuse_brdf_.pdf(n, sr.view_dir, sr.light_dir);
+    return brdf_.pdf(n, sr.view_dir, sr.light_dir);
 }
 
 template <typename T>
 VSNRAY_FUNC
 inline spectrum<T>& disney<T>::base_color()
 {
-    return diffuse_brdf_.base_color;
+    return brdf_.base_color;
 }
 
 template <typename T>
 VSNRAY_FUNC
 inline spectrum<T> const& disney<T>::base_color() const
 {
-    return diffuse_brdf_.base_color;
+    return brdf_.base_color;
 }
 
 template <typename T>
 VSNRAY_FUNC
 inline T& disney<T>::roughness()
 {
-    return diffuse_brdf_.roughness;
+    return brdf_.roughness;
 }
 
 template <typename T>
 VSNRAY_FUNC
 inline T const& disney<T>::roughness() const
 {
-    return diffuse_brdf_.roughness;
+    return brdf_.roughness;
 }
 
 } // visionaray

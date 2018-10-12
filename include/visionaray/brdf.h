@@ -378,7 +378,7 @@ public:
 //
 
 template <typename T>
-class disney_diffuse
+class disney_brdf
 {
 public:
 
@@ -393,6 +393,12 @@ public:
     VSNRAY_FUNC
     spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
+        auto schlick_fresnel_appr = [](float x)
+        {
+            x = U(1.0) - x;
+            return x * x * x * x * x;
+        };
+
         auto h = normalize(wo + wi);
 //      auto hdotn = max( U(0.0), dot(h, n) );
         auto ldotn = max( U(0.0), dot(wi, n) );
@@ -401,8 +407,8 @@ public:
 
         // diffuse component
         auto f_d90 = U(0.5) + U(2.0) * ldoth * ldoth * roughness;
-        auto schlick = (U(1.0) + (f_d90 - U(1.0)) * pow(U(1.0) - ldotn, U(5.0)))
-                     * (U(1.0) + (f_d90 - U(1.0)) * pow(U(1.0) - vdotn, U(5.0)));
+        auto schlick = (U(1.0) + (f_d90 - U(1.0)) * schlick_fresnel_appr(ldotn))
+                     * (U(1.0) + (f_d90 - U(1.0)) * schlick_fresnel_appr(vdotn));
 
         auto f_d = base_color * constants::inv_pi<T>() * schlick;
 

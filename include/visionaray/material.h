@@ -121,7 +121,7 @@ public:
 
 private:
 
-    disney_diffuse<T> diffuse_brdf_;
+    disney_brdf<T> brdf_;
 
 };
 
