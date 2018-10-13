@@ -42,7 +42,7 @@ inline vector<3, U> spot_light<T>::intensity(vector<3, U> const& pos) const
 template <typename T>
 template <typename Generator, typename U>
 VSNRAY_FUNC
-inline light_sample<U> spot_light<T>::sample(Generator& gen) const
+inline light_sample<U> spot_light<T>::sample(Generator& /*gen*/) const
 {
     // Not implemented yet!
     return {};
