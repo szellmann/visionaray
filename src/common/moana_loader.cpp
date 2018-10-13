@@ -387,61 +387,64 @@ static void load_obj(
 
                 surf->name() = std::string(group_name.begin(), group_name.length());
 
-                std::string group = group_name.to_string();
-                auto it = textures.find(group);
-                if (it != textures.end())
-                {
-                    surf->add_texture(std::static_pointer_cast<sg::texture>(it->second));
-                }
-                else
-                {
-                    // Assemble texture base directory
-                    boost::filesystem::path texture_base_path;std::cout << std::string(mtl_name.begin(), mtl_name.length()) << '\n';
-
-                    // Directory is probably stored in color map (use mtl_name to look this up!)
-                    auto cit = color_maps.find(std::string(mtl_name.begin(), mtl_name.length()));
-
-                    if (cit != color_maps.end())
-                    {
-                        texture_base_path = island_base_path / cit->second;
-                    }
-                    else
-                    {
-                        // Not found in color maps!
-
-                        // Extract element base name from obj file path
-                        boost::filesystem::path obj_path(filename);
-                        // Remove obj file name
-                        boost::filesystem::path texture_base_path = obj_path.parent_path();
-                        // If archive, remove archives/
-                        if (texture_base_path.filename().string() == "archives")
-                        {
-                            texture_base_path = texture_base_path.parent_path();
-                        }
-                        // Remove leading obj/
-                        texture_base_path = remove_first(texture_base_path);
-                        // Combine with base path, add textures/ and Color/
-                        texture_base_path = island_base_path / "textures" / texture_base_path / "Color";
-                    }
-
-                    auto tex = load_texture(texture_base_path, group + ".ptx", texture_cache);
-
-                    if (tex != nullptr)
-                    {
-                        tex->name() = group;
-                        textures.insert(std::make_pair(group, tex));
-                        surf->add_texture(tex);
-                    }
-                }
             }
         }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
         {
+            // Material
             std::string usemtl = mtl_name.to_string();
-            auto it = materials.find(usemtl);
-            if (it != materials.end())
+            auto mit = materials.find(usemtl);
+            if (mit != materials.end())
             {
-                surf->material() = it->second;
+                surf->material() = mit->second;
+            }
+
+            // Color texture
+            std::string group = group_name.to_string();
+            auto tit = textures.find(group);
+            if (tit != textures.end())
+            {
+                surf->add_texture(std::static_pointer_cast<sg::texture>(tit->second));
+            }
+            else
+            {
+                // Assemble texture base directory
+                boost::filesystem::path texture_base_path;
+
+                // Directory is probably stored in color map (use mtl_name to look this up!)
+                auto cit = color_maps.find(std::string(mtl_name.begin(), mtl_name.length()));
+
+                if (cit != color_maps.end())
+                {
+                    texture_base_path = island_base_path / cit->second;
+                }
+                else
+                {
+                    // Not found in color maps!
+
+                    // Extract element base name from obj file path
+                    boost::filesystem::path obj_path(filename);
+                    // Remove obj file name
+                    boost::filesystem::path texture_base_path = obj_path.parent_path();
+                    // If archive, remove archives/
+                    if (texture_base_path.filename().string() == "archives")
+                    {
+                        texture_base_path = texture_base_path.parent_path();
+                    }
+                    // Remove leading obj/
+                    texture_base_path = remove_first(texture_base_path);
+                    // Combine with base path, add textures/ and Color/
+                    texture_base_path = island_base_path / "textures" / texture_base_path / "Color";
+                }
+
+                auto tex = load_texture(texture_base_path, group + ".ptx", texture_cache);
+
+                if (tex != nullptr)
+                {
+                    tex->name() = group;
+                    textures.insert(std::make_pair(group, tex));
+                    surf->add_texture(tex);
+                }
             }
         }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_vertices, qi::blank, vertices) )
