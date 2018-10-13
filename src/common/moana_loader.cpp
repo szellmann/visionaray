@@ -331,7 +331,7 @@ static void load_obj(
         std::string const& filename,
         std::map<std::string, std::shared_ptr<sg::disney_material>> const& materials,
         std::map<std::string, std::string> const& color_maps, // [mtlName, colorMap]
-        std::map<std::string, std::string> const& displacement_maps, // [mtlName, displacementMap]
+        std::map<std::string, std::string> const& /*displacement_maps*/, // [mtlName, displacementMap]
         std::map<std::string, std::shared_ptr<sg::texture>>& textures,
 #if VSNRAY_COMMON_HAVE_PTEX
         std::shared_ptr<PtexPtr<PtexCache>> texture_cache,
