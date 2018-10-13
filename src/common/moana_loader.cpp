@@ -330,6 +330,8 @@ static void load_obj(
         boost::filesystem::path const& island_base_path,
         std::string const& filename,
         std::map<std::string, std::shared_ptr<sg::disney_material>> const& materials,
+        std::map<std::string, std::string> const& color_maps, // [mtlName, colorMap]
+        std::map<std::string, std::string> const& displacement_maps, // [mtlName, displacementMap]
         std::map<std::string, std::shared_ptr<sg::texture>>& textures,
 #if VSNRAY_COMMON_HAVE_PTEX
         std::shared_ptr<PtexPtr<PtexCache>> texture_cache,
@@ -393,19 +395,34 @@ static void load_obj(
                 }
                 else
                 {
-                    // Extract element base name from obj file path
-                    boost::filesystem::path obj_path(filename);
-                    // Remove obj file name
-                    boost::filesystem::path texture_base_path = obj_path.parent_path();
-                    // If archive, remove archives/
-                    if (texture_base_path.filename().string() == "archives")
+                    // Assemble texture base directory
+                    boost::filesystem::path texture_base_path;std::cout << std::string(mtl_name.begin(), mtl_name.length()) << '\n';
+
+                    // Directory is probably stored in color map (use mtl_name to look this up!)
+                    auto cit = color_maps.find(std::string(mtl_name.begin(), mtl_name.length()));
+
+                    if (cit != color_maps.end())
                     {
-                        texture_base_path = texture_base_path.parent_path();
+                        texture_base_path = island_base_path / cit->second;
                     }
-                    // Remove leading obj/
-                    texture_base_path = remove_first(texture_base_path);
-                    // Combine with base path, add textures/ and Color/
-                    texture_base_path = island_base_path / "textures" / texture_base_path / "Color";
+                    else
+                    {
+                        // Not found in color maps!
+
+                        // Extract element base name from obj file path
+                        boost::filesystem::path obj_path(filename);
+                        // Remove obj file name
+                        boost::filesystem::path texture_base_path = obj_path.parent_path();
+                        // If archive, remove archives/
+                        if (texture_base_path.filename().string() == "archives")
+                        {
+                            texture_base_path = texture_base_path.parent_path();
+                        }
+                        // Remove leading obj/
+                        texture_base_path = remove_first(texture_base_path);
+                        // Combine with base path, add textures/ and Color/
+                        texture_base_path = island_base_path / "textures" / texture_base_path / "Color";
+                    }
 
                     auto tex = load_texture(texture_base_path, group + ".ptx", texture_cache);
 
@@ -463,6 +480,8 @@ static void load_instanced_primitive_json_file(
         std::string const& filename,
         std::shared_ptr<sg::node> root,
         std::map<std::string, std::shared_ptr<sg::disney_material>>& materials,
+        std::map<std::string, std::string> const& color_maps, // [mtlName, colorMap]
+        std::map<std::string, std::string> const& displacement_maps, // [mtlName, displacementMap]
         std::map<std::string, std::shared_ptr<sg::texture>>& textures,
 #if VSNRAY_COMMON_HAVE_PTEX
         std::shared_ptr<PtexPtr<PtexCache>> texture_cache
@@ -491,7 +510,16 @@ static void load_instanced_primitive_json_file(
         // Instance geometry
         std::string obj_file = it->name.GetString();
         std::vector<std::shared_ptr<sg::node>> objs;
-        load_obj(island_base_path, obj_file, materials, textures, texture_cache, objs);
+        load_obj(
+            island_base_path,
+            obj_file,
+            materials,
+            color_maps,
+            displacement_maps,
+            textures,
+            texture_cache,
+            objs
+            );
 
         // Instance transforms
         auto entries = it->value.GetObject();
@@ -528,7 +556,9 @@ static void load_instanced_primitive_json_file(
 void load_material_file(
         boost::filesystem::path const& island_base_path,
         std::string const& filename,
-        std::map<std::string, std::shared_ptr<sg::disney_material>>& materials
+        std::map<std::string, std::shared_ptr<sg::disney_material>>& materials,
+        std::map<std::string, std::string>& color_maps, // [name,colorMap]
+        std::map<std::string, std::string>& displacement_maps // [name,displacementMap]
         )
 {
     std::string fn = (island_base_path / filename).string();
@@ -604,10 +634,21 @@ void load_material_file(
 
         if (entry.HasMember("colorMap"))
         {
-            std::string path = entry["colorMap"].GetString();
+            std::string color_map = entry["colorMap"].GetString();
 
-            if (!path.empty())
+            if (!color_map.empty())
             {
+                color_maps.insert(std::make_pair(material_name, color_map));
+            }
+        }
+
+        if (entry.HasMember("displacementMap"))
+        {
+            std::string displacement_map = entry["displacementMap"].GetString();
+
+            if (!displacement_map.empty())
+            {
+                displacement_maps.insert(std::make_pair(material_name, displacement_map));
             }
         }
 
@@ -822,6 +863,12 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
         textures.insert(std::make_pair("null", dummy));
 
 
+        // Color map path [name,colorMap] parsed from matFile
+        std::map<std::string, std::string> color_maps;
+
+        // Displacement map path [name,colorMap] parsed from matFile
+        std::map<std::string, std::string> displacement_maps;
+
         std::cout << "Load moana file: " << filename << '\n';
         cfile file(filename, "r");
         if (!file.good())
@@ -840,7 +887,13 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
         if (doc.HasMember("matFile"))
         {
             std::string mat_file = doc["matFile"].GetString();
-            load_material_file(island_base_path, mat_file, materials);
+            load_material_file(
+                island_base_path,
+                mat_file,
+                materials,
+                color_maps,
+                displacement_maps
+                );
         }
 
         auto base_transform = std::make_shared<sg::transform>();
@@ -867,7 +920,17 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
         {
             std::string geom_obj_file = doc["geomObjFile"].GetString();
             std::vector<std::shared_ptr<sg::node>> objs;
-            load_obj(island_base_path, geom_obj_file, materials, textures, texture_cache, objs);
+            load_obj(
+                island_base_path,
+                geom_obj_file,
+                materials,
+                color_maps,
+                displacement_maps,
+                textures,
+                texture_cache,
+                objs
+                );
+
             for (auto obj : objs)
             {
                 base_transform->add_child(obj);
@@ -892,6 +955,8 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
                             inst_json_file,
                             base_transform,
                             materials,
+                            color_maps,
+                            displacement_maps,
                             textures,
                             texture_cache
                             );
@@ -925,7 +990,16 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
                 {
                     std::string geom_obj_file = entry["geomObjFile"].GetString();
                     std::vector<std::shared_ptr<sg::node>> objs;
-                    load_obj(island_base_path, geom_obj_file, materials, textures, texture_cache, objs);
+                    load_obj(
+                        island_base_path,
+                        geom_obj_file,
+                        materials,
+                        color_maps,
+                        displacement_maps,
+                        textures,
+                        texture_cache,
+                        objs
+                        );
                     for (auto obj : objs)
                     {
                         transform->add_child(obj);
@@ -959,6 +1033,8 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
                                     inst_json_file,
                                     transform,
                                     materials,
+                                    color_maps,
+                                    displacement_maps,
                                     textures,
                                     texture_cache
                                     );
