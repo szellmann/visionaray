@@ -52,38 +52,6 @@ inline typename SR::scalar_type emissive<T>::pdf(SR const& sr, Interaction const
     return typename SR::scalar_type(1.0);
 }
 
-// --- deprecated begin -----------------------------------
-
-template <typename T>
-VSNRAY_FUNC
-inline void emissive<T>::set_ce(spectrum<T> const& ce)
-{
-    ce_ = ce;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline spectrum<T> emissive<T>::get_ce() const
-{
-    return ce_;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline void emissive<T>::set_ls(T ls)
-{
-    ls_ = ls;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline T emissive<T>::get_ls() const
-{
-    return ls_;
-}
-
-// --- deprecated end -------------------------------------
-
 template <typename T>
 VSNRAY_FUNC
 inline spectrum<T>& emissive<T>::ce()

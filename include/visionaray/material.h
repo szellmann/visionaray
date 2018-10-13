@@ -169,14 +169,6 @@ public:
             Interaction const& inter
             ) const;
 
-    // deprecated!
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_ce(spectrum<T> const& ce);
-    VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_ce() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_ls(T ls);
-    VSNRAY_FUNC T VSNRAY_DEPRECATED get_ls() const;
-    //
-
     VSNRAY_FUNC spectrum<T>& ce();
     VSNRAY_FUNC spectrum<T> const& ce() const;
 
@@ -228,20 +220,6 @@ public:
             SR const&          shared_rec,
             Interaction const& inter
             ) const;
-
-    // deprecated!
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_ca(spectrum<T> const& ca);
-    VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_ca() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_ka(T ka);
-    VSNRAY_FUNC T VSNRAY_DEPRECATED get_ka() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_cd(spectrum<T> const& cd);
-    VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_cd() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_kd(T kd);
-    VSNRAY_FUNC T VSNRAY_DEPRECATED get_kd() const;
-    //
 
     VSNRAY_FUNC spectrum<T>& ca();
     VSNRAY_FUNC spectrum<T> const& ca() const;
@@ -304,22 +282,6 @@ public:
             SR const&          shared_rec,
             Interaction const& inter
             ) const;
-
-    // deprecated!
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_cr(spectrum<T> const& cr);
-    VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_cr() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_kr(T const& kr);
-    VSNRAY_FUNC T VSNRAY_DEPRECATED get_kr() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_ior(spectrum<T> const& ior);
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_ior(T ior);
-    VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_ior() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_absorption(spectrum<T> const& absorption);
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_absorption(T absorption);
-    VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_absorption() const;
-    //
 
     VSNRAY_FUNC spectrum<T>& cr();
     VSNRAY_FUNC spectrum<T> const& cr() const;
@@ -439,29 +401,6 @@ public:
             SR const&          shared_rec,
             Interaction const& inter
             ) const;
-
-    // deprecated!
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_ca(spectrum<T> const& ca);
-    VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_ca() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_ka(T ka);
-    VSNRAY_FUNC T VSNRAY_DEPRECATED get_ka() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_cd(spectrum<T> const& cd);
-    VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_cd() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_kd(T kd);
-    VSNRAY_FUNC T VSNRAY_DEPRECATED get_kd() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_cs(spectrum<T> const& cs);
-    VSNRAY_FUNC spectrum<T> VSNRAY_DEPRECATED get_cs() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_ks(T ks);
-    VSNRAY_FUNC T VSNRAY_DEPRECATED get_ks() const;
-
-    VSNRAY_FUNC void VSNRAY_DEPRECATED set_specular_exp(T exp);
-    VSNRAY_FUNC T VSNRAY_DEPRECATED get_specular_exp() const;
-    //
 
     VSNRAY_FUNC spectrum<T>& ca();
     VSNRAY_FUNC spectrum<T> const& ca() const;

@@ -69,65 +69,6 @@ inline typename SR::scalar_type matte<T>::pdf(SR const& sr, Interaction const& i
     return diffuse_brdf_.pdf(n, sr.view_dir, sr.light_dir);
 }
 
-// --- deprecated begin -----------------------------------
-
-template <typename T>
-VSNRAY_FUNC
-inline void matte<T>::set_ca(spectrum<T> const& ca)
-{
-    ca_ = ca;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline spectrum<T> matte<T>::get_ca() const
-{
-    return ca_;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline void matte<T>::set_ka(T ka)
-{
-    ka_ = ka;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline T matte<T>::get_ka() const
-{
-    return ka_;
-}
-
-template <typename T>
-VSNRAY_FUNC void matte<T>::set_cd(spectrum<T> const& cd)
-{
-    diffuse_brdf_.cd = cd;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline spectrum<T> matte<T>::get_cd() const
-{
-    return diffuse_brdf_.cd;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline void matte<T>::set_kd(T kd)
-{
-    diffuse_brdf_.kd = kd;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline T matte<T>::get_kd() const
-{
-    return diffuse_brdf_.kd;
-}
-
-// --- deprecated end -------------------------------------
-
 template <typename T>
 VSNRAY_FUNC
 inline spectrum<T>& matte<T>::ca()
