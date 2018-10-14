@@ -28,6 +28,7 @@
 #include <visionaray/math/vector.h>
 
 #include "cfile.h"
+#include "image.h"
 #include "moana_loader.h"
 #include "model.h"
 #include "obj_grammar.h"
@@ -180,7 +181,7 @@ static std::shared_ptr<sg::texture> load_texture(
 // Load camera from json file
 //
 
-static void load_camera(std::string const& filename, std::shared_ptr<sg::node> root)
+static void load_camera_file(std::string const& filename, std::shared_ptr<sg::node> root)
 {
     std::cout << "Load camera json file: " << filename << '\n';
     cfile file(filename, "r");
@@ -319,6 +320,78 @@ static void load_camera(std::string const& filename, std::shared_ptr<sg::node> r
     cam->look_at(eye, center, up);
 
     root->add_child(cam);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Load lights from json file
+//
+
+static void load_light_file(
+        boost::filesystem::path const& island_base_path,
+        std::string const& filename,
+        std::shared_ptr<sg::node> root
+        )
+{
+    std::cout << "Load lights json file: " << filename << '\n';
+    cfile file(filename, "r");
+    if (!file.good())
+    {
+        std::cerr << "Cannot open " << filename << '\n';
+        return;
+    }
+
+    char buffer[65536];
+    rapidjson::FileReadStream frs(file.get(), buffer, sizeof(buffer));
+    rapidjson::Document doc;
+    doc.ParseStream(frs);
+
+    for (auto it = doc.MemberBegin(); it != doc.MemberEnd(); ++it)
+    {
+        auto entry = it->value.GetObject();
+
+        std::string light_name = it->name.GetString();
+
+        std::string light_type = entry["type"].GetString();
+
+        // TODO: support other light types
+        if (light_type != "dome")
+        {
+            continue;
+        }
+
+        std::shared_ptr<sg::light> light = std::make_shared<sg::environment_light>();
+
+        if (entry.HasMember("map"))
+        {
+            std::string map = entry["map"].GetString();
+
+            if (!map.empty())
+            {
+                std::shared_ptr<sg::texture2d<vec4>> tex = std::make_shared<sg::texture2d<vec4>>();
+
+                boost::filesystem::path image_filename = island_base_path; // remove leading "island"
+                image_filename /= remove_first(map);
+
+                image img;
+                if (img.load(image_filename.string()))
+                {
+                    assert(img.format() == PF_RGBA32F);
+
+                    auto data_ptr = reinterpret_cast<vec4 const*>(img.data());
+
+                    tex->resize(img.width(), img.height());
+                    tex->set_address_mode(Wrap);
+                    tex->set_filter_mode(Linear);
+                    tex->reset(data_ptr);
+
+                    std::dynamic_pointer_cast<sg::environment_light>(light)->texture() = tex;
+                }
+            }
+        }
+
+        root->add_child(light);
+    }
 }
 
 
@@ -841,7 +914,13 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
         boost::filesystem::path pp = p.parent_path();
         if (pp.filename().string() == "cameras")
         {
-            load_camera(filename, root);
+            load_camera_file(filename, root);
+            continue;
+        }
+
+        if (pp.filename().string() == "lights")
+        {
+            load_light_file(island_base_path, filename, root);
             continue;
         }
 
