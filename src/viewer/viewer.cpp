@@ -1427,6 +1427,13 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
+    if (rend.algo == Pathtracing)
+    {
+        // Double buffering does not work in case of pathtracing
+        // because destination and source buffers need to be the same
+        rend.rt.set_double_buffering(false);
+    }
+
     rend.gl_debug_callback.activate();
 
     // Load the scene
