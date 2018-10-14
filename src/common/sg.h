@@ -42,6 +42,8 @@ namespace sg
 
 class node;
 class camera;
+class light;
+class environment_light;
 class transform;
 class surface_properties;
 class triangle_mesh;
@@ -60,6 +62,8 @@ public:
 
     virtual void apply(node& n);
     virtual void apply(camera& c);
+    virtual void apply(light& l);
+    virtual void apply(environment_light& el);
     virtual void apply(transform& t);
     virtual void apply(surface_properties& sp);
     virtual void apply(triangle_mesh& tm);
@@ -250,6 +254,39 @@ class camera : public node, public thin_lens_camera
 public:
 
     VSNRAY_SG_NODE
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Light base class
+//
+
+class light : public node
+{
+public:
+
+    VSNRAY_SG_NODE
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Environment light node
+//
+
+class environment_light : public light
+{
+public:
+
+    VSNRAY_SG_NODE
+
+    std::shared_ptr<sg::texture>& texture();
+    std::shared_ptr<sg::texture> const& texture() const;
+
+private:
+
+    std::shared_ptr<sg::texture> texture_;
 
 };
 

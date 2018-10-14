@@ -86,6 +86,21 @@ void node::add_child(std::shared_ptr<node> child)
 
 
 //-------------------------------------------------------------------------------------------------
+// environment_light
+//
+
+std::shared_ptr<sg::texture>& environment_light::texture()
+{
+    return texture_;
+}
+
+std::shared_ptr<sg::texture> const& environment_light::texture() const
+{
+    return texture_;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // transform
 //
 
@@ -208,6 +223,16 @@ void node_visitor::apply(node& n)
 void node_visitor::apply(camera& c)
 {
     apply(static_cast<node&>(c));
+}
+
+void node_visitor::apply(light& l)
+{
+    apply(static_cast<node&>(l));
+}
+
+void node_visitor::apply(environment_light& el)
+{
+    apply(static_cast<node&>(el));
 }
 
 void node_visitor::apply(transform& t)
