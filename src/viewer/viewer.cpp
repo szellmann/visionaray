@@ -282,6 +282,8 @@ struct renderer : viewer_type
 #endif
     thin_lens_camera                            cam;
 
+    std::shared_ptr<texture<vec4, 2>>           environment_map = nullptr;
+
 
     // List of cameras, e.g. read from scene graph
     aligned_vector<std::pair<
@@ -397,6 +399,7 @@ struct build_bvhs_visitor : sg::node_visitor
         , face_ids_(face_ids)
 #endif
         , cameras_(cameras)
+        , environment_map(nullptr)
     {
     }
 
@@ -405,6 +408,21 @@ struct build_bvhs_visitor : sg::node_visitor
         cameras_.push_back(std::make_pair(c.name(), static_cast<thin_lens_camera>(c)));
 
         node_visitor::apply(c);
+    }
+
+    void apply(sg::environment_light& el)
+    {
+        auto tex = std::dynamic_pointer_cast<sg::texture2d<vec4>>(el.texture());
+
+        if (tex != nullptr)
+        {
+            environment_map = std::make_shared<texture<vec4, 2>>(tex->width(), tex->height());
+            environment_map->set_address_mode(tex->get_address_mode());
+            environment_map->set_filter_mode(tex->get_filter_mode());
+            environment_map->reset(tex->data());
+        }
+
+        node_visitor::apply(el);
     }
 
     void apply(sg::transform& t)
@@ -531,6 +549,9 @@ struct build_bvhs_visitor : sg::node_visitor
 
     // Cameras
     aligned_vector<std::pair<std::string, thin_lens_camera>>& cameras_;
+
+    // Environment map
+    std::shared_ptr<texture<vec4, 2>> environment_map;
 
     // Assign consecutive prim ids
     unsigned current_prim_id_ = 0;
@@ -660,6 +681,8 @@ void renderer::build_bvhs()
             }
 #endif
         }
+
+        environment_map = build_visitor.environment_map;
 
         mod.bbox = host_top_level_bvh.node(0).get_bounds();
         mod.materials.push_back({});
