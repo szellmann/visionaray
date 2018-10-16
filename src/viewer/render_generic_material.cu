@@ -21,7 +21,7 @@ void render_generic_material_cu(
         vec4                                                               bgcolor,
         vec4                                                               ambient,
         host_device_rt&                                                    rt,
-        cuda_sched<basic_ray<float>>&                                      sched,
+        cuda_sched<ray_type_gpu>&                                          sched,
         camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
         algorithm                                                          algo,

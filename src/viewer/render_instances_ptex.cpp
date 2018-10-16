@@ -28,9 +28,9 @@ void render_instances_ptex_cpp(
         vec4                                                      ambient,
         host_device_rt&                                           rt,
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<basic_ray<simd::float4>>&                       sched,
+        tbb_sched<ray_type_cpu>&                                  sched,
 #else
-        tiled_sched<basic_ray<simd::float4>>&                     sched,
+        tiled_sched<ray_type_cpu>&                                sched,
 #endif
         camera_t const&                                           cam,
         unsigned&                                                 frame_num,

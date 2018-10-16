@@ -52,6 +52,14 @@ namespace visionaray
 // Helper types
 //
 
+//using scalar_type_cpu           = float;
+using scalar_type_cpu           = simd::float4;
+//using scalar_type_cpu           = simd::float8;
+//using scalar_type_cpu           = simd::float16;
+using scalar_type_gpu           = float;
+using ray_type_cpu              = basic_ray<scalar_type_cpu>;
+using ray_type_gpu              = basic_ray<scalar_type_gpu>;
+
 using camera_t = variant<pinhole_camera, thin_lens_camera>;
 using plastic_t = plastic<float>;
 using generic_light_t = generic_light<
@@ -90,9 +98,9 @@ void render_plastic_cpp(
         vec4                                       ambient,
         host_device_rt&                            rt,
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<basic_ray<simd::float4>>&        sched,
+        tbb_sched<ray_type_cpu>&                   sched,
 #else
-        tiled_sched<basic_ray<simd::float4>>&      sched,
+        tiled_sched<ray_type_cpu>&                 sched,
 #endif
         camera_t const&                            cam,
         unsigned&                                  frame_num,
@@ -114,7 +122,7 @@ void render_plastic_cu(
         vec4                                              bgcolor,
         vec4                                              ambient,
         host_device_rt&                                   rt,
-        cuda_sched<basic_ray<float>>&                     sched,
+        cuda_sched<ray_type_gpu>&                         sched,
         camera_t const&                                   cam,
         unsigned&                                         frame_num,
         algorithm                                         algo,
@@ -141,9 +149,9 @@ void render_generic_material_cpp(
         vec4                                                               ambient,
         host_device_rt&                                                    rt,
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<basic_ray<simd::float4>>&                                sched,
+        tbb_sched<ray_type_cpu>&                                           sched,
 #else
-        tiled_sched<basic_ray<simd::float4>>&                              sched,
+        tiled_sched<ray_type_cpu>&                                         sched,
 #endif
         camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
@@ -165,7 +173,7 @@ void render_generic_material_cu(
         vec4                                                               bgcolor,
         vec4                                                               ambient,
         host_device_rt&                                                    rt,
-        cuda_sched<basic_ray<float>>&                                      sched,
+        cuda_sched<ray_type_gpu>&                                          sched,
         camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
         algorithm                                                          algo,
@@ -192,9 +200,9 @@ void render_instances_cpp(
         vec4                                                      ambient,
         host_device_rt&                                           rt,
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<basic_ray<simd::float4>>&                       sched,
+        tbb_sched<ray_type_cpu>&                                  sched,
 #else
-        tiled_sched<basic_ray<simd::float4>>&                     sched,
+        tiled_sched<ray_type_cpu>&                                sched,
 #endif
         camera_t const&                                           cam,
         unsigned&                                                 frame_num,
@@ -218,9 +226,9 @@ void render_instances_ptex_cpp(
         vec4                                                      ambient,
         host_device_rt&                                           rt,
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<basic_ray<simd::float4>>&                       sched,
+        tbb_sched<ray_type_cpu>&                                  sched,
 #else
-        tiled_sched<basic_ray<simd::float4>>&                     sched,
+        tiled_sched<ray_type_cpu>&                                sched,
 #endif
         camera_t const&                                           cam,
         unsigned&                                                 frame_num,
