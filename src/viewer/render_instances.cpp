@@ -21,11 +21,7 @@ void render_instances_cpp(
         vec4                                                      bgcolor,
         vec4                                                      ambient,
         host_device_rt&                                           rt,
-#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<ray_type_cpu>&                                  sched,
-#else
-        tiled_sched<ray_type_cpu>&                                sched,
-#endif
+        host_sched_t<ray_type_cpu>&                               sched,
         camera_t const&                                           cam,
         unsigned&                                                 frame_num,
         algorithm                                                 algo,

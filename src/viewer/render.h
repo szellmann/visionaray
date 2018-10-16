@@ -80,6 +80,15 @@ using texture_t = texture_ref<vector<4, unorm<8>>, 2>;
 using cuda_texture_t = cuda_texture_ref<vector<4, unorm<8>>, 2>;
 #endif
 
+#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
+template <typename R>
+using host_sched_t = tbb_sched<R>;
+#else
+template <typename R>
+using host_sched_t = tiled_sched<R>;
+#endif
+
+
 //-------------------------------------------------------------------------------------------------
 // Render from lists, only material is plastic
 //
@@ -97,11 +106,7 @@ void render_plastic_cpp(
         vec4                                       bgcolor,
         vec4                                       ambient,
         host_device_rt&                            rt,
-#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<ray_type_cpu>&                   sched,
-#else
-        tiled_sched<ray_type_cpu>&                 sched,
-#endif
+        host_sched_t<ray_type_cpu>&                sched,
         camera_t const&                            cam,
         unsigned&                                  frame_num,
         algorithm                                  algo,
@@ -148,11 +153,7 @@ void render_generic_material_cpp(
         vec4                                                               bgcolor,
         vec4                                                               ambient,
         host_device_rt&                                                    rt,
-#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<ray_type_cpu>&                                           sched,
-#else
-        tiled_sched<ray_type_cpu>&                                         sched,
-#endif
+        host_sched_t<ray_type_cpu>&                                        sched,
         camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
         algorithm                                                          algo,
@@ -199,11 +200,7 @@ void render_instances_cpp(
         vec4                                                      bgcolor,
         vec4                                                      ambient,
         host_device_rt&                                           rt,
-#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<ray_type_cpu>&                                  sched,
-#else
-        tiled_sched<ray_type_cpu>&                                sched,
-#endif
+        host_sched_t<ray_type_cpu>&                               sched,
         camera_t const&                                           cam,
         unsigned&                                                 frame_num,
         algorithm                                                 algo,
@@ -225,11 +222,7 @@ void render_instances_ptex_cpp(
         vec4                                                      bgcolor,
         vec4                                                      ambient,
         host_device_rt&                                           rt,
-#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-        tbb_sched<ray_type_cpu>&                                  sched,
-#else
-        tiled_sched<ray_type_cpu>&                                sched,
-#endif
+        host_sched_t<ray_type_cpu>&                               sched,
         camera_t const&                                           cam,
         unsigned&                                                 frame_num,
         algorithm                                                 algo,

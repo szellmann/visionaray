@@ -262,11 +262,7 @@ struct renderer : viewer_type
     thrust::device_vector<device_tex_ref_type>  device_textures;
 #endif
 
-#if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
-    tbb_sched<ray_type_cpu>                     host_sched;
-#else
-    tiled_sched<ray_type_cpu>                   host_sched;
-#endif
+    host_sched_t<ray_type_cpu>                    host_sched;
     host_device_rt                              rt;
 #ifdef __CUDACC__
     cuda_sched<ray_type_gpu>                    device_sched;
