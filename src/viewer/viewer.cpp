@@ -282,7 +282,8 @@ struct renderer : viewer_type
 #endif
     thin_lens_camera                            cam;
 
-    std::shared_ptr<texture<vec4, 2>>           environment_map = nullptr;
+    std::shared_ptr<visionaray::texture<vec4, 2>>
+                                                environment_map = nullptr;
 
 
     // List of cameras, e.g. read from scene graph
@@ -416,7 +417,7 @@ struct build_bvhs_visitor : sg::node_visitor
 
         if (tex != nullptr)
         {
-            environment_map = std::make_shared<texture<vec4, 2>>(tex->width(), tex->height());
+            environment_map = std::make_shared<visionaray::texture<vec4, 2>>(tex->width(), tex->height());
             environment_map->set_address_mode(tex->get_address_mode());
             environment_map->set_filter_mode(tex->get_filter_mode());
             environment_map->reset(tex->data());
@@ -551,7 +552,7 @@ struct build_bvhs_visitor : sg::node_visitor
     aligned_vector<std::pair<std::string, thin_lens_camera>>& cameras_;
 
     // Environment map
-    std::shared_ptr<texture<vec4, 2>> environment_map;
+    std::shared_ptr<visionaray::texture<vec4, 2>> environment_map;
 
     // Assign consecutive prim ids
     unsigned current_prim_id_ = 0;
