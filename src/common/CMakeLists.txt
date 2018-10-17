@@ -193,6 +193,7 @@ set(COMMON_SOURCES
     manip/arcball.cpp
     manip/arcball_manipulator.cpp
     manip/camera_manipulator.cpp
+    manip/first_person_manipulator.cpp
     manip/model_manipulator.cpp
     manip/pan_manipulator.cpp
     manip/rotate_manipulator.cpp
