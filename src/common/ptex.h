@@ -16,7 +16,6 @@
 #endif
 
 #include <visionaray/math/simd/type_traits.h>
-#include <visionaray/math/triangle.h>
 
 namespace visionaray
 {
