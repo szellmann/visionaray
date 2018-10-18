@@ -175,53 +175,6 @@ void call_kernel(
     }
 }
 
-
-//-------------------------------------------------------------------------------------------------
-// Call one of the built-in kernels
-//
-// Simple, Whitted: uniform sampling (1x SSAA)
-// Pathtracing:     jittered-blend sampling
-//
-
-template <typename Sched, typename KParams, typename ...Args>
-void call_kernel(
-        algorithm       algo,
-        Sched&          sched,
-        KParams const&  kparams,
-        unsigned&       frame_num,
-        Args&&...       args
-        )
-{
-    switch (algo)
-    {
-
-    case Simple:
-        sched.frame(
-            simple::kernel<KParams>({kparams}),
-            make_sched_params(pixel_sampler::uniform_type{}, std::forward<Args>(args)...),
-            frame_num
-            );
-        break;
-
-    case Whitted:
-        sched.frame(
-            whitted::kernel<KParams>({kparams}),
-            make_sched_params(pixel_sampler::uniform_type{}, std::forward<Args>(args)...),
-            frame_num
-            );
-        break;
-
-    case Pathtracing:
-        sched.frame(
-            pathtracing::kernel<KParams>({kparams}),
-            make_sched_params(pixel_sampler::jittered_blend_type{}, std::forward<Args>(args)...),
-            ++frame_num
-            );
-        break;
-
-    }
-}
-
 } // visionaray
 
 #endif // VSNRAY_VIEWER_CALL_KERNEL_H
