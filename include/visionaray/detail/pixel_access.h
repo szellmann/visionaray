@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include <visionaray/math/array.h>
+#include <visionaray/blending.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/result_record.h>
@@ -1115,6 +1116,73 @@ inline void get(
 
 // Blend ------------------------------------------------------------------
 
+template <typename T, typename U>
+VSNRAY_FUNC
+inline T blend(T const& src, U const& sfactor, T const& dst, U const& dfactor)
+{
+    return src * T(sfactor) + dst * T(dfactor);
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline T blend(
+        T const& src,
+        blending::scale_factor const& sfactor,
+        T const& dst,
+        blending::scale_factor const& dfactor
+        )
+{
+    auto make_factor = [](T const& src, T const& dst, blending::scale_factor const& factor)
+    {
+        if (factor == blending::Zero)
+        {
+            return T(0.0);
+        }
+        else if (factor == blending::One)
+        {
+            return T(1.0);
+        }
+        else if (factor == blending::SrcColor)
+        {
+            return src;
+        }
+        else if (factor == blending::OneMinusSrcColor)
+        {
+            return T(1.0) - src;
+        }
+        else if (factor == blending::DstColor)
+        {
+            return dst;
+        }
+        else if (factor == blending::OneMinusDstColor)
+        {
+            return T(1.0) - dst;
+        }
+        else if (factor == blending::SrcAlpha)
+        {
+            return T(src.w);
+        }
+        else if (factor == blending::OneMinusSrcAlpha)
+        {
+            return T(1.0) - T(src.w);
+        }
+        else if (factor == blending::DstAlpha)
+        {
+            return T(dst.w);
+        }
+        else if (factor == blending::OneMinusDstAlpha)
+        {
+            return T(1.0) - T(src.w);
+        }
+
+        return T(0.0);
+    };
+
+    T s = make_factor(src, dst, sfactor);
+    T d = make_factor(src, dst, dfactor);
+
+    return src * s + dst * d;
+}
 
 //-------------------------------------------------------------------------------------------------
 // Blend input and output colors, store in output buffer
@@ -1139,7 +1207,7 @@ inline void blend(
 
     get(pixel_format_constant<SF>{}, pixel_format_constant<DF>{}, x, y, width, height, dst, buffer);
 
-    dst = color * sfactor + dst * dfactor;
+    dst = blend(color, sfactor, dst, dfactor);
 
     store(pixel_format_constant<DF>{}, pixel_format_constant<SF>{}, x, y, width, height, dst, buffer);
 }

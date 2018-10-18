@@ -445,6 +445,7 @@ inline void sample_pixel_impl(
 
 template <
     typename K,
+    typename T,
     typename R,
     typename Generator,
     pixel_format CF,
@@ -452,16 +453,16 @@ template <
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        K                                   kernel,
-        pixel_sampler::uniform_blend_type   blend_params,
-        R const&                            r,
-        Generator&                          gen,
-        render_target_ref<CF>               rt_ref,
-        int                                 x,
-        int                                 y,
-        int                                 width,
-        int                                 height,
-        Camera const&                       cam
+        K                                          kernel,
+        pixel_sampler::basic_uniform_blend_type<T> blend_params,
+        R const&                                   r,
+        Generator&                                 gen,
+        render_target_ref<CF>                      rt_ref,
+        int                                        x,
+        int                                        y,
+        int                                        width,
+        int                                        height,
+        Camera const&                              cam
         )
 {
     VSNRAY_UNUSED(cam);
@@ -479,13 +480,14 @@ inline void sample_pixel_impl(
             height,
             result,
             rt_ref.color(),
-            S(blend_params.sfactor),
-            S(blend_params.dfactor)
+            blend_params.sfactor,
+            blend_params.dfactor
             );
 }
 
 template <
     typename K,
+    typename T,
     typename R,
     typename Generator,
     pixel_format CF,
@@ -494,16 +496,16 @@ template <
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        K                                   kernel,
-        pixel_sampler::uniform_blend_type   blend_params,
-        R const&                            r,
-        Generator&                          gen,
-        render_target_ref<CF, DF>           rt_ref,
-        int                                 x,
-        int                                 y,
-        int                                 width,
-        int                                 height,
-        Camera const&                       cam
+        K                                          kernel,
+        pixel_sampler::basic_uniform_blend_type<T> blend_params,
+        R const&                                   r,
+        Generator&                                 gen,
+        render_target_ref<CF, DF>                  rt_ref,
+        int                                        x,
+        int                                        y,
+        int                                        width,
+        int                                        height,
+        Camera const&                              cam
         )
 {
     using S = typename R::scalar_type;
@@ -524,8 +526,8 @@ inline void sample_pixel_impl(
             result,
             rt_ref.color(),
             rt_ref.depth(),
-            S(blend_params.sfactor),
-            S(blend_params.dfactor)
+            blend_params.sfactor,
+            blend_params.dfactor
             );
 }
 
@@ -571,8 +573,8 @@ inline void sample_pixel_impl(
             height,
             result,
             rt_ref.color(),
-            S(blend_params.sfactor),
-            S(blend_params.dfactor)
+            blend_params.sfactor,
+            blend_params.dfactor
             );
 }
 
@@ -617,8 +619,8 @@ inline void sample_pixel_impl(
             result,
             rt_ref.color(),
             rt_ref.depth(),
-            S(blend_params.sfactor),
-            S(blend_params.dfactor)
+            blend_params.sfactor,
+            blend_params.dfactor
             );
 }
 
