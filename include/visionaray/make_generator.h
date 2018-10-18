@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "detail/macros.h"
+#include "pixel_sampler_types.h"
 #include "random_generator.h"
-#include "tags.h"
 
 namespace visionaray
 {
@@ -39,8 +39,8 @@ struct make_generator_impl<T, pixel_sampler::jittered_type>
     using generator_type = random_generator<T>;
 };
 
-template <typename T>
-struct make_generator_impl<T, pixel_sampler::jittered_blend_type>
+template <typename T, typename U>
+struct make_generator_impl<T, pixel_sampler::basic_jittered_blend_type<U>>
 {
     using generator_type = random_generator<T>;
 };

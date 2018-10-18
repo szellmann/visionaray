@@ -214,21 +214,29 @@ void renderer::on_display()
     // a rand generator is created, and noisy
     // images are blended later on.
 
+    // Note how we set sfactor and dfactor based on
+    // frame_num so that pixel blending works.
+
+    // Note: for the jittered_blend_type pixel sampler to
+    // work properly, you have to count frames yourself!
+    // (check the occurrences of renderer::frame_num in
+    // this file!)
+
+    pixel_sampler::jittered_blend_type blend_params;
+    float alpha = 1.0f / ++frame_num;
+    blend_params.sfactor = alpha;
+    blend_params.dfactor = 1.0f - alpha;
+
     // Note: alternative samplers are:
     //  pixel_sampler::uniform_type
     //  pixel_sampler::ssaa_type<[1|2|4|8}>
     // (uniform_type and ssaa_type<1> will behave the same!)
     // You can also leave this argument out, then you'll get
     // the default: pixel_sampler::uniform_type
-
-    // Note: for the jittered_blend_type pixel sampler to
-    // work properly, you have to count frames yourself!
-    // (check the occurrences of renderer::frame_num in
-    // this file!)
     auto sparams = make_sched_params(
-            pixel_sampler::jittered_blend_type{},
-            cam,    // the camera object (note: could also be two matrices!)
-            host_rt // render target, that's where we store the pixel result.
+            blend_params,
+            cam,          // the camera object (note: could also be two matrices!)
+            host_rt       // render target, that's where we store the pixel result.
             );
 
     //-----------------------------------------------------
@@ -298,11 +306,9 @@ void renderer::on_display()
     // Instantiate the path tracing kernel, and
     // call it by executing the scheduler's
     // frame() function.
-    // Note how we update frame_num so that
-    // pixel blending works.
     pathtracing::kernel<decltype(kparams)> kernel;
     kernel.params = kparams;
-    host_sched.frame(kernel, sparams, ++frame_num);
+    host_sched.frame(kernel, sparams);
 
 
     // Display the rendered image with OpenGL.

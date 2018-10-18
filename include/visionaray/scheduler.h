@@ -65,15 +65,17 @@ struct sched_params<Base, Camera, RT, PxSamplerT> : Base
     using pixel_sampler_type    = PxSamplerT;
 
     template <typename ...Args>
-    sched_params(Camera const& c, RT& r, Args&&... args)
+    sched_params(Camera const& c, RT& r, PxSamplerT sp, Args&&... args)
         : Base( std::forward<Args>(args)... )
         , cam(c)
         , rt(r)
+        , sample_params(sp)
     {
     }
 
     Camera cam;
     RT& rt;
+    PxSamplerT sample_params;
 };
 
 
@@ -115,13 +117,13 @@ template <
     typename RT
     >
 auto make_sched_params(
-        PxSamplerT    /* */,
+        PxSamplerT    sample_params,
         Camera const& cam,
         RT&           rt
         )
     -> sched_params<sched_params_base<recti>, Camera, RT, PxSamplerT>
 {
-    return { cam, rt, recti(0, 0, rt.width(), rt.height()) };
+    return { cam, rt, sample_params, recti(0, 0, rt.width(), rt.height()) };
 }
 
 template <
@@ -132,14 +134,14 @@ template <
     typename Intersector
     >
 auto make_sched_params(
-        PxSamplerT    /* */,
+        PxSamplerT    sample_params,
         Camera const& cam,
         RT&           rt,
         Intersector&  isect
         )
     -> sched_params<sched_params_intersector_base<recti, Intersector>, Camera, RT, PxSamplerT>
 {
-    return { cam, rt, recti(0, 0, rt.width(), rt.height()), isect };
+    return { cam, rt, sample_params, recti(0, 0, rt.width(), rt.height()), isect };
 }
 
 template <
@@ -148,7 +150,7 @@ template <
     typename RT
     >
 auto make_sched_params(
-        PxSamplerT /* */,
+        PxSamplerT sample_params,
         mat4       view_matrix,
         mat4       proj_matrix,
         RT&        rt
@@ -158,6 +160,7 @@ auto make_sched_params(
     return {
         matrix_camera(view_matrix, proj_matrix),
         rt,
+        sample_params,
         recti(0, 0, rt.width(), rt.height())
         };
 }
@@ -169,7 +172,7 @@ template <
     typename Intersector
     >
 auto make_sched_params(
-        PxSamplerT   /* */,
+        PxSamplerT   sample_params,
         mat4         view_matrix,
         mat4         proj_matrix,
         RT&          rt,
@@ -180,6 +183,7 @@ auto make_sched_params(
     return {
         matrix_camera(view_matrix, proj_matrix),
         rt,
+        sample_params,
         recti(0, 0, rt.width(), rt.height()),
         isect
         };

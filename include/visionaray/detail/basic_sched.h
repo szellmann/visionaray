@@ -18,7 +18,7 @@ public:
     explicit basic_sched(Args&&... args);
 
     template <typename K, typename SP>
-    void frame(K kernel, SP sched_params, unsigned frame_num = 0);
+    void frame(K kernel, SP sched_params);
 
     template <typename ...Args>
     void reset(Args&&... args);

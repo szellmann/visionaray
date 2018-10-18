@@ -306,11 +306,23 @@ void renderer::on_display()
 
     double elapsed = 0.0;
 
+#if USE_DOUBLE_PRECISION
+    pixel_sampler::basic_jittered_blend_type<double> blend_params;
+    double alpha = 1.0 / ++frame_num;
+    blend_params.sfactor = alpha;
+    blend_params.dfactor = 1.0 - alpha;
+#else
+    pixel_sampler::basic_jittered_blend_type<float> blend_params;
+    float alpha = 1.0f / ++frame_num;
+    blend_params.sfactor = alpha;
+    blend_params.dfactor = 1.0f - alpha;
+#endif
+
     if (dev_type == GPU)
     {
 #ifdef __CUDACC__
         auto sparams = make_sched_params(
-                pixel_sampler::jittered_blend_type{},
+                blend_params,
                 cam,
                 device_rt
                 ); 
@@ -331,7 +343,7 @@ void renderer::on_display()
 
         pathtracing::kernel<decltype(kparams)> kernel;
         kernel.params = kparams;
-        device_sched.frame(kernel, sparams, ++frame_num);
+        device_sched.frame(kernel, sparams);
 
         elapsed = t.elapsed();
         avg_frame_time += elapsed;
@@ -343,7 +355,7 @@ void renderer::on_display()
     {
 #ifndef __CUDA_ARCH__
         auto sparams = make_sched_params(
-                pixel_sampler::jittered_blend_type{},
+                blend_params,
                 cam,
                 host_rt
                 ); 
@@ -364,7 +376,7 @@ void renderer::on_display()
 
         pathtracing::kernel<decltype(kparams)> kernel;
         kernel.params = kparams;
-        host_sched.frame(kernel, sparams, ++frame_num);
+        host_sched.frame(kernel, sparams);
 
         elapsed = t.elapsed();
         avg_frame_time += elapsed;

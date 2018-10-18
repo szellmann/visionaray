@@ -165,8 +165,13 @@ void renderer::on_display()
     using C = vector<4, S>;
     using V = vector<3, S>;
 
+    float alpha = 1.0f / ++frame_num;
+    auto blend_params = pixel_sampler::jittered_blend_type{};
+    blend_params.sfactor = alpha;
+    blend_params.dfactor = 1.0f - alpha;
+
     auto sparams = make_sched_params(
-            pixel_sampler::jittered_blend_type{},
+            blend_params,
             cam,
             host_rt
             );
@@ -245,7 +250,7 @@ void renderer::on_display()
         }
 
         return result;
-    }, sparams, ++frame_num);
+    }, sparams);
 
 
     // display the rendered image

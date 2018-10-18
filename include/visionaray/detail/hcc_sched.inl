@@ -24,17 +24,15 @@ template <typename R, typename K, typename SP>
 inline void hcc_sched_impl_frame(
         K             kernel,
         SP            sparams,
-        vec2ui const& block_size,
-        unsigned      frame_num
+        vec2ui const& block_size
         )
 {
-    using PxSamplerT = typename SP::pixel_sampler_type;
-
-    auto scissor_box = sparams.scissor_box;
-    auto rt_ref      = sparams.rt.ref();
-    auto cam         = sparams.cam;
-    auto width       = sparams.rt.width();
-    auto height      = sparams.rt.height();
+    auto scissor_box   = sparams.scissor_box;
+    auto rt_ref        = sparams.rt.ref();
+    auto cam           = sparams.cam;
+    auto width         = sparams.rt.width();
+    auto height        = sparams.rt.height();
+    auto sample_params = sparams.sample_params;
 
     hc::parallel_for_each(
             hc::extent<2>(width, height),
@@ -54,7 +52,7 @@ inline void hcc_sched_impl_frame(
 
                 auto r = detail::make_primary_rays(
                         R{},
-                        PxSamplerT{},
+                        sample_params,
                         gen,
                         x,
                         y,
@@ -65,10 +63,9 @@ inline void hcc_sched_impl_frame(
 
                 sample_pixel(
                         kernel,
-                        PxSamplerT(),
+                        sample_params,
                         r,
                         gen,
-                        frame_num,
                         rt_ref,
                         x,
                         y,
@@ -96,7 +93,7 @@ hcc_sched<R>::hcc_sched(unsigned block_size_x, unsigned block_size_y)
 
 template <typename R>
 template <typename K, typename SP>
-void hcc_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
+void hcc_sched<R>::frame(K kernel, SP sched_params)
 {
     sched_params.cam.begin_frame();
 
@@ -106,7 +103,6 @@ void hcc_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
             kernel,
             sched_params,
             block_size_,
-            frame_num
             );
 
     sched_params.rt.end_frame();

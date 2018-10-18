@@ -24,23 +24,21 @@ void call_sample_pixel(
         K               kernel,
         SP              sparams,
         Generator&      gen,
-        unsigned        frame_num,
         Args&&...       args
         )
 {
     auto r = detail::make_primary_rays(
             R{},
-            typename SP::pixel_sampler_type{},
+            sparams.sample_params,
             gen,
             std::forward<Args>(args)...
             );
 
     sample_pixel(
             kernel,
-            typename SP::pixel_sampler_type(),
+            sparams.sample_params,
             r,
             gen,
-            frame_num,
             sparams.rt.ref(),
             std::forward<Args>(args)...
             );
@@ -53,13 +51,12 @@ void call_sample_pixel(
         K               kernel,
         SP              sparams,
         Generator&      gen,
-        unsigned        frame_num,
         Args&&...       args
         )
 {
     auto r = detail::make_primary_rays(
             R{},
-            typename SP::pixel_sampler_type{},
+            sparams.sample_params,
             gen,
             std::forward<Args>(args)...
             );
@@ -68,10 +65,9 @@ void call_sample_pixel(
             detail::have_intersector_tag(),
             sparams.intersector,
             kernel,
-            typename SP::pixel_sampler_type(),
+            sparams.sample_params,
             r,
             gen,
-            frame_num,
             sparams.rt.ref(),
             std::forward<Args>(args)...
             );
@@ -93,7 +89,7 @@ basic_sched<B, R>::basic_sched(Args&&... args)
 
 template <typename B, typename R>
 template <typename K, typename SP>
-void basic_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_num)
+void basic_sched<B, R>::frame(K kernel, SP sched_params)
 {
     sched_params.cam.begin_frame();
 
@@ -118,7 +114,7 @@ void basic_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_num)
         {
             auto gen = make_generator(
                     typename R::scalar_type{},
-                    typename SP::pixel_sampler_type{},
+                    sched_params.sample_params,
                     detail::tic(typename R::scalar_type{})
                     );
 
@@ -128,7 +124,6 @@ void basic_sched<B, R>::frame(K kernel, SP sched_params, unsigned frame_num)
                     kernel,
                     sched_params,
                     gen,
-                    frame_num,
                     x,
                     y,
                     sched_params.rt.width(),

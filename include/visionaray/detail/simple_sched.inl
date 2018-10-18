@@ -14,7 +14,7 @@ namespace visionaray
 
 template <typename R>
 template <typename K, typename SP>
-void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
+void simple_sched<R>::frame(K kernel, SP sched_params)
 {
     sched_params.cam.begin_frame();
 
@@ -54,7 +54,6 @@ void simple_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
                     typename SP::pixel_sampler_type{},
                     r,
                     gen,
-                    frame_num,
                     sched_params.rt.ref(),
                     x,
                     y,

@@ -22,7 +22,7 @@ public:
     hcc_sched(unsigned block_size_x, unsigned block_size_y);
 
     template <typename K, typename SP>
-    void frame(K kernel, SP sched_params, unsigned frame_num = 0);
+    void frame(K kernel, SP sched_params);
 
 private:
 

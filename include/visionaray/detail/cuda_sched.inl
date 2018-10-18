@@ -60,10 +60,10 @@ template <
     typename ...Args
     >
 __global__ void render(
+        PxSamplerT      sample_params,
         Rect            scissor_box,
         RTRef           rt_ref,
         K               kernel,
-        unsigned        frame_num,
         Args...         args
         )
 {
@@ -77,13 +77,13 @@ __global__ void render(
 
     auto gen = make_generator(
             typename R::scalar_type{},
-            PxSamplerT{},
+            sample_params,
             detail::cuda_seed()
             );
 
     auto r = detail::make_primary_rays(
             R{},
-            PxSamplerT{},
+            sample_params,
             gen,
             x,
             y,
@@ -92,10 +92,9 @@ __global__ void render(
 
     sample_pixel(
             kernel,
-            PxSamplerT(),
+            sample_params,
             r,
             gen,
-            frame_num,
             rt_ref,
             x,
             y,
@@ -114,11 +113,11 @@ template <
     >
 __global__ void render(
         detail::have_intersector_tag    /* */,
+        PxSamplerT                      sample_params,
         Intersector                     intersector,
         Rect                            scissor_box,
         RTRef                           rt_ref,
         K                               kernel,
-        unsigned                        frame_num,
         Args...                         args
         )
 {
@@ -135,7 +134,7 @@ __global__ void render(
 
     auto r = detail::make_primary_rays(
             R{},
-            PxSamplerT{},
+            sample_params,
             gen,
             x,
             y,
@@ -146,10 +145,9 @@ __global__ void render(
             detail::have_intersector_tag(),
             intersector,
             kernel,
-            PxSamplerT(),
+            sample_params,
             r,
             gen,
-            frame_num,
             rt_ref,
             x,
             y,
@@ -165,7 +163,7 @@ __global__ void render(
 template <typename R, typename SP, typename Rect, typename ...Args>
 inline void cuda_sched_impl_call_render(
         std::false_type /* has intersector */,
-        SP              /* */,
+        SP&             sparams,
         dim3 const&     grid_size,
         dim3 const&     block_size,
         Rect const&     scissor_box,
@@ -173,6 +171,7 @@ inline void cuda_sched_impl_call_render(
         )
 {
     render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
+            sparams.sample_params,
             scissor_box,
             std::forward<Args>(args)...
             );
@@ -193,6 +192,7 @@ inline void cuda_sched_impl_call_render(
 {
     render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
             detail::have_intersector_tag(),
+            sparams.sample_params,
             sparams.intersector,
             scissor_box,
             std::forward<Args>(args)...
@@ -207,8 +207,7 @@ template <typename R, typename K, typename SP>
 inline void cuda_sched_impl_frame(
         K           kernel,
         SP          sparams,
-        dim3 const& block_size,
-        unsigned    frame_num
+        dim3 const& block_size
         )
 {
     using cuda_dim_t = decltype(block_size.x);
@@ -229,7 +228,6 @@ inline void cuda_sched_impl_frame(
             sparams.scissor_box,
             sparams.rt.ref(),
             kernel,
-            frame_num,
             sparams.rt.width(),
             sparams.rt.height(),
             sparams.cam
@@ -257,7 +255,7 @@ cuda_sched<R>::cuda_sched(unsigned block_size_x, unsigned block_size_y)
 
 template <typename R>
 template <typename K, typename SP>
-void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
+void cuda_sched<R>::frame(K kernel, SP sched_params)
 {
     sched_params.cam.begin_frame();
 
@@ -266,8 +264,7 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, unsigned frame_num)
     detail::cuda_sched_impl_frame<R>(
             kernel,
             sched_params,
-            dim3(block_size_.x, block_size_.y),
-            frame_num
+            dim3(block_size_.x, block_size_.y)
             );
 
     sched_params.rt.end_frame();

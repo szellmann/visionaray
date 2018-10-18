@@ -11,9 +11,9 @@
 #include <visionaray/math/array.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
+#include <visionaray/pixel_sampler_types.h>
 #include <visionaray/render_target.h>
 #include <visionaray/result_record.h>
-#include <visionaray/tags.h>
 
 #include "macros.h"
 #include "pixel_access.h"
@@ -271,7 +271,7 @@ template <
 VSNRAY_FUNC
 inline array<R, Num> make_primary_rays(
         R               /* */,
-        PxSamplerT      /* */,
+        PxSamplerT      sample_params,
         Generator&      gen,
         int             x,
         int             y,
@@ -286,7 +286,7 @@ inline array<R, Num> make_primary_rays(
     {
         result[i] = make_primary_rays(
                 R{},
-                PxSamplerT{},
+                sample_params,
                 gen,
                 x,
                 y,
@@ -335,7 +335,6 @@ inline void sample_pixel_impl(
         pixel_sampler::uniform_type     /* */,
         R const&                        r,
         Generator&                      gen,
-        unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
         int                             x,
         int                             y,
@@ -344,7 +343,6 @@ inline void sample_pixel_impl(
         Camera const&                   cam
         )
 {
-    VSNRAY_UNUSED(frame_num);
     VSNRAY_UNUSED(cam);
 
     auto result = invoke_kernel(kernel, r, gen, x, y);
@@ -374,7 +372,6 @@ inline void sample_pixel_impl(
         pixel_sampler::uniform_type     /* */,
         R const&                        r,
         Generator&                      gen,
-        unsigned                        frame_num,
         render_target_ref<CF, DF>       rt_ref,
         int                             x,
         int                             y,
@@ -383,8 +380,6 @@ inline void sample_pixel_impl(
         Camera const&                   cam
         )
 {
-    VSNRAY_UNUSED(frame_num);
-
     auto result = invoke_kernel(kernel, r, gen, x, y);
     result.depth = select( result.hit, depth_transform(result.isect_pos, cam), typename R::scalar_type(1.0) );
     pixel_access::store(
@@ -420,7 +415,6 @@ inline void sample_pixel_impl(
         pixel_sampler::jittered_type    /* */,
         R const&                        r,
         Generator&                      gen,
-        unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
         int                             x,
         int                             y,
@@ -429,7 +423,6 @@ inline void sample_pixel_impl(
         Camera const&                   cam
         )
 {
-    VSNRAY_UNUSED(frame_num);
     VSNRAY_UNUSED(cam);
 
     auto result = invoke_kernel(kernel, r, gen, x, y);
@@ -460,10 +453,9 @@ template <
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         K                                   kernel,
-        pixel_sampler::uniform_blend_type   /* */,
+        pixel_sampler::uniform_blend_type   blend_params,
         R const&                            r,
         Generator&                          gen,
-        unsigned                            frame_num,
         render_target_ref<CF>               rt_ref,
         int                                 x,
         int                                 y,
@@ -477,7 +469,6 @@ inline void sample_pixel_impl(
     using S = typename R::scalar_type;
 
     auto result = invoke_kernel(kernel, r, gen, x, y);
-    auto alpha  = S(1.0) / S(frame_num);
 
     pixel_access::blend(
             pixel_format_constant<CF>{},
@@ -488,7 +479,8 @@ inline void sample_pixel_impl(
             height,
             result,
             rt_ref.color(),
-            alpha, S(1.0) - alpha
+            S(blend_params.sfactor),
+            S(blend_params.dfactor)
             );
 }
 
@@ -503,10 +495,9 @@ template <
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         K                                   kernel,
-        pixel_sampler::uniform_blend_type   /* */,
+        pixel_sampler::uniform_blend_type   blend_params,
         R const&                            r,
         Generator&                          gen,
-        unsigned                            frame_num,
         render_target_ref<CF, DF>           rt_ref,
         int                                 x,
         int                                 y,
@@ -518,7 +509,6 @@ inline void sample_pixel_impl(
     using S = typename R::scalar_type;
 
     auto result = invoke_kernel(kernel, r, gen, x, y);
-    auto alpha  = S(1.0) / S(frame_num);
 
     result.depth = select( result.hit, depth_transform(result.isect_pos, cam), S(1.0) );
 
@@ -534,7 +524,8 @@ inline void sample_pixel_impl(
             result,
             rt_ref.color(),
             rt_ref.depth(),
-            alpha, S(1.0) - alpha
+            S(blend_params.sfactor),
+            S(blend_params.dfactor)
             );
 }
 
@@ -545,6 +536,7 @@ inline void sample_pixel_impl(
 
 template <
     typename K,
+    typename T,
     typename R,
     typename Generator,
     pixel_format CF,
@@ -552,17 +544,16 @@ template <
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        K                                   kernel,
-        pixel_sampler::jittered_blend_type  /* */,
-        R const&                            r,
-        Generator&                          gen,
-        unsigned                            frame_num,
-        render_target_ref<CF>               rt_ref,
-        int                                 x,
-        int                                 y,
-        int                                 width,
-        int                                 height,
-        Camera const&                       cam
+        K                                           kernel,
+        pixel_sampler::basic_jittered_blend_type<T> blend_params,
+        R const&                                    r,
+        Generator&                                  gen,
+        render_target_ref<CF>                       rt_ref,
+        int                                         x,
+        int                                         y,
+        int                                         width,
+        int                                         height,
+        Camera const&                               cam
         )
 {
     VSNRAY_UNUSED(cam);
@@ -570,7 +561,6 @@ inline void sample_pixel_impl(
     using S = typename R::scalar_type;
 
     auto result = invoke_kernel(kernel, r, gen, x, y);
-    auto alpha  = S(1.0) / S(frame_num);
 
     pixel_access::blend(
             pixel_format_constant<CF>{},
@@ -581,12 +571,14 @@ inline void sample_pixel_impl(
             height,
             result,
             rt_ref.color(),
-            alpha, S(1.0) - alpha
+            S(blend_params.sfactor),
+            S(blend_params.dfactor)
             );
 }
 
 template <
     typename K,
+    typename T,
     typename R,
     typename Generator,
     pixel_format CF,
@@ -595,23 +587,21 @@ template <
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        K                                   kernel,
-        pixel_sampler::jittered_blend_type  /* */,
-        R const&                            r,
-        Generator&                          gen,
-        unsigned                            frame_num,
-        render_target_ref<CF, DF>           rt_ref,
-        int                                 x,
-        int                                 y,
-        int                                 width,
-        int                                 height,
-        Camera const&                       cam
+        K                                           kernel,
+        pixel_sampler::basic_jittered_blend_type<T> blend_params,
+        R const&                                    r,
+        Generator&                                  gen,
+        render_target_ref<CF, DF>                   rt_ref,
+        int                                         x,
+        int                                         y,
+        int                                         width,
+        int                                         height,
+        Camera const&                               cam
         )
 {
     using S = typename R::scalar_type;
 
     auto result = invoke_kernel(kernel, r, gen, x, y);
-    auto alpha  = S(1.0) / S(frame_num);
 
     result.depth = select( result.hit, depth_transform(result.isect_pos, cam), S(1.0) );
 
@@ -627,63 +617,9 @@ inline void sample_pixel_impl(
             result,
             rt_ref.color(),
             rt_ref.depth(),
-            alpha, S(1.0) - alpha
+            S(blend_params.sfactor),
+            S(blend_params.dfactor)
             );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// jittered pixel sampler, blends several samples at once
-//
-
-template <
-    typename K,
-    typename R,
-    size_t Num,
-    typename Generator,
-    pixel_format CF,
-    typename Camera
-    >
-VSNRAY_FUNC
-inline void sample_pixel_impl(
-        K                                   kernel,
-        pixel_sampler::jittered_blend_type  /* */,
-        array<R, Num> const&                rays,
-        Generator&                          gen,
-        unsigned                            frame_num,
-        render_target_ref<CF>               rt_ref,
-        int                                 x,
-        int                                 y,
-        int                                 width,
-        int                                 height,
-        Camera const&                       cam
-        )
-{
-    VSNRAY_UNUSED(cam);
-
-    using S = typename R::scalar_type;
-
-    auto ray_ptr = rays.data();
-
-    auto frame_begin = frame_num;
-    auto frame_end   = frame_num + Num;
-
-    for (size_t frame = frame_begin; frame < frame_end; ++frame)
-    {
-        auto result = invoke_kernel(kernel, *ray_ptr++, gen, x, y);
-        auto alpha = S(1.0) / S(frame);
-        pixel_access::blend(
-                pixel_format_constant<CF>{},
-                pixel_format_constant<PF_RGBA32F>{},
-                x,
-                y,
-                width,
-                height,
-                result,
-                rt_ref.color(),
-                alpha, S(1.0) - alpha
-                );
-    }
 }
 
 
@@ -705,7 +641,6 @@ inline void sample_pixel_impl(
         pixel_sampler::ssaa_type<Num>   /* */,
         array<R, Num> const&            rays,
         Generator&                      gen,
-        unsigned                        frame_num,
         render_target_ref<CF>           rt_ref,
         int                             x,
         int                             y,
@@ -714,7 +649,6 @@ inline void sample_pixel_impl(
         Camera const&                   cam
         )
 {
-    VSNRAY_UNUSED(frame_num);
     VSNRAY_UNUSED(cam);
 
     using S     = typename R::scalar_type;
@@ -770,7 +704,6 @@ inline void sample_pixel_impl(
         pixel_sampler::ssaa_type<Num>   /* */,
         array<R, Num> const&            rays,
         Generator&                      gen,
-        unsigned                        frame_num,
         render_target_ref<CF, DF>       rt_ref,
         int                             x,
         int                             y,
@@ -784,8 +717,8 @@ inline void sample_pixel_impl(
 
     auto ray_ptr = rays.data();
 
-    auto frame_begin = frame_num;
-    auto frame_end   = frame_num + Num;
+    auto frame_begin = 0;
+    auto frame_end   = Num;
 
     pixel_access::store(
             pixel_format_constant<CF>{},
