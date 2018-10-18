@@ -404,7 +404,7 @@ inline void sample_pixel_impl(
 
 
 //-------------------------------------------------------------------------------------------------
-// Jittered pixel sampler, generator is passed to kernel
+// Jittered pixel sampler
 //
 
 template <
@@ -447,7 +447,7 @@ inline void sample_pixel_impl(
 
 
 //-------------------------------------------------------------------------------------------------
-// Jittered pixel sampler, result is blended on top of color buffer, generator is passed to kernel
+// Jittered pixel sampler, result is blended on top of color buffer
 //
 
 template <
