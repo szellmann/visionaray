@@ -1131,8 +1131,8 @@ inline void blend(
         int                         height,
         InputColor const&           color,
         OutputColor*                buffer,
-        T                           sfactor,
-        T                           dfactor
+        T const&                    sfactor,
+        T const&                    dfactor
         )
 {
     InputColor dst;
@@ -1160,8 +1160,8 @@ inline void blend(
         int                         height,
         result_record<S> const&     rr,
         OutputColor*                color_buffer,
-        T                           sfactor,
-        T                           dfactor
+        T const&                    sfactor,
+        T const&                    dfactor
         )
 {
     blend(
@@ -1205,8 +1205,8 @@ inline void blend(
         result_record<S> const&     rr,
         OutputColor*                color_buffer,
         Depth*                      depth_buffer,
-        T                           sfactor,
-        T                           dfactor
+        T const&                    sfactor,
+        T const&                    dfactor
         )
 {
     // Blend color
