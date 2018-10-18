@@ -87,6 +87,9 @@ struct ssaa_type : base_type {};
 // 1x SSAA (no supersampling)
 using uniform_type = ssaa_type<1>;
 
+// 1x SSAA and successive blending
+struct uniform_blend_type : uniform_type {};
+
 // Jittered pixel positions
 struct jittered_type : base_type {};
 

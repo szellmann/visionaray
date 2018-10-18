@@ -447,6 +447,99 @@ inline void sample_pixel_impl(
 
 
 //-------------------------------------------------------------------------------------------------
+// Uniform pixel sampler, result is blended on top of color buffer
+//
+
+template <
+    typename K,
+    typename R,
+    typename Generator,
+    pixel_format CF,
+    typename Camera
+    >
+VSNRAY_FUNC
+inline void sample_pixel_impl(
+        K                                   kernel,
+        pixel_sampler::uniform_blend_type   /* */,
+        R const&                            r,
+        Generator&                          gen,
+        unsigned                            frame_num,
+        render_target_ref<CF>               rt_ref,
+        int                                 x,
+        int                                 y,
+        int                                 width,
+        int                                 height,
+        Camera const&                       cam
+        )
+{
+    VSNRAY_UNUSED(cam);
+
+    using S = typename R::scalar_type;
+
+    auto result = invoke_kernel(kernel, r, gen, x, y);
+    auto alpha  = S(1.0) / S(frame_num);
+
+    pixel_access::blend(
+            pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
+            x,
+            y,
+            width,
+            height,
+            result,
+            rt_ref.color(),
+            alpha, S(1.0) - alpha
+            );
+}
+
+template <
+    typename K,
+    typename R,
+    typename Generator,
+    pixel_format CF,
+    pixel_format DF,
+    typename Camera
+    >
+VSNRAY_FUNC
+inline void sample_pixel_impl(
+        K                                   kernel,
+        pixel_sampler::uniform_blend_type   /* */,
+        R const&                            r,
+        Generator&                          gen,
+        unsigned                            frame_num,
+        render_target_ref<CF, DF>           rt_ref,
+        int                                 x,
+        int                                 y,
+        int                                 width,
+        int                                 height,
+        Camera const&                       cam
+        )
+{
+    using S = typename R::scalar_type;
+
+    auto result = invoke_kernel(kernel, r, gen, x, y);
+    auto alpha  = S(1.0) / S(frame_num);
+
+    result.depth = select( result.hit, depth_transform(result.isect_pos, cam), S(1.0) );
+
+    pixel_access::blend(
+            pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
+            pixel_format_constant<DF>{},
+            pixel_format_constant<PF_DEPTH32F>{},
+            x,
+            y,
+            width,
+            height,
+            result,
+            rt_ref.color(),
+            rt_ref.depth(),
+            alpha, S(1.0) - alpha
+            );
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Jittered pixel sampler, result is blended on top of color buffer
 //
 
