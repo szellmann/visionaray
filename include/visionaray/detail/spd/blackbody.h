@@ -19,8 +19,10 @@ namespace visionaray
 // Color temperature in Kelvin, sample SPD with wavelength (nm)
 //
 
-struct blackbody
+class blackbody
 {
+public:
+
     blackbody(float T = 1500.0) : T(T) {}
 
     VSNRAY_FUNC float operator()(float lambda /* nm */) const
