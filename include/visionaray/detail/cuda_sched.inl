@@ -255,7 +255,7 @@ cuda_sched<R>::cuda_sched(unsigned block_size_x, unsigned block_size_y)
 
 template <typename R>
 template <typename K, typename SP>
-void cuda_sched<R>::frame(K kernel, SP sched_params)
+void cuda_sched<R>::frame(K kernel, SP sched_params, cudaStream_t const& stream)
 {
     sched_params.cam.begin_frame();
 
