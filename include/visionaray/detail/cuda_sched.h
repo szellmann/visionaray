@@ -6,6 +6,8 @@
 #ifndef VSNRAY_DETAIL_CUDA_SCHED_H
 #define VSNRAY_DETAIL_CUDA_SCHED_H 1
 
+#include <cstddef>
+
 #include <cuda_runtime_api.h>
 
 #include <visionaray/math/forward.h>
@@ -34,7 +36,7 @@ public:
     cuda_sched(unsigned block_size_x, unsigned block_size_y);
 
     template <typename K, typename SP>
-    void frame(K kernel, SP sched_params, cudaStream_t const& stream = 0);
+    void frame(K kernel, SP sched_params, size_t smem = 0, cudaStream_t const& stream = 0);
 
 private:
 

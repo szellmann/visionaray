@@ -162,15 +162,17 @@ __global__ void render(
 
 template <typename R, typename SP, typename Rect, typename ...Args>
 inline void cuda_sched_impl_call_render(
-        std::false_type /* has intersector */,
-        SP&             sparams,
-        dim3 const&     grid_size,
-        dim3 const&     block_size,
-        Rect const&     scissor_box,
-        Args&&...       args
+        std::false_type     /* has intersector */,
+        SP&                 sparams,
+        dim3 const&         grid_size,
+        dim3 const&         block_size,
+        size_t              smem,
+        cudaStream_t const& stream,
+        Rect const&         scissor_box,
+        Args&&...           args
         )
 {
-    render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
+    render<R, typename SP::pixel_sampler_type><<<grid_size, block_size, smem, stream>>>(
             sparams.sample_params,
             scissor_box,
             std::forward<Args>(args)...
@@ -182,15 +184,17 @@ inline void cuda_sched_impl_call_render(
 
 template <typename R, typename SP, typename Rect, typename ...Args>
 inline void cuda_sched_impl_call_render(
-        std::true_type  /* has intersector */,
-        SP const&       sparams,
-        dim3 const&     grid_size,
-        dim3 const&     block_size,
-        Rect const&     scissor_box,
-        Args&&...       args
+        std::true_type      /* has intersector */,
+        SP const&           sparams,
+        dim3 const&         grid_size,
+        dim3 const&         block_size,
+        size_t              smem,
+        cudaStream_t const& stream,
+        Rect const&         scissor_box,
+        Args&&...           args
         )
 {
-    render<R, typename SP::pixel_sampler_type><<<grid_size, block_size>>>(
+    render<R, typename SP::pixel_sampler_type><<<grid_size, block_size, smem, stream>>>(
             detail::have_intersector_tag(),
             sparams.sample_params,
             sparams.intersector,
@@ -205,9 +209,11 @@ inline void cuda_sched_impl_call_render(
 
 template <typename R, typename K, typename SP>
 inline void cuda_sched_impl_frame(
-        K           kernel,
-        SP          sparams,
-        dim3 const& block_size
+        K                   kernel,
+        SP                  sparams,
+        dim3 const&         block_size,
+        size_t              smem,
+        cudaStream_t const& stream
         )
 {
     using cuda_dim_t = decltype(block_size.x);
@@ -225,6 +231,8 @@ inline void cuda_sched_impl_frame(
             sparams,
             grid_size,
             block_size,
+            smem,
+            stream,
             sparams.scissor_box,
             sparams.rt.ref(),
             kernel,
@@ -255,7 +263,7 @@ cuda_sched<R>::cuda_sched(unsigned block_size_x, unsigned block_size_y)
 
 template <typename R>
 template <typename K, typename SP>
-void cuda_sched<R>::frame(K kernel, SP sched_params, cudaStream_t const& stream)
+void cuda_sched<R>::frame(K kernel, SP sched_params, size_t smem, cudaStream_t const& stream)
 {
     sched_params.cam.begin_frame();
 
@@ -264,7 +272,9 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, cudaStream_t const& stream)
     detail::cuda_sched_impl_frame<R>(
             kernel,
             sched_params,
-            dim3(block_size_.x, block_size_.y)
+            dim3(block_size_.x, block_size_.y),
+            smem,
+            stream
             );
 
     sched_params.rt.end_frame();
