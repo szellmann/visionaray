@@ -467,8 +467,6 @@ inline void sample_pixel_impl(
 {
     VSNRAY_UNUSED(cam);
 
-    using S = typename R::scalar_type;
-
     auto result = invoke_kernel(kernel, r, gen, x, y);
 
     pixel_access::blend(
@@ -559,8 +557,6 @@ inline void sample_pixel_impl(
         )
 {
     VSNRAY_UNUSED(cam);
-
-    using S = typename R::scalar_type;
 
     auto result = invoke_kernel(kernel, r, gen, x, y);
 
