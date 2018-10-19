@@ -262,7 +262,7 @@ struct renderer : viewer_type
     thrust::device_vector<device_tex_ref_type>  device_textures;
 #endif
 
-    host_sched_t<ray_type_cpu>                    host_sched;
+    host_sched_t<ray_type_cpu>                  host_sched;
     host_device_rt                              rt;
 #ifdef __CUDACC__
     cuda_sched<ray_type_gpu>                    device_sched;
