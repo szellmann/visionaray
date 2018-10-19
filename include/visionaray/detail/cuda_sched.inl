@@ -177,9 +177,6 @@ inline void cuda_sched_impl_call_render(
             scissor_box,
             std::forward<Args>(args)...
             );
-
-//  cudaPeekAtLastError();
-//  cudaDeviceSynchronize();
 }
 
 template <typename R, typename SP, typename Rect, typename ...Args>
@@ -201,9 +198,6 @@ inline void cuda_sched_impl_call_render(
             scissor_box,
             std::forward<Args>(args)...
             );
-
-//  cudaPeekAtLastError();
-//  cudaDeviceSynchronize();
 }
 
 
