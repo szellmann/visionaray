@@ -20,10 +20,6 @@
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
 
-#if VSNRAY_COMMON_HAVE_PTEX
-#include "ptex.h"
-#endif
-
 namespace visionaray
 {
 
@@ -35,8 +31,6 @@ class node;
 class model
 {
 public:
-
-    enum texture_format { Ptex, UV };
 
     struct material_type
     {
@@ -94,10 +88,6 @@ public:
     using mat_list          = aligned_vector<material_type>;
     using tex_map           = std::map<std::string, texture_type>;
     using tex_list          = aligned_vector<typename texture_type::ref_type>;
-#if VSNRAY_COMMON_HAVE_PTEX
-    using ptex_coord_list   = aligned_vector<ptex::face_id_t>;
-    using ptex_list         = aligned_vector<ptex::texture>; // PtexPtr is not copyable
-#endif
 
 public:
 
@@ -121,13 +111,6 @@ public:
     tex_map         texture_map;
     tex_list        textures;
     aabb            bbox;
-#if VSNRAY_COMMON_HAVE_PTEX
-    ptex_coord_list ptex_tex_coords;
-    ptex_list       ptex_textures;
-#endif
-
-    texture_format  tex_format = UV;
-
 };
 
 } // visionaray

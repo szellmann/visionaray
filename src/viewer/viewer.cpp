@@ -63,6 +63,10 @@
 #include <common/cuda.h>
 #endif
 
+#if VSNRAY_COMMON_HAVE_PTEX
+#include <common/ptex.h>
+#endif
+
 #include "call_kernel.h"
 #include "host_device_rt.h"
 #include "render.h"
@@ -95,6 +99,7 @@ struct renderer : viewer_type
         Split        // Split BVH, also binned and with SAH
     };
 
+    enum texture_format { Ptex, UV };
 
     renderer()
         : viewer_type(800, 800, "Visionaray Viewer")
@@ -251,6 +256,10 @@ struct renderer : viewer_type
     aligned_vector<point_light<float>>          point_lights;
     aligned_vector<area_light<float,
                    basic_triangle<3, float>>>   area_lights;
+#if VSNRAY_COMMON_HAVE_PTEX
+    aligned_vector<ptex::face_id_t>             ptex_tex_coords;
+    aligned_vector<ptex::texture>               ptex_textures;
+#endif
 #ifdef __CUDACC__
     device_bvh_type                             device_bvh;
     thrust::device_vector<normal_type>          device_geometric_normals;
@@ -278,6 +287,8 @@ struct renderer : viewer_type
             std::string, thin_lens_camera>>     cameras;
 
     mouse::pos                                  mouse_pos;
+
+    texture_format                              tex_format = UV;
 
     visionaray::frame_counter                   counter;
     double                                      last_frame_time = 0.0;
@@ -592,7 +603,7 @@ void renderer::build_bvhs()
                 mod.geometric_normals,
                 mod.tex_coords,
 #if VSNRAY_COMMON_HAVE_PTEX
-                mod.ptex_tex_coords,
+                ptex_tex_coords,
 #endif
                 cameras
                 );
@@ -612,7 +623,7 @@ void renderer::build_bvhs()
                 );
 
 
-        mod.tex_format = model::UV;
+        tex_format = renderer::UV;
 
 #if VSNRAY_COMMON_HAVE_PTEX
         // Simply check the first texture of the first surface
@@ -620,12 +631,12 @@ void renderer::build_bvhs()
         if (build_visitor.surfaces.size() > 0
             && std::dynamic_pointer_cast<sg::ptex_texture>(build_visitor.surfaces[0].second) != nullptr)
         {
-            mod.tex_format = model::Ptex;
-            mod.ptex_textures.resize(build_visitor.surfaces.size());
+            tex_format = renderer::Ptex;
+            ptex_textures.resize(build_visitor.surfaces.size());
         }
 #endif
 
-        if (mod.tex_format == model::UV)
+        if (tex_format == renderer::UV)
         {
             mod.textures.resize(build_visitor.surfaces.size());
         }
@@ -653,7 +664,7 @@ void renderer::build_bvhs()
             auto ptex_tex = std::dynamic_pointer_cast<sg::ptex_texture>(surf.second);
             if (ptex_tex != nullptr)
             {
-                mod.ptex_textures[i] = { ptex_tex->filename(), ptex_tex->cache() };
+                ptex_textures[i] = { ptex_tex->filename(), ptex_tex->cache() };
             }
 #else
             auto tex = std::dynamic_pointer_cast<sg::texture2d<vector<4, unorm<8>>>>(surf.second);
@@ -1019,7 +1030,7 @@ void renderer::render_impl()
                 temp_lights.push_back(pl);
             }
 
-            if (mod.tex_format == model::UV)
+            if (tex_format == renderer::UV)
             {
                 render_instances_cpp(
                         host_top_level_bvh,
@@ -1042,15 +1053,15 @@ void renderer::render_impl()
                         );
             }
 #if VSNRAY_COMMON_HAVE_PTEX
-            else if (mod.tex_format == model::Ptex)
+            else if (tex_format == renderer::Ptex)
             {
                 render_instances_ptex_cpp(
                         host_top_level_bvh,
                         mod.geometric_normals,
                         mod.shading_normals,
-                        mod.ptex_tex_coords,
+                        ptex_tex_coords,
                         generic_materials,
-                        mod.ptex_textures,
+                        ptex_textures,
                         temp_lights,
                         bounces,
                         epsilon,
@@ -1164,10 +1175,10 @@ void renderer::render_impl()
     last_frame_time = counter.register_frame();
 
 #if VSNRAY_COMMON_HAVE_PTEX
-//  if (mod.ptex_textures.size() > 0)
+//  if (ptex_textures.size() > 0)
 //  {
 //      PtexCache::Stats stats;
-//      mod.ptex_textures[0].cache.get()->get()->getStats(stats);
+//      ptex_textures[0].cache.get()->get()->getStats(stats);
 //      std::cout << "Mem used:        " << stats.memUsed << '\n';
 //      std::cout << "Peak mem used:   " << stats.peakMemUsed << '\n';
 //      std::cout << "Files open:      " << stats.filesOpen << '\n';
