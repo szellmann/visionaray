@@ -96,16 +96,16 @@ inline ReturnT cubic_opt(
 
 
     auto tmp00 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
-    auto h_00  = ( floorx - FloatT(0.5) + tmp00 ) / texsize.x;
+    auto h_00  = ( floorx - FloatT(0.5) + tmp00 ) / convert_to_float(texsize.x);
 
     auto tmp10 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
-    auto h_10  = ( floorx + FloatT(1.5) + tmp10 ) / texsize.x;
+    auto h_10  = ( floorx + FloatT(1.5) + tmp10 ) / convert_to_float(texsize.x);
 
     auto tmp01 = ( w1(fracy) ) / ( w0(fracy) + w1(fracy) );
-    auto h_01  = ( floory - FloatT(0.5) + tmp01 ) / texsize.y;
+    auto h_01  = ( floory - FloatT(0.5) + tmp01 ) / convert_to_float(texsize.y);
 
     auto tmp11 = ( w3(fracy) ) / ( w2(fracy) + w3(fracy) );
-    auto h_11  = ( floory + FloatT(1.5) + tmp11 ) / texsize.y;
+    auto h_11  = ( floory + FloatT(1.5) + tmp11 ) / convert_to_float(texsize.y);
 
 
     auto f_00  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<2, FloatT>(h_00, h_01), texsize, address_mode) );
