@@ -47,38 +47,38 @@ inline ReturnT cubic(
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(1.5) / convert_to_float(texsize),
+            coord - FloatT(1.5) / FloatT(texsize),
             texsize,
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord - FloatT(0.5) / convert_to_float(texsize),
+            coord - FloatT(0.5) / FloatT(texsize),
             texsize,
             address_mode
             );
 
     auto coord3 = map_tex_coord(
-            coord + FloatT(0.5) / convert_to_float(texsize),
+            coord + FloatT(0.5) / FloatT(texsize),
             texsize,
             address_mode
             );
 
     auto coord4 = map_tex_coord(
-            coord + FloatT(1.5) / convert_to_float(texsize),
+            coord + FloatT(1.5) / FloatT(texsize),
             texsize,
             address_mode
             );
 
     decltype(convert_to_int(FloatT{})) pos[4] =
     {
-        convert_to_int(coord1 * convert_to_float(texsize)),
-        convert_to_int(coord2 * convert_to_float(texsize)),
-        convert_to_int(coord3 * convert_to_float(texsize)),
-        convert_to_int(coord4 * convert_to_float(texsize))
+        convert_to_int(coord1 * FloatT(texsize)),
+        convert_to_int(coord2 * FloatT(texsize)),
+        convert_to_int(coord3 * FloatT(texsize)),
+        convert_to_int(coord4 * FloatT(texsize))
     };
 
-    auto u = (coord2 * convert_to_float(texsize)) - convert_to_float(pos[1]);
+    auto u = (coord2 * FloatT(texsize)) - FloatT(pos[1]);
 
     auto sample = [&](int i) -> InternalT
     {
@@ -118,38 +118,38 @@ inline ReturnT cubic(
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(1.5) / convert_to_float(texsize),
+            coord - FloatT(1.5) / vector<2, FloatT>(texsize),
             texsize,
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord - FloatT(0.5) / convert_to_float(texsize),
+            coord - FloatT(0.5) / vector<2, FloatT>(texsize),
             texsize,
             address_mode
             );
 
     auto coord3 = map_tex_coord(
-            coord + FloatT(0.5) / convert_to_float(texsize),
+            coord + FloatT(0.5) / vector<2, FloatT>(texsize),
             texsize,
             address_mode
             );
 
     auto coord4 = map_tex_coord(
-            coord + FloatT(1.5) / convert_to_float(texsize),
+            coord + FloatT(1.5) / vector<2, FloatT>(texsize),
             texsize,
             address_mode
             );
 
     vector<2, decltype(convert_to_int(FloatT{}))> pos[4] =
     {
-        convert_to_int(coord1 * convert_to_float(texsize)),
-        convert_to_int(coord2 * convert_to_float(texsize)),
-        convert_to_int(coord3 * convert_to_float(texsize)),
-        convert_to_int(coord4 * convert_to_float(texsize))
+        convert_to_int(coord1 * vector<2, FloatT>(texsize)),
+        convert_to_int(coord2 * vector<2, FloatT>(texsize)),
+        convert_to_int(coord3 * vector<2, FloatT>(texsize)),
+        convert_to_int(coord4 * vector<2, FloatT>(texsize))
     };
 
-    auto uv = (coord2 * convert_to_float(texsize)) - convert_to_float(pos[1]);
+    auto uv = (coord2 * vector<2, FloatT>(texsize)) - vector<2, FloatT>(pos[1]);
 
     auto sample = [&](int i, int j) -> InternalT
     {
@@ -198,38 +198,38 @@ inline ReturnT cubic(
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(1.5) / convert_to_float(texsize),
+            coord - FloatT(1.5) / vector<3, FloatT>(texsize),
             texsize,
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord - FloatT(0.5) / convert_to_float(texsize),
+            coord - FloatT(0.5) / vector<3, FloatT>(texsize),
             texsize,
             address_mode
             );
 
     auto coord3 = map_tex_coord(
-            coord + FloatT(0.5) / convert_to_float(texsize),
+            coord + FloatT(0.5) / vector<3, FloatT>(texsize),
             texsize,
             address_mode
             );
 
     auto coord4 = map_tex_coord(
-            coord + FloatT(1.5) / convert_to_float(texsize),
+            coord + FloatT(1.5) / vector<3, FloatT>(texsize),
             texsize,
             address_mode
             );
 
     vector<3, decltype(convert_to_int(FloatT{}))> pos[4] =
     {
-        convert_to_int(coord1 * convert_to_float(texsize)),
-        convert_to_int(coord2 * convert_to_float(texsize)),
-        convert_to_int(coord3 * convert_to_float(texsize)),
-        convert_to_int(coord4 * convert_to_float(texsize))
+        convert_to_int(coord1 * vector<3, FloatT>(texsize)),
+        convert_to_int(coord2 * vector<3, FloatT>(texsize)),
+        convert_to_int(coord3 * vector<3, FloatT>(texsize)),
+        convert_to_int(coord4 * vector<3, FloatT>(texsize))
     };
 
-    auto uvw = (coord2 * convert_to_float(texsize)) - convert_to_float(pos[1]);
+    auto uvw = (coord2 * vector<3, FloatT>(texsize)) - vector<3, FloatT>(pos[1]);
 
     auto sample = [&](int i, int j, int k) -> InternalT
     {

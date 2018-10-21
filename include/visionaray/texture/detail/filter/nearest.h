@@ -40,7 +40,7 @@ inline ReturnT nearest(
 {
     coord = map_tex_coord(coord, texsize, address_mode);
 
-    auto lo = convert_to_int(coord * convert_to_float(texsize));
+    auto lo = convert_to_int(coord * FloatT(texsize));
     return point(tex, lo, ReturnT{});
 }
 
@@ -67,7 +67,7 @@ inline ReturnT nearest(
 {
     coord = map_tex_coord(coord, texsize, address_mode);
 
-    auto lo = convert_to_int(coord * convert_to_float(texsize));
+    auto lo = convert_to_int(coord * vector<2, FloatT>(texsize));
 
     auto idx = index(lo[0], lo[1], texsize);
     return point(tex, idx, ReturnT{});
@@ -96,7 +96,7 @@ inline ReturnT nearest(
 {
     coord = map_tex_coord(coord, texsize, address_mode);
 
-    auto lo = convert_to_int(coord * convert_to_float(texsize));
+    auto lo = convert_to_int(coord * vector<3, FloatT>(texsize));
 
     auto idx = index(lo[0], lo[1], lo[2], texsize);
     return point(tex, idx, ReturnT{});

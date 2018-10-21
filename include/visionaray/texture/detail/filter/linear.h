@@ -39,19 +39,19 @@ inline ReturnT linear(
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(0.5) / convert_to_float(texsize),
+            coord - FloatT(0.5) / FloatT(texsize),
             texsize,
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord + FloatT(0.5) / convert_to_float(texsize),
+            coord + FloatT(0.5) / FloatT(texsize),
             texsize,
             address_mode
             );
 
-    auto lo = min(convert_to_int(coord1 * convert_to_float(texsize)), texsize - SizeT(1));
-    auto hi = min(convert_to_int(coord2 * convert_to_float(texsize)), texsize - SizeT(1));
+    auto lo = min(convert_to_int(coord1 * FloatT(texsize)), texsize - SizeT(1));
+    auto hi = min(convert_to_int(coord2 * FloatT(texsize)), texsize - SizeT(1));
 
     InternalT samples[2] =
     {
@@ -59,7 +59,7 @@ inline ReturnT linear(
         InternalT( point(tex, hi, ReturnT{}) )
     };
 
-    auto u = coord1 * convert_to_float(texsize) - convert_to_float(lo);
+    auto u = coord1 * FloatT(texsize) - FloatT(lo);
 
     return ReturnT(lerp(samples[0], samples[1], u));
 }
@@ -86,19 +86,19 @@ inline ReturnT linear(
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(0.5) / convert_to_float(texsize),
+            coord - FloatT(0.5) / vector<2, FloatT>(texsize),
             texsize,
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord + FloatT(0.5) / convert_to_float(texsize),
+            coord + FloatT(0.5) / vector<2, FloatT>(texsize),
             texsize,
             address_mode
             );
 
-    auto lo = min(convert_to_int(coord1 * convert_to_float(texsize)), texsize - SizeT(1));
-    auto hi = min(convert_to_int(coord2 * convert_to_float(texsize)), texsize - SizeT(1));
+    auto lo = min(convert_to_int(coord1 * vector<2, FloatT>(texsize)), texsize - SizeT(1));
+    auto hi = min(convert_to_int(coord2 * vector<2, FloatT>(texsize)), texsize - SizeT(1));
 
     InternalT samples[4] =
     {
@@ -109,7 +109,7 @@ inline ReturnT linear(
     };
 
 
-    auto uv = coord1 * convert_to_float(texsize) - convert_to_float(lo);
+    auto uv = coord1 * vector<2, FloatT>(texsize) - vector<2, FloatT>(lo);
 
     auto p1 = lerp(samples[0], samples[1], uv[0]);
     auto p2 = lerp(samples[2], samples[3], uv[0]);
@@ -139,19 +139,19 @@ inline ReturnT linear(
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(0.5) / convert_to_float(texsize),
+            coord - FloatT(0.5) / vector<3, FloatT>(texsize),
             texsize,
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord + FloatT(0.5) / convert_to_float(texsize),
+            coord + FloatT(0.5) / vector<3, FloatT>(texsize),
             texsize,
             address_mode
             );
 
-    auto lo = min(convert_to_int(coord1 * convert_to_float(texsize)), texsize - SizeT(1));
-    auto hi = min(convert_to_int(coord2 * convert_to_float(texsize)), texsize - SizeT(1));
+    auto lo = min(convert_to_int(coord1 * vector<3, FloatT>(texsize)), texsize - SizeT(1));
+    auto hi = min(convert_to_int(coord2 * vector<3, FloatT>(texsize)), texsize - SizeT(1));
 
     InternalT samples[8] =
     {
@@ -166,7 +166,7 @@ inline ReturnT linear(
     };
 
 
-    auto uvw = coord1 * convert_to_float(texsize) - convert_to_float(lo);
+    auto uvw = coord1 * vector<3, FloatT>(texsize) - vector<3, FloatT>(lo);
 
     auto p1  = lerp(samples[0], samples[1], uvw[0]);
     auto p2  = lerp(samples[2], samples[3], uvw[0]);

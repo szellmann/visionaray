@@ -44,15 +44,15 @@ inline ReturnT cubic_opt(
     bspline::w2_func w2;
     bspline::w3_func w3;
 
-    auto x = coord * convert_to_float(texsize) - FloatT(0.5);
+    auto x = coord * FloatT(texsize) - FloatT(0.5);
     auto floorx = floor(x);
     auto fracx  = x - floor(x);
 
     auto tmp0 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
-    auto h0   = ( floorx - FloatT(0.5) + tmp0 ) / convert_to_float(texsize);
+    auto h0   = ( floorx - FloatT(0.5) + tmp0 ) / FloatT(texsize);
 
     auto tmp1 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
-    auto h1   = ( floorx + FloatT(1.5) + tmp1 ) / convert_to_float(texsize);
+    auto h1   = ( floorx + FloatT(1.5) + tmp1 ) / FloatT(texsize);
 
     auto f_0  = InternalT( linear(ReturnT{}, InternalT{}, tex, h0, texsize, address_mode) );
     auto f_1  = InternalT( linear(ReturnT{}, InternalT{}, tex, h1, texsize, address_mode) );
@@ -86,26 +86,26 @@ inline ReturnT cubic_opt(
     bspline::w2_func w2;
     bspline::w3_func w3;
 
-    auto x = coord.x * convert_to_float(texsize.x) - FloatT(0.5);
+    auto x = coord.x * FloatT(texsize.x) - FloatT(0.5);
     auto floorx = floor(x);
     auto fracx  = x - floor(x);
 
-    auto y = coord.y * convert_to_float(texsize.y) - FloatT(0.5);
+    auto y = coord.y * FloatT(texsize.y) - FloatT(0.5);
     auto floory = floor(y);
     auto fracy  = y - floor(y);
 
 
     auto tmp00 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
-    auto h_00  = ( floorx - FloatT(0.5) + tmp00 ) / convert_to_float(texsize.x);
+    auto h_00  = ( floorx - FloatT(0.5) + tmp00 ) / FloatT(texsize.x);
 
     auto tmp10 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
-    auto h_10  = ( floorx + FloatT(1.5) + tmp10 ) / convert_to_float(texsize.x);
+    auto h_10  = ( floorx + FloatT(1.5) + tmp10 ) / FloatT(texsize.x);
 
     auto tmp01 = ( w1(fracy) ) / ( w0(fracy) + w1(fracy) );
-    auto h_01  = ( floory - FloatT(0.5) + tmp01 ) / convert_to_float(texsize.y);
+    auto h_01  = ( floory - FloatT(0.5) + tmp01 ) / FloatT(texsize.y);
 
     auto tmp11 = ( w3(fracy) ) / ( w2(fracy) + w3(fracy) );
-    auto h_11  = ( floory + FloatT(1.5) + tmp11 ) / convert_to_float(texsize.y);
+    auto h_11  = ( floory + FloatT(1.5) + tmp11 ) / FloatT(texsize.y);
 
 
     auto f_00  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<2, FloatT>(h_00, h_01), texsize, address_mode) );
@@ -145,36 +145,36 @@ inline ReturnT cubic_opt(
     bspline::w2_func w2;
     bspline::w3_func w3;
 
-    auto x = coord.x * convert_to_float(texsize.x) - FloatT(0.5);
+    auto x = coord.x * FloatT(texsize.x) - FloatT(0.5);
     auto floorx = floor(x);
     auto fracx  = x - floor(x);
 
-    auto y = coord.y * convert_to_float(texsize.y) - FloatT(0.5);
+    auto y = coord.y * FloatT(texsize.y) - FloatT(0.5);
     auto floory = floor(y);
     auto fracy  = y - floor(y);
 
-    auto z = coord.z * convert_to_float(texsize.z) - FloatT(0.5);
+    auto z = coord.z * FloatT(texsize.z) - FloatT(0.5);
     auto floorz = floor(z);
     auto fracz  = z - floor(z);
 
 
     auto tmp000 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
-    auto h_000  = ( floorx - FloatT(0.5) + tmp000 ) / convert_to_float(texsize.x);
+    auto h_000  = ( floorx - FloatT(0.5) + tmp000 ) / FloatT(texsize.x);
 
     auto tmp100 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
-    auto h_100  = ( floorx + FloatT(1.5) + tmp100 ) / convert_to_float(texsize.x);
+    auto h_100  = ( floorx + FloatT(1.5) + tmp100 ) / FloatT(texsize.x);
 
     auto tmp010 = ( w1(fracy) ) / ( w0(fracy) + w1(fracy) );
-    auto h_010  = ( floory - FloatT(0.5) + tmp010 ) / convert_to_float(texsize.y);
+    auto h_010  = ( floory - FloatT(0.5) + tmp010 ) / FloatT(texsize.y);
 
     auto tmp110 = ( w3(fracy) ) / ( w2(fracy) + w3(fracy) );
-    auto h_110  = ( floory + FloatT(1.5) + tmp110 ) / convert_to_float(texsize.y);
+    auto h_110  = ( floory + FloatT(1.5) + tmp110 ) / FloatT(texsize.y);
 
     auto tmp001 = ( w1(fracz) ) / ( w0(fracz) + w1(fracz) );
-    auto h_001  = ( floorz - FloatT(0.5) + tmp001 ) / convert_to_float(texsize.z);
+    auto h_001  = ( floorz - FloatT(0.5) + tmp001 ) / FloatT(texsize.z);
 
     auto tmp101 = ( w3(fracz) ) / ( w2(fracz) + w3(fracz) );
-    auto h_101  = ( floorz + FloatT(1.5) + tmp101 ) / convert_to_float(texsize.z);
+    auto h_101  = ( floorz + FloatT(1.5) + tmp101 ) / FloatT(texsize.z);
 
 
     auto f_000  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_000, h_010, h_001), texsize, address_mode) );
