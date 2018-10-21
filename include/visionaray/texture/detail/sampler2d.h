@@ -162,6 +162,34 @@ inline FloatT tex2D_impl_expand_types(
             );
 }
 
+template <
+    size_t Dim,
+    typename T,
+    typename FloatT,
+    typename = typename std::enable_if<!std::is_integral<T>::value>::type,
+    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+    >
+inline vector<Dim, FloatT> tex2D_impl_expand_types(
+        vector<Dim, T> const*                       tex,
+        vector<2, FloatT> const&                    coord,
+        vector<2, simd::int_type_t<FloatT>> const&  texsize,
+        tex_filter_mode                             filter_mode,
+        std::array<tex_address_mode, 2> const&      address_mode
+        )
+{
+    using return_type   = vector<Dim, FloatT>;
+    using internal_type = vector<Dim, FloatT>;
+
+    return choose_filter(
+            return_type{},
+            internal_type{},
+            tex,
+            coord,
+            texsize,
+            filter_mode,
+            address_mode
+            );
+}
 
 
 //-------------------------------------------------------------------------------------------------
