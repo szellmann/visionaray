@@ -76,6 +76,7 @@ void first_person_manipulator::handle_key_press(visionaray::key_event const& eve
     {
         step_dir = cross(view_dir, camera_.up());
         step_dir.y = 0.0f;
+        step_dir = normalize(step_dir);
     }
 
     // Forward
@@ -83,6 +84,7 @@ void first_person_manipulator::handle_key_press(visionaray::key_event const& eve
     {
         step_dir = -view_dir;
         step_dir.y = 0.0f;
+        step_dir = normalize(step_dir);
     }
 
     // Right
@@ -90,6 +92,7 @@ void first_person_manipulator::handle_key_press(visionaray::key_event const& eve
     {
         step_dir = -cross(view_dir, camera_.up());
         step_dir.y = 0.0f;
+        step_dir = normalize(step_dir);
     }
 
     // Back
@@ -97,26 +100,29 @@ void first_person_manipulator::handle_key_press(visionaray::key_event const& eve
     {
         step_dir = view_dir;
         step_dir.y = 0.0f;
+        step_dir = normalize(step_dir);
     }
 
     // Down
     if (event.key() == keyboard::f || event.key() == keyboard::F)
     {
         step_dir.y = -1.0f;
- 
+        step_dir = normalize(step_dir);
     }
 
     // Up
     if (event.key() == keyboard::r || event.key() == keyboard::R)
     {
         step_dir.y = 1.0f;
+        step_dir = normalize(step_dir);
     }
-
-    step_dir = normalize(step_dir);
 
 //  step_dir *= scale_;
 
     camera_.look_at(camera_.eye() + step_dir, camera_.center() + step_dir, camera_.up());
+
+    camera_manipulator::handle_key_press(event);
+
 }
 
 void first_person_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
