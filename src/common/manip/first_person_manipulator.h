@@ -12,6 +12,7 @@
 #include "../input/mouse.h"
 #include "camera_manipulator.h"
 
+#include <unordered_map>
 
 namespace visionaray
 {
@@ -23,10 +24,40 @@ class first_person_manipulator : public camera_manipulator
 {
 public:
 
+    enum move_action
+    {
+        Forward,
+        Backward,
+        Left,
+        Right,
+        Up,
+        Down,
+    };
+
+    struct enum_hash
+    {
+        template <typename T>
+        size_t operator()(T t) const
+        {   
+            return static_cast<size_t>(t);
+        }   
+    };
+
+    using action_key_map = std::unordered_map<keyboard::key, first_person_manipulator::move_action, enum_hash>;
+
+public:
+
     first_person_manipulator(
             pinhole_camera& cam,
             mouse::buttons buttons,
-            keyboard::key_modifiers modifiers = keyboard::NoKey
+            action_key_map const& action_keys = {
+                { keyboard::w, first_person_manipulator::Forward },
+                { keyboard::s, first_person_manipulator::Backward },
+                { keyboard::a, first_person_manipulator::Left },
+                { keyboard::d, first_person_manipulator::Right },
+                { keyboard::r, first_person_manipulator::Up },
+                { keyboard::f, first_person_manipulator::Down }
+                }
             );
    ~first_person_manipulator();
 
@@ -46,6 +77,8 @@ private:
     bool dragging_;
 
     mouse::pos last_pos_;
+
+    action_key_map action_keys_;
 
 };
 

@@ -12,7 +12,6 @@
 #include "first_person_manipulator.h"
 #include "../input/mouse_event.h"
 
-
 using namespace visionaray;
 
 namespace mouse = visionaray::mouse;
@@ -21,13 +20,14 @@ namespace mouse = visionaray::mouse;
 first_person_manipulator::first_person_manipulator(
         pinhole_camera& cam,
         mouse::buttons buttons,
-        keyboard::key_modifiers modifiers
+        action_key_map const& action_keys
         )
     : camera_manipulator(cam)
     , buttons_(buttons)
-    , modifiers_(modifiers)
+    , modifiers_(keyboard::key_modifiers::NoKey)
     , down_modifiers_(keyboard::key_modifiers::NoKey)
     , dragging_(false)
+    , action_keys_(action_keys)
 {
 }
 
@@ -71,55 +71,53 @@ void first_person_manipulator::handle_key_press(visionaray::key_event const& eve
     vec3 step_dir(0.0f);
     vec3 view_dir = normalize( camera_.eye() - camera_.center() );
 
-    // Left
-    if (event.key() == keyboard::a || event.key() == keyboard::A)
-    {
-        step_dir = cross(view_dir, camera_.up());
-        step_dir.y = 0.0f;
-        step_dir = normalize(step_dir);
+    auto it = action_keys_.find(event.key());
+    if (it != action_keys_.end())
+    { 
+        if (it->second == Left)
+        {
+            step_dir = cross(view_dir, camera_.up());
+            step_dir.y = 0.0f;
+            step_dir = normalize(step_dir);
+        }
+
+        if (it->second == Forward)
+        {
+            step_dir = -view_dir;
+            step_dir.y = 0.0f;
+            step_dir = normalize(step_dir);
+        }
+
+        if (it->second == Right)
+        {
+            step_dir = -cross(view_dir, camera_.up());
+            step_dir.y = 0.0f;
+            step_dir = normalize(step_dir);
+        }
+
+        if (it->second == Backward)
+        {
+            step_dir = view_dir;
+            step_dir.y = 0.0f;
+            step_dir = normalize(step_dir);
+        }
+
+        if (it->second == Down)
+        {
+            step_dir.y = -1.0f;
+            step_dir = normalize(step_dir);
+        }
+
+        if (it->second == Up)
+        {
+            step_dir.y = 1.0f;
+            step_dir = normalize(step_dir);
+        }
+
+    //  step_dir *= scale_;
+
+        camera_.look_at(camera_.eye() + step_dir, camera_.center() + step_dir, camera_.up());
     }
-
-    // Forward
-    if (event.key() == keyboard::w || event.key() == keyboard::W)
-    {
-        step_dir = -view_dir;
-        step_dir.y = 0.0f;
-        step_dir = normalize(step_dir);
-    }
-
-    // Right
-    if (event.key() == keyboard::d || event.key() == keyboard::D)
-    {
-        step_dir = -cross(view_dir, camera_.up());
-        step_dir.y = 0.0f;
-        step_dir = normalize(step_dir);
-    }
-
-    // Back
-    if (event.key() == keyboard::s || event.key() == keyboard::S)
-    {
-        step_dir = view_dir;
-        step_dir.y = 0.0f;
-        step_dir = normalize(step_dir);
-    }
-
-    // Down
-    if (event.key() == keyboard::f || event.key() == keyboard::F)
-    {
-        step_dir.y = -1.0f;
-        step_dir = normalize(step_dir);
-    }
-
-    // Up
-    if (event.key() == keyboard::r || event.key() == keyboard::R)
-    {
-        step_dir.y = 1.0f;
-        step_dir = normalize(step_dir);
-    }
-
-//  step_dir *= scale_;
-
-    camera_.look_at(camera_.eye() + step_dir, camera_.center() + step_dir, camera_.up());
 
     camera_manipulator::handle_key_press(event);
 
