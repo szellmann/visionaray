@@ -132,7 +132,7 @@ struct disney_material : material
 class texture
 {
 public:
-    virtual ~texture() {}
+    virtual ~texture();
 
     std::string& name();
     std::string const& name() const;

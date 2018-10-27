@@ -275,6 +275,10 @@ std::string const& material::name() const
 // texture
 //
 
+texture::~texture()
+{
+}
+
 std::string& texture::name()
 {
     return name_;
