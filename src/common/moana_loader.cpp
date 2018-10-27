@@ -6,9 +6,9 @@
 #include <cassert>
 #include <cmath>
 #include <iostream>
-#include <map>
 #include <memory>
 #include <ostream>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/iostreams/device/mapped_file.hpp>
@@ -402,10 +402,10 @@ static void load_light_file(
 static void load_obj(
         boost::filesystem::path const& island_base_path,
         std::string const& filename,
-        std::map<std::string, std::shared_ptr<sg::disney_material>> const& materials,
-        std::map<std::string, std::string> const& color_maps, // [mtlName, colorMap]
-        std::map<std::string, std::string> const& /*displacement_maps*/, // [mtlName, displacementMap]
-        std::map<std::string, std::shared_ptr<sg::texture>>& textures,
+        std::unordered_map<std::string, std::shared_ptr<sg::disney_material>> const& materials,
+        std::unordered_map<std::string, std::string> const& color_maps, // [mtlName, colorMap]
+        std::unordered_map<std::string, std::string> const& /*displacement_maps*/, // [mtlName, displacementMap]
+        std::unordered_map<std::string, std::shared_ptr<sg::texture>>& textures,
 #if VSNRAY_COMMON_HAVE_PTEX
         std::shared_ptr<PtexPtr<PtexCache>> texture_cache,
 #else
@@ -555,10 +555,10 @@ static void load_instanced_primitive_json_file(
         boost::filesystem::path const& island_base_path,
         std::string const& filename,
         std::shared_ptr<sg::node> root,
-        std::map<std::string, std::shared_ptr<sg::disney_material>>& materials,
-        std::map<std::string, std::string> const& color_maps, // [mtlName, colorMap]
-        std::map<std::string, std::string> const& displacement_maps, // [mtlName, displacementMap]
-        std::map<std::string, std::shared_ptr<sg::texture>>& textures,
+        std::unordered_map<std::string, std::shared_ptr<sg::disney_material>>& materials,
+        std::unordered_map<std::string, std::string> const& color_maps, // [mtlName, colorMap]
+        std::unordered_map<std::string, std::string> const& displacement_maps, // [mtlName, displacementMap]
+        std::unordered_map<std::string, std::shared_ptr<sg::texture>>& textures,
 #if VSNRAY_COMMON_HAVE_PTEX
         std::shared_ptr<PtexPtr<PtexCache>> texture_cache
 #else
@@ -632,9 +632,9 @@ static void load_instanced_primitive_json_file(
 void load_material_file(
         boost::filesystem::path const& island_base_path,
         std::string const& filename,
-        std::map<std::string, std::shared_ptr<sg::disney_material>>& materials,
-        std::map<std::string, std::string>& color_maps, // [name,colorMap]
-        std::map<std::string, std::string>& displacement_maps // [name,displacementMap]
+        std::unordered_map<std::string, std::shared_ptr<sg::disney_material>>& materials,
+        std::unordered_map<std::string, std::string>& color_maps, // [name,colorMap]
+        std::unordered_map<std::string, std::string>& displacement_maps // [name,displacementMap]
         )
 {
     std::string fn = (island_base_path / filename).string();
@@ -925,10 +925,10 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
         }
 
         // Materials map
-        std::map<std::string, std::shared_ptr<sg::disney_material>> materials;
+        std::unordered_map<std::string, std::shared_ptr<sg::disney_material>> materials;
 
         // Textures, init with one empty texture
-        std::map<std::string, std::shared_ptr<sg::texture>> textures;
+        std::unordered_map<std::string, std::shared_ptr<sg::texture>> textures;
 
 #if VSNRAY_COMMON_HAVE_PTEX
         auto dummy = std::make_shared<sg::ptex_texture>("null", texture_cache);
@@ -946,10 +946,10 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
 
 
         // Color map path [name,colorMap] parsed from matFile
-        std::map<std::string, std::string> color_maps;
+        std::unordered_map<std::string, std::string> color_maps;
 
         // Displacement map path [name,colorMap] parsed from matFile
-        std::map<std::string, std::string> displacement_maps;
+        std::unordered_map<std::string, std::string> displacement_maps;
 
         std::cout << "Load moana file: " << filename << '\n';
         cfile file(filename, "r");
