@@ -246,12 +246,12 @@ static void load_camera_file(std::string const& filename, std::shared_ptr<sg::no
     }
 
     // center of interest / distance
-    float distance = 0.0f;
-    if (doc.HasMember("centerOfInterest"))
-    {
-        rapidjson::Value const& coi = doc["centerOfInterest"];
-        distance = coi.GetFloat();
-    }
+//  float distance = 0.0f;
+//  if (doc.HasMember("centerOfInterest"))
+//  {
+//      rapidjson::Value const& coi = doc["centerOfInterest"];
+//      distance = coi.GetFloat();
+//  }
 
     // lens radius
     float lens_radius = 0.0f;
