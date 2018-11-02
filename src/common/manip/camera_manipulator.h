@@ -38,18 +38,6 @@ protected:
 
 };
 
-
-class fp_manipulator : public camera_manipulator
-{
-public:
-
-    fp_manipulator(pinhole_camera& cam);
-   ~fp_manipulator();
-
-    void handle_key_press(key_event const& event);
-
-};
-
 } // visionaray
 
 #endif // VSNRAY_COMMON_MANIP_CAMERA_MANIPULATOR_H
