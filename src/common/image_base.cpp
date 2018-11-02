@@ -2,8 +2,8 @@
 // See the LICENSE file for details.
 
 #include <algorithm>
+#include <stdexcept>
 
-#include "exception.h"
 #include "image_base.h"
 
 namespace visionaray
@@ -24,12 +24,12 @@ image_base::image_base(size_t width, size_t height, pixel_format format, uint8_t
 
 bool image_base::load(std::string const& /*filename*/)
 {
-    throw visionaray::not_implemented_yet();
+    throw std::runtime_error("Not implemented yet");
 }
 
 bool image_base::save(std::string const& /*filename*/, image_base::save_options const& /*options*/)
 {
-    throw visionaray::not_implemented_yet();
+    throw std::runtime_error("Not implemented yet");
 }
 
 size_t image_base::width() const

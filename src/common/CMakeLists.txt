@@ -158,7 +158,6 @@ set(COMMON_HEADERS
     blocking_queue.h
     cfile.h
     dds_image.h
-    exception.h
     exr_image.h
     hdr_image.h
     image.h
