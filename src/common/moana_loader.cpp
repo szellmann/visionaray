@@ -465,7 +465,7 @@ static void load_obj(
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
         {
             // Material
-            std::string usemtl = mtl_name.to_string();
+            std::string usemtl(mtl_name.begin(), mtl_name.end());
             auto mit = materials.find(usemtl);
             if (mit != materials.end())
             {
@@ -473,7 +473,7 @@ static void load_obj(
             }
 
             // Color texture
-            std::string group = group_name.to_string();
+            std::string group(group_name.begin(), group_name.end());
             auto tit = textures.find(group);
             if (tit != textures.end())
             {
