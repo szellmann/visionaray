@@ -7,6 +7,7 @@
 #define VSNRAY_LIGHT_SAMPLE_H 1
 
 #include "math/simd/type_traits.h"
+#include "math/vector.h"
 
 namespace visionaray
 {
