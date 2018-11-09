@@ -6,6 +6,8 @@
 #ifndef VSNRAY_SIMD_TYPE_TRAITS_H
 #define VSNRAY_SIMD_TYPE_TRAITS_H 1
 
+#include <visionaray/detail/macros.h>
+
 #include "forward.h"
 #include "intrinsics.h"
 
