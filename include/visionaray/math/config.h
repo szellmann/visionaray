@@ -16,23 +16,19 @@
 
 
 //-------------------------------------------------------------------------------------------------
-// Project specific macros for host or device functions (or both)
+// Macros for CUDA host / device functions
 //
 
-#include <visionaray/detail/macros.h>
-
 #ifndef MATH_FUNC
-#define MATH_FUNC VSNRAY_FUNC
+#define MATH_FUNC __host__ __device__
 #endif
 
 #ifndef MATH_GPU_FUNC
-#define MATH_GPU_FUNC VSNRAY_GPU_FUNC
+#define MATH_GPU_FUNC __device__
 #endif
 
 #ifndef MATH_CPU_FUNC
-#define MATH_CPU_FUNC VSNRAY_CPU_FUNC
+#define MATH_CPU_FUNC __host__
 #endif
 
 #endif // VSNRAY_MATH_CONFIG_H
-
-
