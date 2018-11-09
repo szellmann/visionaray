@@ -27,9 +27,12 @@ namespace MATH_NAMESPACE
 #if defined(__CUDA_ARCH__)
 using ::abs;
 using ::acos;
+using ::acosh;
 using ::asin;
+using ::asinh;
 using ::atan;
 using ::atan2;
+using ::atanh;
 using ::ceil;
 using ::copysign;
 using ::cos;
@@ -50,9 +53,12 @@ using ::tan;
 #elif defined(__KALMAR_ACCELERATOR__) && __KALMAR_ACCELERATOR__
 MATH_FUNC inline float abs(float x) { return hc::precise_math::fabsf(x); }
 MATH_FUNC inline float acos(float x) { return hc::precise_math::acosf(x); }
+MATH_FUNC inline float acosh(float x) { return hc::precise_math::acoshf(x); }
 MATH_FUNC inline float asin(float x) { return hc::precise_math::asinf(x); }
+MATH_FUNC inline float asinh(float x) { return hc::precise_math::asinhf(x); }
 MATH_FUNC inline float atan(float x) { return hc::precise_math::atanf(x); }
 MATH_FUNC inline float atan2(float y, float x) { return hc::precise_math::atanf(y, x); }
+MATH_FUNC inline float atanh(float x) { return hc::precise_math::atanhf(x); }
 MATH_FUNC inline float ceil(float x) { return hc::precise_math::ceilf(x); }
 MATH_FUNC inline float copysign(float x, float y) { return hc::precise_math::copysignf(x, y); }
 MATH_FUNC inline float cos(float x) { return hc::precise_math::cosf(x); }
@@ -73,9 +79,12 @@ MATH_FUNC inline float tan(float x) { return hc::precise_math::tanf(x); }
 #else
 using std::abs;
 using std::acos;
+using std::acosh;
 using std::asin;
+using std::asinh;
 using std::atan;
 using std::atan2;
+using std::atanh;
 using std::ceil;
 using std::copysign;
 using std::cos;
