@@ -279,6 +279,16 @@ inline typename std::enable_if<std::is_integral<T>::value, T>::type round_up(T a
     return div_up(a, b) * b;
 }
 
+//-------------------------------------------------------------------------------------------------
+// Round (a) down to the nearest multiple of (b)
+//
+
+template <typename T>
+inline typename std::enable_if<std::is_integral<T>::value, T>::type round_down(T a, T b)
+{
+    return (a / b) * b;
+}
+
 
 namespace simd
 {
