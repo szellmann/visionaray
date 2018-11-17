@@ -9,6 +9,7 @@
 #include <iterator>
 #include <limits>
 
+#include "math/forward.h"
 #include "math/vector.h"
 #include "prim_traits.h"
 #include "tags.h"
