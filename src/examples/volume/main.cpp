@@ -71,7 +71,7 @@ struct renderer : viewer_type
         , bbox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f })
         , host_sched(8)
         , volume({2, 2, 2})
-        , transfunc({4})
+        , transfunc(4)
     {
         volume.reset(voldata);
         volume.set_filter_mode(Nearest);
