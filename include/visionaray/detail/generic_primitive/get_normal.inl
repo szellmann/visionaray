@@ -6,6 +6,7 @@
 
 #include <visionaray/get_normal.h>
 #include <visionaray/get_shading_normal.h>
+#include <visionaray/prim_traits.h>
 
 namespace visionaray
 {
