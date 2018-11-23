@@ -25,7 +25,7 @@ public:
     vec_type min;
     vec_type max;
 
-    MATH_FUNC basic_aabb() = default;
+    basic_aabb() = default;
     MATH_FUNC basic_aabb(vec_type const& min, vec_type const& max);
 
     template <typename U>
