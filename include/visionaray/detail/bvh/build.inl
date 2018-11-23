@@ -4,7 +4,6 @@
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
-#include <limits>
 
 #include <visionaray/math/aabb.h>
 
