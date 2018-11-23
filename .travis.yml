@@ -44,7 +44,7 @@ before_install:
 
 script:
 
-    - export COMPILER_FLAGS="-mavx"
+    - export COMPILER_FLAGS="-mavx -fabi-version=0"
     - if [ "$STD" = "CPP11" ]; then export COMPILER_FLAGS="${COMPILER_FLAGS} -std=c++11"; fi
     - if [ "$STD" = "CPP14" ]; then export COMPILER_FLAGS="${COMPILER_FLAGS} -std=c++1y"; fi
 
