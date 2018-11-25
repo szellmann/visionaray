@@ -9,7 +9,7 @@
 #include <chrono>
 
 #ifdef __CUDACC__
-#include <cuda.h>
+#include <cuda_runtime_api.h>
 #endif
 
 #ifdef __HIPCC__
