@@ -137,7 +137,7 @@ struct kernel
             {
                 auto ls = sample_random_light(params.lights.begin, params.lights.end, gen);
 
-                auto ld = select(ls.delta_light, S(1.0), length(ls.pos - hit_rec.isect_pos));
+                auto ld = length(ls.pos - hit_rec.isect_pos);
                 auto L = normalize(ls.pos - hit_rec.isect_pos);
 
                 auto ln = select(ls.delta_light, -L, ls.normal);
@@ -160,7 +160,8 @@ struct kernel
 
                 // TODO: inv_pi / dot(n, wi) factor only valid for plastic and matte
                 auto src = surf.shade(view_dir, L, ls.intensity) * constants::inv_pi<S>() / ldotn;
-                auto solid_angle = (ldotln * ls.area) / (ld * ld);
+                auto solid_angle = (ldotln * ls.area);
+                solid_angle = select(!ls.delta_light, solid_angle / (ld * ld), solid_angle);
                 auto light_pdf = S(1.0) / solid_angle;
 
                 S mis_weight = power_heuristic(light_pdf / static_cast<float>(num_lights), brdf_pdf);
