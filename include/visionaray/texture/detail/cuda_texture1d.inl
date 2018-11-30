@@ -272,6 +272,13 @@ public:
         init_texture_object();
     }
 
+    void set_address_mode(std::array<tex_address_mode, 1> const& mode)
+    {
+        address_mode_ = mode;
+
+        init_texture_object();
+    }
+
     void set_filter_mode(tex_filter_mode filter_mode)
     {
         filter_mode_ = filter_mode;
