@@ -176,15 +176,18 @@ struct kernel
             throughput *= src * (dot(n, refl_dir) / brdf_pdf);
             throughput = select(zero_pdf, C(0.0), throughput);
 
-            // Russian roulette
-            auto prob = max_element(throughput.samples());
-            auto terminate = gen.next() > prob;
-            active_rays &= !terminate;
-            throughput /= prob;
-
-            if (!any(active_rays))
+            if (bounce >= 2)
             {
-                break;
+                // Russian roulette
+                auto prob = max_element(throughput.samples());
+                auto terminate = gen.next() > prob;
+                active_rays &= !terminate;
+                throughput /= prob;
+
+                if (!any(active_rays))
+                {
+                    break;
+                }
             }
 
             ray.ori = hit_rec.isect_pos + refl_dir * S(params.epsilon);
