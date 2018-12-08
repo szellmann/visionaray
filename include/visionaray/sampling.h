@@ -125,6 +125,16 @@ inline vector<3, T> cosine_sample_hemisphere(T const& u1, T const& u2)
     return vector<3, T>(x, y, z);
 }
 
+template <typename T>
+VSNRAY_FUNC
+inline vector<3, T> uniform_sample_sphere(T const& u1, T const& u2)
+{
+    auto z   = T(1.0) - T(2.0) * u1;
+    auto r   = sqrt( max(T(0.0), T(1.0) - z * z) );
+    auto phi = constants::two_pi<T>() * u2;
+    return vector<3, T>(r * cos(phi), r * sin(phi), z);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Sample a random light

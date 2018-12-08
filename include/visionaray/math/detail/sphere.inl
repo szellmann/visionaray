@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/sampling.h>
+
 #include "../constants.h"
 #include "math.h"
 
@@ -45,6 +47,12 @@ inline basic_aabb<T> get_bounds(basic_sphere<T, P> const& s)
     return bounds;
 }
 
+template <typename T, typename P, typename Generator, typename U = typename Generator::value_type>
+MATH_FUNC
+inline vector<3, U> sample_surface(basic_sphere<T, P> const& s, Generator& gen)
+{
+    return uniform_sample_sphere(gen.next(), gen.next()) * U(s.radius) + vector<3, U>(s.center);
+}
 
 template <typename T, typename P>
 MATH_FUNC
