@@ -17,6 +17,7 @@
 #include <visionaray/math/ray.h>
 #include <visionaray/math/sphere.h>
 #include <visionaray/math/triangle.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/aligned_vector.h>
 #include <visionaray/area_light.h>
 #include <visionaray/bvh.h>
