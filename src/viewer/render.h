@@ -66,8 +66,8 @@ using plastic_t = plastic<float>;
 using generic_light_t = generic_light<
         point_light<float>,
         spot_light<float>,
-        area_light<float, basic_triangle<3, float>>//,
-//      area_light<float, basic_sphere<float>>
+        area_light<float, basic_triangle<3, float>>,
+        area_light<float, basic_sphere<float>>
         >;
 using generic_material_t = generic_material<
         emissive<float>,
