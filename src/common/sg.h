@@ -385,11 +385,6 @@ public:
     // Use transform node to change position and scale
 };
 
-
-// Flatten scene graph and create lists that are compatible with kernels
-void flatten(model& mod, node& root);
-
-
 } // sg
 } // visionaray
 
