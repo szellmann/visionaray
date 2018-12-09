@@ -546,18 +546,22 @@ struct build_bvhs_visitor : sg::node_visitor
             size_t first_geometric_normal = geometric_normals_.size();
             geometric_normals_.resize(geometric_normals_.size() + itm.indices.size() / 3);
 
-            shading_normals_.insert(shading_normals_.end(), itm.normals.begin(), itm.normals.end());
+            size_t first_shading_normal = shading_normals_.size();
+            if (itm.normals.size() > 0)
+            {
+                shading_normals_.resize(shading_normals_.size() + itm.indices.size());
+            }
 
-            tex_coords_.insert(tex_coords_.end(), itm.tex_coords.begin(), itm.tex_coords.end());
+            size_t first_tex_coord = tex_coords_.size();
+            if (itm.tex_coords.size() > 0)
+            {
+                tex_coords_.resize(tex_coords_.size() + itm.indices.size());
+            }
 
             size_t first_color = colors_.size();
             if (itm.colors.size() > 0)
             {
-                colors_.resize(first_color + itm.colors.size());
-                for (size_t i = 0; i < itm.colors.size(); ++i)
-                {
-                    colors_[first_color + i] = vec3(itm.colors[i]);
-                }
+                colors_.resize(first_color + itm.indices.size());
             }
 
             for (size_t i = 0; i < itm.indices.size(); i += 3)
@@ -574,6 +578,27 @@ struct build_bvhs_visitor : sg::node_visitor
                 vec3 gn = normalize(cross(v2 - v1, v3 - v1));
 
                 geometric_normals_[first_geometric_normal + i / 3] = gn;
+
+                if (itm.normals.size() > 0)
+                {
+                    shading_normals_[first_shading_normal + i]     = itm.normals[itm.indices[i]];
+                    shading_normals_[first_shading_normal + i + 1] = itm.normals[itm.indices[i + 1]];
+                    shading_normals_[first_shading_normal + i + 2] = itm.normals[itm.indices[i + 2]];
+                }
+
+                if (itm.tex_coords.size() > 0)
+                {
+                    tex_coords_[first_tex_coord + i]     = itm.tex_coords[itm.indices[i]];
+                    tex_coords_[first_tex_coord + i + 1] = itm.tex_coords[itm.indices[i + 1]];
+                    tex_coords_[first_tex_coord + i + 2] = itm.tex_coords[itm.indices[i + 2]];
+                }
+
+                if (itm.colors.size() > 0)
+                {
+                    colors_[first_color + i]     = vec3(itm.colors[itm.indices[i]]);
+                    colors_[first_color + i + 1] = vec3(itm.colors[itm.indices[i + 1]]);
+                    colors_[first_color + i + 2] = vec3(itm.colors[itm.indices[i + 2]]);
+                }
             }
 
             // Build single bvh
