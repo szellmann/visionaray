@@ -47,6 +47,7 @@ class environment_light;
 class transform;
 class surface_properties;
 class triangle_mesh;
+class indexed_triangle_mesh;
 class sphere;
 
 // Node visitor base class
@@ -67,6 +68,7 @@ public:
     virtual void apply(transform& t);
     virtual void apply(surface_properties& sp);
     virtual void apply(triangle_mesh& tm);
+    virtual void apply(indexed_triangle_mesh& itm);
     virtual void apply(sphere& s);
 
 protected:
@@ -390,6 +392,37 @@ class triangle_mesh : public node
 public:
 
     VSNRAY_SG_NODE
+
+    // Vertex positions 
+    aligned_vector<vec3> vertices;
+
+    // Shading normals
+    aligned_vector<vec3> normals;
+
+    // Texture coordinates
+    aligned_vector<vec2> tex_coords;
+
+    // Per-vertex colors
+    aligned_vector<vector<3, unorm<8>>> colors;
+
+    // Face IDs for Ptex
+    aligned_vector<int> face_ids;
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Indexed triangle mesh node
+//
+
+class indexed_triangle_mesh : public node
+{
+public:
+
+    VSNRAY_SG_NODE
+
+    // Indices
+    aligned_vector<int> indices;
 
     // Vertex positions 
     aligned_vector<vec3> vertices;

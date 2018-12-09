@@ -365,6 +365,13 @@ struct reset_flags_visitor : sg::node_visitor
 
         node_visitor::apply(tm);
     }
+
+    void apply(sg::indexed_triangle_mesh& itm)
+    {
+        itm.flags() = 0;
+
+        node_visitor::apply(itm);
+    }
 };
 
 
@@ -526,6 +533,63 @@ struct build_bvhs_visitor : sg::node_visitor
         instance_transforms_.push_back(current_transform_);
 
         node_visitor::apply(tm);
+    }
+
+    void apply(sg::indexed_triangle_mesh& itm)
+    {
+        if (itm.flags() == 0 && itm.vertices.size() > 0)
+        {
+            assert(itm.indices.size() % 3 == 0);
+
+            aligned_vector<basic_triangle<3, float>> triangles(itm.indices.size() / 3);
+
+            size_t first_geometric_normal = geometric_normals_.size();
+            geometric_normals_.resize(geometric_normals_.size() + itm.indices.size() / 3);
+
+            shading_normals_.insert(shading_normals_.end(), itm.normals.begin(), itm.normals.end());
+
+            tex_coords_.insert(tex_coords_.end(), itm.tex_coords.begin(), itm.tex_coords.end());
+
+            size_t first_color = colors_.size();
+            if (itm.colors.size() > 0)
+            {
+                colors_.resize(first_color + itm.colors.size());
+                for (size_t i = 0; i < itm.colors.size(); ++i)
+                {
+                    colors_[first_color + i] = vec3(itm.colors[i]);
+                }
+            }
+
+            for (size_t i = 0; i < itm.indices.size(); i += 3)
+            {
+                vec3 v1 = itm.vertices[itm.indices[i]];
+                vec3 v2 = itm.vertices[itm.indices[i + 1]];
+                vec3 v3 = itm.vertices[itm.indices[i + 2]];
+
+                basic_triangle<3, float> tri(v1, v2 - v1, v3 - v1);
+                tri.prim_id = current_prim_id_++;
+                tri.geom_id = current_geom_id_;
+                triangles[i / 3] = tri;
+
+                vec3 gn = normalize(cross(v2 - v1, v3 - v1));
+
+                geometric_normals_[first_geometric_normal + i / 3] = gn;
+            }
+
+            // Build single bvh
+            bvhs_.emplace_back(build<renderer::host_bvh_type>(
+                    triangles.data(),
+                    triangles.size(),
+                    false//builder == Split
+                    ));
+
+            itm.flags() = ~(bvhs_.size() - 1);
+        }
+
+        instance_indices_.push_back(~itm.flags());
+        instance_transforms_.push_back(current_transform_);
+
+        node_visitor::apply(itm);
     }
 
     // List of surface properties to derive geom_ids from

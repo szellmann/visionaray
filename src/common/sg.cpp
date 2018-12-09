@@ -250,6 +250,11 @@ void node_visitor::apply(triangle_mesh& tm)
     apply(static_cast<node&>(tm));
 }
 
+void node_visitor::apply(indexed_triangle_mesh& itm)
+{
+    apply(static_cast<node&>(itm));
+}
+
 void node_visitor::apply(sphere& s)
 {
     apply(static_cast<node&>(s));
