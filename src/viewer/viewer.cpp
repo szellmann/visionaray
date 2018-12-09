@@ -761,8 +761,16 @@ void renderer::build_bvhs()
             else if (auto obj = std::dynamic_pointer_cast<sg::obj_material>(surf.first))
             {
                 // TODO: consolidate model::material and obj_material!
+                newmat.ca = obj->ca;
                 newmat.cd = obj->cd;
                 newmat.cs = obj->cs;
+                newmat.ce = obj->ce;
+                newmat.cr = obj->cr;
+                newmat.ior = obj->ior;
+                newmat.absorption = obj->absorption;
+                newmat.transmission = obj->transmission;
+                newmat.specular_exp = obj->specular_exp;
+                newmat.illum = obj->illum;
             }
             mod.materials.emplace_back(newmat); // TODO
 
