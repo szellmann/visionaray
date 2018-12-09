@@ -401,7 +401,7 @@ public:
     aligned_vector<vec2> tex_coords;
 
     // Per-vertex colors
-    aligned_vector<vector<4, unorm<8>>> colors;
+    aligned_vector<vector<3, unorm<8>>> colors;
 
     // Face IDs for Ptex
     aligned_vector<int> face_ids;

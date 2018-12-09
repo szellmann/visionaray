@@ -190,6 +190,30 @@ std::shared_ptr<sg::node> parse_triangle_mesh(Object const& obj)
         }
     }
 
+    if (obj.HasMember("colors"))
+    {
+        auto const& colors = obj["colors"];
+
+        vector<3, unorm<8>> c;
+        int i = 0;
+        for (auto const& item : colors.GetArray())
+        {
+            c[i++ % 3] = item.GetFloat();
+
+            if (i % 3 == 0)
+            {
+                mesh->colors.emplace_back(c);
+            }
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < mesh->vertices.size(); ++i)
+        {
+            mesh->colors.emplace_back(1.0f);
+        }
+    }
+
     if (obj.HasMember("children"))
     {
         rapidjson::Value const& children = obj["children"];

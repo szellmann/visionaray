@@ -383,6 +383,7 @@ struct build_bvhs_visitor : sg::node_visitor
             aligned_vector<vec3>& shading_normals,
             aligned_vector<vec3>& geometric_normals,
             aligned_vector<vec2>& tex_coords,
+            aligned_vector<vec3>& colors,
 #if VSNRAY_COMMON_HAVE_PTEX
             aligned_vector<ptex::face_id_t>& face_ids,
 #endif
@@ -394,6 +395,7 @@ struct build_bvhs_visitor : sg::node_visitor
         , shading_normals_(shading_normals)
         , geometric_normals_(geometric_normals)
         , tex_coords_(tex_coords)
+        , colors_(colors)
 #if VSNRAY_COMMON_HAVE_PTEX
         , face_ids_(face_ids)
 #endif
@@ -480,6 +482,16 @@ struct build_bvhs_visitor : sg::node_visitor
 
             tex_coords_.insert(tex_coords_.end(), tm.tex_coords.begin(), tm.tex_coords.end());
 
+            size_t first_color = colors_.size();
+            if (tm.colors.size() > 0)
+            {
+                colors_.resize(first_color + tm.colors.size());
+                for (size_t i = 0; i < tm.colors.size(); ++i)
+                {
+                    colors_[first_color + i] = vec3(tm.colors[i]);
+                }
+            }
+
 #if VSNRAY_COMMON_HAVE_PTEX
             face_ids_.insert(face_ids_.end(), tm.face_ids.begin(), tm.face_ids.end());
 #endif
@@ -540,6 +552,9 @@ struct build_bvhs_visitor : sg::node_visitor
 
     // Texture coordinates
     aligned_vector<vec2>& tex_coords_;
+
+    // Vertex colors
+    aligned_vector<vec3>& colors_;
 
 #if VSNRAY_COMMON_HAVE_PTEX
     // Ptex face ids
@@ -602,6 +617,7 @@ void renderer::build_bvhs()
                 mod.shading_normals, // TODO!!!
                 mod.geometric_normals,
                 mod.tex_coords,
+                mod.colors,
 #if VSNRAY_COMMON_HAVE_PTEX
                 ptex_tex_coords,
 #endif
@@ -1070,6 +1086,7 @@ void renderer::render_impl()
                         mod.shading_normals,
                         mod.tex_coords,
                         generic_materials,
+                        mod.colors,
                         mod.textures,
                         temp_lights,
                         bounces,
