@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <cassert>
+#include <cstddef>
 #include <cstring>
 #include <iostream>
 #include <memory>
@@ -45,7 +46,7 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
 {
     parent->children().resize(entries.MemberCount());
 
-    int i = 0;
+    size_t i = 0;
     for (auto const& c : entries.GetArray())
     {
         auto const& obj = c.GetObject();
