@@ -33,6 +33,9 @@ template <typename Object>
 std::shared_ptr<sg::node> parse_transform(Object const& obj);
 
 template <typename Object>
+std::shared_ptr<sg::node> parse_surface_properties(Object const& obj);
+
+template <typename Object>
 std::shared_ptr<sg::node> parse_triangle_mesh(Object const& obj);
 
 template <typename Object>
@@ -61,6 +64,10 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
             else if (strncmp(type_string.GetString(), "transform", 9) == 0)
             {
                 parent->children().at(i++) = parse_transform(obj);
+            }
+            else if (strncmp(type_string.GetString(), "surface_properties", 18) == 0)
+            {
+                parent->children().at(i++) = parse_surface_properties(obj);
             }
             else if (strncmp(type_string.GetString(), "triangle_mesh", 13) == 0)
             {
@@ -117,6 +124,153 @@ std::shared_ptr<sg::node> parse_transform(Object const& obj)
     }
 
     return transform;
+}
+
+template <typename Object>
+std::shared_ptr<sg::node> parse_surface_properties(Object const& obj)
+{
+    auto props = std::make_shared<sg::surface_properties>();
+
+    if (obj.HasMember("material"))
+    {
+        auto const& mat = obj["material"];
+
+        if (mat.HasMember("type"))
+        {
+            auto const& type_string = mat["type"];
+            if (strncmp(type_string.GetString(), "obj", 3) == 0)
+            {
+                auto obj = std::make_shared<sg::obj_material>();
+
+                if (mat.HasMember("ca"))
+                {
+                    auto const& ca = mat["ca"];
+
+                    vec3 clr;
+                    int i = 0;
+                    for (auto const& item : ca.GetArray())
+                    {
+                        clr[i++] = item.GetFloat();
+                    }
+
+                    if (i != 3)
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    obj->ca = clr;
+                }
+
+                if (mat.HasMember("cd"))
+                {
+                    auto const& cd = mat["cd"];
+
+                    vec3 clr;
+                    int i = 0;
+                    for (auto const& item : cd.GetArray())
+                    {
+                        clr[i++] = item.GetFloat();
+                    }
+
+                    if (i != 3)
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    obj->cd = clr;
+                }
+
+                if (mat.HasMember("cs"))
+                {
+                    auto const& cs = mat["cs"];
+
+                    vec3 clr;
+                    int i = 0;
+                    for (auto const& item : cs.GetArray())
+                    {
+                        clr[i++] = item.GetFloat();
+                    }
+
+                    if (i != 3)
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    obj->cs = clr;
+                }
+
+                if (mat.HasMember("ce"))
+                {
+                    auto const& ce = mat["ce"];
+
+                    vec3 clr;
+                    int i = 0;
+                    for (auto const& item : ce.GetArray())
+                    {
+                        clr[i++] = item.GetFloat();
+                    }
+
+                    if (i != 3)
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    obj->ce = clr;
+                }
+
+                props->material() = obj;
+            }
+            else
+            {
+                throw std::runtime_error("");
+            }
+        }
+        else
+        {
+            throw std::runtime_error("");
+        }
+    }
+    else
+    {
+        // Set default material (wavefront obj)
+        auto obj = std::make_shared<sg::obj_material>();
+        props->material() = obj;
+    }
+
+    if (obj.HasMember("diffuse"))
+    {
+        // TODO: load from file
+#if 1
+        vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
+        auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
+        tex->resize(1, 1);
+        tex->set_address_mode(Wrap);
+        tex->set_filter_mode(Nearest);
+        tex->reset(&dummy_texel);
+
+        props->add_texture(tex);
+#endif
+    }
+    else
+    {
+        // Set a dummy texture
+        vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
+        auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
+        tex->resize(1, 1);
+        tex->set_address_mode(Wrap);
+        tex->set_filter_mode(Nearest);
+        tex->reset(&dummy_texel);
+
+        props->add_texture(tex);
+    }
+
+    if (obj.HasMember("children"))
+    {
+        rapidjson::Value const& children = obj["children"];
+        parse_children(props, children);
+    }
+
+    return props;
 }
 
 template <typename Object>
