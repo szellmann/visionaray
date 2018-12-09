@@ -636,6 +636,25 @@ void renderer::build_bvhs()
         }
 #endif
 
+        // Insert dummy material (wavefront obj) if no surfaces
+        // were parsed from sg
+        if (build_visitor.surfaces.size() == 0)
+        {
+            build_visitor.surfaces.resize(1);
+
+            // Material
+            build_visitor.surfaces[0].first = std::make_shared<sg::obj_material>();
+
+            // Texture
+            vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
+            auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
+            tex->resize(1, 1);
+            tex->set_address_mode(Wrap);
+            tex->set_filter_mode(Nearest);
+            tex->reset(&dummy_texel);
+            build_visitor.surfaces[0].second = tex;
+        }
+
         if (tex_format == renderer::UV)
         {
             mod.textures.resize(build_visitor.surfaces.size());
@@ -645,40 +664,53 @@ void renderer::build_bvhs()
         {
             auto const& surf = build_visitor.surfaces[i];
 
-            auto disney = std::dynamic_pointer_cast<sg::disney_material>(surf.first);
-            assert(disney != nullptr);
-
             model::material_type newmat = {};
-            newmat.cd = disney->base_color.xyz();
-            newmat.cs = vec3(0.0f);
-            newmat.ior = vec3(disney->ior);
-            newmat.transmission = disney->refractive; // TODO
-            if (newmat.transmission > 0.0f)
+
+            if (auto disney = std::dynamic_pointer_cast<sg::disney_material>(surf.first))
             {
-                newmat.illum = 4;
-                newmat.cs = vec3(disney->spec_trans);
+                newmat.cd = disney->base_color.xyz();
+                newmat.cs = vec3(0.0f);
+                newmat.ior = vec3(disney->ior);
+                newmat.transmission = disney->refractive; // TODO
+                if (newmat.transmission > 0.0f)
+                {
+                    newmat.illum = 4;
+                    newmat.cs = vec3(disney->spec_trans);
+                }
+            }
+            else if (auto obj = std::dynamic_pointer_cast<sg::obj_material>(surf.first))
+            {
+                // TODO: consolidate model::material and obj_material!
+                newmat.cd = obj->cd;
+                newmat.cs = obj->cs;
             }
             mod.materials.emplace_back(newmat); // TODO
 
 #if VSNRAY_COMMON_HAVE_PTEX
-            auto ptex_tex = std::dynamic_pointer_cast<sg::ptex_texture>(surf.second);
-            if (ptex_tex != nullptr)
+            if (tex_format == renderer::Ptex)
             {
-                ptex_textures[i] = { ptex_tex->filename(), ptex_tex->cache() };
+                auto ptex_tex = std::dynamic_pointer_cast<sg::ptex_texture>(surf.second);
+                if (ptex_tex != nullptr)
+                {
+                    ptex_textures[i] = { ptex_tex->filename(), ptex_tex->cache() };
+                }
             }
-#else
-            auto tex = std::dynamic_pointer_cast<sg::texture2d<vector<4, unorm<8>>>>(surf.second);
-            if (tex != nullptr)
-            {
-                model::texture_type texture(tex->width(), tex->height());
-                texture.set_address_mode(tex->get_address_mode());
-                texture.set_filter_mode(tex->get_filter_mode());
-                texture.reset(tex->data());
-
-                auto it = mod.texture_map.insert(std::make_pair(tex->name(), std::move(texture)));
-                mod.textures[i] = model::texture_type::ref_type(it.first->second);
-            }
+            else if (tex_format == renderer::UV)
 #endif
+
+            {
+                auto tex = std::dynamic_pointer_cast<sg::texture2d<vector<4, unorm<8>>>>(surf.second);
+                if (tex != nullptr)
+                {
+                    model::texture_type texture(tex->width(), tex->height());
+                    texture.set_address_mode(tex->get_address_mode());
+                    texture.set_filter_mode(tex->get_filter_mode());
+                    texture.reset(tex->data());
+
+                    auto it = mod.texture_map.insert(std::make_pair(tex->name(), std::move(texture)));
+                    mod.textures[i] = model::texture_type::ref_type(it.first->second);
+                }
+            }
         }
 
         environment_map = build_visitor.environment_map;
