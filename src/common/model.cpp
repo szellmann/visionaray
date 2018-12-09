@@ -9,12 +9,13 @@
 #include "model.h"
 #include "obj_loader.h"
 #include "ply_loader.h"
+#include "vsnray_loader.h"
 
 //-------------------------------------------------------------------------------------------------
 // Helpers
 //
 
-enum model_type { Moana, OBJ, PLY, Unknown };
+enum model_type { Moana, OBJ, PLY, VSNRAY, Unknown };
 
 static model_type get_type(std::string const& filename)
 {
@@ -49,6 +50,15 @@ static model_type get_type(std::string const& filename)
     if (std::find(ply_extensions, ply_extensions + 2, p.extension()) != ply_extensions + 2)
     {
         return PLY;
+    }
+
+    // VSNRAY
+
+    static const std::string vsnray_extensions[] = { ".vsnray", ".VSNRAY" };
+
+    if (std::find(vsnray_extensions, vsnray_extensions + 2, p.extension()) != vsnray_extensions + 2)
+    {
+        return VSNRAY;
     }
 
     return Unknown;
@@ -114,6 +124,10 @@ bool model::load(std::vector<std::string> const& filenames)
                 load_ply(filenames, *this);
                 return true;
 
+            case VSNRAY:
+                load_vsnray(filenames, *this);
+                return true;
+
             default:
                 return false;
             }
@@ -134,6 +148,10 @@ bool model::load(std::vector<std::string> const& filenames)
 
                 case PLY:
                     load_ply(filename, *this);
+                    return true;
+
+                case VSNRAY:
+                    load_vsnray(filename, *this);
                     return true;
 
                 default:

@@ -180,6 +180,7 @@ set(COMMON_HEADERS
     timer.h
     viewer_base.h
     viewer_glut.h
+    vsnray_loader.h
 
 )
 
@@ -217,6 +218,7 @@ set(COMMON_SOURCES
     tiff_image.cpp
     viewer_base.cpp
     viewer_glut.cpp
+    vsnray_loader.cpp
 
 )
 
