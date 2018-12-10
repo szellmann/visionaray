@@ -235,7 +235,7 @@ std::shared_ptr<sg::node> parse_point_light(Object const& obj)
 {
     auto light = std::make_shared<sg::point_light>();
 
-    vec3 cl(0.0f);
+    vec3 cl(1.0f);
     if (obj.HasMember("cl"))
     {
         auto const& color = obj["cl"];
