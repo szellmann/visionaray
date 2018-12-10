@@ -235,23 +235,6 @@ std::shared_ptr<sg::node> parse_point_light(Object const& obj)
 {
     auto light = std::make_shared<sg::point_light>();
 
-    vec3 position(0.0f);
-    if (obj.HasMember("position"))
-    {
-        auto const& pos = obj["position"];
-
-        int i = 0;
-        for (auto const& item : pos.GetArray())
-        {
-            position[i++] = item.GetFloat();
-        }
-
-        if (i != 3)
-        {
-            throw std::runtime_error("");
-        }
-    }
-
     vec3 cl(0.0f);
     if (obj.HasMember("cl"))
     {
@@ -273,6 +256,23 @@ std::shared_ptr<sg::node> parse_point_light(Object const& obj)
     if (obj.HasMember("kl"))
     {
         kl = obj["kl"].GetFloat();
+    }
+
+    vec3 position(0.0f);
+    if (obj.HasMember("position"))
+    {
+        auto const& pos = obj["position"];
+
+        int i = 0;
+        for (auto const& item : pos.GetArray())
+        {
+            position[i++] = item.GetFloat();
+        }
+
+        if (i != 3)
+        {
+            throw std::runtime_error("");
+        }
     }
 
     float constant_attenuation = 1.0f;
