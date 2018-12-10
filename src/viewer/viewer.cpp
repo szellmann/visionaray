@@ -1145,8 +1145,6 @@ void renderer::render_hud()
 
 void renderer::render_impl()
 {
-    point_lights.clear();
-
     if (use_headlight)
     {
         point_light<float> headlight;
@@ -1347,6 +1345,11 @@ void renderer::render_impl()
 //      std::cout << "Block reads:     " << stats.blockReads << '\n';
 //  }
 #endif
+
+    if (use_headlight)
+    {
+        point_lights.erase(point_lights.end() - 1);
+    }
 }
 
 void renderer::on_close()
