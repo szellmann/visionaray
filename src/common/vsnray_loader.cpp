@@ -69,7 +69,7 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
             }
             else if (strncmp(type_string.GetString(), "point_light", 11) == 0)
             {
-                parent->children().at(i++) = parse_camera(obj);
+                parent->children().at(i++) = parse_point_light(obj);
             }
             else if (strncmp(type_string.GetString(), "reference", 9) == 0)
             {
@@ -293,9 +293,9 @@ std::shared_ptr<sg::node> parse_point_light(Object const& obj)
         quadratic_attenuation = obj["quadratic_attenuation"].GetFloat();
     }
 
-    light->set_position(position);
     light->set_cl(cl);
     light->set_kl(kl);
+    light->set_position(position);
     light->set_constant_attenuation(constant_attenuation);
     light->set_linear_attenuation(linear_attenuation);
     light->set_quadratic_attenuation(quadratic_attenuation);
