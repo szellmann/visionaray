@@ -27,6 +27,9 @@ namespace visionaray
 void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& entries);
 
 template <typename Object>
+std::shared_ptr<sg::node> parse_camera(Object const& obj);
+
+template <typename Object>
 std::shared_ptr<sg::node> parse_reference(Object const& obj);
 
 template <typename Object>
@@ -57,7 +60,11 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
         if (obj.HasMember("type"))
         {
             auto const& type_string = obj["type"];
-            if (strncmp(type_string.GetString(), "reference", 9) == 0)
+            if (strncmp(type_string.GetString(), "camera", 6) == 0)
+            {
+                parent->children().at(i++) = parse_camera(obj);
+            }
+            else if (strncmp(type_string.GetString(), "reference", 9) == 0)
             {
                 parent->children().at(i++) = parse_reference(obj);
             }
@@ -92,6 +99,128 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
     {
         throw std::runtime_error("");
     }
+}
+
+template <typename Object>
+std::shared_ptr<sg::node> parse_camera(Object const& obj)
+{
+    auto cam = std::make_shared<sg::camera>();
+
+    vec3 eye(0.0f);
+    if (obj.HasMember("eye"))
+    {
+        auto const& cam_eye = obj["eye"];
+
+        int i = 0;
+        for (auto const& item : cam_eye.GetArray())
+        {
+            eye[i++] = item.GetFloat();
+        }
+
+        if (i != 3)
+        {
+            throw std::runtime_error("");
+        }
+    }
+
+    vec3 center(0.0f);
+    if (obj.HasMember("center"))
+    {
+        auto const& cam_center = obj["center"];
+
+        int i = 0;
+        for (auto const& item : cam_center.GetArray())
+        {
+            center[i++] = item.GetFloat();
+        }
+
+        if (i != 3)
+        {
+            throw std::runtime_error("");
+        }
+    }
+
+    vec3 up(0.0f);
+    if (obj.HasMember("up"))
+    {
+        auto const& cam_up = obj["up"];
+
+        int i = 0;
+        for (auto const& item : cam_up.GetArray())
+        {
+            up[i++] = item.GetFloat();
+        }
+
+        if (i != 3)
+        {
+            throw std::runtime_error("");
+        }
+    }
+
+    float fovy = 0.0f;
+    if (obj.HasMember("fovy"))
+    {
+        fovy = obj["fovy"].GetFloat();
+    }
+
+    float znear = 0.0f;
+    if (obj.HasMember("znear"))
+    {
+        znear = obj["znear"].GetFloat();
+    }
+
+    float zfar = 0.0f;
+    if (obj.HasMember("zfar"))
+    {
+        zfar = obj["zfar"].GetFloat();
+    }
+
+    recti viewport;
+    if (obj.HasMember("viewport"))
+    {
+        auto const& cam_viewport = obj["viewport"];
+
+        int i = 0;
+        for (auto const& item : cam_viewport.GetArray())
+        {
+            viewport.data()[i++] = item.GetInt();
+        }
+
+        if (i != 4)
+        {
+            throw std::runtime_error("");
+        }
+    }
+
+    float lens_radius = 0.0f;
+    if (obj.HasMember("lens_radius"))
+    {
+        lens_radius = obj["lens_radius"].GetFloat();
+    }
+
+    float focal_distance = 0.0f;
+    if (obj.HasMember("focal_distance"))
+    {
+        focal_distance = obj["focal_distance"].GetFloat();
+    }
+
+    float aspect = viewport.w > 0 && viewport.h > 0
+                 ? viewport.w / static_cast<float>(viewport.h)
+                 : 1;
+
+    cam->perspective(fovy * constants::degrees_to_radians<float>(), aspect, znear, zfar);
+    cam->set_viewport(viewport);
+    cam->set_lens_radius(lens_radius);
+    cam->set_focal_distance(focal_distance);
+    cam->look_at(eye, center, up);
+
+    if (obj.HasMember("children"))
+    {
+        rapidjson::Value const& children = obj["children"];
+        parse_children(cam, children);
+    }
+
+    return cam;
 }
 
 template <typename Object>
