@@ -230,6 +230,11 @@ void node_visitor::apply(light& l)
     apply(static_cast<node&>(l));
 }
 
+void node_visitor::apply(point_light& pl)
+{
+    apply(static_cast<node&>(pl));
+}
+
 void node_visitor::apply(environment_light& el)
 {
     apply(static_cast<node&>(el));

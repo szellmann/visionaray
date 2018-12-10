@@ -394,7 +394,8 @@ struct build_bvhs_visitor : sg::node_visitor
 #if VSNRAY_COMMON_HAVE_PTEX
             aligned_vector<ptex::face_id_t>& face_ids,
 #endif
-            aligned_vector<std::pair<std::string, thin_lens_camera>>& cameras
+            aligned_vector<std::pair<std::string, thin_lens_camera>>& cameras,
+            aligned_vector<point_light<float>>& point_lights
             )
         : bvhs_(bvhs)
         , instance_indices_(instance_indices)
@@ -407,6 +408,7 @@ struct build_bvhs_visitor : sg::node_visitor
         , face_ids_(face_ids)
 #endif
         , cameras_(cameras)
+        , point_lights_(point_lights)
         , environment_map(nullptr)
     {
     }
@@ -416,6 +418,13 @@ struct build_bvhs_visitor : sg::node_visitor
         cameras_.push_back(std::make_pair(c.name(), static_cast<thin_lens_camera>(c)));
 
         node_visitor::apply(c);
+    }
+
+    void apply(sg::point_light& pl)
+    {
+        point_lights_.push_back(static_cast<visionaray::point_light<float>>(pl));
+
+        node_visitor::apply(pl);
     }
 
     void apply(sg::environment_light& el)
@@ -653,6 +662,9 @@ struct build_bvhs_visitor : sg::node_visitor
     // Cameras
     aligned_vector<std::pair<std::string, thin_lens_camera>>& cameras_;
 
+    // Point lights
+    aligned_vector<point_light<float>>& point_lights_;
+
     // Environment map
     std::shared_ptr<visionaray::texture<vec4, 2>> environment_map;
 
@@ -710,7 +722,8 @@ void renderer::build_bvhs()
 #if VSNRAY_COMMON_HAVE_PTEX
                 ptex_tex_coords,
 #endif
-                cameras
+                cameras,
+                point_lights
                 );
         mod.scene_graph->accept(build_visitor);
 

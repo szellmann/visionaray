@@ -19,6 +19,7 @@
 #include <visionaray/math/unorm.h>
 #include <visionaray/math/vector.h>
 #include <visionaray/aligned_vector.h>
+#include <visionaray/point_light.h>
 #include <visionaray/spectrum.h>
 #include <visionaray/thin_lens_camera.h>
 
@@ -43,6 +44,7 @@ namespace sg
 class node;
 class camera;
 class light;
+class point_light;
 class environment_light;
 class transform;
 class surface_properties;
@@ -64,6 +66,7 @@ public:
     virtual void apply(node& n);
     virtual void apply(camera& c);
     virtual void apply(light& l);
+    virtual void apply(point_light& pl);
     virtual void apply(environment_light& el);
     virtual void apply(transform& t);
     virtual void apply(surface_properties& sp);
@@ -303,6 +306,19 @@ public:
 //
 
 class light : public node
+{
+public:
+
+    VSNRAY_SG_NODE
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Point light node
+//
+
+class point_light : public node, public visionaray::point_light<float>
 {
 public:
 
