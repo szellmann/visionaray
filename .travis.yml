@@ -3,7 +3,7 @@
 #
 
 sudo: false
-dist: xenial
+dist: trusty
 
 language: cpp
 compiler:
