@@ -6,6 +6,7 @@
 #ifndef VSNRAY_GET_SURFACE_H
 #define VSNRAY_GET_SURFACE_H 1
 
+#include <cstddef>
 #include <iterator>
 #include <type_traits>
 #include <utility>
