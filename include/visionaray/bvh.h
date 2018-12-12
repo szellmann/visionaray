@@ -9,7 +9,6 @@
 #include <cassert>
 #include <cstddef>
 #include <cstring>
-#include <stdexcept>
 #include <type_traits>
 
 #ifdef __CUDACC__
