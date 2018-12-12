@@ -42,14 +42,14 @@ struct surface<N, M>
         return material.shade(shade_rec);
     }
 
-    template <typename U, typename Interaction, typename S /* sampler */>
+    template <typename U, typename Interaction, typename Generator>
     VSNRAY_FUNC
     spectrum<scalar_type> sample(
             vector<3, U> const& view_dir,
             vector<3, U>&       refl_dir,
             U&                  pdf,
             Interaction&        inter,
-            S&                  sampler
+            Generator&          gen
             )
     {
         shade_record<U> shade_rec;
@@ -58,7 +58,7 @@ struct surface<N, M>
         shade_rec.view_dir         = view_dir;
         shade_rec.tex_color        = vector<3, U>(1.0f);
 
-        return material.sample(shade_rec, refl_dir, pdf, inter, sampler);
+        return material.sample(shade_rec, refl_dir, pdf, inter, gen);
     }
 
     template <typename U, typename Interaction>
@@ -100,14 +100,14 @@ struct surface<N, C, M>
         return material.shade(shade_rec);
     }
 
-    template <typename U, typename Interaction, typename S /* sampler */>
+    template <typename U, typename Interaction, typename Generator>
     VSNRAY_FUNC
     spectrum<scalar_type> sample(
             vector<3, U> const& view_dir,
             vector<3, U>&       refl_dir,
             U&                  pdf,
             Interaction&        inter,
-            S&                  sampler
+            Generator&          gen
             )
     {
         shade_record<U> shade_rec;
@@ -116,7 +116,7 @@ struct surface<N, C, M>
         shade_rec.view_dir         = view_dir;
         shade_rec.tex_color        = tex_color;
 
-        return material.sample(shade_rec, refl_dir, pdf, inter, sampler);
+        return material.sample(shade_rec, refl_dir, pdf, inter, gen);
     }
 
     template <typename U, typename Interaction>
