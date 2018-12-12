@@ -424,6 +424,10 @@ struct build_bvhs_visitor : sg::node_visitor
     {
         point_lights_.push_back(static_cast<visionaray::point_light<float>>(pl));
 
+        vec3 pos = point_lights_.back().position();
+        pos = (current_transform_ * vec4(pos, 1.0f)).xyz();
+        point_lights_.back().set_position(pos);
+
         node_visitor::apply(pl);
     }
 
