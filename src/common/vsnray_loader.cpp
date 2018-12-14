@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstring>
@@ -28,6 +29,9 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
 
 template <typename Object>
 std::shared_ptr<sg::node> parse_camera(Object const& obj);
+
+template <typename Object>
+std::shared_ptr<sg::node> parse_include(Object const& obj);
 
 template <typename Object>
 std::shared_ptr<sg::node> parse_point_light(Object const& obj);
@@ -66,6 +70,10 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
             if (strncmp(type_string.GetString(), "camera", 6) == 0)
             {
                 parent->children().at(i++) = parse_camera(obj);
+            }
+            else if (strncmp(type_string.GetString(), "include", 6) == 0)
+            {
+                parent->children().at(i++) = parse_include(obj);
             }
             else if (strncmp(type_string.GetString(), "point_light", 11) == 0)
             {
@@ -228,6 +236,127 @@ std::shared_ptr<sg::node> parse_camera(Object const& obj)
     }
 
     return cam;
+}
+
+template <typename Object>
+std::shared_ptr<sg::node> parse_include(Object const& obj)
+{
+    std::shared_ptr<sg::node> inc = nullptr;
+
+    if (obj.HasMember("path"))
+    {
+        model mod;
+        if (mod.load(obj["path"].GetString()))
+        {
+            if (mod.scene_graph == nullptr)
+            {
+                inc = std::make_shared<sg::triangle_mesh>();
+                auto mesh = std::dynamic_pointer_cast<sg::triangle_mesh>(inc);
+
+                if (mod.primitives.size() > 0)
+                {
+                    // Vertices (disassemble triangles..)
+                    mesh->vertices.resize(mod.primitives.size() * 3);
+                    for (size_t i = 0; i < mod.primitives.size(); ++i)
+                    {
+                        auto& tri = mod.primitives[i];
+                        vec3 verts[3] = {
+                            tri.v1,
+                            tri.v1 + tri.e1,
+                            tri.v1 + tri.e2
+                            };
+                        std::copy(verts, verts + 3, mesh->vertices.begin() + i * 3);
+                    }
+                }
+                else
+                {
+                    throw std::runtime_error("");
+                }
+
+                if (mod.geometric_normals.size() > 0)
+                {
+                    // Copy normals
+                    mesh->normals.resize(mod.geometric_normals.size());
+                    std::copy(
+                            mod.geometric_normals.begin(),
+                            mod.geometric_normals.end(),
+                            mesh->normals.begin()
+                            );
+                }
+                else
+                {
+                    for (size_t i = 0; i < mesh->vertices.size(); i += 3)
+                    {
+                        vec3 v1 = mesh->vertices[i];
+                        vec3 v2 = mesh->vertices[i + 1];
+                        vec3 v3 = mesh->vertices[i + 2];
+
+                        vec3 gn = normalize(cross(v2 - v1, v3 - v1));
+
+                        mesh->normals.emplace_back(gn);
+                        mesh->normals.emplace_back(gn);
+                        mesh->normals.emplace_back(gn);
+                    }
+                }
+
+                if (mod.tex_coords.size() > 0)
+                {
+                    // Copy tex coords
+                    mesh->tex_coords.resize(mod.tex_coords.size());
+                    std::copy(
+                            mod.tex_coords.begin(),
+                            mod.tex_coords.end(),
+                            mesh->tex_coords.begin()
+                            );
+                }
+                else
+                {
+                    for (size_t i = 0; i < mesh->vertices.size(); ++i)
+                    {
+                        mesh->tex_coords.emplace_back(0.0f, 0.0f);
+                    }
+                }
+
+                if (mod.colors.size() > 0)
+                {
+                    // Copy colors (convert from 3 x float to 3 x unorm8)
+                    mesh->colors.resize(mod.colors.size());
+                    for (size_t i = 0; i < mod.colors.size(); ++i)
+                    {
+                        mesh->colors[i] = vector<3, unorm<8>>(mod.colors[i]);
+                    }
+                }
+                else
+                {
+                    for (size_t i = 0; i < mesh->vertices.size(); ++i)
+                    {
+                        mesh->colors.emplace_back(1.0f);
+                    }
+                }
+            }
+            else
+            {
+                // TODO: don't allow circular references..
+                inc = mod.scene_graph;
+            }
+        }
+        else
+        {
+            throw std::runtime_error("");
+        }
+    }
+    else
+    {
+        throw std::runtime_error("");
+    }
+
+    if (obj.HasMember("children"))
+    {
+        rapidjson::Value const& children = obj["children"];
+        parse_children(inc, children);
+    }
+
+    return inc;
 }
 
 template <typename Object>
