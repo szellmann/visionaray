@@ -1190,6 +1190,11 @@ void renderer::render_impl()
                 temp_lights.push_back(pl);
             }
 
+            for (auto al : area_lights)
+            {
+                temp_lights.push_back(al);
+            }
+
             if (tex_format == renderer::UV)
             {
                 render_instances_cpp(
@@ -1710,35 +1715,40 @@ int main(int argc, char** argv)
     {
         std::size_t begin;
         std::size_t end;
+        unsigned    bvh_id;
         unsigned    geom_id;
     };
 
     std::vector<range> ranges;
 
-    for (std::size_t i = 0; i < rend.mod.primitives.size(); ++i)
+    for (unsigned b = 0; b < rend.host_bvhs.size(); ++b)
     {
-        auto pi = rend.mod.primitives[i];
-        if (rend.generic_materials[pi.geom_id].as<emissive<float>>() != nullptr)
+        for (std::size_t i = 0; i < rend.host_bvhs[b].primitives().size(); ++i)
         {
-            range r;
-            r.begin = i;
-
-            std::size_t j = i + 1;
-            for (;j < rend.mod.primitives.size(); ++j)
+            auto pi = rend.host_bvhs[b].primitives()[i];
+            if (rend.generic_materials[pi.geom_id].as<emissive<float>>() != nullptr)
             {
-                auto pii = rend.mod.primitives[j];
-                if (rend.generic_materials[pii.geom_id].as<emissive<float>>() == nullptr
-                                || pii.geom_id != pi.geom_id)
+                range r;
+                r.begin = i;
+
+                std::size_t j = i + 1;
+                for (;j < rend.host_bvhs[b].primitives().size(); ++j)
                 {
-                    break;
+                    auto pii = rend.host_bvhs[b].primitives()[j];
+                    if (rend.generic_materials[pii.geom_id].as<emissive<float>>() == nullptr
+                                    || pii.geom_id != pi.geom_id)
+                    {
+                        break;
+                    }
                 }
+
+                r.end = j;
+                r.bvh_id = b;
+                r.geom_id = pi.geom_id;
+                ranges.push_back(r);
+
+                i = r.end - 1;
             }
-
-            r.end = j;
-            r.geom_id = pi.geom_id;
-            ranges.push_back(r);
-
-            i = r.end - 1;
         }
     }
 
@@ -1747,7 +1757,7 @@ int main(int argc, char** argv)
     {
         for (std::size_t i = r.begin; i != r.end; ++i)
         {
-            area_light<float, basic_triangle<3, float>> light(rend.mod.primitives[i]);
+            area_light<float, basic_triangle<3, float>> light(rend.host_bvhs[r.bvh_id].primitives()[i]);
             auto mat = *rend.generic_materials[r.geom_id].as<emissive<float>>();
             light.set_cl(to_rgb(mat.ce()));
             light.set_kl(mat.ls());
