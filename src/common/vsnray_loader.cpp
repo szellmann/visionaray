@@ -885,7 +885,14 @@ void load_vsnray(std::vector<std::string> const& filenames, model& mod)
         rapidjson::Document doc;
         doc.ParseStream(frs);
 
-        root = parse_node(doc);
+        if (doc.IsObject())
+        {
+            root = parse_node(doc.GetObject());
+        }
+        else
+        {
+            throw std::runtime_error("");
+        }
     }
 
     if (mod.scene_graph == nullptr)
