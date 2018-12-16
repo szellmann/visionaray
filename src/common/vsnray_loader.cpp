@@ -28,6 +28,9 @@ namespace visionaray
 void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& entries);
 
 template <typename Object>
+std::shared_ptr<sg::node> parse_node(Object const& obj);
+
+template <typename Object>
 std::shared_ptr<sg::node> parse_camera(Object const& obj);
 
 template <typename Object>
@@ -51,6 +54,7 @@ std::shared_ptr<sg::node> parse_triangle_mesh(Object const& obj);
 template <typename Object>
 std::shared_ptr<sg::node> parse_indexed_triangle_mesh(Object const& obj);
 
+
 //-------------------------------------------------------------------------------------------------
 // Parse nodes
 //
@@ -64,53 +68,59 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
     {
         auto const& obj = c.GetObject();
 
-        if (obj.HasMember("type"))
+        parent->children().at(i++) = parse_node(obj);
+    }
+
+    if (i != entries.MemberCount())
+    {
+        throw std::runtime_error("");
+    }
+}
+
+template <typename Object>
+std::shared_ptr<sg::node> parse_node(Object const& obj)
+{
+    if (obj.HasMember("type"))
+    {
+        auto const& type_string = obj["type"];
+        if (strncmp(type_string.GetString(), "camera", 6) == 0)
         {
-            auto const& type_string = obj["type"];
-            if (strncmp(type_string.GetString(), "camera", 6) == 0)
-            {
-                parent->children().at(i++) = parse_camera(obj);
-            }
-            else if (strncmp(type_string.GetString(), "include", 6) == 0)
-            {
-                parent->children().at(i++) = parse_include(obj);
-            }
-            else if (strncmp(type_string.GetString(), "point_light", 11) == 0)
-            {
-                parent->children().at(i++) = parse_point_light(obj);
-            }
-            else if (strncmp(type_string.GetString(), "reference", 9) == 0)
-            {
-                parent->children().at(i++) = parse_reference(obj);
-            }
-            else if (strncmp(type_string.GetString(), "transform", 9) == 0)
-            {
-                parent->children().at(i++) = parse_transform(obj);
-            }
-            else if (strncmp(type_string.GetString(), "surface_properties", 18) == 0)
-            {
-                parent->children().at(i++) = parse_surface_properties(obj);
-            }
-            else if (strncmp(type_string.GetString(), "triangle_mesh", 13) == 0)
-            {
-                parent->children().at(i++) = parse_triangle_mesh(obj);
-            }
-            else if (strncmp(type_string.GetString(), "indexed_triangle_mesh", 21) == 0)
-            {
-                parent->children().at(i++) = parse_indexed_triangle_mesh(obj);
-            }
-            else
-            {
-                throw std::runtime_error("");
-            }
+            return parse_camera(obj);
+        }
+        else if (strncmp(type_string.GetString(), "include", 6) == 0)
+        {
+            return parse_include(obj);
+        }
+        else if (strncmp(type_string.GetString(), "point_light", 11) == 0)
+        {
+            return parse_point_light(obj);
+        }
+        else if (strncmp(type_string.GetString(), "reference", 9) == 0)
+        {
+            return parse_reference(obj);
+        }
+        else if (strncmp(type_string.GetString(), "transform", 9) == 0)
+        {
+            return parse_transform(obj);
+        }
+        else if (strncmp(type_string.GetString(), "surface_properties", 18) == 0)
+        {
+            return parse_surface_properties(obj);
+        }
+        else if (strncmp(type_string.GetString(), "triangle_mesh", 13) == 0)
+        {
+            return parse_triangle_mesh(obj);
+        }
+        else if (strncmp(type_string.GetString(), "indexed_triangle_mesh", 21) == 0)
+        {
+            return parse_indexed_triangle_mesh(obj);
         }
         else
         {
             throw std::runtime_error("");
         }
     }
-
-    if (i != entries.MemberCount())
+    else
     {
         throw std::runtime_error("");
     }
