@@ -61,7 +61,12 @@ std::shared_ptr<sg::node> parse_indexed_triangle_mesh(Object const& obj);
 
 void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& entries)
 {
-    parent->children().resize(entries.MemberCount());
+    if (!entries.IsArray())
+    {
+        throw std::runtime_error("");
+    }
+
+    parent->children().resize(entries.Capacity());
 
     size_t i = 0;
     for (auto const& c : entries.GetArray())
@@ -71,7 +76,7 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
         parent->children().at(i++) = parse_node(obj);
     }
 
-    if (i != entries.MemberCount())
+    if (i != entries.Capacity())
     {
         throw std::runtime_error("");
     }
