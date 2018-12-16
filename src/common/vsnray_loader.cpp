@@ -14,6 +14,12 @@
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
 
+#include <visionaray/math/constants.h>
+#include <visionaray/math/forward.h>
+#include <visionaray/math/unorm.h>
+#include <visionaray/math/vector.h>
+#include <visionaray/texture/texture.h>
+
 #include "cfile.h"
 #include "model.h"
 #include "sg.h"
