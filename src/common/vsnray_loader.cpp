@@ -9,6 +9,7 @@
 #include <memory>
 #include <ostream>
 #include <stdexcept>
+#include <unordered_map>
 
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
@@ -286,6 +287,20 @@ std::shared_ptr<sg::node> parse_include(Object const& obj)
         {
             if (mod.scene_graph == nullptr)
             {
+                std::unordered_map<std::string, std::shared_ptr<sg::texture2d<vector<4, unorm<8>>>>> texture_map;
+
+                for (auto it = mod.texture_map.begin(); it != mod.texture_map.end(); ++it)
+                {
+                    auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
+                    tex->name() = it->first;
+                    tex->resize(it->second.width(), it->second.height());
+                    tex->reset(it->second.data());
+                    tex->set_filter_mode(it->second.get_filter_mode());
+                    tex->set_address_mode(it->second.get_address_mode());
+
+                    texture_map.insert(std::make_pair(it->first, tex));
+                }
+
                 if (mod.primitives.size() > 0)
                 {
                     // Vertices (disassemble triangles..)
@@ -309,14 +324,51 @@ std::shared_ptr<sg::node> parse_include(Object const& obj)
                             obj->illum = mod.materials[tri.geom_id].illum;
                             props->material() = obj;
 
-                            // Add a (dummy) texture (TODO!)
-                            vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
-                            auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
-                            tex->resize(1, 1);
-                            tex->set_address_mode(Wrap);
-                            tex->set_filter_mode(Nearest);
-                            tex->reset(&dummy_texel);
-                            props->add_texture(tex);
+                            bool insert_dummy = false;
+
+                            if (tri.geom_id < mod.textures.size())
+                            {
+                                // Find texture in texture_map
+                                bool found = false;
+                                for (auto it = mod.texture_map.begin(); it != mod.texture_map.end(); ++it)
+                                {
+                                    auto ref = texture_ref<vector<4, unorm<8>>, 2>(it->second);
+
+                                    if (ref.data() == mod.textures[tri.geom_id].data())
+                                    {
+                                        std::string name = it->first;
+                                        // Find in local texture map
+                                        auto res = texture_map.find(name);
+                                        if (res != texture_map.end())
+                                        {
+                                            props->add_texture(res->second);
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (!found)
+                                {
+                                    insert_dummy = true;
+                                }
+                            }
+                            else
+                            {
+                                insert_dummy = true;
+                            }
+
+                            if (insert_dummy)
+                            {
+                                // Add a dummy texture
+                                vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
+                                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
+                                tex->resize(1, 1);
+                                tex->set_address_mode(Wrap);
+                                tex->set_filter_mode(Nearest);
+                                tex->reset(&dummy_texel);
+                                props->add_texture(tex);
+                            }
 
                             // Add to scene graph
                             props->add_child(std::make_shared<sg::triangle_mesh>());
