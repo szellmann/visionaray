@@ -129,6 +129,12 @@ std::shared_ptr<sg::node> parse_node(Object const& obj)
         }
 
         // Parse common node properties
+        if (obj.HasMember("name"))
+        {
+            rapidjson::Value const& name = obj["name"];
+            result->name() = name.GetString();
+        }
+
         if (obj.HasMember("children"))
         {
             rapidjson::Value const& children = obj["children"];
