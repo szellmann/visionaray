@@ -80,50 +80,62 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
 template <typename Object>
 std::shared_ptr<sg::node> parse_node(Object const& obj)
 {
+    std::shared_ptr<sg::node> result = nullptr;
+
     if (obj.HasMember("type"))
     {
+        // Parse individual node types
         auto const& type_string = obj["type"];
         if (strncmp(type_string.GetString(), "camera", 6) == 0)
         {
-            return parse_camera(obj);
+            result = parse_camera(obj);
         }
         else if (strncmp(type_string.GetString(), "include", 6) == 0)
         {
-            return parse_include(obj);
+            result = parse_include(obj);
         }
         else if (strncmp(type_string.GetString(), "point_light", 11) == 0)
         {
-            return parse_point_light(obj);
+            result = parse_point_light(obj);
         }
         else if (strncmp(type_string.GetString(), "reference", 9) == 0)
         {
-            return parse_reference(obj);
+            result = parse_reference(obj);
         }
         else if (strncmp(type_string.GetString(), "transform", 9) == 0)
         {
-            return parse_transform(obj);
+            result = parse_transform(obj);
         }
         else if (strncmp(type_string.GetString(), "surface_properties", 18) == 0)
         {
-            return parse_surface_properties(obj);
+            result = parse_surface_properties(obj);
         }
         else if (strncmp(type_string.GetString(), "triangle_mesh", 13) == 0)
         {
-            return parse_triangle_mesh(obj);
+            result = parse_triangle_mesh(obj);
         }
         else if (strncmp(type_string.GetString(), "indexed_triangle_mesh", 21) == 0)
         {
-            return parse_indexed_triangle_mesh(obj);
+            result = parse_indexed_triangle_mesh(obj);
         }
         else
         {
             throw std::runtime_error("");
+        }
+
+        // Parse common node properties
+        if (obj.HasMember("children"))
+        {
+            rapidjson::Value const& children = obj["children"];
+            parse_children(result, children);
         }
     }
     else
     {
         throw std::runtime_error("");
     }
+
+    return result;
 }
 
 template <typename Object>
@@ -238,12 +250,6 @@ std::shared_ptr<sg::node> parse_camera(Object const& obj)
     cam->set_lens_radius(lens_radius);
     cam->set_focal_distance(focal_distance);
     cam->look_at(eye, center, up);
-
-    if (obj.HasMember("children"))
-    {
-        rapidjson::Value const& children = obj["children"];
-        parse_children(cam, children);
-    }
 
     return cam;
 }
@@ -369,12 +375,6 @@ std::shared_ptr<sg::node> parse_include(Object const& obj)
         throw std::runtime_error("");
     }
 
-    if (obj.HasMember("children"))
-    {
-        rapidjson::Value const& children = obj["children"];
-        parse_children(inc, children);
-    }
-
     return inc;
 }
 
@@ -448,12 +448,6 @@ std::shared_ptr<sg::node> parse_point_light(Object const& obj)
     light->set_linear_attenuation(linear_attenuation);
     light->set_quadratic_attenuation(quadratic_attenuation);
 
-    if (obj.HasMember("children"))
-    {
-        rapidjson::Value const& children = obj["children"];
-        parse_children(light, children);
-    }
-
     return light;
 }
 
@@ -478,12 +472,6 @@ std::shared_ptr<sg::node> parse_transform(Object const& obj)
             transform->matrix().data()[i++] = item.GetFloat();
             assert(i <= 16);
         }
-    }
-
-    if (obj.HasMember("children"))
-    {
-        rapidjson::Value const& children = obj["children"];
-        parse_children(transform, children);
     }
 
     return transform;
@@ -627,12 +615,6 @@ std::shared_ptr<sg::node> parse_surface_properties(Object const& obj)
         props->add_texture(tex);
     }
 
-    if (obj.HasMember("children"))
-    {
-        rapidjson::Value const& children = obj["children"];
-        parse_children(props, children);
-    }
-
     return props;
 }
 
@@ -736,12 +718,6 @@ std::shared_ptr<sg::node> parse_triangle_mesh(Object const& obj)
         {
             mesh->colors.emplace_back(1.0f);
         }
-    }
-
-    if (obj.HasMember("children"))
-    {
-        rapidjson::Value const& children = obj["children"];
-        parse_children(mesh, children);
     }
 
     return mesh;
@@ -857,12 +833,6 @@ std::shared_ptr<sg::node> parse_indexed_triangle_mesh(Object const& obj)
         {
             mesh->colors.emplace_back(1.0f);
         }
-    }
-
-    if (obj.HasMember("children"))
-    {
-        rapidjson::Value const& children = obj["children"];
-        parse_children(mesh, children);
     }
 
     return mesh;
