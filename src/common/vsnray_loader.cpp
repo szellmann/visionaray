@@ -86,7 +86,12 @@ std::shared_ptr<sg::node> parse_node(Object const& obj)
     {
         // Parse individual node types
         auto const& type_string = obj["type"];
-        if (strncmp(type_string.GetString(), "camera", 6) == 0)
+        if (strncmp(type_string.GetString(), "node", 4) == 0)
+        {
+            // Empty node, (may still contain children, e.g. root)
+            result = std::make_shared<sg::node>();
+        }
+        else if (strncmp(type_string.GetString(), "camera", 6) == 0)
         {
             result = parse_camera(obj);
         }
@@ -870,12 +875,7 @@ void load_vsnray(std::vector<std::string> const& filenames, model& mod)
         rapidjson::Document doc;
         doc.ParseStream(frs);
 
-
-        if (doc.HasMember("children"))
-        {
-            rapidjson::Value const& children = doc["children"];
-            parse_children(root, children);
-        }
+        root = parse_node(doc);
     }
 
     if (mod.scene_graph == nullptr)
