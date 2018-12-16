@@ -215,25 +215,25 @@ std::shared_ptr<sg::node> parse_camera(Object const& obj)
         }
     }
 
-    float fovy = 0.0f;
+    float fovy = 45.0f;
     if (obj.HasMember("fovy"))
     {
         fovy = obj["fovy"].GetFloat();
     }
 
-    float znear = 0.0f;
+    float znear = 0.001f;
     if (obj.HasMember("znear"))
     {
         znear = obj["znear"].GetFloat();
     }
 
-    float zfar = 0.0f;
+    float zfar = 1000.0f;
     if (obj.HasMember("zfar"))
     {
         zfar = obj["zfar"].GetFloat();
     }
 
-    recti viewport;
+    recti viewport(0, 0, 0, 0);
     if (obj.HasMember("viewport"))
     {
         auto const& cam_viewport = obj["viewport"];
@@ -250,13 +250,13 @@ std::shared_ptr<sg::node> parse_camera(Object const& obj)
         }
     }
 
-    float lens_radius = 0.0f;
+    float lens_radius = 0.1f;
     if (obj.HasMember("lens_radius"))
     {
         lens_radius = obj["lens_radius"].GetFloat();
     }
 
-    float focal_distance = 0.0f;
+    float focal_distance = 10.0f;
     if (obj.HasMember("focal_distance"))
     {
         focal_distance = obj["focal_distance"].GetFloat();
@@ -267,7 +267,10 @@ std::shared_ptr<sg::node> parse_camera(Object const& obj)
                  : 1;
 
     cam->perspective(fovy * constants::degrees_to_radians<float>(), aspect, znear, zfar);
-    cam->set_viewport(viewport);
+    if (viewport.w > 0 && viewport.h > 0)
+    {
+        cam->set_viewport(viewport);
+    }
     cam->set_lens_radius(lens_radius);
     cam->set_focal_distance(focal_distance);
     cam->look_at(eye, center, up);
