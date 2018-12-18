@@ -41,10 +41,10 @@ void render_instances_ptex_cpp(
     primitives.push_back(bvh.ref());
 
     auto kparams = make_kernel_params(
-            normals_per_face_binding{},
+            normals_per_vertex_binding{},
             primitives.data(),
             primitives.data() + primitives.size(),
-            geometric_normals.data(),
+            shading_normals.data(),
             face_ids.data(),
             materials.data(),
             textures.begin(),
