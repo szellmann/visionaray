@@ -190,7 +190,7 @@ void render_generic_material_cu(
 
 void render_instances_cpp(
         index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
-        aligned_vector<vec3> const&                               geometric_normals,
+        aligned_vector<vec3> const&                               /*geometric_normals*/,
         aligned_vector<vec3> const&                               shading_normals,
         aligned_vector<vec2> const&                               tex_coords,
         aligned_vector<generic_material_t> const&                 materials,
@@ -213,7 +213,7 @@ void render_instances_cpp(
 // With ptex textures
 void render_instances_ptex_cpp(
         index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
-        aligned_vector<vec3> const&                               geometric_normals,
+        aligned_vector<vec3> const&                               /*geometric_normals*/,
         aligned_vector<vec3> const&                               shading_normals,
         aligned_vector<ptex::face_id_t> const&                    face_ids,
         aligned_vector<generic_material_t> const&                 materials,

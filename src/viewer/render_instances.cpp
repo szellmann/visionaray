@@ -10,7 +10,7 @@ namespace visionaray
 
 void render_instances_cpp(
         index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
-        aligned_vector<vec3> const&                               geometric_normals,
+        aligned_vector<vec3> const&                               /*geometric_normals*/,
         aligned_vector<vec3> const&                               shading_normals,
         aligned_vector<vec2> const&                               tex_coords,
         aligned_vector<generic_material_t> const&                 materials,
