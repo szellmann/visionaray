@@ -162,8 +162,8 @@ inline auto get_area(Primitives const& prims, HR const& hr, void* = nullptr)
     int_array prim_id;
     store(prim_id, hr.prim_id);
 
-    int_array inst_id;
-    store(inst_id, hr.inst_id);
+    int_array primitive_list_index_inst;
+    store(primitive_list_index_inst, hr.primitive_list_index_inst);
 
     int_array primitive_list_index;
     store(primitive_list_index, hr.primitive_list_index);
@@ -176,7 +176,7 @@ inline auto get_area(Primitives const& prims, HR const& hr, void* = nullptr)
 
         auto& inst = b.primitive(primitive_list_index[i]);
 
-        result[i] = area(inst.primitive(inst_id[i]));
+        result[i] = area(inst.primitive(primitive_list_index_inst[i]));
     }
 
     return T(result);

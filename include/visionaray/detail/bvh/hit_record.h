@@ -38,7 +38,9 @@ struct hit_record_bvh : Base
     }
 
     // Index into the primitive list stored by the bvh
-    // Is in general different from primitive::prim_id
+    // (this list is usually, but not always, accessed with
+    // an indirect index by using BVH::primitive() - this index
+    // is for *direct* access!)
     int_type primitive_list_index = int_type(0);
 };
 
@@ -58,17 +60,20 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     hit_record_bvh_inst() = default;
     VSNRAY_FUNC explicit hit_record_bvh_inst(
             hit_record_bvh<R, Base> const& base,
-            int_type id,
+            int_type i,
             matrix<4, 4, scalar_type> const& trans_inv
             )
         : hit_record_bvh<R, Base>(base)
-        , inst_id(id)
+        , primitive_list_index_inst(i)
         , transform_inv(trans_inv)
     {
     }
 
-    // Unique instance id
-    int_type inst_id = int_type(0);
+    // Index into the primitive list stored by the bvh instance
+    // (this list is usually, but not always, accessed with
+    // an indirect index by using BVH::primitive() - this index
+    // is for *direct* access!)
+    int_type primitive_list_index_inst = int_type(0);
 
     // Inverse transformation matrix
     matrix<4, 4, scalar_type> transform_inv = matrix<4, 4, typename R::scalar_type>::identity();
@@ -102,7 +107,7 @@ void update_if(
     )
 {
     update_if(static_cast<hit_record_bvh<R, Base>&>(dst), static_cast<hit_record_bvh<R, Base> const&>(src), cond);
-    dst.inst_id = select( cond, src.inst_id, dst.inst_id );
+    dst.primitive_list_index_inst = select( cond, src.primitive_list_index_inst, dst.primitive_list_index_inst );
     dst.transform_inv = select( cond, src.transform_inv, dst.transform_inv );
 }
 
@@ -174,8 +179,8 @@ inline auto unpack(
         num_elements<FloatT>::value
         > result;
 
-    int_array inst_id = {};
-    store(inst_id, hr.inst_id);
+    int_array primitive_list_index_inst = {};
+    store(primitive_list_index_inst, hr.primitive_list_index_inst);
 
     auto transform_inv = unpack(hr.transform_inv);
 
@@ -186,7 +191,7 @@ inline auto unpack(
                         scalar_base_type(base[i]),
                         primitive_list_index[i]
                         ),
-                inst_id[i],
+                primitive_list_index_inst[i],
                 transform_inv[i]
                 );
     }

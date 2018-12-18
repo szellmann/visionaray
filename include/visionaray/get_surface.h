@@ -320,7 +320,9 @@ template <
     typename Base,
     typename Primitive = typename Params::primitive_type,
     typename NormalBinding = typename Params::normal_binding,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type, // is BVH
+    typename = typename std::enable_if<
+                !is_any_bvh_inst<typename Primitive::primitive_type>::value>::type // but not BVH of instances!
     >
 VSNRAY_FUNC
 inline auto get_normal_dispatch(
@@ -351,6 +353,43 @@ inline auto get_normal_dispatch(
             normals,
             static_cast<Base const&>(hr),
             params.prims.begin[i].primitive(hr.primitive_list_index),
+            typename Params::normal_binding{}
+            );
+}
+
+template <
+    typename Params,
+    typename Normals,
+    typename R,
+    typename Base,
+    typename Primitive = typename Params::primitive_type,
+    typename NormalBinding = typename Params::normal_binding,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type, // is BVH ...
+    typename = typename std::enable_if<
+                is_any_bvh_inst<typename Primitive::primitive_type>::value>::type, // ... of instances!
+    typename X = void
+    >
+VSNRAY_FUNC
+inline auto get_normal_dispatch(
+        Params const&                  params,
+        Normals                        normals,
+        hit_record_bvh<R, Base> const& hr,
+        typename std::enable_if<
+            num_normals<typename Primitive::primitive_type, NormalBinding>::value != 1
+            >::type* = 0
+        )
+    -> decltype( get_normal_pair(
+            normals,
+            static_cast<Base const&>(hr),
+            typename Primitive::primitive_type{},
+            NormalBinding{}
+            ) )
+{
+    // Assume we only have one top-level BVH (TODO?)
+    return get_normal_pair(
+            normals,
+            static_cast<Base const&>(hr),
+            params.prims.begin[0].primitive(hr.primitive_list_index).primitive(hr.primitive_list_index_inst),
             typename Params::normal_binding{}
             );
 }

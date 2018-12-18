@@ -395,13 +395,19 @@ std::shared_ptr<sg::node> parse_include(Object const& obj)
                             };
                         mesh->vertices.insert(mesh->vertices.end(), verts, verts + 3);
 
-                        if (mod.geometric_normals.size() > tri.prim_id)
+                        if (mod.shading_normals.size() > tri.prim_id * 3 + 3)
                         {
-                            mesh->normals.push_back(mod.geometric_normals[tri.prim_id]);
+                            for (int i = 0; i < 3; ++i)
+                            {
+                                mesh->normals.push_back(mod.shading_normals[tri.prim_id * 3 + i]);
+                            }
                         }
                         else
                         {
-                            mesh->normals.push_back(normalize(cross(tri.e1, tri.e2)));
+                            for (int i = 0; i < 3; ++i)
+                            {
+                                mesh->normals.push_back(normalize(cross(tri.e1, tri.e2)));
+                            }
                         }
 
                         if (mod.tex_coords.size() >= tri.prim_id * 3 + 3)
