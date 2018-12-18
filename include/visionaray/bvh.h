@@ -264,9 +264,8 @@ public:
 
     bvh_inst_t() = default;
 
-    bvh_inst_t(bvh_ref_t<PrimitiveType> const& ref, unsigned inst_id, mat4 const& transform)
-        : inst_id_(inst_id)
-        , ref_(ref)
+    bvh_inst_t(bvh_ref_t<PrimitiveType> const& ref, mat4 const& transform)
+        : ref_(ref)
         , transform_inv_(inverse(transform))
     {
     }
@@ -291,11 +290,6 @@ public:
         return ref_.node(index);
     }
 
-    VSNRAY_FUNC unsigned get_inst_id() const
-    {
-        return inst_id_;
-    }
-
     VSNRAY_FUNC bvh_ref_t<PrimitiveType> get_ref() const
     {
         return ref_;
@@ -307,9 +301,6 @@ public:
     }
 
 private:
-
-    // Unique id
-    unsigned inst_id_;
 
     // BVH ref
     bvh_ref_t<PrimitiveType> ref_;
@@ -335,9 +326,8 @@ public:
 
     index_bvh_inst_t() = default;
 
-    index_bvh_inst_t(index_bvh_ref_t<PrimitiveType> const& ref, unsigned inst_id, mat4 const& transform)
-        : inst_id_(inst_id)
-        , ref_(ref)
+    index_bvh_inst_t(index_bvh_ref_t<PrimitiveType> const& ref, mat4 const& transform)
+        : ref_(ref)
         , transform_inv_(inverse(transform))
     {
     }
@@ -367,11 +357,6 @@ public:
         return ref_.node(index);
     }
 
-    VSNRAY_FUNC unsigned get_inst_id() const
-    {
-        return inst_id_;
-    }
-
     VSNRAY_FUNC index_bvh_ref_t<PrimitiveType> get_ref() const
     {
         return ref_;
@@ -383,9 +368,6 @@ public:
     }
 
 private:
-
-    // Unique id
-    unsigned inst_id_;
 
     // BVH ref
     index_bvh_ref_t<PrimitiveType> ref_;
@@ -421,7 +403,6 @@ public:
     explicit bvh_t(P* prims, size_t count)
         : primitives_(prims, prims + count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
-        , num_instances_(0)
     {
     }
 
@@ -429,7 +410,6 @@ public:
     explicit bvh_t(bvh_t<PV, NV> const& rhs)
         : primitives_(rhs.primitives())
         , nodes_(rhs.nodes())
-        , num_instances_(0)
     {
     }
 
@@ -455,7 +435,7 @@ public:
 
     bvh_inst inst(mat4 const& transform)
     {
-        return bvh_inst(ref(), num_instances_++, transform);
+        return bvh_inst(ref(), transform);
     }
 
     primitive_type const& primitive(size_t index) const
@@ -478,7 +458,6 @@ private:
 
     primitive_vector primitives_;
     node_vector nodes_;
-    unsigned num_instances_;
 
 };
 
@@ -505,7 +484,6 @@ public:
         : primitives_(prims, prims + count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
         , indices_(count)
-        , num_instances_(0)
     {
     }
 
@@ -514,7 +492,6 @@ public:
         : primitives_(rhs.primitives())
         , nodes_(rhs.nodes())
         , indices_(rhs.indices())
-        , num_instances_(0)
     {
     }
 
@@ -547,7 +524,7 @@ public:
 
     bvh_inst inst(mat4 const& transform)
     {
-        return bvh_inst(ref(), num_instances_++, transform);
+        return bvh_inst(ref(), transform);
     }
 
     primitive_type const& primitive(size_t indirect_index) const
@@ -574,7 +551,6 @@ private:
     primitive_vector primitives_;
     node_vector nodes_;
     index_vector indices_;
-    unsigned num_instances_;
 
 };
 
