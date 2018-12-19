@@ -544,8 +544,6 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
 	for (size_t i = mod.tex_coords.size(); i < mod.primitives.size() * 3; ++i)
 	{
 		mod.tex_coords.emplace_back(0.0f);
-		mod.tex_coords.emplace_back(0.0f);
-		mod.tex_coords.emplace_back(0.0f);
 	}
 
 	mod.bbox.insert(bounds(mod.primitives));
