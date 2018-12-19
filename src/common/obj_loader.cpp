@@ -541,7 +541,7 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
 	}
 
 	// See that each triangle has (potentially dummy) texture coordinates
-	for (size_t i = mod.tex_coords.size(); i < mod.primitives.size(); ++i)
+	for (size_t i = mod.tex_coords.size(); i < mod.primitives.size() * 3; ++i)
 	{
 		mod.tex_coords.emplace_back(0.0f);
 		mod.tex_coords.emplace_back(0.0f);
