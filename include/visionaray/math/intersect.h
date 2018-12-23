@@ -37,8 +37,8 @@ struct hit_record<basic_ray<T>, basic_aabb<U>>
     using mask_type = simd::mask_type_t<T>;
 
     mask_type   hit   = mask_type(false);
-    scalar_type tnear = T( numeric_limits<float>::max());
-    scalar_type tfar  = T(-numeric_limits<float>::max());
+    scalar_type tnear =  numeric_limits<T>::max();
+    scalar_type tfar  = -numeric_limits<T>::max();
 };
 
 template <typename T, typename U>
