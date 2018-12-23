@@ -5,8 +5,6 @@
 #include <cstddef>
 #include <algorithm>
 
-#include <visionaray/math/aabb.h>
-
 #include "lbvh.h"
 #include "sah.h"
 #include "../algorithm.h"
