@@ -95,10 +95,14 @@ struct lbvh_builder
         return result;
     }
 
-    template <typename Tree, typename I>
-    void build(Tree& tree, I first, I last, int max_leaf_size = -1)
+    template <typename Tree, typename P>
+    Tree build(P* primitives, size_t num_prims, int max_leaf_size = -1)
     {
-        detail::build_top_down(tree, *this, first, last, max_leaf_size);
+        Tree tree(primitives, num_prims);
+
+        detail::build_top_down(tree, *this, primitives, primitives + num_prims, max_leaf_size);
+
+        return tree;
     }
 
     template <typename I>
