@@ -33,7 +33,9 @@ TEST(GetNormal, BVH)
     triangles[1].geom_id = 1;
 
 
-    auto bvh = build<index_bvh<triangle_type>>(triangles, 2);
+    binned_sah_builder builder;
+
+    auto bvh = builder.build<index_bvh<triangle_type>>(triangles, 2);
 
     ray r;
     r.ori = vec3(0.5f, -0.5f, 2.0f);

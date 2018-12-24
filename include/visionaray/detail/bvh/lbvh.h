@@ -35,6 +35,8 @@ inline unsigned clz(unsigned val)
 #endif
 }
 
+} // detail
+
 struct lbvh_builder
 {
     struct leaf_info
@@ -71,7 +73,7 @@ struct lbvh_builder
             return (first + last) / 2;
         }
 
-        unsigned common_prefix = clz(code_first ^ code_last);
+        unsigned common_prefix = detail::clz(code_first ^ code_last);
 
         int result = first;
         int step = last - first;
@@ -84,7 +86,7 @@ struct lbvh_builder
             if (next < last)
             {
                 unsigned code = prim_refs[next].morton_code;
-                if (code_first == code || clz(code_first ^ code) > common_prefix)
+                if (code_first == code || detail::clz(code_first ^ code) > common_prefix)
                 {
                     result = next;
                 }
@@ -218,7 +220,6 @@ struct lbvh_builder
     bool use_spatial_splits;
 };
 
-} // detail
 } // visionaray
 
 #endif // VSNRAY_DETAIL_BVH_LBVH_H

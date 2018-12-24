@@ -68,11 +68,13 @@ aligned_vector<sphere_t, 32> make_spheres()
 
 TEST(BVH, BuildBvh)
 {
+    binned_sah_builder builder;
+
     auto triangles = make_triangles();
     auto spheres   = make_spheres();
 
-    auto triangle_bvh = build<bvh<triangle_t>>(triangles.data(), triangles.size());
-    auto sphere_bvh   = build<bvh<sphere_t>>(spheres.data(), spheres.size());
+    auto triangle_bvh = builder.build<bvh<triangle_t>>(triangles.data(), triangles.size());
+    auto sphere_bvh   = builder.build<bvh<sphere_t>>(spheres.data(), spheres.size());
 
     EXPECT_TRUE(triangle_bvh.nodes().size() > 0);
     EXPECT_TRUE(sphere_bvh.nodes().size()   > 0);
@@ -85,11 +87,13 @@ TEST(BVH, BuildBvh)
 
 TEST(BVH, BuildIndexBvh)
 {
+    binned_sah_builder builder;
+
     auto triangles = make_triangles();
     auto spheres   = make_spheres();
 
-    auto triangle_bvh = build<index_bvh<triangle_t>>(triangles.data(), triangles.size());
-    auto sphere_bvh   = build<index_bvh<sphere_t>>(spheres.data(), spheres.size());
+    auto triangle_bvh = builder.build<index_bvh<triangle_t>>(triangles.data(), triangles.size());
+    auto sphere_bvh   = builder.build<index_bvh<sphere_t>>(spheres.data(), spheres.size());
 
     EXPECT_TRUE(triangle_bvh.nodes().size() > 0);
     EXPECT_TRUE(sphere_bvh.nodes().size()   > 0);
@@ -102,11 +106,13 @@ TEST(BVH, BuildIndexBvh)
 
 TEST(BVH, BuildArrayRefBvh)
 {
+    binned_sah_builder builder;
+
     auto triangles = make_triangles();
     auto spheres   = make_spheres();
 
-    auto triangle_bvh = build<array_ref_bvh<triangle_t>>(triangles.data(), triangles.size());
-    auto sphere_bvh   = build<array_ref_bvh<sphere_t>>(spheres.data(), spheres.size());
+    auto triangle_bvh = builder.build<array_ref_bvh<triangle_t>>(triangles.data(), triangles.size());
+    auto sphere_bvh   = builder.build<array_ref_bvh<sphere_t>>(spheres.data(), spheres.size());
 
     EXPECT_TRUE(triangle_bvh.nodes().size() > 0);
     EXPECT_TRUE(sphere_bvh.nodes().size()   > 0);

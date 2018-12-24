@@ -367,10 +367,12 @@ int main(int argc, char** argv)
 
     std::cout << "Creating BVH...\n";
 
-    rend.host_bvh = build<index_bvh<model::triangle_type>>(
+    binned_sah_builder bvh_builder;
+    bvh_builder.enable_spatial_splits(rend.builder == renderer::Split);
+
+    rend.host_bvh = bvh_builder.build<index_bvh<model::triangle_type>>(
             rend.mod.primitives.data(),
-            rend.mod.primitives.size(),
-            rend.builder == renderer::Split
+            rend.mod.primitives.size()
             );
 
     std::cout << "Ready\n";

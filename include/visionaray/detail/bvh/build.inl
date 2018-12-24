@@ -3,6 +3,7 @@
 
 #include <cstddef>
 
+#include "../compiler.h"
 #include "build_top_down.h"
 #include "lbvh.h"
 #include "sah.h"
@@ -12,17 +13,17 @@ namespace visionaray
 {
 
 template <typename Tree, typename P>
-Tree build(detail::lbvh_builder /* */, P* primitives, size_t num_prims)
+Tree VSNRAY_DEPRECATED build(lbvh_builder /* */, P* primitives, size_t num_prims)
 {
-    detail::lbvh_builder builder;
+    lbvh_builder builder;
 
     return builder.build<Tree>(primitives, num_prims);
 }
 
 template <typename Tree, typename P>
-Tree build(detail::binned_sah_builder /* */, P* primitives, size_t num_prims, bool enable_spatial_splits)
+Tree VSNRAY_DEPRECATED build(binned_sah_builder /* */, P* primitives, size_t num_prims, bool enable_spatial_splits)
 {
-    detail::binned_sah_builder builder;
+    binned_sah_builder builder;
 
     builder.enable_spatial_splits(enable_spatial_splits);
     builder.set_alpha(1.0e-5f);
@@ -36,10 +37,10 @@ Tree build(detail::binned_sah_builder /* */, P* primitives, size_t num_prims, bo
 //
 
 template <typename Tree, typename P>
-Tree build(P* primitives, size_t num_prims, bool enable_spatial_splits)
+Tree VSNRAY_DEPRECATED build(P* primitives, size_t num_prims, bool enable_spatial_splits)
 {
     return build<Tree>(
-            detail::binned_sah_builder{},
+            binned_sah_builder{},
             primitives,
             num_prims,
             enable_spatial_splits

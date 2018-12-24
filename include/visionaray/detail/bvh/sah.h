@@ -164,9 +164,6 @@ void split_primitive(aabb& L, aabb& R, float plane, int axis, Primitive const& p
 
 namespace visionaray
 {
-namespace detail
-{
-
 
 struct binned_sah_builder
 {
@@ -793,7 +790,6 @@ struct binned_sah_builder
     }
 };
 
-} // detail
 } // visionaray
 
 #endif // VSNRAY_DETAIL_BVH_SAH_H
