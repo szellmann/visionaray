@@ -76,7 +76,7 @@ struct renderer : viewer_type
             "bvh",
             cl::Desc("BVH build strategy"),
             cl::ArgRequired,
-            cl::init(this->builder)
+            cl::init(this->build_strategy)
             ) );
 
         add_cmdline_option( cl::makeOption<int&>(
@@ -105,7 +105,7 @@ struct renderer : viewer_type
     pinhole_camera                              cam;
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
     tiled_sched<host_ray_type>                  host_sched;
-    bvh_build_strategy                          builder         = Binned;
+    bvh_build_strategy                          build_strategy  = Binned;
 
     std::string                                 filename;
     std::string                                 initial_camera;
@@ -367,10 +367,10 @@ int main(int argc, char** argv)
 
     std::cout << "Creating BVH...\n";
 
-    binned_sah_builder bvh_builder;
-    bvh_builder.enable_spatial_splits(rend.builder == renderer::Split);
+    binned_sah_builder builder;
+    builder.enable_spatial_splits(rend.build_strategy == renderer::Split);
 
-    rend.host_bvh = bvh_builder.build<index_bvh<model::triangle_type>>(
+    rend.host_bvh = builder.build<index_bvh<model::triangle_type>>(
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
             );

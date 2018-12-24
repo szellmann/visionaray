@@ -394,9 +394,9 @@ int main(int argc, char** argv)
     std::cout << "Creating BVH...\n";
 
     // Create the BVH on the host
-    binned_sah_builder bvh_builder;
+    binned_sah_builder builder;
 
-    rend.host_bvh = bvh_builder.build<bvh<model::triangle_type>>(
+    rend.host_bvh = builder.build<bvh<model::triangle_type>>(
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
             );

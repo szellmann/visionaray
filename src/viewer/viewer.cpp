@@ -152,7 +152,7 @@ struct renderer : viewer_type
             "bvh",
             cl::Desc("BVH build strategy"),
             cl::ArgRequired,
-            cl::init(this->builder)
+            cl::init(this->build_strategy)
             ) );
 
         add_cmdline_option( cl::makeOption<unsigned&>({
@@ -234,7 +234,7 @@ struct renderer : viewer_type
     unsigned                                    bounces         = 0;
     unsigned                                    ssaa_samples    = 1;
     algorithm                                   algo            = Simple;
-    bvh_build_strategy                          builder         = Binned;
+    bvh_build_strategy                          build_strategy  = Binned;
     bool                                        use_headlight   = true;
     bool                                        use_dof         = false;
     bool                                        show_hud        = true;
@@ -532,11 +532,11 @@ struct build_bvhs_visitor : sg::node_visitor
                 geometric_normals_[first_geometric_normal + i / 3] = gn;
             }
 
-            binned_sah_builder bvh_builder;
-            bvh_builder.enable_spatial_splits(false/*builder == Split*/);
+            binned_sah_builder builder;
+            builder.enable_spatial_splits(false/*builder == Split*/);
 
             // Build single bvh
-            bvhs_.emplace_back(bvh_builder.build<renderer::host_bvh_type>(triangles.data(), triangles.size()));
+            bvhs_.emplace_back(builder.build<renderer::host_bvh_type>(triangles.data(), triangles.size()));
 
             tm.flags() = ~(bvhs_.size() - 1);
         }
@@ -613,11 +613,11 @@ struct build_bvhs_visitor : sg::node_visitor
                 }
             }
 
-            binned_sah_builder bvh_builder;
-            bvh_builder.enable_spatial_splits(false/*builder == Split*/);
+            binned_sah_builder builder;
+            builder.enable_spatial_splits(false/*build_strategy == Split*/);
 
             // Build single bvh
-            bvhs_.emplace_back(bvh_builder.build<renderer::host_bvh_type>(triangles.data(), triangles.size()));
+            bvhs_.emplace_back(builder.build<renderer::host_bvh_type>(triangles.data(), triangles.size()));
 
             itm.flags() = ~(bvhs_.size() - 1);
         }
@@ -698,11 +698,11 @@ void renderer::build_bvhs()
     if (mod.scene_graph == nullptr)
     {
         // Single BVH
-        binned_sah_builder bvh_builder;
-        bvh_builder.enable_spatial_splits(builder == Split);
+        binned_sah_builder builder;
+        builder.enable_spatial_splits(build_strategy == Split);
 
         host_bvhs.resize(1);
-        host_bvhs[0] = bvh_builder.build<host_bvh_type>(mod.primitives.data(), mod.primitives.size());
+        host_bvhs[0] = builder.build<host_bvh_type>(mod.primitives.data(), mod.primitives.size());
     }
     else
     {
@@ -736,10 +736,10 @@ void renderer::build_bvhs()
         }
 
         // Single BVH
-        binned_sah_builder bvh_builder;
-        bvh_builder.enable_spatial_splits(false);
+        binned_sah_builder builder;
+        builder.enable_spatial_splits(false);
 
-        host_top_level_bvh = bvh_builder.build<index_bvh<host_bvh_type::bvh_inst>>(
+        host_top_level_bvh = builder.build<index_bvh<host_bvh_type::bvh_inst>>(
                 host_instances.data(),
                 host_instances.size()
                 );
