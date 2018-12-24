@@ -15,6 +15,7 @@
 #include <visionaray/math/sphere.h>
 #include <visionaray/math/triangle.h>
 
+#include "build_top_down.h"
 
 namespace visionaray
 {
@@ -187,6 +188,12 @@ struct binned_sah_builder
     };
 
     using prim_refs = aligned_vector<prim_ref>;
+
+    template <typename Tree, typename I>
+    void build(Tree& tree, I first, I last, int max_leaf_size = -1)
+    {
+        detail::build_top_down(tree, *this, first, last, max_leaf_size);
+    }
 
     template <typename I>
     static void init(prim_refs& refs, aabb& prim_bounds, aabb& cent_bounds, I first, I last)

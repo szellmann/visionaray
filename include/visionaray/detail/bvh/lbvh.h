@@ -95,6 +95,12 @@ struct lbvh_builder
         return result;
     }
 
+    template <typename Tree, typename I>
+    void build(Tree& tree, I first, I last, int max_leaf_size = -1)
+    {
+        detail::build_top_down(tree, *this, first, last, max_leaf_size);
+    }
+
     template <typename I>
     VSNRAY_FUNC
     leaf_info init(I first, I last)
