@@ -19,7 +19,7 @@ Tree build(detail::lbvh_builder /* */, P* primitives, size_t num_prims)
 
     detail::lbvh_builder builder;
 
-    detail::build_top_down(tree, builder, primitives, primitives + num_prims);
+    builder.build(tree, primitives, primitives + num_prims);
 
     return tree;
 }
