@@ -4,10 +4,13 @@
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
+#include <type_traits>
 
+#include <visionaray/aligned_vector.h>
+
+#include "../algorithm.h"
 #include "lbvh.h"
 #include "sah.h"
-#include "../algorithm.h"
 
 
 namespace visionaray
