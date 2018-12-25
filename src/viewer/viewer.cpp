@@ -95,8 +95,9 @@ struct renderer : viewer_type
 
     enum bvh_build_strategy
     {
-        Binned = 0,  // Binned SAH builder, no spatial splits
-        Split        // Split BVH, also binned and with SAH
+        Binned = 0, // Binned SAH builder, no spatial splits
+        Split,      // Split BVH, also binned and with SAH
+        LBVH,       // LBVH builder on the CPU
     };
 
     enum texture_format { Ptex, UV };
@@ -147,7 +148,8 @@ struct renderer : viewer_type
 
         add_cmdline_option( cl::makeOption<bvh_build_strategy&>({
                 { "default",            Binned,         "Binned SAH" },
-                { "split",              Split,          "Binned SAH with spatial splits" }
+                { "split",              Split,          "Binned SAH with spatial splits" },
+                { "lbvh",               LBVH,           "LBVH (CPU)" }
             },
             "bvh",
             cl::Desc("BVH build strategy"),
@@ -698,11 +700,20 @@ void renderer::build_bvhs()
     if (mod.scene_graph == nullptr)
     {
         // Single BVH
-        binned_sah_builder builder;
-        builder.enable_spatial_splits(build_strategy == Split);
-
         host_bvhs.resize(1);
-        host_bvhs[0] = builder.build<host_bvh_type>(mod.primitives.data(), mod.primitives.size());
+        if (build_strategy == LBVH)
+        {
+            lbvh_builder builder;
+
+            host_bvhs[0] = builder.build<host_bvh_type>(mod.primitives.data(), mod.primitives.size());
+        }
+        else
+        {
+            binned_sah_builder builder;
+            builder.enable_spatial_splits(build_strategy == Split);
+
+            host_bvhs[0] = builder.build<host_bvh_type>(mod.primitives.data(), mod.primitives.size());
+        }
     }
     else
     {
@@ -736,13 +747,25 @@ void renderer::build_bvhs()
         }
 
         // Single BVH
-        binned_sah_builder builder;
-        builder.enable_spatial_splits(false);
+        if (build_strategy == LBVH)
+        {
+            lbvh_builder builder;
 
-        host_top_level_bvh = builder.build<index_bvh<host_bvh_type::bvh_inst>>(
-                host_instances.data(),
-                host_instances.size()
-                );
+            host_top_level_bvh = builder.build<index_bvh<host_bvh_type::bvh_inst>>(
+                    host_instances.data(),
+                    host_instances.size()
+                    );
+        }
+        else
+        {
+            binned_sah_builder builder;
+            builder.enable_spatial_splits(false);
+
+            host_top_level_bvh = builder.build<index_bvh<host_bvh_type::bvh_inst>>(
+                    host_instances.data(),
+                    host_instances.size()
+                    );
+        }
 
 
         tex_format = renderer::UV;
