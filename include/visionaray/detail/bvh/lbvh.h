@@ -51,6 +51,7 @@ struct lbvh_builder
         int id;
         unsigned morton_code;
 
+        VSNRAY_FUNC
         bool operator<(prim_ref rhs) const
         {
             return morton_code < rhs.morton_code;
