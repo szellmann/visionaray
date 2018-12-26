@@ -11,6 +11,8 @@
 #include <stdexcept>
 #include <unordered_map>
 
+#include <boost/filesystem.hpp>
+
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
 
@@ -29,44 +31,59 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
-// Function declarations
+// .vsnray parser
 //
 
-void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& entries);
+class vsnray_parser
+{
+public:
 
-template <typename Object>
-std::shared_ptr<sg::node> parse_node(Object const& obj);
+    vsnray_parser(std::string filename)
+        : filename_(filename)
+    {
+    }
 
-template <typename Object>
-std::shared_ptr<sg::node> parse_camera(Object const& obj);
+    void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& entries);
 
-template <typename Object>
-std::shared_ptr<sg::node> parse_include(Object const& obj);
+    template <typename Object>
+    std::shared_ptr<sg::node> parse_node(Object const& obj);
 
-template <typename Object>
-std::shared_ptr<sg::node> parse_point_light(Object const& obj);
+    template <typename Object>
+    std::shared_ptr<sg::node> parse_camera(Object const& obj);
 
-template <typename Object>
-std::shared_ptr<sg::node> parse_reference(Object const& obj);
+    template <typename Object>
+    std::shared_ptr<sg::node> parse_include(Object const& obj);
 
-template <typename Object>
-std::shared_ptr<sg::node> parse_transform(Object const& obj);
+    template <typename Object>
+    std::shared_ptr<sg::node> parse_point_light(Object const& obj);
 
-template <typename Object>
-std::shared_ptr<sg::node> parse_surface_properties(Object const& obj);
+    template <typename Object>
+    std::shared_ptr<sg::node> parse_reference(Object const& obj);
 
-template <typename Object>
-std::shared_ptr<sg::node> parse_triangle_mesh(Object const& obj);
+    template <typename Object>
+    std::shared_ptr<sg::node> parse_transform(Object const& obj);
 
-template <typename Object>
-std::shared_ptr<sg::node> parse_indexed_triangle_mesh(Object const& obj);
+    template <typename Object>
+    std::shared_ptr<sg::node> parse_surface_properties(Object const& obj);
+
+    template <typename Object>
+    std::shared_ptr<sg::node> parse_triangle_mesh(Object const& obj);
+
+    template <typename Object>
+    std::shared_ptr<sg::node> parse_indexed_triangle_mesh(Object const& obj);
+
+private:
+
+    std::string filename_;
+
+};
 
 
 //-------------------------------------------------------------------------------------------------
 // Parse nodes
 //
 
-void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& entries)
+void vsnray_parser::parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& entries)
 {
     if (!entries.IsArray())
     {
@@ -90,7 +107,7 @@ void parse_children(std::shared_ptr<sg::node> parent, rapidjson::Value const& en
 }
 
 template <typename Object>
-std::shared_ptr<sg::node> parse_node(Object const& obj)
+std::shared_ptr<sg::node> vsnray_parser::parse_node(Object const& obj)
 {
     std::shared_ptr<sg::node> result = nullptr;
 
@@ -166,7 +183,7 @@ std::shared_ptr<sg::node> parse_node(Object const& obj)
 }
 
 template <typename Object>
-std::shared_ptr<sg::node> parse_camera(Object const& obj)
+std::shared_ptr<sg::node> vsnray_parser::parse_camera(Object const& obj)
 {
     auto cam = std::make_shared<sg::camera>();
 
@@ -285,14 +302,30 @@ std::shared_ptr<sg::node> parse_camera(Object const& obj)
 }
 
 template <typename Object>
-std::shared_ptr<sg::node> parse_include(Object const& obj)
+std::shared_ptr<sg::node> vsnray_parser::parse_include(Object const& obj)
 {
     auto inc = std::make_shared<sg::node>();
 
     if (obj.HasMember("path"))
     {
+        std::string path_string(obj["path"].GetString());
+
+        boost::filesystem::path p(path_string);
+
+        if (!p.is_absolute())
+        {
+            // Extract base path
+            boost::filesystem::path bp(filename_);
+            bp = bp.parent_path();
+
+            // Append path to base path
+            p = bp / p;
+
+            path_string = p.string();
+        }
+
         model mod;
-        if (mod.load(obj["path"].GetString()))
+        if (mod.load(path_string))
         {
             if (mod.scene_graph == nullptr)
             {
@@ -466,7 +499,7 @@ std::shared_ptr<sg::node> parse_include(Object const& obj)
 }
 
 template <typename Object>
-std::shared_ptr<sg::node> parse_point_light(Object const& obj)
+std::shared_ptr<sg::node> vsnray_parser::parse_point_light(Object const& obj)
 {
     auto light = std::make_shared<sg::point_light>();
 
@@ -539,13 +572,13 @@ std::shared_ptr<sg::node> parse_point_light(Object const& obj)
 }
 
 template <typename Object>
-std::shared_ptr<sg::node> parse_reference(Object const& obj)
+std::shared_ptr<sg::node> vsnray_parser::parse_reference(Object const& obj)
 {
     return std::make_shared<sg::node>();
 }
 
 template <typename Object>
-std::shared_ptr<sg::node> parse_transform(Object const& obj)
+std::shared_ptr<sg::node> vsnray_parser::parse_transform(Object const& obj)
 {
     auto transform = std::make_shared<sg::transform>();
 
@@ -565,7 +598,7 @@ std::shared_ptr<sg::node> parse_transform(Object const& obj)
 }
 
 template <typename Object>
-std::shared_ptr<sg::node> parse_surface_properties(Object const& obj)
+std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& obj)
 {
     auto props = std::make_shared<sg::surface_properties>();
 
@@ -706,7 +739,7 @@ std::shared_ptr<sg::node> parse_surface_properties(Object const& obj)
 }
 
 template <typename Object>
-std::shared_ptr<sg::node> parse_triangle_mesh(Object const& obj)
+std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
 {
     auto mesh = std::make_shared<sg::triangle_mesh>();
 
@@ -811,7 +844,7 @@ std::shared_ptr<sg::node> parse_triangle_mesh(Object const& obj)
 }
 
 template <typename Object>
-std::shared_ptr<sg::node> parse_indexed_triangle_mesh(Object const& obj)
+std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object const& obj)
 {
     auto mesh = std::make_shared<sg::indexed_triangle_mesh>();
 
@@ -959,7 +992,8 @@ void load_vsnray(std::vector<std::string> const& filenames, model& mod)
 
         if (doc.IsObject())
         {
-            root = parse_node(doc.GetObject());
+            vsnray_parser parser(filename);
+            root = parser.parse_node(doc.GetObject());
         }
         else
         {
