@@ -318,7 +318,7 @@ public:
 // Point light node
 //
 
-class point_light : public node, public visionaray::point_light<float>
+class point_light : public light, public visionaray::point_light<float>
 {
 public:
 
