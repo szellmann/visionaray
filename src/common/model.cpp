@@ -1,7 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <algorithm>
+#include <type_traits>
+#include <unordered_map>
 
 #include <boost/filesystem.hpp>
 
@@ -19,46 +20,23 @@ enum model_type { Moana, OBJ, PLY, VSNRAY, Unknown };
 
 static model_type get_type(std::string const& filename)
 {
+    std::unordered_map<std::string, model_type> ext2type;
+    // TODO: check here if this is really a "moana" file
+    ext2type.insert(std::make_pair(".json", Moana));
+    ext2type.insert(std::make_pair(".obj", OBJ));
+    ext2type.insert(std::make_pair(".OBJ", OBJ));
+    ext2type.insert(std::make_pair(".ply", PLY));
+    ext2type.insert(std::make_pair(".PLY", PLY));
+    ext2type.insert(std::make_pair(".vsnray", VSNRAY));
+    ext2type.insert(std::make_pair(".VSNRAY", VSNRAY));
+
     boost::filesystem::path p(filename);
 
+    auto result = ext2type.find(p.extension().string());
 
-    // Moana (json files)
-    // TODO: check here if this is really a "moana" file
-
-    static const std::string moana_extensions[] = { ".json" };
-
-    if (std::find(moana_extensions, moana_extensions + 1, p.extension()) != moana_extensions + 1)
+    if (result != ext2type.end())
     {
-        return Moana;
-    }
-
-
-    // OBJ
-
-    static const std::string obj_extensions[] = { ".obj", ".OBJ" };
-
-    if (std::find(obj_extensions, obj_extensions + 2, p.extension()) != obj_extensions + 2)
-    {
-        return OBJ;
-    }
-
-
-    // PLY
-
-    static const std::string ply_extensions[] = { ".ply", ".PLY" };
-
-    if (std::find(ply_extensions, ply_extensions + 2, p.extension()) != ply_extensions + 2)
-    {
-        return PLY;
-    }
-
-    // VSNRAY
-
-    static const std::string vsnray_extensions[] = { ".vsnray", ".VSNRAY" };
-
-    if (std::find(vsnray_extensions, vsnray_extensions + 2, p.extension()) != vsnray_extensions + 2)
-    {
-        return VSNRAY;
+        return result->second;
     }
 
     return Unknown;
