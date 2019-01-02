@@ -64,6 +64,43 @@ static model_type get_type(std::string const& filename)
     return Unknown;
 }
 
+// FN is either a single filename (std::string)
+// or a list of filenames (std::vector<std::string>)
+template <typename FN>
+bool load_model(FN const& fn, visionaray::model& mod, model_type mt)
+{
+    static_assert(
+            std::is_same<FN, std::string>::value ||
+            std::is_same<FN, std::vector<std::string>>::value,
+            "Type mismatch"
+            );
+
+    switch (mt)
+    {
+    case Moana:
+        load_moana(fn, mod);
+        return true;
+
+    case OBJ:
+        load_obj(fn, mod);
+        return true;
+
+    case PLY:
+        load_ply(fn, mod);
+        return true;
+
+    case VSNRAY:
+        load_vsnray(fn, mod);
+        return true;
+
+    default:
+        return false;
+    }
+
+    return false;
+}
+
+
 namespace visionaray
 {
 
@@ -110,55 +147,21 @@ bool model::load(std::vector<std::string> const& filenames)
     {
         if (same_model_type)
         {
-            switch (mt)
-            {
-            case Moana:
-                load_moana(filenames, *this);
-                return true;
-
-            case OBJ:
-                load_obj(filenames, *this);
-                return true;
-
-            case PLY:
-                load_ply(filenames, *this);
-                return true;
-
-            case VSNRAY:
-                load_vsnray(filenames, *this);
-                return true;
-
-            default:
-                return false;
-            }
+            return load_model(filenames, *this, mt);
         }
         else
         {
+            bool success = true;
+
             for (auto filename : filenames)
             {
-                model_type mtt = get_type(filename);
-
-                switch (mtt)
+                if (!load_model(filename, *this, get_type(filename)))
                 {
-                case Moana:
-                    load_moana(filename, *this);
-                    break;
-
-                case OBJ:
-                    load_obj(filename, *this);
-                    break;
-
-                case PLY:
-                    load_ply(filename, *this);
-                    break;
-
-                case VSNRAY:
-                    load_vsnray(filename, *this);
-                    break;
-
-                default:
+                    success = false;
                     break;
                 }
+
+                return success;
             }
         }
     }
