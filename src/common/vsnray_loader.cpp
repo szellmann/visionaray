@@ -27,8 +27,8 @@
 #include "sg.h"
 #include "vsnray_loader.h"
 
-namespace visionaray
-{
+using namespace visionaray;
+
 
 //-------------------------------------------------------------------------------------------------
 // .vsnray parser
@@ -958,6 +958,9 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
     return mesh;
 }
 
+
+namespace visionaray
+{
 
 //-------------------------------------------------------------------------------------------------
 // Interface
