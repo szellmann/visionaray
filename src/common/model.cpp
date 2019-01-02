@@ -3,7 +3,6 @@
 
 #include <type_traits>
 #include <unordered_map>
-#include <utility>
 
 #include <boost/filesystem.hpp>
 
@@ -23,13 +22,13 @@ static model_type get_type(std::string const& filename)
 {
     std::unordered_map<std::string, model_type> ext2type;
     // TODO: check here if this is really a "moana" file
-    ext2type.insert(std::make_pair(".json", Moana));
-    ext2type.insert(std::make_pair(".obj", OBJ));
-    ext2type.insert(std::make_pair(".OBJ", OBJ));
-    ext2type.insert(std::make_pair(".ply", PLY));
-    ext2type.insert(std::make_pair(".PLY", PLY));
-    ext2type.insert(std::make_pair(".vsnray", VSNRAY));
-    ext2type.insert(std::make_pair(".VSNRAY", VSNRAY));
+    ext2type.insert({ ".json", Moana });
+    ext2type.insert({ ".obj", OBJ });
+    ext2type.insert({ ".OBJ", OBJ });
+    ext2type.insert({ ".ply", PLY });
+    ext2type.insert({ ".PLY", PLY });
+    ext2type.insert({ ".vsnray", VSNRAY });
+    ext2type.insert({ ".VSNRAY", VSNRAY });
 
     boost::filesystem::path p(filename);
 
