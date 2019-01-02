@@ -136,7 +136,9 @@ bool model::load(std::vector<std::string> const& filenames)
         {
             for (auto filename : filenames)
             {
-                switch (mt)
+                model_type mtt = get_type(filename);
+
+                switch (mtt)
                 {
                 case Moana:
                     load_moana(filename, *this);
