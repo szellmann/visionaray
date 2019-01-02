@@ -160,9 +160,9 @@ bool model::load(std::vector<std::string> const& filenames)
                     success = false;
                     break;
                 }
-
-                return success;
             }
+
+            return success;
         }
     }
     catch (...)
