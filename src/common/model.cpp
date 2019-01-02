@@ -140,22 +140,22 @@ bool model::load(std::vector<std::string> const& filenames)
                 {
                 case Moana:
                     load_moana(filename, *this);
-                    return true;
+                    break;
 
                 case OBJ:
                     load_obj(filename, *this);
-                    return true;
+                    break;
 
                 case PLY:
                     load_ply(filename, *this);
-                    return true;
+                    break;
 
                 case VSNRAY:
                     load_vsnray(filename, *this);
-                    return true;
+                    break;
 
                 default:
-                    return false;
+                    break;
                 }
             }
         }
