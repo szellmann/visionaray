@@ -6,6 +6,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "fbx_loader.h"
 #include "moana_loader.h"
 #include "model.h"
 #include "obj_loader.h"
@@ -16,11 +17,12 @@
 // Helpers
 //
 
-enum model_type { Moana, OBJ, PLY, VSNRAY, Unknown };
+enum model_type { FBX, Moana, OBJ, PLY, VSNRAY, Unknown };
 
 static model_type get_type(std::string const& filename)
 {
     std::unordered_map<std::string, model_type> ext2type;
+    ext2type.insert({ ".fbx", FBX });
     // TODO: check here if this is really a "moana" file
     ext2type.insert({ ".json", Moana });
     ext2type.insert({ ".obj", OBJ });
@@ -55,6 +57,10 @@ bool load_model(FN const& fn, visionaray::model& mod, model_type mt)
 
     switch (mt)
     {
+    case FBX:
+        load_fbx(fn, mod);
+        return true;
+
     case Moana:
         load_moana(fn, mod);
         return true;

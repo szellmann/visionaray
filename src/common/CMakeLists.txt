@@ -15,6 +15,7 @@ find_package(OpenGL REQUIRED)
 find_package(PNG)
 find_package(Threads REQUIRED)
 find_package(TIFF)
+find_package(ZLIB)
 
 visionaray_use_package(Boost)
 visionaray_use_package(GLEW)
@@ -25,6 +26,7 @@ visionaray_use_package(OpenGL)
 visionaray_use_package(PNG)
 visionaray_use_package(Threads)
 visionaray_use_package(TIFF)
+visionaray_use_package(ZLIB)
 
 # CUDA
 
@@ -159,6 +161,7 @@ set(COMMON_HEADERS
     cfile.h
     dds_image.h
     exr_image.h
+    fbx_loader.h
     hdr_image.h
     image.h
     image_base.h
@@ -202,6 +205,7 @@ set(COMMON_SOURCES
 
     dds_image.cpp
     exr_image.cpp
+    fbx_loader.cpp
     hdr_image.cpp
     image.cpp
     image_base.cpp
