@@ -48,7 +48,7 @@ void render_instances_ptex_cpp(
             shading_normals.data(),
             face_ids.data(),
             materials.data(),
-            textures.begin(),
+            textures.data(),
             lights.data(),
             lights.data() + lights.size(),
             bounces,

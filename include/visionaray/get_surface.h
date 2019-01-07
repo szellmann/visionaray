@@ -223,7 +223,7 @@ inline auto get_surface_impl(HR const& hr, Params const& params)
 
     auto ns    = get_normals(params, hr);
     auto color = params.colors ? get_color(params.colors, hr, P{}, typename Params::color_binding{}) : C(1.0);
-    auto tc    = params.tex_coords ? get_tex_color(
+    auto tc    = params.tex_coords && params.textures ? get_tex_color(
                         hr,
                         params,
                         std::integral_constant<int, texture_dimensions<typename Params::texture_type>::value>{}
