@@ -319,7 +319,7 @@ inline generic_material<16, Ts...> pack(array<visionaray::generic_material<Ts...
 template <typename ...Ts>
 inline array<visionaray::generic_material<Ts...>, 16> unpack(generic_material<16, Ts...> const& m16)
 {
-    return array<visionaray::generic_material<Ts...>, 8>{{
+    return array<visionaray::generic_material<Ts...>, 16>{{
             m16.get( 0), m16.get( 1), m16.get( 2), m16.get( 3),
             m16.get( 4), m16.get( 5), m16.get( 6), m16.get( 7),
             m16.get( 8), m16.get( 9), m16.get(10), m16.get(11),
