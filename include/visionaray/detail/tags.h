@@ -25,9 +25,6 @@ namespace detail
 using has_colors_tag      = std::true_type;
 using has_no_colors_tag   = std::false_type;
 
-using has_textures_tag    = std::true_type;
-using has_no_textures_tag = std::false_type;
-
 template <typename T>
 struct has_colors_impl
 {
@@ -42,23 +39,6 @@ struct has_colors_impl
 
 template <typename T>
 struct has_colors : has_colors_impl<T>::type
-{
-};
-
-template <typename T>
-struct has_textures_impl
-{
-    template <typename U>
-    static has_textures_tag test(typename U::has_textures*);
-
-    template <typename U>
-    static has_no_textures_tag test(...);
-
-    using type = decltype( test<typename std::decay<T>::type>(nullptr) );
-};
-
-template <typename T>
-struct has_textures : has_textures_impl<T>::type
 {
 };
 

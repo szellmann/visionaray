@@ -9,15 +9,32 @@
 #include <iterator>
 #include <type_traits>
 
+#include "detail/macros.h"
 #include "math/detail/math.h"
 #include "math/simd/type_traits.h"
 #include "math/array.h"
+#include "math/sphere.h"
 #include "math/triangle.h"
 #include "math/vector.h"
 
 
 namespace visionaray
 {
+
+//-------------------------------------------------------------------------------------------------
+// Default get_tex_coord implementation, assumes that tex coord list is unused!
+//
+
+template <typename TexCoords, typename HR, typename Primitive>
+VSNRAY_FUNC
+inline auto get_tex_coord(TexCoords tex_coords, HR const& hr, Primitive const& prim)
+    -> typename std::iterator_traits<TexCoords>::value_type
+{
+    VSNRAY_UNUSED(tex_coords);
+
+    return get_tex_coord(hr, prim);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Triangle
@@ -93,6 +110,23 @@ inline auto get_tex_coord(TexCoords tex_coords, HR const& hr, basic_triangle<3, 
     vector<2, U> tc3(x3, y3);
 
     return lerp( tc1, tc2, tc3, hr.u, hr.v );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Sphere
+//
+
+template <
+    typename HR,
+    typename T,
+    typename = typename std::enable_if<!simd::is_simd_vector<typename HR::scalar_type>::value>::type
+    >
+VSNRAY_FUNC
+inline auto get_tex_coord(HR const& hr, basic_sphere<T> /* */)
+    -> vector<2, typename HR::scalar_type>
+{
+    return {}; // TODO
 }
 
 

@@ -34,33 +34,8 @@ namespace detail
 
 // deduce simd surface type from params -------------------
 
-template <typename Params, typename T, typename Enable = void>
-struct simd_decl_surface;
-
 template <typename Params, typename T>
-struct simd_decl_surface<Params, T, typename std::enable_if<
-        !(has_colors<Params>::value || has_textures<Params>::value)
-        >::type>
-{
-private:
-
-    enum { Size_ = simd::num_elements<T>::value };
-    using N_     = typename Params::normal_type;
-    using M_     = typename Params::material_type;
-
-public:
-    using type = surface<
-        decltype(simd::pack(std::declval<array<N_, Size_>>())),
-        decltype(simd::pack(std::declval<array<M_, Size_>>()))
-        >;
-
-    using array_type = array<surface<N_, M_>, Size_>;
-};
-
-template <typename Params, typename T>
-struct simd_decl_surface<Params, T, typename std::enable_if<
-        has_colors<Params>::value || has_textures<Params>::value
-        >::type>
+struct simd_decl_surface
 {
 private:
 
@@ -185,13 +160,19 @@ inline typename Params::color_type get_tex_color(
         std::integral_constant<int, 1> /* */
         )
 {
-    using P = typename Params::primitive_type;
     using C = typename Params::color_type;
 
-    auto coord = get_tex_coord(params.tex_coords, hr, P{});
+    if (params.tex_coords != nullptr)
+    {
+        auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
 
-    auto const& tex = params.textures[hr.geom_id];
-    return C(tex1D(tex, coord));
+        auto const& tex = params.textures[hr.geom_id];
+        return C(tex1D(tex, coord));
+    }
+    else
+    {
+        return C(1.0);
+    }
 }
 
 template <typename HR, typename Params>
@@ -202,13 +183,19 @@ inline typename Params::color_type get_tex_color(
         std::integral_constant<int, 2> /* */
         )
 {
-    using P = typename Params::primitive_type;
     using C = typename Params::color_type;
 
-    auto coord = get_tex_coord(params.tex_coords, hr, P{});
+    if (params.tex_coords != nullptr)
+    {
+        auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
 
-    auto const& tex = params.textures[hr.geom_id];
-    return C(tex2D(tex, coord));
+        auto const& tex = params.textures[hr.geom_id];
+        return C(tex2D(tex, coord));
+    }
+    else
+    {
+        return C(1.0);
+    }
 }
 
 template <typename HR, typename Params>
@@ -219,13 +206,19 @@ inline typename Params::color_type get_tex_color(
         std::integral_constant<int, 3> /* */
         )
 {
-    using P = typename Params::primitive_type;
     using C = typename Params::color_type;
 
-    auto coord = get_tex_coord(params.tex_coords, hr, P{});
+    if (params.tex_coords != nullptr)
+    {
+        auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
 
-    auto const& tex = params.textures[hr.geom_id];
-    return C(tex3D(tex, coord));
+        auto const& tex = params.textures[hr.geom_id];
+        return C(tex3D(tex, coord));
+    }
+    else
+    {
+        return C(1.0);
+    }
 }
 
 
@@ -237,25 +230,6 @@ template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_impl(
         has_no_colors_tag   /* */,
-        has_no_textures_tag /* */,
-        HR const&           hr,
-        Params const&       params
-        )
-    -> surface<typename Params::normal_type, typename Params::material_type>
-{
-    auto ns = get_normals(params, hr);
-    return {
-        ns.geometric_normal,
-        ns.shading_normal,
-        params.materials[hr.geom_id]
-        };
-}
-
-template <typename HR, typename Params>
-VSNRAY_FUNC
-inline auto get_surface_impl(
-        has_no_colors_tag   /* */,
-        has_textures_tag    /* */,
         HR const&           hr,
         Params const&       params
         )
@@ -284,7 +258,6 @@ template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_impl(
         has_colors_tag      /* */,
-        has_textures_tag    /* */,
         HR const&           hr,
         Params const&       params
         )
@@ -319,7 +292,6 @@ inline auto get_surface_impl(
 
 template <
     typename ColorsTag,
-    typename TexturesTag,
     typename HR,
     typename Params,
     typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type
@@ -327,7 +299,6 @@ template <
 VSNRAY_FUNC
 inline auto get_surface_impl(
         ColorsTag     /* */,
-        TexturesTag   /* */,
         HR const&     hr,
         Params const& params
         )
@@ -345,7 +316,6 @@ inline auto get_surface_impl(
         {
             surfs[i] = get_surface_impl(
                     ColorsTag{},
-                    TexturesTag{},
                     hrs[i],
                     params
                     );
@@ -363,14 +333,12 @@ VSNRAY_FUNC
 inline auto get_surface(HR const& hr, Params const& p)
     -> decltype( detail::get_surface_impl(
             detail::has_colors<Params>{},
-            detail::has_textures<Params>{},
             hr,
             p
             ) )
 {
     return detail::get_surface_impl(
             detail::has_colors<Params>{},
-            detail::has_textures<Params>{},
             hr,
             p
             );

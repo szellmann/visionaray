@@ -36,48 +36,24 @@ void render_generic_material_cu(
 
     thrust::device_vector<area_light<float, basic_triangle<3, float>>> device_lights = host_lights;
 
-    bool use_textures = textures.size() > 0 && tex_coords.size() >= bvh.num_primitives() * 3;
+    auto kparams = make_kernel_params(
+            normals_per_vertex_binding{},
+            thrust::raw_pointer_cast(primitives.data()),
+            thrust::raw_pointer_cast(primitives.data()) + primitives.size(),
+            thrust::raw_pointer_cast(geometric_normals.data()),
+            thrust::raw_pointer_cast(shading_normals.data()),
+            thrust::raw_pointer_cast(tex_coords.data()),
+            thrust::raw_pointer_cast(materials.data()),
+            thrust::raw_pointer_cast(textures.data()),
+            thrust::raw_pointer_cast(device_lights.data()),
+            thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+            bounces,
+            epsilon,
+            bgcolor,
+            ambient
+            );
 
-    if (use_textures)
-    {
-        auto kparams = make_kernel_params(
-                normals_per_vertex_binding{},
-                thrust::raw_pointer_cast(primitives.data()),
-                thrust::raw_pointer_cast(primitives.data()) + primitives.size(),
-                thrust::raw_pointer_cast(geometric_normals.data()),
-                thrust::raw_pointer_cast(shading_normals.data()),
-                thrust::raw_pointer_cast(tex_coords.data()),
-                thrust::raw_pointer_cast(materials.data()),
-                thrust::raw_pointer_cast(textures.data()),
-                thrust::raw_pointer_cast(device_lights.data()),
-                thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
-                bounces,
-                epsilon,
-                bgcolor,
-                ambient
-                );
-
-        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
-    }
-    else
-    {
-        auto kparams = make_kernel_params(
-                normals_per_vertex_binding{},
-                thrust::raw_pointer_cast(primitives.data()),
-                thrust::raw_pointer_cast(primitives.data()) + primitives.size(),
-                thrust::raw_pointer_cast(geometric_normals.data()),
-                thrust::raw_pointer_cast(shading_normals.data()),
-                thrust::raw_pointer_cast(materials.data()),
-                thrust::raw_pointer_cast(device_lights.data()),
-                thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
-                bounces,
-                epsilon,
-                bgcolor,
-                ambient
-                );
-
-        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
-    }
+    call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
 }
 
 } // visionaray

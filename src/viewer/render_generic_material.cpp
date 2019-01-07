@@ -34,48 +34,24 @@ void render_generic_material_cpp(
 
     primitives.push_back(bvh.ref());
 
-    bool use_textures = textures.size() > 0 && tex_coords.size() >= bvh.num_primitives() * 3;
+    auto kparams = make_kernel_params(
+            normals_per_vertex_binding{},
+            primitives.data(),
+            primitives.data() + primitives.size(),
+            geometric_normals.data(),
+            shading_normals.data(),
+            tex_coords.data(),
+            materials.data(),
+            textures.data(),
+            lights.data(),
+            lights.data() + lights.size(),
+            bounces,
+            epsilon,
+            bgcolor,
+            ambient
+            );
 
-    if (use_textures)
-    {
-        auto kparams = make_kernel_params(
-                normals_per_vertex_binding{},
-                primitives.data(),
-                primitives.data() + primitives.size(),
-                geometric_normals.data(),
-                shading_normals.data(),
-                tex_coords.data(),
-                materials.data(),
-                textures.data(),
-                lights.data(),
-                lights.data() + lights.size(),
-                bounces,
-                epsilon,
-                bgcolor,
-                ambient
-                );
-
-        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
-    }
-    else
-    {
-        auto kparams = make_kernel_params(
-                normals_per_vertex_binding{},
-                primitives.data(),
-                primitives.data() + primitives.size(),
-                geometric_normals.data(),
-                shading_normals.data(),
-                materials.data(),
-                lights.data(),
-                lights.data() + lights.size(),
-                bounces,
-                epsilon,
-                bgcolor,
-                ambient
-                );
-
-        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
-    }
+    call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
 }
 
 } // visionaray

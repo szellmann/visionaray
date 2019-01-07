@@ -8,22 +8,17 @@
 
 #include <type_traits>
 
-#include "hit_record.h"
-
 namespace visionaray
 {
 
 template <
-    typename R,
-    typename Base,
+    typename HR,
+    typename Base = typename HR::base_type,
     typename Primitive,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
-auto get_tex_coord(
-        hit_record_bvh<R, Base> const& hr,
-        Primitive                      prim
-        )
+auto get_tex_coord(HR const& hr, Primitive prim)
     -> decltype( get_tex_coord(
             static_cast<Base const&>(hr),
             prim.primitive(hr.primitive_list_index)
@@ -37,27 +32,48 @@ auto get_tex_coord(
 
 template <
     typename TexCoords,
-    typename R,
-    typename Base,
+    typename HR,
+    typename Base = typename HR::base_type,
     typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type,
+    typename = typename std::enable_if<!is_any_bvh_inst<Primitive>::value>::type
     >
 VSNRAY_FUNC
-auto get_tex_coord(
-        TexCoords                      tex_coords,
-        hit_record_bvh<R, Base> const& hr,
-        Primitive                      /* */
-        )
+auto get_tex_coord(TexCoords tex_coords, HR const& hr, Primitive prim)
     -> decltype( get_tex_coord(
             tex_coords,
             static_cast<Base const&>(hr),
-            typename Primitive::primitive_type{}
+            prim
             ) )
 {
     return get_tex_coord(
             tex_coords,
             static_cast<Base const&>(hr),
-            typename Primitive::primitive_type{}
+            prim
+            );
+}
+
+template <
+    typename TexCoords,
+    typename HR,
+    typename Base = typename HR::base_type,
+    typename Primitive,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type,
+    typename = typename std::enable_if<is_any_bvh_inst<Primitive>::value>::type,
+    typename = void
+    >
+VSNRAY_FUNC
+auto get_tex_coord(TexCoords tex_coords, HR const& hr, Primitive prim)
+    -> decltype( get_tex_coord(
+            tex_coords,
+            static_cast<Base const&>(hr),
+            prim
+            ) )
+{
+    return get_tex_coord(
+            tex_coords,
+            static_cast<Base const&>(hr),
+            prim
             );
 }
 
