@@ -210,7 +210,7 @@ void renderer::on_display()
             auto n = get_normal(
                 mod.geometric_normals.data(),
                 hit_rec,
-                bvh_ref{}
+                model::triangle_type{}
                 );
 
             V u;
