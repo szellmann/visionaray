@@ -197,7 +197,29 @@ inline vector<3, T> operator*(matrix<3, 3, T> const& m, vector<3, T> const& v)
             m(0, 0) * v.x + m(0, 1) * v.y + m(0, 2) * v.z,
             m(1, 0) * v.x + m(1, 1) * v.y + m(1, 2) * v.z,
             m(2, 0) * v.x + m(2, 1) * v.y + m(2, 2) * v.z
-    );
+            );
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<3, 3, T> operator*(matrix<3, 3, T> const& m, T const& s)
+{
+    return matrix<3, 3, T>(
+            m.col0 * s,
+            m.col1 * s,
+            m.col2 * s
+            );
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<3, 3, T> operator*(T const& s, matrix<3, 3, T> const& m)
+{
+    return matrix<3, 3, T>(
+            s * m.col0,
+            s * m.col1,
+            s * m.col2
+            );
 }
 
 

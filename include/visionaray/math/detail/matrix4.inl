@@ -210,7 +210,6 @@ template <typename T>
 MATH_FUNC
 inline matrix<4, 4, T> operator*(matrix<4, 4, T> const& a, matrix<4, 4, T> const& b)
 {
-
     return matrix<4, 4, T>(
             a(0, 0) * b(0, 0) + a(0, 1) * b(1, 0) + a(0, 2) * b(2, 0) + a(0, 3) * b(3, 0),
             a(1, 0) * b(0, 0) + a(1, 1) * b(1, 0) + a(1, 2) * b(2, 0) + a(1, 3) * b(3, 0),
@@ -229,21 +228,42 @@ inline matrix<4, 4, T> operator*(matrix<4, 4, T> const& a, matrix<4, 4, T> const
             a(2, 0) * b(0, 3) + a(2, 1) * b(1, 3) + a(2, 2) * b(2, 3) + a(2, 3) * b(3, 3),
             a(3, 0) * b(0, 3) + a(3, 1) * b(1, 3) + a(3, 2) * b(2, 3) + a(3, 3) * b(3, 3)
             );
-
 }
 
 template <typename T>
 MATH_FUNC
 inline vector<4, T> operator*(matrix<4, 4, T> const& m, vector<4, T> const& v)
 {
-
     return vector<4, T>(
             m(0, 0) * v.x + m(0, 1) * v.y + m(0, 2) * v.z + m(0, 3) * v.w,
             m(1, 0) * v.x + m(1, 1) * v.y + m(1, 2) * v.z + m(1, 3) * v.w,
             m(2, 0) * v.x + m(2, 1) * v.y + m(2, 2) * v.z + m(2, 3) * v.w,
             m(3, 0) * v.x + m(3, 1) * v.y + m(3, 2) * v.z + m(3, 3) * v.w
             );
+}
 
+template <typename T>
+MATH_FUNC
+inline matrix<4, 4, T> operator*(matrix<4, 4, T> const& m, T const& s)
+{
+    return matrix<4, 4, T>(
+            m.col0 * s,
+            m.col1 * s,
+            m.col2 * s,
+            m.col3 * s
+            );
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<4, 4, T> operator*(T const& s, matrix<4, 4, T> const& m)
+{
+    return matrix<4, 4, T>(
+            s * m.col0,
+            s * m.col1,
+            s * m.col2,
+            s * m.col3
+            );
 }
 
 

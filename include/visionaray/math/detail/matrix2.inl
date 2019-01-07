@@ -152,7 +152,27 @@ inline vector<2, T> operator*(matrix<2, 2, T> const& m, vector<2, T> const& v)
     return vector<2, T>(
             m(0, 0) * v.x + m(0, 1) * v.y,
             m(1, 0) * v.x + m(1, 1) * v.y
-    );
+            );
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<2, 2, T> operator*(matrix<2, 2, T> const& m, T const& s)
+{
+    return matrix<2, 2, T>(
+            m.col0 * s,
+            m.col1 * s
+            );
+}
+
+template <typename T>
+MATH_FUNC
+inline matrix<2, 2, T> operator*(T const& s, matrix<2, 2, T> const& m)
+{
+    return matrix<2, 2, T>(
+            s * m.col0,
+            s * m.col1
+            );
 }
 
 
