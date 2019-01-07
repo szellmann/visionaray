@@ -112,7 +112,7 @@ inline auto get_prim(Params const& params, hit_record_bvh<R, Base> const& hr)
 
 
 //-------------------------------------------------------------------------------------------------
-// Sample textures with range check
+// Sample textures
 //
 
 template <typename HR, typename Params>
