@@ -19,6 +19,7 @@
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
+#include <visionaray/traverse.h>
 
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
