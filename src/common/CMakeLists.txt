@@ -44,7 +44,7 @@ endif()
 
 # Ptex
 
-if(VSNRAY_ENABLE_PTEX)
+if (VSNRAY_ENABLE_PTEX)
     find_package(Ptex)
     find_package(ZLIB)
     visionaray_use_package(Ptex)
