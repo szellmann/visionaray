@@ -105,6 +105,7 @@ template <
     typename Primitive,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
     >
+VSNRAY_FUNC
 inline vector<3, T> get_color(
         Colors                  colors,
         HR const&               hr,
@@ -147,6 +148,7 @@ template <
     typename T,
     typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type
     >
+VSNRAY_FUNC
 inline auto get_color(
         Colors                    colors,
         HR const&                 hr,
