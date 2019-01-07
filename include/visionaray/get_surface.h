@@ -69,15 +69,15 @@ inline P const& get_prim(Params const& params, HR const& hr)
 // overload for BVHs
 template <
     typename Params,
-    typename R,
-    typename Base,
+    typename HR,
+    typename Base = typename HR::base_type,
     typename P = typename Params::primitive_type,
     typename = typename std::enable_if<is_any_bvh<P>::value>::type,
     typename = typename std::enable_if<
                 !is_any_bvh_inst<typename P::primitive_type>::value>::type // but not BVH of instances!
     >
 VSNRAY_FUNC
-inline typename P::primitive_type const& get_prim(Params const& params, hit_record_bvh<R, Base> const& hr)
+inline typename P::primitive_type const& get_prim(Params const& params, HR const& hr)
 {
     VSNRAY_UNUSED(params);
     VSNRAY_UNUSED(hr);
@@ -89,8 +89,8 @@ inline typename P::primitive_type const& get_prim(Params const& params, hit_reco
 // overload for BVHs of instances
 template <
     typename Params,
-    typename R,
-    typename Base,
+    typename HR,
+    typename Base = typename HR::base_type,
     typename P = typename Params::primitive_type,
     typename = typename std::enable_if<is_any_bvh<P>::value>::type, // is BVH ...
     typename = typename std::enable_if<
@@ -98,7 +98,7 @@ template <
     typename X = void
     >
 VSNRAY_FUNC
-inline auto get_prim(Params const& params, hit_record_bvh<R, Base> const& hr)
+inline auto get_prim(Params const& params, HR const& hr)
     -> typename P::primitive_type::primitive_type const&
 {
     // Assume we only have one top-level BVH (TODO?)
