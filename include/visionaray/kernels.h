@@ -82,6 +82,51 @@ struct kernel_params
 
 template <
     typename Primitives,
+    typename Materials
+    >
+auto make_kernel_params(
+        Primitives const&   begin,
+        Primitives const&   end,
+        Materials const&    materials,
+        unsigned            num_bounces     = 5,
+        float               epsilon         = std::numeric_limits<float>::epsilon(),
+        vec4 const&         bg_color        = vec4(0.0),
+        vec4 const&         ambient_color   = vec4(0.0)
+        )
+    -> kernel_params<
+        unspecified_binding,
+        unspecified_binding,
+        Primitives,
+        vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
+        vector<2, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
+        Materials,
+        vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
+        texture<unorm<8>, 2>*,
+        std::nullptr_t*,
+        vec4
+        >
+{
+    return {
+        { begin, end },
+        nullptr, // geometric normals
+        nullptr, // shading normals
+        nullptr, // uvs
+        materials,
+        nullptr, // colors
+        nullptr, // textures
+        { nullptr, nullptr }, // lights
+        num_bounces,
+        epsilon,
+        bg_color,
+        ambient_color
+        };
+}
+
+
+// w/ lights ----------------------------------------------
+
+template <
+    typename Primitives,
     typename Materials,
     typename Lights
     >

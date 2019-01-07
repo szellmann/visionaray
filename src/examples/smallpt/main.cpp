@@ -314,8 +314,6 @@ void renderer::on_display()
 
 
 #if !USE_MULTIPLE_IMPORTANCE_SAMPLING
-    // make_kernel_params needs (!) lights
-    // TODO: fix this in visionaray API!
     empty_light_type* ignore = 0;
 #endif
 
