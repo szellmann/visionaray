@@ -29,7 +29,8 @@ namespace visionaray
 //      that returns a point sample
 //
 //  - texture_dimensions:
-//      value can be either of {1,2,3}
+//      value can be either of {0,1,2,3}, where 0 denotes that type does
+//      not adhere to concept Texture
 //
 //
 //-------------------------------------------------------------------------------------------------
@@ -73,8 +74,14 @@ struct is_texture : detail::is_texture_impl<T>::type
 // texture_dimensions
 //
 
-template <typename T>
+template <typename T, typename Enable = void>
 struct texture_dimensions
+{
+    enum { value = 0 };
+};
+
+template <typename T>
+struct texture_dimensions<T, typename std::enable_if<is_texture<T>::value>::type>
 {
     enum { value = T::dimensions };
 };
