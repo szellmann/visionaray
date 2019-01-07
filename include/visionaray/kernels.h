@@ -170,7 +170,7 @@ auto make_kernel_params(
         vec4 const&         ambient_color   = vec4(0.0)
         )
     -> kernel_params<
-        normals_per_vertex_binding,
+        unspecified_binding,
         unspecified_binding,
         Primitives,
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
@@ -283,7 +283,7 @@ auto make_kernel_params(
         )
     -> kernel_params<
         NormalBinding,
-        colors_per_vertex_binding,
+        unspecified_binding,
         Primitives,
         Normals,
         TexCoords,
