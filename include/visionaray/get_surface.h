@@ -192,6 +192,8 @@ inline typename Params::color_type get_tex_color(
         std::integral_constant<int, 3> /* */
         )
 {
+    using C = typename Params::color_type;
+
     auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
 
     auto const& tex = params.textures[hr.geom_id];
