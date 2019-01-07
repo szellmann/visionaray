@@ -112,43 +112,6 @@ inline auto get_prim(Params const& params, hit_record_bvh<R, Base> const& hr)
 
 
 //-------------------------------------------------------------------------------------------------
-// Struct containing both the geometric and the shading normal
-//
-
-template <typename V>
-struct normal_pair
-{
-    V geometric_normal;
-    V shading_normal;
-};
-
-
-//-------------------------------------------------------------------------------------------------
-// Get geometric normal and shading normal
-//
-
-template <
-    typename Params,
-    typename HR,
-    typename Primitive = typename Params::primitive_type
-    >
-VSNRAY_FUNC
-inline auto get_normals(Params const& params, HR const& hr)
-    -> normal_pair<decltype(get_normal(params.geometric_normals, hr, get_prim(params, hr)))>
-{
-    auto const& prim = get_prim(params, hr);
-
-    auto const& gns = params.geometric_normals;
-    auto const& sns = params.shading_normals;
-
-    auto gn = gns ? get_normal(gns, hr, prim) : get_normal(hr, prim);
-    auto sn = sns ? get_shading_normal(sns, hr, prim, typename Params::normal_binding{}) : gn;
-
-    return { gn, sn };
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // Sample textures with range check
 //
 
@@ -219,22 +182,22 @@ inline auto get_surface_impl(HR const& hr, Params const& params)
             >
 {
     using C = typename Params::color_type;
-    using P = typename Params::primitive_type;
 
-    auto ns    = get_normals(params, hr);
-    auto color = params.colors ? get_color(params.colors, hr, P{}, typename Params::color_binding{}) : C(1.0);
+    auto const& prim = get_prim(params, hr);
+
+    auto const& gns = params.geometric_normals;
+    auto const& sns = params.shading_normals;
+
+    auto gn    = gns ? get_normal(gns, hr, prim) : get_normal(hr, prim);
+    auto sn    = sns ? get_shading_normal(sns, hr, prim, typename Params::normal_binding{}) : gn;
+    auto color = params.colors ? get_color(params.colors, hr, prim, typename Params::color_binding{}) : C(1.0);
     auto tc    = params.tex_coords && params.textures ? get_tex_color(
                         hr,
                         params,
                         std::integral_constant<int, texture_dimensions<typename Params::texture_type>::value>{}
                         ) : C(1.0);
 
-    return {
-        ns.geometric_normal,
-        ns.shading_normal,
-        color * tc,
-        params.materials[hr.geom_id]
-        };
+    return { gn, sn, color * tc, params.materials[hr.geom_id] };
 }
 
 
