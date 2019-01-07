@@ -162,17 +162,10 @@ inline typename Params::color_type get_tex_color(
 {
     using C = typename Params::color_type;
 
-    if (params.tex_coords != nullptr)
-    {
-        auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
+    auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
 
-        auto const& tex = params.textures[hr.geom_id];
-        return C(tex1D(tex, coord));
-    }
-    else
-    {
-        return C(1.0);
-    }
+    auto const& tex = params.textures[hr.geom_id];
+    return C(tex1D(tex, coord));
 }
 
 template <typename HR, typename Params>
@@ -185,17 +178,10 @@ inline typename Params::color_type get_tex_color(
 {
     using C = typename Params::color_type;
 
-    if (params.tex_coords != nullptr)
-    {
-        auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
+    auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
 
-        auto const& tex = params.textures[hr.geom_id];
-        return C(tex2D(tex, coord));
-    }
-    else
-    {
-        return C(1.0);
-    }
+    auto const& tex = params.textures[hr.geom_id];
+    return C(tex2D(tex, coord));
 }
 
 template <typename HR, typename Params>
@@ -206,19 +192,10 @@ inline typename Params::color_type get_tex_color(
         std::integral_constant<int, 3> /* */
         )
 {
-    using C = typename Params::color_type;
+    auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
 
-    if (params.tex_coords != nullptr)
-    {
-        auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
-
-        auto const& tex = params.textures[hr.geom_id];
-        return C(tex3D(tex, coord));
-    }
-    else
-    {
-        return C(1.0);
-    }
+    auto const& tex = params.textures[hr.geom_id];
+    return C(tex3D(tex, coord));
 }
 
 
@@ -244,11 +221,11 @@ inline auto get_surface_impl(HR const& hr, Params const& params)
 
     auto ns    = get_normals(params, hr);
     auto color = params.colors ? get_color(params.colors, hr, P{}, typename Params::color_binding{}) : C(1.0);
-    auto tc    = get_tex_color(
+    auto tc    = params.tex_coords ? get_tex_color(
                         hr,
                         params,
                         std::integral_constant<int, texture_dimensions<typename Params::texture_type>::value>{}
-                        );
+                        ) : C(1.0);
 
     return {
         ns.geometric_normal,
