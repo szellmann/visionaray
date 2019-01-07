@@ -20,79 +20,7 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
-// Parameter structs for built-in kernels
-//
-// Use the make_kernel_params() factory function to create:
-//
-// Parameters:
-//      NormalBindingTag:   [normals_per_face_binding|normals_per_vertex_binding]
-//      ColorBindingTag:    [colors_per_face_binding|colors_per_vertex_binding] (TODO: per geometry)
-//      primitives [..), normals, materials, lights [..)
-//      num_bounces:        depth of the ray tree (applies only to recursive algorithms)
-//      scene_epsilon:      used as an offset to bias ray origins to avoid self intersections
-//      background_color:   RGBA
-//      ambient_color:      RGBA
-//
-// w/ normals:
-//
-//  make_kernel_params(
-//      NormalBindingTag,
-//      primitives_begin,
-//      primitives_end,
-//      normals,
-//      materials,
-//      lights_begin,
-//      lights_end,
-//      num_bounces,
-//      scene_epsilon,
-//      background_color,
-//      ambient_color
-//      );
-//
-//
-// w/ normals and textures:
-//
-//  make_kernel_params(
-//      NormalBindingTag,
-//      primitives_begin,
-//      primitives_end,
-//      normals,
-//      texture_coordinates,
-//      materials,
-//      textures,
-//      lights_begin,
-//      lights_end,
-//      num_bounces,
-//      scene_epsilon,
-//      background_color,
-//      ambient_color
-//      );
-//
-// w/ textures, normals and colors:
-//
-//  make_kernel_params(
-//      NormalBindingTag,
-//      ColorBindingTag,
-//      primitives_begin,
-//      primitives_end,
-//      normals,
-//      texture_coordinates,
-//      materials,
-//      colors,
-//      textures,
-//      lights_begin,
-//      lights_end,
-//      num_bounces,
-//      scene_epsilon,
-//      background_color,
-//      ambient_color
-//      );
-//
-//
-//-------------------------------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------------------------------
-// Param structs
+// Parameter struct for built-in kernels
 //
 
 template <
@@ -147,7 +75,7 @@ struct kernel_params
 
 
 //-------------------------------------------------------------------------------------------------
-// Factory for param structs
+// Factory for param struct
 //
 
 // default ------------------------------------------------
