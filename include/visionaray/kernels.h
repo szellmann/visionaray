@@ -10,9 +10,7 @@
 #include <limits>
 
 #include "math/forward.h"
-#include "math/unorm.h"
 #include "math/vector.h"
-#include "texture/texture.h"
 #include "prim_traits.h"
 #include "tags.h"
 
@@ -101,8 +99,8 @@ auto make_kernel_params(
         vector<2, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         Materials,
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
-        texture<unorm<8>, 2>*,
-        std::nullptr_t*,
+        std::nullptr_t*, // dummy texture type
+        std::nullptr_t*, // dummy light type
         vec4
         >
 {
@@ -149,7 +147,7 @@ auto make_kernel_params(
         vector<2, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         Materials,
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
-        texture<unorm<8>, 2>*,
+        std::nullptr_t*, // dummy texture type
         Lights,
         vec4
         >
@@ -203,7 +201,7 @@ auto make_kernel_params(
         vector<2, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         Materials,
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
-        texture<unorm<8>, 2>*,
+        std::nullptr_t*, // dummy texture type
         Lights,
         vec4
         >

@@ -115,6 +115,20 @@ VSNRAY_FUNC
 inline typename Params::color_type get_tex_color(
         HR const&                      hr,
         Params const&                  params,
+        std::integral_constant<int, 0> /* not a texture! */
+        )
+{
+    using C = typename Params::color_type;
+
+    // Just return white
+    return C(1.0);
+}
+
+template <typename HR, typename Params>
+VSNRAY_FUNC
+inline typename Params::color_type get_tex_color(
+        HR const&                      hr,
+        Params const&                  params,
         std::integral_constant<int, 1> /* */
         )
 {
