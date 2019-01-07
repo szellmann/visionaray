@@ -50,10 +50,10 @@ struct is_texture_impl
     static constexpr std::true_type test(decltype(tex1D(std::declval<U>(), 0.0f))*);
 
     template <typename U>
-    static constexpr std::true_type test(decltype(tex2D(std::declval<U>(), vector<2, float>(0.0f)))*);
+    static constexpr std::true_type test(decltype(tex2D(std::declval<U>(), vector<2, float>(0.0f)))*, void* = 0);
 
     template <typename U>
-    static constexpr std::true_type test(decltype(tex3D(std::declval<U>(), vector<3, float>(0.0f)))*);
+    static constexpr std::true_type test(decltype(tex3D(std::declval<U>(), vector<3, float>(0.0f)))*, void* = 0, void* = 0);
 
     template <typename U>
     static constexpr std::false_type test(...);
