@@ -10,6 +10,7 @@
 #include <iterator>
 #include <type_traits>
 
+#include "detail/macros.h"
 #include "math/simd/type_traits.h"
 #include "math/plane.h"
 #include "math/sphere.h"
@@ -22,10 +23,23 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
-// Get face normal from array
+// Default get_normal implementation, assumes that normal list is unused!
 //
 
-// TODO: generalize this to primitives with num_normals<Primitive, NormalBinding>::value == 1 ?
+template <typename Normals, typename HR, typename Primitive>
+VSNRAY_FUNC
+inline auto get_normal(Normals normals, HR const& hr, Primitive const& prim)
+    -> typename std::iterator_traits<Normals>::value_type
+{
+    VSNRAY_UNUSED(normals);
+
+    return get_normal(hr, prim);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Get face normal from array
+//
 
 template <
     typename Normals,
@@ -37,8 +51,7 @@ VSNRAY_FUNC
 inline auto get_normal(
         Normals                     normals,
         HR const&                   hr,
-        basic_triangle<3, T>        /* */,
-        normals_per_face_binding    /* */
+        basic_triangle<3, T>        /* */
         )
     -> typename std::iterator_traits<Normals>::value_type
 {
@@ -59,8 +72,7 @@ template <
 inline auto get_normal(
         Normals                     normals,
         HR const&                   hr,
-        basic_triangle<3, T>        /* */,
-        normals_per_face_binding    /* */
+        basic_triangle<3, T>        /* */
         )
     -> vector<3, typename HR::scalar_type>
 {
@@ -87,26 +99,6 @@ inline auto get_normal(
             U(y),
             U(z)
             );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Dispatch to calculating function - if normals are not bound per face
-//
-
-template <typename Normals, typename HR, typename T>
-VSNRAY_FUNC
-inline auto get_normal(
-        Normals                     normals,
-        HR const&                   hr,
-        basic_triangle<3, T>        prim,
-        normals_per_vertex_binding  /* */
-        )
-    -> decltype( get_normal(hr, prim) )
-{
-    VSNRAY_UNUSED(normals);
-
-    return get_normal(hr, prim);
 }
 
 
@@ -149,42 +141,6 @@ inline vector<3, T> get_normal(HR const& hr, basic_sphere<T> const& sphere)
     return (hr.isect_pos - sphere.center) / sphere.radius;
 }
 
-
-//-------------------------------------------------------------------------------------------------
-// get_normal as functor for template arguments
-//
-
-namespace detail
-{
-
-struct get_normal_t
-{
-    template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
-    VSNRAY_FUNC
-    inline auto operator()(
-            Normals                     normals,
-            HR const&                   hr,
-            Primitive                   prim,
-            NormalBinding               /* */
-            ) const
-        -> decltype( get_normal(normals, hr, prim, NormalBinding{}) )
-    {
-        return get_normal(normals, hr, prim, NormalBinding{});
-    }
-
-    template <typename HR, typename Primitive>
-    VSNRAY_FUNC
-    inline auto operator()(
-            HR const&                   hr,
-            Primitive                   prim
-            ) const
-        -> decltype( get_normal(hr, prim) )
-    {
-        return get_normal(hr, prim);
-    }
-};
-
-} // detail
 } // visionaray
 
 #endif // VSNRAY_GET_NORMAL_H

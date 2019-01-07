@@ -259,6 +259,7 @@ void renderer::on_display()
             primitives.data(),
             primitives.data() + primitives.size(),
             normals.data(),
+            (vec3*)nullptr,             // no shading normals!
             materials.data(),
             lights.data(),
             lights.data() + lights.size(),

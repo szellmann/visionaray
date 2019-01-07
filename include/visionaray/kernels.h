@@ -97,51 +97,6 @@ template <typename ...Args>
 struct kernel_params;
 
 template <
-    typename Primitives,
-    typename Materials,
-    typename Lights,
-    typename Color,
-    typename ...Args
-    >
-struct kernel_params<
-        Primitives,
-        Materials,
-        Lights,
-        Color,
-        Args...
-        >
-{
-    using primitive_type    = typename std::iterator_traits<Primitives>::value_type;
-    using material_type     = typename std::iterator_traits<Materials>::value_type;
-    using light_type        = typename std::iterator_traits<Lights>::value_type;
-    using normal_type       = vector<3, typename scalar_type<primitive_type>::type>;
-    using color_type        = vector<3, typename scalar_type<primitive_type>::type>;
-
-    using normal_binding    = unspecified_binding;
-    using color_binding     = unspecified_binding;
-
-    struct
-    {
-        Primitives begin;
-        Primitives end;
-    } prims;
-
-    Materials materials;
-
-    struct
-    {
-        Lights begin;
-        Lights end;
-    } lights;
-
-    unsigned num_bounces;
-    float epsilon;
-
-    Color bg_color;
-    Color ambient_color;
-};
-
-template <
     typename NormalBinding,
     typename Primitives,
     typename Normals,
@@ -160,8 +115,6 @@ struct kernel_params<
         Args...
         >
 {
-    using has_normals       = void;
-
     using normal_binding    = NormalBinding;
     using primitive_type    = typename std::iterator_traits<Primitives>::value_type;
     using normal_type       = typename std::iterator_traits<Normals>::value_type;
@@ -177,7 +130,8 @@ struct kernel_params<
         Primitives end;
     } prims;
 
-    Normals   normals;
+    Normals   geometric_normals;
+    Normals   shading_normals;
     Materials materials;
 
     struct
@@ -216,7 +170,6 @@ struct kernel_params<
         Args...
         >
 {
-    using has_normals       = void;
     using has_textures      = void;
 
     using normal_binding    = NormalBinding;
@@ -236,7 +189,8 @@ struct kernel_params<
         Primitives end;
     } prims;
 
-    Normals   normals;
+    Normals   geometric_normals;
+    Normals   shading_normals;
     TexCoords tex_coords;
     Materials materials;
     Textures  textures;
@@ -281,7 +235,6 @@ struct kernel_params<
         Args...
         >
 {
-    using has_normals       = void;
     using has_textures      = void;
     using has_colors        = void;
 
@@ -301,7 +254,8 @@ struct kernel_params<
         Primitives end;
     } prims;
 
-    Normals   normals;
+    Normals   geometric_normals;
+    Normals   shading_normals;
     TexCoords tex_coords;
     Materials materials;
     Colors    colors;
@@ -343,10 +297,19 @@ auto make_kernel_params(
         vec4 const&         bg_color        = vec4(0.0),
         vec4 const&         ambient_color   = vec4(0.0)
         )
-    -> kernel_params<Primitives, Materials, Lights, vec4>
+    -> kernel_params<
+            normals_per_vertex_binding,
+            Primitives,
+            vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
+            Materials,
+            Lights,
+            vec4
+            >
 {
     return {
         { begin, end },
+        nullptr,
+        nullptr,
         materials,
         { lbegin, lend },
         num_bounces,
@@ -371,7 +334,8 @@ auto make_kernel_params(
         NormalBinding       /* */,
         Primitives const&   begin,
         Primitives const&   end,
-        Normals const&      normals,
+        Normals const&      geometric_normals,
+        Normals const&      shading_normals,
         Materials const&    materials,
         Lights const&       lbegin,
         Lights const&       lend,
@@ -384,7 +348,8 @@ auto make_kernel_params(
 {
     return {
         { begin, end },
-        normals,
+        geometric_normals,
+        shading_normals,
         materials,
         { lbegin, lend },
         num_bounces,
@@ -411,7 +376,8 @@ auto make_kernel_params(
         NormalBinding       /* */,
         Primitives const&   begin,
         Primitives const&   end,
-        Normals const&      normals,
+        Normals const&      geometric_normals,
+        Normals const&      shading_normals,
         TexCoords const&    tex_coords,
         Materials const&    materials,
         Textures const&     textures,
@@ -426,7 +392,8 @@ auto make_kernel_params(
 {
     return {
         { begin, end },
-        normals,
+        geometric_normals,
+        shading_normals,
         tex_coords,
         materials,
         textures,
@@ -459,7 +426,8 @@ auto make_kernel_params(
         ColorBinding        /* */,
         Primitives const&   begin,
         Primitives const&   end,
-        Normals const&      normals,
+        Normals const&      geometric_normals,
+        Normals const&      shading_normals,
         TexCoords const&    tex_coords,
         Materials const&    materials,
         Colors const&       colors,
@@ -486,7 +454,8 @@ auto make_kernel_params(
 {
     return {
         { begin, end },
-        normals,
+        geometric_normals,
+        shading_normals,
         tex_coords,
         materials,
         colors,

@@ -90,7 +90,8 @@ struct renderer : viewer_type
     cuda_sched<ray_type>                                    device_sched;
     pixel_unpack_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>        device_rt;
     device_bvh_type                                         device_bvh;
-    thrust::device_vector<model::normal_list::value_type>   device_normals;
+    thrust::device_vector<model::normal_list::value_type>   device_geometric_normals;
+    thrust::device_vector<model::normal_list::value_type>   device_shading_normals;
     thrust::device_vector<material_type>                    device_materials;
 
 #endif
@@ -296,7 +297,8 @@ void renderer::on_display()
             normals_per_vertex_binding{},
             thrust::raw_pointer_cast(device_primitives.data()),
             thrust::raw_pointer_cast(device_primitives.data()) + device_primitives.size(),
-            thrust::raw_pointer_cast(device_normals.data()),
+            thrust::raw_pointer_cast(device_geometric_normals.data()),
+            thrust::raw_pointer_cast(device_shading_normals.data()),
             thrust::raw_pointer_cast(device_materials.data()),
             thrust::raw_pointer_cast(device_lights.data()),
             thrust::raw_pointer_cast(device_lights.data()) + device_lights.size()
@@ -306,6 +308,7 @@ void renderer::on_display()
             normals_per_vertex_binding{},
             bvhs.data(),
             bvhs.data() + bvhs.size(),
+            mod.geometric_normals.data(),
             mod.shading_normals.data(),
 //          mod.tex_coords.data(),
             host_materials.data(),
@@ -420,15 +423,18 @@ int main(int argc, char** argv)
     try
     {
         rend.device_bvh = renderer::device_bvh_type(rend.host_bvh);
-        rend.device_normals = rend.mod.shading_normals;
+        rend.device_geometric_normals = rend.mod.geometric_normals;
+        rend.device_shading_normals = rend.mod.shading_normals;
         rend.device_materials = rend.host_materials;
     }
     catch (std::bad_alloc const&)
     {
         std::cerr << "GPU memory allocation failed" << std::endl;
         rend.device_bvh = renderer::device_bvh_type();
-        rend.device_normals.clear();
-        rend.device_normals.shrink_to_fit();
+        rend.device_geometric_normals.clear();
+        rend.device_geometric_normals.shrink_to_fit();
+        rend.device_shading_normals.clear();
+        rend.device_shading_normals.shrink_to_fit();
         rend.device_materials.clear();
         rend.device_materials.shrink_to_fit();
     }

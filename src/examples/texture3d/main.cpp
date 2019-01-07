@@ -284,10 +284,11 @@ void renderer::on_display()
     // Construct a parameter object that is
     // compatible with the builtin path tracing kernel.
     auto kparams = make_kernel_params(
-            normals_per_face_binding{},
+            normals_per_vertex_binding{},
             primitives.data(),
             primitives.data() + primitives.size(),
             mod.geometric_normals.data(),
+            mod.shading_normals.data(),
             tex_coords.data(),
             materials.data(),
             textures.data(),

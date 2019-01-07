@@ -81,6 +81,62 @@ public:
 
 
 //-------------------------------------------------------------------------------------------------
+// Get primitive from params
+//
+
+template <
+    typename Params,
+    typename HR,
+    typename P = typename Params::primitive_type,
+    typename = typename std::enable_if<!is_any_bvh<P>::value>::type
+    >
+VSNRAY_FUNC
+inline P const& get_prim(Params const& params, HR const& hr)
+{
+    return params.prims.begin[hr.prim_id];
+}
+
+// overload for BVHs
+template <
+    typename Params,
+    typename R,
+    typename Base,
+    typename P = typename Params::primitive_type,
+    typename = typename std::enable_if<is_any_bvh<P>::value>::type,
+    typename = typename std::enable_if<
+                !is_any_bvh_inst<typename P::primitive_type>::value>::type // but not BVH of instances!
+    >
+VSNRAY_FUNC
+inline typename P::primitive_type const& get_prim(Params const& params, hit_record_bvh<R, Base> const& hr)
+{
+    VSNRAY_UNUSED(params);
+    VSNRAY_UNUSED(hr);
+
+    // TODO: iterate over list of BVHs and find the right one!
+    return params.prims.begin[0].primitive(hr.prim_id);
+}
+
+// overload for BVHs of instances
+template <
+    typename Params,
+    typename R,
+    typename Base,
+    typename P = typename Params::primitive_type,
+    typename = typename std::enable_if<is_any_bvh<P>::value>::type, // is BVH ...
+    typename = typename std::enable_if<
+                is_any_bvh_inst<typename P::primitive_type>::value>::type, // ... of instances!
+    typename X = void
+    >
+VSNRAY_FUNC
+inline auto get_prim(Params const& params, hit_record_bvh<R, Base> const& hr)
+    -> typename P::primitive_type::primitive_type const&
+{
+    // Assume we only have one top-level BVH (TODO?)
+    return params.prims.begin[0].primitive(hr.primitive_list_index).primitive(hr.primitive_list_index_inst);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Struct containing both the geometric and the shading normal
 //
 
@@ -92,329 +148,28 @@ struct normal_pair
 };
 
 
-// TODO: consolidate the following with get_normal()?
-// TODO: consolidate interface with get_color() and get_tex_coord()?
-
 //-------------------------------------------------------------------------------------------------
-// get_normal_pair()
-//
-
-template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
-VSNRAY_FUNC
-inline auto get_normal_pair(
-        Normals                     normals,
-        HR const&                   hr,
-        Primitive                   prim,
-        NormalBinding               /* */,
-        typename std::enable_if<num_normals<Primitive, NormalBinding>::value >= 2>::type* = 0
-        )
-    -> normal_pair<decltype(get_normal(normals, hr, prim, NormalBinding{}))>
-{
-    return {
-        get_normal(normals, hr, prim, NormalBinding{}),
-        get_shading_normal(normals, hr, prim, NormalBinding{})
-        };
-}
-
-template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
-VSNRAY_FUNC
-inline auto get_normal_pair(
-        Normals                     normals,
-        HR const&                   hr,
-        Primitive                   /* */,
-        NormalBinding               /* */,
-        typename std::enable_if<num_normals<Primitive, NormalBinding>::value == 1>::type* = 0
-        )
-    -> normal_pair<decltype(get_normal(normals, hr, Primitive{}, NormalBinding{}))>
-{
-    return {
-        get_normal(normals, hr, Primitive{}, NormalBinding{}),
-        get_shading_normal(normals, hr, Primitive{}, NormalBinding{})
-        };
-}
-
-template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
-VSNRAY_FUNC
-inline auto get_normal_pair(
-        Normals                     normals,
-        HR const&                   hr,
-        Primitive                   prim,
-        NormalBinding               /* */,
-        typename std::enable_if<num_normals<Primitive, NormalBinding>::value == 0>::type* = 0
-        )
-    -> normal_pair<decltype(get_normal(hr, prim))>
-{
-    VSNRAY_UNUSED(normals);
-
-    return {
-        get_normal(hr, prim),
-        get_shading_normal(hr, prim)
-        };
-}
-
-template <typename HR, typename Primitive>
-VSNRAY_FUNC
-inline auto get_normal_pair(
-        HR const&                   hr,
-        Primitive                   prim
-        )
-    -> normal_pair<decltype(get_normal(hr, prim))>
-{
-    return {
-        get_normal(hr, prim),
-        get_shading_normal(hr, prim)
-        };
-}
-
-
-// get_normal_pair as functor for template arguments
-struct get_normal_pair_t
-{
-    template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
-    VSNRAY_FUNC
-    inline auto operator()(
-            Normals                     normals,
-            HR const&                   hr,
-            Primitive                   prim,
-            NormalBinding               /* */
-            ) const
-        -> decltype( get_normal_pair(normals, hr, prim, NormalBinding{}) )
-    {
-        return get_normal_pair(normals, hr, prim, NormalBinding{});
-    }
-
-    template <typename HR, typename Primitive>
-    VSNRAY_FUNC
-    inline auto operator()(
-            HR const&                   hr,
-            Primitive                   prim
-            ) const
-        -> decltype( get_normal_pair(hr, prim) )
-    {
-        return get_normal_pair(hr, prim);
-    }
-};
-
-
-// overload for generic_primitive
-template <
-    typename Normals,
-    typename HR,
-    typename ...Ts,
-    typename NormalBinding
-    >
-VSNRAY_FUNC
-inline auto get_normal_pair(
-        Normals                     normals,
-        HR const&                   hr,
-        generic_primitive<Ts...>    prim,
-        NormalBinding               /* */
-        )
-    -> normal_pair<typename std::iterator_traits<Normals>::value_type>
-{
-    get_normal_from_generic_primitive_visitor<
-        get_normal_pair_t,
-        normal_pair<typename std::iterator_traits<Normals>::value_type>,
-        NormalBinding,
-        Normals,
-        HR
-        >visitor(
-            normals,
-            hr
-            );
-
-    return apply_visitor( visitor, prim );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// dispatch function for get_normal()
+// Get geometric normal and shading normal
 //
 
 template <
     typename Params,
-    typename Normals,
     typename HR,
-    typename Primitive = typename Params::primitive_type,
-    typename NormalBinding = typename Params::normal_binding,
-    typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type
+    typename Primitive = typename Params::primitive_type
     >
 VSNRAY_FUNC
-inline auto get_normal_dispatch(
-        Params const&   params,
-        Normals         normals,
-        HR const&       hr,
-        typename std::enable_if<
-            num_normals<Primitive, NormalBinding>::value == 1
-            >::type* = 0
-        )
-    -> decltype( get_normal_pair(normals, hr, Primitive{}, NormalBinding{}) )
+inline auto get_normals(Params const& params, HR const& hr)
+    -> normal_pair<decltype(get_normal(params.geometric_normals, hr, get_prim(params, hr)))>
 {
-    VSNRAY_UNUSED(params);
+    auto const& prim = get_prim(params, hr);
 
-    return get_normal_pair(normals, hr, Primitive{}, NormalBinding{});
-}
+    auto const& gns = params.geometric_normals;
+    auto const& sns = params.shading_normals;
 
-template <
-    typename Params,
-    typename Normals,
-    typename HR,
-    typename Primitive = typename Params::primitive_type,
-    typename NormalBinding = typename Params::normal_binding,
-    typename = typename std::enable_if<!is_any_bvh<Primitive>::value>::type
-    >
-VSNRAY_FUNC
-inline auto get_normal_dispatch(
-        Params const&   params,
-        Normals         normals,
-        HR const&       hr,
-        typename std::enable_if<
-            num_normals<Primitive, NormalBinding>::value != 1
-            >::type* = 0
-        )
-    -> decltype( get_normal_pair(normals, hr, params.prims.begin[hr.prim_id], NormalBinding{}) )
-{
-    return get_normal_pair(normals, hr, params.prims.begin[hr.prim_id], NormalBinding{});
-}
+    auto gn = gns ? get_normal(gns, hr, prim) : get_normal(hr, prim);
+    auto sn = sns ? get_shading_normal(sns, hr, prim, typename Params::normal_binding{}) : gn;
 
-// overload for BVHs
-template <
-    typename Params,
-    typename Normals,
-    typename R,
-    typename Base,
-    typename Primitive = typename Params::primitive_type,
-    typename NormalBinding = typename Params::normal_binding,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
-    >
-VSNRAY_FUNC
-inline auto get_normal_dispatch(
-        Params const&                  params,
-        Normals                        normals,
-        hit_record_bvh<R, Base> const& hr,
-        typename std::enable_if<
-            num_normals<typename Primitive::primitive_type, NormalBinding>::value == 1
-            >::type* = 0
-        )
-    -> decltype( get_normal_pair(
-                normals,
-                static_cast<Base const&>(hr),
-                typename Primitive::primitive_type{},
-                NormalBinding{}
-            ) )
-{
-    VSNRAY_UNUSED(params);
-
-    return get_normal_pair(
-                normals,
-                static_cast<Base const&>(hr),
-                typename Primitive::primitive_type{},
-                NormalBinding{}
-            );
-}
-
-template <
-    typename Params,
-    typename Normals,
-    typename R,
-    typename Base,
-    typename Primitive = typename Params::primitive_type,
-    typename NormalBinding = typename Params::normal_binding,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type, // is BVH
-    typename = typename std::enable_if<
-                !is_any_bvh_inst<typename Primitive::primitive_type>::value>::type // but not BVH of instances!
-    >
-VSNRAY_FUNC
-inline auto get_normal_dispatch(
-        Params const&                  params,
-        Normals                        normals,
-        hit_record_bvh<R, Base> const& hr,
-        typename std::enable_if<
-            num_normals<typename Primitive::primitive_type, NormalBinding>::value != 1
-            >::type* = 0
-        )
-    -> decltype( get_normal_pair(
-            normals,
-            static_cast<Base const&>(hr),
-            typename Primitive::primitive_type{},
-            NormalBinding{}
-            ) )
-{
-    // Find the BVH that contains prim_id
-    size_t num_primitives_total = 0;
-
-    size_t i = 0;
-    while (static_cast<size_t>(hr.prim_id) >= num_primitives_total + params.prims.begin[i].num_primitives())
-    {
-        num_primitives_total += params.prims.begin[i++].num_primitives();
-    }
-
-    return get_normal_pair(
-            normals,
-            static_cast<Base const&>(hr),
-            params.prims.begin[i].primitive(hr.primitive_list_index),
-            typename Params::normal_binding{}
-            );
-}
-
-template <
-    typename Params,
-    typename Normals,
-    typename R,
-    typename Base,
-    typename Primitive = typename Params::primitive_type,
-    typename NormalBinding = typename Params::normal_binding,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type, // is BVH ...
-    typename = typename std::enable_if<
-                is_any_bvh_inst<typename Primitive::primitive_type>::value>::type, // ... of instances!
-    typename X = void
-    >
-VSNRAY_FUNC
-inline auto get_normal_dispatch(
-        Params const&                  params,
-        Normals                        normals,
-        hit_record_bvh<R, Base> const& hr,
-        typename std::enable_if<
-            num_normals<typename Primitive::primitive_type, NormalBinding>::value != 1
-            >::type* = 0
-        )
-    -> decltype( get_normal_pair(
-            normals,
-            static_cast<Base const&>(hr),
-            typename Primitive::primitive_type{},
-            NormalBinding{}
-            ) )
-{
-    // Assume we only have one top-level BVH (TODO?)
-    return get_normal_pair(
-            normals,
-            static_cast<Base const&>(hr),
-            params.prims.begin[0].primitive(hr.primitive_list_index).primitive(hr.primitive_list_index_inst),
-            typename Params::normal_binding{}
-            );
-}
-
-// overload for BVH instances
-template <
-    typename Params,
-    typename Normals,
-    typename R,
-    typename Base
-    >
-VSNRAY_FUNC
-inline auto get_normal_dispatch(
-        Params const& params,
-        Normals normals,
-        hit_record_bvh_inst<R, Base> const& hr
-        )
-    -> decltype(get_normal_dispatch(params, normals, static_cast<hit_record_bvh<R, Base> const&>(hr)))
-{
-    using T = typename R::scalar_type;
-
-    auto np = get_normal_dispatch(params, normals, static_cast<hit_record_bvh<R, Base> const&>(hr));
-    np.geometric_normal = normalize((transpose(hr.transform_inv) * vector<4, T>(np.geometric_normal, T(1.0))).xyz());
-    np.shading_normal = normalize((transpose(hr.transform_inv) * vector<4, T>(np.shading_normal, T(1.0))).xyz());
-    return np;
+    return { gn, sn };
 }
 
 
@@ -481,7 +236,6 @@ inline typename Params::color_type get_tex_color(
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_impl(
-        has_no_normals_tag  /* */,
         has_no_colors_tag   /* */,
         has_no_textures_tag /* */,
         HR const&           hr,
@@ -489,7 +243,7 @@ inline auto get_surface_impl(
         )
     -> surface<typename Params::normal_type, typename Params::material_type>
 {
-    auto ns = get_normal_dispatch(params, nullptr, hr);
+    auto ns = get_normals(params, hr);
     return {
         ns.geometric_normal,
         ns.shading_normal,
@@ -500,26 +254,6 @@ inline auto get_surface_impl(
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_impl(
-        has_normals_tag     /* */,
-        has_no_colors_tag   /* */,
-        has_no_textures_tag /* */,
-        HR const&           hr,
-        Params const&       params
-        )
-    -> surface<typename Params::normal_type, typename Params::material_type>
-{
-    auto ns = get_normal_dispatch(params, params.normals, hr);
-    return {
-        ns.geometric_normal,
-        ns.shading_normal,
-        params.materials[hr.geom_id]
-        };
-}
-
-template <typename HR, typename Params>
-VSNRAY_FUNC
-inline auto get_surface_impl(
-        has_normals_tag     /* */,
         has_no_colors_tag   /* */,
         has_textures_tag    /* */,
         HR const&           hr,
@@ -531,7 +265,7 @@ inline auto get_surface_impl(
             typename Params::material_type
             >
 {
-    auto ns = get_normal_dispatch(params, params.normals, hr);
+    auto ns = get_normals(params, hr);
     auto tc = get_tex_color(
                     hr,
                     params,
@@ -549,7 +283,6 @@ inline auto get_surface_impl(
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface_impl(
-        has_no_normals_tag  /* */,
         has_colors_tag      /* */,
         has_textures_tag    /* */,
         HR const&           hr,
@@ -563,40 +296,7 @@ inline auto get_surface_impl(
 {
     using P = typename Params::primitive_type;
 
-    auto ns    = get_normal_dispatch(params, nullptr, hr);
-    auto color = get_color(params.colors, hr, P{}, typename Params::color_binding{});
-    auto tc    = get_tex_color(
-                        hr,
-                        params,
-                        std::integral_constant<int, texture_dimensions<typename Params::texture_type>::value>{}
-                        );
-
-    return {
-        ns.geometric_normal,
-        ns.shading_normal,
-        color * tc,
-        params.materials[hr.geom_id]
-        };
-}
-
-template <typename HR, typename Params>
-VSNRAY_FUNC
-inline auto get_surface_impl(
-        has_normals_tag     /* */,
-        has_colors_tag      /* */,
-        has_textures_tag    /* */,
-        HR const&           hr,
-        Params const&       params
-        )
-    -> surface<
-            typename Params::normal_type,
-            typename Params::color_type,
-            typename Params::material_type
-            >
-{
-    using P = typename Params::primitive_type;
-
-    auto ns    = get_normal_dispatch(params, params.normals, hr);
+    auto ns    = get_normals(params, hr);
     auto color = get_color(params.colors, hr, P{}, typename Params::color_binding{});
     auto tc    = get_tex_color(
                         hr,
@@ -618,7 +318,6 @@ inline auto get_surface_impl(
 //
 
 template <
-    typename NormalsTag,
     typename ColorsTag,
     typename TexturesTag,
     typename HR,
@@ -627,7 +326,6 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_surface_impl(
-        NormalsTag    /* */,
         ColorsTag     /* */,
         TexturesTag   /* */,
         HR const&     hr,
@@ -646,7 +344,6 @@ inline auto get_surface_impl(
         if (hrs[i].hit)
         {
             surfs[i] = get_surface_impl(
-                    NormalsTag{},
                     ColorsTag{},
                     TexturesTag{},
                     hrs[i],
@@ -665,7 +362,6 @@ template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface(HR const& hr, Params const& p)
     -> decltype( detail::get_surface_impl(
-            detail::has_normals<Params>{},
             detail::has_colors<Params>{},
             detail::has_textures<Params>{},
             hr,
@@ -673,7 +369,6 @@ inline auto get_surface(HR const& hr, Params const& p)
             ) )
 {
     return detail::get_surface_impl(
-            detail::has_normals<Params>{},
             detail::has_colors<Params>{},
             detail::has_textures<Params>{},
             hr,

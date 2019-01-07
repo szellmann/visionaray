@@ -34,15 +34,15 @@ void render_generic_material_cpp(
 
     primitives.push_back(bvh.ref());
 
-    bool use_shading_normals = shading_normals.size() >= bvh.num_primitives() * 3;
     bool use_textures = textures.size() > 0 && tex_coords.size() >= bvh.num_primitives() * 3;
 
-    if (use_shading_normals && use_textures)
+    if (use_textures)
     {
         auto kparams = make_kernel_params(
                 normals_per_vertex_binding{},
                 primitives.data(),
                 primitives.data() + primitives.size(),
+                geometric_normals.data(),
                 shading_normals.data(),
                 tex_coords.data(),
                 materials.data(),
@@ -57,51 +57,14 @@ void render_generic_material_cpp(
 
         call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
     }
-    else if (use_shading_normals && !use_textures)
+    else
     {
         auto kparams = make_kernel_params(
                 normals_per_vertex_binding{},
                 primitives.data(),
                 primitives.data() + primitives.size(),
+                geometric_normals.data(),
                 shading_normals.data(),
-                materials.data(),
-                lights.data(),
-                lights.data() + lights.size(),
-                bounces,
-                epsilon,
-                bgcolor,
-                ambient
-                );
-
-        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
-    }
-    else if (!use_shading_normals && use_textures)
-    {
-        auto kparams = make_kernel_params(
-                normals_per_face_binding{},
-                primitives.data(),
-                primitives.data() + primitives.size(),
-                geometric_normals.data(),
-                tex_coords.data(),
-                materials.data(),
-                textures.data(),
-                lights.data(),
-                lights.data() + lights.size(),
-                bounces,
-                epsilon,
-                bgcolor,
-                ambient
-                );
-
-        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
-    }
-    else if (!use_shading_normals && !use_textures)
-    {
-        auto kparams = make_kernel_params(
-                normals_per_face_binding{},
-                primitives.data(),
-                primitives.data() + primitives.size(),
-                geometric_normals.data(),
                 materials.data(),
                 lights.data(),
                 lights.data() + lights.size(),

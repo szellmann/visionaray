@@ -363,10 +363,11 @@ void renderer::on_display()
 
 
     auto kparams = make_kernel_params(
-            normals_per_face_binding{},
+            normals_per_vertex_binding{},
             triangles.data(),
             triangles.data() + triangles.size(),
             normals.data(),
+            (vec3*)nullptr,    // no shading normals!
             materials.data(),
             lights.data(),
             lights.data() + lights.size(),

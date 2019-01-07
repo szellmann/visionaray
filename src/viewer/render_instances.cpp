@@ -37,52 +37,26 @@ void render_instances_cpp(
 
     primitives.push_back(bvh.ref());
 
-    if (shading_normals.size() != 0)
-    {
-        auto kparams = make_kernel_params(
-                normals_per_vertex_binding{},
-                colors_per_vertex_binding{},
-                primitives.data(),
-                primitives.data() + primitives.size(),
-                shading_normals.data(),
-                tex_coords.data(),
-                materials.data(),
-                colors.data(),
-                textures.data(),
-                lights.data(),
-                lights.data() + lights.size(),
-                bounces,
-                epsilon,
-                bgcolor,
-                ambient
-                );
+    auto kparams = make_kernel_params(
+            normals_per_vertex_binding{},
+            //colors_per_vertex_binding{},
+            primitives.data(),
+            primitives.data() + primitives.size(),
+            geometric_normals.data(),
+            shading_normals.data(),
+            tex_coords.data(),
+            materials.data(),
+            //colors.data(),
+            textures.data(),
+            lights.data(),
+            lights.data() + lights.size(),
+            bounces,
+            epsilon,
+            bgcolor,
+            ambient
+            );
 
-        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
-    }
-    else
-    {
-        assert(geometric_normals.size() != 0);
-
-        auto kparams = make_kernel_params(
-                normals_per_face_binding{},
-                colors_per_vertex_binding{},
-                primitives.data(),
-                primitives.data() + primitives.size(),
-                geometric_normals.data(),
-                tex_coords.data(),
-                materials.data(),
-                colors.data(),
-                textures.data(),
-                lights.data(),
-                lights.data() + lights.size(),
-                bounces,
-                epsilon,
-                bgcolor,
-                ambient
-                );
-
-        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
-    }
+    call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
 }
 
 } // visionaray

@@ -210,8 +210,7 @@ void renderer::on_display()
             auto n = get_normal(
                 mod.geometric_normals.data(),
                 hit_rec,
-                bvh_ref{},
-                normals_per_face_binding{}
+                bvh_ref{}
                 );
 
             V u;

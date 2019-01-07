@@ -22,7 +22,24 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
-// Default get_shading_normal implementation - simply use the geometric normal for shading
+// Default get_shading_normal w/o normal list, dispatches to get_normal (geometric!)
+//
+
+template <
+    typename HR,
+    typename Primitive,
+    typename NormalBinding
+    >
+VSNRAY_FUNC
+inline auto get_shading_normal(HR const& hr, Primitive prim)
+    -> decltype(get_normal(hr, prim))
+{
+    return get_normal(hr, prim);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Default get_shading_normal implementation, assumes that normal list is unused!
 //
 
 template <
@@ -33,19 +50,17 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_shading_normal(
-        Normals                     normals,
-        HR const&                   hr,
-        Primitive                   prim,
-        NormalBinding               binding
+        Normals       normals,
+        HR const&     hr,
+        Primitive     prim,
+        NormalBinding binding
         )
-    -> decltype( get_normal(
-            normals,
-            hr,
-            prim,
-            binding
-            ) )
+    -> typename std::iterator_traits<Normals>::value_type
 {
-    return get_normal(normals, hr, prim, binding);
+    VSNRAY_UNUSED(normals);
+    VSNRAY_UNUSED(binding);
+
+    return get_shading_normal(hr, prim);
 }
 
 template <
@@ -160,42 +175,6 @@ inline auto get_shading_normal(
     return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
 }
 
-
-//-------------------------------------------------------------------------------------------------
-// get_shading_normal as functor for template arguments
-//
-
-namespace detail
-{
-
-struct get_shading_normal_t
-{
-    template <typename Normals, typename HR, typename Primitive, typename NormalBinding>
-    VSNRAY_FUNC
-    inline auto operator()(
-            Normals                     normals,
-            HR const&                   hr,
-            Primitive                   prim,
-            NormalBinding               /* */
-            ) const
-        -> decltype( get_shading_normal(normals, hr, prim, NormalBinding{}) )
-    {
-        return get_shading_normal(normals, hr, prim, NormalBinding{});
-    }
-
-    template <typename HR, typename Primitive>
-    VSNRAY_FUNC
-    inline auto operator()(
-            HR const&                   hr,
-            Primitive                   prim
-            ) const
-        -> decltype( get_shading_normal(hr, prim) )
-    {
-        return get_shading_normal(hr, prim);
-    }
-};
-
-} // detail
 } // visionaray
 
 #endif // VSNRAY_GET_SHADING_NORMAL_H

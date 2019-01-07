@@ -16,7 +16,7 @@ namespace visionaray
 
 void render_instances_ptex_cpp(
         index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
-        aligned_vector<vec3> const&                               /*geometric_normals*/,
+        aligned_vector<vec3> const&                               geometric_normals,
         aligned_vector<vec3> const&                               shading_normals,
         aligned_vector<ptex::face_id_t> const&                    face_ids,
         aligned_vector<generic_material_t> const&                 materials,
@@ -44,6 +44,7 @@ void render_instances_ptex_cpp(
             normals_per_vertex_binding{},
             primitives.data(),
             primitives.data() + primitives.size(),
+            geometric_normals.data(),
             shading_normals.data(),
             face_ids.data(),
             materials.data(),
