@@ -10,7 +10,7 @@ namespace visionaray
 namespace detail
 {
 
-template <typename ReturnType, typename Colors, typename ColorBinding, typename HR>
+template <typename ReturnType, typename ColorBinding, typename Colors, typename HR>
 class get_color_from_generic_primitive_visitor
 {
 public:
@@ -54,7 +54,8 @@ template <
     typename Colors,
     typename HR,
     typename ...Ts,
-    typename ColorBinding
+    typename ColorBinding,
+    typename = typename std::enable_if<!std::is_same<ColorBinding, unspecified_binding>::value>::type
     >
 VSNRAY_FUNC
 inline auto get_color(
@@ -67,13 +68,10 @@ inline auto get_color(
 {
     detail::get_color_from_generic_primitive_visitor<
         typename std::iterator_traits<Colors>::value_type,
+        ColorBinding,
         Colors,
-        HR,
-        ColorBinding
-        >visitor(
-            colors,
-            hr
-            );
+        HR
+        > visitor(colors, hr);
 
     return apply_visitor( visitor, prim );
 }

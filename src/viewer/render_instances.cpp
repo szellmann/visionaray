@@ -39,14 +39,14 @@ void render_instances_cpp(
 
     auto kparams = make_kernel_params(
             normals_per_vertex_binding{},
-            //colors_per_vertex_binding{},
+            colors_per_vertex_binding{},
             primitives.data(),
             primitives.data() + primitives.size(),
             geometric_normals.data(),
             shading_normals.data(),
             tex_coords.data(),
             materials.data(),
-            //colors.data(),
+            colors.data(),
             textures.data(),
             lights.data(),
             lights.data() + lights.size(),

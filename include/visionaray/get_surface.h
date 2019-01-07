@@ -223,54 +223,27 @@ inline typename Params::color_type get_tex_color(
 
 
 //-------------------------------------------------------------------------------------------------
-//
+// No SIMD
 //
 
-template <typename HR, typename Params>
+template <
+    typename HR,
+    typename Params,
+    typename = typename std::enable_if<!simd::is_simd_vector<typename HR::scalar_type>::value>::type
+    >
 VSNRAY_FUNC
-inline auto get_surface_impl(
-        has_no_colors_tag   /* */,
-        HR const&           hr,
-        Params const&       params
-        )
+inline auto get_surface_impl(HR const& hr, Params const& params)
     -> surface<
             typename Params::normal_type,
             typename Params::color_type,
             typename Params::material_type
             >
 {
-    auto ns = get_normals(params, hr);
-    auto tc = get_tex_color(
-                    hr,
-                    params,
-                    std::integral_constant<int, texture_dimensions<typename Params::texture_type>::value>{}
-                    );
-
-    return {
-        ns.geometric_normal,
-        ns.shading_normal,
-        tc,
-        params.materials[hr.geom_id]
-        };
-}
-
-template <typename HR, typename Params>
-VSNRAY_FUNC
-inline auto get_surface_impl(
-        has_colors_tag      /* */,
-        HR const&           hr,
-        Params const&       params
-        )
-    -> surface<
-            typename Params::normal_type,
-            typename Params::color_type,
-            typename Params::material_type
-            >
-{
+    using C = typename Params::color_type;
     using P = typename Params::primitive_type;
 
     auto ns    = get_normals(params, hr);
-    auto color = get_color(params.colors, hr, P{}, typename Params::color_binding{});
+    auto color = params.colors ? get_color(params.colors, hr, P{}, typename Params::color_binding{}) : C(1.0);
     auto tc    = get_tex_color(
                         hr,
                         params,
@@ -291,17 +264,12 @@ inline auto get_surface_impl(
 //
 
 template <
-    typename ColorsTag,
     typename HR,
     typename Params,
     typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type
     >
 VSNRAY_FUNC
-inline auto get_surface_impl(
-        ColorsTag     /* */,
-        HR const&     hr,
-        Params const& params
-        )
+inline auto get_surface_impl(HR const& hr, Params const& params)
     -> typename simd_decl_surface<Params, typename HR::scalar_type>::type
 {
     using T = typename HR::scalar_type;
@@ -314,11 +282,7 @@ inline auto get_surface_impl(
     {
         if (hrs[i].hit)
         {
-            surfs[i] = get_surface_impl(
-                    ColorsTag{},
-                    hrs[i],
-                    params
-                    );
+            surfs[i] = get_surface_impl(hrs[i], params);
         }
     }
 
@@ -331,17 +295,9 @@ inline auto get_surface_impl(
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface(HR const& hr, Params const& p)
-    -> decltype( detail::get_surface_impl(
-            detail::has_colors<Params>{},
-            hr,
-            p
-            ) )
+    -> decltype(detail::get_surface_impl(hr, p))
 {
-    return detail::get_surface_impl(
-            detail::has_colors<Params>{},
-            hr,
-            p
-            );
+    return detail::get_surface_impl(hr, p);
 }
 
 } // visionaray

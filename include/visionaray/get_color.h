@@ -9,6 +9,7 @@
 #include <iterator>
 #include <type_traits>
 
+#include "detail/macros.h"
 #include "math/simd/type_traits.h"
 #include "math/array.h"
 #include "math/triangle.h"
@@ -17,6 +18,28 @@
 
 namespace visionaray
 {
+
+//-------------------------------------------------------------------------------------------------
+// Unspecified binding, just return white
+//
+
+template <typename Colors, typename HR, typename Primitive>
+VSNRAY_FUNC
+inline auto get_color(
+        Colors              colors,
+        HR const&           hr,
+        Primitive           /* */,
+        unspecified_binding /* */
+        )
+    -> typename std::iterator_traits<Colors>::value_type
+{
+    VSNRAY_UNUSED(colors, hr);
+
+    using C = typename std::iterator_traits<Colors>::value_type;
+
+    return C(1.0);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Get face color from array

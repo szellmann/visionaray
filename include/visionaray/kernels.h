@@ -95,68 +95,6 @@ namespace visionaray
 // Param structs
 //
 
-template <typename ...Args>
-struct kernel_params;
-
-template <
-    typename NormalBinding,
-    typename Primitives,
-    typename Normals,
-    typename TexCoords,
-    typename Materials,
-    typename Textures,
-    typename Lights,
-    typename Color,
-    typename ...Args
-    >
-struct kernel_params<
-        NormalBinding,
-        Primitives,
-        Normals,
-        TexCoords,
-        Materials,
-        Textures,
-        Lights,
-        Color,
-        Args...
-        >
-{
-    using normal_binding    = NormalBinding;
-    using primitive_type    = typename std::iterator_traits<Primitives>::value_type;
-    using normal_type       = typename std::iterator_traits<Normals>::value_type;
-    using tex_coords_type   = typename std::iterator_traits<TexCoords>::value_type;
-    using material_type     = typename std::iterator_traits<Materials>::value_type;
-    using texture_type      = typename std::iterator_traits<Textures>::value_type;
-    using light_type        = typename std::iterator_traits<Lights>::value_type;
-    using color_type        = vector<3, typename scalar_type<primitive_type>::type>;
-
-    using color_binding     = unspecified_binding;
-
-    struct
-    {
-        Primitives begin;
-        Primitives end;
-    } prims;
-
-    Normals   geometric_normals;
-    Normals   shading_normals;
-    TexCoords tex_coords;
-    Materials materials;
-    Textures  textures;
-
-    struct
-    {
-        Lights begin;
-        Lights end;
-    } lights;
-
-    unsigned num_bounces;
-    float epsilon;
-
-    Color bg_color;
-    Color ambient_color;
-};
-
 template <
     typename NormalBinding,
     typename ColorBinding,
@@ -170,22 +108,8 @@ template <
     typename Color,
     typename ...Args
     >
-struct kernel_params<
-        NormalBinding,
-        ColorBinding,
-        Primitives,
-        Normals,
-        TexCoords,
-        Materials,
-        Colors,
-        Textures,
-        Lights,
-        Color,
-        Args...
-        >
+struct kernel_params
 {
-    using has_colors        = void;
-
     using normal_binding    = NormalBinding;
     using color_binding     = ColorBinding;
     using primitive_type    = typename std::iterator_traits<Primitives>::value_type;
@@ -247,10 +171,12 @@ auto make_kernel_params(
         )
     -> kernel_params<
             normals_per_vertex_binding,
+            unspecified_binding,
             Primitives,
             vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
             vector<2, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
             Materials,
+            vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
             texture<unorm<8>, 2>*,
             Lights,
             vec4
@@ -262,6 +188,7 @@ auto make_kernel_params(
         nullptr, // shading normals
         nullptr, // uvs
         materials,
+        nullptr, // colors
         nullptr, // textures
         { lbegin, lend },
         num_bounces,
@@ -298,10 +225,12 @@ auto make_kernel_params(
         )
     -> kernel_params<
         NormalBinding,
+        unspecified_binding,
         Primitives,
         Normals,
         vector<2, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         Materials,
+        vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         texture<unorm<8>, 2>*,
         Lights,
         vec4
@@ -313,6 +242,7 @@ auto make_kernel_params(
         shading_normals,
         nullptr, // uvs
         materials,
+        nullptr, // colors
         nullptr, // textures
         { lbegin, lend },
         num_bounces,
@@ -351,7 +281,18 @@ auto make_kernel_params(
         vec4 const&         bg_color        = vec4(0.0),
         vec4 const&         ambient_color   = vec4(1.0)
         )
-    -> kernel_params<NormalBinding, Primitives, Normals, TexCoords, Materials, Textures, Lights, vec4>
+    -> kernel_params<
+        NormalBinding,
+        colors_per_vertex_binding,
+        Primitives,
+        Normals,
+        TexCoords,
+        Materials,
+        vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
+        Textures,
+        Lights,
+        vec4
+        >
 {
     return {
         { begin, end },
@@ -359,6 +300,7 @@ auto make_kernel_params(
         shading_normals,
         tex_coords,
         materials,
+        nullptr, // colors
         textures,
         { lbegin, lend },
         num_bounces,

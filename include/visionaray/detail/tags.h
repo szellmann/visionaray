@@ -19,31 +19,6 @@ namespace detail
 {
 
 //-------------------------------------------------------------------------------------------------
-// Surface
-//
-
-using has_colors_tag      = std::true_type;
-using has_no_colors_tag   = std::false_type;
-
-template <typename T>
-struct has_colors_impl
-{
-    template <typename U>
-    static has_colors_tag test(typename U::has_colors*);
-
-    template <typename U>
-    static has_no_colors_tag test(...);
-
-    using type = decltype( test<typename std::decay<T>::type>(nullptr) );
-};
-
-template <typename T>
-struct has_colors : has_colors_impl<T>::type
-{
-};
-
-
-//-------------------------------------------------------------------------------------------------
 // Traversal types
 //
 
