@@ -48,6 +48,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <visionaray/math/sphere.h>
 
+#include <visionaray/area_light.h>
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
@@ -77,6 +78,13 @@ using viewer_type = viewer_glut;
 //
 
 #define USE_DOUBLE_PRECISION 1
+
+
+//-------------------------------------------------------------------------------------------------
+// Switch between path tracing with MIS and naive path tracing
+//
+
+#define USE_MULTIPLE_IMPORTANCE_SAMPLING 0
 
 
 //-------------------------------------------------------------------------------------------------
@@ -122,6 +130,7 @@ struct renderer : viewer_type
     using host_ray_type   = basic_ray<S>;
     using device_ray_type = basic_ray<S>;
     using material_type   = generic_material<emissive<S>, glass<S>, matte<S>, mirror<S>>;
+    using area_light_type = area_light<S, basic_sphere<S>>;
 
     enum device_type
     {
@@ -197,10 +206,18 @@ struct renderer : viewer_type
         spheres.push_back(make_sphere(Vec(50.0, 681.6 - 0.27, 81.6), 600.0));
         materials.push_back(make_emissive(Vec(12.0, 12.0, 12.0)));
 
+#if USE_MULTIPLE_IMPORTANCE_SAMPLING
+        area_light_type al(spheres.back());
+        al.set_cl(Vec(12.0, 12.0, 12.0));
+        al.set_kl(1.0);
+        lights.push_back(al);
+#endif
+
 #ifdef __CUDACC__
         // Copy to GPU
         device_spheres = spheres;
         device_materials = materials;
+        device_lights = lights;
 #endif
     }
 
@@ -210,6 +227,7 @@ struct renderer : viewer_type
 
     aligned_vector<basic_sphere<S>>                     spheres;
     aligned_vector<material_type>                       materials;
+    aligned_vector<area_light_type>                     lights;
 
 #ifdef __CUDACC__
     pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>  device_rt;
@@ -217,6 +235,7 @@ struct renderer : viewer_type
 
     thrust::device_vector<basic_sphere<S>>              device_spheres;
     thrust::device_vector<material_type>                device_materials;
+    thrust::device_vector<area_light_type>              device_lights;
 #endif
 
     unsigned                                            frame_num = 0;
@@ -294,9 +313,11 @@ void renderer::on_display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+#if !USE_MULTIPLE_IMPORTANCE_SAMPLING
     // make_kernel_params needs (!) lights
     // TODO: fix this in visionaray API!
     empty_light_type* ignore = 0;
+#endif
 
 #if USE_DOUBLE_PRECISION
     float epsilon = 1e-4f;
@@ -331,8 +352,13 @@ void renderer::on_display()
                 thrust::raw_pointer_cast(device_spheres.data()),
                 thrust::raw_pointer_cast(device_spheres.data()) + device_spheres.size(),
                 thrust::raw_pointer_cast(device_materials.data()),
+#if USE_MULTIPLE_IMPORTANCE_SAMPLING
+                thrust::raw_pointer_cast(device_lights.data()),
+                thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+#else
                 ignore,
                 ignore,
+#endif
                 10,
                 epsilon,
                 vec4(background_color(), 1.0f),
@@ -364,8 +390,13 @@ void renderer::on_display()
                 spheres.data(),
                 spheres.data() + spheres.size(),
                 materials.data(),
+#if USE_MULTIPLE_IMPORTANCE_SAMPLING
+                lights.data(),
+                lights.data() + lights.size(),
+#else
                 ignore,
                 ignore,
+#endif
                 10,
                 epsilon,
                 vec4(background_color(), 1.0f),
