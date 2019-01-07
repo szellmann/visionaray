@@ -11,6 +11,7 @@
 
 #include <visionaray/math/array.h>
 
+// TODO: should not depend on this
 #include "hit_record.h"
 
 namespace visionaray
@@ -94,18 +95,13 @@ auto get_normal_from_bvh(Normals normals, HR const& hr, Primitive /* */)
 
 template <
     typename Normals,
-    typename R,
-    typename Base,
+    typename HR,
     typename Primitive,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type,
     typename = typename std::enable_if<!is_any_bvh_inst<Primitive>::value>::type
     >
 VSNRAY_FUNC
-auto get_normal(
-        Normals                        normals,
-        hit_record_bvh<R, Base> const& hr,
-        Primitive                      prim
-        )
+auto get_normal(Normals normals, HR const& hr, Primitive prim)
     -> decltype( detail::get_normal_from_bvh(normals, hr, prim) )
 {
     return detail::get_normal_from_bvh(normals, hr, prim);
