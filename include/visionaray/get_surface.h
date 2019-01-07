@@ -6,22 +6,17 @@
 #ifndef VSNRAY_GET_SURFACE_H
 #define VSNRAY_GET_SURFACE_H 1
 
-#include <cstddef>
-#include <iterator>
 #include <type_traits>
 #include <utility>
 
 #include "math/array.h"
 #include "texture/texture_traits.h"
 #include "bvh.h"
-#include "generic_primitive.h"
 #include "get_color.h"
 #include "get_normal.h"
 #include "get_shading_normal.h"
 #include "get_tex_coord.h"
-#include "prim_traits.h"
 #include "surface.h"
-#include "tags.h"
 
 namespace visionaray
 {

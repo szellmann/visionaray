@@ -7,7 +7,6 @@
 #define VSNRAY_SURFACE_H 1
 
 #include "detail/macros.h"
-#include "detail/tags.h"
 #include "math/vector.h"
 #include "material.h"
 #include "shade_record.h"
