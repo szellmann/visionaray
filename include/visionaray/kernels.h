@@ -105,8 +105,7 @@ template <
     typename Colors,
     typename Textures,
     typename Lights,
-    typename Color,
-    typename ...Args
+    typename Color
     >
 struct kernel_params
 {
