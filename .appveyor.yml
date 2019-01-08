@@ -42,4 +42,6 @@ build_script:
       -DVSNRAY_ENABLE_UNITTESTS=ON
       ..
     - msbuild visionaray.sln
-    - test\unittests\$(configuration)\unittests.exe
+
+test_script:
+    - C:\projects\visionaray\build\test\unittests\$(configuration)\unittests.exe
