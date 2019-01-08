@@ -44,4 +44,4 @@ build_script:
     - msbuild visionaray.sln
 
 test_script:
-    - C:\projects\visionaray\build\test\unittests\$(configuration)\unittests.exe
+    - call C:\projects\visionaray\build\test\unittests\%CONFIGURATION%\unittests.exe
