@@ -691,6 +691,69 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
 
                 props->material() = obj;
             }
+            else if (strncmp(type_string.GetString(), "glass", 5) == 0)
+            {
+                auto glass = std::make_shared<sg::glass_material>();
+
+                if (mat.HasMember("ct"))
+                {
+                    auto const& ct = mat["ct"];
+
+                    vec3 clr;
+                    int i = 0;
+                    for (auto const& item : ct.GetArray())
+                    {
+                        clr[i++] = item.GetFloat();
+                    }
+
+                    if (i != 3)
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    glass->ct = clr;
+                }
+
+                if (mat.HasMember("cr"))
+                {
+                    auto const& cr = mat["cr"];
+
+                    vec3 clr;
+                    int i = 0;
+                    for (auto const& item : cr.GetArray())
+                    {
+                        clr[i++] = item.GetFloat();
+                    }
+
+                    if (i != 3)
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    glass->cr = clr;
+                }
+
+                if (mat.HasMember("ior"))
+                {
+                    auto const& v = mat["ior"];
+
+                    vec3 ior;
+                    int i = 0;
+                    for (auto const& item : v.GetArray())
+                    {
+                        ior[i++] = item.GetFloat();
+                    }
+
+                    if (i != 3)
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    glass->ior = ior;
+                }
+
+                props->material() = glass;
+            }
             else
             {
                 throw std::runtime_error("");

@@ -137,6 +137,23 @@ struct obj_material : material
 
 
 //-------------------------------------------------------------------------------------------------
+// Glass material
+//
+
+struct glass_material : material
+{
+    // Transmissive color
+    vec3 ct = { 0.8f, 0.8f, 0.8f };
+
+    // Reflective color
+    vec3 cr = { 0.2f, 0.2f, 0.2f };
+
+    // Index of refraction
+    vec3 ior = { 1.0f, 1.0f, 1.0f };
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Disney principled material
 //
 

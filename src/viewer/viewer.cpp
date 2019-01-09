@@ -837,6 +837,15 @@ void renderer::build_bvhs()
                 newmat.specular_exp = obj->specular_exp;
                 newmat.illum = obj->illum;
             }
+            else if (auto glass = std::dynamic_pointer_cast<sg::glass_material>(surf.first))
+            {
+                newmat.transmission = 1.0f; // could be anything > 0.0f
+                // This is how model material is later transformed to glass
+                newmat.cd = glass->ct;
+                newmat.cs = glass->cr;
+                newmat.ior = glass->ior;
+                newmat.illum = 4;
+            }
             mod.materials.emplace_back(newmat); // TODO
 
 #if VSNRAY_COMMON_HAVE_PTEX
