@@ -85,7 +85,7 @@ template <typename T>
 inline bool as_T(std::string in, T& out)
 {
     std::istringstream stream(in);
-    return stream >> out;
+    return static_cast<bool>(stream >> out);
 }
 
 template <typename Map>
