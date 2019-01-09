@@ -7,6 +7,8 @@
 #define VSNRAY_COMMON_VIEWER_BASE_H 1
 
 #include <memory>
+#include <set>
+#include <string>
 
 #include <visionaray/math/vector.h>
 
@@ -39,6 +41,8 @@ public:
     virtual ~viewer_base();
 
     void init(int argc, char** argv);
+
+    void parse_inifile(std::set<std::string> const& filenames);
 
     void add_manipulator( std::shared_ptr<camera_manipulator> manip );
     void add_cmdline_option( std::shared_ptr<support::cl::OptionBase> option );

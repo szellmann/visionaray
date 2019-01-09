@@ -53,6 +53,7 @@
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/inifile.h>
 #include <common/make_materials.h>
 #include <common/model.h>
 #include <common/sg.h>
@@ -118,6 +119,10 @@ struct renderer : viewer_type
     {
         using namespace support;
 
+        // Parse inifile (but cmdline overrides!)
+        parse_inifile({ "vsnray-viewer.ini", "viewer.ini" });
+
+        // Add cmdline options
         add_cmdline_option( cl::makeOption<std::set<std::string>&>(
             cl::Parser<>(),
             "filenames",
@@ -227,6 +232,144 @@ struct renderer : viewer_type
             cl::init(rt.mode())
             ) );
 #endif
+    }
+
+    void parse_inifile(std::set<std::string> filenames)
+    {
+        // First parse base's options
+        viewer_base::parse_inifile(filenames);
+
+        // Process the first (if any) valid inifile
+        for (auto filename : filenames)
+        {
+            inifile ini(filename);
+
+            if (ini.good())
+            {
+                inifile::error_code err = inifile::Ok;
+
+                // algorithm
+                std::string algo = "";
+                err = ini.get_string("algorithm", algo);
+                if (err == inifile::Ok)
+                {
+                    if (algo == "simple")
+                    {
+                        this->algo = Simple;
+                    }
+                    else if (algo == "whitted")
+                    {
+                        this->algo = Whitted;
+                    }
+                    else if (algo == "pathtracing")
+                    {
+                        this->algo = Pathtracing;
+                    }
+                }
+
+                // ambient
+                vec3 ambient = this->ambient;
+                err = ini.get_vec3f("ambient", ambient.x, ambient.y, ambient.z);
+                if (err == inifile::Ok)
+                {
+                    this->ambient = ambient;
+                }
+
+                // Initial camera
+                std::string camera = initial_camera;
+                err = ini.get_string("camera", camera, true /*remove quotes*/);
+                if (err == inifile::Ok)
+                {
+                    initial_camera = camera;
+                }
+
+                // bounces
+                uint32_t bounces = this->bounces;
+                err = ini.get_uint32("bounces", bounces);
+                if (err == inifile::Ok)
+                {
+                    this->bounces = bounces;
+                }
+
+                // bvh
+                std::string bvh = "";
+                err = ini.get_string("bvh", bvh);
+                if (err == inifile::Ok)
+                {
+                    if (bvh == "default")
+                    {
+                        build_strategy = Binned;
+                    }
+                    else if (bvh == "split")
+                    {
+                        build_strategy = Split;
+                    }
+                    else if (bvh == "lbvh")
+                    {
+                        build_strategy = LBVH;
+                    }
+                }
+
+                // color space
+                std::string colorspace = "";
+                err = ini.get_string("colorspace", colorspace);
+                if (err == inifile::Ok)
+                {
+                    if (colorspace == "rgb")
+                    {
+                        rt.color_space() = host_device_rt::RGB;
+                    }
+                    else
+                    {
+                        rt.color_space() = host_device_rt::SRGB;
+                    }
+                }
+
+                // depth of field
+                bool dof = use_dof;
+                err = ini.get_bool("dof", dof);
+                if (err == inifile::Ok)
+                {
+                    use_dof = dof;
+                }
+
+                // headlight
+                bool headlight = use_headlight;
+                err = ini.get_bool("headlight", headlight);
+                if (err == inifile::Ok)
+                {
+                    use_headlight = headlight;
+                }
+
+                // Supersampling
+                uint32_t ssaa = ssaa_samples;
+                err = ini.get_uint32("ssaa", ssaa);
+                if (err == inifile::Ok)
+                {
+                    ssaa_samples = ssaa;
+                }
+
+#ifdef __CUDACC__
+                // Device (CPU or GPU)
+                std::string device = "";
+                err = ini.get_string("device", device);
+                if (err == inifile::Ok)
+                {
+                    if (device == "cpu")
+                    {
+                        rt.mode() = host_device_rt::CPU;
+                    }
+                    else if (device == "gpu")
+                    {
+                        rt.mode() = host_device_rt::GPU;
+                    }
+                }
+#endif
+
+                // Don't consider other files
+                break;
+            }
+        }
     }
 
 

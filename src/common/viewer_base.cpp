@@ -21,6 +21,7 @@
 #include "input/mouse.h"
 #include "input/mouse_event.h"
 #include "manip/camera_manipulator.h"
+#include "inifile.h"
 #include "viewer_base.h"
 
 using namespace support;
@@ -45,6 +46,8 @@ struct viewer_base::impl
     impl(int width, int height, char const* window_title);
 
     void init(int argc, char** argv);
+
+    void parse_inifile(std::set<std::string> const& filenames);
 
     void parse_cmd_line(int argc, char** argv);
 };
@@ -110,6 +113,60 @@ void viewer_base::impl::init(int argc, char** argv)
 
 
 //-------------------------------------------------------------------------------------------------
+// Parse ini file
+//
+
+void viewer_base::impl::parse_inifile(std::set<std::string> const& filenames)
+{
+    // Process the first (if any) valid inifile
+    for (auto filename : filenames)
+    {
+        inifile ini(filename);
+
+        if (ini.good())
+        {
+            inifile::error_code err = inifile::Ok;
+
+            // Full screen
+            bool fs = full_screen;
+            err = ini.get_bool("fullscreen", fs);
+            if (err == inifile::Ok)
+            {
+                full_screen = fs;
+            }
+
+            // Window width
+            int32_t w = width;
+            err = ini.get_int32("width", w);
+            if (err == inifile::Ok)
+            {
+                width = w;
+            }
+
+            // Window height
+            int32_t h = height;
+            err = ini.get_int32("height", h);
+            if (err == inifile::Ok)
+            {
+                height = h;
+            }
+
+            // Background color
+            vec3 bg = bgcolor;
+            err = ini.get_vec3f("bgcolor", bg.x, bg.y, bg.z);
+            if (err == inifile::Ok)
+            {
+                bgcolor = bg;
+            }
+
+            // Don't consider other files
+            break;
+        }
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Parse default command line options
 //
 
@@ -144,6 +201,11 @@ viewer_base::~viewer_base()
 void viewer_base::init(int argc, char** argv)
 {
     impl_->init(argc, argv);
+}
+
+void viewer_base::parse_inifile(std::set<std::string> const& filenames)
+{
+    impl_->parse_inifile(filenames);
 }
 
 void viewer_base::add_manipulator( std::shared_ptr<camera_manipulator> manip )
