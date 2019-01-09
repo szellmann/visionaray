@@ -839,21 +839,6 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
             }
         }
     }
-    else
-    {
-        for (size_t i = 0; i < mesh->vertices.size(); i += 3)
-        {
-            vec3 v1 = mesh->vertices[i];
-            vec3 v2 = mesh->vertices[i + 1];
-            vec3 v3 = mesh->vertices[i + 2];
-
-            vec3 gn = normalize(cross(v2 - v1, v3 - v1));
-
-            mesh->normals.emplace_back(gn);
-            mesh->normals.emplace_back(gn);
-            mesh->normals.emplace_back(gn);
-        }
-    }
 
     if (obj.HasMember("tex_coords"))
     {
@@ -871,13 +856,6 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
             }
         }
     }
-    else
-    {
-        for (size_t i = 0; i < mesh->vertices.size(); ++i)
-        {
-            mesh->tex_coords.emplace_back(0.0f, 0.0f);
-        }
-    }
 
     if (obj.HasMember("colors"))
     {
@@ -893,13 +871,6 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
             {
                 mesh->colors.emplace_back(c);
             }
-        }
-    }
-    else
-    {
-        for (size_t i = 0; i < mesh->vertices.size(); ++i)
-        {
-            mesh->colors.emplace_back(1.0f);
         }
     }
 
@@ -954,21 +925,6 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
             }
         }
     }
-    else
-    {
-        for (size_t i = 0; i < mesh->vertices.size(); i += 3)
-        {
-            vec3 v1 = mesh->vertices[i];
-            vec3 v2 = mesh->vertices[i + 1];
-            vec3 v3 = mesh->vertices[i + 2];
-
-            vec3 gn = normalize(cross(v2 - v1, v3 - v1));
-
-            mesh->normals.emplace_back(gn);
-            mesh->normals.emplace_back(gn);
-            mesh->normals.emplace_back(gn);
-        }
-    }
 
     if (obj.HasMember("tex_coords"))
     {
@@ -986,13 +942,6 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
             }
         }
     }
-    else
-    {
-        for (size_t i = 0; i < mesh->vertices.size(); ++i)
-        {
-            mesh->tex_coords.emplace_back(0.0f, 0.0f);
-        }
-    }
 
     if (obj.HasMember("colors"))
     {
@@ -1008,13 +957,6 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
             {
                 mesh->colors.emplace_back(c);
             }
-        }
-    }
-    else
-    {
-        for (size_t i = 0; i < mesh->vertices.size(); ++i)
-        {
-            mesh->colors.emplace_back(1.0f);
         }
     }
 
