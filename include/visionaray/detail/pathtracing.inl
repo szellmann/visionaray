@@ -77,7 +77,7 @@ struct kernel
 
             // Process the current bounce
 
-            V refl_dir;
+            V refl_dir(0.0);
             V view_dir = -ray.dir;
 
             hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;

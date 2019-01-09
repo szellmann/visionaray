@@ -118,6 +118,8 @@ inline typename Params::color_type get_tex_color(
         std::integral_constant<int, 0> /* not a texture! */
         )
 {
+    VSNRAY_UNUSED(hr, params);
+
     using C = typename Params::color_type;
 
     // Just return white
@@ -227,7 +229,7 @@ inline auto get_surface_impl(HR const& hr, Params const& params)
 
     auto hrs = unpack(hr);
 
-    typename simd_decl_surface<Params, T>::array_type surfs = {};
+    typename simd_decl_surface<Params, T>::array_type surfs;
 
     for (int i = 0; i < simd::num_elements<T>::value; ++i)
     {
