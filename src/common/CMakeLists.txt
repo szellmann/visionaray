@@ -209,6 +209,7 @@ set(COMMON_SOURCES
     hdr_image.cpp
     image.cpp
     image_base.cpp
+    inifile.cpp
     jpeg_image.cpp
     moana_loader.cpp
     model.cpp
