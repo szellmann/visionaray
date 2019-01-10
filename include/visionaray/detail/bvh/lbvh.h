@@ -64,10 +64,10 @@ struct lbvh_builder
     aligned_vector<aabb> prim_bounds;
 
     VSNRAY_FUNC
-    int find_split(int first, int last) const
+    int find_split(prim_ref const* refs, int first, int last) const
     {
-        unsigned code_first = prim_refs[first].morton_code;
-        unsigned code_last  = prim_refs[last - 1].morton_code;
+        unsigned code_first = refs[first].morton_code;
+        unsigned code_last  = refs[last - 1].morton_code;
 
         if (code_first == code_last)
         {
@@ -86,7 +86,7 @@ struct lbvh_builder
 
             if (next < last)
             {
-                unsigned code = prim_refs[next].morton_code;
+                unsigned code = refs[next].morton_code;
                 if (code_first == code || detail::clz(code_first ^ code) > common_prefix)
                 {
                     result = next;
@@ -109,7 +109,6 @@ struct lbvh_builder
     }
 
     template <typename I>
-    VSNRAY_FUNC
     leaf_info init(I first, I last)
     {
         // Calculate bounding box for all primitives
@@ -189,7 +188,7 @@ struct lbvh_builder
             return false;
         }
 
-        int split = find_split(leaf.first, leaf.last);
+        int split = find_split(prim_refs.data(), leaf.first, leaf.last);
 
         childs[0].first = leaf.first;
         childs[0].last = split + 1;
