@@ -1623,7 +1623,13 @@ void renderer::on_key_press(key_event const& event)
     {
     case '1':
         std::cout << "Switching algorithm: simple\n";
-        rt.set_double_buffering(true);
+        if (!rt.get_double_buffering())
+        {
+            rt.set_double_buffering(true);
+
+            // Make sure that 2nd buffer is allocated!
+            rt.resize(width(), height());
+        }
         algo = Simple;
         counter.reset();
         clear_frame();
@@ -1631,7 +1637,13 @@ void renderer::on_key_press(key_event const& event)
 
     case '2':
         std::cout << "Switching algorithm: whitted\n";
-        rt.set_double_buffering(true);
+        if (!rt.get_double_buffering())
+        {
+            rt.set_double_buffering(true);
+
+            // Make sure that 2nd buffer is allocated!
+            rt.resize(width(), height());
+        }
         algo = Whitted;
         counter.reset();
         clear_frame();

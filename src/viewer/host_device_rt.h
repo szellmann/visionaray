@@ -52,6 +52,7 @@ public:
     mode_type const& mode() const;
 
     void set_double_buffering(bool double_buffering);
+    bool get_double_buffering() const;
 
     bool& direct_rendering();
     bool const& direct_rendering() const;

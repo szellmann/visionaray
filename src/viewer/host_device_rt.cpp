@@ -103,6 +103,11 @@ void host_device_rt::set_double_buffering(bool double_buffering)
     }
 }
 
+bool host_device_rt::get_double_buffering() const
+{
+    return impl_->double_buffering;
+}
+
 bool& host_device_rt::direct_rendering()
 {
     return impl_->direct_rendering;
