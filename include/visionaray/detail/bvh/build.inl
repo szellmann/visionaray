@@ -17,7 +17,7 @@ Tree VSNRAY_DEPRECATED build(lbvh_builder /* */, P* primitives, size_t num_prims
 {
     lbvh_builder builder;
 
-    return builder.build<Tree>(primitives, num_prims);
+    return builder.build(Tree{}, primitives, num_prims);
 }
 
 template <typename Tree, typename P>
@@ -28,7 +28,7 @@ Tree VSNRAY_DEPRECATED build(binned_sah_builder /* */, P* primitives, size_t num
     builder.enable_spatial_splits(enable_spatial_splits);
     builder.set_alpha(1.0e-5f);
 
-    return builder.build<Tree>(primitives, num_prims);
+    return builder.build(Tree{}, primitives, num_prims);
 }
 
 
