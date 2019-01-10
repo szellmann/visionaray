@@ -444,7 +444,7 @@ struct renderer : viewer_type
     std::future<void>                           render_future;
     std::mutex                                  display_mutex;
 
-    void build_bvhs();
+    void build_scene();
 
 protected:
 
@@ -524,11 +524,11 @@ struct reset_flags_visitor : sg::node_visitor
 // Traverse the scene graph to construct geometry, materials and BVH instances
 //
 
-struct build_bvhs_visitor : sg::node_visitor
+struct build_scene_visitor : sg::node_visitor
 {
     using node_visitor::apply;
 
-    build_bvhs_visitor(
+    build_scene_visitor(
             aligned_vector<renderer::host_bvh_type>& bvhs,
             aligned_vector<size_t>& instance_indices,
             aligned_vector<mat4>& instance_transforms,
@@ -831,10 +831,10 @@ struct build_bvhs_visitor : sg::node_visitor
 
 
 //-------------------------------------------------------------------------------------------------
-// Build bvhs
+// Build up scene data structures
 //
 
-void renderer::build_bvhs()
+void renderer::build_scene()
 {
 //  timer t;
 
@@ -866,7 +866,7 @@ void renderer::build_bvhs()
         aligned_vector<size_t> instance_indices;
         aligned_vector<mat4> instance_transforms;
 
-        build_bvhs_visitor build_visitor(
+        build_scene_visitor build_visitor(
                 host_bvhs,
                 instance_indices,
                 instance_transforms,
@@ -1816,7 +1816,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    rend.build_bvhs();
+    rend.build_scene();
 
     // Generate a list with plastic materials
     rend.plastic_materials = make_materials(
