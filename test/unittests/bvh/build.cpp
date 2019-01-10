@@ -73,8 +73,8 @@ TEST(BVH, BuildBvh)
     auto triangles = make_triangles();
     auto spheres   = make_spheres();
 
-    auto triangle_bvh = builder.build<bvh<triangle_t>>(triangles.data(), triangles.size());
-    auto sphere_bvh   = builder.build<bvh<sphere_t>>(spheres.data(), spheres.size());
+    auto triangle_bvh = builder.build(bvh<triangle_t>{}, triangles.data(), triangles.size());
+    auto sphere_bvh   = builder.build(bvh<sphere_t>{}, spheres.data(), spheres.size());
 
     EXPECT_TRUE(triangle_bvh.nodes().size() > 0);
     EXPECT_TRUE(sphere_bvh.nodes().size()   > 0);
@@ -92,8 +92,8 @@ TEST(BVH, BuildIndexBvh)
     auto triangles = make_triangles();
     auto spheres   = make_spheres();
 
-    auto triangle_bvh = builder.build<index_bvh<triangle_t>>(triangles.data(), triangles.size());
-    auto sphere_bvh   = builder.build<index_bvh<sphere_t>>(spheres.data(), spheres.size());
+    auto triangle_bvh = builder.build(index_bvh<triangle_t>{}, triangles.data(), triangles.size());
+    auto sphere_bvh   = builder.build(index_bvh<sphere_t>{}, spheres.data(), spheres.size());
 
     EXPECT_TRUE(triangle_bvh.nodes().size() > 0);
     EXPECT_TRUE(sphere_bvh.nodes().size()   > 0);
@@ -111,8 +111,8 @@ TEST(BVH, BuildArrayRefBvh)
     auto triangles = make_triangles();
     auto spheres   = make_spheres();
 
-    auto triangle_bvh = builder.build<array_ref_bvh<triangle_t>>(triangles.data(), triangles.size());
-    auto sphere_bvh   = builder.build<array_ref_bvh<sphere_t>>(spheres.data(), spheres.size());
+    auto triangle_bvh = builder.build(array_ref_bvh<triangle_t>{}, triangles.data(), triangles.size());
+    auto sphere_bvh   = builder.build(array_ref_bvh<sphere_t>{}, spheres.data(), spheres.size());
 
     EXPECT_TRUE(triangle_bvh.nodes().size() > 0);
     EXPECT_TRUE(sphere_bvh.nodes().size()   > 0);

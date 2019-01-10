@@ -684,14 +684,14 @@ struct build_scene_visitor : sg::node_visitor
             {
                 lbvh_builder builder;
 
-                bvhs_.emplace_back(builder.build<renderer::host_bvh_type>(triangles.data(), triangles.size()));
+                bvhs_.emplace_back(builder.build(renderer::host_bvh_type{}, triangles.data(), triangles.size()));
             }
             else
             {
                 binned_sah_builder builder;
                 builder.enable_spatial_splits(build_strategy_ == renderer::Split);
 
-                bvhs_.emplace_back(builder.build<renderer::host_bvh_type>(triangles.data(), triangles.size()));
+                bvhs_.emplace_back(builder.build(renderer::host_bvh_type{}, triangles.data(), triangles.size()));
             }
 
             tm.flags() = ~(bvhs_.size() - 1);
@@ -774,14 +774,14 @@ struct build_scene_visitor : sg::node_visitor
             {
                 lbvh_builder builder;
 
-                bvhs_.emplace_back(builder.build<renderer::host_bvh_type>(triangles.data(), triangles.size()));
+                bvhs_.emplace_back(builder.build(renderer::host_bvh_type{}, triangles.data(), triangles.size()));
             }
             else
             {
                 binned_sah_builder builder;
                 builder.enable_spatial_splits(build_strategy_ == renderer::Split);
 
-                bvhs_.emplace_back(builder.build<renderer::host_bvh_type>(triangles.data(), triangles.size()));
+                bvhs_.emplace_back(builder.build(renderer::host_bvh_type{}, triangles.data(), triangles.size()));
             }
 
             itm.flags() = ~(bvhs_.size() - 1);
@@ -871,14 +871,14 @@ void renderer::build_scene()
         {
             lbvh_builder builder;
 
-            host_bvhs[0] = builder.build<host_bvh_type>(mod.primitives.data(), mod.primitives.size());
+            host_bvhs[0] = builder.build(host_bvh_type{}, mod.primitives.data(), mod.primitives.size());
         }
         else
         {
             binned_sah_builder builder;
             builder.enable_spatial_splits(build_strategy == Split);
 
-            host_bvhs[0] = builder.build<host_bvh_type>(mod.primitives.data(), mod.primitives.size());
+            host_bvhs[0] = builder.build(host_bvh_type{}, mod.primitives.data(), mod.primitives.size());
         }
     }
     else
@@ -918,7 +918,8 @@ void renderer::build_scene()
         {
             lbvh_builder builder;
 
-            host_top_level_bvh = builder.build<index_bvh<host_bvh_type::bvh_inst>>(
+            host_top_level_bvh = builder.build(
+                    index_bvh<host_bvh_type::bvh_inst>{},
                     host_instances.data(),
                     host_instances.size()
                     );
@@ -928,7 +929,8 @@ void renderer::build_scene()
             binned_sah_builder builder;
             builder.enable_spatial_splits(false);
 
-            host_top_level_bvh = builder.build<index_bvh<host_bvh_type::bvh_inst>>(
+            host_top_level_bvh = builder.build(
+                    index_bvh<host_bvh_type::bvh_inst>{},
                     host_instances.data(),
                     host_instances.size()
                     );

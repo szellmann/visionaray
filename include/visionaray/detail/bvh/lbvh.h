@@ -99,7 +99,7 @@ struct lbvh_builder
     }
 
     template <typename Tree, typename P>
-    Tree build(P* primitives, size_t num_prims, int max_leaf_size = -1)
+    Tree build(Tree /* */, P* primitives, size_t num_prims, int max_leaf_size = -1)
     {
         Tree tree(primitives, num_prims);
 

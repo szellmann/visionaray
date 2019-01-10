@@ -369,7 +369,8 @@ int main(int argc, char** argv)
     binned_sah_builder builder;
     builder.enable_spatial_splits(rend.build_strategy == renderer::Split);
 
-    rend.host_bvh = builder.build<index_bvh<model::triangle_type>>(
+    rend.host_bvh = builder.build(
+            index_bvh<model::triangle_type>{},
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
             );

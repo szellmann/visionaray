@@ -411,7 +411,8 @@ int main(int argc, char** argv)
     // Create the BVH on the host
     binned_sah_builder builder;
 
-    rend.host_bvh = builder.build<index_bvh<model::triangle_type>>(
+    rend.host_bvh = builder.build(
+            index_bvh<model::triangle_type>{},
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
             );
