@@ -14,17 +14,10 @@ template <typename T>
 using mat_type = matte<T>;
 
 
-#if defined WITHOUT_TEX_COLOR
-    template <typename N, typename M, int SIZE>
-    using param_type = array<surface<N, M>, SIZE>;
-    template <typename N, typename M>
-    using result_type = surface<N, M>;
-#elif defined WITH_TEX_COLOR
-    template <typename N, typename M, int SIZE>
-    using param_type = array<surface<N, vec3f, M>, SIZE>;
-    template <typename N, typename M>
-    using result_type = surface<N, N/*TODO: in general TexCol != N*/, M>;
-#endif
+template <typename N, typename M, int SIZE>
+using param_type = array<surface<N, vec3f, M>, SIZE>;
+template <typename N, typename M>
+using result_type = surface<N, N/*TODO: in general TexCol != N*/, M>;
 
 
 int main()
