@@ -15,25 +15,25 @@ int main()
 
     vector<3, float>* normals;
     hit_record<basic_ray<simd::float4>, primitive<unsigned>> hr;
-    vector<3, simd::float4> n = get_normal(normals, hr, basic_triangle<3, float, unsigned>{}, normals_per_face_binding{});
+    vector<3, simd::float4> n = get_normal(normals, hr, basic_triangle<3, float, unsigned>{});
 
 #elif defined GET_NORMAL_TRIANGLE_PERFACE_FLOAT8
 
     vector<3, float>* normals;
     hit_record<basic_ray<simd::float8>, primitive<unsigned>> hr;
-    vector<3, simd::float8> n = get_normal(normals, hr, basic_triangle<3, float, unsigned>{}, normals_per_face_binding{});
+    vector<3, simd::float8> n = get_normal(normals, hr, basic_triangle<3, float, unsigned>{});
 
 #elif defined GET_NORMAL_TRIANGLE_PERFACE_INT4
 
     vector<3, float>* normals;
     hit_record<basic_ray<simd::int4>, primitive<unsigned>> hr;
-    auto n = get_normal(normals, hr, basic_triangle<3, float, unsigned>{}, normals_per_face_binding{});
+    auto n = get_normal(normals, hr, basic_triangle<3, float, unsigned>{});
 
 #elif defined GET_NORMAL_TRIANGLE_PERFACE_MASK4
 
     vector<3, float>* normals;
     hit_record<basic_ray<simd::mask4>, primitive<unsigned>> hr;
-    auto n = get_normal(normals, hr, basic_triangle<3, float, unsigned>{}, normals_per_face_binding{});
+    auto n = get_normal(normals, hr, basic_triangle<3, float, unsigned>{});
 
 #elif defined GET_NORMAL_TRIANGLE_PERVERTEX_FLOAT4
 
