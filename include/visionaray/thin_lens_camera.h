@@ -30,7 +30,7 @@ public:
     // Generate primary ray at (x,y) (may be a subpixel position).
     template <typename R, typename Generator, typename T = typename R::scalar_type>
     VSNRAY_FUNC
-    R primary_ray(R /* */, Generator gen, T const& x, T const& y, T const& width, T const& height) const;
+    R primary_ray(R /* */, Generator& gen, T const& x, T const& y, T const& width, T const& height) const;
 
 private:
 

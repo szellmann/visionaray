@@ -9,12 +9,12 @@ namespace visionaray
 template <typename R, typename Generator, typename T>
 VSNRAY_FUNC
 inline R thin_lens_camera::primary_ray(
-        R         /* */,
-        Generator gen,
-        T const&  x,
-        T const&  y,
-        T const&  width,
-        T const&  height
+        R          /* */,
+        Generator& gen,
+        T const&   x,
+        T const&   y,
+        T const&   width,
+        T const&   height
         ) const
 {
     R r = pinhole_camera::primary_ray(R{}, x, y, width, height);
