@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include <visionaray/math/array.h>
+#include <visionaray/generic_material.h>
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
 #include <visionaray/spectrum.h>
