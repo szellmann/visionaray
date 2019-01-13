@@ -9,31 +9,21 @@
 
 namespace visionaray
 {
-
-//-------------------------------------------------------------------------------------------------
-// Factory function make_surface()
-//
-
-template <typename N, typename C, typename M>
-VSNRAY_FUNC
-inline surface<N, C, M> make_surface(N const& gn, N const& sn, C const tex_color, M const& m)
-{
-    return { gn, sn, tex_color, m };
-}
-
-
 namespace simd
 {
+
+//-------------------------------------------------------------------------------------------------
+// SIMD conversions
+//
 
 template <typename N, typename C, typename M, size_t Size>
 VSNRAY_FUNC
 inline auto pack(array<surface<N, C, M>, Size> const& surfs)
-    -> decltype( make_surface(
-            pack(std::declval<array<N, Size>>()),
-            pack(std::declval<array<N, Size>>()),
-            pack(std::declval<array<C, Size>>()),
-            pack(std::declval<array<M, Size>>())
-            ) )
+    -> surface<
+            decltype(pack(std::declval<array<N, Size>>())),
+            decltype(pack(std::declval<array<C, Size>>())),
+            decltype(pack(std::declval<array<M, Size>>()))
+            >
 {
     array<N, Size> geometric_normals;
     array<N, Size> shading_normals;
