@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "../math/array.h"
-#include "../generic_material.h"
 
 namespace visionaray
 {
