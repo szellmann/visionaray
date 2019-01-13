@@ -104,6 +104,14 @@ using std::sqrt;
 using std::tan;
 #endif
 
+#ifdef __CUDACC__
+MATH_FUNC
+inline double sqrt(int x)
+{
+    return sqrtf(static_cast<double>(x));
+}
+#endif
+
 template <typename T>
 MATH_FUNC
 inline T min(T const& x, T const& y)
