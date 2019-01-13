@@ -1,8 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/kernels.h> // make_kernel_params()
-
 #include "render.h"
 
 namespace visionaray

@@ -5,8 +5,6 @@
 
 #if VSNRAY_COMMON_HAVE_PTEX
 
-#include <visionaray/kernels.h> // make_kernel_params()
-
 #include <common/ptex.h>
 
 #include "render.h"
