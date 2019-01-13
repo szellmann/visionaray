@@ -13,6 +13,7 @@
 #include "math/detail/math.h"
 #include "math/simd/type_traits.h"
 #include "math/array.h"
+#include "math/constants.h"
 #include "math/sphere.h"
 #include "math/triangle.h"
 #include "math/vector.h"
@@ -123,10 +124,17 @@ template <
     typename = typename std::enable_if<!simd::is_simd_vector<typename HR::scalar_type>::value>::type
     >
 VSNRAY_FUNC
-inline auto get_tex_coord(HR const& hr, basic_sphere<T> /* */)
+inline auto get_tex_coord(HR const& hr, basic_sphere<T> const& sphere)
     -> vector<2, typename HR::scalar_type>
 {
-    return {}; // TODO
+    using S = typename HR::scalar_type;
+
+    auto n = (hr.isect_pos - sphere.center) / sphere.radius;
+
+    return vector<2, S>(
+            atan2(n.x, n.z) / constants::two_pi<S>() + S(0.5),
+            n.y * S(0.5) + S(0.5)
+            );
 }
 
 
