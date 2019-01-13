@@ -27,7 +27,7 @@ struct make_generator_impl
         template <typename ...Args>
         VSNRAY_FUNC void_t(Args...) {}
 
-        T next() { return {}; }
+        VSNRAY_FUNC T next() { return {}; }
     };
 
     using generator_type = void_t;
