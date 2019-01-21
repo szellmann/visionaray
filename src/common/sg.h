@@ -21,6 +21,7 @@
 #include <visionaray/aligned_vector.h>
 #include <visionaray/point_light.h>
 #include <visionaray/spectrum.h>
+#include <visionaray/spot_light.h>
 #include <visionaray/thin_lens_camera.h>
 
 #if VSNRAY_COMMON_HAVE_PTEX
@@ -45,6 +46,7 @@ class node;
 class camera;
 class light;
 class point_light;
+class spot_light;
 class environment_light;
 class transform;
 class surface_properties;
@@ -67,6 +69,7 @@ public:
     virtual void apply(camera& c);
     virtual void apply(light& l);
     virtual void apply(point_light& pl);
+    virtual void apply(spot_light& sl);
     virtual void apply(environment_light& el);
     virtual void apply(transform& t);
     virtual void apply(surface_properties& sp);
@@ -336,6 +339,19 @@ public:
 //
 
 class point_light : public light, public visionaray::point_light<float>
+{
+public:
+
+    VSNRAY_SG_NODE
+
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Spot light node
+//
+
+class spot_light : public light, public visionaray::spot_light<float>
 {
 public:
 
