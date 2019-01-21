@@ -810,16 +810,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
     {
         auto const& verts = obj["vertices"];
 
-        vec3 v;
-        int i = 0;
-        for (auto const& item : verts.GetArray())
+        for (rapidjson::SizeType i = 0; i < verts.Capacity(); i += 3)
         {
-            v[i++ % 3] = item.GetFloat();
-
-            if (i % 3 == 0)
-            {
-                mesh->vertices.emplace_back(v);
-            }
+            mesh->vertices.emplace_back(
+                verts[i].GetFloat(),
+                verts[i + 1].GetFloat(),
+                verts[i + 2].GetFloat()
+                );
         }
     }
 
@@ -827,16 +824,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
     {
         auto const& normals = obj["normals"];
 
-        vec3 n;
-        int i = 0;
-        for (auto const& item : normals.GetArray())
+        for (rapidjson::SizeType i = 0; i < normals.Capacity(); i += 3)
         {
-            n[i++ % 3] = item.GetFloat();
-
-            if (i % 3 == 0)
-            {
-                mesh->normals.emplace_back(n);
-            }
+            mesh->normals.emplace_back(
+                normals[i].GetFloat(),
+                normals[i + 1].GetFloat(),
+                normals[i + 2].GetFloat()
+                );
         }
     }
 
@@ -844,16 +838,12 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
     {
         auto const& tex_coords = obj["tex_coords"];
 
-        vec3 tc;
-        int i = 0;
-        for (auto const& item : tex_coords.GetArray())
+        for (rapidjson::SizeType i = 0; i < tex_coords.Capacity(); i += 2)
         {
-            tc[i++ % 2] = item.GetFloat();
-
-            if (i % 2 == 0)
-            {
-                mesh->tex_coords.emplace_back(tc);
-            }
+            mesh->tex_coords.emplace_back(
+                tex_coords[i].GetFloat(),
+                tex_coords[i + 1].GetFloat()
+                );
         }
     }
 
@@ -861,16 +851,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
     {
         auto const& colors = obj["colors"];
 
-        vector<3, unorm<8>> c;
-        int i = 0;
-        for (auto const& item : colors.GetArray())
+        for (rapidjson::SizeType i = 0; i < colors.Capacity(); i += 3)
         {
-            c[i++ % 3] = item.GetFloat();
-
-            if (i % 3 == 0)
-            {
-                mesh->colors.emplace_back(c);
-            }
+            mesh->colors.emplace_back(
+                colors[i].GetFloat(),
+                colors[i + 1].GetFloat(),
+                colors[i + 2].GetFloat()
+                );
         }
     }
 
@@ -896,16 +883,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
     {
         auto const& verts = obj["vertices"];
 
-        vec3 v;
-        int i = 0;
-        for (auto const& item : verts.GetArray())
+        for (rapidjson::SizeType i = 0; i < verts.Capacity(); i += 3)
         {
-            v[i++ % 3] = item.GetFloat();
-
-            if (i % 3 == 0)
-            {
-                mesh->vertices.emplace_back(v);
-            }
+            mesh->vertices.emplace_back(
+                verts[i].GetFloat(),
+                verts[i + 1].GetFloat(),
+                verts[i + 2].GetFloat()
+                );
         }
     }
 
@@ -913,16 +897,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
     {
         auto const& normals = obj["normals"];
 
-        vec3 n;
-        int i = 0;
-        for (auto const& item : normals.GetArray())
+        for (rapidjson::SizeType i = 0; i < normals.Capacity(); i += 3)
         {
-            n[i++ % 3] = item.GetFloat();
-
-            if (i % 3 == 0)
-            {
-                mesh->normals.emplace_back(n);
-            }
+            mesh->normals.emplace_back(
+                normals[i].GetFloat(),
+                normals[i + 1].GetFloat(),
+                normals[i + 2].GetFloat()
+                );
         }
     }
 
@@ -930,16 +911,12 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
     {
         auto const& tex_coords = obj["tex_coords"];
 
-        vec3 tc;
-        int i = 0;
-        for (auto const& item : tex_coords.GetArray())
+        for (rapidjson::SizeType i = 0; i < tex_coords.Capacity(); i += 2)
         {
-            tc[i++ % 2] = item.GetFloat();
-
-            if (i % 2 == 0)
-            {
-                mesh->tex_coords.emplace_back(tc);
-            }
+            mesh->tex_coords.emplace_back(
+                tex_coords[i].GetFloat(),
+                tex_coords[i + 1].GetFloat()
+                );
         }
     }
 
@@ -947,16 +924,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
     {
         auto const& colors = obj["colors"];
 
-        vector<3, unorm<8>> c;
-        int i = 0;
-        for (auto const& item : colors.GetArray())
+        for (rapidjson::SizeType i = 0; i < colors.Capacity(); i += 3)
         {
-            c[i++ % 3] = item.GetFloat();
-
-            if (i % 3 == 0)
-            {
-                mesh->colors.emplace_back(c);
-            }
+            mesh->colors.emplace_back(
+                colors[i].GetFloat(),
+                colors[i + 1].GetFloat(),
+                colors[i + 2].GetFloat()
+                );
         }
     }
 
