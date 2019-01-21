@@ -515,16 +515,14 @@ std::shared_ptr<sg::node> vsnray_parser::parse_point_light(Object const& obj)
     {
         auto const& color = obj["cl"];
 
-        int i = 0;
-        for (auto const& item : color.GetArray())
-        {
-            cl[i++] = item.GetFloat();
-        }
-
-        if (i != 3)
+        if (color.Capacity() != 3)
         {
             throw std::runtime_error("");
         }
+
+        cl.x = color[0].GetFloat();
+        cl.y = color[1].GetFloat();
+        cl.z = color[2].GetFloat();
     }
 
     float kl = 1.0f;
@@ -538,16 +536,14 @@ std::shared_ptr<sg::node> vsnray_parser::parse_point_light(Object const& obj)
     {
         auto const& pos = obj["position"];
 
-        int i = 0;
-        for (auto const& item : pos.GetArray())
-        {
-            position[i++] = item.GetFloat();
-        }
-
-        if (i != 3)
+        if (pos.Capacity() != 3)
         {
             throw std::runtime_error("");
         }
+
+        position.x = pos[0].GetFloat();
+        position.y = pos[1].GetFloat();
+        position.z = pos[2].GetFloat();
     }
 
     float constant_attenuation = 1.0f;
@@ -588,16 +584,14 @@ std::shared_ptr<sg::node> vsnray_parser::parse_spot_light(Object const& obj)
     {
         auto const& color = obj["cl"];
 
-        int i = 0;
-        for (auto const& item : color.GetArray())
-        {
-            cl[i++] = item.GetFloat();
-        }
-
-        if (i != 3)
+        if (color.Capacity() != 3)
         {
             throw std::runtime_error("");
         }
+
+        cl.x = color[0].GetFloat();
+        cl.y = color[1].GetFloat();
+        cl.z = color[2].GetFloat();
     }
 
     float kl = 1.0f;
@@ -611,16 +605,14 @@ std::shared_ptr<sg::node> vsnray_parser::parse_spot_light(Object const& obj)
     {
         auto const& pos = obj["position"];
 
-        int i = 0;
-        for (auto const& item : pos.GetArray())
-        {
-            position[i++] = item.GetFloat();
-        }
-
-        if (i != 3)
+        if (pos.Capacity() != 3)
         {
             throw std::runtime_error("");
         }
+
+        position.x = pos[0].GetFloat();
+        position.y = pos[1].GetFloat();
+        position.z = pos[2].GetFloat();
     }
 
     vec3 spot_direction(0.0f, 0.0f, -1.0f);
@@ -628,16 +620,14 @@ std::shared_ptr<sg::node> vsnray_parser::parse_spot_light(Object const& obj)
     {
         auto const& sdir = obj["spot_direction"];
 
-        int i = 0;
-        for (auto const& item : sdir.GetArray())
-        {
-            spot_direction[i++] = item.GetFloat();
-        }
-
-        if (i != 3)
+        if (sdir.Capacity() != 3)
         {
             throw std::runtime_error("");
         }
+
+        spot_direction.x = sdir[0].GetFloat();
+        spot_direction.y = sdir[1].GetFloat();
+        spot_direction.z = sdir[2].GetFloat();
     }
 
     assert(length(spot_direction) == 1.0f);
