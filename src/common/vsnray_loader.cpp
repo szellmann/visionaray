@@ -58,6 +58,9 @@ public:
     std::shared_ptr<sg::node> parse_point_light(Object const& obj);
 
     template <typename Object>
+    std::shared_ptr<sg::node> parse_spot_light(Object const& obj);
+
+    template <typename Object>
     std::shared_ptr<sg::node> parse_reference(Object const& obj);
 
     template <typename Object>
@@ -131,6 +134,10 @@ std::shared_ptr<sg::node> vsnray_parser::parse_node(Object const& obj)
         else if (strncmp(type_string.GetString(), "point_light", 11) == 0)
         {
             result = parse_point_light(obj);
+        }
+        else if (strncmp(type_string.GetString(), "spot_light", 10) == 0)
+        {
+            result = parse_spot_light(obj);
         }
         else if (strncmp(type_string.GetString(), "reference", 9) == 0)
         {
@@ -564,6 +571,113 @@ std::shared_ptr<sg::node> vsnray_parser::parse_point_light(Object const& obj)
     light->set_cl(cl);
     light->set_kl(kl);
     light->set_position(position);
+    light->set_constant_attenuation(constant_attenuation);
+    light->set_linear_attenuation(linear_attenuation);
+    light->set_quadratic_attenuation(quadratic_attenuation);
+
+    return light;
+}
+
+template <typename Object>
+std::shared_ptr<sg::node> vsnray_parser::parse_spot_light(Object const& obj)
+{
+    auto light = std::make_shared<sg::spot_light>();
+
+    vec3 cl(1.0f);
+    if (obj.HasMember("cl"))
+    {
+        auto const& color = obj["cl"];
+
+        int i = 0;
+        for (auto const& item : color.GetArray())
+        {
+            cl[i++] = item.GetFloat();
+        }
+
+        if (i != 3)
+        {
+            throw std::runtime_error("");
+        }
+    }
+
+    float kl = 1.0f;
+    if (obj.HasMember("kl"))
+    {
+        kl = obj["kl"].GetFloat();
+    }
+
+    vec3 position(0.0f);
+    if (obj.HasMember("position"))
+    {
+        auto const& pos = obj["position"];
+
+        int i = 0;
+        for (auto const& item : pos.GetArray())
+        {
+            position[i++] = item.GetFloat();
+        }
+
+        if (i != 3)
+        {
+            throw std::runtime_error("");
+        }
+    }
+
+    vec3 spot_direction(0.0f, 0.0f, -1.0f);
+    if (obj.HasMember("spot_direction"))
+    {
+        auto const& sdir = obj["spot_direction"];
+
+        int i = 0;
+        for (auto const& item : sdir.GetArray())
+        {
+            spot_direction[i++] = item.GetFloat();
+        }
+
+        if (i != 3)
+        {
+            throw std::runtime_error("");
+        }
+    }
+
+    assert(length(spot_direction) == 1.0f);
+
+    float spot_cutoff = 180.0f * constants::degrees_to_radians<float>();
+    if (obj.HasMember("spot_cutoff"))
+    {
+        spot_cutoff = obj["spot_cutoff"].GetFloat();
+    }
+
+    float spot_exponent = 0.0f;
+    if (obj.HasMember("spot_exponent"))
+    {
+        spot_exponent = obj["spot_exponent"].GetFloat();
+    }
+
+    float constant_attenuation = 1.0f;
+    if (obj.HasMember("constant_attenuation"))
+    {
+        constant_attenuation = obj["constant_attenuation"].GetFloat();
+    }
+
+    float linear_attenuation = 0.0f;
+    if (obj.HasMember("linear_attenuation"))
+    {
+        linear_attenuation = obj["linear_attenuation"].GetFloat();
+    }
+
+    float quadratic_attenuation = 0.0f;
+    if (obj.HasMember("quadratic_attenuation"))
+    {
+        quadratic_attenuation = obj["quadratic_attenuation"].GetFloat();
+    }
+
+    light->set_cl(cl);
+    light->set_kl(kl);
+    light->set_position(position);
+    light->set_spot_direction(spot_direction);
+    light->set_spot_cutoff(spot_cutoff);
+    light->set_spot_exponent(spot_exponent);
     light->set_constant_attenuation(constant_attenuation);
     light->set_linear_attenuation(linear_attenuation);
     light->set_quadratic_attenuation(quadratic_attenuation);
