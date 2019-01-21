@@ -44,6 +44,7 @@
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
+#include <visionaray/spot_light.h>
 #include <visionaray/thin_lens_camera.h>
 
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
@@ -399,6 +400,7 @@ struct renderer : viewer_type
     aligned_vector<plastic<float>>              plastic_materials;
     aligned_vector<generic_material_t>          generic_materials;
     aligned_vector<point_light<float>>          point_lights;
+    aligned_vector<spot_light<float>>           spot_lights;
     aligned_vector<area_light<float,
                    basic_triangle<3, float>>>   area_lights;
 #if VSNRAY_COMMON_HAVE_PTEX
@@ -541,6 +543,7 @@ struct build_scene_visitor : sg::node_visitor
 #endif
             aligned_vector<std::pair<std::string, thin_lens_camera>>& cameras,
             aligned_vector<point_light<float>>& point_lights,
+            aligned_vector<spot_light<float>>& spot_lights,
             renderer::bvh_build_strategy build_strategy
             )
         : bvhs_(bvhs)
@@ -555,6 +558,7 @@ struct build_scene_visitor : sg::node_visitor
 #endif
         , cameras_(cameras)
         , point_lights_(point_lights)
+        , spot_lights_(spot_lights)
         , environment_map(nullptr)
         , build_strategy_(build_strategy)
     {
@@ -576,6 +580,17 @@ struct build_scene_visitor : sg::node_visitor
         point_lights_.back().set_position(pos);
 
         node_visitor::apply(pl);
+    }
+
+    void apply(sg::spot_light& sl)
+    {
+        spot_lights_.push_back(static_cast<visionaray::spot_light<float>>(sl));
+
+        vec3 pos = spot_lights_.back().position();
+        pos = (current_transform_ * vec4(pos, 1.0f)).xyz();
+        spot_lights_.back().set_position(pos);
+
+        node_visitor::apply(sl);
     }
 
     void apply(sg::environment_light& el)
@@ -832,6 +847,9 @@ struct build_scene_visitor : sg::node_visitor
     // Point lights
     aligned_vector<point_light<float>>& point_lights_;
 
+    // Spot lights
+    aligned_vector<spot_light<float>>& spot_lights_;
+
     // Environment map
     std::shared_ptr<visionaray::texture<vec4, 2>> environment_map;
 
@@ -902,6 +920,7 @@ void renderer::build_scene()
 #endif
                 cameras,
                 point_lights,
+                spot_lights,
                 build_strategy
                 );
         mod.scene_graph->accept(build_visitor);
@@ -1389,6 +1408,11 @@ void renderer::render_impl()
             for (auto pl : point_lights)
             {
                 temp_lights.push_back(pl);
+            }
+
+            for (auto sl : spot_lights)
+            {
+                temp_lights.push_back(sl);
             }
 
             for (auto al : area_lights)
