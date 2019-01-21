@@ -724,76 +724,56 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
                 {
                     auto const& ca = mat["ca"];
 
-                    vec3 clr;
-                    int i = 0;
-                    for (auto const& item : ca.GetArray())
-                    {
-                        clr[i++] = item.GetFloat();
-                    }
-
-                    if (i != 3)
+                    if (ca.Capacity() != 3)
                     {
                         throw std::runtime_error("");
                     }
 
-                    obj->ca = clr;
+                    obj->ca.x = ca[0].GetFloat();
+                    obj->ca.y = ca[1].GetFloat();
+                    obj->ca.z = ca[2].GetFloat();
                 }
 
                 if (mat.HasMember("cd"))
                 {
                     auto const& cd = mat["cd"];
 
-                    vec3 clr;
-                    int i = 0;
-                    for (auto const& item : cd.GetArray())
-                    {
-                        clr[i++] = item.GetFloat();
-                    }
-
-                    if (i != 3)
+                    if (cd.Capacity() != 3)
                     {
                         throw std::runtime_error("");
                     }
 
-                    obj->cd = clr;
+                    obj->cd.x = cd[0].GetFloat();
+                    obj->cd.y = cd[1].GetFloat();
+                    obj->cd.z = cd[2].GetFloat();
                 }
 
                 if (mat.HasMember("cs"))
                 {
                     auto const& cs = mat["cs"];
 
-                    vec3 clr;
-                    int i = 0;
-                    for (auto const& item : cs.GetArray())
-                    {
-                        clr[i++] = item.GetFloat();
-                    }
-
-                    if (i != 3)
+                    if (cs.Capacity() != 3)
                     {
                         throw std::runtime_error("");
                     }
 
-                    obj->cs = clr;
+                    obj->cs.x = cs[0].GetFloat();
+                    obj->cs.y = cs[1].GetFloat();
+                    obj->cs.z = cs[2].GetFloat();
                 }
 
                 if (mat.HasMember("ce"))
                 {
                     auto const& ce = mat["ce"];
 
-                    vec3 clr;
-                    int i = 0;
-                    for (auto const& item : ce.GetArray())
-                    {
-                        clr[i++] = item.GetFloat();
-                    }
-
-                    if (i != 3)
+                    if (ce.Capacity() != 3)
                     {
                         throw std::runtime_error("");
                     }
 
-                    obj->ce = clr;
+                    obj->ce.x = ce[0].GetFloat();
+                    obj->ce.y = ce[1].GetFloat();
+                    obj->ce.z = ce[2].GetFloat();
                 }
 
                 props->material() = obj;
@@ -806,57 +786,42 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
                 {
                     auto const& ct = mat["ct"];
 
-                    vec3 clr;
-                    int i = 0;
-                    for (auto const& item : ct.GetArray())
-                    {
-                        clr[i++] = item.GetFloat();
-                    }
-
-                    if (i != 3)
+                    if (ct.Capacity() != 3)
                     {
                         throw std::runtime_error("");
                     }
 
-                    glass->ct = clr;
+                    glass->ct.x = ct[0].GetFloat();
+                    glass->ct.y = ct[1].GetFloat();
+                    glass->ct.z = ct[2].GetFloat();
                 }
 
                 if (mat.HasMember("cr"))
                 {
                     auto const& cr = mat["cr"];
 
-                    vec3 clr;
-                    int i = 0;
-                    for (auto const& item : cr.GetArray())
-                    {
-                        clr[i++] = item.GetFloat();
-                    }
-
-                    if (i != 3)
+                    if (cr.Capacity() != 3)
                     {
                         throw std::runtime_error("");
                     }
 
-                    glass->cr = clr;
+                    glass->cr.x = cr[0].GetFloat();
+                    glass->cr.y = cr[1].GetFloat();
+                    glass->cr.z = cr[2].GetFloat();
                 }
 
                 if (mat.HasMember("ior"))
                 {
-                    auto const& v = mat["ior"];
+                    auto const& ior = mat["ior"];
 
-                    vec3 ior;
-                    int i = 0;
-                    for (auto const& item : v.GetArray())
-                    {
-                        ior[i++] = item.GetFloat();
-                    }
-
-                    if (i != 3)
+                    if (ior.Capacity() != 3)
                     {
                         throw std::runtime_error("");
                     }
 
-                    glass->ior = ior;
+                    glass->ior.x = ior[0].GetFloat();
+                    glass->ior.y = ior[1].GetFloat();
+                    glass->ior.z = ior[2].GetFloat();
                 }
 
                 props->material() = glass;
