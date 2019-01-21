@@ -690,11 +690,14 @@ std::shared_ptr<sg::node> vsnray_parser::parse_transform(Object const& obj)
     {
         auto const& mat = obj["matrix"];
 
-        int i = 0;
-        for (auto const& item : mat.GetArray())
+        if (mat.Capacity() != 16)
         {
-            transform->matrix().data()[i++] = item.GetFloat();
-            assert(i <= 16);
+            throw std::runtime_error("");
+        }
+
+        for (rapidjson::SizeType i = 0; i < mat.Capacity(); ++i)
+        {
+            transform->matrix().data()[i] = mat[i].GetFloat();
         }
     }
 
