@@ -63,7 +63,7 @@ using face_vector       = aligned_vector<face_index_t>;
 struct obj_grammar
 {
     using It = boost::string_ref::const_iterator;
-    using skip_t = decltype(boost::spirit::qi::blank);
+    using skip_t = boost::spirit::qi::blank_type;
     using sref_t = boost::string_ref;
     using string = std::string;
     using VV = vertex_vector;
