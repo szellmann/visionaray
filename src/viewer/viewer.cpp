@@ -334,6 +334,14 @@ struct renderer : viewer_type
                     use_dof = dof;
                 }
 
+                // ImGui menu
+                bool hud = show_hud;
+                err = ini.get_bool("hud", hud);
+                if (err == inifile::Ok)
+                {
+                    show_hud = hud;
+                }
+
                 // headlight
                 bool headlight = use_headlight;
                 err = ini.get_bool("headlight", headlight);
