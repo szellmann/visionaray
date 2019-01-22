@@ -384,7 +384,6 @@ struct renderer : viewer_type
     bool                                        use_headlight   = true;
     bool                                        use_dof         = false;
     bool                                        show_hud        = true;
-    bool                                        show_hud_ext    = true;
     bool                                        show_bvh        = false;
 
 
