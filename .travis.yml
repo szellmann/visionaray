@@ -22,6 +22,8 @@ env:
 
 matrix:
     exclude:
+        - env: STD="CPP11" BULD_TYPE="Debug"
+          compiler: clang
         - env: STD="CPP14"
           compiler: clang
         - env: STD="CPP14" BUILD_TYPE="Debug"
