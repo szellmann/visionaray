@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <iostream>
@@ -303,6 +304,8 @@ void load_obj(std::string const& filename, model& mod)
 
 void load_obj(std::vector<std::string> const& filenames, model& mod)
 {
+    std::vector<std::string> parsed_matlibs;
+
     std::map<std::string, mtl> matlib;
 
     size_t geom_id = 0;
@@ -336,26 +339,40 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
             }
             else if ( qi::phrase_parse(it, text.cend(), grammar.r_mtllib, qi::blank, mtl_file) )
             {
-                boost::filesystem::path p(filename);
-                std::string mtl_dir = p.parent_path().string();
+                std::string mtl_file_string(mtl_file.begin(), mtl_file.length());
 
-                std::string mtl_path = "";
-                if (mtl_dir.empty())
+                // Some obj files repeat the same mtllib command over and over again..
+                bool already_parsed = std::find(parsed_matlibs.begin(), parsed_matlibs.end(), mtl_file_string) != parsed_matlibs.end();
+
+                if (!already_parsed)
                 {
-                    mtl_path = std::string(mtl_file.begin(), mtl_file.length());
+                    boost::filesystem::path p(filename);
+                    std::string mtl_dir = p.parent_path().string();
+
+                    std::string mtl_path = "";
+                    if (mtl_dir.empty())
+                    {
+                        mtl_path = std::string(mtl_file.begin(), mtl_file.length());
+                    }
+                    else
+                    {
+                        mtl_path = mtl_dir + "/" + std::string(mtl_file.begin(), mtl_file.length());
+                    }
+
+                    if (boost::filesystem::exists(mtl_path))
+                    {
+                        parse_mtl(mtl_path, matlib, grammar);
+                    }
+                    else
+                    {
+                        std::cerr << "Warning: file does not exist: " << mtl_path << '\n';
+                    }
+
+                    parsed_matlibs.push_back(mtl_file_string);
                 }
                 else
                 {
-                    mtl_path = mtl_dir + "/" + std::string(mtl_file.begin(), mtl_file.length());
-                }
-
-                if (boost::filesystem::exists(mtl_path))
-                {
-                    parse_mtl(mtl_path, matlib, grammar);
-                }
-                else
-                {
-                    std::cerr << "Warning: file does not exist: " << mtl_path << '\n';
+                    std::cerr << "Warning: mtllib already parsed: " << mtl_file << '\n';
                 }
             }
             else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
