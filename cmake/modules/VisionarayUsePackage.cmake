@@ -17,7 +17,7 @@ function(visionaray_use_package name)
 
     #
     # search for cmake variables in the following order:
-    #  name_INCLUDE_DIR, NAME_INCLUDE_DIR, name_INCLUDE_DIRS, NAME_INCLUDE_DIRS
+    #  name_INCLUDE_DIR, NAME_INCLUDE_DIR, name_INCLUDE_DIRS, NAME_INCLUDE_DIRS, NAME_INCLUDE_PATH
     if(NOT pkg_INCDIRS)
         if(${name}_INCLUDE_DIR)
             set(pkg_INCDIRS ${${name}_INCLUDE_DIR})
@@ -27,6 +27,10 @@ function(visionaray_use_package name)
             set(pkg_INCDIRS ${${name}_INCLUDE_DIRS})
         elseif(${upper_name}_INCLUDE_DIRS)
             set(pkg_INCDIRS ${${upper_name}_INCLUDE_DIRS})
+        elseif(${name}_INCLUDE_PATH)
+            set(pkg_INCDIRS ${${name}_INCLUDE_PATH})
+        elseif(${upper_name}_INCLUDE_PATH)
+            set(pkg_INCDIRS ${${upper_name}_INCLUDE_PATH})
         endif()
     endif()
 
