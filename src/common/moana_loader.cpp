@@ -448,7 +448,7 @@ static void load_obj(
         faces.clear();
         if ( qi::phrase_parse(it, text.cend(), grammar.r_g, qi::blank, group_name) )
         {
-            if (group_name != "default")
+            if (group_name != string_ref("default"))
             {
                 objs.push_back(std::make_shared<sg::surface_properties>());
                 objs.back()->add_child(std::make_shared<sg::triangle_mesh>());
