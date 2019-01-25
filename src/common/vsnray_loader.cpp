@@ -9,8 +9,13 @@
 #include <memory>
 #include <ostream>
 #include <stdexcept>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
+#include <boost/iostreams/device/mapped_file.hpp>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/utility/string_ref.hpp>
 #include <boost/filesystem.hpp>
 
 #include <rapidjson/document.h>
@@ -28,6 +33,132 @@
 #include "vsnray_loader.h"
 
 using namespace visionaray;
+
+
+namespace data_file
+{
+
+//-------------------------------------------------------------------------------------------------
+// (included) data file meta data
+//
+
+struct meta_data
+{
+    enum encoding_t
+    {
+        Ascii,
+        Binary
+    };
+
+    // VecN are binary compatible w/ visionaray::vecN
+    enum data_type_t
+    {
+        U8,
+        Float,
+        Vec2u8,
+        Vec2f,
+        Vec2,
+        Vec3u8,
+        Vec3f,
+        Vec3,
+        Vec4u8,
+        Vec4f,
+        Vec4
+    };
+
+    enum compression_t
+    {
+        Raw
+    };
+
+    std::string   path;
+    encoding_t    encoding    = Binary;
+    data_type_t   data_type   = U8;
+    int           num_items   = 0;
+    compression_t compression = Raw;
+    char          separator   = ' ';
+};
+
+} // data_file
+
+
+//-------------------------------------------------------------------------------------------------
+// Floating point number parser
+//
+
+template <typename It, typename Vector>
+bool parse_floats(It first, It last, Vector& vec, char separator = ' ')
+{
+    namespace qi = boost::spirit::qi;
+
+    return qi::phrase_parse(
+            first,
+            last,
+            qi::float_ % *qi::char_(separator),
+            qi::ascii::space,
+            vec
+            );
+}
+
+template <size_t N, typename Container>
+bool parse_as_vecNf(data_file::meta_data md, Container& vecNfs)
+{
+    if (md.data_type == data_file::meta_data::Float)
+    {
+        if (md.num_items % N != 0)
+        {
+            return false;
+        }
+
+        boost::iostreams::mapped_file_source file(md.path);
+
+        std::vector<float> floats;
+
+        if (md.encoding == data_file::meta_data::Ascii)
+        {
+            boost::string_ref text(file.data(), file.size());
+
+            parse_floats(text.cbegin(), text.cend(), floats, md.separator);
+
+            if (floats.size() != md.num_items)
+            {
+                return false;
+            }
+        }
+        else // Binary
+        {
+            floats.resize(md.num_items);
+            std::copy(
+                file.data(),
+                file.data() + file.size(),
+                reinterpret_cast<char*>(floats.data())
+                );
+        }
+
+        vecNfs.resize(md.num_items / N);
+        for (size_t i = 0; i < vecNfs.size(); ++i)
+        {
+            for (size_t j = 0; j < N; ++j)
+            {
+                vecNfs[i][j] = floats[i * N + j];
+            }
+        }
+    }
+
+    return true;
+}
+
+template <typename Container>
+bool parse_as_vec2f(data_file::meta_data md, Container& vec2fs)
+{
+    return parse_as_vecNf<2>(md, vec2fs);
+}
+
+template <typename Container>
+bool parse_as_vec3f(data_file::meta_data md, Container& vec3fs)
+{
+    return parse_as_vecNf<3>(md, vec3fs);
+}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -74,6 +205,10 @@ public:
 
     template <typename Object>
     std::shared_ptr<sg::node> parse_indexed_triangle_mesh(Object const& obj);
+
+
+    template <typename Object>
+    data_file::meta_data parse_file_meta_data(Object const& obj);
 
 private:
 
@@ -882,13 +1017,33 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
     {
         auto const& verts = obj["vertices"];
 
-        for (rapidjson::SizeType i = 0; i < verts.Capacity(); i += 3)
+        if (verts.IsArray())
         {
-            mesh->vertices.emplace_back(
-                verts[i].GetFloat(),
-                verts[i + 1].GetFloat(),
-                verts[i + 2].GetFloat()
-                );
+            for (rapidjson::SizeType i = 0; i < verts.Capacity(); i += 3)
+            {
+                mesh->vertices.emplace_back(
+                    verts[i].GetFloat(),
+                    verts[i + 1].GetFloat(),
+                    verts[i + 2].GetFloat()
+                    );
+            }
+        }
+        else if (verts.IsObject())
+        {
+            auto const& type_string = verts["type"];
+            if (strncmp(type_string.GetString(), "file", 4) == 0)
+            {
+                auto md = parse_file_meta_data(verts);
+
+                if (!parse_as_vec3f(md, mesh->vertices))
+                {
+                    throw std::runtime_error("");
+                }
+            }
+        }
+        else
+        {
+            throw std::runtime_error("");
         }
     }
 
@@ -896,13 +1051,33 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
     {
         auto const& normals = obj["normals"];
 
-        for (rapidjson::SizeType i = 0; i < normals.Capacity(); i += 3)
+        if (normals.IsArray())
         {
-            mesh->normals.emplace_back(
-                normals[i].GetFloat(),
-                normals[i + 1].GetFloat(),
-                normals[i + 2].GetFloat()
-                );
+            for (rapidjson::SizeType i = 0; i < normals.Capacity(); i += 3)
+            {
+                mesh->normals.emplace_back(
+                    normals[i].GetFloat(),
+                    normals[i + 1].GetFloat(),
+                    normals[i + 2].GetFloat()
+                    );
+            }
+        }
+        else if (normals.IsObject())
+        {
+            auto const& type_string = normals["type"];
+            if (strncmp(type_string.GetString(), "file", 4) == 0)
+            {
+                auto md = parse_file_meta_data(normals);
+
+                if (!parse_as_vec3f(md, mesh->normals))
+                {
+                    throw std::runtime_error("");
+                }
+            }
+        }
+        else
+        {
+            throw std::runtime_error("");
         }
     }
     else
@@ -928,12 +1103,32 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
     {
         auto const& tex_coords = obj["tex_coords"];
 
-        for (rapidjson::SizeType i = 0; i < tex_coords.Capacity(); i += 2)
+        if (tex_coords.IsArray())
         {
-            mesh->tex_coords.emplace_back(
-                tex_coords[i].GetFloat(),
-                tex_coords[i + 1].GetFloat()
-                );
+            for (rapidjson::SizeType i = 0; i < tex_coords.Capacity(); i += 2)
+            {
+                mesh->tex_coords.emplace_back(
+                    tex_coords[i].GetFloat(),
+                    tex_coords[i + 1].GetFloat()
+                    );
+            }
+        }
+        else if (tex_coords.IsObject())
+        {
+            auto const& type_string = tex_coords["type"];
+            if (strncmp(type_string.GetString(), "file", 4) == 0)
+            {
+                auto md = parse_file_meta_data(tex_coords);
+
+                if (!parse_as_vec2f(md, mesh->tex_coords))
+                {
+                    throw std::runtime_error("");
+                }
+            }
+        }
+        else
+        {
+            throw std::runtime_error("");
         }
     }
     else
@@ -950,13 +1145,33 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
     {
         auto const& colors = obj["colors"];
 
-        for (rapidjson::SizeType i = 0; i < colors.Capacity(); i += 3)
+        if (colors.IsArray())
         {
-            mesh->colors.emplace_back(
-                colors[i].GetFloat(),
-                colors[i + 1].GetFloat(),
-                colors[i + 2].GetFloat()
-                );
+            for (rapidjson::SizeType i = 0; i < colors.Capacity(); i += 3)
+            {
+                mesh->colors.emplace_back(
+                    colors[i].GetFloat(),
+                    colors[i + 1].GetFloat(),
+                    colors[i + 2].GetFloat()
+                    );
+            }
+        }
+        else if (colors.IsObject())
+        {
+            auto const& type_string = colors["type"];
+            if (strncmp(type_string.GetString(), "file", 4) == 0)
+            {
+                auto md = parse_file_meta_data(colors);
+
+                if (!parse_as_vec3f(md, mesh->colors))
+                {
+                    throw std::runtime_error("");
+                }
+            }
+        }
+        else
+        {
+            throw std::runtime_error("");
         }
     }
     else
@@ -991,13 +1206,29 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
     {
         auto const& verts = obj["vertices"];
 
-        for (rapidjson::SizeType i = 0; i < verts.Capacity(); i += 3)
+        if (verts.IsArray())
         {
-            mesh->vertices.emplace_back(
-                verts[i].GetFloat(),
-                verts[i + 1].GetFloat(),
-                verts[i + 2].GetFloat()
-                );
+            for (rapidjson::SizeType i = 0; i < verts.Capacity(); i += 3)
+            {
+                mesh->vertices.emplace_back(
+                    verts[i].GetFloat(),
+                    verts[i + 1].GetFloat(),
+                    verts[i + 2].GetFloat()
+                    );
+            }
+        }
+        else if (verts.IsObject())
+        {
+            auto const& type_string = verts["type"];
+            if (strncmp(type_string.GetString(), "file", 4) == 0)
+            {
+                auto md = parse_file_meta_data(verts);
+
+                if (!parse_as_vec3f(md, mesh->vertices))
+                {
+                    throw std::runtime_error("");
+                }
+            }
         }
     }
 
@@ -1005,13 +1236,33 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
     {
         auto const& normals = obj["normals"];
 
-        for (rapidjson::SizeType i = 0; i < normals.Capacity(); i += 3)
+        if (normals.IsArray())
         {
-            mesh->normals.emplace_back(
-                normals[i].GetFloat(),
-                normals[i + 1].GetFloat(),
-                normals[i + 2].GetFloat()
-                );
+            for (rapidjson::SizeType i = 0; i < normals.Capacity(); i += 3)
+            {
+                mesh->normals.emplace_back(
+                    normals[i].GetFloat(),
+                    normals[i + 1].GetFloat(),
+                    normals[i + 2].GetFloat()
+                    );
+            }
+        }
+        else if (normals.IsObject())
+        {
+            auto const& type_string = normals["type"];
+            if (strncmp(type_string.GetString(), "file", 4) == 0)
+            {
+                auto md = parse_file_meta_data(normals);
+
+                if (!parse_as_vec3f(md, mesh->normals))
+                {
+                    throw std::runtime_error("");
+                }
+            }
+        }
+        else
+        {
+            throw std::runtime_error("");
         }
     }
 
@@ -1019,12 +1270,32 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
     {
         auto const& tex_coords = obj["tex_coords"];
 
-        for (rapidjson::SizeType i = 0; i < tex_coords.Capacity(); i += 2)
+        if (tex_coords.IsArray())
         {
-            mesh->tex_coords.emplace_back(
-                tex_coords[i].GetFloat(),
-                tex_coords[i + 1].GetFloat()
-                );
+            for (rapidjson::SizeType i = 0; i < tex_coords.Capacity(); i += 2)
+            {
+                mesh->tex_coords.emplace_back(
+                    tex_coords[i].GetFloat(),
+                    tex_coords[i + 1].GetFloat()
+                    );
+            }
+        }
+        else if (tex_coords.IsObject())
+        {
+            auto const& type_string = tex_coords["type"];
+            if (strncmp(type_string.GetString(), "file", 4) == 0)
+            {
+                auto md = parse_file_meta_data(tex_coords);
+
+                if (!parse_as_vec2f(md, mesh->tex_coords))
+                {
+                    throw std::runtime_error("");
+                }
+            }
+        }
+        else
+        {
+            throw std::runtime_error("");
         }
     }
 
@@ -1032,17 +1303,156 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
     {
         auto const& colors = obj["colors"];
 
-        for (rapidjson::SizeType i = 0; i < colors.Capacity(); i += 3)
+        if (colors.IsArray())
         {
-            mesh->colors.emplace_back(
-                colors[i].GetFloat(),
-                colors[i + 1].GetFloat(),
-                colors[i + 2].GetFloat()
-                );
+            for (rapidjson::SizeType i = 0; i < colors.Capacity(); i += 3)
+            {
+                mesh->colors.emplace_back(
+                    colors[i].GetFloat(),
+                    colors[i + 1].GetFloat(),
+                    colors[i + 2].GetFloat()
+                    );
+            }
+        }
+        else if (colors.IsObject())
+        {
+            auto const& type_string = colors["type"];
+            if (strncmp(type_string.GetString(), "file", 4) == 0)
+            {
+                auto md = parse_file_meta_data(colors);
+
+                if (!parse_as_vec3f(md, mesh->colors))
+                {
+                    throw std::runtime_error("");
+                }
+            }
+        }
+        else
+        {
+            throw std::runtime_error("");
         }
     }
 
     return mesh;
+}
+
+template <typename Object>
+data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
+{
+    data_file::meta_data result;
+
+    if (obj.HasMember("path"))
+    {
+        result.path = obj["path"].GetString();
+    }
+    else
+    {
+        throw std::runtime_error("");
+    }
+
+    if (obj.HasMember("encoding"))
+    {
+        std::string encoding = obj["encoding"].GetString();
+        if (encoding == "ascii")
+        {
+            result.encoding = data_file::meta_data::Ascii;
+        }
+        else if (encoding == "binary")
+        {
+            result.encoding = data_file::meta_data::Binary;
+        }
+        else
+        {
+            throw std::runtime_error("");
+        }
+    }
+    else
+    {
+        throw std::runtime_error("");
+    }
+
+    if (obj.HasMember("data_type"))
+    {
+        std::string data_type = obj["data_type"].GetString();
+        if (data_type == "float")
+        {
+            result.data_type = data_file::meta_data::Float;
+        }
+        else if (data_type == "vec2u8")
+        {
+            result.data_type = data_file::meta_data::Vec2u8;
+        }
+        else if (data_type == "vec2f")
+        {
+            result.data_type = data_file::meta_data::Vec2u8;
+        }
+        else if (data_type == "vec2")
+        {
+            result.data_type = data_file::meta_data::Vec2;
+        }
+        else if (data_type == "vec3u8")
+        {
+            result.data_type = data_file::meta_data::Vec3u8;
+        }
+        else if (data_type == "vec3f")
+        {
+            result.data_type = data_file::meta_data::Vec3u8;
+        }
+        else if (data_type == "vec3")
+        {
+            result.data_type = data_file::meta_data::Vec3;
+        }
+        else if (data_type == "vec4u8")
+        {
+            result.data_type = data_file::meta_data::Vec4u8;
+        }
+        else if (data_type == "vec4f")
+        {
+            result.data_type = data_file::meta_data::Vec4u8;
+        }
+        else if (data_type == "vec4")
+        {
+            result.data_type = data_file::meta_data::Vec4;
+        }
+        else
+        {
+            throw std::runtime_error("");
+        }
+    }
+    else
+    {
+        throw std::runtime_error("");
+    }
+
+    if (obj.HasMember("num_items"))
+    {
+        result.num_items = obj["num_items"].GetInt();
+    }
+    else
+    {
+        throw std::runtime_error("");
+    }
+
+    if (obj.HasMember("compression"))
+    {
+        std::string compression = obj["compression"].GetString();
+        if (compression == "none" || compression == "raw")
+        {
+            result.compression = data_file::meta_data::Raw;
+        }
+        else
+        {
+            throw std::runtime_error("");
+        }
+    }
+
+    if (obj.HasMember("separator"))
+    {
+        std::string separator = obj["separator"].GetString();
+        result.separator = separator[0];
+    }
+
+    return result;
 }
 
 
