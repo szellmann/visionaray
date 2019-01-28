@@ -1678,7 +1678,7 @@ void vsnray_writer::write_triangle_mesh(Object obj, std::shared_ptr<sg::triangle
 
         write_data_file(cols.GetObject(), md, tm->colors);
 
-        obj.AddMember("tex_coords", cols, allocator);
+        obj.AddMember("colors", cols, allocator);
     }
 }
 
