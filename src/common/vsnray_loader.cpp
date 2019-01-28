@@ -1516,9 +1516,10 @@ void vsnray_writer::write_node(Object obj, std::shared_ptr<sg::node> const& n)
 
     auto& allocator = document_.GetAllocator();
 
+    rapidjson::Value name(n->name().c_str(), allocator);
     obj.AddMember(
         rapidjson::StringRef("name"),
-        rapidjson::StringRef(n->name().c_str()),
+        name,
         allocator
         );
 
@@ -1773,9 +1774,10 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
             allocator
             );
 
+        rapidjson::Value path(md.path.c_str(), allocator);
         obj.AddMember(
             rapidjson::StringRef("path"),
-            rapidjson::StringRef(md.path.c_str()),
+            path,
             allocator
             );
 
@@ -1785,9 +1787,10 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
             allocator
             );
 
+        rapidjson::Value dt(data_type.c_str(), allocator);
         obj.AddMember(
             rapidjson::StringRef("data_type"),
-            rapidjson::StringRef(data_type.c_str()),
+            dt,
             allocator
             );
 
