@@ -265,7 +265,7 @@ bool image::load(std::string const& filename)
     return false;
 }
 
-bool image::save(std::string const& filename, image_base::save_options const& options)
+bool image::save(std::string const& filename, file_base::save_options const& options)
 {
     std::string fn(filename);
     std::replace(fn.begin(), fn.end(), '\\', '/');

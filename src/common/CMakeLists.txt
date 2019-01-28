@@ -162,6 +162,7 @@ set(COMMON_HEADERS
     dds_image.h
     exr_image.h
     fbx_loader.h
+    file_base.h
     hdr_image.h
     image.h
     image_base.h
@@ -206,6 +207,7 @@ set(COMMON_SOURCES
     dds_image.cpp
     exr_image.cpp
     fbx_loader.cpp
+    file_base.cpp
     hdr_image.cpp
     image.cpp
     image_base.cpp

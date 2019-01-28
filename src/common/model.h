@@ -21,6 +21,8 @@
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
 
+#include "file_base.h"
+
 namespace visionaray
 {
 
@@ -29,7 +31,7 @@ namespace sg
 class node;
 } // sg
 
-class model
+class model : public file_base
 {
 public:
 
@@ -96,7 +98,13 @@ public:
 
     model();
 
+    // Load single file
     bool load(std::string const& filename);
+
+    // Save to file
+    bool save(std::string const& filename, save_options const& options);
+
+    // Load multiple files at once
     bool load(std::vector<std::string> const& filenames);
 
 public:

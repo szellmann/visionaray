@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -20,6 +21,8 @@
 
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
+#include <rapidjson/filewritestream.h>
+#include <rapidjson/prettywriter.h>
 
 #include <visionaray/math/constants.h>
 #include <visionaray/math/forward.h>
@@ -1456,6 +1459,378 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
 }
 
 
+//-------------------------------------------------------------------------------------------------
+// .vsnray writer
+//
+
+class vsnray_writer
+{
+public:
+
+    vsnray_writer(rapidjson::Document& doc, std::string filename)
+        : document_(doc)
+        , filename_(filename)
+    {
+    }
+
+    template <typename Object>
+    void write_node(Object obj, std::shared_ptr<sg::node> const& n);
+
+    template <typename Object>
+    void write_transform(Object obj, std::shared_ptr<sg::transform> const& tr);
+
+    template <typename Object>
+    void write_surface_properties(Object obj, std::shared_ptr<sg::surface_properties> const& sp);
+
+    template <typename Object>
+    void write_triangle_mesh(Object obj, std::shared_ptr<sg::triangle_mesh> const& tm);
+
+    template <typename Object>
+    void write_indexed_triangle_mesh(Object obj, std::shared_ptr<sg::indexed_triangle_mesh> const& tm);
+
+
+    template <typename Object, typename Container>
+    void write_data_file(Object obj, data_file::meta_data md, Container const& cont);
+
+private:
+
+    std::string make_inline_filename(std::string node_name, std::string suffix);
+
+    rapidjson::Document& document_;
+
+    std::string filename_;
+
+};
+
+//-------------------------------------------------------------------------------------------------
+// Write nodes
+//
+
+template <typename Object>
+void vsnray_writer::write_node(Object obj, std::shared_ptr<sg::node> const& n)
+{
+    if (n == nullptr)
+    {
+        return;
+    }
+
+    auto& allocator = document_.GetAllocator();
+
+    obj.AddMember(
+        rapidjson::StringRef("name"),
+        rapidjson::StringRef(n->name().c_str()),
+        allocator
+        );
+
+    if (auto tr = std::dynamic_pointer_cast<sg::transform>(n))
+    {
+        obj.AddMember(
+            rapidjson::StringRef("type"),
+            rapidjson::StringRef("transform"),
+            allocator
+            );
+
+        write_transform(obj, tr);
+    }
+    else if (auto sp = std::dynamic_pointer_cast<sg::surface_properties>(n))
+    {
+        obj.AddMember(
+            rapidjson::StringRef("type"),
+            rapidjson::StringRef("surface_properties"),
+            allocator
+            );
+
+        write_surface_properties(obj, sp);
+    }
+    else if (auto tm = std::dynamic_pointer_cast<sg::triangle_mesh>(n))
+    {
+        obj.AddMember(
+            rapidjson::StringRef("type"),
+            rapidjson::StringRef("triangle_mesh"),
+            allocator
+            );
+
+        write_triangle_mesh(obj, tm);
+    }
+    else if (auto itm = std::dynamic_pointer_cast<sg::indexed_triangle_mesh>(n))
+    {
+        obj.AddMember(
+            rapidjson::StringRef("type"),
+            rapidjson::StringRef("indexed_triangle_mesh"),
+            allocator
+            );
+
+        write_indexed_triangle_mesh(obj, itm);
+    }
+    else
+    {
+        obj.AddMember(
+            rapidjson::StringRef("type"),
+            rapidjson::StringRef("node"),
+            allocator
+            );
+    }
+
+    if (n->children().size() > 0)
+    {
+        rapidjson::Value arr(rapidjson::kArrayType);
+
+        for (auto& c : n->children())
+        {
+            rapidjson::Value child;
+            child.SetObject();
+            write_node(child.GetObject(), c);
+
+            arr.PushBack(child, allocator);
+        }
+
+        obj.AddMember("children", arr, allocator);
+    }
+}
+
+template <typename Object>
+void vsnray_writer::write_transform(Object obj, std::shared_ptr<sg::transform> const& tr)
+{
+    auto& allocator = document_.GetAllocator();
+
+    rapidjson::Value mat(rapidjson::kArrayType);
+
+    for (int i = 0; i < 16; ++i)
+    {
+        rapidjson::Value val;
+        val.SetDouble(tr->matrix().data()[i]);
+        mat.PushBack(val, allocator);
+    }
+
+    obj.AddMember("matrix", mat, allocator);
+}
+
+template <typename Object>
+void vsnray_writer::write_surface_properties(Object obj, std::shared_ptr<sg::surface_properties> const& sp)
+{
+}
+
+template <typename Object>
+void vsnray_writer::write_triangle_mesh(Object obj, std::shared_ptr<sg::triangle_mesh> const& tm)
+{
+    auto& allocator = document_.GetAllocator();
+
+    // Write binary files
+
+    if (!tm->vertices.empty())
+    {
+        data_file::meta_data md;
+        md.path = make_inline_filename(tm->name(), "vert");
+        md.encoding = data_file::meta_data::Binary;
+        md.data_type = data_file::meta_data::Vec3f;
+        md.num_items = tm->vertices.size();
+
+        rapidjson::Value verts;
+        verts.SetObject();
+
+        write_data_file(verts.GetObject(), md, tm->vertices);
+
+        obj.AddMember("vertices", verts, allocator);
+    }
+
+    if (!tm->normals.empty())
+    {
+        data_file::meta_data md;
+        md.path = make_inline_filename(tm->name(), "norm");
+        md.encoding = data_file::meta_data::Binary;
+        md.data_type = data_file::meta_data::Vec3f;
+        md.num_items = tm->normals.size();
+
+        rapidjson::Value norms;
+        norms.SetObject();
+
+        write_data_file(norms.GetObject(), md, tm->normals);
+
+        obj.AddMember("normals", norms, allocator);
+    }
+
+    if (!tm->tex_coords.empty())
+    {
+        data_file::meta_data md;
+        md.path = make_inline_filename(tm->name(), "texc");
+        md.encoding = data_file::meta_data::Binary;
+        md.data_type = data_file::meta_data::Vec2f;
+        md.num_items = tm->tex_coords.size();
+
+        rapidjson::Value tcs;
+        tcs.SetObject();
+
+        write_data_file(tcs.GetObject(), md, tm->tex_coords);
+
+        obj.AddMember("tex_coords", tcs, allocator);
+    }
+
+    if (!tm->colors.empty())
+    {
+        data_file::meta_data md;
+        md.path = make_inline_filename(tm->name(), "colo");
+        md.encoding = data_file::meta_data::Binary;
+        md.data_type = data_file::meta_data::Vec3u8;
+        md.num_items = tm->colors.size();
+
+        rapidjson::Value cols;
+        cols.SetObject();
+
+        write_data_file(cols.GetObject(), md, tm->colors);
+
+        obj.AddMember("tex_coords", cols, allocator);
+    }
+}
+
+template <typename Object>
+void vsnray_writer::write_indexed_triangle_mesh(Object obj, std::shared_ptr<sg::indexed_triangle_mesh> const& tm)
+{
+}
+
+template <typename Object, typename Container>
+void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Container const& cont)
+{
+    // First try to write the actual data file
+
+    // Don't overwrite
+    if (boost::filesystem::exists(md.path))
+    {
+        throw std::runtime_error("");
+    }
+
+    // Check for consistency
+    if (cont.size() != md.num_items)
+    {
+        throw std::runtime_error("");
+    }
+
+    std::ofstream file(md.path, std::ios::binary);
+
+    if (!file.good())
+    {
+        throw std::runtime_error("");
+    }
+
+    // Write data
+    try
+    {
+        file.write(reinterpret_cast<char const*>(cont.data()), cont.size() * sizeof(typename Container::value_type));
+    }
+    catch (std::ios_base::failure)
+    {
+        throw std::runtime_error("");
+    }
+
+    assert(boost::filesystem::exists(md.path));
+
+
+    // Now store a JSON node containing meta data to the document
+    auto& allocator = document_.GetAllocator();
+
+    std::string data_type = "";
+
+    switch (md.data_type)
+    {
+    case data_file::meta_data::Float:
+        data_type = "float";
+        break;
+
+    case data_file::meta_data::Vec2u8:
+        data_type = "vec2u8";
+        break;
+
+    case data_file::meta_data::Vec2f:
+        data_type = "vec2f";
+        break;
+
+    case data_file::meta_data::Vec3u8:
+        data_type = "vec3u8";
+        break;
+
+    case data_file::meta_data::Vec4u8:
+        data_type = "vec4u8";
+        break;
+
+    case data_file::meta_data::Vec4f:
+        data_type = "vec4f";
+        break;
+
+    case data_file::meta_data::Vec3f:
+        data_type = "vec3f";
+        break;
+
+    default:
+        throw std::runtime_error("");
+    }
+
+    assert(!data_type.empty());
+
+    if (md.encoding == data_file::meta_data::Binary)
+    {
+        obj.AddMember(
+            rapidjson::StringRef("type"),
+            rapidjson::StringRef("file"),
+            allocator
+            );
+
+        obj.AddMember(
+            rapidjson::StringRef("path"),
+            rapidjson::StringRef(md.path.c_str()),
+            allocator
+            );
+
+        obj.AddMember(
+            rapidjson::StringRef("encoding"),
+            rapidjson::StringRef("binary"),
+            allocator
+            );
+
+        obj.AddMember(
+            rapidjson::StringRef("data_type"),
+            rapidjson::StringRef(data_type.c_str()),
+            allocator
+            );
+
+        rapidjson::Value num_items;
+        num_items.SetInt(md.num_items);
+        obj.AddMember("num_items", num_items, allocator);
+
+        obj.AddMember(
+            rapidjson::StringRef("compression"),
+            rapidjson::StringRef("none"),
+            allocator
+            );
+    }
+    else
+    {
+        // Not implemented yet
+        throw std::runtime_error("");
+    }
+}
+
+std::string vsnray_writer::make_inline_filename(std::string node_name, std::string suffix)
+{
+    std::string result = filename_;
+
+    if (!node_name.empty())
+    {
+        result.append(std::string(".") + node_name);
+    }
+
+    if (!suffix.empty())
+    {
+        if (suffix[0] != '.')
+        {
+            result.append(".");
+        }
+
+        result.append(suffix);
+    }
+
+    return result;
+}
+
+
 namespace visionaray
 {
 
@@ -1470,6 +1845,28 @@ void load_vsnray(std::string const& filename, model& mod)
     filenames[0] = filename;
 
     load_vsnray(filenames, mod);
+}
+
+void save_vsnray(std::string const& filename, model const& mod, file_base::save_options const& options)
+{
+    cfile file(filename, "w+");
+    if (!file.good())
+    {
+        std::cerr << "Cannot open " << filename << '\n';
+        return;
+    }
+
+    rapidjson::Document doc;
+    doc.SetObject();
+
+    vsnray_writer writer(doc, filename);
+    writer.write_node(doc.GetObject(), mod.scene_graph);
+
+    char buffer[65536];
+    rapidjson::FileWriteStream fws(file.get(), buffer, sizeof(buffer));
+
+    rapidjson::PrettyWriter<rapidjson::FileWriteStream> w(fws);
+    doc.Accept(w);
 }
 
 void load_vsnray(std::vector<std::string> const& filenames, model& mod)

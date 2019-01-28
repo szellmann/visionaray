@@ -336,7 +336,7 @@ bool pnm_image::load(std::string const& filename)
     return false;
 }
 
-bool pnm_image::save(std::string const& filename, image_base::save_options const& options)
+bool pnm_image::save(std::string const& filename, file_base::save_options const& options)
 {
     auto it = std::find_if(
             options.begin(),

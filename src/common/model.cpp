@@ -102,6 +102,32 @@ bool model::load(std::string const& filename)
     return load(filenames);
 }
 
+bool model::save(std::string const& filename, file_base::save_options const& options)
+{
+    std::string fn(filename);
+    std::replace(fn.begin(), fn.end(), '\\', '/');
+    model_type mt = get_type(fn);
+
+    switch (mt)
+    {
+    case VSNRAY:
+    {
+        save_vsnray(fn, *this, options);
+        return true;
+    }
+
+
+    // not supported
+
+    case Unknown:
+        // fall-through
+    default:
+        break;
+    }
+
+    return false;
+}
+
 bool model::load(std::vector<std::string> const& filenames)
 {
     if (filenames.size() < 1)

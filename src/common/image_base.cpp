@@ -2,7 +2,6 @@
 // See the LICENSE file for details.
 
 #include <algorithm>
-#include <stdexcept>
 
 #include "image_base.h"
 
@@ -20,16 +19,6 @@ image_base::image_base(size_t width, size_t height, pixel_format format, uint8_t
     data_.resize(len);
 
     std::copy(data, data + len, data_.begin());
-}
-
-bool image_base::load(std::string const& /*filename*/)
-{
-    throw std::runtime_error("Not implemented yet");
-}
-
-bool image_base::save(std::string const& /*filename*/, image_base::save_options const& /*options*/)
-{
-    throw std::runtime_error("Not implemented yet");
 }
 
 size_t image_base::width() const
