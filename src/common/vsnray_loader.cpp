@@ -60,13 +60,10 @@ struct meta_data
         Float,
         Vec2u8,
         Vec2f,
-        Vec2,
         Vec3u8,
         Vec3f,
-        Vec3,
         Vec4u8,
         Vec4f,
-        Vec4
     };
 
     enum compression_t
@@ -104,16 +101,16 @@ bool parse_floats(It first, It last, Vector& vec, char separator = ' ')
 }
 
 template <size_t N, typename Container>
-bool parse_as_vecNf(data_file::meta_data md, Container& vecNfs)
+bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
 {
+    boost::iostreams::mapped_file_source file(md.path);
+
     if (md.data_type == data_file::meta_data::Float)
     {
         if (md.num_items % N != 0)
         {
             return false;
         }
-
-        boost::iostreams::mapped_file_source file(md.path);
 
         std::vector<float> floats;
 
@@ -138,13 +135,145 @@ bool parse_as_vecNf(data_file::meta_data md, Container& vecNfs)
                 );
         }
 
-        vecNfs.resize(md.num_items / N);
-        for (size_t i = 0; i < vecNfs.size(); ++i)
+        vecNs.resize(md.num_items / N);
+        for (size_t i = 0; i < vecNs.size(); ++i)
         {
             for (size_t j = 0; j < N; ++j)
             {
-                vecNfs[i][j] = floats[i * N + j];
+                vecNs[i][j] = floats[i * N + j];
             }
+        }
+    }
+    else if (md.data_type == data_file::meta_data::Vec2u8)
+    {
+        if (N != 2)
+        {
+            throw std::runtime_error("");
+        }
+
+        if (md.encoding == data_file::meta_data::Ascii)
+        {
+            // Not implemented yet
+            return false;
+        }
+        else // Binary
+        {
+            vecNs.resize(md.num_items);
+            std::copy(
+                file.data(),
+                file.data() + file.size(),
+                reinterpret_cast<char*>(vecNs.data())
+                );
+        }
+    }
+    else if (md.data_type == data_file::meta_data::Vec2f)
+    {
+        if (N != 2)
+        {
+            throw std::runtime_error("");
+        }
+
+        if (md.encoding == data_file::meta_data::Ascii)
+        {
+            // Not implemented yet
+            return false;
+        }
+        else // Binary
+        {
+            vecNs.resize(md.num_items);
+            std::copy(
+                file.data(),
+                file.data() + file.size(),
+                reinterpret_cast<char*>(vecNs.data())
+                );
+        }
+    }
+    else if (md.data_type == data_file::meta_data::Vec3u8)
+    {
+        if (N != 3)
+        {
+            throw std::runtime_error("");
+        }
+
+        if (md.encoding == data_file::meta_data::Ascii)
+        {
+            // Not implemented yet
+            return false;
+        }
+        else // Binary
+        {
+            vecNs.resize(md.num_items);
+            std::copy(
+                file.data(),
+                file.data() + file.size(),
+                reinterpret_cast<char*>(vecNs.data())
+                );
+        }
+    }
+    else if (md.data_type == data_file::meta_data::Vec3f)
+    {
+        if (N != 3)
+        {
+            throw std::runtime_error("");
+        }
+
+        if (md.encoding == data_file::meta_data::Ascii)
+        {
+            // Not implemented yet
+            return false;
+        }
+        else // Binary
+        {
+            vecNs.resize(md.num_items);
+            std::copy(
+                file.data(),
+                file.data() + file.size(),
+                reinterpret_cast<char*>(vecNs.data())
+                );
+        }
+    }
+    else if (md.data_type == data_file::meta_data::Vec4u8)
+    {
+        if (N != 4)
+        {
+            throw std::runtime_error("");
+        }
+
+        if (md.encoding == data_file::meta_data::Ascii)
+        {
+            // Not implemented yet
+            return false;
+        }
+        else // Binary
+        {
+            vecNs.resize(md.num_items);
+            std::copy(
+                file.data(),
+                file.data() + file.size(),
+                reinterpret_cast<char*>(vecNs.data())
+                );
+        }
+    }
+    else if (md.data_type == data_file::meta_data::Vec4f)
+    {
+        if (N != 4)
+        {
+            throw std::runtime_error("");
+        }
+
+        if (md.encoding == data_file::meta_data::Ascii)
+        {
+            // Not implemented yet
+            return false;
+        }
+        else // Binary
+        {
+            vecNs.resize(md.num_items);
+            std::copy(
+                file.data(),
+                file.data() + file.size(),
+                reinterpret_cast<char*>(vecNs.data())
+                );
         }
     }
 
@@ -154,13 +283,13 @@ bool parse_as_vecNf(data_file::meta_data md, Container& vecNfs)
 template <typename Container>
 bool parse_as_vec2f(data_file::meta_data md, Container& vec2fs)
 {
-    return parse_as_vecNf<2>(md, vec2fs);
+    return parse_as_vecN<2>(md, vec2fs);
 }
 
 template <typename Container>
 bool parse_as_vec3f(data_file::meta_data md, Container& vec3fs)
 {
-    return parse_as_vecNf<3>(md, vec3fs);
+    return parse_as_vecN<3>(md, vec3fs);
 }
 
 
@@ -1391,7 +1520,7 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
         }
         else if (data_type == "vec2")
         {
-            result.data_type = data_file::meta_data::Vec2;
+            result.data_type = data_file::meta_data::Vec2f;
         }
         else if (data_type == "vec3u8")
         {
@@ -1403,7 +1532,7 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
         }
         else if (data_type == "vec3")
         {
-            result.data_type = data_file::meta_data::Vec3;
+            result.data_type = data_file::meta_data::Vec3f;
         }
         else if (data_type == "vec4u8")
         {
@@ -1415,7 +1544,7 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
         }
         else if (data_type == "vec4")
         {
-            result.data_type = data_file::meta_data::Vec4;
+            result.data_type = data_file::meta_data::Vec4f;
         }
         else
         {
