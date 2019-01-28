@@ -7,7 +7,6 @@
 #define VSNRAY_DETAIL_PARALLEL_FOR_H 1
 
 #include <algorithm>
-#include <type_traits>
 
 #include "../math/detail/math.h"
 #include "range.h"
