@@ -6,6 +6,8 @@
 #ifndef VSNRAY_DETAIL_RANGE_H
 #define VSNRAY_DETAIL_RANGE_H 1
 
+#include <type_traits>
+
 #include "macros.h"
 
 namespace visionaray
