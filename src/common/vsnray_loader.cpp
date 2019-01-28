@@ -1384,7 +1384,7 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
         }
         else if (data_type == "vec2f")
         {
-            result.data_type = data_file::meta_data::Vec2u8;
+            result.data_type = data_file::meta_data::Vec2f;
         }
         else if (data_type == "vec2")
         {
@@ -1396,7 +1396,7 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
         }
         else if (data_type == "vec3f")
         {
-            result.data_type = data_file::meta_data::Vec3u8;
+            result.data_type = data_file::meta_data::Vec3f;
         }
         else if (data_type == "vec3")
         {
@@ -1408,7 +1408,7 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
         }
         else if (data_type == "vec4f")
         {
-            result.data_type = data_file::meta_data::Vec4u8;
+            result.data_type = data_file::meta_data::Vec4f;
         }
         else if (data_type == "vec4")
         {
