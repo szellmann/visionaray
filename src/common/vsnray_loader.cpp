@@ -122,7 +122,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
 
             parse_floats(text.cbegin(), text.cend(), floats, md.separator);
 
-            if (floats.size() != md.num_items)
+            if (static_cast<int>(floats.size()) != md.num_items)
             {
                 return false;
             }
@@ -1932,7 +1932,7 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
     }
 
     // Check for consistency
-    if (cont.size() != md.num_items)
+    if (static_cast<int>(cont.size()) != md.num_items)
     {
         throw std::runtime_error("");
     }
