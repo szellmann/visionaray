@@ -1744,6 +1744,13 @@ void vsnray_writer::write_surface_properties(Object obj, std::shared_ptr<sg::sur
 
     if (sp->material() != nullptr)
     {
+        rapidjson::Value name(sp->material()->name().c_str(), allocator);
+        obj.AddMember(
+            rapidjson::StringRef("name"),
+            name,
+            allocator
+            );
+
         rapidjson::Value jmat;
         jmat.SetObject();
 
