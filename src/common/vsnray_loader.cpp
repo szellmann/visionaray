@@ -2092,21 +2092,56 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
 
 std::string vsnray_writer::make_inline_filename(std::string node_name, std::string suffix)
 {
-    std::string result = filename_;
+    std::string result;
 
-    if (!node_name.empty())
-    {
-        result.append(std::string(".") + node_name);
-    }
+    std::string insert = node_name;
 
-    if (!suffix.empty())
+    int inc = 0;
+
+    for (;;)
     {
-        if (suffix[0] != '.')
+        std::string fn = filename_;
+
+        if (!node_name.empty())
         {
-            result.append(".");
+            fn.append(std::string(".") + node_name);
+        }
+        else
+        {
+            std::string inc_str = std::to_string(inc);
+
+            while (inc_str.length() < 8)
+            {
+                inc_str = std::string("0") + inc_str;
+            }
+
+            fn.append(std::string(".") + inc_str);
+
+            ++inc;
         }
 
-        result.append(suffix);
+        if (!suffix.empty())
+        {
+            if (suffix[0] != '.')
+            {
+                fn.append(".");
+            }
+
+            fn.append(suffix);
+        }
+
+        if (!boost::filesystem::exists(fn))
+        {
+            result = fn;
+            break;
+        }
+        else
+        {
+            if (!node_name.empty())
+            {
+                throw std::runtime_error("");
+            }
+        }
     }
 
     return result;
