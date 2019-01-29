@@ -477,7 +477,7 @@ static void load_obj(
             auto tit = textures.find(group);
             if (tit != textures.end())
             {
-                surf->add_texture(std::static_pointer_cast<sg::texture>(tit->second));
+                surf->add_texture(std::static_pointer_cast<sg::texture>(tit->second), "diffuse");
             }
             else
             {
@@ -516,7 +516,7 @@ static void load_obj(
                 {
                     tex->name() = group;
                     textures.insert(std::make_pair(group, tex));
-                    surf->add_texture(tex);
+                    surf->add_texture(tex, "diffuse");
                 }
             }
         }
@@ -546,7 +546,7 @@ static void load_obj(
         if (surf->textures().size() == 0)
         {
             auto it = textures.find("null");
-            surf->add_texture(it->second);
+            surf->add_texture(it->second, "diffuse");
         }
     }
 }
@@ -811,19 +811,21 @@ struct statistics_visitor : sg::node_visitor
             for (auto& t : sp.textures())
             {
 #if VSNRAY_COMMON_HAVE_PTEX
-
-                auto tex = std::dynamic_pointer_cast<sg::ptex_texture>(t);
-
-                Ptex::String error = "";
-                PtexPtr<PtexTexture> ptex_tex(tex->cache()->get()->get(tex->filename().c_str(), error));
-
-                if (ptex_tex != nullptr)
+                if (t.first == "diffuse")
                 {
-                    for (int faceid = 0; faceid < ptex_tex->numFaces(); ++faceid)
+                    auto tex = std::dynamic_pointer_cast<sg::ptex_texture>(t.second);
+
+                    Ptex::String error = "";
+                    PtexPtr<PtexTexture> ptex_tex(tex->cache()->get()->get(tex->filename().c_str(), error));
+
+                    if (ptex_tex != nullptr)
                     {
-                        texture_bytes += Ptex::DataSize(ptex_tex->dataType())
-                                       * ptex_tex->numChannels()
-                                       * ptex_tex->getFaceInfo(faceid).res.size();
+                        for (int faceid = 0; faceid < ptex_tex->numFaces(); ++faceid)
+                        {
+                            texture_bytes += Ptex::DataSize(ptex_tex->dataType())
+                                           * ptex_tex->numChannels()
+                                           * ptex_tex->getFaceInfo(faceid).res.size();
+                        }
                     }
                 }
 #endif

@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <visionaray/texture/detail/texture_common.h> // detail!
@@ -414,13 +415,15 @@ public:
 
     VSNRAY_SG_NODE
 
+    using texture_map = std::unordered_map<std::string, std::shared_ptr<sg::texture>>;
+
     std::shared_ptr<sg::material>& material();
     std::shared_ptr<sg::material> const& material() const;
 
-    std::vector<std::shared_ptr<sg::texture>>& textures();
-    std::vector<std::shared_ptr<sg::texture>> const& textures() const;
+    texture_map& textures();
+    texture_map const& textures() const;
 
-    void add_texture(std::shared_ptr<sg::texture> texture);
+    void add_texture(std::shared_ptr<sg::texture> texture, std::string channel_name = "diffuse");
 
 private:
 
@@ -428,7 +431,7 @@ private:
     std::shared_ptr<sg::material> material_ = nullptr;
 
     // List of textures with user definable interpretation (e.g. bump, diffuse, roughness, etc.)
-    std::vector<std::shared_ptr<sg::texture>> textures_;
+    texture_map textures_;
 };
 
 

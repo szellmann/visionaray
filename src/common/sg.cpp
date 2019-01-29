@@ -175,19 +175,19 @@ std::shared_ptr<material> const& surface_properties::material() const
     return material_;
 }
 
-std::vector<std::shared_ptr<sg::texture>>& surface_properties::textures()
+surface_properties::texture_map& surface_properties::textures()
 {
     return textures_;
 }
 
-std::vector<std::shared_ptr<sg::texture>> const& surface_properties::textures() const
+surface_properties::texture_map const& surface_properties::textures() const
 {
     return textures_;
 }
 
-void surface_properties::add_texture(std::shared_ptr<sg::texture> texture)
+void surface_properties::add_texture(std::shared_ptr<sg::texture> texture, std::string channel_name)
 {
-    textures_.push_back(texture);
+    textures_[channel_name] = texture;
 }
 
 
