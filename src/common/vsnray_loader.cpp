@@ -1738,6 +1738,73 @@ void vsnray_writer::write_transform(Object obj, std::shared_ptr<sg::transform> c
 template <typename Object>
 void vsnray_writer::write_surface_properties(Object obj, std::shared_ptr<sg::surface_properties> const& sp)
 {
+    auto& allocator = document_.GetAllocator();
+
+    if (sp->material() != nullptr)
+    {
+        rapidjson::Value jmat;
+        jmat.SetObject();
+
+        if (auto mat = std::dynamic_pointer_cast<sg::obj_material>(sp->material()))
+        {
+            jmat.AddMember(
+                rapidjson::StringRef("type"),
+                rapidjson::StringRef("obj"),
+                allocator
+                );
+
+            rapidjson::Value ca(rapidjson::kArrayType);
+            rapidjson::Value cd(rapidjson::kArrayType);
+            rapidjson::Value cs(rapidjson::kArrayType);
+            rapidjson::Value ce(rapidjson::kArrayType);
+
+            for (int i = 0; i < 3; ++i)
+            {
+                ca.PushBack(rapidjson::Value().SetFloat(mat->ca[i]), allocator);
+                cd.PushBack(rapidjson::Value().SetFloat(mat->cd[i]), allocator);
+                cs.PushBack(rapidjson::Value().SetFloat(mat->cs[i]), allocator);
+                ce.PushBack(rapidjson::Value().SetFloat(mat->ce[i]), allocator);
+            }
+
+            jmat.AddMember(rapidjson::StringRef("ca"), ca, allocator);
+            jmat.AddMember(rapidjson::StringRef("cd"), cd, allocator);
+            jmat.AddMember(rapidjson::StringRef("cs"), cs, allocator);
+            jmat.AddMember(rapidjson::StringRef("ce"), ce, allocator);
+        }
+        else if (auto mat = std::dynamic_pointer_cast<sg::glass_material>(sp->material()))
+        {
+            jmat.AddMember(
+                rapidjson::StringRef("type"),
+                rapidjson::StringRef("glass"),
+                allocator
+                );
+
+            rapidjson::Value ct(rapidjson::kArrayType);
+            rapidjson::Value cr(rapidjson::kArrayType);
+            rapidjson::Value ior(rapidjson::kArrayType);
+
+            for (int i = 0; i < 3; ++i)
+            {
+                ct.PushBack(rapidjson::Value().SetFloat(mat->ct[i]), allocator);
+                cr.PushBack(rapidjson::Value().SetFloat(mat->cr[i]), allocator);
+                ior.PushBack(rapidjson::Value().SetFloat(mat->ior[i]), allocator);
+            }
+
+            jmat.AddMember(rapidjson::StringRef("ct"), ct, allocator);
+            jmat.AddMember(rapidjson::StringRef("cr"), cr, allocator);
+            jmat.AddMember(rapidjson::StringRef("ior"), ior, allocator);
+        }
+        else
+        {
+            throw std::runtime_error("");
+        }
+
+        obj.AddMember(
+            rapidjson::StringRef("material"),
+            jmat,
+            allocator
+            );
+    }
 }
 
 template <typename Object>
@@ -1813,7 +1880,7 @@ void vsnray_writer::write_triangle_mesh(Object obj, std::shared_ptr<sg::triangle
 }
 
 template <typename Object>
-void vsnray_writer::write_indexed_triangle_mesh(Object obj, std::shared_ptr<sg::indexed_triangle_mesh> const& tm)
+void vsnray_writer::write_indexed_triangle_mesh(Object obj, std::shared_ptr<sg::indexed_triangle_mesh> const& itm)
 {
 }
 
