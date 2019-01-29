@@ -1796,6 +1796,53 @@ void vsnray_writer::write_surface_properties(Object obj, std::shared_ptr<sg::sur
             jmat.AddMember(rapidjson::StringRef("cr"), cr, allocator);
             jmat.AddMember(rapidjson::StringRef("ior"), ior, allocator);
         }
+        else if (auto mat = std::dynamic_pointer_cast<sg::disney_material>(sp->material()))
+        {
+            jmat.AddMember(
+                rapidjson::StringRef("type"),
+                rapidjson::StringRef("disney"),
+                allocator
+                );
+
+            rapidjson::Value base_color(rapidjson::kArrayType);
+
+            for (int i = 0; i < 4; ++i)
+            {
+                base_color.PushBack(rapidjson::Value().SetFloat(mat->base_color[i]), allocator);
+            }
+
+            jmat.AddMember(rapidjson::StringRef("base_color"), base_color, allocator);
+            jmat.AddMember(
+                rapidjson::StringRef("spec_trans"),
+                rapidjson::Value().SetFloat(mat->spec_trans),
+                allocator
+                );
+            jmat.AddMember(
+                rapidjson::StringRef("sheen"),
+                rapidjson::Value().SetFloat(mat->sheen),
+                allocator
+                );
+            jmat.AddMember(
+                rapidjson::StringRef("sheen_tint"),
+                rapidjson::Value().SetFloat(mat->sheen_tint),
+                allocator
+                );
+            jmat.AddMember(
+                rapidjson::StringRef("ior"),
+                rapidjson::Value().SetFloat(mat->ior),
+                allocator
+                );
+            jmat.AddMember(
+                rapidjson::StringRef("refractive"),
+                rapidjson::Value().SetFloat(mat->refractive),
+                allocator
+                );
+            jmat.AddMember(
+                rapidjson::StringRef("roughness"),
+                rapidjson::Value().SetFloat(mat->roughness),
+                allocator
+                );
+        }
         else
         {
             throw std::runtime_error("");
