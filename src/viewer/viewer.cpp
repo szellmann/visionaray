@@ -630,10 +630,10 @@ struct build_scene_visitor : sg::node_visitor
     {
         unsigned prev = current_geom_id_;
 
-        if (sp.flags() == 0 && sp.material() && sp.textures().size() > 0)
+        if (sp.flags() == 0 && sp.material() && sp.textures().find("diffuse") != sp.textures().end())
         {
             std::shared_ptr<sg::material> material = sp.material();
-            std::shared_ptr<sg::texture> texture = sp.textures()[0];
+            std::shared_ptr<sg::texture> texture = sp.textures()["diffuse"];
 
             auto surf = std::make_pair(material, texture);
 
