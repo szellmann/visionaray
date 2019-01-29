@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <common/config.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
@@ -1804,6 +1806,40 @@ void vsnray_writer::write_surface_properties(Object obj, std::shared_ptr<sg::sur
             jmat,
             allocator
             );
+    }
+
+    for (auto& t : sp->textures())
+    {
+        std::string channel_name = t.first;
+
+        rapidjson::Value jtex;
+        jtex.SetObject();
+
+        if (auto tex = std::dynamic_pointer_cast<sg::texture2d<vector<4, unorm<8>>>>(t.second))
+        {
+            // Not implemented yet
+        }
+#if VSNRAY_COMMON_HAVE_PTEX
+        else if (auto tex = std::dynamic_pointer_cast<sg::ptex_texture>(t.second))
+        {
+            jtex.AddMember(
+                rapidjson::StringRef("type"),
+                rapidjson::StringRef("ptex"),
+                allocator
+                );
+
+            rapidjson::Value filename(tex->filename().c_str(), allocator);
+            jtex.AddMember(
+                rapidjson::StringRef("filename"),
+                filename,
+                allocator
+                );
+        }
+#endif // VSNRAY_COMMON_HAVE_PTEX
+        else
+        {
+            throw std::runtime_error("");
+        }
     }
 }
 
