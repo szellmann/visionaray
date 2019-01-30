@@ -296,6 +296,75 @@ bool parse_as_vec3f(data_file::meta_data md, Container& vec3fs)
 
 
 //-------------------------------------------------------------------------------------------------
+// Parse tiny objects from json object
+//
+
+template <typename Object>
+void parse_optional(float& f, Object const& obj, char const* member)
+{
+    if (obj.HasMember(member))
+    {
+        auto const& val = obj[member];
+
+        if (!val.IsFloat())
+        {
+            throw std::runtime_error("");
+        }
+
+        f = val.GetFloat();
+    }
+}
+
+template <size_t N, typename Object>
+void parse_optional(vector<N, float>& v, Object const& obj, char const* member)
+{
+    if (obj.HasMember(member))
+    {
+        auto const& val = obj[member];
+
+        if (!val.IsArray())
+        {
+            throw std::runtime_error("");
+        }
+
+        if (val.Capacity() != N)
+        {
+            throw std::runtime_error("");
+        }
+
+        for (size_t i = 0; i < N; ++i)
+        {
+            v[i] = val[i].GetFloat();
+        }
+    }
+}
+
+template <typename Object>
+void parse_optional(recti& r, Object const& obj, char const* member)
+{
+    if (obj.HasMember(member))
+    {
+        auto const& val = obj[member];
+
+        if (!val.IsArray())
+        {
+            throw std::runtime_error("");
+        }
+
+        if (val.Capacity() != 4)
+        {
+            throw std::runtime_error("");
+        }
+
+        for (size_t i = 0; i < 4; ++i)
+        {
+            r.data()[i] = val[i].GetFloat();
+        }
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // .vsnray parser
 //
 
@@ -464,102 +533,31 @@ std::shared_ptr<sg::node> vsnray_parser::parse_camera(Object const& obj)
     auto cam = std::make_shared<sg::camera>();
 
     vec3 eye(0.0f);
-    if (obj.HasMember("eye"))
-    {
-        auto const& cam_eye = obj["eye"];
-
-        int i = 0;
-        for (auto const& item : cam_eye.GetArray())
-        {
-            eye[i++] = item.GetFloat();
-        }
-
-        if (i != 3)
-        {
-            throw std::runtime_error("");
-        }
-    }
+    parse_optional(eye, obj, "eye");
 
     vec3 center(0.0f);
-    if (obj.HasMember("center"))
-    {
-        auto const& cam_center = obj["center"];
-
-        int i = 0;
-        for (auto const& item : cam_center.GetArray())
-        {
-            center[i++] = item.GetFloat();
-        }
-
-        if (i != 3)
-        {
-            throw std::runtime_error("");
-        }
-    }
+    parse_optional(center, obj, "center");
 
     vec3 up(0.0f);
-    if (obj.HasMember("up"))
-    {
-        auto const& cam_up = obj["up"];
-
-        int i = 0;
-        for (auto const& item : cam_up.GetArray())
-        {
-            up[i++] = item.GetFloat();
-        }
-
-        if (i != 3)
-        {
-            throw std::runtime_error("");
-        }
-    }
+    parse_optional(up, obj, "up");
 
     float fovy = 45.0f;
-    if (obj.HasMember("fovy"))
-    {
-        fovy = obj["fovy"].GetFloat();
-    }
+    parse_optional(fovy, obj, "fovy");
 
     float znear = 0.001f;
-    if (obj.HasMember("znear"))
-    {
-        znear = obj["znear"].GetFloat();
-    }
+    parse_optional(znear, obj, "znear");
 
     float zfar = 1000.0f;
-    if (obj.HasMember("zfar"))
-    {
-        zfar = obj["zfar"].GetFloat();
-    }
+    parse_optional(zfar, obj, "zfar");
 
     recti viewport(0, 0, 0, 0);
-    if (obj.HasMember("viewport"))
-    {
-        auto const& cam_viewport = obj["viewport"];
-
-        int i = 0;
-        for (auto const& item : cam_viewport.GetArray())
-        {
-            viewport.data()[i++] = item.GetInt();
-        }
-
-        if (i != 4)
-        {
-            throw std::runtime_error("");
-        }
-    }
+    parse_optional(viewport, obj, "viewport");
 
     float lens_radius = 0.1f;
-    if (obj.HasMember("lens_radius"))
-    {
-        lens_radius = obj["lens_radius"].GetFloat();
-    }
+    parse_optional(lens_radius, obj, "lens_radius");
 
     float focal_distance = 10.0f;
-    if (obj.HasMember("focal_distance"))
-    {
-        focal_distance = obj["focal_distance"].GetFloat();
-    }
+    parse_optional(focal_distance, obj, "focal_distance");
 
     float aspect = viewport.w > 0 && viewport.h > 0
                  ? viewport.w / static_cast<float>(viewport.h)
@@ -780,58 +778,22 @@ std::shared_ptr<sg::node> vsnray_parser::parse_point_light(Object const& obj)
     auto light = std::make_shared<sg::point_light>();
 
     vec3 cl(1.0f);
-    if (obj.HasMember("cl"))
-    {
-        auto const& color = obj["cl"];
-
-        if (color.Capacity() != 3)
-        {
-            throw std::runtime_error("");
-        }
-
-        cl.x = color[0].GetFloat();
-        cl.y = color[1].GetFloat();
-        cl.z = color[2].GetFloat();
-    }
+    parse_optional(cl, obj, "cl");
 
     float kl = 1.0f;
-    if (obj.HasMember("kl"))
-    {
-        kl = obj["kl"].GetFloat();
-    }
+    parse_optional(kl, obj, "kl");
 
     vec3 position(0.0f);
-    if (obj.HasMember("position"))
-    {
-        auto const& pos = obj["position"];
-
-        if (pos.Capacity() != 3)
-        {
-            throw std::runtime_error("");
-        }
-
-        position.x = pos[0].GetFloat();
-        position.y = pos[1].GetFloat();
-        position.z = pos[2].GetFloat();
-    }
+    parse_optional(position, obj, "position");
 
     float constant_attenuation = 1.0f;
-    if (obj.HasMember("constant_attenuation"))
-    {
-        constant_attenuation = obj["constant_attenuation"].GetFloat();
-    }
+    parse_optional(constant_attenuation, obj, "constant_attenuation");
 
     float linear_attenuation = 0.0f;
-    if (obj.HasMember("linear_attenuation"))
-    {
-        linear_attenuation = obj["linear_attenuation"].GetFloat();
-    }
+    parse_optional(linear_attenuation, obj, "linear_attenuation");
 
     float quadratic_attenuation = 0.0f;
-    if (obj.HasMember("quadratic_attenuation"))
-    {
-        quadratic_attenuation = obj["quadratic_attenuation"].GetFloat();
-    }
+    parse_optional(quadratic_attenuation, obj, "quadratic_attenuation");
 
     light->set_cl(cl);
     light->set_kl(kl);
@@ -849,87 +811,32 @@ std::shared_ptr<sg::node> vsnray_parser::parse_spot_light(Object const& obj)
     auto light = std::make_shared<sg::spot_light>();
 
     vec3 cl(1.0f);
-    if (obj.HasMember("cl"))
-    {
-        auto const& color = obj["cl"];
-
-        if (color.Capacity() != 3)
-        {
-            throw std::runtime_error("");
-        }
-
-        cl.x = color[0].GetFloat();
-        cl.y = color[1].GetFloat();
-        cl.z = color[2].GetFloat();
-    }
+    parse_optional(cl, obj, "cl");
 
     float kl = 1.0f;
-    if (obj.HasMember("kl"))
-    {
-        kl = obj["kl"].GetFloat();
-    }
+    parse_optional(kl, obj, "kl");
 
     vec3 position(0.0f);
-    if (obj.HasMember("position"))
-    {
-        auto const& pos = obj["position"];
-
-        if (pos.Capacity() != 3)
-        {
-            throw std::runtime_error("");
-        }
-
-        position.x = pos[0].GetFloat();
-        position.y = pos[1].GetFloat();
-        position.z = pos[2].GetFloat();
-    }
+    parse_optional(position, obj, "position");
 
     vec3 spot_direction(0.0f, 0.0f, -1.0f);
-    if (obj.HasMember("spot_direction"))
-    {
-        auto const& sdir = obj["spot_direction"];
-
-        if (sdir.Capacity() != 3)
-        {
-            throw std::runtime_error("");
-        }
-
-        spot_direction.x = sdir[0].GetFloat();
-        spot_direction.y = sdir[1].GetFloat();
-        spot_direction.z = sdir[2].GetFloat();
-    }
-
+    parse_optional(spot_direction, obj, "spot_direction");
     assert(length(spot_direction) == 1.0f);
 
     float spot_cutoff = 180.0f * constants::degrees_to_radians<float>();
-    if (obj.HasMember("spot_cutoff"))
-    {
-        spot_cutoff = obj["spot_cutoff"].GetFloat();
-    }
+    parse_optional(spot_cutoff, obj, "spot_cutoff");
 
     float spot_exponent = 0.0f;
-    if (obj.HasMember("spot_exponent"))
-    {
-        spot_exponent = obj["spot_exponent"].GetFloat();
-    }
+    parse_optional(spot_exponent, obj, "spot_exponent");
 
     float constant_attenuation = 1.0f;
-    if (obj.HasMember("constant_attenuation"))
-    {
-        constant_attenuation = obj["constant_attenuation"].GetFloat();
-    }
+    parse_optional(constant_attenuation, obj, "constant_attenuation");
 
     float linear_attenuation = 0.0f;
-    if (obj.HasMember("linear_attenuation"))
-    {
-        linear_attenuation = obj["linear_attenuation"].GetFloat();
-    }
+    parse_optional(linear_attenuation, obj, "linear_attenuation");
 
     float quadratic_attenuation = 0.0f;
-    if (obj.HasMember("quadratic_attenuation"))
-    {
-        quadratic_attenuation = obj["quadratic_attenuation"].GetFloat();
-    }
+    parse_optional(quadratic_attenuation, obj, "quadratic_attenuation");
 
     light->set_cl(cl);
     light->set_kl(kl);
@@ -989,61 +896,10 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
             {
                 auto obj = std::make_shared<sg::obj_material>();
 
-                if (mat.HasMember("ca"))
-                {
-                    auto const& ca = mat["ca"];
-
-                    if (ca.Capacity() != 3)
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    obj->ca.x = ca[0].GetFloat();
-                    obj->ca.y = ca[1].GetFloat();
-                    obj->ca.z = ca[2].GetFloat();
-                }
-
-                if (mat.HasMember("cd"))
-                {
-                    auto const& cd = mat["cd"];
-
-                    if (cd.Capacity() != 3)
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    obj->cd.x = cd[0].GetFloat();
-                    obj->cd.y = cd[1].GetFloat();
-                    obj->cd.z = cd[2].GetFloat();
-                }
-
-                if (mat.HasMember("cs"))
-                {
-                    auto const& cs = mat["cs"];
-
-                    if (cs.Capacity() != 3)
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    obj->cs.x = cs[0].GetFloat();
-                    obj->cs.y = cs[1].GetFloat();
-                    obj->cs.z = cs[2].GetFloat();
-                }
-
-                if (mat.HasMember("ce"))
-                {
-                    auto const& ce = mat["ce"];
-
-                    if (ce.Capacity() != 3)
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    obj->ce.x = ce[0].GetFloat();
-                    obj->ce.y = ce[1].GetFloat();
-                    obj->ce.z = ce[2].GetFloat();
-                }
+                parse_optional(obj->ca, mat, "ca");
+                parse_optional(obj->cd, mat, "cd");
+                parse_optional(obj->cs, mat, "cs");
+                parse_optional(obj->ce, mat, "ce");
 
                 props->material() = obj;
             }
@@ -1051,47 +907,9 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
             {
                 auto glass = std::make_shared<sg::glass_material>();
 
-                if (mat.HasMember("ct"))
-                {
-                    auto const& ct = mat["ct"];
-
-                    if (ct.Capacity() != 3)
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    glass->ct.x = ct[0].GetFloat();
-                    glass->ct.y = ct[1].GetFloat();
-                    glass->ct.z = ct[2].GetFloat();
-                }
-
-                if (mat.HasMember("cr"))
-                {
-                    auto const& cr = mat["cr"];
-
-                    if (cr.Capacity() != 3)
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    glass->cr.x = cr[0].GetFloat();
-                    glass->cr.y = cr[1].GetFloat();
-                    glass->cr.z = cr[2].GetFloat();
-                }
-
-                if (mat.HasMember("ior"))
-                {
-                    auto const& ior = mat["ior"];
-
-                    if (ior.Capacity() != 3)
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    glass->ior.x = ior[0].GetFloat();
-                    glass->ior.y = ior[1].GetFloat();
-                    glass->ior.z = ior[2].GetFloat();
-                }
+                parse_optional(glass->ct, mat, "ct");
+                parse_optional(glass->cr, mat, "cr");
+                parse_optional(glass->ior, mat, "ior");
 
                 props->material() = glass;
             }
@@ -1099,92 +917,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
             {
                 auto disney = std::make_shared<sg::disney_material>();
 
-                if (mat.HasMember("base_color"))
-                {
-                    auto const& base_color = mat["base_color"];
-
-                    if (base_color.Capacity() != 4)
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    disney->base_color.x = base_color[0].GetFloat();
-                    disney->base_color.y = base_color[1].GetFloat();
-                    disney->base_color.z = base_color[2].GetFloat();
-                    disney->base_color.w = base_color[3].GetFloat();
-                }
-
-                if (mat.HasMember("spec_trans"))
-                {
-                    auto const& spec_trans = mat["spec_trans"];
-
-                    if (!spec_trans.IsFloat())
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    disney->spec_trans = spec_trans.GetFloat();
-                }
-
-                if (mat.HasMember("sheen"))
-                {
-                    auto const& sheen = mat["sheen"];
-
-                    if (!sheen.IsFloat())
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    disney->sheen = sheen.GetFloat();
-                }
-
-                if (mat.HasMember("sheen_tint"))
-                {
-                    auto const& sheen_tint = mat["sheen_tint"];
-
-                    if (!sheen_tint.IsFloat())
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    disney->sheen_tint = sheen_tint.GetFloat();
-                }
-
-                if (mat.HasMember("ior"))
-                {
-                    auto const& ior = mat["ior"];
-
-                    if (!ior.IsFloat())
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    disney->ior = ior.GetFloat();
-                }
-
-                if (mat.HasMember("refractive"))
-                {
-                    auto const& refractive = mat["refractive"];
-
-                    if (!refractive.IsFloat())
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    disney->refractive = refractive.GetFloat();
-                }
-
-                if (mat.HasMember("roughness"))
-                {
-                    auto const& roughness = mat["roughness"];
-
-                    if (!roughness.IsFloat())
-                    {
-                        throw std::runtime_error("");
-                    }
-
-                    disney->roughness = roughness.GetFloat();
-                }
+                parse_optional(disney->base_color, mat, "base_color");
+                parse_optional(disney->spec_trans, mat, "spec_trans");
+                parse_optional(disney->sheen, mat, "sheen");
+                parse_optional(disney->sheen_tint, mat, "sheen_tint");
+                parse_optional(disney->ior, mat, "ior");
+                parse_optional(disney->refractive, mat, "refractive");
+                parse_optional(disney->roughness, mat, "roughness");
 
                 props->material() = disney;
             }
