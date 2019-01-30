@@ -1095,6 +1095,99 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
 
                 props->material() = glass;
             }
+            else if (strncmp(type_string.GetString(), "disney", 6) == 0)
+            {
+                auto disney = std::make_shared<sg::disney_material>();
+
+                if (mat.HasMember("base_color"))
+                {
+                    auto const& base_color = mat["base_color"];
+
+                    if (base_color.Capacity() != 4)
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    disney->base_color.x = base_color[0].GetFloat();
+                    disney->base_color.y = base_color[1].GetFloat();
+                    disney->base_color.z = base_color[2].GetFloat();
+                    disney->base_color.w = base_color[3].GetFloat();
+                }
+
+                if (mat.HasMember("spec_trans"))
+                {
+                    auto const& spec_trans = mat["spec_trans"];
+
+                    if (!spec_trans.IsFloat())
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    disney->spec_trans = spec_trans.GetFloat();
+                }
+
+                if (mat.HasMember("sheen"))
+                {
+                    auto const& sheen = mat["sheen"];
+
+                    if (!sheen.IsFloat())
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    disney->sheen = sheen.GetFloat();
+                }
+
+                if (mat.HasMember("sheen_tint"))
+                {
+                    auto const& sheen_tint = mat["sheen_tint"];
+
+                    if (!sheen_tint.IsFloat())
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    disney->sheen_tint = sheen_tint.GetFloat();
+                }
+
+                if (mat.HasMember("ior"))
+                {
+                    auto const& ior = mat["ior"];
+
+                    if (!ior.IsFloat())
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    disney->ior = ior.GetFloat();
+                }
+
+                if (mat.HasMember("refractive"))
+                {
+                    auto const& refractive = mat["refractive"];
+
+                    if (!refractive.IsFloat())
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    disney->refractive = refractive.GetFloat();
+                }
+
+                if (mat.HasMember("roughness"))
+                {
+                    auto const& roughness = mat["roughness"];
+
+                    if (!roughness.IsFloat())
+                    {
+                        throw std::runtime_error("");
+                    }
+
+                    disney->roughness = roughness.GetFloat();
+                }
+
+                props->material() = disney;
+            }
             else
             {
                 throw std::runtime_error("");
@@ -1676,13 +1769,18 @@ void vsnray_writer::write_node(Object obj, std::shared_ptr<sg::node> const& n)
     }
     else if (auto tm = std::dynamic_pointer_cast<sg::triangle_mesh>(n))
     {
-        obj.AddMember(
-            rapidjson::StringRef("type"),
-            rapidjson::StringRef("triangle_mesh"),
-            allocator
-            );
+        if (tm->flags() == 0)
+        {
+            obj.AddMember(
+                rapidjson::StringRef("type"),
+                rapidjson::StringRef("triangle_mesh"),
+                allocator
+                );
 
-        write_triangle_mesh(obj, tm);
+            write_triangle_mesh(obj, tm);
+
+            tm->flags() = 1;
+        }
     }
     else if (auto itm = std::dynamic_pointer_cast<sg::indexed_triangle_mesh>(n))
     {
