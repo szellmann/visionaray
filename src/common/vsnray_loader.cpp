@@ -2224,10 +2224,12 @@ void load_vsnray(std::vector<std::string> const& filenames, model& mod)
 
     if (mod.scene_graph == nullptr)
     {
-        mod.scene_graph = std::make_shared<sg::node>();
+        mod.scene_graph = root;
     }
-
-    mod.scene_graph->add_child(root);
+    else
+    {
+        mod.scene_graph->add_child(root);
+    }
 }
 
 } // visionaray
