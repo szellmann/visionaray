@@ -1158,13 +1158,43 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
 {
     auto mesh = std::make_shared<sg::indexed_triangle_mesh>();
 
-    if (obj.HasMember("indices"))
+    if (obj.HasMember("vertex_indices"))
     {
-        auto const& indices = obj["indices"];
+        auto const& vertex_indices = obj["vertex_indices"];
 
-        for (auto const& item : indices.GetArray())
+        for (auto const& item : vertex_indices.GetArray())
         {
-            mesh->indices.push_back(item.GetInt());
+            mesh->vertex_indices.push_back(item.GetInt());
+        }
+    }
+
+    if (obj.HasMember("normal_indices"))
+    {
+        auto const& normal_indices = obj["normal_indices"];
+
+        for (auto const& item : normal_indices.GetArray())
+        {
+            mesh->normal_indices.push_back(item.GetInt());
+        }
+    }
+
+    if (obj.HasMember("tex_coord_indices"))
+    {
+        auto const& tex_coord_indices = obj["tex_coord_indices"];
+
+        for (auto const& item : tex_coord_indices.GetArray())
+        {
+            mesh->tex_coord_indices.push_back(item.GetInt());
+        }
+    }
+
+    if (obj.HasMember("color_indices"))
+    {
+        auto const& color_indices = obj["color_indices"];
+
+        for (auto const& item : color_indices.GetArray())
+        {
+            mesh->color_indices.push_back(item.GetInt());
         }
     }
 

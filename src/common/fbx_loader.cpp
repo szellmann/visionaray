@@ -539,20 +539,20 @@ void fbx_document::process_node(std::shared_ptr<sg::node> dst, std::unique_ptr<f
             // TODO: error handling
         }
 
-        if (auto indices = dynamic_cast<fbx_property_int32s const*>(src->props[0].get()))
+        if (auto vertex_indices = dynamic_cast<fbx_property_int32s const*>(src->props[0].get()))
         {
-            mesh->indices.resize(indices->size());
+            mesh->vertex_indices.resize(vertex_indices->size());
 
-            for (size_t i = 0; i < indices->size(); ++i)
+            for (size_t i = 0; i < vertex_indices->size(); ++i)
             {
-                int32_t index = (*indices)[i];
+                int32_t index = (*vertex_indices)[i];
 
                 if (index < 0)
                 {
                     index = ~index;
                 }
 
-                mesh->indices[i] = index;
+                mesh->vertex_indices[i] = index;
             }
         }
         else

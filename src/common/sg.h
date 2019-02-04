@@ -473,8 +473,17 @@ public:
 
     VSNRAY_SG_NODE
 
-    // Indices
-    aligned_vector<int> indices;
+    // Vertex indices
+    aligned_vector<int> vertex_indices;
+
+    // Normal indices
+    aligned_vector<int> normal_indices;
+
+    // Texture coordinate indices
+    aligned_vector<int> tex_coord_indices;
+
+    // Per-vertex color indices
+    aligned_vector<int> color_indices;
 
     // Vertex positions 
     aligned_vector<vec3> vertices;
