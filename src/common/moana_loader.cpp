@@ -138,7 +138,7 @@ static std::shared_ptr<sg::texture> load_texture(
         boost::filesystem::path const& texture_base_path,
         std::string const& filename,
 #if VSNRAY_COMMON_HAVE_PTEX
-        std::shared_ptr<PtexPtr<PtexCache>> texture_cache
+        std::shared_ptr<PtexPtr<PtexCache>> const& texture_cache
 #else
         void* texture_cache
 #endif
@@ -181,7 +181,7 @@ static std::shared_ptr<sg::texture> load_texture(
 // Load camera from json file
 //
 
-static void load_camera_file(std::string const& filename, std::shared_ptr<sg::node> root)
+static void load_camera_file(std::string const& filename, std::shared_ptr<sg::node> const& root)
 {
     std::cout << "Load camera json file: " << filename << '\n';
     cfile file(filename, "r");
@@ -330,7 +330,7 @@ static void load_camera_file(std::string const& filename, std::shared_ptr<sg::no
 static void load_light_file(
         boost::filesystem::path const& island_base_path,
         std::string const& filename,
-        std::shared_ptr<sg::node> root
+        std::shared_ptr<sg::node> const& root
         )
 {
     std::cout << "Load lights json file: " << filename << '\n';
@@ -407,7 +407,7 @@ static void load_obj(
         std::unordered_map<std::string, std::string> const& /*displacement_maps*/, // [mtlName, displacementMap]
         std::unordered_map<std::string, std::shared_ptr<sg::texture>>& textures,
 #if VSNRAY_COMMON_HAVE_PTEX
-        std::shared_ptr<PtexPtr<PtexCache>> texture_cache,
+        std::shared_ptr<PtexPtr<PtexCache>> const& texture_cache,
 #else
         void* texture_cache,
 #endif
@@ -554,13 +554,13 @@ static void load_obj(
 static void load_instanced_primitive_json_file(
         boost::filesystem::path const& island_base_path,
         std::string const& filename,
-        std::shared_ptr<sg::node> root,
+        std::shared_ptr<sg::node> const& root,
         std::unordered_map<std::string, std::shared_ptr<sg::disney_material>>& materials,
         std::unordered_map<std::string, std::string> const& color_maps, // [mtlName, colorMap]
         std::unordered_map<std::string, std::string> const& displacement_maps, // [mtlName, displacementMap]
         std::unordered_map<std::string, std::shared_ptr<sg::texture>>& textures,
 #if VSNRAY_COMMON_HAVE_PTEX
-        std::shared_ptr<PtexPtr<PtexCache>> texture_cache
+        std::shared_ptr<PtexPtr<PtexCache>> const& texture_cache
 #else
         void* texture_cache
 #endif
