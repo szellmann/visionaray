@@ -19,6 +19,8 @@
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
+#include <boost/assign.hpp>
+#include <boost/bimap.hpp>
 #include <boost/filesystem.hpp>
 
 #include <rapidjson/document.h>
@@ -68,6 +70,8 @@ struct meta_data
         Vec4f,
     };
 
+    static boost::bimap<data_type_t, std::string> data_type_map;
+
     enum compression_t
     {
         Raw
@@ -80,6 +84,17 @@ struct meta_data
     compression_t compression = Raw;
     char          separator   = ' ';
 };
+
+boost::bimap<meta_data::data_type_t, std::string> meta_data::data_type_map
+    = boost::assign::list_of<typename boost::bimap<meta_data::data_type_t, std::string>::relation>
+        ( U8,     "u8" )
+        ( Float,  "float" )
+        ( Vec2u8, "vec2u8" )
+        ( Vec2f,  "vec2f" )
+        ( Vec3u8, "vec3u8" )
+        ( Vec3f,  "vec3f" )
+        ( Vec4u8, "vec4u8" )
+        ( Vec4f,  "vec4f" );
 
 } // data_file
 
@@ -1370,45 +1385,14 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
     if (obj.HasMember("data_type"))
     {
         std::string data_type = obj["data_type"].GetString();
-        if (data_type == "float")
+
+        auto& data_type_map = data_file::meta_data::data_type_map;
+
+        auto it = data_type_map.right.find(data_type);
+
+        if (it != data_type_map.right.end())
         {
-            result.data_type = data_file::meta_data::Float;
-        }
-        else if (data_type == "vec2u8")
-        {
-            result.data_type = data_file::meta_data::Vec2u8;
-        }
-        else if (data_type == "vec2f")
-        {
-            result.data_type = data_file::meta_data::Vec2f;
-        }
-        else if (data_type == "vec2")
-        {
-            result.data_type = data_file::meta_data::Vec2f;
-        }
-        else if (data_type == "vec3u8")
-        {
-            result.data_type = data_file::meta_data::Vec3u8;
-        }
-        else if (data_type == "vec3f")
-        {
-            result.data_type = data_file::meta_data::Vec3f;
-        }
-        else if (data_type == "vec3")
-        {
-            result.data_type = data_file::meta_data::Vec3f;
-        }
-        else if (data_type == "vec4u8")
-        {
-            result.data_type = data_file::meta_data::Vec4u8;
-        }
-        else if (data_type == "vec4f")
-        {
-            result.data_type = data_file::meta_data::Vec4f;
-        }
-        else if (data_type == "vec4")
-        {
-            result.data_type = data_file::meta_data::Vec4f;
+            result.data_type = it->second;
         }
         else
         {
@@ -1883,37 +1867,16 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
 
     std::string data_type = "";
 
-    switch (md.data_type)
+    auto& data_type_map = data_file::meta_data::data_type_map;
+
+    auto it = data_type_map.left.find(md.data_type);
+
+    if (it != data_type_map.left.end())
     {
-    case data_file::meta_data::Float:
-        data_type = "float";
-        break;
-
-    case data_file::meta_data::Vec2u8:
-        data_type = "vec2u8";
-        break;
-
-    case data_file::meta_data::Vec2f:
-        data_type = "vec2f";
-        break;
-
-    case data_file::meta_data::Vec3u8:
-        data_type = "vec3u8";
-        break;
-
-    case data_file::meta_data::Vec4u8:
-        data_type = "vec4u8";
-        break;
-
-    case data_file::meta_data::Vec4f:
-        data_type = "vec4f";
-        break;
-
-    case data_file::meta_data::Vec3f:
-        data_type = "vec3f";
-        break;
-
-    default:
+        data_type = it->second;
+    }
+    else
+    {
         throw std::runtime_error("");
     }
 
