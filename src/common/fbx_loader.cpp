@@ -445,11 +445,13 @@ void fbx_document::process_node(std::shared_ptr<sg::node> dst, std::unique_ptr<f
 
         if (auto vertices = dynamic_cast<fbx_property_floats const*>(src->props[0].get()))
         {
-            mesh->vertices.resize(vertices->size() / 3);
+            mesh->vertices = std::make_shared<aligned_vector<vec3>>();
+
+            mesh->vertices->resize(vertices->size() / 3);
 
             for (size_t i = 0; i < vertices->size(); i += 3)
             {
-                mesh->vertices[i / 3] = vec3(
+                (*mesh->vertices)[i / 3] = vec3(
                         (*vertices)[i],
                         (*vertices)[i + 1],
                         (*vertices)[i + 2]
@@ -459,12 +461,14 @@ void fbx_document::process_node(std::shared_ptr<sg::node> dst, std::unique_ptr<f
         }
         else if (auto vertices = dynamic_cast<fbx_property_doubles const*>(src->props[0].get()))
         {
-            mesh->vertices.resize(vertices->size() / 3);
+            mesh->vertices = std::make_shared<aligned_vector<vec3>>();
+
+            mesh->vertices->resize(vertices->size() / 3);
 
             for (size_t i = 0; i < vertices->size(); i += 3)
             {
                 // Convert double to float
-                mesh->vertices[i / 3] = vec3(
+                (*mesh->vertices)[i / 3] = vec3(
                         static_cast<float>((*vertices)[i]),
                         static_cast<float>((*vertices)[i + 1]),
                         static_cast<float>((*vertices)[i + 2])
@@ -493,11 +497,13 @@ void fbx_document::process_node(std::shared_ptr<sg::node> dst, std::unique_ptr<f
 
         if (auto normals = dynamic_cast<fbx_property_floats const*>(src->props[0].get()))
         {
-            mesh->normals.resize(normals->size() / 3);
+            mesh->normals = std::make_shared<aligned_vector<vec3>>();
+
+            mesh->normals->resize(normals->size() / 3);
 
             for (size_t i = 0; i < normals->size(); i += 3)
             {
-                mesh->normals[i / 3] = vec3(
+                (*mesh->normals)[i / 3] = vec3(
                         (*normals)[i],
                         (*normals)[i + 1],
                         (*normals)[i + 2]
@@ -507,12 +513,14 @@ void fbx_document::process_node(std::shared_ptr<sg::node> dst, std::unique_ptr<f
         }
         else if (auto normals = dynamic_cast<fbx_property_doubles const*>(src->props[0].get()))
         {
-            mesh->normals.resize(normals->size() / 3);
+            mesh->normals = std::make_shared<aligned_vector<vec3>>();
+
+            mesh->normals->resize(normals->size() / 3);
 
             for (size_t i = 0; i < normals->size(); i += 3)
             {
                 // Convert double to float
-                mesh->normals[i / 3] = vec3(
+                (*mesh->normals)[i / 3] = vec3(
                         static_cast<float>((*normals)[i]),
                         static_cast<float>((*normals)[i + 1]),
                         static_cast<float>((*normals)[i + 2])
@@ -576,11 +584,13 @@ void fbx_document::process_node(std::shared_ptr<sg::node> dst, std::unique_ptr<f
 
         if (auto uvs = dynamic_cast<fbx_property_floats const*>(src->props[0].get()))
         {
-            mesh->tex_coords.resize(uvs->size() / 2);
+            mesh->tex_coords = std::make_shared<aligned_vector<vec2>>();
+
+            mesh->tex_coords->resize(uvs->size() / 2);
 
             for (size_t i = 0; i < uvs->size(); i += 2)
             {
-                mesh->tex_coords[i / 2] = vec2(
+                (*mesh->tex_coords)[i / 2] = vec2(
                         (*uvs)[i],
                         (*uvs)[i + 1]
                         );
@@ -589,12 +599,14 @@ void fbx_document::process_node(std::shared_ptr<sg::node> dst, std::unique_ptr<f
         }
         else if (auto uvs = dynamic_cast<fbx_property_doubles const*>(src->props[0].get()))
         {
-            mesh->tex_coords.resize(uvs->size() / 2);
+            mesh->tex_coords = std::make_shared<aligned_vector<vec2>>();
+
+            mesh->tex_coords->resize(uvs->size() / 2);
 
             for (size_t i = 0; i < uvs->size(); i += 2)
             {
                 // Convert double to float
-                mesh->tex_coords[i / 2] = vec2(
+                (*mesh->tex_coords)[i / 2] = vec2(
                         static_cast<float>((*uvs)[i]),
                         static_cast<float>((*uvs)[i + 1])
                         );

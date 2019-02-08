@@ -486,16 +486,16 @@ public:
     aligned_vector<int> color_indices;
 
     // Vertex positions 
-    aligned_vector<vec3> vertices;
+    std::shared_ptr<aligned_vector<vec3>> vertices;
 
     // Shading normals
-    aligned_vector<vec3> normals;
+    std::shared_ptr<aligned_vector<vec3>> normals;
 
     // Texture coordinates
-    aligned_vector<vec2> tex_coords;
+    std::shared_ptr<aligned_vector<vec2>> tex_coords;
 
     // Per-vertex colors
-    aligned_vector<vector<3, unorm<8>>> colors;
+    std::shared_ptr<aligned_vector<vector<3, unorm<8>>>> colors;
 
     // Face IDs for Ptex
     aligned_vector<int> face_ids;

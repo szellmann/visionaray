@@ -1215,13 +1215,15 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
 
     if (obj.HasMember("vertices"))
     {
+        mesh->vertices = std::make_shared<aligned_vector<vec3>>();
+
         auto const& verts = obj["vertices"];
 
         if (verts.IsArray())
         {
             for (rapidjson::SizeType i = 0; i < verts.Capacity(); i += 3)
             {
-                mesh->vertices.emplace_back(
+                mesh->vertices->emplace_back(
                     verts[i].GetFloat(),
                     verts[i + 1].GetFloat(),
                     verts[i + 2].GetFloat()
@@ -1235,7 +1237,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
             {
                 auto md = parse_file_meta_data(verts);
 
-                if (!parse_as_vec3f(md, mesh->vertices))
+                if (!parse_as_vec3f(md, *mesh->vertices))
                 {
                     throw std::runtime_error("");
                 }
@@ -1245,13 +1247,15 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
 
     if (obj.HasMember("normals"))
     {
+        mesh->normals = std::make_shared<aligned_vector<vec3>>();
+
         auto const& normals = obj["normals"];
 
         if (normals.IsArray())
         {
             for (rapidjson::SizeType i = 0; i < normals.Capacity(); i += 3)
             {
-                mesh->normals.emplace_back(
+                mesh->normals->emplace_back(
                     normals[i].GetFloat(),
                     normals[i + 1].GetFloat(),
                     normals[i + 2].GetFloat()
@@ -1265,7 +1269,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
             {
                 auto md = parse_file_meta_data(normals);
 
-                if (!parse_as_vec3f(md, mesh->normals))
+                if (!parse_as_vec3f(md, *mesh->normals))
                 {
                     throw std::runtime_error("");
                 }
@@ -1279,13 +1283,15 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
 
     if (obj.HasMember("tex_coords"))
     {
+        mesh->tex_coords = std::make_shared<aligned_vector<vec2>>();
+
         auto const& tex_coords = obj["tex_coords"];
 
         if (tex_coords.IsArray())
         {
             for (rapidjson::SizeType i = 0; i < tex_coords.Capacity(); i += 2)
             {
-                mesh->tex_coords.emplace_back(
+                mesh->tex_coords->emplace_back(
                     tex_coords[i].GetFloat(),
                     tex_coords[i + 1].GetFloat()
                     );
@@ -1298,7 +1304,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
             {
                 auto md = parse_file_meta_data(tex_coords);
 
-                if (!parse_as_vec2f(md, mesh->tex_coords))
+                if (!parse_as_vec2f(md, *mesh->tex_coords))
                 {
                     throw std::runtime_error("");
                 }
@@ -1312,13 +1318,15 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
 
     if (obj.HasMember("colors"))
     {
+        mesh->colors = std::make_shared<aligned_vector<vector<3, unorm<8>>>>();
+
         auto const& colors = obj["colors"];
 
         if (colors.IsArray())
         {
             for (rapidjson::SizeType i = 0; i < colors.Capacity(); i += 3)
             {
-                mesh->colors.emplace_back(
+                mesh->colors->emplace_back(
                     colors[i].GetFloat(),
                     colors[i + 1].GetFloat(),
                     colors[i + 2].GetFloat()
@@ -1332,7 +1340,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
             {
                 auto md = parse_file_meta_data(colors);
 
-                if (!parse_as_vec3f(md, mesh->colors))
+                if (!parse_as_vec3f(md, *mesh->colors))
                 {
                     throw std::runtime_error("");
                 }
