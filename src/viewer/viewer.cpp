@@ -794,6 +794,11 @@ struct build_scene_visitor : sg::node_visitor
                 colors_[first_color + i + 2] = vec3((*itm.colors)[itm.color_indices[i + 2]]);
             }
 
+#if VSNRAY_COMMON_HAVE_PTEX
+            face_ids_.insert(face_ids_.end(), itm.face_ids.begin(), itm.face_ids.end());
+#endif
+
+
             // Build single bvh
             if (build_strategy_ == renderer::LBVH)
             {

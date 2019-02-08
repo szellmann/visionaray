@@ -84,42 +84,40 @@ inline Int remap_index(Int idx, Int size)
 }
 
 static void store_faces(
-        std::shared_ptr<sg::triangle_mesh>& tm,
-        vertex_vector const&                vertices,
-        normal_vector const&                normals,
-        face_vector const&                  faces,
-        int                                 face_id
+        std::shared_ptr<sg::indexed_triangle_mesh>& itm,
+        int                                         num_vertices,
+        int                                         num_normals,
+        face_vector const&                          faces,
+        int                                         face_id
         )
 {
-    auto vertices_size = static_cast<int>(vertices.size());
     size_t last = 2;
-    auto i1 = remap_index(faces[0].vertex_index, vertices_size);
+    auto i1 = remap_index(faces[0].vertex_index, num_vertices);
 
     // simply construct new vertices for each obj face we encounter
     // ..too hard to keep track of v/vn combinations..
     while (last != faces.size())
     {
         // triangle indices
-        auto i2 = remap_index(faces[last - 1].vertex_index, vertices_size);
-        auto i3 = remap_index(faces[last].vertex_index, vertices_size);
+        auto i2 = remap_index(faces[last - 1].vertex_index, num_vertices);
+        auto i3 = remap_index(faces[last].vertex_index, num_vertices);
 
         // no texture coordinates but face ids
 
         // normal indices
-        auto normals_size = static_cast<int>(normals.size());
-        auto ni1 = remap_index(*faces[0].normal_index, normals_size);
-        auto ni2 = remap_index(*faces[last - 1].normal_index, normals_size);
-        auto ni3 = remap_index(*faces[last].normal_index, normals_size);
+        auto ni1 = remap_index(*faces[0].normal_index, num_normals);
+        auto ni2 = remap_index(*faces[last - 1].normal_index, num_normals);
+        auto ni3 = remap_index(*faces[last].normal_index, num_normals);
 
-        tm->vertices.emplace_back(vertices[i1]);
-        tm->vertices.emplace_back(vertices[i2]);
-        tm->vertices.emplace_back(vertices[i3]);
+        itm->vertex_indices.emplace_back(i1);
+        itm->vertex_indices.emplace_back(i2);
+        itm->vertex_indices.emplace_back(i3);
 
-        tm->normals.emplace_back(normals[ni1]);
-        tm->normals.emplace_back(normals[ni2]);
-        tm->normals.emplace_back(normals[ni3]);
+        itm->normal_indices.emplace_back(ni1);
+        itm->normal_indices.emplace_back(ni2);
+        itm->normal_indices.emplace_back(ni3);
 
-        tm->face_ids.emplace_back(face_id);
+        itm->face_ids.emplace_back(face_id);
 
         ++last;
         face_id = ~face_id; // indicates 2nd triangle in quad
@@ -427,10 +425,9 @@ static void load_obj(
 
     // containers for parsing
 
-    vertex_vector    vertices;
-    tex_coord_vector tex_coords;
-    normal_vector    normals;
-    face_vector      faces;
+    auto vertices = std::make_shared<vertex_vector>();
+    auto normals = std::make_shared<normal_vector>();
+    face_vector faces;
 
     string_ref comment;
     string_ref mtl_file;
@@ -438,7 +435,7 @@ static void load_obj(
     string_ref mtl_name;
 
     std::shared_ptr<sg::surface_properties> surf = nullptr;
-    std::shared_ptr<sg::triangle_mesh> tm = nullptr;
+    std::shared_ptr<sg::indexed_triangle_mesh> itm = nullptr;
 
     // Face ID for ptex
     int face_id = 0;
@@ -451,15 +448,16 @@ static void load_obj(
             if (group_name != string_ref("default"))
             {
                 objs.push_back(std::make_shared<sg::surface_properties>());
-                objs.back()->add_child(std::make_shared<sg::triangle_mesh>());
+                objs.back()->add_child(std::make_shared<sg::indexed_triangle_mesh>());
 
                 face_id = 0;
 
                 surf = std::dynamic_pointer_cast<sg::surface_properties>(objs.back());
-                tm = std::dynamic_pointer_cast<sg::triangle_mesh>(surf->children().back());
+                itm = std::dynamic_pointer_cast<sg::indexed_triangle_mesh>(surf->children().back());
+                itm->vertices = vertices;
+                itm->normals = normals;
 
                 surf->name() = std::string(group_name.begin(), group_name.length());
-
             }
         }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
@@ -520,15 +518,21 @@ static void load_obj(
                 }
             }
         }
-        else if ( qi::phrase_parse(it, text.cend(), grammar.r_vertices, qi::blank, vertices) )
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_vertices, qi::blank, *vertices) )
         {
         }
-        else if ( qi::phrase_parse(it, text.cend(), grammar.r_normals, qi::blank, normals) )
+        else if ( qi::phrase_parse(it, text.cend(), grammar.r_normals, qi::blank, *normals) )
         {
         }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_face, qi::blank, faces) )
         {
-            store_faces(tm, vertices, normals, faces, face_id++);
+            store_faces(
+                    itm,
+                    static_cast<int>(vertices->size()),
+                    static_cast<int>(normals->size()),
+                    faces,
+                    face_id++
+                    );
         }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_unhandled, qi::blank) )
         {
