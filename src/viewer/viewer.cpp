@@ -727,7 +727,7 @@ struct build_scene_visitor : sg::node_visitor
 
     void apply(sg::indexed_triangle_mesh& itm)
     {
-        if (itm.flags() == 0 && itm.vertices->size() > 0)
+        if (itm.flags() == 0 && itm.vertex_indices.size() > 0)
         {
             assert(itm.vertex_indices.size() % 3 == 0);
 
