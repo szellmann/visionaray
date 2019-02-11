@@ -95,16 +95,16 @@ inline void store(
     store(g, color.y);
     store(b, color.z);
 
-    auto w = packet_size<FloatT>::w;
-    auto h = packet_size<FloatT>::h;
+    const int w = packet_size<FloatT>::w;
+    const int h = packet_size<FloatT>::h;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGB8>{},
                     pixel_format_constant<PF_RGB32F>{},
@@ -148,16 +148,16 @@ inline void store(
     store(g, color.y);
     store(b, color.z);
 
-    auto w = packet_size<FloatT>::w;
-    auto h = packet_size<FloatT>::h;
+    const int w = packet_size<FloatT>::w;
+    const int h = packet_size<FloatT>::h;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGB32F>{},
                     pixel_format_constant<PF_RGB32F>{},
@@ -204,16 +204,16 @@ inline void store(
     store(b, color.z);
     store(a, color.w);
 
-    auto w = packet_size<FloatT>::w;
-    auto h = packet_size<FloatT>::h;
+    const int w = packet_size<FloatT>::w;
+    const int h = packet_size<FloatT>::h;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGB32F>{},
                     pixel_format_constant<PF_RGBA32F>{},
@@ -262,16 +262,16 @@ inline void store(
     store(b, color.z);
     store(a, color.w);
 
-    auto w = packet_size<FloatT>::w;
-    auto h = packet_size<FloatT>::h;
+    const int w = packet_size<FloatT>::w;
+    const int h = packet_size<FloatT>::h;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGBA8>{},
                     pixel_format_constant<PF_RGBA32F>{},
@@ -320,16 +320,16 @@ inline void store(
     store(b, color.z);
     store(a, color.w);
 
-    auto w = packet_size<FloatT>::w;
-    auto h = packet_size<FloatT>::h;
+    const int w = packet_size<FloatT>::w;
+    const int h = packet_size<FloatT>::h;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGB8>{},
                     pixel_format_constant<PF_RGBA32F>{},
@@ -376,16 +376,16 @@ inline void store(
     store(b, color.z);
     store(a, color.w);
 
-    auto w = packet_size<FloatT>::w;
-    auto h = packet_size<FloatT>::h;
+    const int w = packet_size<FloatT>::w;
+    const int h = packet_size<FloatT>::h;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 convert(
                     pixel_format_constant<PF_RGBA32F>{},
                     pixel_format_constant<PF_RGBA32F>{},
@@ -450,12 +450,12 @@ inline void store(
 
     store(v, value);
 
-    auto w = packet_size<FloatT>::w;
-    auto h = packet_size<FloatT>::h;
+    const int w = packet_size<FloatT>::w;
+    const int h = packet_size<FloatT>::h;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
@@ -497,12 +497,12 @@ inline void store(
 
     store(v, value);
 
-    auto w = packet_size<T>::w;
-    auto h = packet_size<T>::h;
+    const int w = packet_size<T>::w;
+    const int h = packet_size<T>::h;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
@@ -539,12 +539,12 @@ inline void store(
 
     store(v, value);
 
-    auto w = packet_size<FloatT>::w;
-    auto h = packet_size<FloatT>::h;
+    const int w = packet_size<FloatT>::w;
+    const int h = packet_size<FloatT>::h;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
@@ -877,13 +877,13 @@ inline void get(
 
     simd::aligned_array_t<simd::float8> out;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 out[idx] = buffer[(y + row) * width + (x + col)];
             }
         }
@@ -910,13 +910,13 @@ inline void get(
 
     simd::aligned_array_t<simd::float8> out;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 out[idx] = buffer[(y + row) * width + (x + col)];
             }
         }
@@ -944,13 +944,13 @@ inline void get(
 
     simd::aligned_array_t<simd::int8> out;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 out[idx] = buffer[(y + row) * width + (x + col)];
             }
         }
@@ -1030,13 +1030,13 @@ inline void get(
 
     simd::aligned_array_t<simd::float16> out;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 out[idx] = buffer[(y + row) * width + (x + col)];
             }
         }
@@ -1063,13 +1063,13 @@ inline void get(
 
     simd::aligned_array_t<simd::float16> out;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 out[idx] = buffer[(y + row) * width + (x + col)];
             }
         }
@@ -1097,13 +1097,13 @@ inline void get(
 
     simd::aligned_array_t<simd::int16> out;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
+                int idx = row * w + col;
                 out[idx] = buffer[(y + row) * width + (x + col)];
             }
         }
