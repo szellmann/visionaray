@@ -977,38 +977,30 @@ inline void get(
     const int w = packet_size<simd::float16>::w;
     const int h = packet_size<simd::float16>::h;
 
-    vec4 v[w * h];
+    simd::aligned_array_t<simd::float16> xs;
+    simd::aligned_array_t<simd::float16> ys;
+    simd::aligned_array_t<simd::float16> zs;
+    simd::aligned_array_t<simd::float16> ws;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
-                v[idx] = buffer[(y + row) * width + (x + col)];
+                int idx = row * w + col;
+                xs[idx] = buffer[(y + row) * width + (x + col)].x;
+                ys[idx] = buffer[(y + row) * width + (x + col)].y;
+                zs[idx] = buffer[(y + row) * width + (x + col)].z;
+                ws[idx] = buffer[(y + row) * width + (x + col)].w;
             }
         }
     }
 
-    color = vector<4, simd::float16>(
-        simd::float16(
-            v[ 0].x, v[ 1].x, v[ 2].x, v[ 3].x, v[ 4].x, v[ 5].x, v[ 6].x, v[ 7].x,
-            v[ 8].x, v[ 9].x, v[10].x, v[11].x, v[12].x, v[13].x, v[14].x, v[15].x
-            ),
-        simd::float16(
-            v[ 0].y, v[ 1].y, v[ 2].y, v[ 3].y, v[ 4].y, v[ 5].y, v[ 6].y, v[ 7].y,
-            v[ 8].y, v[ 9].y, v[10].y, v[11].y, v[12].y, v[13].y, v[14].y, v[15].y
-            ),
-        simd::float16(
-            v[ 0].z, v[ 1].z, v[ 2].z, v[ 3].z, v[ 4].z, v[ 5].z, v[ 6].z, v[ 7].z,
-            v[ 8].z, v[ 9].z, v[10].z, v[11].z, v[12].z, v[13].z, v[14].z, v[15].z
-            ),
-        simd::float16(
-            v[ 0].w, v[ 1].w, v[ 2].w, v[ 3].w, v[ 4].w, v[ 5].w, v[ 6].w, v[ 7].w,
-            v[ 8].w, v[ 9].w, v[10].w, v[11].w, v[12].w, v[13].w, v[14].w, v[15].w
-            )
-        );
+    color.x = simd::float16(xs);
+    color.y = simd::float16(ys);
+    color.z = simd::float16(zs);
+    color.w = simd::float16(ws);
 }
 
 //-------------------------------------------------------------------------------------------------
