@@ -828,26 +828,30 @@ inline void get(
     const int w = packet_size<simd::float8>::w;
     const int h = packet_size<simd::float8>::h;
 
-    vec4 v[w * h];
+    simd::aligned_array_t<simd::float8> xs;
+    simd::aligned_array_t<simd::float8> ys;
+    simd::aligned_array_t<simd::float8> zs;
+    simd::aligned_array_t<simd::float8> ws;
 
-    for (auto row = 0; row < h; ++row)
+    for (int row = 0; row < h; ++row)
     {
-        for (auto col = 0; col < w; ++col)
+        for (int col = 0; col < w; ++col)
         {
             if (x + col < width && y + row < height)
             {
-                auto idx = row * w + col;
-                v[idx] = buffer[(y + row) * width + (x + col)];
+                int idx = row * w + col;
+                xs[idx] = buffer[(y + row) * width + (x + col)].x;
+                ys[idx] = buffer[(y + row) * width + (x + col)].y;
+                zs[idx] = buffer[(y + row) * width + (x + col)].z;
+                ws[idx] = buffer[(y + row) * width + (x + col)].w;
             }
         }
     }
 
-    color = vector<4, simd::float8>(
-        simd::float8(v[0].x, v[1].x, v[2].x, v[3].x, v[4].x, v[5].x, v[6].x, v[7].x),
-        simd::float8(v[0].y, v[1].y, v[2].y, v[3].y, v[4].y, v[5].y, v[6].y, v[7].y),
-        simd::float8(v[0].z, v[1].z, v[2].z, v[3].z, v[4].z, v[5].z, v[6].z, v[7].z),
-        simd::float8(v[0].w, v[1].w, v[2].w, v[3].w, v[4].w, v[5].w, v[6].w, v[7].w)
-        );
+    color.x = simd::float8(xs);
+    color.y = simd::float8(ys);
+    color.z = simd::float8(zs);
+    color.w = simd::float8(ws);
 }
 
 //-------------------------------------------------------------------------------------------------
