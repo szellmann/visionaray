@@ -10,6 +10,7 @@
 #include <deque>
 #include <memory>
 #include <mutex>
+#include <utility>
 
 #include <visionaray/detail/semaphore.h>
 
@@ -31,6 +32,17 @@ public:
             std::unique_lock<std::mutex> l(mutex_);
 
             queue_.push_back(value);
+        }
+
+        non_empty_.notify();
+    }
+
+    void push_back(T&& value)
+    {
+        {
+            std::unique_lock<std::mutex> l(mutex_);
+
+            queue_.push_back(std::move(value));
         }
 
         non_empty_.notify();
