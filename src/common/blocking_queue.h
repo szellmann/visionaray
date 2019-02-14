@@ -48,7 +48,7 @@ public:
         non_empty_.notify();
     }
 
-    T pop_front()
+    T&& pop_front()
     {
         T next;
 
@@ -61,12 +61,12 @@ public:
             assert(!queue_.empty());
 
             // Return the front of the queue
-            next = queue_.front();
+            next = std::move(queue_.front());
             // Remove the object from the queue
             queue_.pop_front();
         }
 
-        return next;
+        return std::move(next);
     }
 
 private:
