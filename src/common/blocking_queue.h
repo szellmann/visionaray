@@ -48,7 +48,7 @@ public:
         non_empty_.notify();
     }
 
-    T&& pop_front()
+    T pop_front()
     {
         T next;
 
@@ -66,7 +66,7 @@ public:
             queue_.pop_front();
         }
 
-        return std::move(next);
+        return next;
     }
 
 private:
