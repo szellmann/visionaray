@@ -11,8 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include <boost/any.hpp>
-
 #include <visionaray/aligned_vector.h>
 #include <visionaray/pixel_format.h>
 
