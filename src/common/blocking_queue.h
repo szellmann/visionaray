@@ -22,7 +22,7 @@ class blocking_queue
 {
 public:
 
-    using queue_type = std::deque<T>;
+    using queue_type = std::deque<T, A>;
 
 public:
 
