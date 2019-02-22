@@ -2,7 +2,6 @@
 // See the LICENSE file for details.
 
 #include <algorithm>
-#include <cstring>
 
 #include <visionaray/gl/compositing.h>
 #include <visionaray/aligned_vector.h>
