@@ -296,14 +296,14 @@ typename basic_aabb<T>::vertex_list compute_vertices(basic_aabb<T> const& box)
 
     typename basic_aabb<T>::vertex_list result =
     {{
-        vector<3, T>(max.x, max.y, max.z),
-        vector<3, T>(min.x, max.y, max.z),
-        vector<3, T>(min.x, min.y, max.z),
-        vector<3, T>(max.x, min.y, max.z),
-        vector<3, T>(min.x, max.y, min.z),
-        vector<3, T>(max.x, max.y, min.z),
-        vector<3, T>(max.x, min.y, min.z),
-        vector<3, T>(min.x, min.y, min.z)
+        { max.x, max.y, max.z },
+        { min.x, max.y, max.z },
+        { min.x, min.y, max.z },
+        { max.x, min.y, max.z },
+        { min.x, max.y, min.z },
+        { max.x, max.y, min.z },
+        { max.x, min.y, min.z },
+        { min.x, min.y, min.z }
     }};
 
     return result;
