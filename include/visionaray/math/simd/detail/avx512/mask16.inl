@@ -59,8 +59,9 @@ VSNRAY_FORCE_INLINE mask16::operator __mmask16() const
 
 VSNRAY_FORCE_INLINE int16 convert_to_int(mask16 const& a)
 {
-    // TODO!
-    throw std::runtime_error("Not implemented yet");
+    VSNRAY_ALIGN(64) int arr[16];
+    store(arr, a);
+    return int16(arr);
 }
 
 

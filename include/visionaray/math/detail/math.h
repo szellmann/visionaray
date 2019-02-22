@@ -173,6 +173,12 @@ inline int convert_to_int(float a)
     return static_cast<int>(a);
 }
 
+MATH_FUNC
+inline int convert_to_int(bool a)
+{
+    return static_cast<int>(a);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Extended versions of min/max
