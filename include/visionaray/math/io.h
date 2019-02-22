@@ -29,34 +29,6 @@ namespace simd
 // SIMD type
 //
 
-namespace detail
-{
-
-// helper function to convert SIMD mask to SIMD int
-
-template <typename T>
-T int_from_mask(T const& a)
-{
-    return a;
-}
-
-template <typename F, typename I>
-basic_int<I> int_from_mask(basic_mask<F, I> const& m)
-{
-    return m.i;
-}
-
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX512F)
-inline basic_int<__m512i> int_from_mask(basic_mask<__mmask16> const& m)
-{
-    VSNRAY_ALIGN(64) int arr[16];
-    store(arr, m);
-    return basic_int<__m512i>(arr);
-}
-#endif
-
-} // detail
-
 template <
     typename CharT,
     typename Traits,
@@ -66,7 +38,7 @@ template <
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, VecT const& v)
 {
-    using array_t = aligned_array_t<decltype(detail::int_from_mask(v))>;
+    using array_t = aligned_array_t<decltype(convert_to_int(v))>;
     using elem_t  = typename element_type<VecT>::type;
     int vec_size  = num_elements<VecT>::value;
 
@@ -77,7 +49,7 @@ operator<<(std::basic_ostream<CharT, Traits>& out, VecT const& v)
 
 
     array_t vals = {};
-    store(vals, detail::int_from_mask(v));
+    store(vals, convert_to_int(v));
 
     s << '(';
     for (int i = 0; i < vec_size; ++i)
