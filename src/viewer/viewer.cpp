@@ -396,6 +396,7 @@ struct renderer : viewer_type
 
     std::set<std::string>                       filenames;
     std::string                                 initial_camera;
+    std::string                                 current_cam;
 
     model                                       mod;
     vec3                                        ambient         = vec3(-1.0f);
@@ -1211,173 +1212,406 @@ void renderer::render_hud()
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
     ImGui::Begin("Settings", &show_hud);
 
-    ImGui::Text("X: %4d", x);
-    ImGui::SameLine();
-    ImGui::Text("W: %4d", w);
-    ImGui::SameLine();
-    ImGui::Spacing();
-    ImGui::SameLine();
-    ImGui::Text("# Triangles: %zu", mod.primitives.size());
+    vec3 amb;
 
-    ImGui::Text("Y: %4d", y);
-    ImGui::SameLine();
-    ImGui::Text("H: %4d", h);
-    ImGui::SameLine();
-    ImGui::Spacing();
-    ImGui::SameLine();
-    ImGui::Text("# BVH Nodes/Leaves: %d/%d", num_nodes, num_leaves);
+    std::vector<std::string> algo_names;
+    algo_names.push_back("Simple");
+    algo_names.push_back("Whitted");
+    algo_names.push_back("Path Tracing");
 
-    ImGui::Text("R: %5.2f", rgba.x);
-    ImGui::SameLine();
-    ImGui::Text("G: %5.2f", rgba.y);
-    ImGui::SameLine();
-    ImGui::Text("B: %5.2f", rgba.z);
-
-    ImGui::Text("FPS: %6.2f", last_frame_time);
-    ImGui::SameLine();
-    ImGui::Spacing();
-    ImGui::SameLine();
-    if (algo == Pathtracing)
+    std::vector<std::string> ssaa_modes;
+    ssaa_modes.push_back("1x SSAA");
+    ssaa_modes.push_back("2x SSAA");
+    ssaa_modes.push_back("4x SSAA");
+    ssaa_modes.push_back("8x SSAA");
+    if (ImGui::BeginTabBar("Menu"))
     {
-        ImGui::Text("SPP: %7u", std::max(1U, frame_num));
-    }
-    else
-    {
-        ImGui::Text("SPP: %dx SSAA", ssaa_samples);
-    }
-    ImGui::SameLine();
-    ImGui::Spacing();
-    ImGui::SameLine();
-    ImGui::Text("Device: %s", rt.mode() == host_device_rt::GPU ? "GPU" : "CPU");
-
-    ImGui::Spacing();
-
-    if (ImGui::Checkbox("Headlight", &use_headlight))
-    {
-        clear_frame();
-    }
-    ImGui::SameLine();
-    if (ImGui::Checkbox("Render async", &render_async))
-    {
-        if (render_future.valid() && !render_async)
+        // Overview tab
+        if (ImGui::BeginTabItem("Overview"))
         {
-            render_future.wait();
-        }
-    }
+            ImGui::Spacing();
+            ImGui::Text("W: %4d", w);
+            ImGui::SameLine();
+            ImGui::Spacing();
+            ImGui::SameLine();
+            ImGui::Text("# Triangles: %zu", mod.primitives.size());
 
-    vec3 amb = ambient.x < 0.0f ? vec3(0.0f) : ambient;
-    if (ImGui::InputFloat3("Ambient Intensity", amb.data()))
-    {
-        ambient = amb;
-        clear_frame();
-    }
+            ImGui::Text("Y: %4d", y);
+            ImGui::SameLine();
+            ImGui::Text("H: %4d", h);
+            ImGui::SameLine();
+            ImGui::Spacing();
+            ImGui::SameLine();
+            ImGui::Text("# BVH Nodes/Leaves: %d/%d", num_nodes, num_leaves);
 
-    if (ImGui::Checkbox("DoF", &use_dof) && algo == Pathtracing)
-    {
-        clear_frame();
-
-        if (algo != Pathtracing)
-        {
-            std::cerr << "Warning: setting only affects pathtracing algorithm\n";
-        }
-    }
-    ImGui::SameLine();
-    ImGui::PushItemWidth(200);
-    if (ImGui::SliderFloat("", &focal_dist, 0.1, 100.0f, "Focal Dist. %.1f"))
-    {
-        cam.set_focal_distance(focal_dist);
-        if (use_dof && algo == Pathtracing)
-        {
-            clear_frame();
-        }
-
-        if (algo != Pathtracing)
-        {
-            std::cerr << "Warning: setting only affects pathtracing algorithm\n";
-        }
-    }
-    ImGui::SameLine();
-    ImGui::PushItemWidth(50);
-    if (ImGui::InputFloat("Lens radius", &lens_radius))
-    {
-        cam.set_lens_radius(lens_radius);
-        if (use_dof && algo == Pathtracing)
-        {
-            clear_frame();
-        }
-
-        if (algo != Pathtracing)
-        {
-            std::cerr << "Warning: setting only affects pathtracing algorithm\n";
-        }
-    }
-    ImGui::PopItemWidth();
-
-    // TODO: member?
-    static std::string current = camera_names[0]; // <reset...>
-
-    if (ImGui::BeginCombo("Cameras", current.c_str()))
-    {
-        for (size_t i = 0; i < camera_names.size(); ++i)
-        {
-            bool selected = current == camera_names[i];
-
-            if (ImGui::Selectable(camera_names[i].c_str(), selected))
+            ImGui::Text("R: %5.2f", rgba.x);
+            ImGui::SameLine();
+            ImGui::Text("G: %5.2f", rgba.y);
+            ImGui::SameLine();
+            ImGui::Text("B: %5.2f", rgba.z);
+            ImGui::Spacing();
+            ImGui::Text("FPS: %6.2f", last_frame_time);
+            ImGui::SameLine();
+            ImGui::Spacing();
+            ImGui::SameLine();
+            if (algo == Pathtracing)
             {
-                current = camera_names[i].c_str();
+                ImGui::Text("SPP: %7u", std::max(1U, frame_num));
+            }
+            else
+            {
+                ImGui::Text("SPP: %dx SSAA", ssaa_samples);
+            }
+            ImGui::SameLine();
+            ImGui::Spacing();
+            ImGui::EndTabItem();
+        }
 
-                auto it = std::find_if(
-                        cameras.begin(),
-                        cameras.end(),
-                        [&](std::pair<std::string, thin_lens_camera> c)
+        // Settings tab
+        if (ImGui::BeginTabItem("Settings"))
+        {
+            ImGui::Spacing();
+            if (ImGui::Checkbox("Headlight", &use_headlight))
+            {
+                clear_frame();
+            }
+            ImGui::SameLine();
+            if (ImGui::Checkbox("Render async", &render_async))
+            {
+                if (render_future.valid() && !render_async)
+                {
+                    render_future.wait();
+                }
+            }
+            ImGui::SameLine();
+            if (ImGui::Checkbox("BVH", &show_bvh))
+            {
+                if (show_bvh)
+                {
+                    if (host_top_level_bvh.num_nodes() > 0)
+                    {
+                        outlines.init(host_top_level_bvh);
+                    }
+                    else
+                    {
+                        outlines.init(host_bvhs[0]);
+                    }
+                }
+            }
+
+            bool gamma = rt.color_space() == host_device_rt::SRGB;
+            ImGui::Checkbox("Color space:", &gamma);
+            ImGui::SameLine();
+            if (gamma)
+            {
+                rt.color_space() = host_device_rt::SRGB;
+                ImGui::Text("SRGB");
+            }
+            else
+            {
+                rt.color_space() = host_device_rt::RGB;
+                ImGui::Text(" RGB");
+            }
+
+            ImGui::SameLine();
+            ImGui::Text("Device: %s", rt.mode() == host_device_rt::GPU ? "GPU" : "CPU");
+            int nbit = sizeof(ssaa_samples) * 8;
+            int ssaa_log2 = nbit - 1 - detail::clz(ssaa_samples);
+            std::string currentssaa = ssaa_modes[ssaa_log2];
+            if (ImGui::BeginCombo("SPP", currentssaa.c_str()))
+            {
+                for (size_t i = 0; i < ssaa_modes.size(); ++i)
+                {
+                    bool selectedssaa = currentssaa == ssaa_modes[i];
+
+                    if (ImGui::Selectable(ssaa_modes[i].c_str(), selectedssaa))
+                    {
+                        currentssaa = ssaa_modes[i].c_str();
+                        if (ssaa_modes[i] == ssaa_modes[0])
                         {
-                            return c.first == camera_names[i];
+                            ssaa_samples = 1;
+                            if (algo != Pathtracing)
+                            {
+                                counter.reset();
+                                clear_frame();
+                            }
                         }
-                        );
+                        else if (ssaa_modes[i] == ssaa_modes[1])
+                        {
+                            ssaa_samples = 2;
+                            if (algo != Pathtracing)
+                            {
+                                counter.reset();
+                                clear_frame();
+                            }
+                        }
+                        else if (ssaa_modes[i] == ssaa_modes[2])
+                        {
+                            ssaa_samples = 4;
+                            if (algo != Pathtracing)
+                            {
+                                counter.reset();
+                                clear_frame();
+                            }
+                        }
+                        else if ( ssaa_modes[i] == ssaa_modes[3])
+                        {
 
-                if (it != cameras.end())
-                {
-                    // Preloaded
-                    cam = it->second;
-
-                    // Reset viewport and aspect
-                    float fovy = cam.fovy();
-                    float aspect = width() / static_cast<float>(height());
-                    cam.set_viewport(0, 0, width(), height());
-                    cam.perspective(fovy, aspect, 0.001f, 1000.0f);
-
-                    counter.reset();
-                    clear_frame();
+                            ssaa_samples = 8;
+                            if (algo != Pathtracing)
+                            {
+                                counter.reset();
+                                clear_frame();
+                            }
+                        }
+                    }
                 }
-                else if (current == camera_names[0])
-                {
-                    // Reset...
-                    float aspect = width() / static_cast<float>(height());
-
-                    cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
-                    cam.set_lens_radius(0.1f);
-                    cam.set_focal_distance(10.0f);
-                    cam.view_all(mod.bbox);
-
-                    counter.reset();
-                    clear_frame();
-                }
-                else if (boost::filesystem::exists(current))
-                {
-                    // From file
-                    load_camera(current);
-                }
+                ImGui::EndCombo();
             }
 
-            if (selected)
+            ImGui::Spacing();
+            amb = ambient.x < 0.0f ? vec3(0.0f) : ambient;
+            if (ImGui::ColorEdit4("Ambient Color", amb.data(), ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float))
             {
-                ImGui::SetItemDefaultFocus();
+                ambient = amb;
+                clear_frame();
             }
+
+            ImGui::Spacing();
+            ImGui::Spacing();
+            std::string currentalgo = "";
+            if (algo == Simple)
+            {
+                currentalgo = algo_names[0];
+            }
+            else if (algo == Whitted)
+            {
+                currentalgo = algo_names[1];
+            }
+            else if (algo == Pathtracing)
+            {
+                currentalgo = algo_names[2];
+            }
+
+            if (ImGui::BeginCombo("Algorithm", currentalgo.c_str()))
+            {
+                for (size_t i = 0; i < algo_names.size(); ++i)
+                {
+                    bool selected = currentalgo == algo_names[i];
+
+                    if (ImGui::Selectable(algo_names[i].c_str(), selected))
+                    {
+                        currentalgo = algo_names[i].c_str();
+                        if (algo_names[i] == algo_names[0])
+                        {
+                            rt.set_double_buffering(true);
+                            algo = Simple;
+                            counter.reset();
+                            clear_frame();
+                        }
+                        else if (algo_names[i] == algo_names[1])
+                        {
+                            rt.set_double_buffering(true);
+                            algo = Whitted;
+                            counter.reset();
+                            clear_frame();
+                        }
+                        else if (algo_names[i] == algo_names[2])
+                        {
+                            if (render_future.valid())
+                            {
+                                render_future.wait();
+                            }
+                            // Double buffering does not work in case of pathtracing
+                            // because destination and source buffers need to be the same
+                            rt.set_double_buffering(false);
+                            algo = Pathtracing;
+                            counter.reset();
+                            clear_frame();
+                        } 
+                    }
+
+                    if (selected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+
+                ImGui::EndCombo();
+            }
+            ImGui::EndTabItem();
         }
 
-        ImGui::EndCombo();
-    }
+        // Camera tab
+        if (ImGui::BeginTabItem("Camera"))
+        {
 
+            ImGui::Spacing();
+
+            if (current_cam == "")
+            {
+                current_cam = camera_names[0]; // <reset...>
+            }
+
+            if (ImGui::BeginCombo("Cameras", current_cam.c_str()))
+            {
+                for (size_t i = 0; i < camera_names.size(); ++i)
+                {
+                    bool selected = current_cam == camera_names[i];
+
+                    if (ImGui::Selectable(camera_names[i].c_str(), selected))
+                    {
+                        current_cam = camera_names[i].c_str();
+
+                        auto it = std::find_if(
+                                cameras.begin(),
+                                cameras.end(),
+                                [&](std::pair<std::string, thin_lens_camera> c)
+                                {
+                                return c.first == camera_names[i];
+                                }
+                                );
+
+                        if (it != cameras.end())
+                        {
+                            // Preloaded
+                            cam = it->second;
+
+                            // Reset viewport and aspect
+                            float fovy = cam.fovy();
+                            float aspect = width() / static_cast<float>(height());
+                            cam.set_viewport(0, 0, width(), height());
+                            cam.perspective(fovy, aspect, 0.001f, 1000.0f);
+
+                            counter.reset();
+                            clear_frame();
+                        }
+                        else if (current_cam == camera_names[0])
+                        {
+                            // Reset...
+                            float aspect = width() / static_cast<float>(height());
+
+                            cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+                            cam.set_lens_radius(0.1f);
+                            cam.set_focal_distance(10.0f);
+                            cam.view_all(mod.bbox);
+
+                            counter.reset();
+                            clear_frame();
+                        }
+                        else if (boost::filesystem::exists(current_cam))
+                        {
+                            // From file
+                            load_camera(current_cam);
+                        }
+                    }
+
+                    if (selected)
+                    {
+                        ImGui::SetItemDefaultFocus();
+                    }
+                }
+
+                ImGui::EndCombo();
+            }
+            ImGui::Spacing();
+            int bc = 0;
+            if (ImGui::Button("Save Cam"))
+            {
+                bc = 1;
+            }
+
+            if (bc == 1){
+                int inc = 0;
+                std::string inc_str = "";
+
+                std::string filename = camera_file_base + inc_str + camera_file_suffix;
+
+                while (boost::filesystem::exists(filename))
+                {
+                    ++inc;
+                    inc_str = std::to_string(inc);
+
+                    while (inc_str.length() < 4)
+                    {
+                        inc_str = std::string("0") + inc_str;
+                    }
+
+                    inc_str = std::string("-") + inc_str;
+
+                    filename = camera_file_base + inc_str + camera_file_suffix;
+                }
+
+                std::ofstream file(filename);
+                if (file.good())
+                {
+                    std::cout << "Storing camera to file: " << filename << '\n';
+                    file << cam;
+                }
+                bc = 0;
+            }
+            ImGui::Spacing();
+            ImGui::Spacing();
+            ImGui::PushItemWidth(50);
+            if (ImGui::InputFloat("Lens radius", &lens_radius))
+            {
+                cam.set_lens_radius(lens_radius);
+                if (use_dof && algo == Pathtracing)
+                {
+                    clear_frame();
+                }
+
+                if (algo != Pathtracing)
+                {
+                    std::cerr << "Warning: setting only affects pathtracing algorithm\n";
+                }
+            }
+            ImGui::PopItemWidth();
+            ImGui::Spacing();
+            ImGui::Spacing();
+            if (ImGui::Checkbox("DoF", &use_dof))
+            {
+                if (use_dof && algo == Pathtracing) 
+                {
+                    clear_frame();
+                }
+
+                if (algo != Pathtracing)
+                {
+                    std::cerr << "Warning: setting only affects pathtracing algorithm\n";
+                }
+            }
+            ImGui::SameLine();
+            ImGui::PushItemWidth(200);
+            if (ImGui::SliderFloat("##Focal", &focal_dist, 0.1, 100.0f, "Focal Dist. %.1f"))
+            {
+                cam.set_focal_distance(focal_dist);
+                if (use_dof && algo == Pathtracing)
+                {
+                    clear_frame();
+                }
+
+                if (algo != Pathtracing)
+                {
+                    std::cerr << "Warning: setting only affects pathtracing algorithm\n";
+                }
+            }
+            ImGui::EndTabItem();
+        }
+        ImGui::EndTabBar();
+    }
+    ImGui::SameLine(ImGui::GetWindowWidth()-39);
+    ImGui::SetCursorPosY(25);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(7.0f, 7.6f, 0.6f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(1.0f, 7.6f, 0.7f));
+    ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(7.0f, 0.6f, 0.6f));
+    if (ImGui::Button("Quit"))
+    {
+        quit();
+    }
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
+    ImGui::PopStyleColor();
     ImGui::End();
 }
 
