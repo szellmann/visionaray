@@ -65,6 +65,7 @@ public:
 
     node_visitor() = default;
     node_visitor(traversal_type tt);
+    virtual ~node_visitor() = default;
 
     virtual void apply(node& n);
     virtual void apply(camera& c);
