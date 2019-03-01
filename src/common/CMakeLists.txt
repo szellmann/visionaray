@@ -167,7 +167,6 @@ set(COMMON_HEADERS
     image.h
     image_base.h
     jpeg_image.h
-    lock_free_queue.h
     make_unique.h
     make_materials.h
     moana_loader.h
