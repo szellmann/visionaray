@@ -4,6 +4,7 @@
 #include <common/config.h>
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <chrono>
 #include <cmath>
@@ -1214,16 +1215,19 @@ void renderer::render_hud()
 
     vec3 amb;
 
-    std::vector<std::string> algo_names;
-    algo_names.push_back("Simple");
-    algo_names.push_back("Whitted");
-    algo_names.push_back("Path Tracing");
+    std::array<char const*, 3> algo_names = {{
+            "Simple",
+            "Whitted",
+            "Path Tracing"
+            }};
 
-    std::vector<std::string> ssaa_modes;
-    ssaa_modes.push_back("1x SSAA");
-    ssaa_modes.push_back("2x SSAA");
-    ssaa_modes.push_back("4x SSAA");
-    ssaa_modes.push_back("8x SSAA");
+    std::array<char const*, 4> ssaa_modes = {{
+            "1x SSAA",
+            "2x SSAA",
+            "4x SSAA",
+            "8x SSAA"
+            }};
+
     if (ImGui::BeginTabBar("Menu"))
     {
         // Overview tab
@@ -1324,9 +1328,9 @@ void renderer::render_hud()
                 {
                     bool selectedssaa = currentssaa == ssaa_modes[i];
 
-                    if (ImGui::Selectable(ssaa_modes[i].c_str(), selectedssaa))
+                    if (ImGui::Selectable(ssaa_modes[i], selectedssaa))
                     {
-                        currentssaa = ssaa_modes[i].c_str();
+                        currentssaa = ssaa_modes[i];
                         if (ssaa_modes[i] == ssaa_modes[0])
                         {
                             ssaa_samples = 1;
@@ -1399,9 +1403,9 @@ void renderer::render_hud()
                 {
                     bool selected = currentalgo == algo_names[i];
 
-                    if (ImGui::Selectable(algo_names[i].c_str(), selected))
+                    if (ImGui::Selectable(algo_names[i], selected))
                     {
-                        currentalgo = algo_names[i].c_str();
+                        currentalgo = algo_names[i];
                         if (algo_names[i] == algo_names[0])
                         {
                             rt.set_double_buffering(true);
