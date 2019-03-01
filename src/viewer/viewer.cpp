@@ -1383,21 +1383,9 @@ void renderer::render_hud()
 
             ImGui::Spacing();
             ImGui::Spacing();
-            std::string currentalgo = "";
-            if (algo == Simple)
-            {
-                currentalgo = algo_names[0];
-            }
-            else if (algo == Whitted)
-            {
-                currentalgo = algo_names[1];
-            }
-            else if (algo == Pathtracing)
-            {
-                currentalgo = algo_names[2];
-            }
+            char const* currentalgo = algo_names[algo];
 
-            if (ImGui::BeginCombo("Algorithm", currentalgo.c_str()))
+            if (ImGui::BeginCombo("Algorithm", currentalgo))
             {
                 for (size_t i = 0; i < algo_names.size(); ++i)
                 {
@@ -1406,21 +1394,21 @@ void renderer::render_hud()
                     if (ImGui::Selectable(algo_names[i], selected))
                     {
                         currentalgo = algo_names[i];
-                        if (algo_names[i] == algo_names[0])
+                        if (i == 0)
                         {
                             rt.set_double_buffering(true);
                             algo = Simple;
                             counter.reset();
                             clear_frame();
                         }
-                        else if (algo_names[i] == algo_names[1])
+                        else if (i == 1)
                         {
                             rt.set_double_buffering(true);
                             algo = Whitted;
                             counter.reset();
                             clear_frame();
                         }
-                        else if (algo_names[i] == algo_names[2])
+                        else if (i == 2)
                         {
                             if (render_future.valid())
                             {
@@ -1472,7 +1460,7 @@ void renderer::render_hud()
                                 cameras.end(),
                                 [&](std::pair<std::string, thin_lens_camera> c)
                                 {
-                                return c.first == camera_names[i];
+                                    return c.first == camera_names[i];
                                 }
                                 );
 
