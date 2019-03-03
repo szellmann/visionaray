@@ -9,7 +9,6 @@
 #include "detail/macros.h"
 #include "math/aabb.h"
 #include "math/intersect.h"
-#include "math/ray.h"
 
 namespace visionaray
 {
@@ -60,12 +59,12 @@ auto is_closer(HR const& query, HR const& reference)
 
 // query is box, reference is general primitive
 
-template <typename T, typename U, typename HR>
+template <typename R, typename T, typename HR>
 VSNRAY_FUNC
-auto is_closer(hit_record<basic_ray<T>, basic_aabb<U>> const& query, HR const& reference)
+auto is_closer(hit_record<R, basic_aabb<T>> const& query, HR const& reference)
     -> decltype(query.tnear < reference.t)
 {
-    return query.hit && query.tnear < reference.t && query.tfar >= U(0.0);
+    return query.hit && query.tnear < reference.t && query.tfar >= T(0.0);
 }
 
 
@@ -82,9 +81,9 @@ auto is_closer(HR const& query, HR const& reference, T max_t)
 }
 
 // specialization for aabb
-template <typename T, typename U, typename HR>
+template <typename R, typename T, typename HR>
 VSNRAY_FUNC
-auto is_closer(hit_record<basic_ray<T>, basic_aabb<U>> const& query, HR const& reference, T max_t)
+auto is_closer(hit_record<R, basic_aabb<T>> const& query, HR const& reference, typename R::scalar_type max_t)
     -> decltype(is_closer(query, reference))
 {
     return is_closer(query, reference) && query.tnear < max_t;
