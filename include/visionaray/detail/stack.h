@@ -13,7 +13,7 @@ namespace visionaray
 namespace detail
 {
 
-template <unsigned N>
+template <unsigned N, typename T = unsigned>
 struct stack
 {
     VSNRAY_FUNC stack()
@@ -36,17 +36,17 @@ struct stack
         ptr = 0;
     }
 
-    VSNRAY_FUNC void push(unsigned v)
+    VSNRAY_FUNC void push(T v)
     {
         data[++ptr] = v;
     }
 
-    VSNRAY_FUNC unsigned pop()
+    VSNRAY_FUNC T pop()
     {
         return data[ptr--];
     }
 
-    unsigned data[N];
+    T data[N];
     unsigned ptr;
 };
 
