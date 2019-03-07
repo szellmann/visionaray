@@ -69,6 +69,37 @@ public:
         return next;
     }
 
+
+    // Obtain a reference to the queue's mutex
+    std::mutex& mutex()
+    {
+        return mutex_;
+    }
+
+    //-------------------------------------------------------------------------
+    // Some convenience functions to access the underlying data structure
+    //
+
+    bool unsafe_empty() const
+    {
+        return queue_.empty();
+    }
+
+    size_t unsafe_size() const
+    {
+        return queue_.size();
+    }
+
+    T unsafe_front()
+    {
+        return queue_.front();
+    }
+
+    void unsafe_pop_front()
+    {
+        queue_.pop_front();
+    }
+
 private:
 
     // The queue
