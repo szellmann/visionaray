@@ -36,6 +36,7 @@ public:
 
     void notify()
     {
+        std::unique_lock<std::mutex> l(mutex_);
         ++count_;
         cond_.notify_one();
     }
