@@ -24,6 +24,18 @@
 
 
 //-------------------------------------------------------------------------------------------------
+// VSNRAY_WARN_UNUSED_RESULT
+// Warn if result of function call is unused
+//
+
+#if VSNRAY_CXX_MSVC && (_MSC_VER >= 1700)
+#define VSNRAY_WARN_UNUSED_RESULT _Check_return_
+#else
+#define VSNRAY_WARN_UNUSED_RESULT __attribute__ ((warn_unused_result))
+#endif
+
+
+//-------------------------------------------------------------------------------------------------
 // VSNRAY_FORCE_INLINE
 // Force function inlining
 //
