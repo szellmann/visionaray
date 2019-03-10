@@ -7,7 +7,6 @@
 
 #include <visionaray/math/limits.h>
 #include <visionaray/math/matrix.h>
-#include <visionaray/math/ray.h>
 #include <visionaray/intersector.h>
 #include <visionaray/update_if.h>
 
@@ -28,32 +27,30 @@ namespace visionaray
 template <
     detail::traversal_type Traversal,
     size_t MultiHitMax = 1,             // Max hits for multi-hit traversal
-    typename T,
+    typename R,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<!is_any_bvh_inst<BVH>::value>::type,
     typename Intersector,
+    typename T = typename R::scalar_type,
     typename Cond = is_closer_t
     >
 VSNRAY_FUNC
 inline auto intersect(
-        basic_ray<T> const& ray,
-        BVH const&          b,
-        Intersector&        isect,
-        T                   max_t = numeric_limits<T>::max(),
-        Cond                update_cond = Cond()
+        R const&     ray,
+        BVH const&   b,
+        Intersector& isect,
+        T            max_t = numeric_limits<T>::max(),
+        Cond         update_cond = Cond()
         )
     -> typename detail::traversal_result< hit_record_bvh<
-            basic_ray<T>,
+            R,
             decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
             >, Traversal, MultiHitMax>::type
 {
 
     using namespace detail;
-    using HR = hit_record_bvh<
-        basic_ray<T>,
-        decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
-        >;
+    using HR = hit_record_bvh<R, decltype(isect(ray, std::declval<typename BVH::primitive_type>()))>;
 
     using RT = typename detail::traversal_result<HR, Traversal, MultiHitMax>::type;
 
@@ -141,34 +138,32 @@ next:
 template <
     detail::traversal_type Traversal,
     size_t MultiHitMax = 1,             // Max hits for multi-hit traversal
-    typename T,
+    typename R,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh_inst<BVH>::value>::type,
     typename Intersector,
+    typename T = typename R::scalar_type,
     typename Cond = is_closer_t
     >
 VSNRAY_FUNC
 inline auto intersect(
-        basic_ray<T> const& ray,
-        BVH const&          b,
-        Intersector&        isect,
-        T                   max_t = numeric_limits<T>::max(),
-        Cond                update_cond = Cond()
+        R const&     ray,
+        BVH const&   b,
+        Intersector& isect,
+        T            max_t = numeric_limits<T>::max(),
+        Cond         update_cond = Cond()
         )
     -> typename detail::traversal_result< hit_record_bvh_inst<
-            basic_ray<T>,
+            R,
             decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
             >, Traversal, MultiHitMax>::type
 {
     using namespace detail;
-    using HR = hit_record_bvh_inst<
-        basic_ray<T>,
-        decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
-        >;
+    using HR = hit_record_bvh_inst<R, decltype(isect(ray, std::declval<typename BVH::primitive_type>()))>;
 
     using RT = typename detail::traversal_result<HR, Traversal, MultiHitMax>::type;
 
-    basic_ray<T> transformed_ray = ray;
+    R transformed_ray = ray;
     transformed_ray.ori = (matrix<4, 4, T>(b.transform_inv()) * vector<4, T>(ray.ori, T(1.0))).xyz();
     transformed_ray.dir = (matrix<4, 4, T>(b.transform_inv()) * vector<4, T>(ray.dir, T(0.0))).xyz();
     // NOTE: dir is in general *not* normalized!
@@ -192,7 +187,7 @@ inline auto intersect(
 // overload w/ custom intersector -------------------------
 
 template <
-    typename T,
+    typename R,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename Intersector,
@@ -200,34 +195,38 @@ template <
     >
 VSNRAY_FUNC
 inline auto intersect(
-        basic_ray<T> const& ray,
-        BVH const&          b,
-        Intersector&        isect,
-        Cond                update_cond = Cond()
+        R const&     ray,
+        BVH const&   b,
+        Intersector& isect,
+        Cond         update_cond = Cond()
         )
-    -> decltype(intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<T>::max(), update_cond))
+    -> decltype(intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<typename R::scalar_type>::max(), update_cond))
 {
-    return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<T>::max(), update_cond);
+    return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<typename R::scalar_type>::max(), update_cond);
 }
 
 // overload w/ default intersector ------------------------
 
 template <
-    typename T,
+    typename R,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename Cond = is_closer_t
     >
 VSNRAY_FUNC
 inline auto intersect(
-        basic_ray<T> const& ray,
-        BVH const&          b,
-        Cond                update_cond = Cond()
+        R const&   ray,
+        BVH const& b,
+        Cond       update_cond = Cond()
         )
-    -> decltype(intersect<detail::ClosestHit>(ray, b, std::declval<default_intersector&>(), numeric_limits<T>::max(), update_cond))
+    -> decltype(intersect<detail::ClosestHit>(
+            ray,
+            b,
+            std::declval<default_intersector&>(), numeric_limits<typename R::scalar_type>::max(), update_cond)
+            )
 {
     default_intersector isect;
-    return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<T>::max(), update_cond);
+    return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<typename R::scalar_type>::max(), update_cond);
 }
 
 
