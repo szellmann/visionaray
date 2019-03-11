@@ -77,9 +77,10 @@ inline hit_record<basic_ray<T>, basic_aabb<U>> intersect(
 // general ray primitive hit record
 //
 
-template <typename T>
-struct hit_record<basic_ray<T>, primitive<unsigned>>
+template <typename R>
+struct hit_record<R, primitive<unsigned>>
 {
+    using T = typename R::scalar_type;
     using scalar_type = T;
     using int_type = simd::int_type_t<T>;
     using mask_type = simd::mask_type_t<T>;
