@@ -18,18 +18,22 @@ configuration:
 
 install:
     - git submodule update --init --recursive
+    - vcpkg install freeglut:x64-windows
+    - vcpkg install glew:x64-windows
+    - cd c:\tools\vcpkg
+    - vcpkg integrate install
+
+cache: c:\tools\vcpkg\installed\
 
 build:
     parallel: true
 
 build_script:
-    - cd C:\projects
-    - nuget install nupengl.core
-    - dir /s /b
     - cd C:\projects\visionaray
     - mkdir build
     - cd build
     - cmake -G "Visual Studio 14 2015 Win64"
+      -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
       -DBOOST_ROOT="%BOOST_ROOT%"
       -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR_WIN64%"
       -DBoost_USE_STATIC_LIBS="ON"
