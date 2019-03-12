@@ -14,6 +14,7 @@
 #include "bvh.h"
 #include "get_color.h"
 #include "get_normal.h"
+#include "get_primitive.h"
 #include "get_shading_normal.h"
 #include "get_tex_coord.h"
 #include "surface.h"
@@ -51,62 +52,6 @@ public:
 
 
 //-------------------------------------------------------------------------------------------------
-// Get primitive from params
-//
-
-template <
-    typename Params,
-    typename HR,
-    typename P = typename Params::primitive_type,
-    typename = typename std::enable_if<!is_any_bvh<P>::value>::type
-    >
-VSNRAY_FUNC
-inline P const& get_prim(Params const& params, HR const& hr)
-{
-    return params.prims.begin[hr.prim_id];
-}
-
-// overload for BVHs
-template <
-    typename Params,
-    typename HR,
-    typename Base = typename HR::base_type,
-    typename P = typename Params::primitive_type,
-    typename = typename std::enable_if<is_any_bvh<P>::value>::type,
-    typename = typename std::enable_if<
-                !is_any_bvh_inst<typename P::primitive_type>::value>::type // but not BVH of instances!
-    >
-VSNRAY_FUNC
-inline typename P::primitive_type const& get_prim(Params const& params, HR const& hr)
-{
-    VSNRAY_UNUSED(params);
-    VSNRAY_UNUSED(hr);
-
-    // TODO: iterate over list of BVHs and find the right one!
-    return params.prims.begin[0].primitive(hr.prim_id);
-}
-
-// overload for BVHs of instances
-template <
-    typename Params,
-    typename HR,
-    typename Base = typename HR::base_type,
-    typename P = typename Params::primitive_type,
-    typename = typename std::enable_if<is_any_bvh<P>::value>::type, // is BVH ...
-    typename = typename std::enable_if<
-                is_any_bvh_inst<typename P::primitive_type>::value>::type, // ... of instances!
-    typename X = void
-    >
-VSNRAY_FUNC
-inline auto get_prim(Params const& params, HR const& hr)
-    -> typename P::primitive_type::primitive_type const&
-{
-    // Assume we only have one top-level BVH (TODO?)
-    return params.prims.begin[0].primitive(hr.primitive_list_index).primitive(hr.primitive_list_index_inst);
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // Sample textures
 //
 
@@ -136,7 +81,7 @@ inline typename Params::color_type get_tex_color(
 {
     using C = typename Params::color_type;
 
-    auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
+    auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params, hr));
 
     auto const& tex = params.textures[hr.geom_id];
     return C(tex1D(tex, coord));
@@ -152,7 +97,7 @@ inline typename Params::color_type get_tex_color(
 {
     using C = typename Params::color_type;
 
-    auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
+    auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params, hr));
 
     auto const& tex = params.textures[hr.geom_id];
     return C(tex2D(tex, coord));
@@ -168,7 +113,7 @@ inline typename Params::color_type get_tex_color(
 {
     using C = typename Params::color_type;
 
-    auto coord = get_tex_coord(params.tex_coords, hr, get_prim(params, hr));
+    auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params, hr));
 
     auto const& tex = params.textures[hr.geom_id];
     return C(tex3D(tex, coord));
@@ -194,7 +139,7 @@ inline auto get_surface_impl(HR const& hr, Params const& params)
 {
     using C = typename Params::color_type;
 
-    auto const& prim = get_prim(params, hr);
+    auto const& prim = get_primitive(params, hr);
 
     auto const& gns = params.geometric_normals;
     auto const& sns = params.shading_normals;

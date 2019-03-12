@@ -309,6 +309,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/get_area.h
     ${HEADER_DIR}/get_color.h
     ${HEADER_DIR}/get_normal.h
+    ${HEADER_DIR}/get_primitive.h
     ${HEADER_DIR}/get_shading_normal.h
     ${HEADER_DIR}/get_surface.h
     ${HEADER_DIR}/get_tex_coord.h
