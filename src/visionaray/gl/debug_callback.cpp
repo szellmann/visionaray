@@ -3,9 +3,15 @@
 
 #include <iostream>
 #include <ostream>
+#include <sstream>
 #include <stdexcept>
+#include <string>
 
 #include <visionaray/detail/platform.h>
+
+#if defined(VSNRAY_OS_DARWIN) || defined(VSNRAY_OS_LINUX)
+#include <execinfo.h>
+#endif
 
 #ifdef VSNRAY_OS_WIN32
 #include <windows.h>
@@ -19,18 +25,43 @@
 
 #include <visionaray/gl/debug_callback.h>
 
-#include "../util.h"
 
 namespace visionaray
 {
 namespace gl
 {
 
-#if defined(GL_KHR_debug)
-
 //-------------------------------------------------------------------------------------------------
 // Helpers
 //
+
+static std::string backtrace()
+{
+#if defined(VSNRAY_OS_DARWIN) || defined(VSNRAY_OS_LINUX)
+    static const int max_frames = 16;
+
+    void* buffer[max_frames] = { 0 };
+    int cnt = ::backtrace(buffer, max_frames);
+
+    char** symbols = backtrace_symbols(buffer, cnt);
+
+    if (symbols)
+    {
+        std::stringstream str;
+        for (int n = 1; n < cnt; ++n) // skip the 1st entry (address of this function)
+        {
+            str << symbols[n] << '\n';
+        }
+        free(symbols);
+        return str.str();
+    }
+    return std::string();
+#else
+    return std::string("not implemented");
+#endif
+}
+
+#if defined(GL_KHR_debug)
 
 static char const* get_debug_type_string(GLenum type)
 {
@@ -98,7 +129,7 @@ static void debug_callback_func(
             DebugBreak();
         }
 #else
-        std::cerr << visionaray::util::backtrace() << '\n';
+        std::cerr << gl::backtrace() << '\n';
         throw std::runtime_error("OpenGL error");
 #endif
     }

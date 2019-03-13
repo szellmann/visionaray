@@ -3,8 +3,6 @@
 
 #include <visionaray/gl/util.h>
 
-#include "../util.h"
-
 
 namespace gl = visionaray::gl;
 

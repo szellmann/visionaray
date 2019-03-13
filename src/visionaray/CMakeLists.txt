@@ -350,12 +350,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/variant.h
     ${HEADER_DIR}/version.h
 
-    #----------------------------------------------------------------------------------------------
-    # Private headers
-    #
-
-    util.h
-
 )
 
 set(VSNRAY_SOURCES
@@ -373,7 +367,6 @@ set(VSNRAY_SOURCES
     gl/util.cpp
 
     pixel_format.cpp
-    util.cpp
 
 )
 
