@@ -36,10 +36,6 @@
 #include <common/manip/zoom_manipulator.h>
 #include <common/viewer_glut.h>
 
-#ifdef __CUDACC__
-#include <common/cuda.h>
-#endif
-
 using namespace visionaray;
 
 using manipulators  = std::vector<std::shared_ptr<visionaray::camera_manipulator>>;

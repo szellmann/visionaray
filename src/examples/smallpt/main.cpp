@@ -65,10 +65,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <common/timer.h>
 #include <common/viewer_glut.h>
 
-#ifdef __CUDACC__
-#include <common/cuda.h>
-#endif
-
 using namespace visionaray;
 
 using viewer_type = viewer_glut;
