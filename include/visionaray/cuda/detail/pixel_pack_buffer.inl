@@ -32,6 +32,8 @@ pixel_pack_buffer::pixel_pack_buffer()
 {
 }
 
+pixel_pack_buffer::~pixel_pack_buffer() = default;
+
 void pixel_pack_buffer::map(recti viewport, pixel_format format)
 {
     auto info = map_pixel_format(format);

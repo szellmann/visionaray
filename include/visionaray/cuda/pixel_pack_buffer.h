@@ -22,6 +22,7 @@ class pixel_pack_buffer
 public:
 
     pixel_pack_buffer();
+   ~pixel_pack_buffer();
 
     void map(recti viewport, pixel_format format);
     void unmap();
