@@ -26,6 +26,10 @@
 
 #include <boost/filesystem.hpp>
 
+#ifdef __CUDACC__
+#include <cuda_runtime_api.h>
+#endif
+
 #include <imgui.h>
 
 #include <Support/CmdLine.h>
@@ -60,10 +64,6 @@
 #include <common/sg.h>
 #include <common/timer.h>
 #include <common/viewer_glut.h>
-
-#ifdef __CUDACC__
-#include <common/cuda.h>
-#endif
 
 #if VSNRAY_COMMON_HAVE_PTEX
 #include <common/ptex.h>
@@ -2074,9 +2074,11 @@ int main(int argc, char** argv)
     renderer rend;
 
 #ifdef __CUDACC__
-    if (rend.rt.direct_rendering() && cuda::init_gl_interop() != cudaSuccess)
+    int device = 0;
+    cudaDeviceProp prop;
+    if (rend.rt.direct_rendering() && cudaChooseDevice(&device, &prop) != cudaSuccess)
     {
-        std::cerr << "Cannot initialize CUDA OpenGL interop\n";
+        std::cerr << "Cannot choose CUDA device " << device << '\n';
         return EXIT_FAILURE;
     }
 #endif

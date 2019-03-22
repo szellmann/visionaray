@@ -10,6 +10,10 @@
 
 #include <GL/glew.h>
 
+#ifdef __CUDACC__
+#include <cuda_runtime_api.h>
+#endif
+
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
@@ -365,9 +369,11 @@ void renderer::on_resize(int w, int h)
 int main(int argc, char** argv)
 {
 #ifdef __CUDACC__
-    if (cuda::init_gl_interop() != cudaSuccess)
+    int device;
+    cudaDeviceProp prop;
+    if (cudaChooseDevice(&device, &prop))
     {
-        std::cerr << "Cannot initialize CUDA OpenGL interop\n";
+        std::cerr << "Cannot choose CUDA device " << device << '\n';
         return EXIT_FAILURE;
     }
 #endif
