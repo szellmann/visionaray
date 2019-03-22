@@ -22,6 +22,14 @@
 
 #include "dds_image.h"
 
+// Make a four-character constant from four characters
+#define MAKE_FOURCC(C0, C1, C2, C3)     \
+   (static_cast<unsigned>(C0)           \
+ | (static_cast<unsigned>(C1) <<  8)    \
+ | (static_cast<unsigned>(C2) << 16)    \
+ | (static_cast<unsigned>(C3) << 24))
+    
+
 #define DDS_MAGIC 0x20534444
 
 // dds_header.flags
@@ -54,11 +62,11 @@
 #define DDSCAPS2_CUBEMAP_NEGATIVEZ 0x00008000 
 #define DDSCAPS2_VOLUME            0x00200000 
 
-#define D3DFMT_DXT1                '1TXD'
-#define D3DFMT_DXT2                '2TXD'
-#define D3DFMT_DXT3                '3TXD'
-#define D3DFMT_DXT4                '4TXD'
-#define D3DFMT_DXT5                '5TXD'
+#define D3DFMT_DXT1                MAKE_FOURCC('D','X','T','1')
+#define D3DFMT_DXT2                MAKE_FOURCC('D','X','T','2')
+#define D3DFMT_DXT3                MAKE_FOURCC('D','X','T','3')
+#define D3DFMT_DXT4                MAKE_FOURCC('D','X','T','4')
+#define D3DFMT_DXT5                MAKE_FOURCC('D','X','T','5')
 
 
 struct dds_header
