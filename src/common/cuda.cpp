@@ -16,24 +16,8 @@ namespace cuda
 
 cudaError_t init_gl_interop(int device)
 {
-    cudaError_t result = cudaSuccess;
-
     cudaDeviceProp prop;
-    result = cudaChooseDevice(&device, &prop);
-    if (result != cudaSuccess)
-    {
-        return result;
-    }
-
-    result = cudaGLSetGLDevice(device);
-
-    if (result == cudaErrorSetOnActiveProcess)
-    {
-        result = cudaDeviceReset();
-        result = cudaGLSetGLDevice(device);
-    }
-
-    return result;
+    return cudaChooseDevice(&device, &prop);
 }
 
 } // cuda
