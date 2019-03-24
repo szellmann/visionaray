@@ -210,9 +210,6 @@ auto make_sched_params(First first, Args&&... args)
 #ifdef __CUDACC__
 #include "detail/cuda_sched.h"
 #endif
-#ifdef __HCC__
-#include "detail/hcc_sched.h"
-#endif
 #include "detail/simple_sched.h"
 #if !defined(__MINGW32__) && !defined(__MINGW64__)
 #include "detail/tiled_sched.h"

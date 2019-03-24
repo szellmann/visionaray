@@ -68,17 +68,7 @@ typename cpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* cpu_buffer_r
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename cpu_buffer_rt<ColorFormat, DepthFormat>::ref_type cpu_buffer_rt<ColorFormat, DepthFormat>::ref()
 {
-#if defined(__HCC__)
-    // TODO: check why aggregate initialization doesn't work with hcc here
-    typename cpu_buffer_rt<ColorFormat, DepthFormat>::ref_type result;
-    result.color_  = color();
-    result.depth_  = depth();
-    result.width_  = width();
-    result.height_ = height();
-    return result;
-#else
     return { color(), depth(), width(), height() };
-#endif
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>

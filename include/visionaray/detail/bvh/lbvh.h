@@ -26,8 +26,6 @@ inline unsigned clz(unsigned val)
 {
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 200
     return __clz(val);
-#elif defined(__KALMAR_ACCELERATOR__)
-    // TODO
 #elif defined(_WIN32)
     return __lzcnt(val);
 #else

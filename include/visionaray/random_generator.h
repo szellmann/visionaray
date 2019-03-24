@@ -12,8 +12,6 @@
 
 #if defined(__CUDACC__)
 #include <thrust/random.h>
-#elif defined(__HCC__)
-#include "hcc/random.h"
 #else
 #include <random>
 #endif
@@ -39,16 +37,6 @@ VSNRAY_GPU_FUNC
 inline unsigned tic(T /* */)
 {
     return clock64();
-}
-#elif defined(__KALMAR_ACCELERATOR__)
-template <
-    typename T,
-    typename = typename std::enable_if<std::is_floating_point<T>::value>::type
-    >
-VSNRAY_FUNC
-inline unsigned tic(T /* */)
-{
-    return {}; // TODO!
 }
 #else
 template <
@@ -98,9 +86,6 @@ public:
 #if defined(__CUDACC__)
     typedef thrust::default_random_engine rand_engine;
     typedef thrust::uniform_real_distribution<T> uniform_dist;
-#elif defined(__HCC__)
-    typedef hcc::default_random_engine rand_engine;
-    typedef hcc::uniform_real_distribution<T> uniform_dist;
 #else
     typedef std::default_random_engine rand_engine;
     typedef std::uniform_real_distribution<T> uniform_dist;

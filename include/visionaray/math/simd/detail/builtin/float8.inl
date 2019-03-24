@@ -614,7 +614,6 @@ VSNRAY_FORCE_INLINE float8 sqrt(float8 const& v)
             );
 }
 
-#if !defined(__KALMAR_ACCELERATOR__)
 MATH_FUNC
 VSNRAY_FORCE_INLINE mask8 isinf(float8 const& v)
 {
@@ -659,7 +658,6 @@ VSNRAY_FORCE_INLINE mask8 isfinite(float8 const& v)
             MATH_NAMESPACE::isfinite(v.value[7])
             );
 }
-#endif
 
 
 //-------------------------------------------------------------------------------------------------
