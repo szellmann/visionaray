@@ -253,6 +253,11 @@ cl::CmdLine& viewer_base::cmd_line_inst()
     return impl_->cmd;
 }
 
+void viewer_base::set_background_color(vec3 color)
+{
+    impl_->bgcolor = color;
+}
+
 void viewer_base::event_loop()
 {
 }

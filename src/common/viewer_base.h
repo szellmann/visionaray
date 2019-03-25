@@ -59,6 +59,8 @@ public:
     // Returns a reference to the command line instance
     support::cl::CmdLine& cmd_line_inst();
 
+    void set_background_color(vec3 color);
+
     virtual void event_loop();
     virtual void resize(int width, int height);
     virtual void swap_buffers();
