@@ -47,7 +47,7 @@ inline typename P::primitive_type const& get_primitive(Params const& params, HR 
     VSNRAY_UNUSED(hr);
 
     // TODO: iterate over list of BVHs and find the right one!
-    return params.prims.begin[0].primitive(hr.prim_id);
+    return params.prims.begin[0].primitive(hr.primitive_list_index);
 }
 
 // overload for BVHs of instances
