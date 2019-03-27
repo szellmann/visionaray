@@ -244,6 +244,26 @@ inline float max_min(float x, float y, float z)
 
 
 //-------------------------------------------------------------------------------------------------
+// Get the next power of two
+//
+
+template <typename T>
+inline typename std::enable_if<std::is_integral<T>::value && std::is_unsigned<T>::value, T>::type next_pow2(T val)
+{
+#if defined(_WIN32)
+    unsigned lz = __lzcnt(val);
+#else
+    unsigned lz = __builtin_clz(val);
+#endif
+
+    unsigned nbits = sizeof(val) * 8;
+    unsigned ilog2 = nbits - 1 - lz;
+
+    return (val >> ilog2) << ilog2;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Round (a) up to the nearest multiple of (b), then divide by (b)
 //
 
