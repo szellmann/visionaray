@@ -117,6 +117,8 @@ visionaray_add_executable(viewer
     ${VIEWER_CUDA_SOURCES}
 )
 
+set_target_properties(viewer PROPERTIES MACOSX_BUNDLE TRUE)
+
 
 #--------------------------------------------------------------------------------------------------
 # Install viewer
