@@ -20,6 +20,7 @@
 #include "input/keyboard.h"
 #include "input/mouse.h"
 #include "input/mouse_event.h"
+#include "input/space_mouse.h"
 #include "manip/camera_manipulator.h"
 #include "inifile.h"
 #include "viewer_base.h"
@@ -32,16 +33,18 @@ using cmdline_options   = std::vector<std::shared_ptr<cl::OptionBase>>;
 
 struct viewer_base::impl
 {
-    manipulators    manips;
-    cmdline_options options;
-    cl::CmdLine     cmd;
-    bool            allow_unknown_args = false;
+    static viewer_base* viewer;
 
-    bool            full_screen        = false;
-    int             width              = 512;
-    int             height             = 512;
-    char const*     window_title       = "";
-    vec3            bgcolor            = { 0.1f, 0.4f, 1.0f };
+    manipulators        manips;
+    cmdline_options     options;
+    cl::CmdLine         cmd;
+    bool                allow_unknown_args = false;
+
+    bool                full_screen        = false;
+    int                 width              = 512;
+    int                 height             = 512;
+    char const*         window_title       = "";
+    vec3                bgcolor            = { 0.1f, 0.4f, 1.0f };
 
     impl(int width, int height, char const* window_title);
 
@@ -50,8 +53,13 @@ struct viewer_base::impl
     void parse_inifile(std::set<std::string> const& filenames);
 
     void parse_cmd_line(int argc, char** argv);
+
+    // Space mouse callbacks
+    static void space_mouse_move_func(space_mouse_event const& event);
 };
 
+viewer_base* viewer_base::impl::viewer = nullptr;
+    
 
 viewer_base::impl::impl(int width, int height, char const* window_title)
     : width(width)
@@ -185,6 +193,16 @@ void viewer_base::impl::parse_cmd_line(int argc, char** argv)
 }
 
 
+//-------------------------------------------------------------------------------------------------
+// Static space mouse callback
+//
+
+void viewer_base::impl::space_mouse_move_func(space_mouse_event const& event)
+{
+    viewer->on_space_mouse_move(event);
+}
+
+
 viewer_base::viewer_base(
         int width,
         int height,
@@ -192,10 +210,18 @@ viewer_base::viewer_base(
         )
     : impl_(new impl(width, height, window_title))
 {
+    viewer_base::impl::viewer = this;
+
+    if (space_mouse::init())
+    {
+        space_mouse::register_event_callback(space_mouse::Rotation, &impl::space_mouse_move_func);
+        space_mouse::register_event_callback(space_mouse::Translation, &impl::space_mouse_move_func);
+    }
 }
 
 viewer_base::~viewer_base()
 {
+    space_mouse::cleanup();
 }
 
 void viewer_base::init(int argc, char** argv)
@@ -355,6 +381,14 @@ void viewer_base::on_mouse_up(visionaray::mouse_event const& event)
     for (auto& manip : impl_->manips)
     {
         manip->handle_mouse_up(event);
+    }
+}
+
+void viewer_base::on_space_mouse_move(visionaray::space_mouse_event const& event)
+{
+    for (auto& manip : impl_->manips)
+    {
+        manip->handle_space_mouse_move(event);
     }
 }
 

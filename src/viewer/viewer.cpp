@@ -462,6 +462,7 @@ protected:
     void on_display();
     void on_key_press(visionaray::key_event const& event);
     void on_mouse_move(visionaray::mouse_event const& event);
+    void on_space_mouse_move(visionaray::space_mouse_event const& event);
     void on_resize(int w, int h);
 
 private:
@@ -2049,6 +2050,13 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 
     mouse_pos = event.pos();
     viewer_type::on_mouse_move(event);
+}
+
+void renderer::on_space_mouse_move(visionaray::space_mouse_event const& event)
+{
+    clear_frame();
+
+    viewer_type::on_space_mouse_move(event);
 }
 
 void renderer::on_resize(int w, int h)

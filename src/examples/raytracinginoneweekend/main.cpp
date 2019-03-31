@@ -175,6 +175,7 @@ protected:
 
     void on_display();
     void on_mouse_move(visionaray::mouse_event const& event);
+    void on_space_mouse_move(visionaray::space_mouse_event const& event);
     void on_resize(int w, int h);
 
 };
@@ -259,6 +260,14 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
     }
 
     viewer_type::on_mouse_move(event);
+}
+
+void renderer::on_space_mouse_move(visionaray::space_mouse_event const& event)
+{
+    frame_num = 0;
+    host_rt.clear_color_buffer();
+
+    viewer_type::on_space_mouse_move(event);
 }
 
 

@@ -28,6 +28,7 @@ namespace visionaray
 class camera_manipulator;
 class key_event;
 class mouse_event;
+class space_mouse_event;
 
 class viewer_base
 {
@@ -80,6 +81,7 @@ protected:
     virtual void on_mouse_move(mouse_event const& event);
     virtual void on_mouse_down(mouse_event const& event);
     virtual void on_mouse_up(mouse_event const& event);
+    virtual void on_space_mouse_move(space_mouse_event const& event);
     virtual void on_resize(int w, int h);
 
 private:

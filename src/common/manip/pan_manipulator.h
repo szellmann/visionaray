@@ -7,6 +7,7 @@
 #define VSNRAY_COMMON_MANIP_PAN_MANIPULATOR_H 1
 
 #include "../input/keyboard.h"
+#include "../input/space_mouse.h"
 #include "camera_manipulator.h"
 
 
@@ -30,6 +31,8 @@ public:
     void handle_mouse_down(mouse_event const& event);
     void handle_mouse_up(mouse_event const& event);
     void handle_mouse_move(mouse_event const& event);
+
+    void handle_space_mouse_move(space_mouse_event const& event);
 
 private:
 

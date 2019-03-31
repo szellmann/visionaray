@@ -73,6 +73,21 @@ if (VSNRAY_ENABLE_SDL2)
     visionaray_use_package(SDL2)
 endif()
 
+# TODO
+set(3DCONNEXIONCLIENT_FOUND NOTFOUND)
+
+if (APPLE AND VSNRAY_ENABLE_3DCONNEXIONCLIENT)
+    include(CMakeFindFrameworks)
+
+    CMAKE_FIND_FRAMEWORKS(3DconnexionClient)
+
+    if (3DconnexionClient_FRAMEWORKS)
+        set(__VSNRAY_LINK_LIBRARIES ${__VSNRAY_LINK_LIBRARIES} ${3DconnexionClient_FRAMEWORKS})
+        set(__VSNRAY_USED_PACKAGES ${__VSNRAY_USED_PACKAGES} 3DCONNEXIONCLIENT)
+        set(3DCONNEXIONCLIENT_FOUND FOUND)
+    endif()
+endif()
+
 
 #--------------------------------------------------------------------------------------------------
 #
@@ -147,6 +162,7 @@ set(COMMON_HEADERS
     input/mouse_event.h
     input/qt.h
     input/sdl2.h
+    input/space_mouse.h
 
     manip/arcball.h
     manip/arcball_manipulator.h
@@ -193,6 +209,8 @@ set(COMMON_SOURCES
     async/connection.cpp
     async/connection_manager.cpp
     async/message.cpp
+
+    input/space_mouse.cpp
 
     manip/arcball.cpp
     manip/arcball_manipulator.cpp

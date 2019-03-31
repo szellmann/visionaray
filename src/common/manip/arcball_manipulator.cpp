@@ -124,3 +124,40 @@ void arcball_manipulator::handle_mouse_move(visionaray::mouse_event const& event
     camera_manipulator::handle_mouse_move(event);
 
 }
+
+
+void arcball_manipulator::handle_space_mouse_move(visionaray::space_mouse_event const& event)
+{
+    if (event.type() == space_mouse::Rotation)
+    {
+        float sensitivity = 1 / 10000.0f;
+        float yaw   =  event.pos().y * sensitivity;
+        float pitch = -event.pos().z * sensitivity;
+        float roll  =  event.pos().x * sensitivity;
+
+        quat q = quat::rotation(yaw, pitch, roll);
+
+        ball_.rotation = q * ball_.rotation;
+
+        if (true)
+        {
+
+            // view transform
+
+            mat4 rotation_matrix = rotation(conjugate(ball_.rotation));
+
+            vec4 eye4(0, 0, camera_.distance(), 1.0);
+            eye4 = rotation_matrix * eye4;
+            vec3 eye = vec3(eye4[0], eye4[1], eye4[2]);
+            eye += camera_.center();
+
+            vec4 up4 = rotation_matrix(1);
+            vec3 up(up4[0], up4[1], up4[2]);
+
+            camera_.look_at(eye, camera_.center(), up);
+
+        }
+    }
+
+    camera_manipulator::handle_space_mouse_move(event);
+}

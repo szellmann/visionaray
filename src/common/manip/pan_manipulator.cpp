@@ -90,3 +90,23 @@ void pan_manipulator::handle_mouse_move(visionaray::mouse_event const& event)
     camera_manipulator::handle_mouse_move(event);
 
 }
+
+
+void pan_manipulator::handle_space_mouse_move(space_mouse_event const& event)
+{
+    if (event.type() == space_mouse::Translation)
+    {
+        auto dx = -static_cast<float>(event.pos().x) / 100000.f;
+        auto dy =  static_cast<float>(event.pos().z) / 100000.f;
+        auto dz = -static_cast<float>(event.pos().y) / 100000.f;
+        auto s  = 2.0f * camera_.distance();
+        auto zaxis = normalize( camera_.eye() - camera_.center() );
+        auto yaxis = camera_.up();
+        auto xaxis = cross( yaxis, zaxis );
+        vec3 d = (dx * s) * xaxis + (dy * s) * yaxis + (dz * s) * zaxis;
+
+        camera_.look_at( camera_.eye() + d, camera_.center() + d, camera_.up() );
+    }
+
+    camera_manipulator::handle_space_mouse_move(event);
+}
