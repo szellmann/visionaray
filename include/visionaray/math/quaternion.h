@@ -27,6 +27,7 @@ public:
 
     MATH_FUNC static quaternion identity();
     MATH_FUNC static quaternion rotation(vector<3, T> const& from, vector<3, T> const& to);
+    MATH_FUNC static quaternion rotation(T const& yaw, T const& pitch, T const& roll);
 
 };
 

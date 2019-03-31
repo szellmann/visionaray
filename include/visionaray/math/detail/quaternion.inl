@@ -49,6 +49,25 @@ inline quaternion<T> quaternion<T>::rotation(vector<3, T> const& from, vector<3,
     return quaternion<T>(dot(nfrom, nto), cross(nfrom, nto));
 }
 
+template <typename T>
+MATH_FUNC
+inline quaternion<T> quaternion<T>::rotation(T const& yaw, T const& pitch, T const& roll)
+{
+    T cy = cos(yaw * T(0.5));
+    T sy = sin(yaw * T(0.5));
+    T cp = cos(pitch * T(0.5));
+    T sp = sin(pitch * T(0.5));
+    T cr = cos(roll * T(0.5));
+    T sr = sin(roll * T(0.5));
+
+    return quaternion<T>(
+        cy * cp * cr + sy * sp * sr,
+        cy * cp * sr - sy * sp * cr,
+        sy * cp * sr + cy * sp * cr,
+        sy * cp * cr - cy * sp * sr
+        );
+}
+
 
 //--------------------------------------------------------------------------------------------------
 // Basic arithmetic
