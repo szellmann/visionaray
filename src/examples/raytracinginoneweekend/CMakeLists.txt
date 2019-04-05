@@ -9,5 +9,3 @@ set(EX_RAYTRACINGINONEWEEKEND_SOURCES
 visionaray_add_executable(raytracinginoneweekend
     ${EX_RAYTRACINGINONEWEEKEND_SOURCES}
 )
-
-set_target_properties(raytracinginoneweekend PROPERTIES MACOSX_BUNDLE TRUE)

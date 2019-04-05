@@ -32,6 +32,10 @@ endfunction()
 function(visionaray_add_executable name)
     add_executable(${name} ${ARGN})
     target_link_libraries(${name} ${__VSNRAY_LINK_LIBRARIES})
+
+    if(VSNRAY_MACOSX_BUNDLE)
+        set_target_properties(${name} PROPERTIES MACOSX_BUNDLE TRUE)
+    endif()
 endfunction()
 
 function(visionaray_add_library name)
