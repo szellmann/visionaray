@@ -57,11 +57,13 @@ public:
             size_t                                  w,
             std::array<tex_address_mode, 1> const&  address_mode,
             tex_filter_mode const&                  filter_mode,
+            tex_color_space const&                  color_space,
             bool                                    normalized_coords = true
             )
         : width_(w)
         , address_mode_(address_mode)
         , filter_mode_(filter_mode)
+        , color_space_(color_space)
         , normalized_coords_(normalized_coords)
     {
         if (width_ == 0)
@@ -95,11 +97,13 @@ public:
             size_t              w,
             tex_address_mode    address_mode,
             tex_filter_mode     filter_mode,
+            tex_color_space     color_space,
             bool                normalized_coords = true
             )
         : width_(w)
         , address_mode_{{ address_mode }}
         , filter_mode_(filter_mode)
+        , color_space_(color_space)
         , normalized_coords_(normalized_coords)
     {
         if (width_ == 0)
@@ -132,6 +136,7 @@ public:
         : width_(host_tex.width())
         , address_mode_(host_tex.get_address_mode())
         , filter_mode_(host_tex.get_filter_mode())
+        , color_space_(host_tex.get_color_space())
         , normalized_coords_(host_tex.get_normalized_coords())
     {
         if (width_ == 0)
@@ -164,6 +169,7 @@ public:
         : width_(host_tex.width())
         , address_mode_(host_tex.get_address_mode())
         , filter_mode_(host_tex.get_filter_mode())
+        , color_space_(host_tex.get_color_space())
         , normalized_coords_(host_tex.get_normalized_coords())
     {
         if (width_ == 0)
@@ -286,6 +292,13 @@ public:
         init_texture_object();
     }
 
+    void set_color_space(tex_color_space color_space)
+    {
+        color_space_ = color_space;
+
+        init_texture_object();
+    }
+
     void set_normalized_coords(bool nc)
     {
         normalized_coords_ = nc;
@@ -303,6 +316,7 @@ private:
 
     std::array<tex_address_mode, 1> address_mode_;
     tex_filter_mode                 filter_mode_;
+    tex_color_space                 color_space_ = RGB;
     bool                            normalized_coords_ = true;
 
 
@@ -338,6 +352,7 @@ private:
         texture_desc.addressMode[0]             = detail::map_address_mode( address_mode_[0] );
         texture_desc.filterMode                 = detail::map_filter_mode( filter_mode_ );
         texture_desc.readMode                   = cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value);
+        texture_desc.sRGB                       = color_space_ == sRGB;
         texture_desc.normalizedCoords           = normalized_coords_;
 
         cudaTextureObject_t obj = 0;

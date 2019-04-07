@@ -33,6 +33,12 @@ enum tex_filter_mode
     CardinalSpline
 };
 
+enum tex_color_space
+{
+    RGB = 0,
+    sRGB
+};
+
 
 template <typename T, size_t Dim>
 class texture_base;

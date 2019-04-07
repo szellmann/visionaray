@@ -71,6 +71,16 @@ public:
         return filter_mode_;
     }
 
+    void set_color_space(tex_color_space cs)
+    {
+        color_space_ = cs;
+    }
+
+    tex_color_space get_color_space() const
+    {
+        return color_space_;
+    }
+
     void set_normalized_coords(bool nc)
     {
         normalized_coords_ = nc;
@@ -85,6 +95,7 @@ protected:
 
     std::array<tex_address_mode, Dim> address_mode_;
     tex_filter_mode                   filter_mode_;
+    tex_color_space                   color_space_ = RGB;
     bool                              normalized_coords_ = true;
 
 };
@@ -252,6 +263,52 @@ protected:
     aligned_vector<element_type> prefiltered_;
 
 };
+
+template <typename T>
+VSNRAY_FUNC
+inline T apply_color_conversion(T const& t, tex_color_space const& color_space)
+{
+    VSNRAY_UNUSED(color_space);
+
+    return t;
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline vector<3, T> apply_color_conversion(vector<3, T> const& t, tex_color_space const& color_space)
+{
+    if (color_space == sRGB)
+    {
+        return vector<3, T>(
+                pow(t.x, T(2.2)),
+                pow(t.y, T(2.2)),
+                pow(t.z, T(2.2))
+                );
+    }
+    else
+    {
+        return t;
+    }
+}
+
+template <typename T>
+VSNRAY_FUNC
+inline vector<4, T> apply_color_conversion(vector<4, T> const& t, tex_color_space const& color_space)
+{
+    if (color_space == sRGB)
+    {
+        return vector<4, T>(
+                pow(t.x, T(2.2)),
+                pow(t.y, T(2.2)),
+                pow(t.z, T(2.2)),
+                t.w
+                );
+    }
+    else
+    {
+        return t;
+    }
+}
 
 } // visionaray
 

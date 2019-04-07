@@ -215,13 +215,13 @@ inline auto tex2D_impl(Tex const& tex, vector<2, FloatT> coord)
             static_cast<int>(tex.height())
             );
 
-    return tex2D_impl_expand_types(
+    return apply_color_conversion(tex2D_impl_expand_types(
             tex.data(),
             coord,
             texsize,
             tex.get_filter_mode(),
             tex.get_address_mode()
-            );
+            ), tex.get_color_space());
 }
 
 } // detail
