@@ -3,14 +3,16 @@
 
 #include <common/config.h>
 
-#if VSNRAY_COMMON_HAVE_3DCONNEXIONCLIENT
-
 #include <cassert>
 
+#if VSNRAY_COMMON_HAVE_3DCONNEXIONCLIENT
 #include <3DConnexionClient/ConnexionClient.h>
 #include <3DConnexionClient/ConnexionClientAPI.h>
+#endif
 
 #include "space_mouse.h"
+
+#if VSNRAY_COMMON_HAVE_3DCONNEXIONCLIENT
 
 // Import weak so we can later check if the
 // driver is loaded by checking for NULL
