@@ -15,6 +15,7 @@
 
 #include "../input/mouse.h"
 #include "../input/mouse_event.h"
+#include "../input/space_mouse.h"
 #include "translate_manipulator.h"
 
 using namespace visionaray;
@@ -191,6 +192,31 @@ bool translate_manipulator::handle_mouse_move(visionaray::mouse_event const& eve
         model_matrix_ = mat4::translation(d) * model_matrix_;
 
         down_pos_ = event.pos();
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool translate_manipulator::handle_space_mouse_move(visionaray::space_mouse_event const& event)
+{
+    if (event.type() == space_mouse::Translation)
+    {
+        auto w  =  camera_.get_viewport().w;
+        auto h  =  camera_.get_viewport().h;
+        auto dx = -static_cast<float>(event.pos().x) / 100000.f;
+        auto dy =  static_cast<float>(event.pos().z) / 100000.f;
+        auto dz = -static_cast<float>(event.pos().y) / 100000.f;
+        auto s  = 2.0f * camera_.distance();
+        auto Z  = normalize( camera_.eye() - camera_.center() );
+        auto Y  = camera_.up();
+        auto X  = cross(Y, Z);
+        vec3 d  = (dx * s) * X + (dy * s) * Y + (dz * s) * Z;
+
+        model_matrix_ = mat4::translation(d) * model_matrix_;
 
         return true;
     }

@@ -30,6 +30,8 @@ private:
     bool handle_mouse_up(mouse_event const& event);
     bool handle_mouse_move(mouse_event const& event);
 
+    bool handle_space_mouse_move(space_mouse_event const& event);
+
     int select_from_mouse_pointer(mouse_event const& event);
 
     vec3 to_sphere_coords(int x, int y);
