@@ -56,4 +56,9 @@ void camera_manipulator::handle_space_mouse_move(space_mouse_event const& event)
     VSNRAY_UNUSED(event);
 }
 
+void camera_manipulator::handle_space_mouse_button_press(space_mouse_event const& event)
+{
+    VSNRAY_UNUSED(event);
+}
+
 } // visionaray

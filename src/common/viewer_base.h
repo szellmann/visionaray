@@ -82,6 +82,7 @@ protected:
     virtual void on_mouse_down(mouse_event const& event);
     virtual void on_mouse_up(mouse_event const& event);
     virtual void on_space_mouse_move(space_mouse_event const& event);
+    virtual void on_space_mouse_button_press(space_mouse_event const& event);
     virtual void on_resize(int w, int h);
 
 private:

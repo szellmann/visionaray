@@ -64,8 +64,25 @@ static void message_handler(unsigned product_id, unsigned message_type, void* me
                 break;
             }
             case kConnexionCmdHandleButtons:
+            {
+                int buttons = 0;
+
+                for (int bits = 0x00000001; bits != 0x10000000; bits <<= 1)
+                {
+                    if (state->buttons & bits)
+                    {
+                        buttons |= bits;
+                    }
+                }
+
+                if (event_callbacks[Button] != nullptr)
+                {
+                    event_callbacks[Button](space_mouse_event(Button, buttons));
+                }
+
                 // TODO
                 break;
+            }
             }
         }
     }

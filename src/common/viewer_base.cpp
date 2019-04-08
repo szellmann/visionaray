@@ -56,6 +56,7 @@ struct viewer_base::impl
 
     // Space mouse callbacks
     static void space_mouse_move_func(space_mouse_event const& event);
+    static void space_mouse_button_press_func(space_mouse_event const& event);
 };
 
 viewer_base* viewer_base::impl::viewer = nullptr;
@@ -194,12 +195,17 @@ void viewer_base::impl::parse_cmd_line(int argc, char** argv)
 
 
 //-------------------------------------------------------------------------------------------------
-// Static space mouse callback
+// Static space mouse callbacks
 //
 
 void viewer_base::impl::space_mouse_move_func(space_mouse_event const& event)
 {
     viewer->on_space_mouse_move(event);
+}
+
+void viewer_base::impl::space_mouse_button_press_func(space_mouse_event const& event)
+{
+    viewer->on_space_mouse_button_press(event);
 }
 
 
@@ -214,6 +220,7 @@ viewer_base::viewer_base(
 
     if (space_mouse::init())
     {
+        space_mouse::register_event_callback(space_mouse::Button, &impl::space_mouse_button_press_func);
         space_mouse::register_event_callback(space_mouse::Rotation, &impl::space_mouse_move_func);
         space_mouse::register_event_callback(space_mouse::Translation, &impl::space_mouse_move_func);
     }
@@ -389,6 +396,14 @@ void viewer_base::on_space_mouse_move(visionaray::space_mouse_event const& event
     for (auto& manip : impl_->manips)
     {
         manip->handle_space_mouse_move(event);
+    }
+}
+
+void viewer_base::on_space_mouse_button_press(visionaray::space_mouse_event const& event)
+{
+    for (auto& manip : impl_->manips)
+    {
+        manip->handle_space_mouse_button_press(event);
     }
 }
 

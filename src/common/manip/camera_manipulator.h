@@ -31,6 +31,7 @@ public:
     virtual void handle_mouse_move(mouse_event const& event);
 
     virtual void handle_space_mouse_move(space_mouse_event const& event);
+    virtual void handle_space_mouse_button_press(space_mouse_event const& event);
 
 protected:
 
