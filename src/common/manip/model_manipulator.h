@@ -16,6 +16,7 @@ namespace visionaray
 class pinhole_camera;
 class key_event;
 class mouse_event;
+class space_mouse_event;
 
 class model_manipulator
 {
@@ -40,6 +41,9 @@ public:
     virtual bool handle_mouse_up(mouse_event const& event);
     virtual bool handle_mouse_click(mouse_event const& event);
     virtual bool handle_mouse_move(mouse_event const& event);
+
+    virtual bool handle_space_mouse_move(space_mouse_event const& event);
+    virtual bool handle_space_mouse_button_press(space_mouse_event const& event);
 
 protected:
 
