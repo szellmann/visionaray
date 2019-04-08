@@ -87,7 +87,7 @@ bool init()
 
     // Take space mouse over system-wide
     client_id = RegisterConnexionClient(
-            'vsnr',
+            'vray',
             0,
             kConnexionClientModeTakeOver,
             kConnexionMaskAll
