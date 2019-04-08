@@ -409,6 +409,8 @@ protected:
     void on_mouse_down(visionaray::mouse_event const& event);
     void on_mouse_up(visionaray::mouse_event const& event);
     void on_mouse_move(visionaray::mouse_event const& event);
+    void on_space_mouse_move(visionaray::space_mouse_event const& event);
+    void on_space_mouse_button_press(visionaray::space_mouse_event const& event);
     void on_resize(int w, int h);
 
 };
@@ -807,6 +809,67 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
 
     // usual handling if no transform manip intercepted
     viewer_base::on_mouse_move(event);
+}
+
+void renderer::on_space_mouse_move(visionaray::space_mouse_event const& event)
+{
+    for (auto& manip : model_manips)
+    {
+        if (manip->active())
+        {
+            manip->handle_space_mouse_move(event);
+            // Return unconditionally so camera
+            // manipulators will not interfere
+            return;
+        }
+    }
+
+    // usual handling if no transform manip intercepted
+    viewer_base::on_space_mouse_move(event);
+}
+
+void renderer::on_space_mouse_button_press(visionaray::space_mouse_event const& event)
+{
+    // Forward
+    if (event.buttons() & space_mouse::Button1)
+    {
+        for (auto it = model_manips.begin(); it != model_manips.end(); ++it)
+        {
+            if ((*it)->active())
+            {
+                (*it)->set_active(false);
+                auto next = ++it;
+                if (next != model_manips.end())
+                {
+                    (*next)->set_active(true);
+                }
+                return;
+            }
+        }
+
+        (*model_manips.begin())->set_active(true);
+    }
+    // Backward
+    else if (event.buttons() & space_mouse::Button2)
+    {
+        for (auto it = model_manips.begin(); it != model_manips.end(); ++it)
+        {
+            if ((*it)->active())
+            {
+                (*it)->set_active(false);
+                if (it != model_manips.begin())
+                {
+                    --it;
+                    (*it)->set_active(true);
+                    return;
+                }
+            }
+        }
+
+        model_manips.back()->set_active(true);
+    }
+
+    viewer_base::on_space_mouse_button_press(event);
 }
 
 
