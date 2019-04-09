@@ -89,7 +89,7 @@ public:
         : type_(type)
         , pos_(pos)
     {
-        assert(type == Rotation || type == Translation);
+        assert(type == space_mouse::Rotation || type == space_mouse::Translation);
     }
 
     // Buttons pressed
@@ -97,7 +97,7 @@ public:
         : type_(type)
         , buttons_(buttons)
     {
-        assert(type == Button);
+        assert(type == space_mouse::Button);
     }
 
     space_mouse::event_type type() const { return type_; }
