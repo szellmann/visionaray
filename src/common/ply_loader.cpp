@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <cassert>
+#include <cstdint>
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -17,6 +18,48 @@ using namespace tinyply;
 
 namespace visionaray
 {
+
+//-------------------------------------------------------------------------------------------------
+// Wrapper around tinyply index buffer (resolves index type)
+//
+
+class index_buffer
+{
+public:
+    index_buffer(Buffer& buffer, Type type)
+        : buffer_(buffer)
+        , type_(type)
+    {
+    }
+
+    int operator[](size_t index)
+    {
+        switch (type_)
+        {
+        case Type::INT8:
+            return reinterpret_cast<int8_t const*>(buffer_.get())[index];
+        case Type::UINT8:
+            return reinterpret_cast<uint8_t const*>(buffer_.get())[index];
+        case Type::INT16:
+            return reinterpret_cast<int16_t const*>(buffer_.get())[index];
+        case Type::UINT16:
+            return reinterpret_cast<uint16_t const*>(buffer_.get())[index];
+        case Type::INT32:
+            return reinterpret_cast<int32_t const*>(buffer_.get())[index];
+        case Type::UINT32:
+            return reinterpret_cast<uint32_t const*>(buffer_.get())[index];
+        default:
+            assert(0);
+        }
+
+        return -1;
+    }
+
+private:
+    Buffer& buffer_;
+    Type type_;
+
+};
 
 void load_ply(std::string const& filename, model& mod)
 {
@@ -63,14 +106,14 @@ void load_ply(std::string const& filename, model& mod)
             vertices &&
             faces &&
             vertices->t == tinyply::Type::FLOAT32 &&
-            normals->t == tinyply::Type::FLOAT32 &&
-            faces->t == tinyply::Type::INT32
+            normals->t == tinyply::Type::FLOAT32
             );
 
         float const* verts = reinterpret_cast<float const*>(vertices->buffer.get());
-        int const* indices = reinterpret_cast<int const*>(faces->buffer.get());
         float const* norms = normals ? reinterpret_cast<float const*>(normals->buffer.get()) : nullptr;
         float const* coords = normals ? reinterpret_cast<float const*>(tex_coords->buffer.get()) : nullptr;
+
+        index_buffer indices(faces->buffer, faces->t);
 
         if (mod.primitives.size() == 0)
         {
