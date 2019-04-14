@@ -111,7 +111,7 @@ void load_ply(std::string const& filename, model& mod)
 
         float const* verts = reinterpret_cast<float const*>(vertices->buffer.get());
         float const* norms = normals ? reinterpret_cast<float const*>(normals->buffer.get()) : nullptr;
-        float const* coords = normals ? reinterpret_cast<float const*>(tex_coords->buffer.get()) : nullptr;
+        float const* coords = tex_coords ? reinterpret_cast<float const*>(tex_coords->buffer.get()) : nullptr;
 
         index_buffer indices(faces->buffer, faces->t);
 
