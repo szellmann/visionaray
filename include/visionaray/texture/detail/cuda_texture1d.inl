@@ -57,7 +57,7 @@ public:
             size_t                                  w,
             std::array<tex_address_mode, 1> const&  address_mode,
             tex_filter_mode const&                  filter_mode,
-            tex_color_space const&                  color_space,
+            tex_color_space const&                  color_space = RGB,
             bool                                    normalized_coords = true
             )
         : width_(w)
