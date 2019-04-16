@@ -1228,19 +1228,9 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
                 props->add_texture(tex);
             }
         }
-        else
-        {
-            vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
-            auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
-            tex->resize(1, 1);
-            tex->set_address_mode(Wrap);
-            tex->set_filter_mode(Nearest);
-            tex->reset(&dummy_texel);
-
-            props->add_texture(tex);
-        }
     }
-    else
+
+    if (props->textures().size() == 0)
     {
         // Set a dummy texture
         vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
