@@ -4,6 +4,7 @@
 #include <common/config.h>
 
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cstddef>
 #include <cstring>
@@ -377,6 +378,191 @@ void parse_optional(recti& r, Object const& obj, char const* member)
             r.data()[i] = val[i].GetFloat();
         }
     }
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Parse texture parameters
+//
+
+template <typename Object>
+bool parse_tex_address_mode_impl(Object const& obj, char const* attr, tex_address_mode& am)
+{
+    if (obj.HasMember(attr) && obj[attr].IsString())
+    {
+        std::string am_str = obj[attr].GetString();
+
+        if (am_str == "wrap")
+        {
+            am = Wrap;
+        }
+        else if (am_str == "mirror")
+        {
+            am = Mirror;
+        }
+        else if (am_str == "clamp")
+        {
+            am = Clamp;
+        }
+        else if (am_str == "border")
+        {
+            am = Border;
+        }
+        else
+        {
+            throw std::runtime_error("");
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+// For 1-d textures
+template <typename Object>
+std::array<tex_address_mode, 1> parse_tex_address_mode1(Object const& obj)
+{
+    // Default: Wrap
+    std::array<tex_address_mode, 1> result{{ Wrap }};
+
+    tex_address_mode am = Wrap;
+
+    // First parse address_mode
+    if (parse_tex_address_mode_impl(obj, "address_mode", am))
+    {
+        result[0] = am;
+    }
+
+    // address_mode_s may override default / address_mode
+    if (parse_tex_address_mode_impl(obj, "address_mode_s", am))
+    {
+        result[0] = am;
+    }
+
+    return result;
+}
+
+// For 2-d textures
+template <typename Object>
+std::array<tex_address_mode, 2> parse_tex_address_mode2(Object const& obj)
+{
+    // Default: Wrap
+    std::array<tex_address_mode, 2> result{{ Wrap }};
+
+    tex_address_mode am = Wrap;
+
+    // First parse address_mode
+    if (parse_tex_address_mode_impl(obj, "address_mode", am))
+    {
+        result[0] = am;
+        result[1] = am;
+    }
+
+    // address_mode_{s|t} may override default / address_mode
+    if (parse_tex_address_mode_impl(obj, "address_mode_s", am))
+    {
+        result[0] = am;
+    }
+
+    if (parse_tex_address_mode_impl(obj, "address_mode_t", am))
+    {
+        result[1] = am;
+    }
+
+    return result;
+}
+
+// For 3-d textures
+template <typename Object>
+std::array<tex_address_mode, 3> parse_tex_address_mode3(Object const& obj)
+{
+    // Default: Wrap
+    std::array<tex_address_mode, 3> result{{ Wrap }};
+
+    tex_address_mode am = Wrap;
+
+    // First parse address_mode
+    if (parse_tex_address_mode_impl(obj, "address_mode", am))
+    {
+        result[0] = am;
+        result[1] = am;
+        result[2] = am;
+    }
+
+    // address_mode_{s|t|r} may override default / address_mode
+    if (parse_tex_address_mode_impl(obj, "address_mode_s", am))
+    {
+        result[0] = am;
+    }
+
+    if (parse_tex_address_mode_impl(obj, "address_mode_t", am))
+    {
+        result[1] = am;
+    }
+
+    if (parse_tex_address_mode_impl(obj, "address_mode_r", am))
+    {
+        result[2] = am;
+    }
+
+    return result;
+}
+
+template  <typename Object>
+tex_filter_mode parse_tex_filter_mode(Object const& obj)
+{
+    if (obj.HasMember("filter_mode") && obj["filter_mode"].IsString())
+    {
+        std::string fm_str = obj["filter_mode"].GetString();
+
+        if (fm_str == "nearest")
+        {
+            return Nearest;
+        }
+        else if (fm_str == "linear")
+        {
+            return Linear;
+        }
+        else if (fm_str == "bspline")
+        {
+            return BSpline;
+        }
+        else if (fm_str == "cardinalspline")
+        {
+            return CardinalSpline;
+        }
+        else
+        {
+            throw std::runtime_error("");
+        }
+    }
+
+    return Linear;
+}
+
+template  <typename Object>
+tex_color_space parse_tex_color_space(Object const& obj)
+{
+    if (obj.HasMember("color_space") && obj["color_space"].IsString())
+    {
+        std::string cs_str = obj["color_space"].GetString();
+
+        if (cs_str == "rgb")
+        {
+            return RGB;
+        }
+        else if (cs_str == "srgb")
+        {
+            return sRGB;
+        }
+        else
+        {
+            throw std::runtime_error("");
+        }
+    }
+
+    return RGB;
 }
 
 
@@ -987,9 +1173,9 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
             {
                 auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
                 tex->resize(img.width(), img.height());
-                tex->set_address_mode(Wrap);
-                tex->set_filter_mode(Linear);
-                tex->set_color_space(sRGB);
+                tex->set_address_mode(parse_tex_address_mode2(diffuse_obj));
+                tex->set_filter_mode(parse_tex_filter_mode(diffuse_obj));
+                tex->set_color_space(parse_tex_color_space(diffuse_obj));
 
                 // TODO: consolidate w/ obj loader
                 if (img.format() == PF_RGB32F)
