@@ -428,6 +428,7 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
                                     tex_type tex(img.width(), img.height());
                                     tex.set_address_mode( Wrap );
                                     tex.set_filter_mode( Linear );
+                                    tex.set_color_space( sRGB );
 
                                     if (img.format() == PF_RGB32F)
                                     {
