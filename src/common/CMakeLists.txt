@@ -13,6 +13,7 @@ find_package(JPEG)
 find_package(OpenEXR)
 find_package(OpenGL REQUIRED)
 find_package(PNG)
+find_package(PbrtParser)
 find_package(Threads REQUIRED)
 find_package(TIFF)
 find_package(ZLIB)
@@ -24,6 +25,7 @@ visionaray_use_package(JPEG)
 visionaray_use_package(OpenEXR)
 visionaray_use_package(OpenGL)
 visionaray_use_package(PNG)
+visionaray_use_package(PbrtParser)
 visionaray_use_package(Threads)
 visionaray_use_package(TIFF)
 visionaray_use_package(ZLIB)
@@ -189,6 +191,7 @@ set(COMMON_HEADERS
     model.h
     obj_grammar.h
     obj_loader.h
+    pbrt_loader.h
     ply_loader.h
     png_image.h
     pnm_image.h
@@ -235,6 +238,7 @@ set(COMMON_SOURCES
     model.cpp
     obj_grammar.cpp
     obj_loader.cpp
+    pbrt_loader.cpp
     ply_loader.cpp
     png_image.cpp
     pnm_image.cpp

@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <common/config.h>
+
 #include <type_traits>
 #include <unordered_map>
 
@@ -10,6 +12,9 @@
 #include "moana_loader.h"
 #include "model.h"
 #include "obj_loader.h"
+#if VSNRAY_COMMON_HAVE_PBRTPARSER
+#include "pbrt_loader.h"
+#endif
 #include "ply_loader.h"
 #include "vsnray_loader.h"
 
@@ -17,7 +22,7 @@
 // Helpers
 //
 
-enum model_type { FBX, Moana, OBJ, PLY, VSNRAY, Unknown };
+enum model_type { FBX, Moana, OBJ, PBRT, PLY, VSNRAY, Unknown };
 
 static model_type get_type(std::string const& filename)
 {
@@ -27,6 +32,8 @@ static model_type get_type(std::string const& filename)
     ext2type.insert({ ".json", Moana });
     ext2type.insert({ ".obj", OBJ });
     ext2type.insert({ ".OBJ", OBJ });
+    ext2type.insert({ ".pbrt", PBRT });
+    ext2type.insert({ ".PBRT", PBRT });
     ext2type.insert({ ".ply", PLY });
     ext2type.insert({ ".PLY", PLY });
     ext2type.insert({ ".vsnray", VSNRAY });
@@ -68,6 +75,12 @@ bool load_model(FN const& fn, visionaray::model& mod, model_type mt)
     case OBJ:
         load_obj(fn, mod);
         return true;
+
+#if VSNRAY_COMMON_HAVE_PBRTPARSER
+    case PBRT:
+        load_pbrt(fn, mod);
+        return true;
+#endif
 
     case PLY:
         load_ply(fn, mod);
