@@ -108,6 +108,33 @@ inline vector<3, T> xyz_to_rgb(vector<3, T> const& xyz)
 
 
 //-------------------------------------------------------------------------------------------------
+// Convert an arbitrary spectral power distribution to RGB
+//
+
+template <typename SPD, typename T = float>
+VSNRAY_FUNC
+inline vector<3, T> spd_to_rgb(SPD const& spd, T lmin = T(400.0), T lmax = T(700.0), T step = T(1.0))
+{
+    T x(0.0);
+    T y(0.0);
+    T z(0.0);
+    T n(0.0);
+
+    for (float lambda = lmin; lambda <= lmax; lambda += step)
+    {
+        auto p = spd(lambda);
+
+        x += p * cie_x(lambda);
+        y += p * cie_y(lambda);
+        z += p * cie_z(lambda);
+        n +=     cie_y(lambda);
+    }
+
+    return xyz_to_rgb( vector<3, T>( x / n, y / n, z / n ) );
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Convert spectrum to RGB
 //
 
@@ -119,23 +146,7 @@ inline vector<3, T> spd_to_rgb(spectrum<T> const& spe)
     const float lmax = spectrum<T>::lambda_max;
     const float step = (lmax - lmin) / (spectrum<T>::num_samples - 1);
 
-    T x(0.0);
-    T y(0.0);
-    T z(0.0);
-    T n(0.0);
-
-    for (float lambda = lmin; lambda <= lmax; lambda += step)
-    {
-        auto p = spe(lambda);
-
-
-        x += p * cie_x(lambda);
-        y += p * cie_y(lambda);
-        z += p * cie_z(lambda);
-        n +=     cie_y(lambda);
-    }
-
-    return xyz_to_rgb( vector<3, T>( x / n, y / n, z / n ) );
+    return spd_to_rgb(spe, lmin, lmax, step);
 }
 
 
