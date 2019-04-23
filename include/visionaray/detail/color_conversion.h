@@ -13,7 +13,7 @@
 #include <visionaray/pixel_format.h>
 #include <visionaray/spectrum.h>
 
-#include "spd/d65.h"
+#include "spd/blackbody.h"
 #include "macros.h"
 
 
@@ -131,6 +131,43 @@ inline vector<3, T> spd_to_rgb(SPD const& spd, T lmin = T(400.0), T lmax = T(700
     }
 
     return xyz_to_rgb( vector<3, T>( x / n, y / n, z / n ) );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Convert an arbitrary spectral power distribution to RGB
+//
+
+VSNRAY_FUNC
+inline vector<3, float> spd_to_rgb(blackbody const& spd, float lmin = 400.0f, float lmax = 700.0f, float step = 1.0f, bool normalize = true)
+{
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+    float n = 0.0f;
+
+    // For normalization
+    float max_radiance = 1.0f;
+
+    if (normalize)
+    {
+        // lambda where radiance is max
+        float lambda_max_radiance = 2.8977721e-3 / spd.temperature() * 1e9 /* m2nm */;
+
+        max_radiance = spd(lambda_max_radiance);
+    }
+
+    for (float lambda = lmin; lambda <= lmax; lambda += step)
+    {
+        auto p = spd(lambda) / max_radiance;
+
+        x += p * cie_x(lambda);
+        y += p * cie_y(lambda);
+        z += p * cie_z(lambda);
+        n +=     cie_y(lambda);
+    }
+
+    return xyz_to_rgb( vector<3, float>( x / n, y / n, z / n ) );
 }
 
 

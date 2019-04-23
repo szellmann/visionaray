@@ -37,6 +37,16 @@ public:
              * ( 1.0 / (exp((1E6 * h * c) / (lambda * k * T)) - 1.0) );
     }
 
+    double& temperature()
+    {
+        return T;
+    }
+
+    double const& temperature() const
+    {
+        return T;
+    }
+
 private:
 
     double T;
