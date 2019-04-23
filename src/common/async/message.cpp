@@ -1,6 +1,12 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details
 
+#include <boost/version.hpp>
+
+#if BOOST_VERSION == 106900
+#define BOOST_ALLOW_DEPRECATED_HEADERS
+#endif
+
 #include <boost/uuid/uuid_generators.hpp>
 
 #include "message.h"
