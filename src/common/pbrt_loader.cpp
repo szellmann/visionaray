@@ -3,6 +3,7 @@
 
 #include <common/config.h>
 
+#include <cstring> // memcpy
 #include <stdexcept>
 #include <unordered_map>
 
@@ -131,30 +132,34 @@ void make_scene_graph(
         {
             auto itm = std::make_shared<sg::indexed_triangle_mesh>();
 
-            itm->vertices = std::make_shared<aligned_vector<vec3>>();
-            itm->normals = std::make_shared<aligned_vector<vec3>>();
-
-            for (auto v : mesh->vertex)
+            itm->vertices = std::make_shared<aligned_vector<vec3>>(mesh->vertex.size());
+            itm->normals = std::make_shared<aligned_vector<vec3>>(mesh->normal.size());
+            itm->vertex_indices.resize(mesh->index.size() * 3);
+            if (itm->normals->size() > 0)
             {
-                itm->vertices->emplace_back(v.x, v.y, v.z);
+                itm->normal_indices.resize(mesh->index.size() * 3);
             }
 
-            for (auto n : mesh->normal)
+            for (size_t i = 0; i < mesh->vertex.size(); ++i)
             {
-                itm->normals->emplace_back(n.x, n.y, n.z);
+                auto v = mesh->vertex[i];
+                (*itm->vertices)[i] = vec3(v.x, v.y, v.z);
             }
 
-            for (auto i3 : mesh->index)
+            for (size_t i = 0; i < mesh->normal.size(); ++i)
             {
-                itm->vertex_indices.push_back(i3.x);
-                itm->vertex_indices.push_back(i3.y);
-                itm->vertex_indices.push_back(i3.z);
+                auto n = mesh->normal[i];
+                (*itm->normals)[i] = vec3(n.x, n.y, n.z);
+            }
+
+            for (size_t i = 0; i < mesh->index.size(); ++i)
+            {
+                auto i3 = mesh->index[i];
+                memcpy(itm->vertex_indices.data() + i * 3, &i3.x, sizeof(int) * 3);
 
                 if (itm->normals->size() > 0)
                 {
-                    itm->normal_indices.push_back(i3.x);
-                    itm->normal_indices.push_back(i3.y);
-                    itm->normal_indices.push_back(i3.z);
+                    memcpy(itm->normal_indices.data() + i * 3, &i3.x, sizeof(int) * 3);
                 }
             }
 
