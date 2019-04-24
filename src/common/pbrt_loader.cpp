@@ -121,6 +121,7 @@ std::shared_ptr<sg::material> make_material_node(Shape::SP shape)
 void make_scene_graph(
         Object::SP object,
         sg::node& parent,
+        std::unordered_map<Shape::SP, std::shared_ptr<sg::indexed_triangle_mesh>>& shape2itm,
         std::unordered_map<Material::SP, std::shared_ptr<sg::surface_properties>>& mat2prop
         )
 {
@@ -130,37 +131,68 @@ void make_scene_graph(
 
         if (mesh != nullptr)
         {
-            auto itm = std::make_shared<sg::indexed_triangle_mesh>();
+            std::shared_ptr<sg::indexed_triangle_mesh> itm = nullptr;
+            auto itm_it = shape2itm.find(shape);
 
-            itm->vertices = std::make_shared<aligned_vector<vec3>>(mesh->vertex.size());
-            itm->normals = std::make_shared<aligned_vector<vec3>>(mesh->normal.size());
-            itm->vertex_indices.resize(mesh->index.size() * 3);
-            if (itm->normals->size() > 0)
+            if (itm_it != shape2itm.end())
             {
-                itm->normal_indices.resize(mesh->index.size() * 3);
+                itm = itm_it->second;
             }
-
-            for (size_t i = 0; i < mesh->vertex.size(); ++i)
+            else
             {
-                auto v = mesh->vertex[i];
-                (*itm->vertices)[i] = vec3(v.x, v.y, v.z);
-            }
+                itm = std::make_shared<sg::indexed_triangle_mesh>();
 
-            for (size_t i = 0; i < mesh->normal.size(); ++i)
-            {
-                auto n = mesh->normal[i];
-                (*itm->normals)[i] = vec3(n.x, n.y, n.z);
-            }
-
-            for (size_t i = 0; i < mesh->index.size(); ++i)
-            {
-                auto i3 = mesh->index[i];
-                memcpy(itm->vertex_indices.data() + i * 3, &i3.x, sizeof(int) * 3);
-
-                if (itm->normals->size() > 0)
+                itm->vertices = std::make_shared<aligned_vector<vec3>>(mesh->vertex.size());
+                if (mesh->normal.size() > 0)
                 {
+                    itm->normals = std::make_shared<aligned_vector<vec3>>(mesh->normal.size());
+                }
+                itm->vertex_indices.resize(mesh->index.size() * 3);
+                itm->normal_indices.resize(mesh->index.size() * 3);
+
+                for (size_t i = 0; i < mesh->vertex.size(); ++i)
+                {
+                    auto v = mesh->vertex[i];
+                    (*itm->vertices)[i] = vec3(v.x, v.y, v.z);
+                }
+
+                for (size_t i = 0; i < mesh->normal.size(); ++i)
+                {
+                    auto n = mesh->normal[i];
+                    (*itm->normals)[i] = vec3(n.x, n.y, n.z);
+                }
+
+                for (size_t i = 0; i < mesh->index.size(); ++i)
+                {
+                    auto i3 = mesh->index[i];
+                    memcpy(itm->vertex_indices.data() + i * 3, &i3.x, sizeof(int) * 3);
                     memcpy(itm->normal_indices.data() + i * 3, &i3.x, sizeof(int) * 3);
                 }
+
+                // If model has no shading normals, use geometric normals instead
+                if (itm->normals == nullptr)
+                {
+                    itm->normals = std::make_shared<aligned_vector<vec3>>(itm->vertex_indices.size());
+
+                    for (size_t i = 0; i < itm->vertex_indices.size(); i += 3)
+                    {
+                        int i1 = itm->vertex_indices[i];
+                        int i2 = itm->vertex_indices[i + 1];
+                        int i3 = itm->vertex_indices[i + 2];
+
+                        vec3 v1 = (*itm->vertices)[i1];
+                        vec3 v2 = (*itm->vertices)[i2];
+                        vec3 v3 = (*itm->vertices)[i3];
+
+                        vec3 n = normalize(cross(v2 - v1, v3 - v1));
+
+                        (*itm->normals)[i1] = n;
+                        (*itm->normals)[i2] = n;
+                        (*itm->normals)[i3] = n;
+                    }
+                }
+
+                shape2itm.insert({ shape, itm });
             }
 
             std::shared_ptr<sg::surface_properties> sp = nullptr;
@@ -208,7 +240,7 @@ void make_scene_graph(
 
         trans->matrix() = make_mat4(inst->xfm);
 
-        make_scene_graph(inst->object, *trans, mat2prop);
+        make_scene_graph(inst->object, *trans, shape2itm, mat2prop);
 
         parent.add_child(trans);
     }
@@ -227,13 +259,17 @@ void load_pbrt(std::string const& filename, model& mod)
     // transforms
     std::unordered_map<Material::SP, std::shared_ptr<sg::surface_properties>> mat2prop;
 
+    // List with all shapes that are stored and their corresponding
+    // triangle mesh nodes, so that instances can refer to them
+    std::unordered_map<Shape::SP, std::shared_ptr<sg::indexed_triangle_mesh>> shape2itm;
+
     std::shared_ptr<Scene> scene;
 
     try
     {
         auto scene = importPBRT(filename);
 
-        make_scene_graph(scene->world, *root, mat2prop);
+        make_scene_graph(scene->world, *root, shape2itm, mat2prop);
     }
     catch (std::runtime_error e)
     {
