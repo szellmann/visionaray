@@ -6,7 +6,9 @@
 #include <stdexcept>
 #include <unordered_map>
 
+#if VSNRAY_COMMON_HAVE_PBRTPARSER
 #include <pbrtParser/Scene.h>
+#endif
 
 #include <visionaray/detail/spd/blackbody.h>
 
