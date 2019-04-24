@@ -15,12 +15,12 @@
 #include "model.h"
 #include "sg.h"
 
-using namespace pbrt;
-
 namespace visionaray
 {
 
 #if VSNRAY_COMMON_HAVE_PBRTPARSER
+
+using namespace pbrt;
 
 mat4 make_mat4(affine3f const& aff)
 {
