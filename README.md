@@ -46,6 +46,7 @@ Additionally, in order to compile the viewer application and the [examples](http
 - [Libpng][8] (optional)
 - [LibTIFF][9] (optional)
 - [OpenEXR][10] (optional)
+- [PBRT-Parser][11] (optional)
 
 
 
@@ -149,3 +150,4 @@ Visionaray is licensed under the MIT License (MIT)
 [8]:    http://libpng.sourceforge.net
 [9]:    http://www.libtiff.org
 [10]:   http://www.openexr.com/
+[11]:   https://github.com/ingowald/pbrt-parser
