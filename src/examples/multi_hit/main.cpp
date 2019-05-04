@@ -386,13 +386,9 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    try
+    if (!rend.mod.load(rend.filename))
     {
-        visionaray::load_obj(rend.filename, rend.mod);
-    }
-    catch (std::exception const& e)
-    {
-        std::cerr << "Failed loading obj model: " << e.what() << std::endl;
+        std::cerr << "Failed loading obj model\n";
         return EXIT_FAILURE;
     }
 
