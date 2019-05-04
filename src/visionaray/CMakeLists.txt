@@ -341,8 +341,6 @@ set(VSNRAY_SOURCES
 
     cuda/graphics_resource.cpp
 
-    detail/spd/d65.cpp
-
     gl/bvh_outline_renderer.cpp
     gl/compositing.cpp
     gl/debug_callback.cpp
