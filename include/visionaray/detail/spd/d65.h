@@ -85,8 +85,8 @@ public:
             return 0;
         }
 
-        auto i = (int)floor(lambda) / 10;
-        auto s = (lambda - i * 10.0f) / 10.0f;
+        int i = static_cast<int>(floor(lambda)) / 10;
+        float s = (lambda - i * 10.0f) / 10.0f;
 
         i -= 30;
 
