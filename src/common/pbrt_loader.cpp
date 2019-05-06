@@ -84,6 +84,18 @@ std::shared_ptr<sg::material> make_material_node(Shape::SP shape)
 
         return obj;
     }
+    else if (auto m = std::dynamic_pointer_cast<SubstrateMaterial>(mat))
+    {
+        auto obj = std::make_shared<sg::obj_material>();
+
+        obj->cd = vec3(m->kd.x, m->kd.y, m->kd.z);
+        obj->cs = vec3(m->ks.x, m->ks.y, m->ks.z);
+
+        // TODO
+        obj->specular_exp = m->uRoughness;
+
+        return obj;
+    }
     else if (auto m = std::dynamic_pointer_cast<MirrorMaterial>(mat))
     {
     }
