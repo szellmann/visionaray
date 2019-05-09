@@ -12,6 +12,9 @@
 #endif
 
 #include <visionaray/detail/spd/blackbody.h>
+#include <visionaray/math/forward.h>
+#include <visionaray/math/matrix.h>
+#include <visionaray/math/vector.h>
 
 #include "model.h"
 #include "sg.h"
@@ -139,9 +142,56 @@ void make_scene_graph(
 {
     for (auto shape : object->shapes)
     {
-        auto mesh = std::dynamic_pointer_cast<TriangleMesh>(shape);
+        if (auto sphere = std::dynamic_pointer_cast<Sphere>(shape))
+        {
+            mat4 m = mat4::identity();
+            m = scale(m, vec3(sphere->radius));
+            m = translate(m, vec3(sphere->transform.p.x, sphere->transform.p.y, sphere->transform.p.z));
 
-        if (mesh != nullptr)
+            auto trans = std::make_shared<sg::transform>();
+            trans->matrix() = m;
+
+            trans->add_child(std::make_shared<sg::sphere>());
+
+            // TODO: dedup!!
+            std::shared_ptr<sg::surface_properties> sp = nullptr;
+
+            auto it = mat2prop.find(sphere->material);
+
+            if (it != mat2prop.end())
+            {
+                sp = it->second;
+            }
+            else
+            {
+                sp = std::make_shared<sg::surface_properties>();
+
+                // TODO
+                auto mat = make_material_node(sphere);
+                sp->material() = mat;
+
+                mat2prop.insert({ sphere->material, sp });
+
+                parent.add_child(sp);
+            }
+
+            bool insert_dummy = true;
+
+            if (insert_dummy)
+            {
+                // Add a dummy texture
+                vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
+                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
+                tex->resize(1, 1);
+                tex->set_address_mode(Wrap);
+                tex->set_filter_mode(Nearest);
+                tex->reset(&dummy_texel);
+                sp->add_texture(tex, "diffuse");
+            }
+
+            sp->add_child(trans);
+        }
+        if (auto mesh = std::dynamic_pointer_cast<TriangleMesh>(shape))
         {
             std::shared_ptr<sg::indexed_triangle_mesh> itm = nullptr;
             auto itm_it = shape2itm.find(shape);
