@@ -145,8 +145,8 @@ void make_scene_graph(
         if (auto sphere = std::dynamic_pointer_cast<Sphere>(shape))
         {
             mat4 m = mat4::identity();
-            m = scale(m, vec3(sphere->radius));
             m = translate(m, vec3(sphere->transform.p.x, sphere->transform.p.y, sphere->transform.p.z));
+            m = scale(m, vec3(sphere->radius));
 
             auto trans = std::make_shared<sg::transform>();
             trans->matrix() = m;
