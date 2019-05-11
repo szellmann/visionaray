@@ -501,6 +501,94 @@ std::ostream& operator<<(std::ostream& out, pinhole_camera const& cam)
 
 
 //-------------------------------------------------------------------------------------------------
+// Approximate sphere with icosahedron
+// cf. https://schneide.blog/2016/07/15/generating-an-icosphere-in-c/
+//
+
+struct icosahedron
+{
+    aligned_vector<basic_triangle<3, float>> triangles;
+    aligned_vector<vec3> normals;
+};
+
+icosahedron make_icosahedron()
+{
+    static constexpr float X = 0.525731112119133606f;
+    static constexpr float Z = 0.850650808352039932f;
+    static constexpr float N = 0.0f;
+
+    static const vec3 vertices[] = {
+        { -X,  N,  Z },
+        {  X,  N,  Z },
+        { -X,  N, -Z },
+        {  X,  N, -Z },
+        {  N,  Z,  X },
+        {  N,  Z, -X },
+        {  N, -Z,  X },
+        {  N, -Z, -X },
+        {  Z,  X,  N },
+        { -Z,  X,  N },
+        {  Z, -X,  N },
+        { -Z, -X,  N }
+        };
+
+    static const vec3i indices[] {
+        { 0, 4, 1 },
+        { 0, 9, 4 },
+        { 9, 5, 4 },
+        { 4, 5, 8 },
+        { 4, 8, 1 },
+        { 8, 10, 1 },
+        { 8, 3, 10 },
+        { 5, 3, 8 },
+        { 5, 2, 3 },
+        { 2, 7, 3 },
+        { 7, 10, 3 },
+        { 7, 6, 10 },
+        { 7, 11, 6 },
+        { 11, 0, 6 },
+        { 0, 1, 6 },
+        { 6, 1, 10 },
+        { 9, 0, 11 },
+        { 9, 11, 2 },
+        { 9, 2, 5 },
+        { 7, 2, 11 }
+        };
+
+    auto make_triangle = [&](int index)
+    {
+        vec3i idx = indices[index];
+        return basic_triangle<3, float>(
+                vertices[idx.x],
+                vertices[idx.y] - vertices[idx.x],
+                vertices[idx.z] - vertices[idx.x]
+                );
+    };
+
+    icosahedron result;
+    result.triangles.resize(20);
+    result.normals.resize(20 * 3);
+
+    for (int i = 0; i < 20; ++i)
+    {
+        result.triangles[i] = make_triangle(i);
+
+        vec3i idx = indices[i];
+
+        vec3 v1 = vertices[idx.x];
+        vec3 v2 = vertices[idx.y];
+        vec3 v3 = vertices[idx.z];
+
+        result.normals[i * 3] = normalize(v1);
+        result.normals[i * 3 + 1] = normalize(v2);
+        result.normals[i * 3 + 2] = normalize(v3);
+    }
+
+    return result;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Reset triangle mesh flags to 0
 //
 
@@ -513,6 +601,13 @@ struct reset_flags_visitor : sg::node_visitor
         sp.flags() = 0;
 
         node_visitor::apply(sp);
+    }
+
+    void apply(sg::sphere& sph)
+    {
+        sph.flags() = 0;
+
+        node_visitor::apply(sph);
     }
 
     void apply(sg::triangle_mesh& tm)
@@ -656,6 +751,53 @@ struct build_scene_visitor : sg::node_visitor
         node_visitor::apply(sp);
 
         current_geom_id_ = prev;
+    }
+
+    void apply(sg::sphere& sph)
+    {
+        if (sph.flags() == 0)
+        {
+            auto ico = make_icosahedron();
+
+            shading_normals_.insert(shading_normals_.end(), ico.normals.begin(), ico.normals.end());
+
+            for (size_t i = 0; i < ico.triangles.size(); ++i)
+            {
+                auto& tri = ico.triangles[i];
+
+                tri.prim_id = current_prim_id_++;
+                tri.geom_id = current_geom_id_;
+
+                vec3 n = normalize(cross(tri.e1, tri.e2));
+
+                geometric_normals_.emplace_back(n);
+                tex_coords_.emplace_back(0.0f, 0.0f);
+                tex_coords_.emplace_back(0.0f, 0.0f);
+                tex_coords_.emplace_back(0.0f, 0.0f);
+            }
+
+            // Build single bvh
+            if (build_strategy_ == renderer::LBVH)
+            {
+                lbvh_builder builder;
+
+                bvhs_.emplace_back(builder.build(renderer::host_bvh_type{}, ico.triangles.data(), ico.triangles.size()));
+            }
+            else
+            {
+                binned_sah_builder builder;
+                builder.enable_spatial_splits(build_strategy_ == renderer::Split);
+
+                bvhs_.emplace_back(builder.build(renderer::host_bvh_type{}, ico.triangles.data(), ico.triangles.size()));
+            }
+
+            sph.flags() = ~(bvhs_.size() - 1);
+        }
+
+        instance_indices_.push_back(~sph.flags());
+        instance_transforms_.push_back(current_transform_);
+
+        node_visitor::apply(sph);
     }
 
     void apply(sg::triangle_mesh& tm)
