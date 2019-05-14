@@ -16,6 +16,8 @@
 #include <visionaray/math/matrix.h>
 #include <visionaray/math/vector.h>
 
+#include "image.h"
+#include "make_texture.h"
 #include "model.h"
 #include "sg.h"
 
@@ -49,8 +51,10 @@ mat4 make_mat4(affine3f const& aff)
     return result;
 }
 
-std::shared_ptr<sg::material> make_material_node(Shape::SP shape)
+std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 {
+    auto sp = std::make_shared<sg::surface_properties>();
+
     if (shape->areaLight != nullptr)
     {
         // TODO: don't misuse obj for emissive
@@ -67,7 +71,10 @@ std::shared_ptr<sg::material> make_material_node(Shape::SP shape)
             obj->ce = spd_to_rgb(bb) * l->scale; //?
         }
 
-        return obj;
+        sp->material() = obj;
+
+        // Ignore material!
+        return sp;
     }
 
     auto mat = shape->material;
@@ -85,7 +92,18 @@ std::shared_ptr<sg::material> make_material_node(Shape::SP shape)
         // TODO
         obj->specular_exp = m->roughness;
 
-        return obj;
+        sp->material() = obj;
+
+        if (auto t = std::dynamic_pointer_cast<ImageTexture>(m->map_kd))
+        {
+            image img;
+            if (img.load(t->fileName))
+            {
+                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
+
+                sp->add_texture(tex, "diffuse");
+            }
+        }
     }
     else if (auto m = std::dynamic_pointer_cast<SubstrateMaterial>(mat))
     {
@@ -97,7 +115,18 @@ std::shared_ptr<sg::material> make_material_node(Shape::SP shape)
         // TODO
         obj->specular_exp = m->uRoughness;
 
-        return obj;
+        sp->material() = obj;
+
+        if (auto t = std::dynamic_pointer_cast<ImageTexture>(m->map_kd))
+        {
+            image img;
+            if (img.load(t->fileName))
+            {
+                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
+
+                sp->add_texture(tex, "diffuse");
+            }
+        }
     }
     else if (auto m = std::dynamic_pointer_cast<MirrorMaterial>(mat))
     {
@@ -108,7 +137,18 @@ std::shared_ptr<sg::material> make_material_node(Shape::SP shape)
 
         obj->cd = vec3(m->kd.x, m->kd.y, m->kd.z);
 
-        return obj;
+        sp->material() = obj;
+
+        if (auto t = std::dynamic_pointer_cast<ImageTexture>(m->map_kd))
+        {
+            image img;
+            if (img.load(t->fileName))
+            {
+                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
+
+                sp->add_texture(tex, "diffuse");
+            }
+        }
     }
     else if (auto m = std::dynamic_pointer_cast<GlassMaterial>(mat))
     {
@@ -118,7 +158,7 @@ std::shared_ptr<sg::material> make_material_node(Shape::SP shape)
         glass->cr = vec3(m->kr.x, m->kr.y, m->kr.z);
         glass->ior = vec3(m->index);
 
-        return glass;
+        sp->material() = glass;
     }
     else if (auto m = std::dynamic_pointer_cast<UberMaterial>(mat))
     {
@@ -127,10 +167,21 @@ std::shared_ptr<sg::material> make_material_node(Shape::SP shape)
         obj->cd = vec3(m->kd.x, m->kd.y, m->kd.z);
         obj->cs = vec3(m->ks.x, m->ks.y, m->ks.z);
 
-        return obj;
+        sp->material() = obj;
+
+        if (auto t = std::dynamic_pointer_cast<ImageTexture>(m->map_kd))
+        {
+            image img;
+            if (img.load(t->fileName))
+            {
+                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
+
+                sp->add_texture(tex, "diffuse");
+            }
+        }
     }
 
-    return std::make_shared<sg::obj_material>();
+    return sp;
 }
 
 void make_scene_graph(
@@ -164,11 +215,7 @@ void make_scene_graph(
             }
             else
             {
-                sp = std::make_shared<sg::surface_properties>();
-
-                // TODO
-                auto mat = make_material_node(sphere);
-                sp->material() = mat;
+                sp = make_surface_properties(sphere);
 
                 mat2prop.insert({ sphere->material, sp });
 
@@ -267,11 +314,7 @@ void make_scene_graph(
             }
             else
             {
-                sp = std::make_shared<sg::surface_properties>();
-
-                // TODO
-                auto mat = make_material_node(mesh);
-                sp->material() = mat;
+                sp = make_surface_properties(mesh);
 
                 mat2prop.insert({ mesh->material, sp });
 
