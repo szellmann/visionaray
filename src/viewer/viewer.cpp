@@ -1410,8 +1410,6 @@ void renderer::render_hud()
             {
                 ImGui::Text("SPP: %dx SSAA", ssaa_samples);
             }
-            ImGui::SameLine();
-            ImGui::Spacing();
 
             ImGui::Text("Device: %s", rt.mode() == host_device_rt::GPU ? "GPU" : "CPU");
             ImGui::EndTabItem();
