@@ -222,6 +222,26 @@ public:
 
 public:
 
+    texture2d() = default;
+    texture2d(texture2d const&) = default;
+    texture2d(texture2d&&) = default;
+
+    // Copy-construct from base
+    texture2d(texture_base<T, 2> const& base)
+        : texture_base<T, 2>(base)
+    {
+    }
+
+    texture2d& operator=(texture2d const&) = default;
+    texture2d& operator=(texture2d&&) = default;
+
+    // Copy-assign base
+    texture2d& operator=(texture_base<T, 2> const& base)
+    {
+        reinterpret_cast<texture_base<T, 2>*>(this) = base;
+        return *this;
+    }
+
     void resize(int w, int h)
     {
         width_ = w;
