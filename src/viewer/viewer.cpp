@@ -1412,6 +1412,8 @@ void renderer::render_hud()
             }
             ImGui::SameLine();
             ImGui::Spacing();
+
+            ImGui::Text("Device: %s", rt.mode() == host_device_rt::GPU ? "GPU" : "CPU");
             ImGui::EndTabItem();
         }
 
@@ -1461,8 +1463,6 @@ void renderer::render_hud()
                 ImGui::Text(" RGB");
             }
 
-            ImGui::SameLine();
-            ImGui::Text("Device: %s", rt.mode() == host_device_rt::GPU ? "GPU" : "CPU");
             int nbit = sizeof(ssaa_samples) * 8;
             int ssaa_log2 = nbit - 1 - detail::clz(ssaa_samples);
             std::string currentssaa = ssaa_modes[ssaa_log2];
