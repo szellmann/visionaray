@@ -1174,7 +1174,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
             {
                 auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
 
-                props->add_texture(tex);
+                props->add_texture(tex, "diffuse");
             }
         }
     }
