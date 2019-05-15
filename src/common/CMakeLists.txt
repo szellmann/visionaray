@@ -187,6 +187,7 @@ set(COMMON_HEADERS
     jpeg_image.h
     make_unique.h
     make_materials.h
+    make_texture.h
     moana_loader.h
     model.h
     obj_grammar.h
