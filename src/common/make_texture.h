@@ -6,7 +6,9 @@
 #ifndef VSNRAY_COMMON_MAKE_TEXTURE_H
 #define VSNRAY_COMMON_MAKE_TEXTURE_H 1
 
+#include <iostream>
 #include <memory>
+#include <ostream>
 
 #include <visionaray/math/unorm.h>
 #include <visionaray/math/vector.h>
