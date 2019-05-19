@@ -7,6 +7,7 @@
 #define VSNRAY_MATH_DETAIL_MATH_H 1
 
 #include <cmath>
+#include <cstring>
 #include <type_traits>
 
 #include "../config.h"
@@ -104,31 +105,19 @@ inline T max(T const& x, T const& y)
 MATH_FUNC
 inline int reinterpret_as_int(float a)
 {
-    // Prefer union over reinterpret_cast for type-punning
-    // for compilers with strict-aliasing rules
-    union helper
-    {
-        float a;
-        int i;
-    };
-    helper h;
-    h.a = a;
-    return h.i;
+    // Use memcpy bc. of strict-aliasing rules
+    int i;
+    memcpy(&i, &a, sizeof(i));
+    return i;
 }
 
 MATH_FUNC
 inline float reinterpret_as_float(int a)
 {
-    // Prefer union over reinterpret_cast for type-punning
-    // for compilers with strict-aliasing rules
-    union helper
-    {
-        int a;
-        float f;
-    };
-    helper h;
-    h.a = a;
-    return h.f;
+    // Use memcpy bc. of strict-aliasing rules
+    float f;
+    memcpy(&f, &a, sizeof(f));
+    return f;
 }
 
 MATH_FUNC
