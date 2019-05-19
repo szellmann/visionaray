@@ -3,6 +3,7 @@
 
 #include <common/config.h>
 
+#include <algorithm>
 #include <cstring> // memcpy
 #include <stdexcept>
 #include <unordered_map>
@@ -243,12 +244,20 @@ void make_scene_graph(
                 itm = std::make_shared<sg::indexed_triangle_mesh>();
 
                 itm->vertices = std::make_shared<aligned_vector<vec3>>(mesh->vertex.size());
+
                 if (mesh->normal.size() > 0)
                 {
                     itm->normals = std::make_shared<aligned_vector<vec3>>(mesh->normal.size());
                 }
+
+                if (mesh->texcoord.size() > 0)
+                {
+                    itm->tex_coords = std::make_shared<aligned_vector<vec2>>(mesh->texcoord.size());
+                }
+
                 itm->vertex_indices.resize(mesh->index.size() * 3);
                 itm->normal_indices.resize(mesh->index.size() * 3);
+                itm->tex_coord_indices.resize(mesh->index.size() * 3);
 
                 for (size_t i = 0; i < mesh->vertex.size(); ++i)
                 {
@@ -260,6 +269,12 @@ void make_scene_graph(
                 {
                     auto n = mesh->normal[i];
                     (*itm->normals)[i] = vec3(n.x, n.y, n.z);
+                }
+
+                for (size_t i = 0; i < mesh->texcoord.size(); ++i)
+                {
+                    auto tc = mesh->texcoord[i];
+                    (*itm->tex_coords)[i] = vec2(tc.x, tc.y);
                 }
 
                 for (size_t i = 0; i < mesh->index.size(); ++i)
@@ -290,6 +305,14 @@ void make_scene_graph(
                         (*itm->normals)[i2] = n;
                         (*itm->normals)[i3] = n;
                     }
+                }
+
+                // If model has no texture coordinates, add dummies
+                if (itm->tex_coords == nullptr)
+                {
+                    itm->tex_coords = std::make_shared<aligned_vector<vec2>>(itm->tex_coord_indices.size());
+
+                    std::fill(itm->tex_coords->begin(), itm->tex_coords->end(), vec2(0.0f, 0.0f));
                 }
 
                 shape2itm.insert({ shape, itm });
