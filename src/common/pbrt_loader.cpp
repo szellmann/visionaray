@@ -230,6 +230,7 @@ void make_scene_graph(
 
             sp->add_child(trans);
         }
+
         if (auto mesh = std::dynamic_pointer_cast<TriangleMesh>(shape))
         {
             std::shared_ptr<sg::indexed_triangle_mesh> itm = nullptr;
@@ -282,6 +283,7 @@ void make_scene_graph(
                     auto i3 = mesh->index[i];
                     memcpy(itm->vertex_indices.data() + i * 3, &i3.x, sizeof(int) * 3);
                     memcpy(itm->normal_indices.data() + i * 3, &i3.x, sizeof(int) * 3);
+                    memcpy(itm->tex_coord_indices.data() + i * 3, &i3.x, sizeof(int) * 3);
                 }
 
                 // If model has no shading normals, use geometric normals instead
