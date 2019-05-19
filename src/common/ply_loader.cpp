@@ -151,7 +151,6 @@ void load_ply(std::string const& filename, model& mod)
 
             if (coords)
             {
-
                 vec2 tc1(coords[index1 * 2], coords[index1 * 2 + 1]);
                 vec2 tc2(coords[index2 * 2], coords[index2 * 2 + 1]);
                 vec2 tc3(coords[index3 * 2], coords[index3 * 2 + 1]);
@@ -160,12 +159,14 @@ void load_ply(std::string const& filename, model& mod)
                 mod.tex_coords.emplace_back(tc2);
                 mod.tex_coords.emplace_back(tc3);
             }
+            else
+            {
+                mod.tex_coords.emplace_back(0.0f);
+                mod.tex_coords.emplace_back(0.0f);
+                mod.tex_coords.emplace_back(0.0f);
+            }
 
             mod.geometric_normals.emplace_back(cross(e1, e2));
-
-            mod.tex_coords.emplace_back(0.0f);
-            mod.tex_coords.emplace_back(0.0f);
-            mod.tex_coords.emplace_back(0.0f);
 
             mod.bbox.insert(v1);
             mod.bbox.insert(v2);
