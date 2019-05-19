@@ -187,7 +187,6 @@ void load_ply(std::string const& filename, model& mod)
             tex.reset(&dummy_texel);
             mod.textures.push_back(std::move(tex));
         }
-        mod.textures.push_back({0, 0});
     }
     catch (std::exception const& e)
     {
