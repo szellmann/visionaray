@@ -13,6 +13,7 @@
 
 #include <visionaray/detail/spd/blackbody.h>
 #include <visionaray/math/forward.h>
+#include <visionaray/math/io.h>
 #include <visionaray/math/matrix.h>
 #include <visionaray/math/vector.h>
 
@@ -27,6 +28,32 @@ namespace visionaray
 #if VSNRAY_COMMON_HAVE_PBRTPARSER
 
 using namespace pbrt;
+
+void add_diffuse_texture(std::shared_ptr<sg::surface_properties>& sp, Texture::SP texture)
+{
+    if (auto t = std::dynamic_pointer_cast<ImageTexture>(texture))
+    {
+        image img;
+        if (img.load(t->fileName))
+        {
+            auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
+
+            sp->add_texture(tex, "diffuse");
+        }
+    }
+    else if (auto t = std::dynamic_pointer_cast<ConstantTexture>(texture))
+    {
+        vector<4, unorm<8>> texel(t->value.x, t->value.y, t->value.z, 1.0f);
+
+        auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
+        tex->resize(1, 1);
+        tex->set_address_mode(Wrap);
+        tex->set_filter_mode(Nearest);
+        tex->reset(&texel);
+
+        sp->add_texture(tex, "diffuse");
+    }
+}
 
 mat4 make_mat4(affine3f const& aff)
 {
@@ -94,16 +121,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         sp->material() = obj;
 
-        if (auto t = std::dynamic_pointer_cast<ImageTexture>(m->map_kd))
-        {
-            image img;
-            if (img.load(t->fileName))
-            {
-                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
-
-                sp->add_texture(tex, "diffuse");
-            }
-        }
+        add_diffuse_texture(sp, m->map_kd);
     }
     else if (auto m = std::dynamic_pointer_cast<SubstrateMaterial>(mat))
     {
@@ -117,16 +135,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         sp->material() = obj;
 
-        if (auto t = std::dynamic_pointer_cast<ImageTexture>(m->map_kd))
-        {
-            image img;
-            if (img.load(t->fileName))
-            {
-                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
-
-                sp->add_texture(tex, "diffuse");
-            }
-        }
+        add_diffuse_texture(sp, m->map_kd);
     }
     else if (auto m = std::dynamic_pointer_cast<MirrorMaterial>(mat))
     {
@@ -139,16 +148,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         sp->material() = obj;
 
-        if (auto t = std::dynamic_pointer_cast<ImageTexture>(m->map_kd))
-        {
-            image img;
-            if (img.load(t->fileName))
-            {
-                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
-
-                sp->add_texture(tex, "diffuse");
-            }
-        }
+        add_diffuse_texture(sp, m->map_kd);
     }
     else if (auto m = std::dynamic_pointer_cast<GlassMaterial>(mat))
     {
@@ -169,16 +169,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         sp->material() = obj;
 
-        if (auto t = std::dynamic_pointer_cast<ImageTexture>(m->map_kd))
-        {
-            image img;
-            if (img.load(t->fileName))
-            {
-                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
-
-                sp->add_texture(tex, "diffuse");
-            }
-        }
+        add_diffuse_texture(sp, m->map_kd);
     }
 
     return sp;
