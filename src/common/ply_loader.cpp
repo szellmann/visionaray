@@ -173,6 +173,19 @@ void load_ply(std::string const& filename, model& mod)
         }
 
         mod.materials.emplace_back(model::material_type());
+
+        bool insert_dummy = true;
+
+        if (insert_dummy)
+        {
+            // Add a dummy texture
+            vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
+            model::texture_type tex(1, 1);
+            tex.set_address_mode(Wrap);
+            tex.set_filter_mode(Nearest);
+            tex.reset(&dummy_texel);
+            mod.textures.push_back(std::move(tex));
+        }
         mod.textures.push_back({0, 0});
     }
     catch (std::exception const& e)
