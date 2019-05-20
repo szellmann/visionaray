@@ -203,16 +203,17 @@ void make_scene_graph(
 
             if (it != mat2prop.end())
             {
-                sp = it->second;
+                sp = std::make_shared<sg::surface_properties>();
+                sp->material() = it->second->material();
+                sp->textures() = it->second->textures();
             }
             else
             {
                 sp = make_surface_properties(sphere);
-
                 mat2prop.insert({ sphere->material, sp });
-
-                parent.add_child(sp);
             }
+
+            parent.add_child(sp);
 
             bool insert_dummy = true;
 
@@ -326,16 +327,17 @@ void make_scene_graph(
 
             if (it != mat2prop.end())
             {
-                sp = it->second;
+                sp = std::make_shared<sg::surface_properties>();
+                sp->material() = it->second->material();
+                sp->textures() = it->second->textures();
             }
             else
             {
                 sp = make_surface_properties(mesh);
-
                 mat2prop.insert({ mesh->material, sp });
-
-                parent.add_child(sp);
             }
+
+            parent.add_child(sp);
 
             bool insert_dummy = true;
 
