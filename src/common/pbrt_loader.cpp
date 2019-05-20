@@ -140,6 +140,13 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
     }
     else if (auto m = std::dynamic_pointer_cast<MirrorMaterial>(mat))
     {
+        auto obj = std::make_shared<sg::obj_material>();
+
+        obj->illum = 3; // indicates purely reflective!
+
+        obj->cs = vec3(m->kr.x, m->kr.y, m->kr.z);
+
+        sp->material() = obj;
     }
     else if (auto m = std::dynamic_pointer_cast<MatteMaterial>(mat))
     {
