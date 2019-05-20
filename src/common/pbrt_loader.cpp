@@ -222,7 +222,7 @@ void make_scene_graph(
 
             parent.add_child(sp);
 
-            bool insert_dummy = true;
+            bool insert_dummy = sp->textures().size() == 0;
 
             if (insert_dummy)
             {
@@ -346,7 +346,7 @@ void make_scene_graph(
 
             parent.add_child(sp);
 
-            bool insert_dummy = true;
+            bool insert_dummy = sp->textures().size() == 0;
 
             if (insert_dummy)
             {
