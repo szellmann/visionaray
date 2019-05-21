@@ -83,34 +83,10 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 {
     auto sp = std::make_shared<sg::surface_properties>();
 
-    if (shape->areaLight != nullptr)
-    {
-        // TODO: don't misuse obj for emissive
-        auto obj = std::make_shared<sg::obj_material>();
-
-        if (auto l = std::dynamic_pointer_cast<DiffuseAreaLightRGB>(shape->areaLight))
-        {
-            obj->ce = vec3(l->L.x, l->L.y, l->L.z);
-        }
-        else if (auto l = std::dynamic_pointer_cast<DiffuseAreaLightBB>(shape->areaLight))
-        {
-            blackbody bb(l->temperature);
-
-            obj->ce = spd_to_rgb(bb) * l->scale; //?
-        }
-
-        sp->material() = obj;
-
-        // Ignore material!
-        return sp;
-    }
-
-    auto mat = shape->material;
-
-    if (auto m = std::dynamic_pointer_cast<MetalMaterial>(mat))
+    if (auto m = std::dynamic_pointer_cast<MetalMaterial>(shape->material))
     {
     }
-    else if (auto m = std::dynamic_pointer_cast<PlasticMaterial>(mat))
+    else if (auto m = std::dynamic_pointer_cast<PlasticMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
 
@@ -124,7 +100,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         add_diffuse_texture(sp, m->map_kd);
     }
-    else if (auto m = std::dynamic_pointer_cast<SubstrateMaterial>(mat))
+    else if (auto m = std::dynamic_pointer_cast<SubstrateMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
 
@@ -138,7 +114,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         add_diffuse_texture(sp, m->map_kd);
     }
-    else if (auto m = std::dynamic_pointer_cast<MirrorMaterial>(mat))
+    else if (auto m = std::dynamic_pointer_cast<MirrorMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
 
@@ -148,7 +124,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         sp->material() = obj;
     }
-    else if (auto m = std::dynamic_pointer_cast<MatteMaterial>(mat))
+    else if (auto m = std::dynamic_pointer_cast<MatteMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
 
@@ -158,7 +134,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         add_diffuse_texture(sp, m->map_kd);
     }
-    else if (auto m = std::dynamic_pointer_cast<GlassMaterial>(mat))
+    else if (auto m = std::dynamic_pointer_cast<GlassMaterial>(shape->material))
     {
         auto glass = std::make_shared<sg::glass_material>();
 
@@ -168,7 +144,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         sp->material() = glass;
     }
-    else if (auto m = std::dynamic_pointer_cast<UberMaterial>(mat))
+    else if (auto m = std::dynamic_pointer_cast<UberMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
 
@@ -203,21 +179,45 @@ void make_scene_graph(
 
             trans->add_child(std::make_shared<sg::sphere>());
 
-            // TODO: dedup!!
             std::shared_ptr<sg::surface_properties> sp = nullptr;
 
-            auto it = mat2prop.find(sphere->material);
-
-            if (it != mat2prop.end())
+            if (shape->areaLight != nullptr)
             {
+                // If shape has an area light, ignore material!
+
                 sp = std::make_shared<sg::surface_properties>();
-                sp->material() = it->second->material();
-                sp->textures() = it->second->textures();
+
+                // TODO: don't misuse obj for emissive
+                auto obj = std::make_shared<sg::obj_material>();
+
+                if (auto l = std::dynamic_pointer_cast<DiffuseAreaLightRGB>(shape->areaLight))
+                {
+                    obj->ce = vec3(l->L.x, l->L.y, l->L.z);
+                }
+                else if (auto l = std::dynamic_pointer_cast<DiffuseAreaLightBB>(shape->areaLight))
+                {
+                    blackbody bb(l->temperature);
+
+                    obj->ce = spd_to_rgb(bb) * l->scale; //?
+                }
+
+                sp->material() = obj;
             }
             else
             {
-                sp = make_surface_properties(sphere);
-                mat2prop.insert({ sphere->material, sp });
+                auto it = mat2prop.find(sphere->material);
+
+                if (it != mat2prop.end())
+                {
+                    sp = std::make_shared<sg::surface_properties>();
+                    sp->material() = it->second->material();
+                    sp->textures() = it->second->textures();
+                }
+                else
+                {
+                    sp = make_surface_properties(sphere);
+                    mat2prop.insert({ sphere->material, sp });
+                }
             }
 
             parent.add_child(sp);
@@ -330,18 +330,43 @@ void make_scene_graph(
 
             std::shared_ptr<sg::surface_properties> sp = nullptr;
 
-            auto it = mat2prop.find(mesh->material);
-
-            if (it != mat2prop.end())
+            if (shape->areaLight != nullptr)
             {
+                // If shape has an area light, ignore material!
+
                 sp = std::make_shared<sg::surface_properties>();
-                sp->material() = it->second->material();
-                sp->textures() = it->second->textures();
+
+                // TODO: don't misuse obj for emissive
+                auto obj = std::make_shared<sg::obj_material>();
+
+                if (auto l = std::dynamic_pointer_cast<DiffuseAreaLightRGB>(shape->areaLight))
+                {
+                    obj->ce = vec3(l->L.x, l->L.y, l->L.z);
+                }
+                else if (auto l = std::dynamic_pointer_cast<DiffuseAreaLightBB>(shape->areaLight))
+                {
+                    blackbody bb(l->temperature);
+
+                    obj->ce = spd_to_rgb(bb) * l->scale; //?
+                }
+
+                sp->material() = obj;
             }
             else
             {
-                sp = make_surface_properties(mesh);
-                mat2prop.insert({ mesh->material, sp });
+                auto it = mat2prop.find(mesh->material);
+
+                if (it != mat2prop.end())
+                {
+                    sp = std::make_shared<sg::surface_properties>();
+                    sp->material() = it->second->material();
+                    sp->textures() = it->second->textures();
+                }
+                else
+                {
+                    sp = make_surface_properties(mesh);
+                    mat2prop.insert({ mesh->material, sp });
+                }
             }
 
             parent.add_child(sp);
