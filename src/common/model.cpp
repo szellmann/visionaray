@@ -32,6 +32,8 @@ static model_type get_type(std::string const& filename)
     ext2type.insert({ ".json", Moana });
     ext2type.insert({ ".obj", OBJ });
     ext2type.insert({ ".OBJ", OBJ });
+    ext2type.insert({ ".pbf", PBRT });
+    ext2type.insert({ ".PBF", PBRT });
     ext2type.insert({ ".pbrt", PBRT });
     ext2type.insert({ ".PBRT", PBRT });
     ext2type.insert({ ".ply", PLY });

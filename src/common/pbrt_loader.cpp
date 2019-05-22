@@ -4,9 +4,12 @@
 #include <common/config.h>
 
 #include <algorithm>
+#include <cctype>
 #include <cstring> // memcpy
 #include <stdexcept>
 #include <unordered_map>
+
+#include <boost/filesystem.hpp>
 
 #if VSNRAY_COMMON_HAVE_PBRTPARSER
 #include <pbrtParser/Scene.h>
@@ -422,7 +425,19 @@ void load_pbrt(std::string const& filename, model& mod)
 
     try
     {
-        auto scene = importPBRT(filename);
+        boost::filesystem::path p(filename);
+        std::string ext = p.extension().string();
+
+        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+        if (ext == ".pbf")
+        {
+            scene = Scene::loadFrom(filename);
+        }
+        else if (ext == ".pbrt")
+        {
+            scene = importPBRT(filename);
+        }
 
         make_scene_graph(scene->world, *root, shape2itm, mat2prop);
     }
