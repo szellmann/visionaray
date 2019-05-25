@@ -92,6 +92,8 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
     else if (auto m = std::dynamic_pointer_cast<PlasticMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
+        
+        obj->name() = m->name;
 
         obj->cd = vec3(m->kd.x, m->kd.y, m->kd.z);
         obj->cs = vec3(m->ks.x, m->ks.y, m->ks.z);
@@ -107,6 +109,8 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
     {
         auto obj = std::make_shared<sg::obj_material>();
 
+        obj->name() = m->name;
+
         obj->cd = vec3(m->kd.x, m->kd.y, m->kd.z);
         obj->cs = vec3(m->ks.x, m->ks.y, m->ks.z);
 
@@ -121,6 +125,8 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
     {
         auto obj = std::make_shared<sg::obj_material>();
 
+        obj->name() = m->name;
+
         obj->illum = 3; // indicates purely reflective!
 
         obj->cs = vec3(m->kr.x, m->kr.y, m->kr.z);
@@ -130,6 +136,8 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
     else if (auto m = std::dynamic_pointer_cast<MatteMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
+
+        obj->name() = m->name;
 
         obj->cd = vec3(m->kd.x, m->kd.y, m->kd.z);
 
@@ -141,6 +149,8 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
     {
         auto glass = std::make_shared<sg::glass_material>();
 
+        glass->name() = m->name;
+
         glass->ct = vec3(m->kt.x, m->kt.y, m->kt.z);
         glass->cr = vec3(m->kr.x, m->kr.y, m->kr.z);
         glass->ior = vec3(m->index);
@@ -150,6 +160,8 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
     else if (auto m = std::dynamic_pointer_cast<UberMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
+
+        obj->name() = m->name;
 
         obj->cd = vec3(m->kd.x, m->kd.y, m->kd.z);
         obj->cs = vec3(m->ks.x, m->ks.y, m->ks.z);
