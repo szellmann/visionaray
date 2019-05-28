@@ -175,6 +175,10 @@ set(COMMON_HEADERS
     manip/translate_manipulator.h
     manip/zoom_manipulator.h
 
+    # Scene graph
+
+    sg/io.h
+
     blocking_queue.h
     cfile.h
     dds_image.h
