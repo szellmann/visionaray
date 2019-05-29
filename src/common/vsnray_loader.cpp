@@ -1172,7 +1172,10 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
 
             if (img.load(filename))
             {
-                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
+                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
+                tex->resize(img.width(), img.height());
+                // TODO: textures need a unique name!
+                make_texture(*tex, img);
 
                 props->add_texture(tex, "diffuse");
             }

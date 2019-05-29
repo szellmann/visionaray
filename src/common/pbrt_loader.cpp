@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <unordered_map>
 
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
 #if VSNRAY_COMMON_HAVE_PBRTPARSER
@@ -33,16 +34,54 @@ namespace visionaray
 
 using namespace pbrt;
 
-void add_diffuse_texture(std::shared_ptr<sg::surface_properties>& sp, Texture::SP texture)
+void add_diffuse_texture(
+        std::shared_ptr<sg::surface_properties>& sp,
+        Texture::SP texture,
+        std::string base_filename
+        )
 {
     if (auto t = std::dynamic_pointer_cast<ImageTexture>(texture))
     {
-        image img;
-        if (img.load(t->fileName))
-        {
-            auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>(make_texture(img));
+        std::string tex_filename;
 
-            sp->add_texture(tex, "diffuse");
+        boost::filesystem::path kdp(t->fileName);
+
+        if (kdp.is_absolute())
+        {
+            tex_filename = kdp.string();
+        }
+
+        // Maybe boost::filesystem was wrong and a relative path
+        // camouflaged as an absolute one (e.g. because it was
+        // erroneously prefixed with a '/' under Unix.
+        // Happens e.g. in the fairy forest model..
+        // Let's also check for that..
+
+        if (!boost::filesystem::exists(tex_filename) || !kdp.is_absolute())
+        {
+            // Find texture relative to the path the obj file is located in
+            boost::filesystem::path p(base_filename);
+            tex_filename = p.parent_path().string() + "/" + t->fileName;
+            std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
+        }
+
+        if (!boost::filesystem::exists(tex_filename))
+        {
+            boost::trim(tex_filename);
+        }
+
+        if (boost::filesystem::exists(tex_filename))
+        {
+            image img;
+            if (img.load(tex_filename))
+            {
+                auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
+                tex->resize(img.width(), img.height());
+                tex->name() = t->fileName;
+                make_texture(*tex, img);
+
+                sp->add_texture(tex, "diffuse");
+            }
         }
     }
     else if (auto t = std::dynamic_pointer_cast<ConstantTexture>(texture))
@@ -82,7 +121,7 @@ mat4 make_mat4(affine3f const& aff)
     return result;
 }
 
-std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
+std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape, std::string base_filename)
 {
     auto sp = std::make_shared<sg::surface_properties>();
 
@@ -103,7 +142,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         sp->material() = obj;
 
-        add_diffuse_texture(sp, m->map_kd);
+        add_diffuse_texture(sp, m->map_kd, base_filename);
     }
     else if (auto m = std::dynamic_pointer_cast<SubstrateMaterial>(shape->material))
     {
@@ -119,7 +158,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         sp->material() = obj;
 
-        add_diffuse_texture(sp, m->map_kd);
+        add_diffuse_texture(sp, m->map_kd, base_filename);
     }
     else if (auto m = std::dynamic_pointer_cast<MirrorMaterial>(shape->material))
     {
@@ -143,7 +182,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         sp->material() = obj;
 
-        add_diffuse_texture(sp, m->map_kd);
+        add_diffuse_texture(sp, m->map_kd, base_filename);
     }
     else if (auto m = std::dynamic_pointer_cast<GlassMaterial>(shape->material))
     {
@@ -168,7 +207,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 
         sp->material() = obj;
 
-        add_diffuse_texture(sp, m->map_kd);
+        add_diffuse_texture(sp, m->map_kd, base_filename);
     }
     else
     {
@@ -183,7 +222,8 @@ void make_scene_graph(
         Object::SP object,
         sg::node& parent,
         std::unordered_map<Shape::SP, std::shared_ptr<sg::indexed_triangle_mesh>>& shape2itm,
-        std::unordered_map<Material::SP, std::shared_ptr<sg::surface_properties>>& mat2prop
+        std::unordered_map<Material::SP, std::shared_ptr<sg::surface_properties>>& mat2prop,
+        std::string base_filename
         )
 {
     for (auto shape : object->shapes)
@@ -235,7 +275,7 @@ void make_scene_graph(
                 }
                 else
                 {
-                    sp = make_surface_properties(sphere);
+                    sp = make_surface_properties(sphere, base_filename);
                     mat2prop.insert({ sphere->material, sp });
                 }
             }
@@ -384,7 +424,7 @@ void make_scene_graph(
                 }
                 else
                 {
-                    sp = make_surface_properties(mesh);
+                    sp = make_surface_properties(mesh, base_filename);
                     mat2prop.insert({ mesh->material, sp });
                 }
             }
@@ -415,7 +455,7 @@ void make_scene_graph(
 
         trans->matrix() = make_mat4(inst->xfm);
 
-        make_scene_graph(inst->object, *trans, shape2itm, mat2prop);
+        make_scene_graph(inst->object, *trans, shape2itm, mat2prop, base_filename);
 
         parent.add_child(trans);
     }
@@ -456,7 +496,7 @@ void load_pbrt(std::string const& filename, model& mod)
             scene = importPBRT(filename);
         }
 
-        make_scene_graph(scene->world, *root, shape2itm, mat2prop);
+        make_scene_graph(scene->world, *root, shape2itm, mat2prop, filename);
     }
     catch (std::runtime_error e)
     {

@@ -426,7 +426,8 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
                                 image img;
                                 if (img.load(tex_filename))
                                 {
-                                    auto tex = make_texture(img);
+                                    model::texture_type tex(img.width(), img.height());
+                                    make_texture(tex, img);
 
                                     mod.texture_map.insert(std::make_pair(mat_it->second.map_kd, std::move(tex)));
                                     // Will be ref()'d below

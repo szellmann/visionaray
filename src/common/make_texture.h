@@ -20,9 +20,12 @@
 namespace visionaray
 {
 
-inline texture<vector<4, unorm<8>>, 2> make_texture(image const& img)
+template <typename Texture>
+inline void make_texture(Texture& tex, image const& img)
 {
-    texture<vector<4, unorm<8>>, 2> tex(img.width(), img.height());
+    // Require 4x unorm8!
+    static_assert(std::is_same<typename Texture::value_type, vector<4, unorm<8>>>::value, "Type mismatch");
+
     tex.set_address_mode(Wrap);
     tex.set_filter_mode(Linear);
     tex.set_color_space(sRGB);
@@ -73,8 +76,6 @@ inline texture<vector<4, unorm<8>>, 2> make_texture(image const& img)
     {
         std::cerr << "Warning: unsupported pixel format\n";
     }
-
-    return tex;
 }
 
 } // visionaray
