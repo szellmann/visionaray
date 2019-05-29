@@ -9,6 +9,8 @@
 #include <memory>
 #include <ostream>
 
+#include <visionaray/math/io.h>
+
 #include "../sg.h"
 
 namespace visionaray
@@ -29,43 +31,51 @@ public:
     {
     }
 
-    void apply(sg::node& n)
-    {
-        ++depth_;
-
-        node_visitor::apply(n);
-
-        --depth_;
-    }
-
     void apply(surface_properties& sp)
     {
         ++depth_;
 
-        for (int i = 0; i < depth_; ++i)
-        {
-            out_ << ' ';
-        }
+        indent();
+
+        out_ << "surface_properties\n";
 
         if (sp.material() != nullptr)
         {
+            indent();
+
             if (auto m = std::dynamic_pointer_cast<obj_material>(sp.material()))
             {
-                out_ << "obj_material, ";
+                out_ << "obj_material, ce: " << m->ce << '\n';
             }
             else if (auto m = std::dynamic_pointer_cast<glass_material>(sp.material()))
             {
-                out_ << "glass_material, ";
+                out_ << "glass_material\n";
             }
             else if (auto m = std::dynamic_pointer_cast<disney_material>(sp.material()))
             {
-                out_ << "disney_material, ";
+                out_ << "disney_material\n";
             }
 
-            out_ << '"' << sp.material()->name() << "\"\n";
+            if (sp.material()->name() != "")
+            {
+                out_ << ", \"" << sp.material()->name() << "\"\n";
+            }
         }
 
         node_visitor::apply(sp);
+
+        --depth_;
+    }
+
+    void apply(transform& tr)
+    {
+        ++depth_;
+
+        indent();
+
+        out_ << "transform, matrix: " << tr.matrix() << '\n';
+
+        node_visitor::apply(tr);
 
         --depth_;
     }
@@ -74,12 +84,9 @@ public:
     {
         ++depth_;
 
-        for (int i = 0; i < depth_; ++i)
-        {
-            out_ << ' ';
-        }
+        indent();
 
-        out_ << "triangle_mesh\n";
+        out_ << "triangle_mesh, vertices: " << tm.vertices.size() << '\n';
 
         node_visitor::apply(tm);
 
@@ -90,12 +97,9 @@ public:
     {
         ++depth_;
 
-        for (int i = 0; i < depth_; ++i)
-        {
-            out_ << ' ';
-        }
+        indent();
 
-        out_ << "indexed_triangle_mesh\n";
+        out_ << "indexed_triangle_mesh, vertex indices: " << itm.vertex_indices.size() << '\n';
 
         node_visitor::apply(itm);
 
@@ -106,6 +110,13 @@ private:
     Stream& out_;
     int depth_ = 0;
 
+    void indent()
+    {
+        for (int i = 0; i < depth_; ++i)
+        {
+            out_ << ' ';
+        }
+    }
 };
 
 } // detail
