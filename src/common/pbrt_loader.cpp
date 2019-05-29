@@ -86,10 +86,10 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
 {
     auto sp = std::make_shared<sg::surface_properties>();
 
-    if (auto m = std::dynamic_pointer_cast<MetalMaterial>(shape->material))
+    /*if (auto m = std::dynamic_pointer_cast<MetalMaterial>(shape->material))
     {
     }
-    else if (auto m = std::dynamic_pointer_cast<PlasticMaterial>(shape->material))
+    else*/ if (auto m = std::dynamic_pointer_cast<PlasticMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
         
@@ -169,6 +169,11 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape)
         sp->material() = obj;
 
         add_diffuse_texture(sp, m->map_kd);
+    }
+    else
+    {
+        // Unsupported material or material is null - assign default obj
+        sp->material() = std::make_shared<sg::obj_material>();
     }
 
     return sp;
