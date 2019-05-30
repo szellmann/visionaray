@@ -125,10 +125,21 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape,
 {
     auto sp = std::make_shared<sg::surface_properties>();
 
-    /*if (auto m = std::dynamic_pointer_cast<MetalMaterial>(shape->material))
+    if (auto m = std::dynamic_pointer_cast<MetalMaterial>(shape->material))
     {
+        auto obj = std::make_shared<sg::obj_material>();
+
+        obj->name() = m->name;
+
+        // Approximate with an obj material with no diffuse and a high exponent for now..
+        obj->ca = vec3(0.0f, 0.0f, 0.0f);
+        obj->cd = vec3(0.0f, 0.0f, 0.0f);
+        obj->cs = vec3(m->k.x, m->k.y, m->k.z);
+        obj->specular_exp = 128.0f;
+
+        sp->material() = obj;
     }
-    else*/ if (auto m = std::dynamic_pointer_cast<PlasticMaterial>(shape->material))
+    else if (auto m = std::dynamic_pointer_cast<PlasticMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
         
@@ -208,6 +219,23 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape,
         sp->material() = obj;
 
         add_diffuse_texture(sp, m->map_kd, base_filename);
+    }
+    else if (auto m = std::dynamic_pointer_cast<MixMaterial>(shape->material))
+    {
+        // TODO: this just happens to be the case in "landscape"...
+        if (auto m0 = std::dynamic_pointer_cast<UberMaterial>(m->material0))
+        {
+            auto obj = std::make_shared<sg::obj_material>();
+
+            obj->name() = m0->name;
+
+            obj->cd = vec3(m0->kd.x, m0->kd.y, m0->kd.z);
+            obj->cs = vec3(m0->ks.x, m0->ks.y, m0->ks.z);
+
+            sp->material() = obj;
+
+            add_diffuse_texture(sp, m0->map_kd, base_filename);
+        }
     }
     else
     {
