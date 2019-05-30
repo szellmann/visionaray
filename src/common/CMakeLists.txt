@@ -75,6 +75,13 @@ if (VSNRAY_ENABLE_SDL2)
     visionaray_use_package(SDL2)
 endif()
 
+# TBB
+
+if (VSNRAY_ENABLE_TBB)
+    find_package(TBB)
+    visionaray_use_package(TBB)
+endif()
+
 # TODO
 set(3DCONNEXIONCLIENT_FOUND NOTFOUND)
 

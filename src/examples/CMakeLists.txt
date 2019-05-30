@@ -2,18 +2,24 @@
 # See the LICENSE file for details.
 
 find_package(Boost COMPONENTS filesystem iostreams system thread REQUIRED)
-find_package(CUDA)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 
 visionaray_use_package(Boost)
-if (CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
-visionaray_use_package(CUDA)
-endif()
 visionaray_use_package(GLEW)
 visionaray_use_package(OpenGL)
 visionaray_use_package(Threads)
+
+if (VSNRAY_ENABLE_CUDA)
+    find_package(CUDA)
+    visionaray_use_package(CUDA)
+endif()
+
+if (VSNRAY_ENABLE_TBB)
+    find_package(TBB)
+    visionaray_use_package(TBB)
+endif()
 
 visionaray_link_libraries(visionaray)
 visionaray_link_libraries(visionaray_common)
