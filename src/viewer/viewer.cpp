@@ -335,6 +335,22 @@ struct renderer : viewer_type
                     use_dof = dof;
                 }
 
+                // lens radius
+                float lr = cam.get_lens_radius();
+                err = ini.get_float("lens_radius", lr);
+                if (err == inifile::Ok)
+                {
+                    cam.set_lens_radius(lr);
+                }
+
+                // focal distance
+                float fd = cam.get_focal_distance();
+                err = ini.get_float("focal_distance", fd);
+                if (err == inifile::Ok)
+                {
+                    cam.set_focal_distance(fd);
+                }
+
                 // ImGui menu
                 bool hud = show_hud;
                 err = ini.get_bool("hud", hud);
