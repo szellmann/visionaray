@@ -186,6 +186,13 @@ public:
         return nodes_first[index];
     }
 
+    VSNRAY_FUNC bool operator==(bvh_ref_t const& rhs) const
+    {
+        return primitives_first == rhs.primitives_first
+            && primitives_last  == rhs.primitives_last
+            && nodes_first      == rhs.nodes_first
+            && nodes_last       == rhs.nodes_last;
+    }
 };
 
 template <typename PrimitiveType>
@@ -236,6 +243,15 @@ public:
         return nodes_first[index];
     }
 
+    VSNRAY_FUNC bool operator==(index_bvh_ref_t const& rhs) const
+    {
+        return primitives_first == rhs.primitives_first
+            && primitives_last  == rhs.primitives_last
+            && nodes_first      == rhs.nodes_first
+            && nodes_first      == rhs.nodes_first
+            && indices_last     == rhs.indices_last
+            && indices_last     == rhs.indices_last;
+    }
 };
 
 
@@ -293,6 +309,11 @@ public:
     VSNRAY_FUNC mat4 const& transform_inv() const
     {
         return transform_inv_;
+    }
+
+    VSNRAY_FUNC bool operator==(bvh_inst_t const& rhs) const
+    {
+        return ref_ == rhs.ref_ && transform_inv_ == rhs.transform_inv_;
     }
 
 private:
@@ -360,6 +381,11 @@ public:
     VSNRAY_FUNC mat4 const& transform_inv() const
     {
         return transform_inv_;
+    }
+
+    VSNRAY_FUNC bool operator==(index_bvh_inst_t const& rhs) const
+    {
+        return ref_ == rhs.ref_ && transform_inv_ == rhs.transform_inv_;
     }
 
 private:
