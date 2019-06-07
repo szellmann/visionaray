@@ -1394,7 +1394,8 @@ void renderer::render_hud()
         // Overview tab
         if (ImGui::BeginTabItem("Overview"))
         {
-            ImGui::Spacing();
+            ImGui::Text("X: %4d", x);
+            ImGui::SameLine();
             ImGui::Text("W: %4d", w);
             ImGui::SameLine();
             ImGui::Spacing();
