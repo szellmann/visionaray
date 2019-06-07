@@ -2447,7 +2447,10 @@ int main(int argc, char** argv)
 
                 assert(index < size_t(-1));
 
-                rend.device_top_level_bvh.primitives()[i] = { rend.device_bvhs[index].ref(), mat4() };
+                rend.device_top_level_bvh.primitives()[i] = {
+                        rend.device_bvhs[index].ref(),
+                        inverse(rend.device_bvhs[index].transform_inv)
+                        };
             }
 
             // Copy nodes and indices
