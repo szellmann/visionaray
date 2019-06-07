@@ -433,7 +433,8 @@ struct renderer : viewer_type
     aligned_vector<ptex::texture>               ptex_textures;
 #endif
 #ifdef __CUDACC__
-    device_bvh_type                             device_bvh;
+    cuda_index_bvh<device_bvh_type::bvh_inst>   device_top_level_bvh;
+    std::vector<device_bvh_type>                device_bvhs;
     thrust::device_vector<normal_type>          device_geometric_normals;
     thrust::device_vector<normal_type>          device_shading_normals;
     thrust::device_vector<tex_coord_type>       device_tex_coords;
@@ -1917,7 +1918,7 @@ void renderer::render_impl()
         if (area_lights.size() > 0 && algo == Pathtracing)
         {
             render_generic_material_cu(
-                    device_bvh,
+                    device_bvhs[0],
                     device_geometric_normals,
                     device_shading_normals,
                     device_tex_coords,
@@ -1939,7 +1940,7 @@ void renderer::render_impl()
         else
         {
             render_plastic_cu(
-                    device_bvh,
+                    device_bvhs[0],
                     device_geometric_normals,
                     device_shading_normals,
                     device_tex_coords,
@@ -2415,7 +2416,53 @@ int main(int argc, char** argv)
     // Copy data to GPU
     try
     {
-        rend.device_bvh = renderer::device_bvh_type(rend.host_bvhs[0]);
+        // Build up lower level bvhs first
+        rend.device_bvhs.resize(rend.host_bvhs.size());
+        for (size_t i = 0; i < rend.host_bvhs.size(); ++i)
+        {
+            rend.device_bvhs[i] = renderer::device_bvh_type(rend.host_bvhs[i]);
+        }
+
+        // Make a deep copy of the top level bvh
+        if (rend.host_top_level_bvh.num_primitives() > 0)
+        {
+            rend.device_top_level_bvh.primitives().resize(rend.host_top_level_bvh.num_primitives());
+            rend.device_top_level_bvh.nodes().resize(rend.host_top_level_bvh.num_nodes());
+            rend.device_top_level_bvh.indices().resize(rend.host_top_level_bvh.num_indices());
+
+            // Linear search for each inst: This may obviously become fairly inefficient..
+            for (size_t i = 0; i < rend.host_top_level_bvh.num_primitives(); ++i)
+            {
+                size_t index = size_t(-1);
+
+                for (size_t j = 0; j < rend.host_bvhs.size(); ++j)
+                {
+                    if (rend.host_bvhs[j].ref() == rend.host_top_level_bvh.primitive(i).get_ref())
+                    {
+                        index = j;
+                        break;
+                    }
+                }
+
+                assert(index < size_t(-1));
+
+                rend.device_top_level_bvh.primitives()[i] = { rend.device_bvhs[index].ref(), mat4() };
+            }
+
+            // Copy nodes and indices
+            thrust::copy(
+                    rend.host_top_level_bvh.nodes().begin(),
+                    rend.host_top_level_bvh.nodes().end(),
+                    rend.device_top_level_bvh.nodes().begin()
+                    );
+
+            thrust::copy(
+                    rend.host_top_level_bvh.indices().begin(),
+                    rend.host_top_level_bvh.indices().end(),
+                    rend.device_top_level_bvh.indices().begin()
+                    );
+        }
+
         rend.device_geometric_normals = rend.mod.geometric_normals;
         rend.device_shading_normals = rend.mod.shading_normals;
         rend.device_tex_coords = rend.mod.tex_coords;
@@ -2483,7 +2530,8 @@ int main(int argc, char** argv)
     catch (std::bad_alloc const&)
     {
         std::cerr << "GPU memory allocation failed" << std::endl;
-        rend.device_bvh = renderer::device_bvh_type();
+        rend.device_bvhs.clear();
+        rend.device_bvhs.shrink_to_fit();
         rend.device_geometric_normals.clear();
         rend.device_geometric_normals.shrink_to_fit();
         rend.device_shading_normals.clear();
