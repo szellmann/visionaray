@@ -904,6 +904,10 @@ struct build_scene_visitor : sg::node_visitor
                 assert(itm.normal_indices.size() % 3 == 0);
                 shading_normals_.resize(shading_normals_.size() + itm.normal_indices.size());
             }
+            else
+            {
+                shading_normals_.resize(shading_normals_.size() + itm.vertex_indices.size());
+            }
 
             size_t first_tex_coord = tex_coords_.size();
             if (itm.tex_coord_indices.size() > 0)
@@ -933,6 +937,13 @@ struct build_scene_visitor : sg::node_visitor
                 vec3 gn = normalize(cross(v2 - v1, v3 - v1));
 
                 geometric_normals_[first_geometric_normal + i / 3] = gn;
+
+                if (itm.normal_indices.size() == 0)
+                {
+                    shading_normals_[first_shading_normal + i]     = gn;
+                    shading_normals_[first_shading_normal + i + 1] = gn;
+                    shading_normals_[first_shading_normal + i + 2] = gn;
+                }
             }
 
             for (size_t i = 0; i < itm.normal_indices.size(); i += 3)
