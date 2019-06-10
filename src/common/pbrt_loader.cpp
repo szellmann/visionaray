@@ -125,7 +125,21 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape,
 {
     auto sp = std::make_shared<sg::surface_properties>();
 
-    if (auto m = std::dynamic_pointer_cast<MetalMaterial>(shape->material))
+    if (auto m = std::dynamic_pointer_cast<DisneyMaterial>(shape->material))
+    {
+        auto disney = std::make_shared<sg::disney_material>();
+
+        disney->base_color = vec4(m->color.x, m->color.y, m->color.z, 1.0f);
+        disney->spec_trans = m->specTrans;
+        disney->sheen = m->sheen;
+        disney->sheen_tint = m->sheenTint;
+        disney->ior = m->eta;
+        disney->refractive = 0.0f;
+        disney->roughness = m->roughness;
+
+        sp->material() = disney;
+    }
+    else if (auto m = std::dynamic_pointer_cast<MetalMaterial>(shape->material))
     {
         auto obj = std::make_shared<sg::obj_material>();
 
