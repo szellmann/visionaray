@@ -645,6 +645,17 @@ struct reset_flags_visitor : sg::node_visitor
 
 
 //-------------------------------------------------------------------------------------------------
+// Instance
+//
+
+struct instance
+{
+    int index;
+    mat4 transform;
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Traverse the scene graph to construct geometry, materials and BVH instances
 //
 
@@ -654,8 +665,7 @@ struct build_scene_visitor : sg::node_visitor
 
     build_scene_visitor(
             aligned_vector<renderer::host_bvh_type>& bvhs,
-            aligned_vector<size_t>& instance_indices,
-            aligned_vector<mat4>& instance_transforms,
+            aligned_vector<instance>& instances,
             aligned_vector<vec3>& shading_normals,
             aligned_vector<vec3>& geometric_normals,
             aligned_vector<vec2>& tex_coords,
@@ -669,8 +679,7 @@ struct build_scene_visitor : sg::node_visitor
             renderer::bvh_build_strategy build_strategy
             )
         : bvhs_(bvhs)
-        , instance_indices_(instance_indices)
-        , instance_transforms_(instance_transforms)
+        , instances_(instances)
         , shading_normals_(shading_normals)
         , geometric_normals_(geometric_normals)
         , tex_coords_(tex_coords)
@@ -812,8 +821,7 @@ struct build_scene_visitor : sg::node_visitor
             sph.flags() = ~(bvhs_.size() - 1);
         }
 
-        instance_indices_.push_back(~sph.flags());
-        instance_transforms_.push_back(current_transform_);
+        instances_.push_back({ static_cast<int>(~sph.flags()), current_transform_ });
 
         node_visitor::apply(sph);
     }
@@ -881,8 +889,7 @@ struct build_scene_visitor : sg::node_visitor
             tm.flags() = ~(bvhs_.size() - 1);
         }
 
-        instance_indices_.push_back(~tm.flags());
-        instance_transforms_.push_back(current_transform_);
+        instances_.push_back({ static_cast<int>(~tm.flags()), current_transform_ });
 
         node_visitor::apply(tm);
     }
@@ -990,8 +997,7 @@ struct build_scene_visitor : sg::node_visitor
             itm.flags() = ~(bvhs_.size() - 1);
         }
 
-        instance_indices_.push_back(~itm.flags());
-        instance_transforms_.push_back(current_transform_);
+        instances_.push_back({ static_cast<int>(~itm.flags()), current_transform_ });
 
         node_visitor::apply(itm);
     }
@@ -1006,11 +1012,8 @@ struct build_scene_visitor : sg::node_visitor
     // Storage bvhs
     aligned_vector<renderer::host_bvh_type>& bvhs_;
 
-    // Indices to construct instances from
-    aligned_vector<size_t>& instance_indices_;
-
-    // Transforms to construct instances from
-    aligned_vector<mat4>& instance_transforms_;
+    // Instances (BVH index + transform)
+    aligned_vector<instance>& instances_;
 
     // Shading normals
     aligned_vector<vec3>& shading_normals_;
@@ -1092,13 +1095,11 @@ void renderer::build_scene()
         reset_flags_visitor reset_visitor;
         mod.scene_graph->accept(reset_visitor);
 
-        aligned_vector<size_t> instance_indices;
-        aligned_vector<mat4> instance_transforms;
+        aligned_vector<instance> instances;
 
         build_scene_visitor build_visitor(
                 host_bvhs,
-                instance_indices,
-                instance_transforms,
+                instances,
                 mod.shading_normals, // TODO!!!
                 mod.geometric_normals,
                 mod.tex_coords,
@@ -1113,11 +1114,11 @@ void renderer::build_scene()
                 );
         mod.scene_graph->accept(build_visitor);
 
-        host_instances.resize(instance_indices.size());
-        for (size_t i = 0; i < instance_indices.size(); ++i)
+        host_instances.resize(instances.size());
+        for (size_t i = 0; i < instances.size(); ++i)
         {
-            size_t index = instance_indices[i];
-            host_instances[i] = host_bvhs[index].inst(instance_transforms[i]);
+            size_t index = instances[i].index;
+            host_instances[i] = host_bvhs[index].inst(instances[i].transform);
         }
 
         // Single BVH
