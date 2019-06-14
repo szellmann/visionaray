@@ -1050,12 +1050,6 @@ struct build_scene_visitor : sg::node_visitor
     // Assign consecutive geom ids for each encountered material
     unsigned current_geom_id_ = 0;
 
-    // Index into the bvh list
-    unsigned current_bvh_index_ = 0;
-
-    // Index into the instance list
-    unsigned current_instance_index_ = 0;
-
     // BVH build strategy
     renderer::bvh_build_strategy build_strategy_;
 
