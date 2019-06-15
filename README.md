@@ -30,7 +30,7 @@ Build requirements
 
 - [CMake][1] version 2.8.9 or newer
 - [Boost][2]
-- OpenGL
+- [OpenGL][12]
 - [GLEW][3]
 - [NVIDIA CUDA Toolkit][4] version 7.0 or newer (optional)
 
@@ -151,3 +151,4 @@ Visionaray is licensed under the MIT License (MIT)
 [9]:    http://www.libtiff.org
 [10]:   http://www.openexr.com/
 [11]:   https://github.com/ingowald/pbrt-parser
+[12]:   https://www.opengl.org
