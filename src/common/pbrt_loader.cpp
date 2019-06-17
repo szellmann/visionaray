@@ -88,8 +88,12 @@ void add_diffuse_texture(
     {
         vector<4, unorm<8>> texel(t->value.x, t->value.y, t->value.z, 1.0f);
 
+        static unsigned num = 1;
+        std::string name = "ConstantTexture" + std::to_string(num++);
+
         auto tex = std::make_shared<sg::texture2d<vector<4, unorm<8>>>>();
         tex->resize(1, 1);
+        tex->name() = name;
         tex->set_address_mode(Wrap);
         tex->set_filter_mode(Nearest);
         tex->reset(&texel);
