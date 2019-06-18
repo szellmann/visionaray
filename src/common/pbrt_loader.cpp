@@ -234,6 +234,8 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape,
         obj->cd = vec3(m->kd.x, m->kd.y, m->kd.z);
         obj->cs = vec3(m->ks.x, m->ks.y, m->ks.z);
 
+        // TODO
+        obj->specular_exp = m->roughness;
         sp->material() = obj;
 
         add_diffuse_texture(sp, m->map_kd, base_filename);
@@ -250,6 +252,8 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape,
             obj->cd = vec3(m0->kd.x, m0->kd.y, m0->kd.z);
             obj->cs = vec3(m0->ks.x, m0->ks.y, m0->ks.z);
 
+            // TODO
+            obj->specular_exp = m0->roughness;
             sp->material() = obj;
 
             add_diffuse_texture(sp, m0->map_kd, base_filename);
