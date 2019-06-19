@@ -2176,11 +2176,23 @@ void renderer::on_key_press(key_event const& event)
                 }
             }
 
+            // Flip so that origin is (top|left)
+            std::vector<vector<3, unorm<8>>> flipped(rt.width() * rt.height());
+
+            for (int y = 0; y < rt.height(); ++y)
+            {
+                for (int x = 0; x < rt.width(); ++x)
+                {
+                    int yy = rt.height() - y - 1;
+                    flipped[yy * rt.width() + x] = rgb[y * rt.width() + x];
+                }
+            }
+
             image img(
                 rt.width(),
                 rt.height(),
                 PF_RGB8,
-                reinterpret_cast<uint8_t const*>(rgb.data())
+                reinterpret_cast<uint8_t const*>(flipped.data())
                 );
 
             image::save_option opt1({"binary", true});
