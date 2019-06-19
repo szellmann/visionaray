@@ -62,7 +62,7 @@
 #include <common/inifile.h>
 #include <common/make_materials.h>
 #include <common/model.h>
-#include <common/pnm_image.h>
+#include <common/image.h>
 #include <common/sg.h>
 #include <common/timer.h>
 #include <common/viewer_glut.h>
@@ -2176,14 +2176,14 @@ void renderer::on_key_press(key_event const& event)
                 }
             }
 
-            pnm_image img(
+            image img(
                 rt.width(),
                 rt.height(),
                 PF_RGB8,
                 reinterpret_cast<uint8_t const*>(rgb.data())
                 );
 
-            pnm_image::save_option opt1({"binary", true});
+            image::save_option opt1({"binary", true});
             if (img.save(screenshot_filename, {opt1}))
             {
                 std::cout << "Screenshot saved to file: " << screenshot_filename << '\n';
