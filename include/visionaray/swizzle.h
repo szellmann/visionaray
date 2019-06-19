@@ -380,6 +380,23 @@ inline void swizzle_expand_types(
     }
 }
 
+// RGBA32F -> RGB8, 8-bit type is unorm<8>
+
+inline void swizzle_expand_types(
+        vector<3, unorm<8>>*        dst,
+        pixel_format                format_dst,
+        vector<4, float> const*  src,
+        pixel_format                format_src,
+        size_t                      len,
+        swizzle_hint                hint
+        )
+{
+    if (format_dst == PF_RGB8 && format_src == PF_RGBA32F)
+    {
+        detail::swizzle_RGBA_to_RGB( dst, src, len, hint );
+    }
+}
+
 // RGB16UI -> RGB8, 16-bit type is unorm<16>, 8-bit type is unorm<8>
 
 inline void swizzle_expand_types(
