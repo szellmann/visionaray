@@ -2169,9 +2169,9 @@ void renderer::on_key_press(key_event const& event)
                     for (int x = 0; x < rt.width(); ++x)
                     {
                         auto& color = rgb[y * rt.width() + x];
-                        color.x = std::pow(color.x, 1 / 2.2f);
-                        color.y = std::pow(color.y, 1 / 2.2f);
-                        color.z = std::pow(color.z, 1 / 2.2f);
+                        color.x = powf(color.x, 1 / 2.2f);
+                        color.y = powf(color.y, 1 / 2.2f);
+                        color.z = powf(color.z, 1 / 2.2f);
                     }
                 }
             }
