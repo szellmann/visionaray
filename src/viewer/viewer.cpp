@@ -62,6 +62,7 @@
 #include <common/inifile.h>
 #include <common/make_materials.h>
 #include <common/model.h>
+#include <common/pnm_image.h>
 #include <common/sg.h>
 #include <common/timer.h>
 #include <common/viewer_glut.h>
@@ -2049,6 +2050,8 @@ void renderer::on_key_press(key_event const& event)
     static const std::string camera_file_base = "visionaray-camera";
     static const std::string camera_file_suffix = ".txt";
 
+    static const std::string screenshot_filename = "screenshot.pnm";
+
     switch (event.key())
     {
     case '1':
@@ -2144,6 +2147,53 @@ void renderer::on_key_press(key_event const& event)
         counter.reset();
         clear_frame();
 #endif
+        break;
+
+    case 'p':
+        {
+            // Swizzle to RGB8 for compatibility with pnm image
+            std::vector<vector<3, unorm<8>>> rgb(rt.width() * rt.height());
+            swizzle(
+                rgb.data(),
+                PF_RGB8,
+                rt.color(),
+                PF_RGBA32F,
+                rt.width() * rt.height(),
+                TruncateAlpha
+                );
+
+            if (rt.color_space() == host_device_rt::SRGB)
+            {
+                for (int y = 0; y < rt.height(); ++y)
+                {
+                    for (int x = 0; x < rt.width(); ++x)
+                    {
+                        auto& color = rgb[y * rt.width() + x];
+                        color.x = std::pow(color.x, 1 / 2.2f);
+                        color.y = std::pow(color.y, 1 / 2.2f);
+                        color.z = std::pow(color.z, 1 / 2.2f);
+                    }
+                }
+            }
+
+            pnm_image img(
+                rt.width(),
+                rt.height(),
+                PF_RGB8,
+                reinterpret_cast<uint8_t const*>(rgb.data())
+                );
+
+            pnm_image::save_option opt1({"binary", true});
+            if (img.save(screenshot_filename, {opt1}))
+            {
+                std::cout << "Screenshot saved to file: " << screenshot_filename << '\n';
+            }
+            else
+            {
+                std::cerr << "Error saving screenshot to file: " << screenshot_filename << '\n';
+            }
+
+        }
         break;
 
     case 's':
