@@ -81,7 +81,7 @@ static image_type get_type(std::string const& filename)
 
     // PNM
 
-    static const std::string pnm_extensions[] = { ".pbm", ".pgm", ".ppm", ".PBM", ".PGM", ".PPM" };
+    static const std::string pnm_extensions[] = { ".pbm", ".pgm", ".pnm", ".ppm", ".PBM", ".PGM", ".PNM", ".PPM" };
 
     if (std::find(pnm_extensions, pnm_extensions + 6, p.extension()) != pnm_extensions + 6)
     {
@@ -275,7 +275,7 @@ bool image::save(std::string const& filename, file_base::save_options const& opt
     {
     case PNM:
     {
-        pnm_image pnm;
+        pnm_image pnm(width(), height(), format(), data());
         return pnm.save(fn, options);
     }
 
