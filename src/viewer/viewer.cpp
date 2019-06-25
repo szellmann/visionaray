@@ -2517,7 +2517,7 @@ int main(int argc, char** argv)
 
                 rend.device_top_level_bvh.primitives()[i] = {
                         rend.device_bvhs[index].ref(),
-                        inverse(rend.device_bvhs[index].transform_inv)
+                        inverse(rend.host_instances[i].transform_inv())
                         };
             }
 
