@@ -106,6 +106,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/material/disney.inl
     ${HEADER_DIR}/detail/material/emissive.inl
     ${HEADER_DIR}/detail/material/matte.inl
+    ${HEADER_DIR}/detail/material/metal.inl
     ${HEADER_DIR}/detail/material/mirror.inl
     ${HEADER_DIR}/detail/material/plastic.inl
     ${HEADER_DIR}/detail/spd/blackbody.h

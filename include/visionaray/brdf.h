@@ -10,6 +10,7 @@
 #include "math/constants.h"
 #include "math/vector.h"
 #include "fresnel.h"
+#include "mdf.h"
 #include "sampling.h"
 #include "spectrum.h"
 #include "surface_interaction.h"
@@ -190,6 +191,88 @@ public:
         U costheta = dot(n, h);
         U vdoth = dot(wo, h);
         return ( ((exp + U(1.0)) * pow(costheta, exp)) / (U(2.0) * constants::pi<U>() * U(4.0) * vdoth) );
+    }
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Cook Torrance reflection like in:
+// Walter et al.: Microfacet Models for Refraction through Rough Surfaces
+//
+
+template <typename T, typename MDF>
+class cook_torrance
+{
+public:
+
+    using scalar_type   = T;
+
+public:
+
+    spectrum<T> ior;
+    spectrum<T> absorption;
+    MDF mdf;
+
+    template <typename U>
+    VSNRAY_FUNC
+    spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    {
+        // h is proportional to the microfacet normal
+        auto h = normalize(wi + wo);
+
+        auto F = fresnel_reflectance(
+                conductor_tag{},
+                ior,
+                absorption,
+                dot(wi, h)
+                );
+
+        // "The Smith G approximates the bidirectional shadowing-masking as
+        // the separable product of two monodirectional shadowing terms G1:"
+        auto G = mdf.g1(n, h, wi) * mdf.g1(n, h, wo);
+
+        auto D = mdf.d(n, h);
+
+        return              (F * G * D)
+            / (U(4) * abs(dot(wi, n)) * abs(dot(wo, n)));
+
+    }
+
+    template <typename U, typename Interaction, typename Generator>
+    VSNRAY_FUNC
+    spectrum<U> sample_f(
+            vector<3, T> const& n,
+            vector<3, U> const& wo,
+            vector<3, U>&       wi,
+            U&                  pdf,
+            Interaction&        inter,
+            Generator&          gen
+            ) const
+    {
+        auto w = n;
+        auto v = select(
+                abs(w.x) > abs(w.y),
+                normalize( vector<3, U>(-w.z, U(0.0), w.x) ),
+                normalize( vector<3, U>(U(0.0), w.z, -w.y) )
+                );
+        auto u = cross(v, w);
+
+        auto sp = cosine_sample_hemisphere(gen.next(), gen.next());
+        wi      = normalize( sp.x * u + sp.y * v + sp.z * w );
+
+        pdf     = this->pdf(n, wo, wi);
+
+        inter   = Interaction(surface_interaction::GlossyReflection);
+
+        return f(n, wo, wi);
+    }
+
+    template <typename U>
+    VSNRAY_FUNC
+    U pdf(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+    {
+        VSNRAY_UNUSED(wo);
+        return dot(n, wi) * constants::inv_pi<U>();
     }
 };
 

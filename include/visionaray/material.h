@@ -243,6 +243,56 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
+// Metal material
+//
+
+template <typename T>
+class metal
+{
+public:
+
+    using scalar_type = T;
+
+public:
+
+    // TODO: no support for  ambient (function returns 0.0)
+    VSNRAY_FUNC spectrum<T> ambient() const;
+
+    template <typename SR>
+    VSNRAY_FUNC
+    spectrum<typename SR::scalar_type> shade(SR const& sr) const;
+
+    template <typename SR, typename U, typename Interaction, typename Generator>
+    VSNRAY_FUNC spectrum<U> sample(
+            SR const&       sr,
+            vector<3, U>&   refl_dir,
+            U&              pdf,
+            Interaction&    inter,
+            Generator&      gen
+            ) const;
+
+    template <typename SR, typename Interaction>
+    VSNRAY_FUNC typename SR::scalar_type pdf(
+            SR const&          shared_rec,
+            Interaction const& inter
+            ) const;
+
+    VSNRAY_FUNC T& roughness();
+    VSNRAY_FUNC T const& roughness() const;
+
+    VSNRAY_FUNC spectrum<T>& ior();
+    VSNRAY_FUNC spectrum<T> const& ior() const;
+
+    VSNRAY_FUNC spectrum<T>& absorption();
+    VSNRAY_FUNC spectrum<T> const& absorption() const;
+
+private:
+
+    cook_torrance<T, ggx<T>> brdf_;
+
+};
+
+//-------------------------------------------------------------------------------------------------
 // Mirror material
 //
 // Parameters:
@@ -438,6 +488,7 @@ private:
 #include "detail/material/emissive.inl"
 #include "detail/material/glass.inl"
 #include "detail/material/matte.inl"
+#include "detail/material/metal.inl"
 #include "detail/material/mirror.inl"
 #include "detail/material/plastic.inl"
 #include "detail/material.inl"
