@@ -2515,9 +2515,11 @@ int main(int argc, char** argv)
 
                 assert(index < size_t(-1));
 
-                rend.device_top_level_bvh.primitives()[i] = {
+                int indirect_index = rend.host_top_level_bvh.indices()[i];
+
+                rend.device_top_level_bvh.primitives()[indirect_index] = {
                         rend.device_bvhs[index].ref(),
-                        inverse(rend.host_instances[i].transform_inv())
+                        inverse(rend.host_top_level_bvh.primitive(i).transform_inv())
                         };
             }
 
