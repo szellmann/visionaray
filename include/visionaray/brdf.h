@@ -218,7 +218,14 @@ public:
     spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
         // h is proportional to the microfacet normal
-        auto h = normalize(wi + wo);
+        auto h = wi + wo;
+
+        auto ldotn = abs(dot(wi, n));
+        auto vdotn = abs(dot(wo, n));
+
+        auto active = length(h) != U(0.0) && ldotn != U(0.0) && vdotn != U(0.0);
+
+        h = normalize(h);
 
         auto F = fresnel_reflectance(
                 conductor_tag{},
@@ -233,9 +240,9 @@ public:
 
         auto D = mdf.d(n, h);
 
-        return              (F * G * D)
-            / (U(4) * abs(dot(wi, n)) * abs(dot(wo, n)));
+        auto fr = (F * G * D) / (U(4) * ldotn * vdotn);
 
+        return select(active, fr, spectrum<U>(0.0));
     }
 
     template <typename U, typename Interaction, typename Generator>
