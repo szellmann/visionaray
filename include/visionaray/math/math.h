@@ -13,6 +13,7 @@
 #include "array.h"
 #include "axis.h"
 #include "constants.h"
+#include "coordinates.h"
 #include "fixed.h"
 #include "intersect.h"
 #include "io.h"
