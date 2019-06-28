@@ -90,6 +90,7 @@ struct renderer : viewer_type
     using primitive_type            = model::triangle_type;
     using normal_type               = model::normal_type;
     using tex_coord_type            = model::tex_coord_type;
+    using color_type                = model::color_type;
     using host_bvh_type             = index_bvh<primitive_type>;
 #ifdef __CUDACC__
     using device_bvh_type           = cuda_index_bvh<primitive_type>;
@@ -441,6 +442,7 @@ struct renderer : viewer_type
     thrust::device_vector<tex_coord_type>       device_tex_coords;
     thrust::device_vector<plastic<float>>       device_plastic_materials;
     thrust::device_vector<generic_material_t>   device_generic_materials;
+    thrust::device_vector<color_type>           device_colors;
     std::map<std::string, device_tex_type>      device_texture_map;
     thrust::device_vector<device_tex_ref_type>  device_textures;
 #endif
@@ -1923,6 +1925,49 @@ void renderer::render_impl()
 #ifdef __CUDACC__
     else if (rt.mode() == host_device_rt::GPU)
     {
+        if (device_top_level_bvh.num_primitives() > 0)
+        {
+            // TODO: disambiguate
+            aligned_vector<generic_light_t> temp_lights;
+            for (auto pl : point_lights)
+            {
+                temp_lights.push_back(pl);
+            }
+
+            for (auto sl : spot_lights)
+            {
+                temp_lights.push_back(sl);
+            }
+
+            for (auto al : area_lights)
+            {
+                temp_lights.push_back(al);
+            }
+
+            if (tex_format == renderer::UV)
+            {
+                render_instances_cu(
+                        device_top_level_bvh,
+                        device_geometric_normals,
+                        device_shading_normals,
+                        device_tex_coords,
+                        device_generic_materials,
+                        device_colors,
+                        device_textures,
+                        temp_lights,
+                        bounces,
+                        epsilon,
+                        vec4(background_color(), 1.0f),
+                        amb,
+                        rt,
+                        device_sched,
+                        camx,
+                        frame_num,
+                        algo,
+                        ssaa_samples
+                        );
+            }
+        }
         if (area_lights.size() > 0 && algo == Pathtracing)
         {
             render_generic_material_cu(
@@ -2542,6 +2587,7 @@ int main(int argc, char** argv)
         rend.device_tex_coords = rend.mod.tex_coords;
         rend.device_plastic_materials = rend.plastic_materials;
         rend.device_generic_materials = rend.generic_materials;
+        rend.device_colors = rend.mod.colors;
 
 
         // Copy textures and texture references to the GPU
@@ -2616,6 +2662,8 @@ int main(int argc, char** argv)
         rend.device_plastic_materials.shrink_to_fit();
         rend.device_generic_materials.clear();
         rend.device_generic_materials.shrink_to_fit();
+        rend.device_colors.clear();
+        rend.device_colors.shrink_to_fit();
         rend.device_texture_map.clear();
         rend.device_textures.clear();
         rend.device_textures.shrink_to_fit();

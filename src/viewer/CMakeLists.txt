@@ -103,6 +103,7 @@ if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     visionaray_cuda_compile(VIEWER_CUDA_SOURCES
         host_device_rt.cu
         render_generic_material.cu
+        render_instances.cu
         render_plastic.cu
         viewer.cu
     )

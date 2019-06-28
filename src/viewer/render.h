@@ -209,6 +209,29 @@ void render_instances_cpp(
         unsigned                                                  ssaa_samples
         );
 
+#ifdef __CUDACC__
+void render_instances_cu(
+        cuda_index_bvh<cuda_index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
+        thrust::device_vector<vec3> const&                                  geometric_normals,
+        thrust::device_vector<vec3> const&                                  shading_normals,
+        thrust::device_vector<vec2> const&                                  tex_coords,
+        thrust::device_vector<generic_material_t> const&                    materials,
+        thrust::device_vector<vec3> const&                                  colors,
+        thrust::device_vector<cuda_texture_t> const&                        textures,
+        aligned_vector<generic_light_t> const&                              lights,
+        unsigned                                                            bounces,
+        float                                                               epsilon,
+        vec4                                                                bgcolor,
+        vec4                                                                ambient,
+        host_device_rt&                                                     rt,
+        cuda_sched<ray_type_gpu>&                                           sched,
+        camera_t const&                                                     cam,
+        unsigned&                                                           frame_num,
+        algorithm                                                           algo,
+        unsigned                                                            ssaa_samples
+        );
+#endif
+
 #if VSNRAY_COMMON_HAVE_PTEX
 // With ptex textures
 void render_instances_ptex_cpp(

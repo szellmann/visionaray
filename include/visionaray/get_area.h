@@ -143,13 +143,33 @@ inline auto get_area(Primitives const& prims, HR const& hr)
     return T(result);
 }
 
+// BVH instance, no SIMD
+template <
+    typename Primitives,
+    typename HR,
+    typename Primitive = typename std::iterator_traits<Primitives>::value_type,
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value && is_any_bvh_inst<typename Primitive::primitive_type>::value>::type,
+    typename = typename std::enable_if<!simd::is_simd_vector<typename HR::scalar_type>::value>::type
+    >
+VSNRAY_FUNC
+inline auto get_area(Primitives const& prims, HR const& hr, void* = nullptr)
+    -> typename HR::scalar_type
+{
+    auto& b = prims[0]; // TODO: currently only two levels supported (i.e. one top-level BVH)
+
+    auto& inst = b.primitive(hr.primitive_list_index);
+
+    return area(inst.primitive(hr.primitive_list_index_inst));
+}
+
 // BVH instance, SIMD
 template <
     typename Primitives,
     typename HR,
     typename Primitive = typename std::iterator_traits<Primitives>::value_type,
     typename = typename std::enable_if<is_any_bvh<Primitive>::value && is_any_bvh_inst<typename Primitive::primitive_type>::value>::type,
-    typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type
+    typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type,
+    typename = void
     >
 VSNRAY_FUNC
 inline auto get_area(Primitives const& prims, HR const& hr, void* = nullptr)
