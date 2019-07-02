@@ -37,12 +37,12 @@ public:
              * ( 1.0 / (exp((1E6 * h * c) / (lambda * k * T)) - 1.0) );
     }
 
-    double& temperature()
+    VSNRAY_FUNC double& temperature()
     {
         return T;
     }
 
-    double const& temperature() const
+    VSNRAY_FUNC double const& temperature() const
     {
         return T;
     }
