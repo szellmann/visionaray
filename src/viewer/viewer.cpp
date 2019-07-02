@@ -2569,16 +2569,18 @@ int main(int argc, char** argv)
             }
 
             // Copy nodes and indices
-            thrust::copy(
-                    rend.host_top_level_bvh.nodes().begin(),
-                    rend.host_top_level_bvh.nodes().end(),
-                    rend.device_top_level_bvh.nodes().begin()
+            cudaMemcpy(
+                    thrust::raw_pointer_cast(rend.device_top_level_bvh.nodes().data()),
+                    rend.host_top_level_bvh.nodes().data(),
+                    sizeof(bvh_node) * rend.host_top_level_bvh.num_nodes(),
+                    cudaMemcpyHostToDevice
                     );
 
-            thrust::copy(
-                    rend.host_top_level_bvh.indices().begin(),
-                    rend.host_top_level_bvh.indices().end(),
-                    rend.device_top_level_bvh.indices().begin()
+            cudaMemcpy(
+                    thrust::raw_pointer_cast(rend.device_top_level_bvh.indices().data()),
+                    rend.host_top_level_bvh.indices().data(),
+                    sizeof(unsigned) * rend.host_top_level_bvh.num_indices(),
+                    cudaMemcpyHostToDevice
                     );
         }
 

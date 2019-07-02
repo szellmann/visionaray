@@ -510,10 +510,10 @@ public:
 
     template <typename PV, typename NV, typename IV>
     explicit index_bvh_t(index_bvh_t<PV, NV, IV> const& rhs)
-        : primitives_(rhs.primitives())
-        , nodes_(rhs.nodes())
-        , indices_(rhs.indices())
     {
+        copy(primitives_, rhs.primitives());
+        copy(nodes_, rhs.nodes());
+        copy(indices_, rhs.indices());
     }
 
     primitive_vector const& primitives() const  { return primitives_; }
@@ -573,6 +573,30 @@ private:
     node_vector nodes_;
     index_vector indices_;
 
+    template <typename DstVector, typename SrcVector>
+    void copy(DstVector& dst, SrcVector const& src)
+    {
+        dst = src;
+    }
+
+#ifdef __CUDACC__
+    template <typename T, typename SrcVector>
+    void copy(thrust::device_vector<T>& dst, SrcVector const& src)
+    {
+        // Make a trivial copy, thrust will allocate temporary
+        // storage on both host and device because host_vector::iterator
+        // is not the same type as device_vector::iterator and it thus
+        // thinks the copy is not trivial...     ¯\_(ツ)_/¯
+        dst.resize(src.size());
+
+        cudaMemcpy(
+            thrust::raw_pointer_cast(dst.data()),
+            src.data(),
+            sizeof(T) * src.size(),
+            cudaMemcpyHostToDevice
+            );
+    }
+#endif
 };
 
 
