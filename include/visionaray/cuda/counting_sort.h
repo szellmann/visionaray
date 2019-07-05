@@ -6,6 +6,7 @@
 #ifndef VSNRAY_CUDA_COUNTING_SORT_H
 #define VSNRAY_CUDA_COUNTING_SORT_H 1
 
+#include <climits>
 #include <cstddef>
 
 #include <thrust/execution_policy.h>
