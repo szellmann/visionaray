@@ -29,6 +29,7 @@
 
 #ifdef __CUDACC__
 #include <cuda_runtime_api.h>
+#include <thrust/device_vector.h>
 #endif
 
 #include <imgui.h>
