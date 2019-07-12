@@ -22,6 +22,7 @@
 #include <visionaray/aligned_vector.h>
 
 #include "file_base.h"
+#include "sg.h"
 
 namespace visionaray
 {
@@ -35,41 +36,7 @@ class model : public file_base
 {
 public:
 
-    struct material_type
-    {
-        // Material name
-        std::string name = "";
-
-        // Ambient color
-        vec3 ca = { 0.2f, 0.2f, 0.2f };
-
-        // Diffuse color
-        vec3 cd = { 0.8f, 0.8f, 0.8f };
-
-        // Specular color
-        vec3 cs = { 0.1f, 0.1f, 0.1f };
-
-        // Emissive color
-        vec3 ce = { 0.0f, 0.0f, 0.0f };
-
-        // Reflective color
-        vec3 cr = { 0.0f, 0.0f, 0.0f };
-
-        // Index of refraction
-        vec3 ior = { 1.0f, 1.0f, 1.0f };
-
-        // Absorption
-        vec3 absorption = { 0.0f, 0.0f, 0.0f };
-
-        // Transmission
-        float transmission = 0.0f;
-
-        // Specular exponent
-        float specular_exp = 32.0f;
-
-        // Wavefront obj illumination model (default: 1 maps to plastic).
-        int illum = 2;
-    };
+    using material_type     = sg::obj_material;
 
     using triangle_type     = basic_triangle<3, float>;
     using normal_type       = vector<3, float>;

@@ -249,7 +249,7 @@ template <typename Container>
 void add_material(Container& cont, mtl m, string_ref name)
 {
     model::material_type mat;
-    mat.name = std::string(name.data(), name.length());
+    mat.name() = std::string(name.data(), name.length());
     mat.ca = m.ka;
     mat.cd = m.kd;
     mat.cs = m.ks;
