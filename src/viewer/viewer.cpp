@@ -498,6 +498,109 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
+// Map obj material to generic material
+//
+
+generic_material_t map_material(sg::obj_material const& mat)
+{
+    // Add emissive material if emissive component > 0
+    if (length(mat.ce) > 0.0f)
+    {
+        emissive<float> em;
+        em.ce() = from_rgb(mat.ce);
+        em.ls() = 1.0f;
+        return em;
+    }
+    else if (mat.illum == 1)
+    {
+        matte<float> ma;
+        ma.ca() = from_rgb(mat.ca);
+        ma.cd() = from_rgb(mat.cd);
+        ma.ka() = 1.0f;
+        ma.kd() = 1.0f;
+        return ma;
+    }
+    else if (mat.illum == 3)
+    {
+        mirror<float> mi;
+        mi.cr() = from_rgb(mat.cs);
+        mi.kr() = 1.0f;
+        mi.ior() = spectrum<float>(0.0f);
+        mi.absorption() = spectrum<float>(0.0f);
+        return mi;
+    }
+    else if (mat.illum == 4 && mat.transmission > 0.0f)
+    {
+        glass<float> gl;
+        gl.ct() = from_rgb(mat.cd);
+        gl.kt() = 1.0f;
+        gl.cr() = from_rgb(mat.cs);
+        gl.kr() = 1.0f;
+        gl.ior() = from_rgb(mat.ior);
+        return gl;
+    }
+    else
+    {
+        plastic<float> pl;
+        pl.ca() = from_rgb(mat.ca);
+        pl.cd() = from_rgb(mat.cd);
+        pl.cs() = from_rgb(mat.cs);
+        pl.ka() = 1.0f;
+        pl.kd() = 1.0f;
+        pl.ks() = 1.0f;
+        pl.specular_exp() = mat.specular_exp;
+        return pl;
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Map disney material to generic material
+//
+
+generic_material_t map_material(sg::disney_material const& mat)
+{
+    // TODO..
+    if (mat.refractive > 0.0f)
+    {
+        glass<float> gl;
+        gl.ct() = from_rgb(mat.base_color.xyz());
+        gl.kt() = 1.0f;
+        gl.cr() = from_rgb(vec3(mat.spec_trans));
+        gl.kr() = 1.0f;
+        gl.ior() = from_rgb(vec3(mat.ior));
+        return gl;
+    }
+    else
+    {
+        matte<float> ma;
+        ma.ca() = from_rgb(vec3(0.0f));
+        ma.cd() = from_rgb(vec3(mat.base_color.xyz()));
+        ma.ka() = 1.0f;
+        ma.kd() = 1.0f;
+        return ma;
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Map glass material to generic material
+//
+
+generic_material_t map_material(sg::glass_material const& mat)
+{
+    // TODO: consolidate glass and sg::glass_material (?)
+    glass<float> gl;
+    gl.ct() = from_rgb(mat.ct);
+    gl.kt() = 1.0f;
+    gl.cr() = from_rgb(mat.cr);
+    gl.kr() = 1.0f;
+    gl.ior() = from_rgb(mat.ior);
+    return gl;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // I/O utility for camera lookat only - not fit for the general case!
 //
 
@@ -1188,30 +1291,16 @@ void renderer::build_scene()
 
             if (auto disney = std::dynamic_pointer_cast<sg::disney_material>(surf.first))
             {
-                newmat.cd = disney->base_color.xyz();
-                newmat.cs = vec3(0.0f);
-                newmat.ior = vec3(disney->ior);
-                newmat.transmission = disney->refractive; // TODO
-                if (newmat.transmission > 0.0f)
-                {
-                    newmat.illum = 4;
-                    newmat.cs = vec3(disney->spec_trans);
-                }
+                generic_materials.emplace_back(map_material(*disney));
             }
             else if (auto obj = std::dynamic_pointer_cast<sg::obj_material>(surf.first))
             {
-                newmat = *obj;
+                generic_materials.emplace_back(map_material(*obj));
             }
             else if (auto glass = std::dynamic_pointer_cast<sg::glass_material>(surf.first))
             {
-                newmat.transmission = 1.0f; // could be anything > 0.0f
-                // This is how model material is later transformed to glass
-                newmat.cd = glass->ct;
-                newmat.cs = glass->cr;
-                newmat.ior = glass->ior;
-                newmat.illum = 4;
+                generic_materials.emplace_back(map_material(*glass));
             }
-            mod.materials.emplace_back(newmat); // TODO
 
 #if VSNRAY_COMMON_HAVE_PTEX
             if (tex_format == renderer::Ptex)
@@ -2399,62 +2488,18 @@ int main(int argc, char** argv)
             rend.mod.materials
             );
 
-    // Generate another list with generic materials
-    rend.generic_materials = make_materials(
-            generic_material_t{},
-            rend.mod.materials,
-            [](aligned_vector<generic_material_t>& cont, model::material_type mat)
-            {
-                // Add emissive material if emissive component > 0
-                if (length(mat.ce) > 0.0f)
+    if (rend.generic_materials.empty())
+    {
+        // Generate another list with generic materials
+        rend.generic_materials = make_materials(
+                generic_material_t{},
+                rend.mod.materials,
+                [](aligned_vector<generic_material_t>& cont, model::material_type mat)
                 {
-                    emissive<float> em;
-                    em.ce() = from_rgb(mat.ce);
-                    em.ls() = 1.0f;
-                    cont.emplace_back(em);
+                    cont.emplace_back(map_material(mat));
                 }
-                else if (mat.illum == 1)
-                {
-                    matte<float> ma;
-                    ma.ca() = from_rgb(mat.ca);
-                    ma.cd() = from_rgb(mat.cd);
-                    ma.ka() = 1.0f;
-                    ma.kd() = 1.0f;
-                    cont.emplace_back(ma);
-                }
-                else if (mat.illum == 3)
-                {
-                    mirror<float> mi;
-                    mi.cr() = from_rgb(mat.cs);
-                    mi.kr() = 1.0f;
-                    mi.ior() = spectrum<float>(0.0f);
-                    mi.absorption() = spectrum<float>(0.0f);
-                    cont.emplace_back(mi);
-                }
-                else if (mat.illum == 4 && mat.transmission > 0.0f)
-                {
-                    glass<float> gl;
-                    gl.ct() = from_rgb(mat.cd);
-                    gl.kt() = 1.0f;
-                    gl.cr() = from_rgb(mat.cs);
-                    gl.kr() = 1.0f;
-                    gl.ior() = from_rgb(mat.ior);
-                    cont.push_back(gl);
-                }
-                else
-                {
-                    plastic<float> pl;
-                    pl.ca() = from_rgb(mat.ca);
-                    pl.cd() = from_rgb(mat.cd);
-                    pl.cs() = from_rgb(mat.cs);
-                    pl.ka() = 1.0f;
-                    pl.kd() = 1.0f;
-                    pl.ks() = 1.0f;
-                    pl.specular_exp() = mat.specular_exp;
-                    cont.emplace_back(pl);
-                }
-            }
-            );
+                );
+    }
 
 
     // Loop over all triangles, check if their
