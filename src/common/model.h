@@ -21,8 +21,8 @@
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
 
+#include "sg/material.h"
 #include "file_base.h"
-#include "sg.h"
 
 namespace visionaray
 {

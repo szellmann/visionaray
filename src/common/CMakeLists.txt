@@ -185,6 +185,7 @@ set(COMMON_HEADERS
     # Scene graph
 
     sg/io.h
+    sg/material.h
 
     blocking_queue.h
     cfile.h
