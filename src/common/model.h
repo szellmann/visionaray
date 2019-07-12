@@ -67,15 +67,6 @@ public:
         // Specular exponent
         float specular_exp = 32.0f;
 
-        // Glossiness term
-        float glossiness = 0.0f;
-
-        // Sheen
-        float sheen = 0.0f;
-
-        // Sheen tint
-        float sheen_tint = 0.0f;
-
         // Wavefront obj illumination model (default: 1 maps to plastic).
         int illum = 2;
     };
