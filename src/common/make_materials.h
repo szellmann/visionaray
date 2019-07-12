@@ -10,14 +10,14 @@
 #include <visionaray/generic_material.h>
 #include <visionaray/material.h>
 
-#include "model.h"
+#include "sg/material.h"
 
 namespace visionaray
 {
 
 inline aligned_vector<plastic<float>> make_materials(
-        plastic<float>          /* */,
-        model::mat_list const&  materials
+        plastic<float>                          /* */,
+        aligned_vector<sg::obj_material> const& materials
         )
 {
     aligned_vector<plastic<float>> result;
@@ -40,9 +40,9 @@ inline aligned_vector<plastic<float>> make_materials(
 
 template <typename ...Ts, typename UpdateFunc>
 inline aligned_vector<generic_material<Ts...>> make_materials(
-        generic_material<Ts...> /* */,
-        model::mat_list const&  materials,
-        UpdateFunc              update_func
+        generic_material<Ts...>                 /* */,
+        aligned_vector<sg::obj_material> const& materials,
+        UpdateFunc                              update_func
         )
 {
     aligned_vector<generic_material<Ts...>> result;
