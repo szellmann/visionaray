@@ -167,6 +167,7 @@ static std::shared_ptr<sg::texture> load_texture(
         return tex_node;
     }
 #else
+    VSNRAY_UNUSED(texture_cache);
 
     std::cerr << "Warning: not compiled with Ptex support\n";
 
