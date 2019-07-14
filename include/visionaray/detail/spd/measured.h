@@ -47,8 +47,8 @@ public:
     {
         // Require values to be sorted by wavelength
         assert(std::is_sorted(
-                values.begin(),
-                values.end(),
+                values_.begin(),
+                values_.end(),
                 [](std::pair<float, float> a, std::pair<float, float> b)
                 {
                     return a.first < b.first;
