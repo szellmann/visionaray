@@ -1116,6 +1116,16 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
 
                 props->material() = glass;
             }
+            else if (strncmp(type_string.GetString(), "metal", 5) == 0)
+            {
+                auto metal = std::make_shared<sg::metal_material>();
+
+                parse_optional(metal->roughness, mat, "roughness");
+                parse_optional(metal->ior, mat, "ior");
+                parse_optional(metal->absorption, mat, "absorption");
+
+                props->material() = metal;
+            }
             else if (strncmp(type_string.GetString(), "disney", 6) == 0)
             {
                 auto disney = std::make_shared<sg::disney_material>();
@@ -1870,6 +1880,31 @@ void vsnray_writer::write_surface_properties(Object obj, std::shared_ptr<sg::sur
             jmat.AddMember(rapidjson::StringRef("ct"), ct, allocator);
             jmat.AddMember(rapidjson::StringRef("cr"), cr, allocator);
             jmat.AddMember(rapidjson::StringRef("ior"), ior, allocator);
+        }
+        else if (auto mat = std::dynamic_pointer_cast<sg::metal_material>(sp->material()))
+        {
+            jmat.AddMember(
+                rapidjson::StringRef("type"),
+                rapidjson::StringRef("metal"),
+                allocator
+                );
+
+            rapidjson::Value ior(rapidjson::kArrayType);
+            rapidjson::Value absorption(rapidjson::kArrayType);
+
+            for (int i = 0; i < 3; ++i)
+            {
+                ior.PushBack(rapidjson::Value().SetFloat(mat->ior[i]), allocator);
+                absorption.PushBack(rapidjson::Value().SetFloat(mat->absorption[i]), allocator);
+            }
+
+            jmat.AddMember(
+                rapidjson::StringRef("roughness"),
+                rapidjson::Value().SetFloat(mat->roughness),
+                allocator
+                );
+            jmat.AddMember(rapidjson::StringRef("ior"), ior, allocator);
+            jmat.AddMember(rapidjson::StringRef("absorption"), absorption, allocator);
         }
         else if (auto mat = std::dynamic_pointer_cast<sg::disney_material>(sp->material()))
         {
