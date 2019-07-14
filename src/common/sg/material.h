@@ -90,6 +90,23 @@ struct glass_material : material
 
 
 //-------------------------------------------------------------------------------------------------
+// Metal material
+//
+
+struct metal_material : material
+{
+    // Roughness
+    float roughness = 0.0f;
+
+    // Index of refraction
+    vec3 ior = { 1.0f, 1.0f, 1.0f };
+
+    // Absorption
+    vec3 absorption = { 0.2f, 0.2f, 0.2f };
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // Disney principled material
 //
 

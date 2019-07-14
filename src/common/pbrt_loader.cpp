@@ -17,6 +17,7 @@
 #endif
 
 #include <visionaray/detail/spd/blackbody.h>
+#include <visionaray/detail/spd/measured.h>
 #include <visionaray/math/forward.h>
 #include <visionaray/math/io.h>
 #include <visionaray/math/matrix.h>
@@ -145,17 +146,33 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape,
     }
     else if (auto m = std::dynamic_pointer_cast<MetalMaterial>(shape->material))
     {
-        auto obj = std::make_shared<sg::obj_material>();
+        auto metal = std::make_shared<sg::metal_material>();
 
-        obj->name() = m->name;
+        metal->name() = m->name;
 
-        // Approximate with an obj material with no diffuse and a high exponent for now..
-        obj->ca = vec3(0.0f, 0.0f, 0.0f);
-        obj->cd = vec3(0.0f, 0.0f, 0.0f);
-        obj->cs = vec3(m->k.x, m->k.y, m->k.z);
-        obj->specular_exp = 128.0f;
+        metal->roughness = m->roughness;
 
-        sp->material() = obj;
+        if (m->spectrum_eta.spd.size() > 0)
+        {
+            measured msrd(m->spectrum_eta.spd);
+            metal->ior = spd_to_rgb(msrd);
+        }
+        else
+        {
+            metal->ior = vec3(m->eta.x, m->eta.y, m->eta.z);
+        }
+
+        if (m->spectrum_k.spd.size() > 0)
+        {
+            measured msrd(m->spectrum_k.spd);
+            metal->absorption = spd_to_rgb(msrd);
+        }
+        else
+        {
+            metal->absorption = vec3(m->k.x, m->k.y, m->k.z);
+        }
+
+        sp->material() = metal;
     }
     else if (auto m = std::dynamic_pointer_cast<PlasticMaterial>(shape->material))
     {

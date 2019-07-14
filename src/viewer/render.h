@@ -73,6 +73,7 @@ using generic_material_t = generic_material<
         emissive<float>,
         glass<float>,
         matte<float>,
+        metal<float>,
         mirror<float>,
         plastic<float>
         >;

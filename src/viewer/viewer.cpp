@@ -584,6 +584,21 @@ generic_material_t map_material(sg::disney_material const& mat)
 
 
 //-------------------------------------------------------------------------------------------------
+// Map metal material to generic material
+//
+
+generic_material_t map_material(sg::metal_material const& mat)
+{
+    // TODO: consolidate glass and sg::glass_material (?)
+    metal<float> mt;
+    mt.roughness() = mat.roughness;
+    mt.absorption() = from_rgb(mat.absorption);
+    mt.ior() = from_rgb(mat.ior);
+    return mt;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Map glass material to generic material
 //
 
@@ -1296,6 +1311,10 @@ void renderer::build_scene()
             else if (auto obj = std::dynamic_pointer_cast<sg::obj_material>(surf.first))
             {
                 generic_materials.emplace_back(map_material(*obj));
+            }
+            else if (auto metal = std::dynamic_pointer_cast<sg::metal_material>(surf.first))
+            {
+                generic_materials.emplace_back(map_material(*metal));
             }
             else if (auto glass = std::dynamic_pointer_cast<sg::glass_material>(surf.first))
             {
