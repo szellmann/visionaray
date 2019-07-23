@@ -51,7 +51,7 @@ The viewer supports the following mouse interaction modes and keyboard shortcuts
 * **Key-h**: Toggle visibility of head up display.
 * **Key-l**: Toggle headlight.
 * **Key-m**: **Switch** between **CPU** mode and **GPU** mode (must be [compiled with CUDA](#build-cuda)).
-  **Key-p**: Make a screenshot and store it in "screenshot.pnm".
+* **Key-p**: Make a screenshot and store it in "screenshot.pnm".
 * **Key-s**: Toggle supersampling anti-aliasing mode. Only applies to ray casting and ray tracing algorithm (simple|whitted). Supported modes: 1x, 2x, 4x, and 8x supersampling.
 * **Key-u**: **Store** the current **camera** in the working directory (visionaray-camera.txt).
 * **Key-v**: **Load** the file "visionaray-camera.txt" from the current working directory, if it exists, and adjust the **camera** accordingly.
