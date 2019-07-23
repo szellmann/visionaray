@@ -1594,6 +1594,16 @@ void renderer::render_hud()
                 rt.color_space() = host_device_rt::RGB;
                 ImGui::Text(" RGB");
             }
+            ImGui::SameLine();
+            int bounces = this->bounces;
+            ImGui::PushItemWidth(80);
+            if (ImGui::InputInt("Bounces", &bounces))
+            {
+                this->bounces = static_cast<unsigned>(bounces);
+                counter.reset();
+                clear_frame();
+            }
+            ImGui::PopItemWidth();
 
             int nbit = sizeof(ssaa_samples) * 8;
             int ssaa_log2 = nbit - 1 - detail::clz(ssaa_samples);
