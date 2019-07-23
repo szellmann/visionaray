@@ -354,6 +354,14 @@ struct renderer : viewer_type
                     cam.set_focal_distance(fd);
                 }
 
+                // asynchronous rendering
+                bool async = render_async;
+                err = ini.get_bool("render_async", async);
+                if (err == inifile::Ok)
+                {
+                    render_async = async;
+                }
+
                 // ImGui menu
                 bool hud = show_hud;
                 err = ini.get_bool("hud", hud);
