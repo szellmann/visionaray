@@ -55,7 +55,7 @@ static void store_rgba32f(
         size_t                         height
         )
 {
-    auto pitch = width * sizeof(float);
+    auto pitch = width * sizeof(vec4);
     dst.resize(pitch * height);
 
     vec4* arr = reinterpret_cast<vec4*>(dst.data());
