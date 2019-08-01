@@ -177,7 +177,7 @@ public:
 
     operator bool() const
     {
-        return data_.size() == 0;
+        return data_.size() != 0;
     }
 
 protected:
