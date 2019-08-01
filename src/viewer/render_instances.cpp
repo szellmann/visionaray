@@ -26,7 +26,8 @@ void render_instances_cpp(
         camera_t const&                                           cam,
         unsigned&                                                 frame_num,
         algorithm                                                 algo,
-        unsigned                                                  ssaa_samples
+        unsigned                                                  ssaa_samples,
+        hdr_texture_t const&                                      environment_map
         )
 {
     using bvh_ref = index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>::bvh_ref;
@@ -35,26 +36,51 @@ void render_instances_cpp(
 
     primitives.push_back(bvh.ref());
 
-    auto kparams = make_kernel_params(
-            normals_per_vertex_binding{},
-            colors_per_vertex_binding{},
-            primitives.data(),
-            primitives.data() + primitives.size(),
-            geometric_normals.data(),
-            shading_normals.data(),
-            tex_coords.data(),
-            materials.data(),
-            colors.data(),
-            textures.data(),
-            lights.data(),
-            lights.data() + lights.size(),
-            bounces,
-            epsilon,
-            bgcolor,
-            ambient
-            );
+    if (environment_map)
+    {
+        auto kparams = make_kernel_params(
+                normals_per_vertex_binding{},
+                colors_per_vertex_binding{},
+                primitives.data(),
+                primitives.data() + primitives.size(),
+                geometric_normals.data(),
+                shading_normals.data(),
+                tex_coords.data(),
+                materials.data(),
+                colors.data(),
+                textures.data(),
+                lights.data(),
+                lights.data() + lights.size(),
+                environment_map,
+                bounces,
+                epsilon
+                );
 
-    call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
+        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
+    }
+    else
+    {
+        auto kparams = make_kernel_params(
+                normals_per_vertex_binding{},
+                colors_per_vertex_binding{},
+                primitives.data(),
+                primitives.data() + primitives.size(),
+                geometric_normals.data(),
+                shading_normals.data(),
+                tex_coords.data(),
+                materials.data(),
+                colors.data(),
+                textures.data(),
+                lights.data(),
+                lights.data() + lights.size(),
+                bounces,
+                epsilon,
+                bgcolor,
+                ambient
+                );
+
+        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
+    }
 }
 
 } // visionaray

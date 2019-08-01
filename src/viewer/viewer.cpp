@@ -120,6 +120,7 @@ struct renderer : viewer_type
 #ifdef __CUDACC__
         , device_sched(8, 8)
 #endif
+        , environment_map(0, 0)
         , mouse_pos(0)
     {
         using namespace support;
@@ -463,8 +464,7 @@ struct renderer : viewer_type
 #endif
     thin_lens_camera                            cam;
 
-    std::shared_ptr<visionaray::texture<vec4, 2>>
-                                                environment_map = nullptr;
+    visionaray::texture<vec4, 2>                environment_map;
 
 
     // List of cameras, e.g. read from scene graph
@@ -806,6 +806,7 @@ struct build_scene_visitor : sg::node_visitor
             aligned_vector<std::pair<std::string, thin_lens_camera>>& cameras,
             aligned_vector<point_light<float>>& point_lights,
             aligned_vector<spot_light<float>>& spot_lights,
+            visionaray::texture<vec4, 2>& environment_map,
             renderer::bvh_build_strategy build_strategy
             )
         : bvhs_(bvhs)
@@ -820,7 +821,7 @@ struct build_scene_visitor : sg::node_visitor
         , cameras_(cameras)
         , point_lights_(point_lights)
         , spot_lights_(spot_lights)
-        , environment_map(nullptr)
+        , environment_map_(environment_map)
         , build_strategy_(build_strategy)
     {
     }
@@ -860,10 +861,10 @@ struct build_scene_visitor : sg::node_visitor
 
         if (tex != nullptr)
         {
-            environment_map = std::make_shared<visionaray::texture<vec4, 2>>(tex->width(), tex->height());
-            environment_map->set_address_mode(tex->get_address_mode());
-            environment_map->set_filter_mode(tex->get_filter_mode());
-            environment_map->reset(tex->data());
+            environment_map_ = visionaray::texture<vec4, 2>(tex->width(), tex->height());
+            environment_map_.set_address_mode(tex->get_address_mode());
+            environment_map_.set_filter_mode(tex->get_filter_mode());
+            environment_map_.reset(tex->data());
         }
 
         node_visitor::apply(el);
@@ -1172,7 +1173,7 @@ struct build_scene_visitor : sg::node_visitor
     aligned_vector<spot_light<float>>& spot_lights_;
 
     // Environment map
-    std::shared_ptr<visionaray::texture<vec4, 2>> environment_map;
+    visionaray::texture<vec4, 2>& environment_map_;
 
     // Assign consecutive prim ids
     unsigned current_prim_id_ = 0;
@@ -1234,6 +1235,7 @@ void renderer::build_scene()
                 cameras,
                 point_lights,
                 spot_lights,
+                environment_map,
                 build_strategy
                 );
         mod.scene_graph->accept(build_visitor);
@@ -1355,8 +1357,6 @@ void renderer::build_scene()
                 }
             }
         }
-
-        environment_map = build_visitor.environment_map;
 
         mod.bbox = host_top_level_bvh.node(0).get_bounds();
         mod.materials.push_back({});
@@ -1945,9 +1945,15 @@ void renderer::render_impl()
             {
                 temp_lights.push_back(al);
             }
-
             if (tex_format == renderer::UV)
             {
+                hdr_texture_t env_map(0, 0);
+
+                if (environment_map)
+                {
+                    env_map = hdr_texture_t(environment_map);
+                }
+
                 render_instances_cpp(
                         host_top_level_bvh,
                         mod.geometric_normals,
@@ -1966,7 +1972,8 @@ void renderer::render_impl()
                         camx,
                         frame_num,
                         algo,
-                        ssaa_samples
+                        ssaa_samples,
+                        env_map
                         );
             }
 #if VSNRAY_COMMON_HAVE_PTEX
