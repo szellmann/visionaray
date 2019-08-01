@@ -65,6 +65,11 @@ public:
     size_t height() const { return height_; }
     size_t depth() const { return depth_; }
 
+    operator bool() const
+    {
+        return static_cast<bool>(static_cast<Base>(*this)) && width_ > 0 && height_ > 0 && depth_ > 0;
+    }
+
 private:
 
     size_t width_;

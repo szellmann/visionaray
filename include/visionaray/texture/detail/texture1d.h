@@ -56,6 +56,11 @@ public:
 
     size_t width() const { return width_; }
 
+    operator bool() const
+    {
+        return static_cast<bool>(static_cast<Base>(*this)) && width_ > 0;
+    }
+
 private:
 
     size_t width_;

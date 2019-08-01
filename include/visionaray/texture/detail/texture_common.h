@@ -175,6 +175,11 @@ public:
         return data_.data();
     }
 
+    operator bool() const
+    {
+        return data_.size() == 0;
+    }
+
 protected:
 
     aligned_vector<T> data_;
@@ -213,6 +218,11 @@ public:
     T const* data() const
     {
         return data_;
+    }
+
+    operator bool() const
+    {
+        return data_ != nullptr;
     }
 
 protected:
