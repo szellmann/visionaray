@@ -224,6 +224,21 @@ inline void swizzle_RGB8_to_RGBA8(
     }
 }
 
+inline void swizzle_RGB32F_to_RGBA32F(
+        vector<4, float>*           dst,
+        vector<3, float> const*     src,
+        size_t                      len,
+        swizzle_hint                hint
+        )
+{
+    float a = hint == AlphaIsZero ? 0.0f : 1.0f;
+    for (size_t i = 0; i < len; ++i)
+    {
+        auto rgb = src[i];
+        dst[i] = vector<4, float>( rgb.x, rgb.y, rgb.z, a );
+    }
+}
+
 inline void swizzle_RGB32F_to_RGBA8(
         vector<4, unorm<8>>*        dst,
         vector<3, float> const*     src,
@@ -360,6 +375,23 @@ inline void swizzle_expand_types(
     if (format_dst == PF_RGBA8 && format_src == PF_RGB8)
     {
         detail::swizzle_RGB8_to_RGBA8( dst, src, len, hint );
+    }
+}
+
+// RGB32F -> RGBA32F
+
+inline void swizzle_expand_types(
+        vector<4, float>*           dst,
+        pixel_format                format_dst,
+        vector<3, float> const*     src,
+        pixel_format                format_src,
+        size_t                      len,
+        swizzle_hint                hint
+        )
+{
+    if (format_dst == PF_RGBA32F && format_src == PF_RGB32F)
+    {
+        detail::swizzle_RGB32F_to_RGBA32F( dst, src, len, hint );
     }
 }
 
