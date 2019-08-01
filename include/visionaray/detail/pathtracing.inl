@@ -19,6 +19,29 @@ namespace visionaray
 namespace pathtracing
 {
 
+template <typename EnvMap, typename R, typename T = typename R::scalar_type>
+VSNRAY_FUNC
+vector<4, T> sample_environment_map(EnvMap const& environment_map, R ray)
+{
+    auto x = atan2(ray.dir.x, ray.dir.z);
+    x = select(x < T(0.0), x + constants::two_pi<T>(), x);
+    auto y = acos(ray.dir.y);
+
+    auto u = x / constants::two_pi<T>();
+    auto v = y * constants::inv_pi<T>();
+
+    vector<2, T> tc(u, v);
+
+    return tex2D(environment_map, tc);
+}
+
+template <typename R, typename T = typename R::scalar_type>
+VSNRAY_FUNC
+vector<4, T> sample_environment_map(std::nullptr_t*, R)
+{
+    return vector<4, T>(0.0);
+}
+
 template <typename Params>
 struct kernel
 {
@@ -46,17 +69,35 @@ struct kernel
         result_record<S> result;
         result.color = params.bg_color;
 
+        if (params.environment_map)
+        {
+            result.color = sample_environment_map(params.environment_map, ray);
+        }
+
         for (unsigned bounce = 0; bounce < params.num_bounces; ++bounce)
         {
             auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end, isect);
 
             // Handle rays that just exited
             auto exited = active_rays & !hit_rec.hit;
-            intensity += select(
-                exited,
-                C(from_rgba(params.ambient_color)) * throughput,
-                C(0.0)
-                );
+
+            if (params.environment_map)
+            {
+                auto env = sample_environment_map(params.environment_map, ray);
+                intensity += select(
+                    exited,
+                    from_rgba(env) * throughput,
+                    C(0.0)
+                    );
+            }
+            else
+            {
+                intensity += select(
+                    exited,
+                    C(from_rgba(params.ambient_color)) * throughput,
+                    C(0.0)
+                    );
+            }
 
 
             // Exit if no ray is active anymore

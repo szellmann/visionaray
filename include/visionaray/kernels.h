@@ -31,7 +31,8 @@ template <
     typename Colors,
     typename Textures,
     typename Lights,
-    typename Color
+    typename Color,
+    typename EnvMap
     >
 struct kernel_params
 {
@@ -69,6 +70,8 @@ struct kernel_params
 
     Color bg_color;
     Color ambient_color;
+
+    EnvMap environment_map;
 };
 
 
@@ -101,7 +104,8 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         std::nullptr_t*, // dummy texture type
         std::nullptr_t*, // dummy light type
-        vec4
+        vec4,
+        std::nullptr_t*  // dummy env map type
         >
 {
     return {
@@ -116,7 +120,8 @@ auto make_kernel_params(
         num_bounces,
         epsilon,
         bg_color,
-        ambient_color
+        ambient_color,
+        nullptr  // env map
         };
 }
 
@@ -149,7 +154,8 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         std::nullptr_t*, // dummy texture type
         Lights,
-        vec4
+        vec4,
+        std::nullptr_t*  // dummy env map type
         >
 {
     return {
@@ -164,7 +170,8 @@ auto make_kernel_params(
         num_bounces,
         epsilon,
         bg_color,
-        ambient_color
+        ambient_color,
+        nullptr  // env map
         };
 }
 
@@ -203,7 +210,8 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         std::nullptr_t*, // dummy texture type
         Lights,
-        vec4
+        vec4,
+        std::nullptr_t*  // dummy env map type
         >
 {
     return {
@@ -218,7 +226,8 @@ auto make_kernel_params(
         num_bounces,
         epsilon,
         bg_color,
-        ambient_color
+        ambient_color,
+        nullptr  // env map
         };
 }
 
@@ -261,7 +270,8 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         Textures,
         Lights,
-        vec4
+        vec4,
+        std::nullptr_t* // dummy env map type
         >
 {
     return {
@@ -276,7 +286,8 @@ auto make_kernel_params(
         num_bounces,
         epsilon,
         bg_color,
-        ambient_color
+        ambient_color,
+        nullptr  // env map
         };
 }
 
@@ -324,7 +335,8 @@ auto make_kernel_params(
         Colors,
         Textures,
         Lights,
-        vec4
+        vec4,
+        std::nullptr_t* // dummy env map type
         >
 {
     return {
@@ -339,10 +351,74 @@ auto make_kernel_params(
         num_bounces,
         epsilon,
         bg_color,
-        ambient_color
+        ambient_color,
+        nullptr // env map
         };
 }
 
+// w/ everything ------------------------------------------
+
+template <
+    typename NormalBinding,
+    typename ColorBinding,
+    typename Primitives,
+    typename Normals,
+    typename TexCoords,
+    typename Materials,
+    typename Colors,
+    typename Textures,
+    typename Lights,
+    typename EnvMap,
+    typename = typename std::enable_if<is_normal_binding<NormalBinding>::value>::type,
+    typename = typename std::enable_if<is_color_binding<ColorBinding>::value>::type
+    >
+auto make_kernel_params(
+        NormalBinding       /* */,
+        ColorBinding        /* */,
+        Primitives const&   begin,
+        Primitives const&   end,
+        Normals const&      geometric_normals,
+        Normals const&      shading_normals,
+        TexCoords const&    tex_coords,
+        Materials const&    materials,
+        Colors const&       colors,
+        Textures const&     textures,
+        Lights const&       lbegin,
+        Lights const&       lend,
+        EnvMap const&       environment_map,
+        unsigned            num_bounces     = 5,
+        float               epsilon         = std::numeric_limits<float>::epsilon()
+        )
+    -> kernel_params<
+        NormalBinding,
+        ColorBinding,
+        Primitives,
+        Normals,
+        TexCoords,
+        Materials,
+        Colors,
+        Textures,
+        Lights,
+        vec4,
+        EnvMap
+        >
+{
+    return {
+        { begin, end },
+        geometric_normals,
+        shading_normals,
+        tex_coords,
+        materials,
+        colors,
+        textures,
+        { lbegin, lend },
+        num_bounces,
+        epsilon,
+        vec4(), // dummy bgcolor
+        vec4(), // ambient color
+        environment_map
+        };
+}
 } // visionaray
 
 #include "detail/pathtracing.inl"
