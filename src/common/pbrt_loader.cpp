@@ -508,6 +508,65 @@ void make_scene_graph(
 
         parent.add_child(trans);
     }
+
+    for (auto ls : object->lightSources)
+    {
+        if (auto ils = std::dynamic_pointer_cast<InfiniteLightSource>(ls))
+        {
+            std::string tex_filename;
+
+            boost::filesystem::path kdp(ils->mapName);
+
+            if (kdp.is_absolute())
+            {
+                tex_filename = kdp.string();
+            }
+
+            // Maybe boost::filesystem was wrong and a relative path
+            // camouflaged as an absolute one (e.g. because it was
+            // erroneously prefixed with a '/' under Unix.
+            // Happens e.g. in the fairy forest model..
+            // Let's also check for that..
+
+            if (!boost::filesystem::exists(tex_filename) || !kdp.is_absolute())
+            {
+                // Find texture relative to the path the obj file is located in
+                boost::filesystem::path p(base_filename);
+                tex_filename = p.parent_path().string() + "/" + ils->mapName;
+                std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
+            }
+
+            if (!boost::filesystem::exists(tex_filename))
+            {
+                boost::trim(tex_filename);
+            }
+
+            if (boost::filesystem::exists(tex_filename))
+            {
+                image img;
+                if (img.load(tex_filename))
+                {
+                    auto tex = std::make_shared<sg::texture2d<vec4>>();
+                    tex->resize(img.width(), img.height());
+                    tex->name() = ils->mapName;
+                    tex->set_filter_mode(Linear);
+                    tex->set_address_mode(Clamp);
+                    make_texture(*tex, img);
+
+                    auto el = std::make_shared<sg::environment_light>();
+                    el->texture() = tex;
+
+                    parent.add_child(el);
+                }
+
+                //std::cout << ils->mapName << '\n';
+                //std::cout << ils->transform << '\n';
+                //std::cout << ils->L << '\n';
+                //std::cout << ils->scale << '\n';
+                //std::cout << ils->nSamples << '\n';
+            }
+        }
+    }
 }
 
 #endif // VSNRAY_COMMON_HAVE_PBRTPARSER
