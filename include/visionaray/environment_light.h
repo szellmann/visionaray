@@ -8,6 +8,7 @@
 
 #include "detail/macros.h"
 #include "math/matrix.h"
+#include "spectrum.h"
 
 namespace visionaray
 {
@@ -25,6 +26,9 @@ public:
     VSNRAY_FUNC Texture& texture();
     VSNRAY_FUNC Texture const& texture() const;
 
+    VSNRAY_FUNC spectrum<T>& scale();
+    VSNRAY_FUNC spectrum<T> const& scale() const;
+
     // Set light to world transform; also sets world to light (its inverse)
     VSNRAY_FUNC void set_light_to_world_transform(matrix<4, 4, T> const& light_to_world_transform);
 
@@ -35,6 +39,8 @@ public:
 
 private:
     Texture texture_;
+
+    spectrum<T> scale_;
 
     matrix<4, 4, T> light_to_world_transform_;
     matrix<4, 4, T> world_to_light_transform_;

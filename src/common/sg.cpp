@@ -99,6 +99,16 @@ std::shared_ptr<sg::texture> const& environment_light::texture() const
     return texture_;
 }
 
+vec3& environment_light::scale()
+{
+    return scale_;
+}
+
+vec3 const& environment_light::scale() const
+{
+    return scale_;
+}
+
 mat4& environment_light::light_to_world_transform()
 {
     return light_to_world_transform_;

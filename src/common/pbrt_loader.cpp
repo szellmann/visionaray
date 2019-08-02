@@ -555,16 +555,11 @@ void make_scene_graph(
 
                     auto el = std::make_shared<sg::environment_light>();
                     el->texture() = tex;
+                    el->scale() = vec3(ils->scale.x, ils->scale.y, ils->scale.z);
                     el->light_to_world_transform() = make_mat4(ils->transform);
 
                     parent.add_child(el);
                 }
-
-                //std::cout << ils->mapName << '\n';
-                //std::cout << ils->transform << '\n';
-                //std::cout << ils->L << '\n';
-                //std::cout << ils->scale << '\n';
-                //std::cout << ils->nSamples << '\n';
             }
         }
     }

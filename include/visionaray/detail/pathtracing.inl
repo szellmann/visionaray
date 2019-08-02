@@ -34,7 +34,7 @@ vector<4, T> sample_environment_light(Light const& env_light, R ray)
 
     vector<2, T> tc(u, v);
 
-    return tex2D(env_light.texture(), tc);
+    return tex2D(env_light.texture(), tc) * vector<4, T>(to_rgba(env_light.scale()));
 }
 
 template <typename R, typename T = typename R::scalar_type>

@@ -292,12 +292,17 @@ public:
     std::shared_ptr<sg::texture>& texture();
     std::shared_ptr<sg::texture> const& texture() const;
 
+    vec3& scale();
+    vec3 const& scale() const;
+
     mat4& light_to_world_transform();
     mat4 const& light_to_world_transform() const;
 
 private:
 
     std::shared_ptr<sg::texture> texture_;
+
+    vec3 scale_;
 
     mat4 light_to_world_transform_;
 

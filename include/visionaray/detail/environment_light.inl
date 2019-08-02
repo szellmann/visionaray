@@ -20,6 +20,20 @@ Texture const& environment_light<T, Texture>::texture() const
 
 template <typename T, typename Texture>
 VSNRAY_FUNC
+spectrum<T>& environment_light<T, Texture>::scale()
+{
+    return scale_;
+}
+
+template <typename T, typename Texture>
+VSNRAY_FUNC
+spectrum<T> const& environment_light<T, Texture>::scale() const
+{
+    return scale_;
+}
+
+template <typename T, typename Texture>
+VSNRAY_FUNC
 void environment_light<T, Texture>::set_light_to_world_transform(matrix<4, 4, T> const& light_to_world_transform)
 {
     light_to_world_transform_ = light_to_world_transform;

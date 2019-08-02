@@ -874,6 +874,7 @@ struct build_scene_visitor : sg::node_visitor
             env_map_.reset(tex->data());
 
             env_light_.texture() = texture_ref<vec4, 2>(env_map_);
+            env_light_.scale() = from_rgb(el.scale());
             env_light_.set_light_to_world_transform(el.light_to_world_transform());
         }
 
