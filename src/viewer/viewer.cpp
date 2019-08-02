@@ -44,6 +44,7 @@
 #include <visionaray/aligned_vector.h>
 #include <visionaray/area_light.h>
 #include <visionaray/bvh.h>
+#include <visionaray/environment_light.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
@@ -120,10 +121,13 @@ struct renderer : viewer_type
 #ifdef __CUDACC__
         , device_sched(8, 8)
 #endif
-        , environment_map(0, 0)
+        , env_map(0, 0)
         , mouse_pos(0)
     {
         using namespace support;
+
+        // Init null environment light
+        env_light.texture() = env_map;
 
         // Parse inifile (but cmdline overrides!)
         parse_inifile({ "vsnray-viewer.ini", "viewer.ini" });
@@ -464,7 +468,8 @@ struct renderer : viewer_type
 #endif
     thin_lens_camera                            cam;
 
-    visionaray::texture<vec4, 2>                environment_map;
+    visionaray::texture<vec4, 2>                env_map;
+    host_environment_light                      env_light;
 
 
     // List of cameras, e.g. read from scene graph
@@ -806,7 +811,8 @@ struct build_scene_visitor : sg::node_visitor
             aligned_vector<std::pair<std::string, thin_lens_camera>>& cameras,
             aligned_vector<point_light<float>>& point_lights,
             aligned_vector<spot_light<float>>& spot_lights,
-            visionaray::texture<vec4, 2>& environment_map,
+            visionaray::texture<vec4, 2>& env_map,
+            host_environment_light& env_light,
             renderer::bvh_build_strategy build_strategy
             )
         : bvhs_(bvhs)
@@ -821,7 +827,8 @@ struct build_scene_visitor : sg::node_visitor
         , cameras_(cameras)
         , point_lights_(point_lights)
         , spot_lights_(spot_lights)
-        , environment_map_(environment_map)
+        , env_map_(env_map)
+        , env_light_(env_light)
         , build_strategy_(build_strategy)
     {
     }
@@ -861,10 +868,13 @@ struct build_scene_visitor : sg::node_visitor
 
         if (tex != nullptr)
         {
-            environment_map_ = visionaray::texture<vec4, 2>(tex->width(), tex->height());
-            environment_map_.set_address_mode(tex->get_address_mode());
-            environment_map_.set_filter_mode(tex->get_filter_mode());
-            environment_map_.reset(tex->data());
+            env_map_ = visionaray::texture<vec4, 2>(tex->width(), tex->height());
+            env_map_.set_address_mode(tex->get_address_mode());
+            env_map_.set_filter_mode(tex->get_filter_mode());
+            env_map_.reset(tex->data());
+
+            env_light_.texture() = texture_ref<vec4, 2>(env_map_);
+            env_light_.set_light_to_world_transform(el.light_to_world_transform());
         }
 
         node_visitor::apply(el);
@@ -1173,7 +1183,10 @@ struct build_scene_visitor : sg::node_visitor
     aligned_vector<spot_light<float>>& spot_lights_;
 
     // Environment map
-    visionaray::texture<vec4, 2>& environment_map_;
+    visionaray::texture<vec4, 2>& env_map_;
+
+    // Environment light
+    host_environment_light& env_light_;
 
     // Assign consecutive prim ids
     unsigned current_prim_id_ = 0;
@@ -1235,7 +1248,8 @@ void renderer::build_scene()
                 cameras,
                 point_lights,
                 spot_lights,
-                environment_map,
+                env_map,
+                env_light,
                 build_strategy
                 );
         mod.scene_graph->accept(build_visitor);
@@ -1947,13 +1961,6 @@ void renderer::render_impl()
             }
             if (tex_format == renderer::UV)
             {
-                hdr_texture_t env_map(0, 0);
-
-                if (environment_map)
-                {
-                    env_map = hdr_texture_t(environment_map);
-                }
-
                 render_instances_cpp(
                         host_top_level_bvh,
                         mod.geometric_normals,
@@ -1973,7 +1980,7 @@ void renderer::render_impl()
                         frame_num,
                         algo,
                         ssaa_samples,
-                        env_map
+                        env_light
                         );
             }
 #if VSNRAY_COMMON_HAVE_PTEX

@@ -555,6 +555,7 @@ void make_scene_graph(
 
                     auto el = std::make_shared<sg::environment_light>();
                     el->texture() = tex;
+                    el->light_to_world_transform() = make_mat4(ils->transform);
 
                     parent.add_child(el);
                 }

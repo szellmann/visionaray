@@ -19,25 +19,27 @@ namespace visionaray
 namespace pathtracing
 {
 
-template <typename EnvMap, typename R, typename T = typename R::scalar_type>
+template <typename Light, typename R, typename T = typename R::scalar_type>
 VSNRAY_FUNC
-vector<4, T> sample_environment_map(EnvMap const& environment_map, R ray)
+vector<4, T> sample_environment_light(Light const& env_light, R ray)
 {
-    auto x = atan2(ray.dir.x, ray.dir.z);
+    auto dir = (matrix<4, 4, T>(env_light.world_to_light_transform()) * vector<4, T>(ray.dir, T(0.0))).xyz();
+
+    auto x = atan2(dir.x, dir.y);
     x = select(x < T(0.0), x + constants::two_pi<T>(), x);
-    auto y = acos(ray.dir.y);
+    auto y = acos(dir.z);
 
     auto u = x / constants::two_pi<T>();
     auto v = y * constants::inv_pi<T>();
 
     vector<2, T> tc(u, v);
 
-    return tex2D(environment_map, tc);
+    return tex2D(env_light.texture(), tc);
 }
 
 template <typename R, typename T = typename R::scalar_type>
 VSNRAY_FUNC
-vector<4, T> sample_environment_map(std::nullptr_t*, R)
+vector<4, T> sample_environment_light(std::nullptr_t*, R)
 {
     return vector<4, T>(0.0);
 }
@@ -71,7 +73,7 @@ struct kernel
 
         if (params.environment_map)
         {
-            result.color = sample_environment_map(params.environment_map, ray);
+            result.color = sample_environment_light(params.environment_map, ray);
         }
 
         for (unsigned bounce = 0; bounce < params.num_bounces; ++bounce)
@@ -83,7 +85,7 @@ struct kernel
 
             if (params.environment_map)
             {
-                auto env = sample_environment_map(params.environment_map, ray);
+                auto env = sample_environment_light(params.environment_map, ray);
                 intensity += select(
                     exited,
                     from_rgba(env) * throughput,

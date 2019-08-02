@@ -99,6 +99,16 @@ std::shared_ptr<sg::texture> const& environment_light::texture() const
     return texture_;
 }
 
+mat4& environment_light::light_to_world_transform()
+{
+    return light_to_world_transform_;
+}
+
+mat4 const& environment_light::light_to_world_transform() const
+{
+    return light_to_world_transform_;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // transform

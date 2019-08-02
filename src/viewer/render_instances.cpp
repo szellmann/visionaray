@@ -27,7 +27,7 @@ void render_instances_cpp(
         unsigned&                                                 frame_num,
         algorithm                                                 algo,
         unsigned                                                  ssaa_samples,
-        hdr_texture_t const&                                      environment_map
+        host_environment_light const&                             env_light
         )
 {
     using bvh_ref = index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>::bvh_ref;
@@ -36,7 +36,7 @@ void render_instances_cpp(
 
     primitives.push_back(bvh.ref());
 
-    if (environment_map)
+    if (env_light.texture())
     {
         auto kparams = make_kernel_params(
                 normals_per_vertex_binding{},
@@ -51,7 +51,7 @@ void render_instances_cpp(
                 textures.data(),
                 lights.data(),
                 lights.data() + lights.size(),
-                environment_map,
+                env_light,
                 bounces,
                 epsilon
                 );

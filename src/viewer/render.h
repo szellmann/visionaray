@@ -21,6 +21,7 @@
 #include <visionaray/aligned_vector.h>
 #include <visionaray/area_light.h>
 #include <visionaray/bvh.h>
+#include <visionaray/environment_light.h>
 #include <visionaray/generic_light.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/material.h>
@@ -78,7 +79,7 @@ using generic_material_t = generic_material<
         plastic<float>
         >;
 using texture_t = texture_ref<vector<4, unorm<8>>, 2>;
-using hdr_texture_t = texture_ref<vector<4, float>, 2>;
+using host_environment_light = environment_light<float, texture_ref<vec4, 2>>;
 #ifdef __CUDACC__
 using cuda_texture_t = cuda_texture_ref<vector<4, unorm<8>>, 2>;
 #endif
@@ -209,7 +210,7 @@ void render_instances_cpp(
         unsigned&                                                 frame_num,
         algorithm                                                 algo,
         unsigned                                                  ssaa_samples,
-        hdr_texture_t const&                                      environment_map = hdr_texture_t(0, 0)
+        host_environment_light const&                             env_light
         );
 
 #ifdef __CUDACC__
