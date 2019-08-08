@@ -18,6 +18,10 @@ namespace sg
 // node
 //
 
+node::~node()
+{
+}
+
 std::string& node::name()
 {
     if (meta_data_ == nullptr)

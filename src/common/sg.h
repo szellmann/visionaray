@@ -198,6 +198,8 @@ public:
 
     VSNRAY_SG_NODE
 
+    virtual ~node();
+
     std::string& name();
     std::string const& name() const;
 
