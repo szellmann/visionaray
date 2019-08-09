@@ -813,9 +813,9 @@ struct statistics_visitor : sg::node_visitor
                 material_bytes += sizeof(sg::material);
             }
 
+#if VSNRAY_COMMON_HAVE_PTEX
             for (auto& t : sp.textures())
             {
-#if VSNRAY_COMMON_HAVE_PTEX
                 if (t.first == "diffuse")
                 {
                     auto tex = std::dynamic_pointer_cast<sg::ptex_texture>(t.second);
@@ -833,8 +833,8 @@ struct statistics_visitor : sg::node_visitor
                         }
                     }
                 }
-#endif
             }
+#endif
 
             surf_node_bytes += sizeof(sg::surface_properties);
             node_bytes_total += sizeof(sg::surface_properties);
