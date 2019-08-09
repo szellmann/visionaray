@@ -252,6 +252,8 @@ public:
 
     VSNRAY_SG_NODE
 
+    virtual ~light();
+
 };
 
 
