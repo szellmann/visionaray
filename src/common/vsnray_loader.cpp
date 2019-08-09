@@ -1055,7 +1055,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_spot_light(Object const& obj)
 }
 
 template <typename Object>
-std::shared_ptr<sg::node> vsnray_parser::parse_reference(Object const& obj)
+std::shared_ptr<sg::node> vsnray_parser::parse_reference(Object const& /*obj*/)
 {
     return std::make_shared<sg::node>();
 }
@@ -2253,7 +2253,7 @@ void load_vsnray(std::string const& filename, model& mod)
     load_vsnray(filenames, mod);
 }
 
-void save_vsnray(std::string const& filename, model const& mod, file_base::save_options const& options)
+void save_vsnray(std::string const& filename, model const& mod, file_base::save_options const& /*options*/)
 {
     cfile file(filename, "w+");
     if (!file.good())
