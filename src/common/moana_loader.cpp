@@ -385,8 +385,6 @@ static void load_light_file(
 
                     auto el = std::dynamic_pointer_cast<sg::environment_light>(light);
                     el->texture() = tex;
-                    el->scale() = vec3(1.0f, 1.0f, 1.0f);
-                    el->light_to_world_transform() = mat4::identity();
                 }
             }
         }

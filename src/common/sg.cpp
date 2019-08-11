@@ -102,6 +102,12 @@ light::~light()
 // environment_light
 //
 
+environment_light::environment_light()
+    : scale_(1.0f, 1.0f, 1.0f)
+    , light_to_world_transform_(mat4::identity())
+{
+}
+
 std::shared_ptr<sg::texture>& environment_light::texture()
 {
     return texture_;

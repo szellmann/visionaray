@@ -293,6 +293,8 @@ public:
 
     VSNRAY_SG_NODE
 
+    environment_light();
+
     std::shared_ptr<sg::texture>& texture();
     std::shared_ptr<sg::texture> const& texture() const;
 
