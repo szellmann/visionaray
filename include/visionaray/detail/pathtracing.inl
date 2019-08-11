@@ -25,9 +25,9 @@ vector<4, T> sample_environment_light(Light const& env_light, R ray)
 {
     auto dir = (matrix<4, 4, T>(env_light.world_to_light_transform()) * vector<4, T>(ray.dir, T(0.0))).xyz();
 
-    auto x = atan2(dir.x, dir.y);
+    auto x = atan2(dir.x, dir.z);
     x = select(x < T(0.0), x + constants::two_pi<T>(), x);
-    auto y = acos(dir.z);
+    auto y = acos(dir.y);
 
     auto u = x / constants::two_pi<T>();
     auto v = y * constants::inv_pi<T>();
