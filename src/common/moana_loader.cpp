@@ -29,6 +29,7 @@
 
 #include "cfile.h"
 #include "image.h"
+#include "make_texture.h"
 #include "moana_loader.h"
 #include "model.h"
 #include "obj_grammar.h"
@@ -377,14 +378,15 @@ static void load_light_file(
                 {
                     assert(img.format() == PF_RGBA32F);
 
-                    auto data_ptr = reinterpret_cast<vec4 const*>(img.data());
-
                     tex->resize(img.width(), img.height());
                     tex->set_address_mode(Wrap);
                     tex->set_filter_mode(Linear);
-                    tex->reset(data_ptr);
+                    make_texture(*tex, img);
 
-                    std::dynamic_pointer_cast<sg::environment_light>(light)->texture() = tex;
+                    auto el = std::dynamic_pointer_cast<sg::environment_light>(light);
+                    el->texture() = tex;
+                    el->scale() = vec3(1.0f, 1.0f, 1.0f);
+                    el->light_to_world_transform() = mat4::identity();
                 }
             }
         }
