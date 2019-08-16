@@ -76,11 +76,11 @@ public:
         threads.reset(nullptr);
     }
 
-    template <typename Task>
-    void run(Task t, long queue_length)
+    template <typename Func>
+    void run(Func f, long queue_length)
     {
         // Set worker function
-        task = t;
+        func = f;
 
         // Set counters
         sync_params.num_work_items = queue_length;
@@ -103,9 +103,8 @@ public:
 
 private:
 
-    // Work-item specific tasks
-    using task_t = std::function<void(unsigned)>;
-    task_t task;
+    using func_t = std::function<void(unsigned)>;
+    func_t func;
 
 
     struct
@@ -156,7 +155,7 @@ private:
                     break;
                 }
 
-                task(work_item);
+                func(work_item);
 
                 auto finished = sync_params.work_items_finished_counter.fetch_add(1);
 
