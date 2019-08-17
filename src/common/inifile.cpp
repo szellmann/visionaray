@@ -21,10 +21,10 @@ std::string trim(std::string str, std::string ws = " \t")
     // Remove leading whitespace
     auto first = str.find_first_not_of(ws);
 
-    // No whitespace found
+    // Only whitespace found
     if (first == std::string::npos)
     {
-        first = 0;
+        return "";
     }
 
     // Remove trailing whitespace
