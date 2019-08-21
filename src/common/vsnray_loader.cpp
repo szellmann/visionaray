@@ -1401,6 +1401,10 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
             mesh->vertex_indices.push_back(item.GetInt());
         }
     }
+    else
+    {
+        throw std::runtime_error("");
+    }
 
     if (obj.HasMember("normal_indices"))
     {
