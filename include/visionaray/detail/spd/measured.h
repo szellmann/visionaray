@@ -64,7 +64,7 @@ public:
         size_t ival(-1);
         for (size_t i = 0; i < values_.size() - 1; ++i)
         {
-            if (values_[i].first >= lambda && values_[i + 1].first)
+            if (values_[i].first <= lambda && values_[i + 1].first >= lambda)
             {
                 ival = i;
                 break;
