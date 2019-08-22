@@ -21,10 +21,13 @@ Options:
    -bvh=<ARG>             BVH build strategy:
       =default            - Binned SAH
       =split              - Binned SAH with spatial splits
+      =lbvh               - LBVH (CPU)
    -camera=<ARG>          Text file with camera parameters
    -colorspace=<ARG>      Color space:
       =rgb                - RGB color space for display
       =srgb               - sRGB color space for display
+   -dof=<ARG>             Activate depth of field
+   -envmap=<ARG>          HDR environment map
    -fullscreen            Full screen window
    -headlight=<ARG>       Activate headlight
    -height=<ARG>          Window height
