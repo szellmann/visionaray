@@ -392,6 +392,14 @@ struct renderer : viewer_type
                     use_headlight = headlight;
                 }
 
+                // Environment map
+                std::string envmap = env_map_filename;
+                err = ini.get_string("envmap", envmap, true /*remove quotes*/);
+                if (err == inifile::Ok)
+                {
+                    env_map_filename = envmap;
+                }
+
                 // Supersampling
                 uint32_t ssaa = ssaa_samples;
                 err = ini.get_uint32("ssaa", ssaa);
