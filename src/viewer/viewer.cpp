@@ -63,6 +63,7 @@
 #include <common/manip/zoom_manipulator.h>
 #include <common/inifile.h>
 #include <common/make_materials.h>
+#include <common/make_texture.h>
 #include <common/model.h>
 #include <common/image.h>
 #include <common/sg.h>
@@ -148,6 +149,14 @@ struct renderer : viewer_type
             cl::Desc("Text file with camera parameters"),
             cl::ArgRequired,
             cl::init(this->initial_camera)
+            ) );
+
+        add_cmdline_option( cl::makeOption<std::string&>(
+            cl::Parser<>(),
+            "envmap",
+            cl::Desc("HDR environment map"),
+            cl::ArgRequired,
+            cl::init(this->env_map_filename)
             ) );
 
         add_cmdline_option( cl::makeOption<algorithm&>({
@@ -468,6 +477,7 @@ struct renderer : viewer_type
 #endif
     thin_lens_camera                            cam;
 
+    std::string                                 env_map_filename;
     visionaray::texture<vec4, 2>                env_map;
     host_environment_light                      env_light;
 
@@ -1227,6 +1237,35 @@ void renderer::build_scene()
             builder.enable_spatial_splits(build_strategy == Split);
 
             host_bvhs[0] = builder.build(host_bvh_type{}, mod.primitives.data(), mod.primitives.size());
+        }
+
+        if (!env_map_filename.empty() && boost::filesystem::exists(env_map_filename))
+        {
+            image img;
+            if (img.load(env_map_filename))
+            {
+                env_map = visionaray::texture<vec4, 2>(img.width(), img.height());
+                env_map.set_address_mode(Clamp);
+                env_map.set_filter_mode(Linear);
+                make_texture(env_map, img);
+
+                env_light.texture() = texture_ref<vec4, 2>(env_map);
+                env_light.scale() = from_rgb(vec3(1.0f));
+                env_light.set_light_to_world_transform(mat4::identity());
+            }
+
+            // When we have an environment light , enforce the code path
+            // with instances which will also support the light source
+            host_instances.push_back(host_bvhs[0].inst(mat4::identity()));
+
+            // Any builder will suffice, we only have one instance..
+            lbvh_builder builder;
+
+            host_top_level_bvh = builder.build(
+                    index_bvh<host_bvh_type::bvh_inst>{},
+                    host_instances.data(),
+                    host_instances.size()
+                    );
         }
     }
     else
