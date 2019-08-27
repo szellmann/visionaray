@@ -17,10 +17,6 @@ if(VSNRAY_ENABLE_EXAMPLES)
 add_subdirectory(examples)
 endif()
 
-if(VSNRAY_ENABLE_CONV)
-add_subdirectory(conv)
-endif()
-
 if(VSNRAY_ENABLE_VIEWER)
 add_subdirectory(viewer)
 endif()
