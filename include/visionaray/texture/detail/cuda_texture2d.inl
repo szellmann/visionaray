@@ -304,6 +304,11 @@ public:
         init_texture_object();
     }
 
+    operator bool() const
+    {
+        return pitch_.get() != nullptr;
+    }
+
 private:
 
     cuda::pitch2d<cuda_type>        pitch_;
@@ -431,6 +436,11 @@ public:
     VSNRAY_FUNC size_t height() const
     {
         return height_;
+    }
+
+    VSNRAY_FUNC operator bool() const
+    {
+        return texture_obj_ != 0;
     }
 
 private:

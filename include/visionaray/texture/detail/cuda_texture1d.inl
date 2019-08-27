@@ -306,6 +306,11 @@ public:
         init_texture_object();
     }
 
+    operator bool() const
+    {
+        return array_.get() != nullptr;
+    }
+
 private:
 
     cuda::array                     array_;
@@ -417,6 +422,11 @@ public:
     VSNRAY_FUNC size_t width() const
     {
         return width_;
+    }
+
+    VSNRAY_FUNC operator bool() const
+    {
+        return texture_obj_ != 0;
     }
 
 private:
