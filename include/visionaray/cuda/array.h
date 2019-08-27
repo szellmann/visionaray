@@ -58,7 +58,7 @@ public:
     array& operator=(array const& rhs) = delete;
 
 
-    cudaArray_t get()
+    cudaArray_t get() const
     {
         return array_ptr_;
     }
