@@ -19,7 +19,7 @@ std::string gl::last_error()
         return std::string(reinterpret_cast<char const*>(glewGetErrorString(err)));
 #endif
     }
-    return "";
+    return std::to_string(err);
 }
 
 void gl::alloc_texture(pixel_format_info info, GLsizei w, GLsizei h)
