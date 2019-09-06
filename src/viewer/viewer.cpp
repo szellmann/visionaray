@@ -521,6 +521,7 @@ protected:
 private:
 
     void load_camera(std::string filename);
+    void init_bvh_outlines();
     void clear_frame();
     void render_hud();
     void render_impl();
@@ -1450,6 +1451,23 @@ void renderer::load_camera(std::string filename)
 
 
 //-------------------------------------------------------------------------------------------------
+// Initialize BVH outline renderer
+//
+
+void renderer::init_bvh_outlines()
+{
+    if (host_top_level_bvh.num_nodes() > 0)
+    {
+        outlines.init(host_top_level_bvh);
+    }
+    else
+    {
+        outlines.init(host_bvhs[0]);
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // If path tracing, clear frame buffer and reset frame counter
 //
 
@@ -1632,14 +1650,7 @@ void renderer::render_hud()
             {
                 if (show_bvh)
                 {
-                    if (host_top_level_bvh.num_nodes() > 0)
-                    {
-                        outlines.init(host_top_level_bvh);
-                    }
-                    else
-                    {
-                        outlines.init(host_bvhs[0]);
-                    }
+                    init_bvh_outlines();
                 }
             }
 
@@ -2325,14 +2336,7 @@ void renderer::on_key_press(key_event const& event)
 
         if (show_bvh)
         {
-            if (host_top_level_bvh.num_nodes() > 0)
-            {
-                outlines.init(host_top_level_bvh);
-            }
-            else
-            {
-                outlines.init(host_bvhs[0]);
-            }
+            init_bvh_outlines();
         }
 
         break;
