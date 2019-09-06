@@ -1456,14 +1456,34 @@ void renderer::load_camera(std::string filename)
 
 void renderer::init_bvh_outlines()
 {
-    if (host_top_level_bvh.num_nodes() > 0)
+    outlines.destroy();
+
+    if (rt.mode() == host_device_rt::CPU)
     {
-        outlines.init(host_top_level_bvh);
+        if (host_top_level_bvh.num_nodes() > 0)
+        {
+            outlines.init(host_top_level_bvh);
+        }
+        else
+        {
+            outlines.init(host_bvhs[0]);
+        }
     }
-    else
+#ifdef __CUDACC__
+    else if (rt.mode() == host_device_rt::GPU)
     {
-        outlines.init(host_bvhs[0]);
+        if (device_top_level_bvh.num_nodes() > 0)
+        {
+            index_bvh<host_bvh_type::bvh_inst> temp(device_top_level_bvh);
+            outlines.init(temp);
+        }
+        else
+        {
+            host_bvh_type temp(device_bvhs[0]);
+            outlines.init(temp);
+        }
     }
+#endif
 }
 
 
@@ -2374,6 +2394,11 @@ void renderer::on_key_press(key_event const& event)
         }
         counter.reset();
         clear_frame();
+
+        if (show_bvh)
+        {
+            init_bvh_outlines();
+        }
 #endif
         break;
 
