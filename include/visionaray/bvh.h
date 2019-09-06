@@ -610,6 +610,20 @@ private:
             cudaMemcpyDeviceToHost
             );
     }
+
+    template <typename T>
+    void copy(thrust::device_vetor<T>& dst, thrust::device_vector<T> const& src)
+    {
+        // Trivial copy. See copy(device_vector, host_vector)
+        dst.resize(src.size());
+
+        cudaMemcpy(
+            thrust::raw_pointer_cast(dst.data()),
+            thrust::raw_pointer_cast(src.data()),
+            sizeof(T) * src.size(),
+            cudaMemcpyDeviceToDevice
+            );
+    }
 #endif
 };
 
