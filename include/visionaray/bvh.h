@@ -612,7 +612,7 @@ private:
     }
 
     template <typename T>
-    void copy(thrust::device_vetor<T>& dst, thrust::device_vector<T> const& src)
+    void copy(thrust::device_vector<T>& dst, thrust::device_vector<T> const& src)
     {
         // Trivial copy. See copy(device_vector, host_vector)
         dst.resize(src.size());
