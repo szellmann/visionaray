@@ -8,9 +8,9 @@
 
 #include <visionaray/config.h>
 
-#if VSNRAY_HAVE_GLEW
+#if defined(VSNRAY_HAVE_GLEW)
 #include <GL/glew.h>
-#elif VSNRAY_HAVE_OPENGLES
+#elif defined(VSNRAY_HAVE_OPENGLES)
 #include <GLES2/gl2.h>
 #endif
 

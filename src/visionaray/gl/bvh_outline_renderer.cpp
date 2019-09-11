@@ -3,9 +3,9 @@
 
 #include <visionaray/config.h>
 
-#if VSNRAY_HAVE_GLEW
+#if defined(VSNRAY_HAVE_GLEW)
 #include <GL/glew.h>
-#elif VSNRAY_HAVE_OPENGLES
+#elif defined(VSNRAY_HAVE_OPENGLES)
 #include <GLES2/gl2.h>
 #endif
 
@@ -132,7 +132,7 @@ bool bvh_outline_renderer::init_gl(float const* data, size_t size)
         void main(void)
         {
             gl_FragColor = vec4(1.0);
-        }        
+        }
         )");
     impl_->frag.compile();
 

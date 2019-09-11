@@ -8,7 +8,7 @@
 
 #include <common/config.h>
 
-#if VSNRAY_COMMON_HAVE_GLUT
+#ifdef VSNRAY_COMMON_HAVE_GLUT
 
 #include <visionaray/detail/platform.h>
 

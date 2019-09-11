@@ -19,7 +19,7 @@
 
 #include <visionaray/config.h>
 
-#if VSNRAY_HAVE_GLEW
+#ifdef VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
 #endif
 
