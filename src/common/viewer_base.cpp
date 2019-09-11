@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#if VSNRAY_COMMON_HAVE_GLEW
+#ifdef VSNRAY_COMMON_HAVE_GLEW
 #include <GL/glew.h> // glViewport() (TODO!)
 #endif
 
@@ -60,7 +60,7 @@ struct viewer_base::impl
 };
 
 viewer_base* viewer_base::impl::viewer = nullptr;
-    
+
 
 viewer_base::impl::impl(int width, int height, char const* window_title)
     : width(width)
