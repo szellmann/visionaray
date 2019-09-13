@@ -404,7 +404,6 @@ VSNRAY_FUNC
 inline vector<3, T> to_rgb(spectrum<T> const& s)
 {
 #if VSNRAY_SPECTRUM_RGB
-    static_assert( spectrum<T>::num_samples == 3, "Incompatible num samples" );
     return s.samples();
 #else
     static_assert( spectrum<T>::num_samples > 1, "Incompatible num samples" );
