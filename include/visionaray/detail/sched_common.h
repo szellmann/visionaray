@@ -6,6 +6,7 @@
 #ifndef VSNRAY_DETAIL_SCHED_COMMON_H
 #define VSNRAY_DETAIL_SCHED_COMMON_H 1
 
+#include <cstddef>
 #include <utility>
 
 #include <visionaray/math/array.h>
