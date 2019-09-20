@@ -7,6 +7,7 @@
 #define VSNRAY_DETAIL_ALGORITHM_H 1
 
 #include <algorithm>
+#include <cstddef>
 #include <functional>
 #include <iterator>
 #include <type_traits>
