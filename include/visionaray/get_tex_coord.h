@@ -6,6 +6,7 @@
 #ifndef VSNRAY_GET_TEX_COORD_H
 #define VSNRAY_GET_TEX_COORD_H 1
 
+#include <cstddef>
 #include <iterator>
 #include <type_traits>
 
