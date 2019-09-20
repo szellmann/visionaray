@@ -220,6 +220,8 @@ void renderer::on_display()
 
             S radius= AO_Radius;
 
+            S ao(0.0);
+
             for (int i = 0; i < AO_Samples; ++i)
             {
                 auto sp = cosine_sample_hemisphere(gen.next(), gen.next());
@@ -237,14 +239,14 @@ void renderer::on_display()
                         radius
                         );
 
-                clr = select(
+                ao = select(
                         ao_rec.hit,
-                        clr - S(1.0f / AO_Samples),
-                        clr
+                        ao + S(1.0f / AO_Samples),
+                        ao
                         );
             }
 
-            result.color      = select( hit_rec.hit, C(clr.xyz(), S(1.0)), result.color );
+            result.color = select( hit_rec.hit, C(ao, ao, ao,  S(1.0)), result.color );
 
         }
 
