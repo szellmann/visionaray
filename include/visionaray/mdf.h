@@ -6,6 +6,7 @@
 #ifndef VSNRAY_MDF_H
 #define VSNRAY_MDF_H 1
 
+#include "detail/macros.h"
 #include "math/constants.h"
 #include "math/vector.h"
 
@@ -24,6 +25,7 @@ public:
 
     // Return differential area of microfacet w.r.t. h
     template <typename U>
+    VSNRAY_FUNC
     U d(vector<3, U> const& n, vector<3, U> const& h) const
     {
         U sgn = select(dot(n, h) > U(0.0), U(1.0), U(0.0));
@@ -38,6 +40,7 @@ public:
 
     // Return _monodirectional_ shadowing-masking term as in Smith approximation
     template <typename U>
+    VSNRAY_FUNC
     U g1(vector<3, U> const& n, vector<3, U> const& h, vector<3, U> const& w) const
     {
         U sgn = select(dot(w, h) / dot(w, n) > U(0.0), U(1.0), U(0.0));
