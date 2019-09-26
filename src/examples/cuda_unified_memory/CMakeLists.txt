@@ -8,6 +8,7 @@ endif()
 
 if(APPLE)
     message(STATUS "Not building cuda_unified_memory example, not supported on macOS")
+    return()
 endif()
 
 find_package(CUDA)
