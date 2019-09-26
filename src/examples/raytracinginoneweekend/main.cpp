@@ -5,7 +5,7 @@
 // This file is based on Peter Shirley's book "Ray Tracing in One Weekend"
 //
 
-//#include <cstdlib>
+#include <cstdlib>
 #include <iostream>
 #include <ostream>
 #include <memory>
