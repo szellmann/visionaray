@@ -17,11 +17,14 @@ configuration:
     - Release
 
 install:
-    - git submodule update --init --recursive
+    - cd C:\Tools\vcpkg
+    - git pull
+    - .\bootstrap-vcpkg.bat
+    - vcpkg integrate install
     - vcpkg install freeglut:x64-windows
     - vcpkg install glew:x64-windows
-    - cd c:\tools\vcpkg
-    - vcpkg integrate install
+    - cd %APPVEYOR_BUILD_FOLDER%
+    - git submodule update --init --recursive
 
 cache: c:\tools\vcpkg\installed\
 
