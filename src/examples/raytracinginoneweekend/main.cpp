@@ -5,7 +5,7 @@
 // This file is based on Peter Shirley's book "Ray Tracing in One Weekend"
 //
 
-#include <cstdlib>
+//#include <cstdlib>
 #include <iostream>
 #include <ostream>
 #include <memory>
@@ -28,6 +28,27 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 #include <common/viewer_glut.h>
+
+#ifdef _WIN32
+
+//-------------------------------------------------------------------------------------------------
+// https://pubs.opengroup.org/onlinepubs/007908799/xsh/drand48.html
+//
+
+double drand48()
+{
+    constexpr static uint64_t m = 1ULL<<48;
+    constexpr static uint64_t a = 0x5DEECE66DULL;
+    constexpr static uint64_t c = 0xBULL;
+    thread_local static uint64_t x = 0;
+
+    // TODO: could optimize the % b/c m is pot
+    x = (a * x + c) % m;
+
+    return static_cast<double>(x) / m;
+}
+
+#endif
 
 using namespace visionaray;
 
