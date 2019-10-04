@@ -25,6 +25,7 @@
 #include <set>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include <boost/filesystem.hpp>
 
