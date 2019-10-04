@@ -42,8 +42,7 @@ double drand48()
     constexpr static uint64_t c = 0xBULL;
     thread_local static uint64_t x = 0;
 
-    // TODO: could optimize the % b/c m is pot
-    x = (a * x + c) % m;
+    x = (a * x + c) & (m - 1ULL);
 
     return static_cast<double>(x) / m;
 }
