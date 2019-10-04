@@ -28,29 +28,15 @@ class program
 {
 public:
 
-    explicit program(GLuint name = 0)
-        : name_(name)
-        , old_(0)
-    {
-    }
+    explicit program(GLuint name = 0);
 
-   ~program() { reset(); }
+   ~program();
 
-    void destroy()
-    {
-        glDeleteProgram(name_);
-    }
+    void destroy();
 
-    void reset(GLuint name = 0)
-    {
-        if (name_ != 0)
-        {
-            destroy();
-        }
-        name_ = name;
-    }
+    void reset(GLuint name = 0);
 
-    GLuint get() const { return name_; }
+    GLuint get() const;
 
     void attach_shader(shader const& s) const;
     void detach_shader(shader const& s) const;

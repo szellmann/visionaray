@@ -15,6 +15,37 @@ namespace visionaray
 namespace gl
 {
 
+program::program(GLuint name)
+    : name_(name)
+    , old_(0)
+{
+}
+
+program::~program()
+{
+    reset();
+}
+
+void program::destroy()
+{
+    glDeleteProgram(name_);
+}
+
+void program::reset(GLuint name)
+{
+    if (name_ != 0)
+    {
+        destroy();
+    }
+
+    name_ = name;
+}
+
+GLuint program::get() const
+{
+    return name_;
+}
+
 void program::attach_shader(shader const& s) const
 {
     glAttachShader(name_, s.get());
