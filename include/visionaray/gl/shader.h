@@ -25,24 +25,14 @@ class shader
 {
 public:
 
-    explicit shader(GLuint name = 0) : name_(name) {}
-   ~shader() { reset(); }
+    explicit shader(GLuint name = 0);
+   ~shader();
 
-    void destroy()
-    {
-        glDeleteShader(name_);
-    }
+    void destroy();
 
-    void reset(GLuint name = 0)
-    {
-        if (name_ != 0)
-        {
-            destroy();
-        }
-        name_ = name;
-    }
+    void reset(GLuint name = 0);
 
-    GLuint get() const { return name_; }
+    GLuint get() const;
 
     void set_source(char const* source) const;
     void compile() const;

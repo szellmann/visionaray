@@ -15,6 +15,36 @@ namespace visionaray
 namespace gl
 {
 
+shader::shader(GLuint name)
+    : name_(name)
+{
+}
+
+shader::~shader()
+{
+    reset();
+}
+
+void shader::destroy()
+{
+    glDeleteShader(name_);
+}
+
+void shader::reset(GLuint name)
+{
+    if (name_ != 0)
+    {
+        destroy();
+    }
+
+    name_ = name;
+}
+
+GLuint shader::get() const
+{
+    return name_;
+}
+
 void shader::set_source(char const* source) const
 {
     GLint len = static_cast<GLint>(std::strlen(source));
