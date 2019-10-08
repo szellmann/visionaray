@@ -6,6 +6,7 @@
 #ifndef VSNRAY_DETAIL_BVH_HIT_RECORD_H
 #define VSNRAY_DETAIL_BVH_HIT_RECORD_H 1
 
+#include <cstddef>
 #include <type_traits>
 
 #include <visionaray/math/simd/type_traits.h>
