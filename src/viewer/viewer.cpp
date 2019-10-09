@@ -2180,7 +2180,7 @@ void renderer::render_impl()
                         );
             }
         }
-        if (area_lights.size() > 0 && algo == Pathtracing)
+        else if (area_lights.size() > 0 && algo == Pathtracing)
         {
             render_generic_material_cu(
                     device_bvhs[0],
