@@ -6,6 +6,8 @@
 #ifndef VSNRAY_CUDA_ARRAY_H
 #define VSNRAY_CUDA_ARRAY_H 1
 
+#include <cstring> // memset
+
 #include <cuda_runtime_api.h>
 
 namespace visionaray
