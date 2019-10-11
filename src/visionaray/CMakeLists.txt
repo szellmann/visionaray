@@ -249,7 +249,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/quaternion.h
     ${HEADER_DIR}/math/ray.h
     ${HEADER_DIR}/math/rectangle.h
-    ${HEADER_DIR}/math/serialization.h
     ${HEADER_DIR}/math/snorm.h
     ${HEADER_DIR}/math/sphere.h
     ${HEADER_DIR}/math/triangle.h

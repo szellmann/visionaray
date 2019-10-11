@@ -26,7 +26,6 @@
 #include "quaternion.h"
 #include "ray.h"
 #include "rectangle.h"
-#include "serialization.h"
 #include "snorm.h"
 #include "sphere.h"
 #include "triangle.h"
