@@ -69,7 +69,7 @@ make
 make install
 ```
 
-The headers, libraries and viewer application will then be located in the standard install path of your operating system (usually /usr/local).
+The headers, libraries and viewer application will then be located in the standard install path of your operating system (usually `/usr/local`).
 
 See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Getting-started) and the [Troubleshooting section](https://github.com/szellmann/visionaray/wiki/Troubleshooting) in the [Wiki](https://github.com/szellmann/visionaray/wiki) for further information.
 
