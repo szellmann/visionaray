@@ -29,7 +29,6 @@ Build requirements
     tested with Microsoft Visual Studio 2015 VC14 for x64)
 
 - [CMake][1] version 2.8.9 or newer
-- [Boost][2]
 - [OpenGL][12]
 - [GLEW][3]
 - [NVIDIA CUDA Toolkit][4] version 7.0 or newer (optional)
@@ -41,6 +40,7 @@ Build requirements
 
 Additionally, in order to compile the viewer application and the [examples](https://github.com/szellmann/visionaray/tree/master/src/examples), the following packages are needed:
 
+- [Boost][2]
 - [GLUT][5] or [FreeGLUT][6]
 - [Libjpeg][7] (optional)
 - [Libpng][8] (optional)
