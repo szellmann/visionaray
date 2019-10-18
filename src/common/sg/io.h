@@ -122,7 +122,7 @@ private:
 } // detail
 
 template <typename CharT, typename Traits>
-std::basic_ostream<CharT, Traits>&
+inline std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, std::shared_ptr<node> const& n)
 {
     detail::ostream_visitor<std::basic_ostream<CharT, Traits>> visitor(out);
