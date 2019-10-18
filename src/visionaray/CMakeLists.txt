@@ -2,10 +2,8 @@
 # External libraries
 #
 
-find_package(Boost REQUIRED)
 find_package(Threads REQUIRED)
 
-visionaray_use_package(Boost)
 visionaray_use_package(Threads)
 
 # Graphics API
