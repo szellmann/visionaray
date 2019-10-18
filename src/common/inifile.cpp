@@ -16,7 +16,7 @@ namespace visionaray
 // Helpers
 //
 
-std::string trim(std::string str, std::string ws = " \t")
+static std::string trim(std::string str, std::string ws = " \t")
 {
     // Remove leading whitespace
     auto first = str.find_first_not_of(ws);
@@ -46,7 +46,7 @@ std::string trim(std::string str, std::string ws = " \t")
     return str.substr(first, last - first + 1);
 }
 
-std::vector<std::string> string_split(std::string s, char delim)
+static std::vector<std::string> string_split(std::string s, char delim)
 {
     std::vector<std::string> result;
 
@@ -60,7 +60,7 @@ std::vector<std::string> string_split(std::string s, char delim)
     return result;
 }
 
-size_t count_whitespaces(std::string str)
+static size_t count_whitespaces(std::string str)
 {
     return std::count_if(
             str.begin(),
@@ -69,7 +69,7 @@ size_t count_whitespaces(std::string str)
             );
 }
 
-std::string tolower(std::string str)
+static std::string tolower(std::string str)
 {
     std::transform(
             str.begin(),
