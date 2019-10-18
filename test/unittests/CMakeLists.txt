@@ -1,7 +1,7 @@
 # This file is distributed under the MIT license.
 # See the LICENSE file for details.
 
-find_package(Boost COMPONENTS chrono filesystem iostreams serialization system thread REQUIRED)
+find_package(Boost COMPONENTS chrono filesystem iostreams system thread REQUIRED)
 find_package(CUDA)
 find_package(Git)
 find_package(TBB)
@@ -103,7 +103,6 @@ set(UNITTESTS_SOURCES
     math/matrix.cpp
     math/ray.cpp
     math/rectangle.cpp
-    math/serialization.cpp
     math/triangle.cpp
     math/snorm.cpp
     math/unorm.cpp
