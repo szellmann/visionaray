@@ -2077,7 +2077,7 @@ void vsnray_writer::write_triangle_mesh(Object obj, std::shared_ptr<sg::triangle
 }
 
 template <typename Object>
-void vsnray_writer::write_indexed_triangle_mesh(Object obj, std::shared_ptr<sg::indexed_triangle_mesh> const& itm)
+void vsnray_writer::write_indexed_triangle_mesh(Object /*obj*/, std::shared_ptr<sg::indexed_triangle_mesh> const& /*itm*/)
 {
 }
 
