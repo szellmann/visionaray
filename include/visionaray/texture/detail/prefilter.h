@@ -6,6 +6,7 @@
 #ifndef VSNRAY_TEXTURE_DETAIL_PREFILTER_H
 #define VSNRAY_TEXTURE_DETAIL_PREFILTER_H 1
 
+#include <cstddef>
 #include <limits>
 #include <stdexcept>
 
