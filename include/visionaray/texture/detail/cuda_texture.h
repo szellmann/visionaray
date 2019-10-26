@@ -7,9 +7,6 @@
 #define VSNRAY_TEXTURE_DETAIL_CUDA_TEXTURE_H 1
 
 #include <cstddef>
-#include <cstring> // memset
-
-#include <array>
 
 #include <visionaray/cuda/texture_object.h>
 #include <visionaray/cuda/util.h>
