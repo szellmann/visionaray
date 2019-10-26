@@ -6,8 +6,6 @@
 #ifndef VSNRAY_DETAIL_PARALLEL_FOR_H
 #define VSNRAY_DETAIL_PARALLEL_FOR_H 1
 
-#include <algorithm>
-
 #include "../math/detail/math.h"
 #include "range.h"
 #include "thread_pool.h"
@@ -29,7 +27,7 @@ void parallel_for(thread_pool& pool, range1d<I> const& range, Func const& func)
     pool.run([=](long tile_index)
         {
             I first = static_cast<I>(tile_index) * tile_size;
-            I last = std::min(first + tile_size, len);
+            I last = min(first + tile_size, len);
 
             for (I i = first; i != last; ++i)
             {
@@ -50,7 +48,7 @@ void parallel_for(thread_pool& pool, tiled_range1d<I> const& range, Func const& 
     pool.run([=](long tile_index)
         {
             I first = static_cast<I>(tile_index) * tile_size + beg;
-            I last = std::min(first + tile_size, beg + len);
+            I last = min(first + tile_size, beg + len);
 
             func(range1d<I>(first, last));
 
@@ -72,10 +70,10 @@ void parallel_for(thread_pool& pool, tiled_range2d<I> const& range, Func const& 
     pool.run([=](long tile_index)
         {
             I first_x = (tile_index % num_tiles_x) * tile_width + first_row;
-            I last_x = std::min(first_x + tile_width, first_row + width);
+            I last_x = min(first_x + tile_width, first_row + width);
 
             I first_y = (tile_index / num_tiles_x) * tile_height + first_col;
-            I last_y = std::min(first_y + tile_height, first_col + height);
+            I last_y = min(first_y + tile_height, first_col + height);
 
             func(range2d<I>(first_x, last_x, first_y, last_y));
 
