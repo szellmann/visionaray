@@ -71,7 +71,8 @@ struct renderer : viewer_type
 
         add_cmdline_option( cl::makeOption<bvh_build_strategy&>({
                 { "default",            Binned,         "Binned SAH" },
-                { "split",              Split,          "Binned SAH with spatial splits" }
+                { "split",              Split,          "Binned SAH with spatial splits" },
+                { "lbvh",               LBVH,           "LBVH (CPU)" }
             },
             "bvh",
             cl::Desc("BVH build strategy"),
@@ -98,8 +99,9 @@ struct renderer : viewer_type
 
     enum bvh_build_strategy
     {
-        Binned = 0,  // Binned SAH builder, no spatial splits
-        Split        // Split BVH, also binned and with SAH
+        Binned = 0, // Binned SAH builder, no spatial splits
+        Split,      // Split BVH, also binned and with SAH
+        LBVH,       // LBVH builder on the CPU
     };
 
     pinhole_camera                              cam;
