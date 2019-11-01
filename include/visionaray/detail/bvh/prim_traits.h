@@ -6,6 +6,8 @@
 #ifndef VSNRAY_DETAIL_BVH_PRIM_TRAITS_H
 #define VSNRAY_DETAIL_BVH_PRIM_TRAITS_H 1
 
+#include <type_traits>
+
 #include <visionaray/prim_traits.h>
 
 namespace visionaray
