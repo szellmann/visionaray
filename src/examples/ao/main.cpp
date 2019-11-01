@@ -248,7 +248,8 @@ void renderer::on_display()
                         );
             }
 
-            result.color = select( hit_rec.hit, C(ao, ao, ao,  S(1.0)), result.color );
+            ao = S(1.0) - ao;
+            result.color = select( hit_rec.hit, C(ao, ao, ao, S(1.0)), result.color );
 
         }
 
