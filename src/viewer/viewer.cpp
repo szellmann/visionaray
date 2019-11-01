@@ -1592,8 +1592,6 @@ void renderer::render_hud()
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
     ImGui::Begin("Settings", &show_hud);
 
-    vec3 amb;
-
     std::array<char const*, 3> algo_names = {{
             "Simple",
             "Whitted",
@@ -1755,7 +1753,7 @@ void renderer::render_hud()
             }
 
             ImGui::Spacing();
-            amb = ambient.x < 0.0f ? vec3(0.0f) : ambient;
+            vec3 amb = ambient.x < 0.0f ? vec3(0.0f) : ambient;
             if (ImGui::ColorEdit4("Ambient Color", amb.data(), ImGuiColorEditFlags_HDR | ImGuiColorEditFlags_Float))
             {
                 ambient = amb;
