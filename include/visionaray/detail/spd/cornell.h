@@ -9,7 +9,7 @@
 #include <cassert>
 #include <cmath>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/detail/math.h>
 
 #include "../macros.h"
 
