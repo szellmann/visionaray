@@ -195,40 +195,6 @@ operator<<(std::basic_ostream<CharT, Traits>& out, vector<Dim, T> const& v)
 }
 
 
-template <typename T, typename CharT, typename Traits>
-std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, vector<3, T> const& v)
-{
-
-    std::basic_ostringstream<CharT, Traits> s;
-    s.flags(out.flags());
-    s.imbue(out.getloc());
-    s.precision(out.precision());
-
-    s << '(' << v.x << ',' << v.y << ',' << v.z << ')';
-
-    return out << s.str();
-
-}
-
-
-template <typename T, typename CharT, typename Traits>
-std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, vector<4, T> const& v)
-{
-
-    std::basic_ostringstream<CharT, Traits> s;
-    s.flags(out.flags());
-    s.imbue(out.getloc());
-    s.precision(out.precision());
-
-    s << '(' << v.x << ',' << v.y << ',' << v.z << ',' << v.w << ')';
-
-    return out << s.str();
-
-}
-
-
 //-------------------------------------------------------------------------------------------------
 // matrices
 //
