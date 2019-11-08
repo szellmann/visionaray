@@ -43,17 +43,17 @@ inline T numeric_limits<T>::epsilon()
 
 MATH_FUNC inline char numeric_limits<char>::min()
 {
-    return CHAR_MIN;
+    return SCHAR_MIN;
 }
 
 MATH_FUNC inline char numeric_limits<char>::lowest()
 {
-    return CHAR_MIN;
+    return SCHAR_MIN;
 }
 
 MATH_FUNC inline char numeric_limits<char>::max()
 {
-    return CHAR_MAX;
+    return SCHAR_MAX;
 }
 
 
