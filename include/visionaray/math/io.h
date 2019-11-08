@@ -171,7 +171,7 @@ operator>>(std::basic_istream<CharT, Traits>& in, vector<Dim, T>& v)
 
 template <size_t Dim, typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, vector<Dim, T> v)
+operator<<(std::basic_ostream<CharT, Traits>& out, vector<Dim, T> const& v)
 {
 
     std::basic_ostringstream<CharT, Traits> s;
@@ -197,7 +197,7 @@ operator<<(std::basic_ostream<CharT, Traits>& out, vector<Dim, T> v)
 
 template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, vector<3, T> v)
+operator<<(std::basic_ostream<CharT, Traits>& out, vector<3, T> const& v)
 {
 
     std::basic_ostringstream<CharT, Traits> s;
@@ -214,7 +214,7 @@ operator<<(std::basic_ostream<CharT, Traits>& out, vector<3, T> v)
 
 template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
-operator<<(std::basic_ostream<CharT, Traits>& out, vector<4, T> v)
+operator<<(std::basic_ostream<CharT, Traits>& out, vector<4, T> const& v)
 {
 
     std::basic_ostringstream<CharT, Traits> s;
