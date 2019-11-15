@@ -148,7 +148,7 @@ inline simd::float4 point(
 namespace bspline
 {
 
-// weight functions for Mitchell - Netravalli B-Spline with B = 1 and C = 0
+// weight functions for Mitchell - Netravali B-Spline with B = 1 and C = 0
 
 struct w0_func
 {
