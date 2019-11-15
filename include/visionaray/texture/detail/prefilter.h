@@ -7,7 +7,6 @@
 #define VSNRAY_TEXTURE_DETAIL_PREFILTER_H 1
 
 #include <cstddef>
-#include <limits>
 #include <stdexcept>
 
 #include <visionaray/math/detail/math.h>
