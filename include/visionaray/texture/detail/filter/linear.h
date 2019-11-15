@@ -33,8 +33,8 @@ inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
-        FloatT                                  coord,
-        SizeT                                   texsize,
+        FloatT const&                           coord,
+        SizeT const&                            texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
@@ -80,8 +80,8 @@ inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
-        vector<2, FloatT>                       coord,
-        vector<2, SizeT>                        texsize,
+        vector<2, FloatT> const&                coord,
+        vector<2, SizeT>  const&                texsize,
         std::array<tex_address_mode, 2> const&  address_mode
         )
 {
@@ -133,8 +133,8 @@ inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
-        vector<3, FloatT>                       coord,
-        vector<3, SizeT>                        texsize,
+        vector<3, FloatT> const&                coord,
+        vector<3, SizeT> const&                 texsize,
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {
