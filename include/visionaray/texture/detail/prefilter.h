@@ -11,9 +11,7 @@
 
 #include <visionaray/math/detail/math.h>
 
-#include "texture1d.h"
-#include "texture2d.h"
-#include "texture3d.h"
+#include "texture_common.h"
 
 
 namespace visionaray
