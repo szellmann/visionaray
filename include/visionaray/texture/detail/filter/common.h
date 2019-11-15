@@ -81,14 +81,14 @@ inline vector<Dim, F> map_tex_coord(
 //
 
 template <typename T>
-inline T index(T x, T y, vector<2, T> texsize)
+inline T index(T x, T y, vector<2, T> const& texsize)
 {
     return y * texsize[0] + x;
 }
 
 
 template <typename T>
-inline T index(T x, T y, T z, vector<3, T> texsize)
+inline T index(T x, T y, T z, vector<3, T> const& texsize)
 {
     return z * texsize[0] * texsize[1] + y * texsize[0] + x;
 }
