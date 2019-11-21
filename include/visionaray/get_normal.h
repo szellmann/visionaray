@@ -136,9 +136,13 @@ inline vector<3, T> get_normal(HR const& hr, basic_plane<3, T> const& plane)
 
 template <typename HR, typename T>
 VSNRAY_FUNC
-inline vector<3, T> get_normal(HR const& hr, basic_sphere<T> const& sphere)
+inline auto get_normal(HR const& hr, basic_sphere<T> const& sphere)
+    -> decltype(hr.isect_pos)
 {
-    return (hr.isect_pos - sphere.center) / sphere.radius;
+    using V = decltype(hr.isect_pos);
+    using S = typename V::value_type;
+
+    return (hr.isect_pos - V(sphere.center)) / S(sphere.radius);
 }
 
 } // visionaray
