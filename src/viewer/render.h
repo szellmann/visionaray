@@ -82,6 +82,7 @@ using texture_t = texture_ref<vector<4, unorm<8>>, 2>;
 using host_environment_light = environment_light<float, texture_ref<vec4, 2>>;
 #ifdef __CUDACC__
 using cuda_texture_t = cuda_texture_ref<vector<4, unorm<8>>, 2>;
+using device_environment_light = environment_light<float, cuda_texture_ref<vec4, 2>>;
 #endif
 
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
@@ -232,7 +233,8 @@ void render_instances_cu(
         camera_t const&                                                     cam,
         unsigned&                                                           frame_num,
         algorithm                                                           algo,
-        unsigned                                                            ssaa_samples
+        unsigned                                                            ssaa_samples,
+        device_environment_light const&                                     env_light
         );
 #endif
 

@@ -490,7 +490,10 @@ struct renderer : viewer_type
     std::string                                 env_map_filename;
     visionaray::texture<vec4, 2>                env_map;
     host_environment_light                      env_light;
-
+#ifdef __CUDACC__
+    visionaray::cuda_texture<vec4, 2>           device_env_map;
+    device_environment_light                    device_env_light;
+#endif
 
     // List of cameras, e.g. read from scene graph
     aligned_vector<std::pair<
@@ -2174,7 +2177,8 @@ void renderer::render_impl()
                         camx,
                         frame_num,
                         algo,
-                        ssaa_samples
+                        ssaa_samples,
+                        device_env_light
                         );
             }
         }
@@ -2811,6 +2815,16 @@ int main(int argc, char** argv)
                     rend.device_textures[i] = renderer::device_tex_ref_type(it->second);
                 }
             }
+        }
+
+        // Copy environment texture to the GPU
+        if (rend.env_map)
+        {
+            rend.device_env_map = cuda_texture<vec4, 2>(rend.env_map);
+
+            rend.device_env_light.texture() = cuda_texture_ref<vec4, 2>(rend.device_env_map);
+            rend.device_env_light.scale() = rend.env_light.scale();
+            rend.device_env_light.set_light_to_world_transform(rend.env_light.light_to_world_transform());
         }
     }
     catch (std::bad_alloc const&)

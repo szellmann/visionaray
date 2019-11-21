@@ -26,7 +26,8 @@ void render_instances_cu(
         camera_t const&                                                     cam,
         unsigned&                                                           frame_num,
         algorithm                                                           algo,
-        unsigned                                                            ssaa_samples
+        unsigned                                                            ssaa_samples,
+        device_environment_light const&                                     env_light
         )
 {
     using bvh_ref = cuda_index_bvh<cuda_index_bvh<basic_triangle<3, float>>::bvh_inst>::bvh_ref;
@@ -37,26 +38,51 @@ void render_instances_cu(
 
     thrust::device_vector<generic_light_t> device_lights = host_lights;
 
-    auto kparams = make_kernel_params(
-            normals_per_vertex_binding{},
-            colors_per_vertex_binding{},
-            thrust::raw_pointer_cast(primitives.data()),
-            thrust::raw_pointer_cast(primitives.data()) + primitives.size(),
-            thrust::raw_pointer_cast(geometric_normals.data()),
-            thrust::raw_pointer_cast(shading_normals.data()),
-            thrust::raw_pointer_cast(tex_coords.data()),
-            thrust::raw_pointer_cast(materials.data()),
-            thrust::raw_pointer_cast(colors.data()),
-            thrust::raw_pointer_cast(textures.data()),
-            thrust::raw_pointer_cast(device_lights.data()),
-            thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
-            bounces,
-            epsilon,
-            bgcolor,
-            ambient
-            );
+    if (env_light.texture())
+    {
+        auto kparams = make_kernel_params(
+                normals_per_vertex_binding{},
+                colors_per_vertex_binding{},
+                thrust::raw_pointer_cast(primitives.data()),
+                thrust::raw_pointer_cast(primitives.data()) + primitives.size(),
+                thrust::raw_pointer_cast(geometric_normals.data()),
+                thrust::raw_pointer_cast(shading_normals.data()),
+                thrust::raw_pointer_cast(tex_coords.data()),
+                thrust::raw_pointer_cast(materials.data()),
+                thrust::raw_pointer_cast(colors.data()),
+                thrust::raw_pointer_cast(textures.data()),
+                thrust::raw_pointer_cast(device_lights.data()),
+                thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+                env_light,
+                bounces,
+                epsilon
+                );
 
-    call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
+        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
+    }
+    else
+    {
+        auto kparams = make_kernel_params(
+                normals_per_vertex_binding{},
+                colors_per_vertex_binding{},
+                thrust::raw_pointer_cast(primitives.data()),
+                thrust::raw_pointer_cast(primitives.data()) + primitives.size(),
+                thrust::raw_pointer_cast(geometric_normals.data()),
+                thrust::raw_pointer_cast(shading_normals.data()),
+                thrust::raw_pointer_cast(tex_coords.data()),
+                thrust::raw_pointer_cast(materials.data()),
+                thrust::raw_pointer_cast(colors.data()),
+                thrust::raw_pointer_cast(textures.data()),
+                thrust::raw_pointer_cast(device_lights.data()),
+                thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
+                bounces,
+                epsilon,
+                bgcolor,
+                ambient
+                );
+
+        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
+    }
 }
 
 } // visionaray
