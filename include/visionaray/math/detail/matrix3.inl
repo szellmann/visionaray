@@ -294,4 +294,55 @@ inline matrix<2, 2, T> top_left(matrix<3, 3, T> const& m)
     return result;
 }
 
+// Return quaternion for given rotation matrix
+template <typename T>
+MATH_FUNC
+inline quaternion<T> rotation(matrix<3, 3, T> const& m)
+{
+    T tr = m(0,0) + m(1,1) + m(2,2) + T(1.0);
+    vector<3, T> diag(m(0,0), m(1,1), m(2,2));
+
+    // TODO: simd
+    if (tr > T(1.0))
+    {
+        T s = sqrt(tr) * T(2.0);
+        return quaternion<T>(
+                T(0.25) * s,
+                (m(2,1) - m(1,2)) / s,
+                (m(0,2) - m(2,0)) / s,
+                (m(1,0) - m(0,1)) / s
+                );
+    }
+    else if (min_index(diag) == 0)
+    {
+        T s = sqrt(T(1.0) + diag.x - diag.y - diag.z) * T(2.0);
+        return quaternion<T>(
+                (m(2,1) - m(1,2)) / s,
+                T(0.25) * s,
+                (m(0,1) - m(1,0)) / s,
+                (m(0,2) - m(2,0)) / s
+                );
+    }
+    else if (min_index(diag) == 1)
+    {
+        T s = sqrt(T(1.0) + diag.y - diag.x - diag.z) * T(2.0);
+        return quaternion<T>(
+                (m(0,2) - m(2,0)) / s,
+                (m(0,1) - m(1,0)) / s,
+                T(0.25) * s,
+                (m(1,2) - m(2,1)) / s
+                );
+    }
+    else
+    {
+        T s = sqrt(T(1.0) + diag.z - diag.x - diag.y) * T(2.0);
+        return quaternion<T>(
+                (m(1,0) - m(0,1)) / s,
+                (m(0,2) - m(2,0)) / s,
+                (m(1,2) - m(2,1)) / s,
+                T(0.25) * s
+                );
+    }
+}
+
 } // MATH_NAMESPACE
