@@ -176,6 +176,7 @@ set(COMMON_HEADERS
     manip/arcball.h
     manip/arcball_manipulator.h
     manip/camera_manipulator.h
+    manip/first_person_manipulator.h
     manip/model_manipulator.h
     manip/pan_manipulator.h
     manip/rotate_manipulator.h
