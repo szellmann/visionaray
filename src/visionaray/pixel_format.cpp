@@ -6,8 +6,8 @@
 #include <cassert>
 
 #include <algorithm>
-#include <map>
 #include <utility>
+#include <vector>
 
 #if VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
@@ -36,7 +36,7 @@ struct format_key
     }
 };
 
-static std::map<format_key, pixel_format> gl_formats(
+static std::vector<std::pair<format_key, pixel_format>> gl_formats(
 {
 #if defined(GL_VERSION_1_1) && GL_VERSION_1_1 // TODO!
     { { GL_R8,                      GL_UNSIGNED_BYTE,                   1 },                PF_R8                   },
