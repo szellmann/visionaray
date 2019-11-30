@@ -38,7 +38,6 @@ endif()
 #
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/include/visionaray)
 
 set(HEADER_DIR ${PROJECT_SOURCE_DIR}/include/visionaray)
 
