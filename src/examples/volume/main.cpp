@@ -23,12 +23,8 @@
 #include <common/manip/zoom_manipulator.h>
 #include <common/viewer_glut.h>
 
-using std::make_shared;
-using std::shared_ptr;
-
 using namespace visionaray;
 
-using manipulators  = std::vector<shared_ptr<visionaray::camera_manipulator>>;
 using viewer_type   = viewer_glut;
 
 
@@ -84,7 +80,6 @@ struct renderer : viewer_type
 
     aabb                                        bbox;
     pinhole_camera                              cam;
-    manipulators                                manips;
     cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED>     host_rt;
     tiled_sched<host_ray_type>                  host_sched;
 
