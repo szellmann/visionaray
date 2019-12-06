@@ -6,7 +6,6 @@
 #ifndef VSNRAY_GET_NORMAL_H
 #define VSNRAY_GET_NORMAL_H 1
 
-#include <cstddef>
 #include <iterator>
 #include <type_traits>
 
@@ -86,7 +85,7 @@ inline auto get_normal(
     float_array y;
     float_array z;
 
-    for (size_t i = 0; i < simd::num_elements<U>::value; ++i)
+    for (unsigned i = 0; i < simd::num_elements<U>::value; ++i)
     {
         auto n = hrs[i].hit ? normals[hrs[i].prim_id] : N();
         x[i] = n.x;

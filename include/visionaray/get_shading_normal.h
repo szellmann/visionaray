@@ -6,7 +6,6 @@
 #ifndef VSNRAY_GET_SHADING_NORMAL_H
 #define VSNRAY_GET_SHADING_NORMAL_H 1
 
-#include <cstddef>
 #include <iterator>
 #include <type_traits>
 
@@ -149,7 +148,7 @@ inline auto get_shading_normal(
     float_array y3;
     float_array z3;
 
-    for (size_t i = 0; i < simd::num_elements<U>::value; ++i)
+    for (unsigned i = 0; i < simd::num_elements<U>::value; ++i)
     {
         auto nn1 = get_norm(i, 0);
         auto nn2 = get_norm(i, 1);
