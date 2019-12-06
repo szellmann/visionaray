@@ -366,7 +366,7 @@ VSNRAY_FORCE_INLINE F cos(F const& x)
     float_array tmp;
     store(tmp, x);
 
-    for (size_t i = 0; i < num_elements<F>::value; ++i)
+    for (unsigned i = 0; i < num_elements<F>::value; ++i)
     {
         tmp[i] = cosf(tmp[i]);
     }
@@ -383,7 +383,7 @@ VSNRAY_FORCE_INLINE F sin(F const& x)
     float_array tmp;
     store(tmp, x);
 
-    for (size_t i = 0; i < num_elements<F>::value; ++i)
+    for (unsigned i = 0; i < num_elements<F>::value; ++i)
     {
         tmp[i] = sinf(tmp[i]);
     }
@@ -400,7 +400,7 @@ VSNRAY_FORCE_INLINE F tan(F const& x)
     float_array tmp;
     store(tmp, x);
 
-    for (size_t i = 0; i < num_elements<F>::value; ++i)
+    for (unsigned i = 0; i < num_elements<F>::value; ++i)
     {
         tmp[i] = tanf(tmp[i]);
     }
@@ -417,7 +417,7 @@ VSNRAY_FORCE_INLINE F acos(F const& x)
     float_array tmp;
     store(tmp, x);
 
-    for (size_t i = 0; i < num_elements<F>::value; ++i)
+    for (unsigned i = 0; i < num_elements<F>::value; ++i)
     {
         tmp[i] = acosf(tmp[i]);
     }
@@ -434,7 +434,7 @@ VSNRAY_FORCE_INLINE F asin(F const& x)
     float_array tmp;
     store(tmp, x);
 
-    for (size_t i = 0; i < num_elements<F>::value; ++i)
+    for (unsigned i = 0; i < num_elements<F>::value; ++i)
     {
         tmp[i] = asinf(tmp[i]);
     }
@@ -451,7 +451,7 @@ VSNRAY_FORCE_INLINE F atan(F const& x)
     float_array tmp;
     store(tmp, x);
 
-    for (size_t i = 0; i < num_elements<F>::value; ++i)
+    for (unsigned i = 0; i < num_elements<F>::value; ++i)
     {
         tmp[i] = atanf(tmp[i]);
     }
@@ -471,7 +471,7 @@ VSNRAY_FORCE_INLINE F atan2(F const& y, F const& x)
     float_array tmpy;
     store(tmpy, y);
 
-    for (size_t i = 0; i < num_elements<F>::value; ++i)
+    for (unsigned i = 0; i < num_elements<F>::value; ++i)
     {
         tmpy[i] = atan2f(tmpy[i], tmpx[i]);
     }
