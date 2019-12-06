@@ -7,6 +7,8 @@
 #include <ostream>
 #include <vector>
 
+#include <GL/glew.h>
+
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/cpu_buffer_rt.h>
