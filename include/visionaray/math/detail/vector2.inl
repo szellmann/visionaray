@@ -3,8 +3,7 @@
 
 #include <type_traits>
 
-#include <visionaray/array.h>
-
+#include "../config.h"
 #include "math.h"
 
 namespace MATH_NAMESPACE

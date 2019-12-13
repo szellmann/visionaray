@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/array.h>
+#include "../config.h"
 
 namespace MATH_NAMESPACE
 {

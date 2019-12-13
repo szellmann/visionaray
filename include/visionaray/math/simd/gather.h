@@ -9,8 +9,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include <visionaray/array.h>
-
+#include "../config.h"
 #include "avx.h"
 #include "avx512.h"
 #include "builtin.h"

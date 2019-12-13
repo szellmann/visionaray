@@ -33,6 +33,14 @@
 #define MATH_CPU_FUNC VSNRAY_CPU_FUNC
 #endif
 
+
+//-------------------------------------------------------------------------------------------------
+// Utilities
+//
+
+#include <visionaray/array.h>
+
+template <typename T, size_t N>
+using array = visionaray::array<T, N>;
+
 #endif // VSNRAY_MATH_CONFIG_H
-
-
