@@ -9,7 +9,7 @@
 #include <cstddef>
 #include <utility>
 
-#include <visionaray/math/array.h>
+#include <visionaray/array.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/pixel_sampler_types.h>

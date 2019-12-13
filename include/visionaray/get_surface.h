@@ -9,8 +9,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "math/array.h"
 #include "texture/texture_traits.h"
+#include "array.h"
 #include "bvh.h"
 #include "get_color.h"
 #include "get_normal.h"

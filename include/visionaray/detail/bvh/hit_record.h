@@ -10,9 +10,9 @@
 #include <type_traits>
 
 #include <visionaray/math/simd/type_traits.h>
-#include <visionaray/math/array.h>
 #include <visionaray/math/matrix.h>
 #include <visionaray/math/ray.h>
+#include <visionaray/array.h>
 #include <visionaray/update_if.h>
 
 namespace visionaray

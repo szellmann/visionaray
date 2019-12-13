@@ -7,8 +7,8 @@
 #define VSNRAY_POINT_LIGHT_H 1
 
 #include "detail/macros.h"
-#include "math/array.h"
 #include "math/vector.h"
+#include "array.h"
 #include "light_sample.h"
 
 namespace visionaray

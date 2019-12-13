@@ -6,7 +6,8 @@
 #ifndef VSNRAY_MATH_AABB_H
 #define VSNRAY_MATH_AABB_H 1
 
-#include "array.h"
+#include <visionaray/array.h>
+
 #include "config.h"
 #include "vector.h"
 

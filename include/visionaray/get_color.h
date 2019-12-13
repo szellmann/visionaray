@@ -11,9 +11,9 @@
 
 #include "detail/macros.h"
 #include "math/simd/type_traits.h"
-#include "math/array.h"
 #include "math/triangle.h"
 #include "math/vector.h"
+#include "array.h"
 #include "tags.h"
 
 namespace visionaray

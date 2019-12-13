@@ -3,9 +3,9 @@
 
 #include <ostream>
 
-#include <visionaray/math/array.h>
 #include <visionaray/texture/texture.h>
 
+#include "../array.h"
 #include "color_conversion.h"
 
 namespace visionaray

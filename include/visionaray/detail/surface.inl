@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <utility>
 
-#include "../math/array.h"
+#include "../array.h"
 
 namespace visionaray
 {

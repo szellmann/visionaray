@@ -13,11 +13,11 @@
 #include "detail/macros.h"
 #include "math/detail/math.h"
 #include "math/simd/type_traits.h"
-#include "math/array.h"
 #include "math/constants.h"
 #include "math/sphere.h"
 #include "math/triangle.h"
 #include "math/vector.h"
+#include "array.h"
 
 
 namespace visionaray

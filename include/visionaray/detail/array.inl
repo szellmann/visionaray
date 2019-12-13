@@ -8,7 +8,7 @@
 #include <thrust/swap.h>
 #endif
 
-#include <visionaray/detail/compiler.h>
+#include "compiler.h"
 
 #ifdef VSNRAY_CXX_HAS_CONSTEXPR
 #define VSNRAY_CONSTEXPR__ constexpr
@@ -24,7 +24,7 @@ namespace visionaray
 //
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T& array<T, N>::at(size_t pos)
 {
     if (pos >= N)
@@ -38,7 +38,7 @@ inline T& array<T, N>::at(size_t pos)
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T const& array<T, N>::at(size_t pos) const
 {
     if (pos >= N)
@@ -52,140 +52,133 @@ inline T const& array<T, N>::at(size_t pos) const
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T& array<T, N>::operator[](size_t pos)
 {
     return data_[pos];
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T const& array<T, N>::operator[](size_t pos) const
 {
     return data_[pos];
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T& array<T, N>::front()
 {
     return data_[0];
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T const& array<T, N>::front() const
 {
     return data_[0];
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T& array<T, N>::back()
 {
     return data_[N - 1];
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T const& array<T, N>::back() const
 {
     return data_[N - 1];
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T* array<T, N>::data()
 {
     return data_;
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T const* array<T, N>::data() const
 {
     return data_;
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T* array<T, N>::begin()
 {
     return data_;
 }
 
 template <typename T, size_t N>
-MATH_FUNC
-inline T const* array<T, N>::begin() const
-{
-    return data_;
-}
-
-template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T const* array<T, N>::cbegin() const
 {
     return data_;
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T* array<T, N>::end()
 {
     return data_ + N;
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T const* array<T, N>::end() const
 {
     return data_ + N;
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline T const* array<T, N>::cend() const
 {
     return data_ + N;
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline typename array<T, N>::reverse_iterator array<T, N>::rbegin()
 {
     return typename array<T, N>::reverse_iterator(data_ + N);
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline typename array<T, N>::const_reverse_iterator array<T, N>::rbegin() const
 {
     return typename array<T, N>::const_reverse_iterator(data_ + N);
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline typename array<T, N>::const_reverse_iterator array<T, N>::crbegin() const
 {
     return typename array<T, N>::const_reverse_iterator(data_ + N);
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline typename array<T, N>::reverse_iterator array<T, N>::rend()
 {
     return typename array<T, N>::reverse_iterator(data_);
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline typename array<T, N>::const_reverse_iterator array<T, N>::rend() const
 {
     return typename array<T, N>::const_reverse_iterator(data_);
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline typename array<T, N>::const_reverse_iterator array<T, N>::crend() const
 {
     return typename array<T, N>::const_reverse_iterator(data_);
@@ -193,28 +186,28 @@ inline typename array<T, N>::const_reverse_iterator array<T, N>::crend() const
 
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline VSNRAY_CONSTEXPR__ bool array<T, N>::empty() const
 {
     return N == 0;
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline VSNRAY_CONSTEXPR__ size_t array<T, N>::size() const
 {
     return N;
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline VSNRAY_CONSTEXPR__ size_t array<T, N>::max_size() const
 {
     return N;
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline void array<T, N>::fill(T const& value)
 {
     // May not call std::fill() and the like with CUDA
@@ -225,7 +218,7 @@ inline void array<T, N>::fill(T const& value)
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 inline void array<T, N>::swap(array<T, N>& rhs)
 {
 #ifdef __CUDACC__
@@ -246,7 +239,7 @@ inline void array<T, N>::swap(array<T, N>& rhs)
 //
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 bool operator==(array<T, N> const& a, array<T, N> const& b)
 {
     for (size_t i = 0; i < N; ++i)
@@ -261,7 +254,7 @@ bool operator==(array<T, N> const& a, array<T, N> const& b)
 }
 
 template <typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 bool operator!=(array<T, N> const& a, array<T, N> const& b)
 {
     return !(a == b);
@@ -316,28 +309,28 @@ namespace thrust
 //
 
 template <size_t I, typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 VSNRAY_CONSTEXPR__ T& get(visionaray::array<T, N>& a)
 {
     return a[I];
 }
 
 template <size_t I, typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 VSNRAY_CONSTEXPR__ T&& get(visionaray::array<T, N>&& a)
 {
     return a[I];
 }
 
 template <size_t I, typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 VSNRAY_CONSTEXPR__ T const& get(visionaray::array<T, N> const& a)
 {
     return a[I];
 }
 
 template <size_t I, typename T, size_t N>
-MATH_FUNC
+VSNRAY_FUNC
 VSNRAY_CONSTEXPR__ T const&& get(visionaray::array<T, N> const&& a)
 {
     return a[I];

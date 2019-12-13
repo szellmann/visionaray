@@ -3,11 +3,12 @@
 
 #include <type_traits>
 
+#include <visionaray/array.h>
+
 #include "../simd/builtin.h"
 #include "../simd/neon.h"
 #include "../simd/sse.h"
 #include "../simd/type_traits.h"
-#include "../array.h"
 #include "math.h"
 
 namespace MATH_NAMESPACE

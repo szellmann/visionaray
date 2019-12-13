@@ -17,7 +17,7 @@
 #endif
 
 #include "math/simd/type_traits.h"
-#include "math/array.h"
+#include "array.h"
 
 namespace visionaray
 {

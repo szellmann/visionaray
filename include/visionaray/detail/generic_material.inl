@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-#include <visionaray/math/array.h>
+#include <visionaray/array.h>
 #include <visionaray/material.h>
 
 namespace visionaray

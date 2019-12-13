@@ -9,8 +9,8 @@
 #include <type_traits>
 
 #include <visionaray/math/simd/type_traits.h>
-#include <visionaray/math/array.h>
 #include <visionaray/math/vector.h>
+#include <visionaray/array.h>
 #include <visionaray/blending.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>

@@ -8,10 +8,10 @@
 
 #include <type_traits>
 
-#include "simd/type_traits.h"
+#include <visionaray/array.h>
 
+#include "simd/type_traits.h"
 #include "aabb.h"
-#include "array.h"
 #include "limits.h"
 #include "plane.h"
 #include "ray.h"
