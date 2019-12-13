@@ -11,7 +11,7 @@
 #include <thrust/host_vector.h>
 #include <thrust/swap.h>
 
-#include <visionaray/math/array.h>
+#include <visionaray/array.h>
 
 #include <gtest/gtest.h>
 
