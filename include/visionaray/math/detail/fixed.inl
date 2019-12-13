@@ -4,7 +4,7 @@
 #include <cmath>
 #include <type_traits>
 
-namespace visionaray
+namespace MATH_NAMESPACE
 {
 namespace detail
 {
@@ -463,4 +463,4 @@ inline fixed<I, F> select(bool k, fixed<I, F> const& a, fixed<I, F> const& b)
     return k ? a : b;
 }
 
-} // visionaray
+} // MATH_NAMESPACE

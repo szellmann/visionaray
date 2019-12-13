@@ -10,7 +10,7 @@
 
 #include "config.h"
 
-namespace visionaray
+namespace MATH_NAMESPACE
 {
 
 template <unsigned Bits>
@@ -96,7 +96,7 @@ private:
 
 };
 
-} // visionaray
+} // MATH_NAMESPACE
 
 #include "detail/fixed.inl"
 
