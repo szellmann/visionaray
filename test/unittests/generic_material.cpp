@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include <visionaray/math/array.h>
+#include <visionaray/array.h>
 #include <visionaray/generic_material.h>
 
 #include <gtest/gtest.h>

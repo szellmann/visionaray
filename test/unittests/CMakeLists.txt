@@ -99,7 +99,6 @@ set(UNITTESTS_SOURCES
     math/simd/select.cpp
     math/simd/simd.cpp
     math/simd/trans.cpp
-    math/array.cpp
     math/matrix.cpp
     math/ray.cpp
     math/rectangle.cpp
@@ -107,6 +106,7 @@ set(UNITTESTS_SOURCES
     math/snorm.cpp
     math/unorm.cpp
     math/vector.cpp
+    array.cpp
     generic_material.cpp
     generic_primitive.cpp
     get_normal.cpp

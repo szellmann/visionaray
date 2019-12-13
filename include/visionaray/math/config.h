@@ -38,9 +38,14 @@
 // Utilities
 //
 
-#include <visionaray/array.h>
+#if defined(MATH_USE_STD_ARRAY)
 
+#include <array>
 template <typename T, size_t N>
-using array = visionaray::array<T, N>;
+using array = std::array<T, N>;
+
+#else
+#include <visionaray/array.h>
+#endif
 
 #endif // VSNRAY_MATH_CONFIG_H
