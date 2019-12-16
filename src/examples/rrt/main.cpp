@@ -224,8 +224,7 @@ void renderer::on_display()
     {
         result_record<float> result;
 
-        float intensity = 0.0f;
-        float throughput = 1.0f;
+        vec3 throughput(1.0f);
 
         auto hit_rec = intersect(r, bbox);
 
@@ -241,20 +240,21 @@ void renderer::on_display()
                 // Is the path length exceeded?
                 if (bounce++ >= 1024)
                 {
-                    throughput = 0.0f;
+                    throughput = vec3(0.0f);
                     break;
                 }
 
                 throughput *= albedo;
                 // Russian roulette absorption
-                if (throughput < 0.2f)
+                float prob = max_element(throughput);
+                if (prob < 0.2f)
                 {
-                    if (gen.next() > throughput * 5.0f)
+                    if (gen.next() > prob)
                     {
-                        throughput = 0.0f;
+                        throughput = vec3(0.0f);
                         break;
                     }
-                    throughput = 0.2f;
+                    throughput /= prob;
                 }
 
                 // Sample phase function
@@ -269,12 +269,12 @@ void renderer::on_display()
 
         // Look up the environment
 #if 1
-        intensity = (0.5f + 0.5f * r.dir.y) * throughput;
-        vec3 L = vec3(intensity);
+        vec3 Ld(0.5f + 0.5f * r.dir.y);
 #else
-        intensity = (0.5f + 0.5f * r.dir.y) * throughput;
-        vec3 L = vec3(0.5f, (1.0f - intensity), intensity);
+        float f = (0.5f + 0.5f * r.dir.y);
+        vec3 Ld(0.5f, (1.0f - f), f);
 #endif
+        vec3 L = Ld * throughput;
 
         result.color = vec4(L, 1.0f);
         result.hit = hit_rec.hit;
