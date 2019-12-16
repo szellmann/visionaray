@@ -194,7 +194,7 @@ void renderer::on_display()
 #endif
     };
 
-    auto sample_interaction = [&](ray& r, random_generator<float>& gen)
+    auto sample_interaction = [&](ray& r, float d, random_generator<float>& gen)
     {
         float t = 0.0f;
         vec3 pos;
@@ -204,7 +204,7 @@ void renderer::on_display()
             t -= log(1.0f - gen.next()) / mu_;
 
             pos = r.ori + r.dir * t;
-            if (!bbox.contains(pos))
+            if (t >= d)
             {
                 return false;
             }
@@ -232,10 +232,11 @@ void renderer::on_display()
         if (hit_rec.hit)
         {
             r.ori += r.dir * hit_rec.tnear;
+            hit_rec.tfar -= hit_rec.tnear;
 
             unsigned bounce = 0;
 
-            while (sample_interaction(r, gen))
+            while (sample_interaction(r, hit_rec.tfar, gen))
             {
                 // Is the path length exceeded?
                 if (bounce++ >= 1024)
@@ -261,6 +262,8 @@ void renderer::on_display()
                 float pdf;
                 f.sample(-r.dir, scatter_dir, pdf, gen);
                 r.dir = scatter_dir;
+
+                hit_rec = intersect(r, bbox);
             }
         }
 
@@ -269,8 +272,8 @@ void renderer::on_display()
         intensity = (0.5f + 0.5f * r.dir.y) * throughput;
         vec3 L = vec3(intensity);
 #else
-        intensity = (0.5f + 0.5f * r.dir.y);
-        vec3 L = vec3(0.5f, (1.0f - intensity), intensity) * throughput;
+        intensity = (0.5f + 0.5f * r.dir.y) * throughput;
+        vec3 L = vec3(0.5f, (1.0f - intensity), intensity);
 #endif
 
         result.color = vec4(L, 1.0f);
