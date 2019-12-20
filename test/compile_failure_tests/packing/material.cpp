@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/math/array.h>
+#include <visionaray/array.h>
 #include <visionaray/material.h>
 
 using namespace visionaray;
