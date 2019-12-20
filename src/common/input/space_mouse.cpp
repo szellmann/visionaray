@@ -32,7 +32,7 @@ static uint16_t client_id = -1;
 
 static event_callback event_callbacks[EventTypeCount] = { nullptr };
 
-static void message_handler(unsigned product_id, unsigned message_type, void* message_arg)
+static void message_handler(unsigned /*product_id*/, unsigned message_type, void* message_arg)
 {
     switch (message_type)
     {
