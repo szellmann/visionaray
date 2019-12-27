@@ -167,28 +167,28 @@ inline auto operator!=(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 
 template <typename T>
 MATH_FUNC
-basic_aabb<T> combine(basic_aabb<T> const& a, basic_aabb<T> const& b)
+inline basic_aabb<T> combine(basic_aabb<T> const& a, basic_aabb<T> const& b)
 {
     return basic_aabb<T>( min(a.min, b.min), max(a.max, b.max) );
 }
 
 template <typename T>
 MATH_FUNC
-basic_aabb<T> combine(basic_aabb<T> const& a, vector<3, T> const& b)
+inline basic_aabb<T> combine(basic_aabb<T> const& a, vector<3, T> const& b)
 {
     return basic_aabb<T>( min(a.min, b), max(a.max, b) );
 }
 
 template <typename T>
 MATH_FUNC
-basic_aabb<T> intersect(basic_aabb<T> const& a, basic_aabb<T> const& b)
+inline basic_aabb<T> intersect(basic_aabb<T> const& a, basic_aabb<T> const& b)
 {
     return basic_aabb<T>( max(a.min, b.min), min(a.max, b.max) );
 }
 
 template <typename T>
 MATH_FUNC
-T half_surface_area(basic_aabb<T> const& box)
+inline T half_surface_area(basic_aabb<T> const& box)
 {
     auto s = box.size();
     return s.x * s.y + s.y * s.z + s.z * s.x;
@@ -196,7 +196,7 @@ T half_surface_area(basic_aabb<T> const& box)
 
 template <typename T>
 MATH_FUNC
-T safe_half_surface_area(basic_aabb<T> const& box)
+inline T safe_half_surface_area(basic_aabb<T> const& box)
 {
     auto s = box.safe_size();
     return s.x * s.y + s.y * s.z + s.z * s.x;
@@ -204,21 +204,21 @@ T safe_half_surface_area(basic_aabb<T> const& box)
 
 template <typename T>
 MATH_FUNC
-T surface_area(basic_aabb<T> const& box)
+inline T surface_area(basic_aabb<T> const& box)
 {
     return 2 * half_surface_area(box);
 }
 
 template <typename T>
 MATH_FUNC
-T safe_surface_area(basic_aabb<T> const& box)
+inline T safe_surface_area(basic_aabb<T> const& box)
 {
     return 2 * safe_half_surface_area(box);
 }
 
 template <typename T>
 MATH_FUNC
-T volume(basic_aabb<T> const& box)
+inline T volume(basic_aabb<T> const& box)
 {
     auto s = box.size();
     return s.x * s.y * s.z;
@@ -226,7 +226,7 @@ T volume(basic_aabb<T> const& box)
 
 template <typename T>
 MATH_FUNC
-T overlap_ratio_union(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+inline T overlap_ratio_union(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 {
     auto I = intersect(lhs, rhs);
 
@@ -241,7 +241,7 @@ T overlap_ratio_union(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 
 template <typename T>
 MATH_FUNC
-T overlap_ratio_min(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+inline T overlap_ratio_min(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 {
     auto I = intersect(lhs, rhs);
 
@@ -262,14 +262,14 @@ T overlap_ratio_min(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 
 template <typename T>
 MATH_FUNC
-T overlap_ratio(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+inline T overlap_ratio(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 {
 //  return overlap_ratio_union(lhs, rhs);
     return overlap_ratio_min(lhs, rhs);
 }
 
 template <typename T>
-std::pair<basic_aabb<T>, basic_aabb<T>> split(basic_aabb<T> const& box, cartesian_axis<3> axis, T splitpos)
+inline std::pair<basic_aabb<T>, basic_aabb<T>> split(basic_aabb<T> const& box, cartesian_axis<3> axis, T splitpos)
 {
 
     vector<3, T> min1 = box.min;
@@ -288,7 +288,7 @@ std::pair<basic_aabb<T>, basic_aabb<T>> split(basic_aabb<T> const& box, cartesia
 
 template <typename T>
 MATH_FUNC
-typename basic_aabb<T>::vertex_list compute_vertices(basic_aabb<T> const& box)
+inline typename basic_aabb<T>::vertex_list compute_vertices(basic_aabb<T> const& box)
 {
 
     vector<3, T> min = box.min;
