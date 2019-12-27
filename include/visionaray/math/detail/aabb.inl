@@ -233,7 +233,7 @@ inline T overlap_ratio_union(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
     if (I.empty())
     {
         // bounding boxes do not overlap.
-        return 0.0f;
+        return T(0.0);
     }
 
     return volume(I) / volume(combine(lhs, rhs));
@@ -248,13 +248,13 @@ inline T overlap_ratio_min(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
     if (lhs.empty() || rhs.empty())
     {
         // an empty bounding box never overlaps another bounding box
-        return 0.0f;
+        return T(0.0);
     }
 
     if (I.empty())
     {
         // bounding boxes do not overlap.
-        return 0.0f;
+        return T(0.0);
     }
 
     return volume(I) / min(volume(lhs), volume(rhs));
