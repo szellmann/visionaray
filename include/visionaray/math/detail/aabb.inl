@@ -206,14 +206,14 @@ template <typename T>
 MATH_FUNC
 inline T surface_area(basic_aabb<T> const& box)
 {
-    return 2 * half_surface_area(box);
+    return T(2.0) * half_surface_area(box);
 }
 
 template <typename T>
 MATH_FUNC
 inline T safe_surface_area(basic_aabb<T> const& box)
 {
-    return 2 * safe_half_surface_area(box);
+    return T(2.0) * safe_half_surface_area(box);
 }
 
 template <typename T>
