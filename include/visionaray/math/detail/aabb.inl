@@ -271,7 +271,6 @@ inline T overlap_ratio(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 template <typename T>
 inline std::pair<basic_aabb<T>, basic_aabb<T>> split(basic_aabb<T> const& box, cartesian_axis<3> axis, T splitpos)
 {
-
     vector<3, T> min1 = box.min;
     vector<3, T> min2 = box.min;
     vector<3, T> max1 = box.max;
@@ -283,14 +282,12 @@ inline std::pair<basic_aabb<T>, basic_aabb<T>> split(basic_aabb<T> const& box, c
     basic_aabb<T> box1(min1, max1);
     basic_aabb<T> box2(min2, max2);
     return std::make_pair(box1, box2);
-
 }
 
 template <typename T>
 MATH_FUNC
 inline typename basic_aabb<T>::vertex_list compute_vertices(basic_aabb<T> const& box)
 {
-
     vector<3, T> min = box.min;
     vector<3, T> max = box.max;
 
@@ -307,7 +304,6 @@ inline typename basic_aabb<T>::vertex_list compute_vertices(basic_aabb<T> const&
     }};
 
     return result;
-
 }
 
 } // MATH_NAMESPACE
