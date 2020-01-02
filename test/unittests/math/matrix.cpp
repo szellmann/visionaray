@@ -4,7 +4,9 @@
 #include <cassert>
 #include <cstddef>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/constants.h>
+#include <visionaray/math/matrix.h>
+#include <visionaray/math/vector.h>
 
 #include <gtest/gtest.h>
 
