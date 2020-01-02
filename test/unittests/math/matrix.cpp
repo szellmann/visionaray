@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <cassert>
+#include <cstddef>
 
 #include <visionaray/math/math.h>
 
