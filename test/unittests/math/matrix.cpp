@@ -218,6 +218,29 @@ TEST(Matrix, Mult)
     }
 }
 
+TEST(Matrix, Add)
+{
+    //-------------------------------------------------------------------------
+    // mat4
+    //
+
+    {
+
+        // make some matrices
+        mat4 A = mat4::rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
+        mat4 B = mat4::translation(vec3(3, 4, 5));
+        mat4 C = A + B;
+
+        for_each_mat4_e(
+            [&](int i, int j)
+            {
+                EXPECT_FLOAT_EQ(C(i, j), A(i, j) + B(i, j));
+            }
+            );
+
+    }
+}
+
 TEST(Matrix, Transpose)
 {
 
