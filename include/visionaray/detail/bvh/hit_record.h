@@ -77,7 +77,7 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     int_type primitive_list_index_inst = int_type(0);
 
     // Inverse transformation matrix
-    matrix<4, 4, scalar_type> transform_inv = matrix<4, 4, typename R::scalar_type>::identity();
+    matrix<4, 4, scalar_type> transform_inv = matrix<4, 4, scalar_type>::identity();
 };
 
 
