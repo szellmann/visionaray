@@ -58,7 +58,11 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     using int_type    = simd::int_type_t<scalar_type>;
     using base_type   = Base;
 
-    hit_record_bvh_inst() = default;
+    VSNRAY_FUNC hit_record_bvh_inst()
+        : transform_inv(matrix<4, 4, scalar_type>::identity())
+    {
+    }
+
     VSNRAY_FUNC explicit hit_record_bvh_inst(
             hit_record_bvh<R, Base> const& base,
             int_type i,
@@ -77,7 +81,7 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     int_type primitive_list_index_inst = int_type(0);
 
     // Inverse transformation matrix
-    matrix<4, 4, scalar_type> transform_inv = matrix<4, 4, scalar_type>::identity();
+    matrix<4, 4, scalar_type> transform_inv;
 };
 
 
