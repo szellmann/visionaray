@@ -59,7 +59,8 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     using base_type   = Base;
 
     VSNRAY_FUNC hit_record_bvh_inst()
-        : transform_inv(matrix<4, 4, scalar_type>::identity())
+        : primitive_list_index(0)
+        , transform_inv(matrix<4, 4, scalar_type>::identity())
     {
     }
 
@@ -78,7 +79,7 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     // (this list is usually, but not always, accessed with
     // an indirect index by using BVH::primitive() - this index
     // is for *direct* access!)
-    int_type primitive_list_index_inst = int_type(0);
+    int_type primitive_list_index_inst;
 
     // Inverse transformation matrix
     matrix<4, 4, scalar_type> transform_inv;
