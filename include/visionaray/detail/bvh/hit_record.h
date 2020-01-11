@@ -58,7 +58,7 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     using base_type   = Base;
 
     VSNRAY_FUNC hit_record_bvh_inst()
-        : primitive_list_index(0)
+        : primitive_list_index_inst(0)
         , transform_inv(matrix<4, 4, scalar_type>::identity())
     {
     }
