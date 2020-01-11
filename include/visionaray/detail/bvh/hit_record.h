@@ -6,7 +6,6 @@
 #ifndef VSNRAY_DETAIL_BVH_HIT_RECORD_H
 #define VSNRAY_DETAIL_BVH_HIT_RECORD_H 1
 
-#include <cstddef>
 #include <type_traits>
 
 #include <visionaray/math/simd/type_traits.h>
@@ -126,7 +125,7 @@ namespace simd
 //
 
 template <
-    size_t N,
+    unsigned N,
     typename T = simd::float_from_simd_width_t<N>,
     typename Base
     >
@@ -142,7 +141,7 @@ inline hit_record_bvh<basic_ray<T>, decltype(simd::pack(array<Base, N>{{}}))> pa
     array<Base, N> bases;
     int_array primitive_list_index;
 
-    for (size_t i = 0; i < N; ++i)
+    for (unsigned i = 0; i < N; ++i)
     {
         // Slicing (on purpose)!
         bases[i] = Base(hrs[i]);
@@ -190,7 +189,7 @@ inline auto unpack(
 
     auto transform_inv = unpack(hr.transform_inv);
 
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i] = hit_record_bvh_inst<ray, scalar_base_type>(
                 hit_record_bvh<basic_ray<float>, scalar_base_type>(
@@ -233,7 +232,7 @@ inline auto unpack(
         num_elements<FloatT>::value
         > result;
 
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i] = hit_record_bvh<ray, scalar_base_type>(
                 scalar_base_type(base[i]),
