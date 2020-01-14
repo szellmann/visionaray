@@ -55,6 +55,12 @@ using texture = texture_iface<texture_base<T, Dim>, T, Dim>;
 template <typename T, size_t Dim>
 using texture_ref = texture_iface<texture_ref_base<T, Dim>, T, Dim>;
 
+template <typename T, size_t Dim>
+class cuda_texture;
+
+template <typename T, size_t Dim>
+class cuda_texture_ref;
+
 } // visionaray
 
 #endif // VSNRAY_TEXTURE_FORWARD_H
