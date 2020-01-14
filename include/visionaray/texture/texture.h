@@ -8,7 +8,7 @@
 
 #include <visionaray/detail/macros.h>
 
-#if defined(__CUDACC__) || defined(CUDARTAPI)
+#ifdef __CUDACC__
 #include "detail/cuda_texture.h"
 #endif
 
@@ -60,7 +60,7 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> const& coord)
 }
 
 
-#if defined(__CUDACC__) || defined(CUDARTAPI)
+#ifdef __CUDACC__
 
 template <
     typename T,
@@ -143,7 +143,7 @@ tex3D(cuda_texture_ref<T, 3> const& tex, vector<3, float> coord)
     return cuda::cast<return_type>(retval);
 }
 
-#endif // defined(__CUDACC__) || defined(CUDARTAPI)
+#endif // __CUDACC__
 
 } // visionaray
 

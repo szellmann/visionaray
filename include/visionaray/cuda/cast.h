@@ -7,7 +7,6 @@
 #define VSNRAY_CUDA_CAST_H 1
 
 #include <cuda_runtime_api.h>
-#include <vector_functions.h>
 
 #include <visionaray/detail/macros.h>
 #include <visionaray/math/norm.h>
