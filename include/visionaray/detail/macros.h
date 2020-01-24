@@ -31,7 +31,7 @@
 #if VSNRAY_CXX_MSVC && (_MSC_VER >= 1700)
 #define VSNRAY_WARN_UNUSED_RESULT _Check_return_
 #else
-#define VSNRAY_WARN_UNUSED_RESULT __attribute__ ((warn_unused_result))
+#define VSNRAY_WARN_UNUSED_RESULT __attribute__((warn_unused_result))
 #endif
 
 
