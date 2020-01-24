@@ -43,7 +43,7 @@
 #if VSNRAY_CXX_INTEL
 #define VSNRAY_FORCE_INLINE __forceinline
 #elif VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
-#define VSNRAY_FORCE_INLINE inline __attribute((always_inline))
+#define VSNRAY_FORCE_INLINE inline __attribute__((always_inline))
 #elif VSNRAY_CXX_MSVC
 #define VSNRAY_FORCE_INLINE __forceinline
 #else
