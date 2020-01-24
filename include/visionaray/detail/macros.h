@@ -128,7 +128,7 @@
 
 
 //-------------------------------------------------------------------------------------------------
-// VSNRAY_UNUSED(...)
+// VSNRAY_UNUSED
 // Verbose way to say that a parameter is not used intentionally
 //
 
