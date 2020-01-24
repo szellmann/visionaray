@@ -132,11 +132,7 @@
 // Verbose way to say that a parameter is not used intentionally
 //
 
-template <typename ...Args>
-VSNRAY_FUNC
-inline void VSNRAY_UNUSED(Args&&...)
-{
-}
+#define VSNRAY_UNUSED(X) (void)(X)
 
 
 //-------------------------------------------------------------------------------------------------
