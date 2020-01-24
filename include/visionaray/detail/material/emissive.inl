@@ -48,7 +48,8 @@ template <typename SR, typename Interaction>
 VSNRAY_FUNC
 inline typename SR::scalar_type emissive<T>::pdf(SR const& sr, Interaction const& inter) const
 {
-    VSNRAY_UNUSED(sr, inter);
+    VSNRAY_UNUSED(sr);
+    VSNRAY_UNUSED(inter);
     return typename SR::scalar_type(1.0);
 }
 

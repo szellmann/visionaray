@@ -343,7 +343,9 @@ public:
     VSNRAY_FUNC
     U pdf(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
-        VSNRAY_UNUSED(n, wo, wi);
+        VSNRAY_UNUSED(n);
+        VSNRAY_UNUSED(wo);
+        VSNRAY_UNUSED(wi);
         return U(0.0);
     }
 };
@@ -458,7 +460,9 @@ public:
     VSNRAY_FUNC
     U pdf(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
     {
-        VSNRAY_UNUSED(n, wo, wi);
+        VSNRAY_UNUSED(n);
+        VSNRAY_UNUSED(wo);
+        VSNRAY_UNUSED(wi);
         return U(0.0);
     }
 };

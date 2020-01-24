@@ -33,7 +33,8 @@ inline auto get_color(
         )
     -> typename std::iterator_traits<Colors>::value_type
 {
-    VSNRAY_UNUSED(colors, hr);
+    VSNRAY_UNUSED(colors);
+    VSNRAY_UNUSED(hr);
 
     using C = typename std::iterator_traits<Colors>::value_type;
 

@@ -224,7 +224,9 @@ template <
 VSNRAY_FUNC
 inline simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T max_t)
 {
-    VSNRAY_UNUSED(query, reference, max_t);
+    VSNRAY_UNUSED(query);
+    VSNRAY_UNUSED(reference);
+    VSNRAY_UNUSED(max_t);
 
     return simd::mask_type_t<T>(true);
 }

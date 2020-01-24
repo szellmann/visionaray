@@ -173,7 +173,9 @@ template <
 VSNRAY_FUNC
 light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen)
 {
-    VSNRAY_UNUSED(begin, end, gen);
+    VSNRAY_UNUSED(begin);
+    VSNRAY_UNUSED(end);
+    VSNRAY_UNUSED(gen);
 
     return {};
 }
