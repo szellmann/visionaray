@@ -13,16 +13,7 @@ if (VSNRAY_ENABLE_CUDA)
 endif()
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
-    visionaray_cuda_compile(EX_SMALLPT_CUDA_SOURCES
-        main.cu
-    )
+    visionaray_add_cuda_executable(smallpt main.cu)
 else()
-    set(EX_SMALLPT_SOURCES
-        main.cpp
-    )
+    visionaray_add_executable(smallpt main.cpp)
 endif()
-
-visionaray_add_executable(smallpt
-    ${EX_SMALLPT_SOURCES}
-    ${EX_SMALLPT_CUDA_SOURCES}
-)
