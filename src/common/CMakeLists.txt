@@ -366,6 +366,6 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} ${CONFIG_DIR}
 )
 
 install(TARGETS visionaray_common
-     LIBRARY DESTINATION share/lib COMPONENT libraries
-     ARCHIVE DESTINATION share/lib COMPONENT libraries
+     LIBRARY DESTINATION lib COMPONENT libraries
+     ARCHIVE DESTINATION lib COMPONENT libraries
 )
