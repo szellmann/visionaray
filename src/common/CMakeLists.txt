@@ -329,7 +329,6 @@ set(TINYPLY_SOURCES
 #
 
 visionaray_add_library(visionaray_common
-    STATIC
     ${COMMON_HEADERS}
     ${COMMON_SOURCES}
     ${CMD_LINE_HEADERS}
