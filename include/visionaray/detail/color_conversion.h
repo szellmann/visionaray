@@ -225,6 +225,29 @@ inline T spd_to_luminance(spectrum<T> const& spe)
 
 
 //-------------------------------------------------------------------------------------------------
+// Convert from linear to sRGB space
+//
+
+template <typename T>
+VSNRAY_FUNC
+inline vector<3, T> linear_to_srgb(vector<3, T> const& rgb)
+{
+    vector<3, T> result;
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        result[i] = select(
+            rgb[i] <= T(0.0031308),
+            T(12.92) * rgb[i],
+            T(1.055) * pow(rgb[i], T(1.0 / 2.4)) - T(0.055)
+            );
+    }
+
+    return result;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Convert OpenGL pixel formats
 //
 
