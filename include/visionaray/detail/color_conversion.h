@@ -248,6 +248,29 @@ inline vector<3, T> linear_to_srgb(vector<3, T> const& rgb)
 
 
 //-------------------------------------------------------------------------------------------------
+// Convert from sRGB to linear space
+//
+
+template <typename T>
+VSNRAY_FUNC
+inline vector<3, T> srgb_to_linear(vector<3, T> const& srgb)
+{
+    vector<3, T> result;
+
+    for (size_t i = 0; i < 3; ++i)
+    {
+        result[i] = select(
+            srgb[i] <= T(0.04045),
+            srgb[i] / T(12.92),
+            pow((srgb[i] + T(0.055)) / T(1.055), T(2.4))
+            );
+    }
+
+    return result;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Convert OpenGL pixel formats
 //
 
