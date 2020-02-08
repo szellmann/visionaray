@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cstddef>
+#include <type_traits>
 
 #include <visionaray/math/simd/type_traits.h>
 #include <visionaray/math/array.h>
