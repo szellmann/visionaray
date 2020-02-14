@@ -39,11 +39,11 @@ public:
     {
         assert(file_);
 
-        int err = fclose(file_);
+        int res = fclose(file_);
 
-        assert(err == 0);
+        assert(res != EOF);
 
-        VSNRAY_UNUSED(err);
+        VSNRAY_UNUSED(res);
     }
 
 private:
