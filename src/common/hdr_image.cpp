@@ -94,20 +94,20 @@ bool hdr_image::load(std::string const& filename)
     for (size_t h = 0; h < height_; ++h)
     {
         std::getline(file, line);
-        auto bytes = reinterpret_cast<uint8_t const*>(line.c_str());
+        //auto bytes = reinterpret_cast<uint8_t const*>(line.c_str());
 
-        for (size_t w = 0; w < width_; ++w)
-        {
-            uint8_t r = bytes[w * 4];
-            uint8_t g = bytes[w * 4 + 1];
-            uint8_t b = bytes[w * 4 + 2];
-            uint8_t e = bytes[w * 4 + 3];
+        //for (size_t w = 0; w < width_; ++w)
+        //{
+        //    uint8_t r = bytes[w * 4];
+        //    uint8_t g = bytes[w * 4 + 1];
+        //    uint8_t b = bytes[w * 4 + 2];
+        //    uint8_t e = bytes[w * 4 + 3];
 
-            size_t rl = 1;
-            if (r == 2 && g == 2)
-            {
-            }
-        }
+        //    size_t rl = 1;
+        //    if (r == 2 && g == 2)
+        //    {
+        //    }
+        //}
     }
 
     return true;
