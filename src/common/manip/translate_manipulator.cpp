@@ -205,8 +205,6 @@ bool translate_manipulator::handle_space_mouse_move(visionaray::space_mouse_even
 {
     if (event.type() == space_mouse::Translation)
     {
-        auto w  =  camera_.get_viewport().w;
-        auto h  =  camera_.get_viewport().h;
         auto dx = -static_cast<float>(event.pos().x) / 100000.f;
         auto dy =  static_cast<float>(event.pos().z) / 100000.f;
         auto dz = -static_cast<float>(event.pos().y) / 100000.f;
