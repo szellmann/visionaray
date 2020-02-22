@@ -273,6 +273,14 @@ bool image::save(std::string const& filename, file_base::save_options const& opt
 
     switch (it)
     {
+#if VSNRAY_COMMON_HAVE_PNG
+    case PNG:
+    {
+        png_image png(width(), height(), format(), data());
+        return png.save(fn, options);
+    }
+#endif // VSNRAY_COMMON_HAVE_PNG
+
     case PNM:
     {
         pnm_image pnm(width(), height(), format(), data());
