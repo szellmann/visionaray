@@ -2074,6 +2074,7 @@ void renderer::render_impl()
                         mod.shading_normals,
                         ptex_tex_coords,
                         generic_materials,
+                        mod.colors,
                         ptex_textures,
                         temp_lights,
                         bounces,
@@ -2085,7 +2086,8 @@ void renderer::render_impl()
                         camx,
                         frame_num,
                         algo,
-                        ssaa_samples
+                        ssaa_samples,
+                        env_light
                         );
             }
 #endif
