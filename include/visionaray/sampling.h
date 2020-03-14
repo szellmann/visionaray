@@ -6,6 +6,7 @@
 #ifndef VSNRAY_SAMPLING_H
 #define VSNRAY_SAMPLING_H 1
 
+#include <iterator>
 #include <type_traits>
 
 #include "detail/macros.h"
