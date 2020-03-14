@@ -291,8 +291,7 @@ inline typename basic_aabb<T>::vertex_list compute_vertices(basic_aabb<T> const&
     vector<3, T> min = box.min;
     vector<3, T> max = box.max;
 
-    typename basic_aabb<T>::vertex_list result =
-    {{
+    return {{
         { max.x, max.y, max.z },
         { min.x, max.y, max.z },
         { min.x, min.y, max.z },
@@ -302,8 +301,6 @@ inline typename basic_aabb<T>::vertex_list compute_vertices(basic_aabb<T> const&
         { max.x, min.y, min.z },
         { min.x, min.y, min.z }
     }};
-
-    return result;
 }
 
 } // MATH_NAMESPACE
