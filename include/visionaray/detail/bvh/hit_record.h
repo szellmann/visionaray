@@ -6,6 +6,7 @@
 #ifndef VSNRAY_DETAIL_BVH_HIT_RECORD_H
 #define VSNRAY_DETAIL_BVH_HIT_RECORD_H 1
 
+#include <cstddef>
 #include <type_traits>
 
 #include <visionaray/math/simd/type_traits.h>
@@ -125,7 +126,7 @@ namespace simd
 //
 
 template <
-    unsigned N,
+    size_t N,
     typename T = simd::float_from_simd_width_t<N>,
     typename Base
     >
