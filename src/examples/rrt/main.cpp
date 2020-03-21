@@ -83,6 +83,8 @@ struct volume
     // Emission
     vec3 Le(vec3 const& pos) const
     {
+        return vec3(0.0f);
+
         if (pos.x > 0.16f && pos.y > 0.16f && pos.z > 0.16f)
          //&& pos.x < 0.33f && pos.y < 0.33f && pos.z < 0.33f)
         {
@@ -273,12 +275,19 @@ void renderer::on_display()
             }
         }
 
+#if 1
+        // Look up sphere light
+        basic_sphere<float> sph(vec3f(.7f),.2f);
+        auto sph_rec = intersect(r, sph);
+        vec3 Ld = sph_rec.hit ? vec3f(30.f,70.f,20.f) : vec3f(0.f);
+#else
         // Look up the environment
 #if 1
         vec3 Ld(0.5f + 0.5f * r.dir.y);
 #else
         float f = (0.5f + 0.5f * r.dir.y);
         vec3 Ld(0.5f, (1.0f - f), f);
+#endif
 #endif
         vec3 L = Ld * throughput;
 
