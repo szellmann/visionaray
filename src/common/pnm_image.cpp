@@ -410,9 +410,6 @@ bool pnm_image::save(std::string const& filename, file_base::save_options const&
         return false;
     }
 
-
-    file.close();
-
     if (!file)
     {
         std::cerr << "Error writing to file\n";

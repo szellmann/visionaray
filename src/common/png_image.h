@@ -6,6 +6,8 @@
 #ifndef VSNRAY_COMMON_PNG_IMAGE_H
 #define VSNRAY_COMMON_PNG_IMAGE_H 1
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 
 #include "image_base.h"
@@ -17,7 +19,16 @@ class png_image : public image_base
 {
 public:
 
+    // Default constructor.
+    png_image() = default;
+
+    // Construct image from width, height, format, and data (data is copied).
+    png_image(size_t width, size_t height, pixel_format format, uint8_t const* data);
+
     bool load(std::string const& filename);
+
+    // Save png image. Options: { tba. }
+    bool save(std::string const& filename, save_options const& options);
 
 };
 

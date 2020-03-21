@@ -116,6 +116,13 @@ inline T* array<T, N>::begin()
 
 template <typename T, size_t N>
 VSNRAY_FUNC
+inline T const* array<T, N>::begin() const
+{
+    return data_;
+}
+
+template <typename T, size_t N>
+VSNRAY_FUNC
 inline T const* array<T, N>::cbegin() const
 {
     return data_;

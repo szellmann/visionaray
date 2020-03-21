@@ -130,7 +130,9 @@ void gl::blend_texture(GLuint texture, GLenum sfactor, GLenum dfactor)
 
     glPopAttrib();
 #else
-    VSNRAY_UNUSED(texture, sfactor, dfactor);
+    VSNRAY_UNUSED(texture
+    VSNRAY_UNUSED(sfactor);
+    VSNRAY_UNUSED(dfactor);
 #endif
 }
 
@@ -156,7 +158,13 @@ void gl::blend_pixels(GLsizei w, GLsizei h, GLenum format, GLenum type, GLvoid c
 
     glPopAttrib();
 #else
-    VSNRAY_UNUSED(w, h, format, type, pixels, sfactor, dfactor);
+    VSNRAY_UNUSED(w);
+    VSNRAY_UNUSED(h);
+    VSNRAY_UNUSED(format);
+    VSNRAY_UNUSED(type);
+    VSNRAY_UNUSED(pixels);
+    VSNRAY_UNUSED(sfactor);
+    VSNRAY_UNUSED(dfactor);
 #endif
 }
 

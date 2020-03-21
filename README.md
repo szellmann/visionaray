@@ -38,7 +38,7 @@ Build requirements
 - When targeting NVIDIA CUDA, make sure you have a C++11 compliant version (v7.0 or newer)
 - Visionaray supports Fermi+ NVIDIA GPUs (e.g. >= GeForce 400 series or >= Quadro {4|5|6}000) (Visionaray does not support texturing on Fermi GPUs, bindless texture support is available with Kepler+ GPUs)
 
-Additionally, in order to compile the viewer application and the [examples](https://github.com/szellmann/visionaray/tree/master/src/examples), the following packages are needed:
+Additionally, in order to compile the viewer application and the [examples](https://github.com/szellmann/visionaray/tree/master/src/examples), the following packages are needed or recommended:
 
 - [Boost][2]
 - [GLUT][5] or [FreeGLUT][6]
@@ -47,6 +47,7 @@ Additionally, in order to compile the viewer application and the [examples](http
 - [LibTIFF][9] (optional)
 - [OpenEXR][10] (optional)
 - [PBRT-Parser][11] (optional)
+- [Ptex][13] (optional)
 
 
 
@@ -103,7 +104,7 @@ Visionaray is a template library, so that most algorithms are implemented in hea
 - `include/visionaray/texture`: texture management templates and texture access routines
 - `include/visionaray`: misc. ray tracing templates, BVHs, render targets, etc.
 
-Visionaray can optionally interoperate with graphics and GPGPU APIs. Interoperability with the respective libraries is compiled into the Visionaray library. When not needing GPU interoperability, chances are high that you don't need to link with the library but can just include headers.
+Visionaray can optionally interoperate with graphics and GPGPU APIs. Interoperability with the respective libraries is compiled into the Visionaray library. When not needing GPU interoperability, chances are high that you don't need to link with Visionaray, but can rather use it as a header only library.
 
 - `include/visionaray/cuda/`, `src/visionaray/cuda`: CUDA interoperability classes
 - `include/visionaray/gl`, `src/visionaray/gl`: OpenGL(ES) interoperability classes
@@ -119,7 +120,7 @@ Visionaray comes with a rudimentary viewer (see above) and a set of [example app
 
 ### Common library
 
-The viewer application and the examples statically link with the Visionaray-common library that provides functionality such as windowing classes or mouse interaction. The Visionaray-common library is **not part of the public API** and interfaces may change between releases.
+The viewer application and the examples link with the Visionaray-common library that provides functionality such as windowing classes or mouse interaction. The Visionaray-common library is **not part of the public API** and interfaces may change between releases.
 
 - `src/common`: library private to the viewer and example applications
 
@@ -152,3 +153,4 @@ Visionaray is licensed under the MIT License (MIT)
 [10]:   http://www.openexr.com/
 [11]:   https://github.com/ingowald/pbrt-parser
 [12]:   https://www.opengl.org
+[13]:   https://github.com/wdas/ptex

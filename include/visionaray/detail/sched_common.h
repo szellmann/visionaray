@@ -73,6 +73,21 @@ inline auto invoke_kernel(K kernel, R r, Generator& gen, int x, int y)
     return kernel(r, x, y);
 }
 
+template <
+    typename K,
+    typename R,
+    typename Generator,
+    typename = void,
+    typename = void,
+    typename = void
+    >
+VSNRAY_FUNC
+inline auto invoke_kernel(K kernel, R r, Generator& gen, int x, int y)
+    -> decltype(kernel(r, gen, x, y))
+{
+    return kernel(r, gen, x, y);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Invoke cam::primary_ray()

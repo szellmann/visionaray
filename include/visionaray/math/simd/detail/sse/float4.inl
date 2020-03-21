@@ -269,21 +269,6 @@ VSNRAY_FORCE_INLINE mask4 operator!=(float4 const& u, float4 const& v)
 // Math functions
 //
 
-VSNRAY_FORCE_INLINE float4 dot(float4 const& u, float4 const& v)
-{
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE4_1)
-    return _mm_dp_ps(u, v, 0xFF);
-#else
-   __m128 t1 = _mm_mul_ps(u, v);
-   __m128 t2 = _mm_shuffle_ps(t1, t1, _MM_SHUFFLE(2,3,0,1));
-   __m128 t3 = _mm_add_ps(t1, t2);
-   __m128 t4 = _mm_shuffle_ps(t3, t3, _MM_SHUFFLE(0,1,2,3));
-   __m128 t5 = _mm_add_ps(t3, t4);
-
-   return t5;
-#endif
-}
-
 VSNRAY_FORCE_INLINE float4 min(float4 const& u, float4 const& v)
 {
     return _mm_min_ps(u, v);

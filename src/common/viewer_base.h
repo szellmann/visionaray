@@ -21,6 +21,7 @@ class OptionBase;
 } // cl
 } // support
 
+struct ImDrawData;
 
 namespace visionaray
 {
@@ -84,6 +85,10 @@ protected:
     virtual void on_space_mouse_move(space_mouse_event const& event);
     virtual void on_space_mouse_button_press(space_mouse_event const& event);
     virtual void on_resize(int w, int h);
+
+    void imgui_create_font_texture_opengl2();
+    void imgui_destroy_font_texture_opengl2();
+    void imgui_draw_opengl2(ImDrawData* draw_data);
 
 private:
 

@@ -179,15 +179,15 @@ bool translate_manipulator::handle_mouse_move(visionaray::mouse_event const& eve
     {
         auto last_pos_ = down_pos_;
 
-        auto w  =  camera_.get_viewport().w;
-        auto h  =  camera_.get_viewport().h;
-        auto dx = -static_cast<float>(last_pos_.x - event.pos().x) / w;
-        auto dy = +static_cast<float>(last_pos_.y - event.pos().y) / h;
-        auto s  = 2.0f * camera_.distance();
-        auto Z = normalize( camera_.eye() - camera_.center() );
-        auto Y = camera_.up();
-        auto X = cross(Y, Z);
-        vec3 d  =  (dx * s) * X + (dy * s) * Y;
+        int w = camera_.get_viewport().w;
+        int h = camera_.get_viewport().h;
+        float dx = -static_cast<float>(last_pos_.x - event.pos().x) / w;
+        float dy = +static_cast<float>(last_pos_.y - event.pos().y) / h;
+        float s = 2.0f * camera_.distance();
+        vec3 Z = normalize( camera_.eye() - camera_.center() );
+        vec3 Y = camera_.up();
+        vec3 X = cross(Y, Z);
+        vec3 d = (dx * s) * X + (dy * s) * Y;
 
         model_matrix_ = mat4::translation(d) * model_matrix_;
 
@@ -205,16 +205,14 @@ bool translate_manipulator::handle_space_mouse_move(visionaray::space_mouse_even
 {
     if (event.type() == space_mouse::Translation)
     {
-        auto w  =  camera_.get_viewport().w;
-        auto h  =  camera_.get_viewport().h;
-        auto dx = -static_cast<float>(event.pos().x) / 100000.f;
-        auto dy =  static_cast<float>(event.pos().z) / 100000.f;
-        auto dz = -static_cast<float>(event.pos().y) / 100000.f;
-        auto s  = 2.0f * camera_.distance();
-        auto Z  = normalize( camera_.eye() - camera_.center() );
-        auto Y  = camera_.up();
-        auto X  = cross(Y, Z);
-        vec3 d  = (dx * s) * X + (dy * s) * Y + (dz * s) * Z;
+        float dx = -static_cast<float>(event.pos().x) / 100000.f;
+        float dy =  static_cast<float>(event.pos().z) / 100000.f;
+        float dz = -static_cast<float>(event.pos().y) / 100000.f;
+        float s = 2.0f * camera_.distance();
+        vec3 Z = normalize( camera_.eye() - camera_.center() );
+        vec3 Y = camera_.up();
+        vec3 X = cross(Y, Z);
+        vec3 d = (dx * s) * X + (dy * s) * Y + (dz * s) * Z;
 
         model_matrix_ = mat4::translation(d) * model_matrix_;
 

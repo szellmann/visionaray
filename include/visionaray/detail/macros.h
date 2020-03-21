@@ -31,7 +31,7 @@
 #if VSNRAY_CXX_MSVC && (_MSC_VER >= 1700)
 #define VSNRAY_WARN_UNUSED_RESULT _Check_return_
 #else
-#define VSNRAY_WARN_UNUSED_RESULT __attribute__ ((warn_unused_result))
+#define VSNRAY_WARN_UNUSED_RESULT __attribute__((warn_unused_result))
 #endif
 
 
@@ -43,7 +43,7 @@
 #if VSNRAY_CXX_INTEL
 #define VSNRAY_FORCE_INLINE __forceinline
 #elif VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
-#define VSNRAY_FORCE_INLINE inline __attribute((always_inline))
+#define VSNRAY_FORCE_INLINE inline __attribute__((always_inline))
 #elif VSNRAY_CXX_MSVC
 #define VSNRAY_FORCE_INLINE __forceinline
 #else
@@ -128,15 +128,11 @@
 
 
 //-------------------------------------------------------------------------------------------------
-// VSNRAY_UNUSED(...)
+// VSNRAY_UNUSED
 // Verbose way to say that a parameter is not used intentionally
 //
 
-template <typename ...Args>
-VSNRAY_FUNC
-inline void VSNRAY_UNUSED(Args&&...)
-{
-}
+#define VSNRAY_UNUSED(X) (void)(X)
 
 
 //-------------------------------------------------------------------------------------------------

@@ -38,7 +38,7 @@ inline T area(basic_triangle<Dim, T, P> const& t)
 
 template <size_t Dim, typename T, typename P>
 MATH_FUNC
-basic_aabb<T> get_bounds(basic_triangle<Dim, T, P> const& t)
+inline basic_aabb<T> get_bounds(basic_triangle<Dim, T, P> const& t)
 {
     basic_aabb<T> bounds;
 
@@ -52,7 +52,7 @@ basic_aabb<T> get_bounds(basic_triangle<Dim, T, P> const& t)
 
 template <typename T, typename P>
 MATH_FUNC
-rectangle<min_max_layout<2, T>, T> get_bounds(basic_triangle<2, T, P> const& t)
+inline rectangle<min_max_layout<2, T>, T> get_bounds(basic_triangle<2, T, P> const& t)
 {
     rectangle<min_max_layout<2, T>, T> bounds;
 

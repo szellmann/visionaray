@@ -489,21 +489,6 @@ VSNRAY_FORCE_INLINE mask8 operator!=(float8 const& u, float8 const& v)
 //
 
 MATH_FUNC
-VSNRAY_FORCE_INLINE float8 dot(float8 const& u, float8 const& v)
-{
-    return float8(
-            u.value[0] * v.value[0]
-          + u.value[1] * v.value[1]
-          + u.value[2] * v.value[2]
-          + u.value[3] * v.value[3]
-          + u.value[4] * v.value[4]
-          + u.value[5] * v.value[5]
-          + u.value[6] * v.value[6]
-          + u.value[7] * v.value[7]
-            );
-}
-
-MATH_FUNC
 VSNRAY_FORCE_INLINE float8 min(float8 const& u, float8 const& v)
 {
     return float8(

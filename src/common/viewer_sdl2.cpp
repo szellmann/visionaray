@@ -9,6 +9,8 @@
 
 #include <SDL2/SDL.h>
 
+#include <imgui.h>
+
 #include "input/key_event.h"
 #include "input/keyboard.h"
 #include "input/mouse.h"
@@ -48,7 +50,35 @@ void viewer_sdl2::impl::call_close()
 
 void viewer_sdl2::impl::call_display()
 {
+    // Set up new imgui frame
+    ImGuiIO& io = ImGui::GetIO();
+    IM_ASSERT(io.Fonts->IsBuilt() && "ImGui font atlas not built!");
+
+    int w;
+    int h;
+    SDL_GetWindowSize(window, &w, &h);
+
+    int display_w;
+    int display_h;
+    SDL_GL_GetDrawableSize(window, &display_w, &display_h);
+    io.DisplaySize = ImVec2(static_cast<float>(w), static_cast<float>(h));
+
+    if (w > 0 && h > 0)
+    {
+        io.DisplayFramebufferScale = ImVec2(
+            static_cast<float>(display_w / w),
+            static_cast<float>(display_h / h)
+            );
+    }
+    ImGui::NewFrame();
+
+    // Render
     viewer->on_display();
+
+    // Draw imgui
+    ImGui::Render();
+    viewer->imgui_draw_opengl2(ImGui::GetDrawData());
+
     SDL_GL_SwapWindow(window);
 }
 
@@ -69,6 +99,16 @@ void viewer_sdl2::impl::call_key_release(SDL_KeyboardEvent const& event)
 
 void viewer_sdl2::impl::call_mouse_move(SDL_MouseMotionEvent const& event)
 {
+    // imgui
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos = ImVec2(static_cast<float>(event.x), static_cast<float>(event.y));
+
+    if (io.WantCaptureMouse)
+    {
+        return;
+    }
+
+    // viewer
     mouse::pos p = { event.x, event.y };
 
     mouse_event ev(
@@ -83,6 +123,13 @@ void viewer_sdl2::impl::call_mouse_move(SDL_MouseMotionEvent const& event)
 
 void viewer_sdl2::impl::call_mouse_down(SDL_MouseButtonEvent const& event)
 {
+    // imgui
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos = ImVec2(static_cast<float>(event.x), static_cast<float>(event.y));
+    int imgui_button = event.button == SDL_BUTTON_LEFT ? 0 : event.button == SDL_BUTTON_RIGHT ? 1 : 2;
+    io.MouseDown[imgui_button] = true;
+
+    // viewer
     mouse::pos p = { event.x, event.y };
 
     auto b = mouse::map_sdl2_button(event.button);
@@ -94,6 +141,13 @@ void viewer_sdl2::impl::call_mouse_down(SDL_MouseButtonEvent const& event)
 
 void viewer_sdl2::impl::call_mouse_up(SDL_MouseButtonEvent const& event)
 {
+    // imgui
+    ImGuiIO& io = ImGui::GetIO();
+    io.MousePos = ImVec2(static_cast<float>(event.x), static_cast<float>(event.y));
+    int imgui_button = event.button == SDL_BUTTON_LEFT ? 0 : event.button == SDL_BUTTON_RIGHT ? 1 : 2;
+    io.MouseDown[imgui_button] = false;
+
+    // viewer
     mouse::pos p = { event.x, event.y };
 
     auto b = mouse::map_sdl2_button(event.button);
@@ -122,6 +176,10 @@ viewer_sdl2::viewer_sdl2(int width, int height, char const* window_title)
 
 viewer_sdl2::~viewer_sdl2()
 {
+    imgui_destroy_font_texture_opengl2();
+
+    ImGui::DestroyContext();
+
     SDL_GL_DeleteContext(impl_->context);
     SDL_DestroyWindow(impl_->window);
 }
@@ -179,6 +237,43 @@ void viewer_sdl2::init(int argc, char** argv)
         error_string.append(reinterpret_cast<char const*>(glewGetErrorString(error)));
         throw std::runtime_error(error_string);
     }
+
+
+    // ImGui
+
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+
+    imgui_create_font_texture_opengl2();
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
+    io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
+    io.BackendPlatformName = "imgui_impl_sdl";
+
+    io.KeyMap[ImGuiKey_Tab] = SDL_SCANCODE_TAB;
+    io.KeyMap[ImGuiKey_LeftArrow] = SDL_SCANCODE_LEFT;
+    io.KeyMap[ImGuiKey_RightArrow] = SDL_SCANCODE_RIGHT;
+    io.KeyMap[ImGuiKey_UpArrow] = SDL_SCANCODE_UP;
+    io.KeyMap[ImGuiKey_DownArrow] = SDL_SCANCODE_DOWN;
+    io.KeyMap[ImGuiKey_PageUp] = SDL_SCANCODE_PAGEUP;
+    io.KeyMap[ImGuiKey_PageDown] = SDL_SCANCODE_PAGEDOWN;
+    io.KeyMap[ImGuiKey_Home] = SDL_SCANCODE_HOME;
+    io.KeyMap[ImGuiKey_End] = SDL_SCANCODE_END;
+    io.KeyMap[ImGuiKey_Insert] = SDL_SCANCODE_INSERT;
+    io.KeyMap[ImGuiKey_Delete] = SDL_SCANCODE_DELETE;
+    io.KeyMap[ImGuiKey_Backspace] = SDL_SCANCODE_BACKSPACE;
+    io.KeyMap[ImGuiKey_Space] = SDL_SCANCODE_SPACE;
+    io.KeyMap[ImGuiKey_Enter] = SDL_SCANCODE_RETURN;
+    io.KeyMap[ImGuiKey_Escape] = SDL_SCANCODE_ESCAPE;
+    io.KeyMap[ImGuiKey_KeyPadEnter] = SDL_SCANCODE_RETURN2;
+    io.KeyMap[ImGuiKey_A] = SDL_SCANCODE_A;
+    io.KeyMap[ImGuiKey_C] = SDL_SCANCODE_C;
+    io.KeyMap[ImGuiKey_V] = SDL_SCANCODE_V;
+    io.KeyMap[ImGuiKey_X] = SDL_SCANCODE_X;
+    io.KeyMap[ImGuiKey_Y] = SDL_SCANCODE_Y;
+    io.KeyMap[ImGuiKey_Z] = SDL_SCANCODE_Z;
 }
 
 void viewer_sdl2::event_loop()
@@ -252,6 +347,16 @@ void viewer_sdl2::event_loop()
     }
 }
 
+void viewer_sdl2::resize(int width, int height)
+{
+    viewer_base::resize(width, height);
+}
+
+void viewer_sdl2::swap_buffers()
+{
+    SDL_GL_SwapWindow(impl_->window);
+}
+
 void viewer_sdl2::toggle_full_screen()
 {
     if (full_screen())
@@ -275,14 +380,9 @@ void viewer_sdl2::quit()
     viewer_base::quit();
 }
 
-void viewer_sdl2::resize(int width, int height)
+bool viewer_sdl2::have_imgui_support()
 {
-    viewer_base::resize(width, height);
-}
-
-void viewer_sdl2::swap_buffers()
-{
-    SDL_GL_SwapWindow(impl_->window);
+    return true;
 }
 
 

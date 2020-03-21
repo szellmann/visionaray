@@ -246,6 +246,7 @@ void render_instances_ptex_cpp(
         aligned_vector<vec3> const&                               shading_normals,
         aligned_vector<ptex::face_id_t> const&                    face_ids,
         aligned_vector<generic_material_t> const&                 materials,
+        aligned_vector<vec3> const&                               colors,
         aligned_vector<ptex::texture> const&                      textures,
         aligned_vector<generic_light_t> const&                    lights,
         unsigned                                                  bounces,
@@ -257,7 +258,8 @@ void render_instances_ptex_cpp(
         camera_t const&                                           cam,
         unsigned&                                                 frame_num,
         algorithm                                                 algo,
-        unsigned                                                  ssaa_samples
+        unsigned                                                  ssaa_samples,
+        host_environment_light const&                             env_light
         );
 #endif
 

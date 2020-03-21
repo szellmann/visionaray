@@ -93,18 +93,6 @@ struct tex_read_mode_from_type<vector<Dim, unorm<Bits>>>
 };
 
 } // detail
-
-
-//-------------------------------------------------------------------------------------------------
-// Forward declarations
-//
-
-template <typename T, size_t Dim>
-class cuda_texture;
-
-template <typename T, size_t Dim>
-class cuda_texture_ref;
-
 } // visionaray
 
 #include "cuda_texture1d.inl"

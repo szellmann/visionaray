@@ -6,6 +6,8 @@
 #ifndef VSNRAY_COMMON_INPUT_SPACE_MOUSE_H
 #define VSNRAY_COMMON_INPUT_SPACE_MOUSE_H 1
 
+#include <cassert>
+
 #include <visionaray/math/forward.h>
 #include <visionaray/math/vector.h>
 

@@ -31,6 +31,28 @@ struct png_read_context
     }
 };
 
+struct png_write_context
+{
+    png_structp png;
+    png_infop info;
+    png_bytep row;
+
+    png_write_context()
+        : png(0)
+        , info(0)
+        , row(0)
+    {
+    }
+
+   ~png_write_context()
+    {
+        png_free_data(png, info, PNG_FREE_ALL, -1);
+        png_destroy_write_struct(&png, &info);
+
+        delete[] row;
+    }
+};
+
 static void png_error_callback(png_structp png_ptr, png_const_charp msg)
 {
     fprintf(stderr, "PNG error: \"%s\"\n", msg);
@@ -62,6 +84,15 @@ static int png_num_components(int color_type)
 }
 #endif
 
+
+//-------------------------------------------------------------------------------------------------
+// png_image
+//
+
+png_image::png_image(size_t width, size_t height, pixel_format format, uint8_t const* data)
+    : image_base(width, height, format, data)
+{
+}
 
 bool png_image::load(std::string const& filename)
 {
@@ -160,6 +191,83 @@ bool png_image::load(std::string const& filename)
     height_ = static_cast<size_t>(h);
 
     return true;
+#else
+    VSNRAY_UNUSED(filename);
+
+    return false;
+#endif
+}
+
+bool png_image::save(std::string const& filename, file_base::save_options const& options)
+{
+#if VSNRAY_COMMON_HAVE_PNG
+    cfile file(filename.c_str(), "wb");
+
+    if (!file.good())
+    {
+        return false;
+    }
+
+
+    png_write_context context;
+
+    context.png = png_create_write_struct(
+            PNG_LIBPNG_VER_STRING,
+            0 /*user-data*/,
+            png_error_callback,
+            png_warning_callback
+            );
+
+    if (context.png == 0)
+    {
+        return false;
+    }
+
+    context.info = png_create_info_struct(context.png);
+
+    if (context.info == 0)
+    {
+        return false;
+    }
+
+
+    png_init_io(context.png, file.get());
+
+    // TODO: support other formats than RGB8
+    png_set_IHDR(
+            context.png,
+            context.info,
+            width_,
+            height_,
+            8,
+            PNG_COLOR_TYPE_RGB,
+            PNG_INTERLACE_NONE,
+            PNG_COMPRESSION_TYPE_BASE,
+            PNG_FILTER_TYPE_BASE
+            );
+
+    png_write_info(context.png, context.info);
+
+    size_t pitch = width_ * 3;
+    context.row = new png_byte[pitch];
+
+    for (size_t y = 0; y < height_; ++y)
+    {
+        for (size_t x = 0; x < width_; ++x)
+        {
+            std::memcpy(
+                context.row + x * 3,
+                data() + (y * width_ + x) * 3,
+                3
+                );
+        }
+        png_write_row(context.png, context.row);
+    }
+
+    png_write_end(context.png, 0);
+
+    return true;
+
 #else
     VSNRAY_UNUSED(filename);
 

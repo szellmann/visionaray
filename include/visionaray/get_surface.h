@@ -63,7 +63,8 @@ inline typename Params::color_type get_tex_color(
         std::integral_constant<int, 0> /* not a texture! */
         )
 {
-    VSNRAY_UNUSED(hr, params);
+    VSNRAY_UNUSED(hr);
+    VSNRAY_UNUSED(params);
 
     using C = typename Params::color_type;
 

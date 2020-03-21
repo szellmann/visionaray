@@ -3,13 +3,15 @@
 
 #include <cmath>
 #include <cstddef>
+#include <type_traits>
 
 #include <visionaray/math/simd/type_traits.h>
-#include <visionaray/math/array.h>
 #include <visionaray/math/forward.h>
 #include <visionaray/math/triangle.h>
 #include <visionaray/math/vector.h>
 #include <visionaray/texture/texture_traits.h>
+
+#include <visionaray/array.h>
 
 namespace visionaray
 {

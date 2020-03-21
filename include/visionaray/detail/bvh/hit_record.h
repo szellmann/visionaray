@@ -58,7 +58,12 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     using int_type    = simd::int_type_t<scalar_type>;
     using base_type   = Base;
 
-    hit_record_bvh_inst() = default;
+    VSNRAY_FUNC hit_record_bvh_inst()
+        : primitive_list_index_inst(0)
+        , transform_inv(matrix<4, 4, scalar_type>::identity())
+    {
+    }
+
     VSNRAY_FUNC explicit hit_record_bvh_inst(
             hit_record_bvh<R, Base> const& base,
             int_type i,
@@ -74,10 +79,10 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     // (this list is usually, but not always, accessed with
     // an indirect index by using BVH::primitive() - this index
     // is for *direct* access!)
-    int_type primitive_list_index_inst = int_type(0);
+    int_type primitive_list_index_inst;
 
     // Inverse transformation matrix
-    matrix<4, 4, scalar_type> transform_inv = matrix<4, 4, typename R::scalar_type>::identity();
+    matrix<4, 4, scalar_type> transform_inv;
 };
 
 
@@ -137,7 +142,7 @@ inline hit_record_bvh<basic_ray<T>, decltype(simd::pack(array<Base, N>{{}}))> pa
     array<Base, N> bases;
     int_array primitive_list_index;
 
-    for (size_t i = 0; i < N; ++i)
+    for (unsigned i = 0; i < N; ++i)
     {
         // Slicing (on purpose)!
         bases[i] = Base(hrs[i]);
@@ -185,7 +190,7 @@ inline auto unpack(
 
     auto transform_inv = unpack(hr.transform_inv);
 
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i] = hit_record_bvh_inst<ray, scalar_base_type>(
                 hit_record_bvh<basic_ray<float>, scalar_base_type>(
@@ -228,7 +233,7 @@ inline auto unpack(
         num_elements<FloatT>::value
         > result;
 
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i] = hit_record_bvh<ray, scalar_base_type>(
                 scalar_base_type(base[i]),

@@ -117,7 +117,11 @@ using namespace visionaray;
                 )
                 -> CVReturn
             {
-                VSNRAY_UNUSED(disp_link, now, output_time, flags_in, flags_out);
+                VSNRAY_UNUSED(disp_link);
+                VSNRAY_UNUSED(now);
+                VSNRAY_UNUSED(output_time);
+                VSNRAY_UNUSED(flags_in);
+                VSNRAY_UNUSED(flags_out);
 
                 graphics_view* view = static_cast<graphics_view*>(display_link_context);
 

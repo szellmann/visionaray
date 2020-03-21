@@ -617,7 +617,8 @@ void load_pbrt(std::string const& filename, model& mod)
         mod.scene_graph->add_child(root);
     }
 #else
-    VSNRAY_UNUSED(filename, mod);
+    VSNRAY_UNUSED(filename);
+    VSNRAY_UNUSED(mod);
 #endif
 }
 

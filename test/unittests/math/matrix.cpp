@@ -2,8 +2,11 @@
 // See the LICENSE file for details.
 
 #include <cassert>
+#include <cstddef>
 
-#include <visionaray/math/math.h>
+#include <visionaray/math/constants.h>
+#include <visionaray/math/matrix.h>
+#include <visionaray/math/vector.h>
 
 #include <gtest/gtest.h>
 
@@ -151,7 +154,7 @@ TEST(Matrix, Inverse)
     }
 }
 
-TEST(Matrix, Mult)
+TEST(Matrix, Mul)
 {
 
     //-------------------------------------------------------------------------
@@ -212,6 +215,29 @@ TEST(Matrix, Mult)
             {
                 float d = dot(get_row(A, i), get_col(B, j));
                 EXPECT_FLOAT_EQ(C(i, j), d);
+            }
+            );
+
+    }
+}
+
+TEST(Matrix, Add)
+{
+    //-------------------------------------------------------------------------
+    // mat4
+    //
+
+    {
+
+        // make some matrices
+        mat4 A = mat4::rotation(vec3(1, 0, 0), constants::pi<float>() / 4);
+        mat4 B = mat4::translation(vec3(3, 4, 5));
+        mat4 C = A + B;
+
+        for_each_mat4_e(
+            [&](int i, int j)
+            {
+                EXPECT_FLOAT_EQ(C(i, j), A(i, j) + B(i, j));
             }
             );
 

@@ -32,6 +32,8 @@ public:
     void toggle_full_screen();
     void quit();
 
+    static bool have_imgui_support();
+
 protected:
 
     virtual void on_idle();

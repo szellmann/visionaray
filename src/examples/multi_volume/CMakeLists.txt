@@ -13,16 +13,7 @@ if (VSNRAY_ENABLE_CUDA)
 endif()
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
-    visionaray_cuda_compile(EX_MULTI_VOLUME_CUDA_SOURCES
-        main.cu
-    )
+    visionaray_add_cuda_executable(multi_volume main.cu)
 else()
-    set(EX_MULTI_VOLUME_SOURCES
-        main.cpp
-    )
+    visionaray_add_executable(multi_volume main.cpp)
 endif()
-
-visionaray_add_executable(multi_volume
-    ${EX_MULTI_VOLUME_SOURCES}
-    ${EX_MULTI_VOLUME_CUDA_SOURCES}
-)

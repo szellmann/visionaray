@@ -70,7 +70,7 @@ inline auto get_area(Primitives const& prims, HR const& hr)
 
     float_array result = {};
 
-    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    for (unsigned i = 0; i < simd::num_elements<T>::value; ++i)
     {
         result[i] = area(prims[prim_id[i]]);
     }
@@ -128,7 +128,7 @@ inline auto get_area(Primitives const& prims, HR const& hr)
 
     float_array result = {};
 
-    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    for (unsigned i = 0; i < simd::num_elements<T>::value; ++i)
     {
         // Find the BVH that contains prim_id[i]
         size_t num_primitives_total = 0;
@@ -191,7 +191,7 @@ inline auto get_area(Primitives const& prims, HR const& hr, void* = nullptr)
 
     float_array result = {};
 
-    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    for (unsigned i = 0; i < simd::num_elements<T>::value; ++i)
     {
         auto& b = prims[0]; // TODO: currently only two levels supported (i.e. one top-level BVH)
 

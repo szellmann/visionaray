@@ -296,17 +296,6 @@ VSNRAY_FORCE_INLINE mask4 operator!=(float4 const& u, float4 const& v)
 // Math functions
 //
 
-VSNRAY_FORCE_INLINE float4 dot(float4 const& u, float4 const& v)
-{
-   float4 t1 = u * v;
-   float4 t2 = shuffle<1,0,3,2>(t1);
-   float4 t3 = t1 + t2;
-   float4 t4 = shuffle<3,2,1,0>(t3);
-   float4 t5 = t3 + t4;
-
-   return t5;
-}
-
 VSNRAY_FORCE_INLINE float4 min(float4 const& u, float4 const& v)
 {
     return vminq_f32(u, v);

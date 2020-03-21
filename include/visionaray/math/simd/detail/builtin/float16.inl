@@ -692,29 +692,6 @@ VSNRAY_FORCE_INLINE mask16 operator!=(float16 const& u, float16 const& v)
 //
 
 MATH_FUNC
-VSNRAY_FORCE_INLINE float16 dot(float16 const& u, float16 const& v)
-{
-    return float16(
-            u.value[ 0] * v.value[ 0]
-          + u.value[ 1] * v.value[ 1]
-          + u.value[ 2] * v.value[ 2]
-          + u.value[ 3] * v.value[ 3]
-          + u.value[ 4] * v.value[ 4]
-          + u.value[ 5] * v.value[ 5]
-          + u.value[ 6] * v.value[ 6]
-          + u.value[ 7] * v.value[ 7]
-          + u.value[ 8] * v.value[ 8]
-          + u.value[ 9] * v.value[ 9]
-          + u.value[10] * v.value[10]
-          + u.value[11] * v.value[11]
-          + u.value[12] * v.value[12]
-          + u.value[13] * v.value[13]
-          + u.value[14] * v.value[14]
-          + u.value[15] * v.value[15]
-            );
-}
-
-MATH_FUNC
 VSNRAY_FORCE_INLINE float16 min(float16 const& u, float16 const& v)
 {
     return float16(

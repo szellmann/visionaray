@@ -283,11 +283,28 @@ public:
         init_texture_object();
     }
 
+    tex_address_mode get_address_mode(size_t index) const
+    {
+        assert(index < 2);
+
+        return address_mode_[index];
+    }
+
+    std::array<tex_address_mode, 2> const& get_address_mode() const
+    {
+        return address_mode_;
+    }
+
     void set_filter_mode(tex_filter_mode filter_mode)
     {
         filter_mode_ = filter_mode;
 
         init_texture_object();
+    }
+
+    tex_filter_mode get_filter_mode() const
+    {
+        return filter_mode_;
     }
 
     void set_color_space(tex_color_space color_space)
@@ -297,11 +314,21 @@ public:
         init_texture_object();
     }
 
+    tex_color_space get_color_space() const
+    {
+        return color_space_;
+    }
+
     void set_normalized_coords(bool nc)
     {
         normalized_coords_ = nc;
 
         init_texture_object();
+    }
+
+    bool get_normalized_coords() const
+    {
+        return normalized_coords_;
     }
 
     operator bool() const

@@ -6,6 +6,7 @@
 #ifndef VSNRAY_SAMPLING_H
 #define VSNRAY_SAMPLING_H 1
 
+#include <iterator>
 #include <type_traits>
 
 #include "detail/macros.h"
@@ -173,7 +174,9 @@ template <
 VSNRAY_FUNC
 light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen)
 {
-    VSNRAY_UNUSED(begin, end, gen);
+    VSNRAY_UNUSED(begin);
+    VSNRAY_UNUSED(end);
+    VSNRAY_UNUSED(gen);
 
     return {};
 }
@@ -227,7 +230,7 @@ light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen, T 
     float* area = reinterpret_cast<float*>(&result.area);
     int* delta_light = reinterpret_cast<int*>(&result.delta_light);
 
-    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    for (unsigned i = 0; i < simd::num_elements<T>::value; ++i)
     {
         int light_id = static_cast<int>(uf[i] * num_lights);
 

@@ -42,8 +42,18 @@ find_library(VISIONARAY_LIBRARY
         lib
 )
 
+find_library(VISIONARAY_COMMON_LIBRARY
+    NAMES
+        visionaray_common
+    PATHS
+        ${paths}
+    PATH_SUFFIXES
+        lib64
+        lib
+)
+
 set(VISIONARAY_INCLUDE_DIRS ${VISIONARAY_INCLUDE_DIR})
-set(VISIONARAY_LIBRARIES ${VISIONARAY_LIBRARY})
+set(VISIONARAY_LIBRARIES ${VISIONARAY_LIBRARY} ${VISIONARAY_COMMON_LIBRARY})
 
 find_package_handle_standard_args(Visionaray
     DEFAULT_MSG

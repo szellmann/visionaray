@@ -6,6 +6,7 @@
 #ifndef VSNRAY_GET_COLOR_H
 #define VSNRAY_GET_COLOR_H 1
 
+#include <cstddef>
 #include <iterator>
 #include <type_traits>
 
@@ -33,7 +34,8 @@ inline auto get_color(
         )
     -> typename std::iterator_traits<Colors>::value_type
 {
-    VSNRAY_UNUSED(colors, hr);
+    VSNRAY_UNUSED(colors);
+    VSNRAY_UNUSED(hr);
 
     using C = typename std::iterator_traits<Colors>::value_type;
 
@@ -122,7 +124,7 @@ inline vector<3, T> get_color(
     float_array y;
     float_array z;
 
-    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    for (unsigned i = 0; i < simd::num_elements<T>::value; ++i)
     {
         auto c = hrs[i].hit ? colors[hrs[i].prim_id] : C();
         x[i] = c.x;
@@ -180,7 +182,7 @@ inline auto get_color(
     float_array y3;
     float_array z3;
 
-    for (size_t i = 0; i < simd::num_elements<U>::value; ++i)
+    for (unsigned i = 0; i < simd::num_elements<U>::value; ++i)
     {
         auto cc1 = get_clr(i, 0);
         auto cc2 = get_clr(i, 1);
