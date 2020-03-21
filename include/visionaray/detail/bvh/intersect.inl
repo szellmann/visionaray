@@ -11,7 +11,6 @@
 #include <visionaray/update_if.h>
 
 #include "../exit_traversal.h"
-#include "../multi_hit.h"
 #include "../stack.h"
 #include "../tags.h"
 #include "../traversal_result.h"
