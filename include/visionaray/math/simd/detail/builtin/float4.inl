@@ -363,12 +363,6 @@ VSNRAY_FORCE_INLINE mask4 operator!=(float4 const& u, float4 const& v)
 //
 
 MATH_FUNC
-VSNRAY_FORCE_INLINE float4 dot(float4 const& u, float4 const& v)
-{
-    return float4(u.value[0] * v.value[0] + u.value[1] * v.value[1] + u.value[2] * v.value[2] + u.value[3] * v.value[3]);
-}
-
-MATH_FUNC
 VSNRAY_FORCE_INLINE float4 min(float4 const& u, float4 const& v)
 {
     return float4(
