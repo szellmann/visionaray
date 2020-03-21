@@ -83,7 +83,7 @@ struct volume
     // Emission
     vec3 Le(vec3 const& pos) const
     {
-        return vec3(0.0f);
+        //return vec3(0.0f);
 
         if (pos.x > 0.16f && pos.y > 0.16f && pos.z > 0.16f)
          //&& pos.x < 0.33f && pos.y < 0.33f && pos.z < 0.33f)
@@ -218,6 +218,8 @@ void renderer::on_display()
 
     host_sched.frame([&](ray r, random_generator<float>& gen) -> result_record<float>
     {
+        basic_sphere<float> sph(vec3f(0.f),.2f);
+
         result_record<float> result;
 
         vec3 throughput(1.0f);
@@ -235,7 +237,13 @@ void renderer::on_display()
             {
                 vec3 Le;
                 float Tr;
-                collision_type coll = delta_tracking::sample_interaction(r, vol, Le, Tr, hit_rec.tfar, gen);
+
+                float d = hit_rec.tfar;
+                auto sph_rec = intersect(r, sph);
+                if (sph_rec.hit)
+                    d = min(d, sph_rec.t);
+
+                collision_type coll = delta_tracking::sample_interaction(r, vol, Le, Tr, d, gen);
 
                 if (coll == Boundary)
                 {
@@ -275,20 +283,23 @@ void renderer::on_display()
             }
         }
 
-#if 1
+        vec3 Ld;
+
         // Look up sphere light
-        basic_sphere<float> sph(vec3f(.7f),.2f);
         auto sph_rec = intersect(r, sph);
-        vec3 Ld = sph_rec.hit ? vec3f(30.f,70.f,20.f) : vec3f(0.f);
-#else
-        // Look up the environment
+
+        if (sph_rec.hit && sph_rec.t > 0.f)
+            Ld = vec3f(30.f,70.f,20.f);
+        else
+        {
+            // Look up the environment
 #if 1
-        vec3 Ld(0.5f + 0.5f * r.dir.y);
+            Ld = vec3(0.5f + 0.5f * r.dir.y);
 #else
-        float f = (0.5f + 0.5f * r.dir.y);
-        vec3 Ld(0.5f, (1.0f - f), f);
+            float f = (0.5f + 0.5f * r.dir.y);
+            Ld = vec3(0.5f, (1.0f - f), f);
 #endif
-#endif
+        }
         vec3 L = Ld * throughput;
 
         result.color = vec4(L, 1.0f);
