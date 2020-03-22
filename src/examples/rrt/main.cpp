@@ -22,6 +22,7 @@
 
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
+#include <common/manip/translate_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 #include <common/viewer_glut.h>
 
@@ -165,11 +166,19 @@ struct renderer : viewer_type
 {
     using host_ray_type = basic_ray<float>;
 
+    using model_manipulators = std::vector<std::shared_ptr<model_manipulator>>;
+
     renderer()
         : viewer_type(512, 512, "Visionaray Residual Ratio Tracking Example")
         , bbox({ -0.5f, -0.5f, -0.5f }, { 0.5f, 0.5f, 0.5f })
         , host_sched(8)
     {
+        model_manips.emplace_back( std::make_shared<translate_manipulator>(
+                cam,
+                sphere_transform,
+                vec3(1.0f),
+                mouse::Left
+                ) );
     }
 
     aabb                                        bbox;
@@ -181,10 +190,19 @@ struct renderer : viewer_type
 
     ::volume<1> vol;
 
+    model_manipulators model_manips;
+
+    mat4 sphere_transform = mat4::identity();
+
 protected:
 
     void on_display();
+    void on_key_press(key_event const& event);
+    void on_mouse_down(visionaray::mouse_event const& event);
+    void on_mouse_up(visionaray::mouse_event const& event);
     void on_mouse_move(visionaray::mouse_event const& event);
+    void on_space_mouse_move(visionaray::space_mouse_event const& event);
+    void on_space_mouse_button_press(visionaray::space_mouse_event const& event);
     void on_resize(int w, int h);
 
 };
@@ -218,7 +236,9 @@ void renderer::on_display()
 
     host_sched.frame([&](ray r, random_generator<float>& gen) -> result_record<float>
     {
-        basic_sphere<float> sph(vec3f(0.f),.2f);
+        vec3 sphere_center = (sphere_transform * vec4(0.0f, 0.0f, 0.0f, 1.0f)).xyz();
+
+        basic_sphere<float> sph(sphere_center, 0.2f);
 
         result_record<float> result;
 
@@ -315,8 +335,83 @@ void renderer::on_display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     host_rt.display_color_buffer();
+
+    for (auto& manip : model_manips)
+    {
+        if (manip->active())
+        {
+            manip->render();
+        }
+    }
 }
 
+
+//-------------------------------------------------------------------------------------------------
+// Keyboard handling
+//
+
+void renderer::on_key_press(key_event const& event)
+{
+    if (event.key() == keyboard::r)
+    {
+        for (auto it = model_manips.begin(); it != model_manips.end(); ++it)
+        {
+            if ((*it)->active())
+            {
+                (*it)->set_active(false);
+                auto next = ++it;
+                if (next != model_manips.end())
+                {
+                    (*next)->set_active(true);
+                }
+                return;
+            }
+        }
+
+        (*model_manips.begin())->set_active(true);
+    }
+
+    viewer_base::on_key_press(event);
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Mouse handling
+//
+
+void renderer::on_mouse_down(visionaray::mouse_event const& event)
+{
+    for (auto& manip : model_manips)
+    {
+        if (manip->active())
+        {
+            if (manip->handle_mouse_down(event))
+            {
+                return;
+            }
+        }
+    }
+
+    // usual handling if no transform manip intercepted
+    viewer_base::on_mouse_down(event);
+}
+
+void renderer::on_mouse_up(visionaray::mouse_event const& event)
+{
+    for (auto& manip : model_manips)
+    {
+        if (manip->active())
+        {
+            if (manip->handle_mouse_up(event))
+            {
+                return;
+            }
+        }
+    }
+
+    // usual handling if no transform manip intercepted
+    viewer_base::on_mouse_up(event);
+}
 
 void renderer::on_mouse_move(visionaray::mouse_event const& event)
 {
@@ -325,7 +420,80 @@ void renderer::on_mouse_move(visionaray::mouse_event const& event)
         frame_num = 0;
     }
 
+    for (auto& manip : model_manips)
+    {
+        if (manip->active())
+        {
+            if (manip->handle_mouse_move(event))
+            {
+                return;
+            }
+        }
+    }
+
+    // usual handling if no transform manip intercepted
     viewer_type::on_mouse_move(event);
+}
+
+void renderer::on_space_mouse_move(visionaray::space_mouse_event const& event)
+{
+    for (auto& manip : model_manips)
+    {
+        if (manip->active())
+        {
+            manip->handle_space_mouse_move(event);
+            // Return unconditionally so camera
+            // manipulators will not interfere
+            return;
+        }
+    }
+
+    // usual handling if no transform manip intercepted
+    viewer_base::on_space_mouse_move(event);
+}
+
+void renderer::on_space_mouse_button_press(visionaray::space_mouse_event const& event)
+{
+    // Forward
+    if (event.buttons() & space_mouse::Button1)
+    {
+        for (auto it = model_manips.begin(); it != model_manips.end(); ++it)
+        {
+            if ((*it)->active())
+            {
+                (*it)->set_active(false);
+                auto next = ++it;
+                if (next != model_manips.end())
+                {
+                    (*next)->set_active(true);
+                }
+                return;
+            }
+        }
+
+        (*model_manips.begin())->set_active(true);
+    }
+    // Backward
+    else if (event.buttons() & space_mouse::Button2)
+    {
+        for (auto it = model_manips.begin(); it != model_manips.end(); ++it)
+        {
+            if ((*it)->active())
+            {
+                (*it)->set_active(false);
+                if (it != model_manips.begin())
+                {
+                    --it;
+                    (*it)->set_active(true);
+                    return;
+                }
+            }
+        }
+
+        model_manips.back()->set_active(true);
+    }
+
+    viewer_base::on_space_mouse_button_press(event);
 }
 
 
