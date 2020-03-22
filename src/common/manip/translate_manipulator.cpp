@@ -66,7 +66,7 @@ static recti flip(recti const& r, recti const& viewport)
 // TODO: don't use fixed-function pipeline
 //
 
-void draw_line(vec2i offset, int len, vec4 color, cartesian_axis<2> axis, int thickness = 1)
+static void draw_line(vec2i offset, int len, vec4 color, cartesian_axis<2> axis, int thickness = 1)
 {
     int num_pixels = len * thickness;
 
