@@ -18,6 +18,7 @@
 #include <visionaray/phase_function.h>
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/random_generator.h>
+#include <visionaray/sampling.h>
 #include <visionaray/scheduler.h>
 
 #include <common/manip/arcball_manipulator.h>
@@ -84,7 +85,7 @@ struct volume
     // Emission
     vec3 Le(vec3 const& pos) const
     {
-        //return vec3(0.0f);
+        return vec3(0.0f);
 
         if (pos.x > 0.16f && pos.y > 0.16f && pos.z > 0.16f)
          //&& pos.x < 0.33f && pos.y < 0.33f && pos.z < 0.33f)
@@ -237,17 +238,20 @@ void renderer::on_display()
     host_sched.frame([&](ray r, random_generator<float>& gen) -> result_record<float>
     {
         vec3 sphere_center = (sphere_transform * vec4(0.0f, 0.0f, 0.0f, 1.0f)).xyz();
+        vec3 sphere_light(30.f,70.f,20.f);
 
         basic_sphere<float> sph(sphere_center, 0.2f);
 
         result_record<float> result;
 
         vec3 throughput(1.0f);
+        vec3 Ld(0.0f);
 
         auto hit_rec = intersect(r, bbox);
         auto sph_rec = intersect(r, sph);
 
         bool sphere_in_front = sph_rec.hit && sph_rec.t < hit_rec.tnear;
+        bool sphere_hit_with_nee = false;
 
         if (hit_rec.hit && !sphere_in_front)
         {
@@ -296,6 +300,50 @@ void renderer::on_display()
 
                 throughput += Le;
 
+                // NEE
+                if (true)
+                {
+                vec3 sphere_sample = sample_surface(sph, gen);
+                vec3 dir = normalize(sphere_sample - r.ori);
+                ray shadow_ray;
+                shadow_ray.ori = r.ori + dir * 1e-3f;
+                shadow_ray.dir = dir;
+                float d = length(sphere_sample - r.ori) - 2.f * 1e-3f;
+
+                // Make sure we're on the forward facing hemisphere
+                // TODO: just sample that hemisphere in the first place
+                auto shadow_rec = intersect(shadow_ray, sph);
+                bool front_facing_hemisphere = d < shadow_rec.t;
+
+                if (front_facing_hemisphere)
+                {
+                    vec3 ignoreLe;
+                    collision_type shadow_coll = delta_tracking::sample_interaction(
+                            shadow_ray,
+                            vol,
+                            ignoreLe,
+                            Tr,
+                            d,
+                            gen
+                            );
+                    if (front_facing_hemisphere && shadow_coll == Boundary)
+                    {
+                        float u1 = gen.next();
+                        float u2 = gen.next();
+                        vec3 n = uniform_sample_sphere(u1, u2);
+                        vec3 ln = normalize(sphere_sample - sph.center);
+
+                        auto ldotn = abs(dot(-dir, n));
+                        auto ldotln = abs(dot(-dir, ln));
+                        // that's for later:
+                        //auto solid_angle = (ldotln * area(sph));
+                        //auto lpdf = 1.0f / solid_angle;
+                        Ld += sphere_light * throughput * Tr * ldotn * ldotn * ldotln;
+                        sphere_hit_with_nee = true;
+                    }
+                }
+                }
+
                 // Sample phase function
                 vec3 scatter_dir;
                 float pdf;
@@ -306,23 +354,23 @@ void renderer::on_display()
             }
         }
 
-        vec3 Ld;
+        //vec3 Ld;
 
         // Look up sphere light
         auto sph_rec_exit = intersect(r, sph);
 
-        if (sph_rec_exit.hit && sph_rec_exit.t > 0.f)
+        if (!sphere_hit_with_nee && sph_rec_exit.hit && sph_rec_exit.t > 0.f)
         {
-            Ld = vec3f(30.f,70.f,20.f);
+            Ld += sphere_light;
         }
         else
         {
             // Look up the environment
 #if 1
-            Ld = vec3(0.5f + 0.5f * r.dir.y);
+            Ld += vec3(0.5f + 0.5f * r.dir.y);
 #else
             float f = (0.5f + 0.5f * r.dir.y);
-            Ld = vec3(0.5f, (1.0f - f), f);
+            Ld += vec3(0.5f, (1.0f - f), f);
 #endif
         }
         vec3 L = Ld * throughput;
