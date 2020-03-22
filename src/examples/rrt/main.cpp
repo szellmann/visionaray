@@ -245,8 +245,11 @@ void renderer::on_display()
         vec3 throughput(1.0f);
 
         auto hit_rec = intersect(r, bbox);
+        auto sph_rec = intersect(r, sph);
 
-        if (hit_rec.hit)
+        bool sphere_in_front = sph_rec.hit && sph_rec.t < hit_rec.tnear;
+
+        if (hit_rec.hit && !sphere_in_front)
         {
             r.ori += r.dir * hit_rec.tnear;
             hit_rec.tfar -= hit_rec.tnear;
@@ -306,10 +309,12 @@ void renderer::on_display()
         vec3 Ld;
 
         // Look up sphere light
-        auto sph_rec = intersect(r, sph);
+        auto sph_rec_exit = intersect(r, sph);
 
-        if (sph_rec.hit && sph_rec.t > 0.f)
+        if (sph_rec_exit.hit && sph_rec_exit.t > 0.f)
+        {
             Ld = vec3f(30.f,70.f,20.f);
+        }
         else
         {
             // Look up the environment
