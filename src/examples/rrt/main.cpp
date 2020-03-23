@@ -116,7 +116,7 @@ namespace delta_tracking
 {
 
 template <int Mode>
-collision_type delta_tracking_sample(ray& r, ::volume<Mode> const& vol, vec3& Le, float& Tr,float d, random_generator<float>& gen)
+collision_type sample_interaction(ray& r, ::volume<Mode> const& vol, vec3& Le, float& Tr,float d, random_generator<float>& gen)
 {
     collision_type result;
 
@@ -270,7 +270,7 @@ void renderer::on_display()
                 if (sph_rec.hit)
                     d = min(d, sph_rec.t);
 
-                collision_type coll = delta_tracking::delta_tracking_sample(r, vol, Le, Tr, d, gen);
+                collision_type coll = delta_tracking::sample_interaction(r, vol, Le, Tr, d, gen);
 
                 if (coll == Boundary)
                 {
@@ -318,7 +318,7 @@ void renderer::on_display()
                     if (front_facing_hemisphere)
                     {
                         vec3 ignoreLe;
-                        collision_type shadow_coll = delta_tracking::delta_tracking_sample(
+                        collision_type shadow_coll = delta_tracking::sample_interaction(
                                 shadow_ray,
                                 vol,
                                 ignoreLe,
