@@ -303,45 +303,45 @@ void renderer::on_display()
                 // NEE
                 if (true)
                 {
-                vec3 sphere_sample = sample_surface(sph, gen);
-                vec3 dir = normalize(sphere_sample - r.ori);
-                ray shadow_ray;
-                shadow_ray.ori = r.ori + dir * 1e-3f;
-                shadow_ray.dir = dir;
-                float d = length(sphere_sample - r.ori) - 2.f * 1e-3f;
+                    vec3 sphere_sample = sample_surface(sph, gen);
+                    vec3 dir = normalize(sphere_sample - r.ori);
+                    ray shadow_ray;
+                    shadow_ray.ori = r.ori + dir * 1e-3f;
+                    shadow_ray.dir = dir;
+                    float d = length(sphere_sample - r.ori) - 2.f * 1e-3f;
 
-                // Make sure we're on the forward facing hemisphere
-                // TODO: just sample that hemisphere in the first place
-                auto shadow_rec = intersect(shadow_ray, sph);
-                bool front_facing_hemisphere = d < shadow_rec.t;
+                    // Make sure we're on the forward facing hemisphere
+                    // TODO: just sample that hemisphere in the first place
+                    vec3 sample_vector = normalize(sph.center + sphere_sample);
+                    bool front_facing_hemisphere = dot(sample_vector, dir) < 0.f;
 
-                if (front_facing_hemisphere)
-                {
-                    vec3 ignoreLe;
-                    collision_type shadow_coll = delta_tracking::sample_interaction(
-                            shadow_ray,
-                            vol,
-                            ignoreLe,
-                            Tr,
-                            d,
-                            gen
-                            );
-                    if (front_facing_hemisphere && shadow_coll == Boundary)
+                    if (front_facing_hemisphere)
                     {
-                        float u1 = gen.next();
-                        float u2 = gen.next();
-                        vec3 n = uniform_sample_sphere(u1, u2);
-                        vec3 ln = normalize(sphere_sample - sph.center);
+                        vec3 ignoreLe;
+                        collision_type shadow_coll = delta_tracking::sample_interaction(
+                                shadow_ray,
+                                vol,
+                                ignoreLe,
+                                Tr,
+                                d,
+                                gen
+                                );
+                        if (front_facing_hemisphere && shadow_coll == Boundary)
+                        {
+                            float u1 = gen.next();
+                            float u2 = gen.next();
+                            vec3 n = uniform_sample_sphere(u1, u2);
+                            vec3 ln = normalize(sphere_sample - sph.center);
 
-                        auto ldotn = abs(dot(-dir, n));
-                        auto ldotln = abs(dot(-dir, ln));
-                        // that's for later:
-                        //auto solid_angle = (ldotln * area(sph));
-                        //auto lpdf = 1.0f / solid_angle;
-                        Ld += sphere_light * throughput * Tr * ldotn * ldotn * ldotln;
-                        sphere_hit_with_nee = true;
+                            auto ldotn = abs(dot(-dir, n));
+                            auto ldotln = abs(dot(-dir, ln));
+                            // that's for later:
+                            //auto solid_angle = (ldotln * area(sph));
+                            //auto lpdf = 1.0f / solid_angle;
+                            Ld += sphere_light * throughput * Tr * ldotn * ldotn * ldotln;
+                            sphere_hit_with_nee = true;
+                        }
                     }
-                }
                 }
 
                 // Sample phase function
