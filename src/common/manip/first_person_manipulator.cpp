@@ -7,6 +7,9 @@
 #endif
 
 #include <visionaray/math/axis.h>
+#include <visionaray/math/forward.h>
+#include <visionaray/math/matrix.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/pinhole_camera.h>
 
 #include "first_person_manipulator.h"
