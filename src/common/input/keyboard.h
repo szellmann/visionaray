@@ -6,8 +6,6 @@
 #ifndef VSNRAY_COMMON_INPUT_KEYBOARD_H
 #define VSNRAY_COMMON_INPUT_KEYBOARD_H 1
 
-#include <bitset>
-
 namespace visionaray
 {
 namespace keyboard
