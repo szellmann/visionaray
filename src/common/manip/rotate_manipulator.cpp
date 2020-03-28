@@ -20,7 +20,7 @@ namespace circle
 //
 
 template <typename F>
-void for_each_line(F func, float radius = 1.0f, vec2 center = { 0.0f, 0.0f } )
+static void for_each_line(F func, float radius = 1.0f, vec2 center = { 0.0f, 0.0f } )
 {
     for (int i = 0; i < 360; ++i)
     {
@@ -42,7 +42,7 @@ void for_each_line(F func, float radius = 1.0f, vec2 center = { 0.0f, 0.0f } )
 //
 
 template <typename F>
-void for_each_line(F func, vec3 vx, vec3 vy, vec3 center = { 0.0f, 0.0f, 0.0f } )
+static void for_each_line(F func, vec3 vx, vec3 vy, vec3 center = { 0.0f, 0.0f, 0.0f } )
 {
     for (int i = 0; i < 360; ++i)
     {
