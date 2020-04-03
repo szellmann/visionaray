@@ -134,6 +134,19 @@ The viewer application and the examples use the following third-party libraries 
 - [RapidJSON](http://rapidjson.org/) library for parsing JSON scene descriptions.
 - [tinyply](https://github.com/ddiakopoulos/tinyply) library to load Stanford PLY models.
 
+### Citation
+
+If you use Visionaray or some of its code for your scientific project, it would be nice if you cited this paper:
+```
+@inproceedings{zellmann:visionaray,
+author = {Zellmann, Stefan and Wickeroth, Daniel and Lang, Ulrich},
+title = {Visionaray: A Cross-Platform Ray Tracing Template Library},
+booktitle = {Proceedings of the 10th Workshop on Software Engineering and Architectures for Realtime Interactive Systems (IEEE SEARIS 2017)},
+year = {2017},
+publisher = {IEEE}
+}
+```
+
 
 License
 -------
