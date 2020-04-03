@@ -134,7 +134,9 @@ The viewer application and the examples use the following third-party libraries 
 - [RapidJSON](http://rapidjson.org/) library for parsing JSON scene descriptions.
 - [tinyply](https://github.com/ddiakopoulos/tinyply) library to load Stanford PLY models.
 
-### Citation
+
+Citation
+--------
 
 If you use Visionaray or some of its code for your scientific project, it would be nice if you cited this paper:
 ```
