@@ -17,6 +17,7 @@
 #include <thrust/device_vector.h>
 #endif
 
+#include "detail/macros.h"
 #include "math/aabb.h"
 #include "math/forward.h"
 #include "math/matrix.h"
