@@ -28,7 +28,9 @@ program::~program()
 
 void program::destroy()
 {
+#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     glDeleteProgram(name_);
+#endif
 }
 
 void program::reset(GLuint name)
@@ -48,32 +50,47 @@ GLuint program::get() const
 
 void program::attach_shader(shader const& s) const
 {
+#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     glAttachShader(name_, s.get());
+#else
+    VSNRAY_UNUSED(s);
+#endif
 }
 
 void program::detach_shader(shader const& s) const
 {
+#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     glDetachShader(name_, s.get());
+#else
+    VSNRAY_UNUSED(s);
+#endif
 }
 
 void program::link() const
 {
+#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     glLinkProgram(name_);
+#endif
 }
 
 void program::enable() const
 {
+#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     glGetIntegerv(GL_CURRENT_PROGRAM, const_cast<GLint*>(reinterpret_cast<GLint const*>(&old_)));
     glUseProgram(name_);
+#endif
 }
 
 void program::disable() const
 {
+#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     glUseProgram(old_);
+#endif
 }
 
 bool program::check_attached(shader const& s) const
 {
+#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     // Check if program was created at all.
     if (name_ == 0)
     {
@@ -98,10 +115,15 @@ bool program::check_attached(shader const& s) const
     }
 
     return false;
+#else
+    VSNRAY_UNUSED(s);
+    return false;
+#endif
 }
 
 bool program::check_linked() const
 {
+#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     GLint success = GL_FALSE;
     glGetProgramiv(name_, GL_LINK_STATUS, &success);
 
@@ -121,6 +143,9 @@ bool program::check_linked() const
     }
 
     return true;
+#else
+    return false;
+#endif
 }
 
 } // gl

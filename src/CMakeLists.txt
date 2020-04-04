@@ -11,7 +11,9 @@ if(APPLE AND VSNRAY_ENABLE_CUDA)
     add_definitions(-DBOOST_NO_CXX11_HDR_SYSTEM_ERROR)
 endif()
 
+if(VSNRAY_ENABLE_COMMON)
 add_subdirectory(common)
+endif()
 
 if(VSNRAY_ENABLE_EXAMPLES)
 add_subdirectory(examples)

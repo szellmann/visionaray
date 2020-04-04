@@ -12,6 +12,8 @@
 #include <GL/glew.h>
 #elif VSNRAY_HAVE_OPENGLES
 #include <GLES2/gl2.h>
+#else
+#include "types.h"
 #endif
 
 #include <memory>
