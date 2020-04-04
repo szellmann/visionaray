@@ -6,7 +6,6 @@
 #ifndef VSNRAY_TAGS_H
 #define VSNRAY_TAGS_H 1
 
-#include <cstddef>
 #include <type_traits>
 
 //-------------------------------------------------------------------------------------------------
