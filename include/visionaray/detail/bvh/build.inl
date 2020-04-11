@@ -4,7 +4,6 @@
 #include <cstddef>
 
 #include "../compiler.h"
-#include "build_top_down.h"
 #include "lbvh.h"
 #include "sah.h"
 

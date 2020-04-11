@@ -16,6 +16,8 @@
 #include <intrin.h>
 #endif
 
+#include "build_top_down.h"
+
 namespace visionaray
 {
 namespace detail
