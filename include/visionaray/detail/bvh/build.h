@@ -3,6 +3,9 @@
 
 #pragma once
 
+#ifndef VSNRAY_DETAIL_BVH_BUILD_H
+#define VSNRAY_DETAIL_BVH_BUILD_H 1
+
 #include <cstddef>
 
 #include "../compiler.h"
@@ -48,5 +51,6 @@ Tree VSNRAY_DEPRECATED build(P* primitives, size_t num_prims, bool enable_spatia
             );
 }
 
-
 } // visionaray
+
+#endif // VSNRAY_DETAIL_BVH_BUILD_H
