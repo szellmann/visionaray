@@ -126,7 +126,7 @@ if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     visionaray_cuda_compile(UNITTESTS_CUDA_SOURCES
         cuda/cast.cu
         array.cu
-        texture.cu
+        #texture.cu
     )
 endif()
 
