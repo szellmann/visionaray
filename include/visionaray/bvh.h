@@ -723,14 +723,15 @@ void traverse_parents(B const& b, N const& n, F func);
 
 } // visionaray
 
-#include "detail/bvh/build.inl"
 #include "detail/bvh/get_bounds.inl"
 #include "detail/bvh/get_color.h"
 #include "detail/bvh/get_normal.h"
 #include "detail/bvh/get_tex_coord.h"
 #include "detail/bvh/hit_record.h"
 #include "detail/bvh/intersect.inl"
+#include "detail/bvh/lbvh.h"
 #include "detail/bvh/prim_traits.h"
+#include "detail/bvh/sah.h"
 #include "detail/bvh/statistics.h"
 #include "detail/bvh/traverse.h"
 
