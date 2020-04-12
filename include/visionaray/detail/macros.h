@@ -97,10 +97,14 @@
 
 //-------------------------------------------------------------------------------------------------
 // VSNRAY_NOEXCEPT
-// Mark functions that are not expected to throw an exception (TODO: support C++-11 noexcept)
+// Mark functions that are not expected to throw an exception
 //
 
-#define VSNRAY_NOEXCEPT throw()
+#ifdef VSNRAY_CXX_HAS_NOEXCEPT
+#define VSNRAY_NOEXCEPT noexcpet
+#else
+#define VSNRAY_NOEXCEPT
+#endif
 
 
 //-------------------------------------------------------------------------------------------------

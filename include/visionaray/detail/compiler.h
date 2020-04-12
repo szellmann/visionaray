@@ -88,6 +88,9 @@
 #   if __has_feature(cxx_lambdas)
 #       define VSNRAY_CXX_HAS_LAMBDAS
 #   endif
+#   if __has_feature(cxx_noexcept)
+#       define VSNRAY_CXX_HAS_NOEXCEPT
+#   endif
 #   if __has_feature(cxx_nullptr)
 #       define VSNRAY_CXX_HAS_NULLPTR
 #   endif
@@ -124,6 +127,7 @@
 #       endif
 #       if VSNRAY_CXX_GCC >= 406
 #           define VSNRAY_CXX_HAS_CONSTEXPR
+#           define VSNRAY_CXX_HAS_NOEXCEPT
 #           define VSNRAY_CXX_HAS_NULLPTR
 #           define VSNRAY_CXX_HAS_RANGE_FOR
 #       endif
@@ -155,6 +159,7 @@
 #   endif
 #   if VSNRAY_CXX_MSVC >= 1900 // Visual C++ 14.0 (2015)
 #       define VSNRAY_CXX_HAS_CONSTEXPR
+#       define VSNRAY_CXX_HAS_NOEXCEPT
 #   endif
 #endif
 
