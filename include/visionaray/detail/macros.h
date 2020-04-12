@@ -101,7 +101,7 @@
 //
 
 #ifdef VSNRAY_CXX_HAS_NOEXCEPT
-#define VSNRAY_NOEXCEPT noexcpet
+#define VSNRAY_NOEXCEPT noexcept
 #else
 #define VSNRAY_NOEXCEPT
 #endif
