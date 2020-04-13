@@ -38,12 +38,12 @@ struct stack
 
     VSNRAY_FUNC void push(T v)
     {
-        data[++ptr] = v;
+        data[ptr++] = v;
     }
 
     VSNRAY_FUNC T pop()
     {
-        return data[ptr--];
+        return data[--ptr];
     }
 
     T data[N];
