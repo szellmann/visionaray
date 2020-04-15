@@ -82,10 +82,10 @@ Visionaray comes with a viewer application that can process wavefront obj files 
 After being installed, the viewer application executable can be called using the following command:
 
 ```Shell
-vsnray-viewer <filename.obj>
+vsnray-viewer <file>
 ```
 
-where filename.obj is a wavefront obj file.
+where `file` is either a path to a wavefront obj file, a ply file, or a pbrt file. The latter requires the project to be compiled and linked against [PBRT-Parser][11].
 
 Documentation
 -------------
