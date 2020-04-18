@@ -65,7 +65,7 @@ cd visionaray
 mkdir build
 cd build
 
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -msse4.1"
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-std=c++11 -march=native"
 make
 make install
 ```
