@@ -1,7 +1,7 @@
 # This file is distributed under the MIT license.
 # See the LICENSE file for details.
 
-project(visionaray)
+project(visionaray CXX)
 
 
 cmake_minimum_required(VERSION 2.8.9)
