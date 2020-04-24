@@ -6,8 +6,10 @@
 #ifndef VSNRAY_SIMD_TYPE_TRAITS_H
 #define VSNRAY_SIMD_TYPE_TRAITS_H 1
 
+#if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wignored-attributes"
+#endif
 
 #include "forward.h"
 #include "intrinsics.h"
@@ -991,6 +993,8 @@ struct num_elements<simd::mask16>
 } // simd
 } // MATH_NAMESPACE
 
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
+#endif
 
 #endif // VSNRAY_SIMD_TYPE_TRAITS_H

@@ -6,8 +6,10 @@
 #ifndef VSNRAY_MATH_SIMD_SSE_H
 #define VSNRAY_MATH_SIMD_SSE_H 1
 
+#if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wignored-attributes"
+#endif
 
 #include <visionaray/detail/macros.h>
 
@@ -98,6 +100,8 @@ public:
 
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
+#endif
 
 #endif // VSNRAY_MATH_SIMD_SSE_H
