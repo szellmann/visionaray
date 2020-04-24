@@ -699,14 +699,6 @@ using cuda_index_bvh    = index_bvh_t<thrust::device_vector<P>, thrust::device_v
 
 
 //-------------------------------------------------------------------------------------------------
-// build() interface
-//
-
-template <typename Tree, typename P>
-Tree build(P* primitives, size_t num_prims, bool use_spatial_splits = false);
-
-
-//-------------------------------------------------------------------------------------------------
 // Traversal algorithms
 //
 // NOTE: use intersect(ray, bvh) for *ray* / bvh traversal
