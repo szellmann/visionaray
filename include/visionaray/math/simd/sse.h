@@ -6,6 +6,9 @@
 #ifndef VSNRAY_MATH_SIMD_SSE_H
 #define VSNRAY_MATH_SIMD_SSE_H 1
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-attributes"
+
 #include <visionaray/detail/macros.h>
 
 #include "detail/common.h"
@@ -94,5 +97,7 @@ public:
 #include "detail/sse/int4.inl"
 
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
+#pragma GCC diagnostic pop
 
 #endif // VSNRAY_MATH_SIMD_SSE_H

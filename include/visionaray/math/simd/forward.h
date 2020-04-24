@@ -6,6 +6,9 @@
 #ifndef VSNRAY_MATH_SIMD_FORWARD_H
 #define VSNRAY_MATH_SIMD_FORWARD_H 1
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-attributes"
+
 #include "intrinsics.h"
 #include "../config.h"
 #include "../forward.h"
@@ -71,5 +74,7 @@ typedef basic_ray<float16>                      ray16;
 
 } // simd
 } // MATH_NAMESPACE
+
+#pragma GCC diagnostic pop
 
 #endif // VSNRAY_MATH_SIMD_FORWARD_H
