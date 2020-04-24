@@ -251,7 +251,8 @@ int main(int argc, char** argv)
 
         std::cout << "Creating BVH...\n";
         t.reset();
-        auto h_bvh = build<index_bvh<basic_sphere<float>>>(spheres.data(), spheres.size(), true /* spatial splits */);
+        binned_sah_builder builder;
+        auto h_bvh = builder.build(index_bvh<basic_sphere<float>>{}, spheres.data(), spheres.size(), true /* spatial splits */);
         std::cout << "Time elapsed: " << t.elapsed() << "s\n\n";
 
 
