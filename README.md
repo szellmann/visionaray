@@ -56,7 +56,7 @@ Building the Visionaray library and viewer application
 
 ### Linux and Mac OS X
 
-It is strongly recommended to build Visionaray in release mode, as the source code relies heavily on function inlining by the compiler and executables may be extremely slow without that optimization.
+It is strongly recommended to build Visionaray in release mode, as the source code relies heavily on function inlining by the compiler, and executables may be extremely slow without that optimization.
 It is also recommended to supply an architecture flag that corresponds to the CPU architecture you are targeting.
 Please ensure that you have C++11 support activated.
 
@@ -78,7 +78,7 @@ See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Get
 Visionaray Viewer
 -----------------
 
-Visionaray comes with a viewer application that supports a number of different 3D file formats. The viewer application is primarily meant as a developer tool for debugging and testing.
+Visionaray comes with a viewer application that supports a number of different 3D file formats. The viewer application is primarily targeted at developers, as a tool for debugging and testing.
 After being installed, the viewer application executable can be called using the following command:
 
 ```Shell
