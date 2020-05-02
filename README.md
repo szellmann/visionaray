@@ -78,7 +78,7 @@ See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Get
 Visionaray Viewer
 -----------------
 
-Visionaray comes with a viewer application that can process wavefront obj files containing polygons. The viewer application is primarily meant as a developer tool for debugging and testing.
+Visionaray comes with a viewer application that supports a number of different 3D file formats. The viewer application is primarily meant as a developer tool for debugging and testing.
 After being installed, the viewer application executable can be called using the following command:
 
 ```Shell
