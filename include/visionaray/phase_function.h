@@ -6,6 +6,7 @@
 #ifndef VSNRAY_PHASE_FUNCTION_H
 #define VSNRAY_PHASE_FUNCTION_H 1
 
+#include "math/detail/math.h"
 #include "math/constants.h"
 #include "math/limits.h"
 
