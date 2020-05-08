@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include <visionaray/math/forward.h>
 #include <visionaray/math/matrix.h>
 #include <visionaray/bvh.h>
 #include <visionaray/export.h>
