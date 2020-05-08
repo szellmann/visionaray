@@ -7,6 +7,7 @@
 #define VSNRAY_MATRIX_CAMERA 1
 
 #include "detail/macros.h"
+#include "math/forward.h"
 #include "math/matrix.h"
 
 namespace visionaray
