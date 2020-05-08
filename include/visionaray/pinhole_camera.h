@@ -7,6 +7,7 @@
 #define VSNRAY_PINHOLE_CAMERA_H 1
 
 #include "math/aabb.h"
+#include "math/forward.h"
 #include "math/matrix.h"
 #include "math/rectangle.h"
 #include "math/vector.h"
