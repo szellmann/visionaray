@@ -6,6 +6,7 @@
 #ifndef VSNRAY_GL_BVH_OUTLINE_RENDERER_H
 #define VSNRAY_GL_BVH_OUTLINE_RENDERER_H 1
 
+#include <cstddef>
 #include <memory>
 #include <vector>
 
