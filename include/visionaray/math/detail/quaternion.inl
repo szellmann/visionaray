@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cstddef>
+
 #include "../matrix.h"
 #include "math.h"
 
@@ -184,6 +186,56 @@ inline matrix<4, 4, T> rotation(quaternion<T> const& q)
     result(3, 3) = T(1.0);
 
     return result;
+}
+
+template <size_t N, size_t M, typename T>
+MATH_FUNC
+inline quaternion<T> rotation(matrix<N, M, T> const& a)
+{
+    vector<3, T> diag(a(0,0),a(1,1),a(2,2));
+
+    T tr = diag.x + diag.y + diag.z + T(1.0);
+
+    if (tr > T(1.0))
+    {
+        T s = sqrt(tr) * T(2.0);
+        return quaternion<T>(
+                T(0.25) * s,
+                (a(1,2) - a(2,1)) / s,
+                (a(2,0) - a(0,2)) / s,
+                (a(0,1) - a(1,0)) / s
+                );
+    }
+    else if (min_index(diag) == 0)
+    {
+        T s = sqrt(T(1.0) + diag.x - diag.y - diag.z) * T(2.0);
+        return quaternion<T>(
+                (a(1,2) - a(2,1)) / s,
+                T(0.25) * s,
+                (a(1,0) - a(0,1)) / s,
+                (a(2,1) - a(1,2)) / s
+                );
+    }
+    else if (min_index(diag) == 1)
+    {
+        T s = sqrt(T(1.0) + diag.y - diag.x - diag.z) *T(2.0);
+        return quaternion<T>(
+                (a(2,0) - a(0,2)) / s,
+                (a(1,0) - a(0,1)) / s,
+                T(0.25) * s,
+                (a(2,1) - a(1,2)) / s
+                );
+    }
+    else
+    {
+        T s = sqrt(T(1.0) + diag.z - diag.x - diag.y) * T(2.0);
+        return quaternion<T>(
+                (a(0,1) - a(1,0)) / s,
+                (a(2,0) - a(0,2)) / s,
+                (a(2,1) - a(1,2)) / s,
+                T(0.25) * s
+                );
+    }
 }
 
 template <typename T>
