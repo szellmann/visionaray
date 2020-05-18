@@ -138,6 +138,36 @@ inline auto get_tex_coord(HR const& hr, basic_sphere<T> const& sphere)
             );
 }
 
+template <
+    typename HR,
+    typename T,
+    typename = typename std::enable_if<simd::is_simd_vector<typename HR::scalar_type>::value>::type,
+    typename = void
+    >
+VSNRAY_FUNC
+inline auto get_tex_coord(HR const& hr, basic_sphere<T> const& sphere)
+    -> vector<2, typename HR::scalar_type>
+{
+    using U = typename HR::scalar_type;
+    using TC = vector<2, simd::element_type<U>>;
+    using float_array = simd::aligned_array_t<U>;
+
+    auto hrs = unpack(hr);
+
+    float_array x;
+    float_array y;
+
+    for (int i = 0; i < simd::num_elements<U>::value; ++i)
+    {
+        TC tc = hrs[i].hit ? get_tex_coord(hrs[i], sphere) : TC();
+        x[i] = tc.x;
+        y[i] = tc.y;
+    }
+
+    return vector<2, U>(x, y);
+}
+
+
 
 //-------------------------------------------------------------------------------------------------
 // Gather N texture coordinates from array
