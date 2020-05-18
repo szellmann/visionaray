@@ -133,8 +133,8 @@ inline auto get_tex_coord(HR const& hr, basic_sphere<T> const& sphere)
     auto n = (hr.isect_pos - sphere.center) / sphere.radius;
 
     return vector<2, S>(
-            atan2(n.x, n.z) / constants::two_pi<S>() + S(0.5),
-            n.y * S(0.5) + S(0.5)
+            acos(n.z),
+            atan(n.y / n.x)
             );
 }
 
