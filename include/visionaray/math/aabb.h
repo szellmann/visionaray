@@ -6,19 +6,21 @@
 #ifndef VSNRAY_MATH_AABB_H
 #define VSNRAY_MATH_AABB_H 1
 
+#include <cstddef>
+
 #include "config.h"
 #include "vector.h"
 
 namespace MATH_NAMESPACE
 {
 
-template <typename T>
+template <typename T, size_t Dim>
 class basic_aabb
 {
 public:
 
     typedef T value_type;
-    typedef vector<3, T> vec_type;
+    typedef vector<Dim, T> vec_type;
 
     vec_type min;
     vec_type max;
@@ -27,13 +29,13 @@ public:
     MATH_FUNC basic_aabb(vec_type const& min, vec_type const& max);
 
     template <typename U>
-    MATH_FUNC basic_aabb(basic_aabb<U> const& rhs);
+    MATH_FUNC basic_aabb(basic_aabb<U, Dim> const& rhs);
 
     template <typename U>
-    MATH_FUNC basic_aabb(vector<3, U> const& min, vector<3, U> const& max);
+    MATH_FUNC basic_aabb(vector<Dim, U> const& min, vector<Dim, U> const& max);
 
     template <typename U>
-    MATH_FUNC basic_aabb& operator=(basic_aabb<U> const& rhs);
+    MATH_FUNC basic_aabb& operator=(basic_aabb<U, Dim> const& rhs);
 
     MATH_FUNC vec_type center() const;
     MATH_FUNC vec_type size() const;

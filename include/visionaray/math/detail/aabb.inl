@@ -14,60 +14,60 @@ namespace MATH_NAMESPACE
 // aabb members
 //
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline basic_aabb<T>::basic_aabb(vector<3, T> const& min, vector<3, T> const& max)
+inline basic_aabb<T, Dim>::basic_aabb(vector<Dim, T> const& min, vector<Dim, T> const& max)
     : min(min)
     , max(max)
 {
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 template <typename U>
 MATH_FUNC
-inline basic_aabb<T>::basic_aabb(basic_aabb<U> const& rhs)
+inline basic_aabb<T, Dim>::basic_aabb(basic_aabb<U, Dim> const& rhs)
     : min(rhs.min)
     , max(rhs.max)
 {
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 template <typename U>
 MATH_FUNC
-inline basic_aabb<T>::basic_aabb(vector<3, U> const& min, vector<3, U> const& max)
+inline basic_aabb<T, Dim>::basic_aabb(vector<Dim, U> const& min, vector<Dim, U> const& max)
     : min(min)
     , max(max)
 {
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 template <typename U>
 MATH_FUNC
-inline basic_aabb<T>& basic_aabb<T>::operator=(basic_aabb<U> const& rhs)
+inline basic_aabb<T, Dim>& basic_aabb<T, Dim>::operator=(basic_aabb<U, Dim> const& rhs)
 {
-    min = vector<3, T>(rhs.min);
-    max = vector<3, T>(rhs.max);
+    min = vector<Dim, T>(rhs.min);
+    max = vector<Dim, T>(rhs.max);
 
     return *this;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline vector<3, T> basic_aabb<T>::center() const
+inline vector<Dim, T> basic_aabb<T, Dim>::center() const
 {
     return (max + min) * value_type(0.5);
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline vector<3, T> basic_aabb<T>::size() const
+inline vector<Dim, T> basic_aabb<T, Dim>::size() const
 {
     return max - min;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline vector<3, T> basic_aabb<T>::safe_size() const
+inline vector<Dim, T> basic_aabb<T, Dim>::safe_size() const
 {
     auto s = max - min;
 
@@ -78,62 +78,70 @@ inline vector<3, T> basic_aabb<T>::safe_size() const
     return s;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline void basic_aabb<T>::invalidate()
+inline void basic_aabb<T, Dim>::invalidate()
 {
     min = vec_type(numeric_limits<T>::max());
     max = vec_type(numeric_limits<T>::lowest());
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline bool basic_aabb<T>::invalid() const
+inline bool basic_aabb<T, Dim>::invalid() const
 {
+    static_assert(Dim == 3, "Size mismatch");
+
     return min.x > max.x || min.y > max.y || min.z > max.z;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline bool basic_aabb<T>::valid() const
+inline bool basic_aabb<T, Dim>::valid() const
 {
+    static_assert(Dim == 3, "Size mismatch");
+
     return min.x <= max.x && min.y <= max.y && min.z <= max.z;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline bool basic_aabb<T>::empty() const
+inline bool basic_aabb<T, Dim>::empty() const
 {
+    static_assert(Dim == 3, "Size mismatch");
+
     return min.x >= max.x || min.y >= max.y || min.z >= max.z;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline bool basic_aabb<T>::contains(vector<3, T> const& v) const
+inline bool basic_aabb<T, Dim>::contains(vector<Dim, T> const& v) const
 {
+    static_assert(Dim == 3, "Size mismatch");
+
     return v.x >= min.x && v.x <= max.x
         && v.y >= min.y && v.y <= max.y
         && v.z >= min.z && v.z <= max.z;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline bool basic_aabb<T>::contains(basic_aabb<T> const& b) const
+inline bool basic_aabb<T, Dim>::contains(basic_aabb<T, Dim> const& b) const
 {
     return contains(b.min) && contains(b.max);
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline void basic_aabb<T>::insert(vec_type const& v)
+inline void basic_aabb<T, Dim>::insert(vec_type const& v)
 {
     min = MATH_NAMESPACE::min(min, v);
     max = MATH_NAMESPACE::max(max, v);
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline void basic_aabb<T>::insert(basic_aabb const& v)
+inline void basic_aabb<T, Dim>::insert(basic_aabb const& v)
 {
     min = MATH_NAMESPACE::min(min, v.min);
     max = MATH_NAMESPACE::max(max, v.max);
@@ -144,17 +152,17 @@ inline void basic_aabb<T>::insert(basic_aabb const& v)
 // Comparisons
 //
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline auto operator==(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+inline auto operator==(basic_aabb<T, Dim> const& lhs, basic_aabb<T, Dim> const& rhs)
     -> decltype(lhs.min == rhs.min)
 {
     return lhs.min == rhs.min && lhs.max == rhs.max;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline auto operator!=(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+inline auto operator!=(basic_aabb<T, Dim> const& lhs, basic_aabb<T, Dim> const& rhs)
     -> decltype(lhs.min != rhs.min)
 {
     return lhs.min != rhs.min || lhs.max != rhs.max;
@@ -165,68 +173,74 @@ inline auto operator!=(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
 // Geometric functions
 //
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline basic_aabb<T> combine(basic_aabb<T> const& a, basic_aabb<T> const& b)
+inline basic_aabb<T, Dim> combine(basic_aabb<T, Dim> const& a, basic_aabb<T, Dim> const& b)
 {
-    return basic_aabb<T>( min(a.min, b.min), max(a.max, b.max) );
+    return basic_aabb<T>(min(a.min, b.min), max(a.max, b.max));
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline basic_aabb<T> combine(basic_aabb<T> const& a, vector<3, T> const& b)
+inline basic_aabb<T, Dim> combine(basic_aabb<T, Dim> const& a, vector<Dim, T> const& b)
 {
-    return basic_aabb<T>( min(a.min, b), max(a.max, b) );
+    return basic_aabb<T>(min(a.min, b), max(a.max, b));
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline basic_aabb<T> intersect(basic_aabb<T> const& a, basic_aabb<T> const& b)
+inline basic_aabb<T, Dim> intersect(basic_aabb<T, Dim> const& a, basic_aabb<T, Dim> const& b)
 {
-    return basic_aabb<T>( max(a.min, b.min), min(a.max, b.max) );
+    return basic_aabb<T, Dim>(max(a.min, b.min), min(a.max, b.max));
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline T half_surface_area(basic_aabb<T> const& box)
+inline T half_surface_area(basic_aabb<T, Dim> const& box)
 {
+    static_assert(Dim == 3, "Size mismatch");
+
     auto s = box.size();
     return s.x * s.y + s.y * s.z + s.z * s.x;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline T safe_half_surface_area(basic_aabb<T> const& box)
+inline T safe_half_surface_area(basic_aabb<T, Dim> const& box)
 {
+    static_assert(Dim == 3, "Size mismatch");
+
     auto s = box.safe_size();
     return s.x * s.y + s.y * s.z + s.z * s.x;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline T surface_area(basic_aabb<T> const& box)
+inline T surface_area(basic_aabb<T, Dim> const& box)
 {
     return T(2.0) * half_surface_area(box);
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline T safe_surface_area(basic_aabb<T> const& box)
+inline T safe_surface_area(basic_aabb<T, Dim> const& box)
 {
     return T(2.0) * safe_half_surface_area(box);
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline T volume(basic_aabb<T> const& box)
+inline T volume(basic_aabb<T, Dim> const& box)
 {
+    static_assert(Dim == 3, "Size mismatch");
+
     auto s = box.size();
     return s.x * s.y * s.z;
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline T overlap_ratio_union(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+inline T overlap_ratio_union(basic_aabb<T, Dim> const& lhs, basic_aabb<T, Dim> const& rhs)
 {
     auto I = intersect(lhs, rhs);
 
@@ -239,9 +253,9 @@ inline T overlap_ratio_union(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
     return volume(I) / volume(combine(lhs, rhs));
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline T overlap_ratio_min(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+inline T overlap_ratio_min(basic_aabb<T, Dim> const& lhs, basic_aabb<T, Dim> const& rhs)
 {
     auto I = intersect(lhs, rhs);
 
@@ -260,17 +274,19 @@ inline T overlap_ratio_min(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
     return volume(I) / min(volume(lhs), volume(rhs));
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline T overlap_ratio(basic_aabb<T> const& lhs, basic_aabb<T> const& rhs)
+inline T overlap_ratio(basic_aabb<T, Dim> const& lhs, basic_aabb<T, Dim> const& rhs)
 {
 //  return overlap_ratio_union(lhs, rhs);
     return overlap_ratio_min(lhs, rhs);
 }
 
-template <typename T>
-inline std::pair<basic_aabb<T>, basic_aabb<T>> split(basic_aabb<T> const& box, cartesian_axis<3> axis, T splitpos)
+template <typename T, size_t Dim>
+inline std::pair<basic_aabb<T, Dim>, basic_aabb<T>> split(basic_aabb<T, Dim> const& box, cartesian_axis<3> axis, T splitpos)
 {
+    static_assert(Dim == 3, "Size mismatch");
+
     vector<3, T> min1 = box.min;
     vector<3, T> min2 = box.min;
     vector<3, T> max1 = box.max;
@@ -284,10 +300,12 @@ inline std::pair<basic_aabb<T>, basic_aabb<T>> split(basic_aabb<T> const& box, c
     return std::make_pair(box1, box2);
 }
 
-template <typename T>
+template <typename T, size_t Dim>
 MATH_FUNC
-inline array<vector<3, T>, 8> compute_vertices(basic_aabb<T> const& box)
+inline array<vector<3, T>, 8> compute_vertices(basic_aabb<T, Dim> const& box)
 {
+    static_assert(Dim == 3, "Size mismatch");
+
     vector<3, T> min = box.min;
     vector<3, T> max = box.max;
 

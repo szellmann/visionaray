@@ -43,7 +43,7 @@ class matrix;
 template <size_t Dim, typename T, typename P = unsigned>
 class basic_plane;
 
-template <typename T>
+template <typename T, size_t Dim = 3>
 class basic_aabb;
 
 template <typename T>
