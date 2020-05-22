@@ -19,7 +19,6 @@ public:
 
     typedef T value_type;
     typedef vector<3, T> vec_type;
-    typedef array<vec_type, 8> vertex_list;
 
     vec_type min;
     vec_type max;

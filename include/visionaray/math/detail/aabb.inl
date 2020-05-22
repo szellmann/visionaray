@@ -286,7 +286,7 @@ inline std::pair<basic_aabb<T>, basic_aabb<T>> split(basic_aabb<T> const& box, c
 
 template <typename T>
 MATH_FUNC
-inline typename basic_aabb<T>::vertex_list compute_vertices(basic_aabb<T> const& box)
+inline array<vector<3, T>, 8> compute_vertices(basic_aabb<T> const& box)
 {
     vector<3, T> min = box.min;
     vector<3, T> max = box.max;
