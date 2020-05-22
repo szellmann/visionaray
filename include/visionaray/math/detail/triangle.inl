@@ -78,4 +78,11 @@ inline vector<3, U> sample_surface(basic_triangle<Dim, T, P> const& t, Generator
     return v1 * (U(1.0) - sqrt(u1)) + v2 * sqrt(u1) * (U(1.0) - u2) + v3 * sqrt(u1) * u2;
 }
 
+template <size_t Dim, typename T, typename P>
+MATH_FUNC
+inline array<vector<Dim, T>,3> compute_vertices(basic_triangle<Dim, T, P> const& t)
+{
+    return {{ t.v1, t.v1 + t.e1, t.v1 + t.e2 }};
+}
+
 } // MATH_NAMESPACE
