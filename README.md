@@ -12,7 +12,7 @@ A C++ based, cross platform ray tracing library
 Getting Visionaray
 ------------------
 
-Under Linux or Mac OS X, use the following commands to clone Visionaray
+The Visionaray git repository can be cloned using the following commands:
 
 ```Shell
 git clone https://github.com/szellmann/visionaray.git
