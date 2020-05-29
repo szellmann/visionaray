@@ -100,14 +100,14 @@ Source Code Organization
 
 Visionaray is a template library, so that most algorithms are implemented in headers located under `include/visionaray`.
 
-- `include/visionaray/math`: GLSL-inspired math templates, wrappers for SIMD types, geometric primitives
-- `include/visionaray/texture`: texture management templates and texture access routines
-- `include/visionaray`: misc. ray tracing templates, BVHs, render targets, etc.
+- [include/visionaray/math](/include/visionaray/math): GLSL-inspired math templates, wrappers for SIMD types, geometric primitives
+- [include/visionaray/texture](/include/visionaray/texture): texture management templates and texture access routines
+- [include/visionaray](/include/visionaray): misc. ray tracing templates, BVHs, render targets, etc.
 
 Visionaray can optionally interoperate with graphics and GPGPU APIs. Interoperability with the respective libraries is compiled into the Visionaray library. When not needing GPU interoperability, chances are high that you don't need to link with Visionaray, but can rather use it as a header only library.
 
-- `include/visionaray/cuda/`, `src/visionaray/cuda`: CUDA interoperability classes
-- `include/visionaray/gl`, `src/visionaray/gl`: OpenGL(ES) interoperability classes
+- [include/visionaray/cuda/](/include/visionaray/cuda/), [src/visionaray/cuda](/src/visionaray/cuda): CUDA interoperability classes
+- [include/visionaray/gl](/include/visionaray/gl), [src/visionaray/gl](/src/visionaray/gl): OpenGL(ES) interoperability classes
 
 Headers in `./detail` subfolders are not part of the public API. Code in namespace `detail` contains private implementation. Template class implementations go into files ending with `.inl`, which are included at the bottom of the public interface header file.
 
@@ -115,18 +115,18 @@ Headers in `./detail` subfolders are not part of the public API. Code in namespa
 
 Visionaray comes with a rudimentary viewer (see above) and a set of [example applications](https://github.com/szellmann/visionaray/tree/master/src/examples). Those are implemented under
 
-- `src/viewer`: visionaray viewer application
-- `src/examples`: visionaray example applications
+- [src/viewer](/src/viewer): visionaray viewer application
+- [src/examples](/src/examples): visionaray example applications
 
 ### Common library
 
 The viewer application and the examples link with the Visionaray-common library that provides functionality such as windowing classes or mouse interaction. The Visionaray-common library is **not part of the public API** and interfaces may change between releases.
 
-- `src/common`: library private to the viewer and example applications
+- [src/common](/src/common): library private to the viewer and example applications
 
 ### Third-party libraries
 
-- `src/3rdparty`: third-party code goes in here
+- [src/3rdparty](/src/3rdparty): third-party code goes in here
 
 The viewer application and the examples use the following third-party libraries (the Visionaray library can be built without these dependencies):
 - [CmdLine](https://github.com/abolz/CmdLine) library to handle command line arguments in the viewer and example applications.
