@@ -113,7 +113,7 @@ Headers in `./detail` subfolders are not part of the public API. Code in namespa
 
 ### Applications
 
-Visionaray comes with a rudimentary viewer (see above) and a set of [example applications](https://github.com/szellmann/visionaray/tree/master/src/examples). Those are implemented under
+Visionaray comes with a rudimentary viewer (see above) and a set of [example applications](https://github.com/szellmann/visionaray/tree/master/src/examples). Those are implemented in
 
 - [src/viewer](/src/viewer): visionaray viewer application
 - [src/examples](/src/examples): visionaray example applications
