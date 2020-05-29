@@ -347,25 +347,3 @@ visionaray_add_library(visionaray_common
 if (VSNRAY_ENABLE_QT5)
     qt5_use_modules(visionaray_common Core Gui OpenGL Widgets)
 endif()
-
-
-#--------------------------------------------------------------------------------------------------
-# Install headers and library
-#
-
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} ${CONFIG_DIR}
-    DESTINATION include/visionaray/private
-    COMPONENT headers
-    FILES_MATCHING
-        PATTERN "*.h"
-        PATTERN "*.hh"
-        PATTERN "*.hpp"
-        PATTERN "*.hxx"
-        PATTERN "*.inl"
-        PATTERN "*.inc"
-)
-
-install(TARGETS visionaray_common
-     LIBRARY DESTINATION lib COMPONENT libraries
-     ARCHIVE DESTINATION lib COMPONENT libraries
-)
