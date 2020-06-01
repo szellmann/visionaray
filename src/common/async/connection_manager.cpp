@@ -10,9 +10,6 @@
 #include <boost/asio/read.hpp>
 #include <boost/asio/write.hpp>
 
-#include <boost/thread.hpp>
-#include <boost/thread/locks.hpp>
-
 #include <boost/bind.hpp>
 
 #include "connection_manager.h"
@@ -91,7 +88,7 @@ void connection_manager::run()
 
 void connection_manager::run_in_thread()
 {
-    runner_ = boost::thread(&connection_manager::run, this);
+    runner_ = std::thread(&connection_manager::run, this);
 }
 
 void connection_manager::wait()

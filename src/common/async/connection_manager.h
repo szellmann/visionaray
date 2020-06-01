@@ -8,9 +8,8 @@
 
 #include <deque>
 #include <set>
+#include <thread>
 #include <vector>
-
-#include <boost/thread.hpp>
 
 #include "connection.h"
 
@@ -134,7 +133,7 @@ private:
     // List of messages to be written
     messages write_queue_;
     // A thread to process the message queue
-    boost::thread runner_;
+    std::thread runner_;
 };
 
 inline connection_manager_pointer make_connection_manager()
