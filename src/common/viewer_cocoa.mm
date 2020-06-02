@@ -408,8 +408,8 @@ struct viewer_cocoa::impl
 // viewer_cocoa
 //
 
-viewer_cocoa::viewer_cocoa(int width, int height, char const* window_title)
-    : viewer_base(width, height, window_title)
+viewer_cocoa::viewer_cocoa(int width, int height, char const* window_title, display_mode_t display_mode)
+    : viewer_base(width, height, window_title, display_mode)
     , impl_(new impl)
 {
 }

@@ -31,6 +31,12 @@ class key_event;
 class mouse_event;
 class space_mouse_event;
 
+struct display_mode_t
+{
+    bool double_buffered = true;
+    bool multisampling   = false;
+};
+
 class viewer_base
 {
 public:
@@ -38,7 +44,8 @@ public:
     viewer_base(
             int width                   = 512,
             int height                  = 512,
-            char const* window_title    = ""
+            char const* window_title    = "",
+            display_mode_t display_mode  = {}
             );
     virtual ~viewer_base();
 
@@ -53,6 +60,7 @@ public:
     bool full_screen() const;
     int width() const;
     int height() const;
+    display_mode_t display_mode() const;
     vec3 background_color() const;
 
     // Allow for unknown or unhandled command line arguments

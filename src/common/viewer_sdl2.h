@@ -20,7 +20,8 @@ public:
     viewer_sdl2(
             int width,
             int height,
-            char const* window_title    = "Visionaray SDL2 Viewer"
+            char const* window_title    = "Visionaray SDL2 Viewer",
+            display_mode_t display_mode = {}
             );
     virtual ~viewer_sdl2();
 

@@ -128,7 +128,12 @@ void viewer_glut::impl::init(
 {
     glutInit(&argc, argv);
 
-    glutInitDisplayMode(/*GLUT_3_2_CORE_PROFILE |*/ GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+    unsigned mode = /*GLUT_3_2_CORE_PROFILE |*/ GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH;
+    if (viewer_glut::impl::viewer->display_mode().multisampling)
+    {
+        mode |= GLUT_MULTISAMPLE;
+    }
+    glutInitDisplayMode(mode);
 
     glutInitWindowSize(width, height);
     win_id = glutCreateWindow(window_title);
@@ -451,9 +456,10 @@ void viewer_glut::impl::special_up_func(int key, int, int)
 viewer_glut::viewer_glut(
         int width,
         int height,
-        char const* window_title
+        char const* window_title,
+        display_mode_t display_mode
         )
-    : viewer_base(width, height, window_title)
+    : viewer_base(width, height, window_title, display_mode)
     , impl_(new impl(this))
 {
 }

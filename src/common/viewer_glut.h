@@ -20,7 +20,8 @@ public:
     viewer_glut(
             int width                   = 512,
             int height                  = 512,
-            char const* window_title    = "Visionaray GLUT Viewer"
+            char const* window_title    = "Visionaray GLUT Viewer",
+            display_mode_t display_mode = {}
             );
     virtual ~viewer_glut();
 

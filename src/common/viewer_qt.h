@@ -28,7 +28,8 @@ public:
     viewer_qt(
             int width                   = 512,
             int height                  = 512,
-            char const* window_title    = "Visionaray Qt Viewer"
+            char const* window_title    = "Visionaray Qt Viewer",
+            display_mode_t display_mode = {}
             );
     virtual ~viewer_qt();
 

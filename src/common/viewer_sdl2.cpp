@@ -167,8 +167,8 @@ void viewer_sdl2::impl::call_resize(int w, int h)
 // viewer_sdl2
 //
 
-viewer_sdl2::viewer_sdl2(int width, int height, char const* window_title)
-    : viewer_base(width, height, window_title)
+viewer_sdl2::viewer_sdl2(int width, int height, char const* window_title, display_mode_t display_mode)
+    : viewer_base(width, height, window_title, display_mode)
     , impl_(new impl)
 {
     impl_->viewer = this;

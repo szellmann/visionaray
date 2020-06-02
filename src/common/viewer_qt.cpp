@@ -69,9 +69,10 @@ struct viewer_qt::impl
 viewer_qt::viewer_qt(
         int width,
         int height,
-        char const* window_title
+        char const* window_title,
+        display_mode_t display_mode
         )
-    : viewer_base(width, height, window_title)
+    : viewer_base(width, height, window_title, display_mode)
     , impl_(new impl)
 {
 }

@@ -20,7 +20,8 @@ public:
     viewer_cocoa(
             int width,
             int height,
-            char const* window_title    = "Visionaray Cocoa Viewer"
+            char const* window_title    = "Visionaray Cocoa Viewer",
+            display_mode_t display_mode = {}
             );
     virtual ~viewer_cocoa();
 

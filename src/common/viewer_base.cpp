@@ -46,11 +46,12 @@ struct viewer_base::impl
     int                 width              = 512;
     int                 height             = 512;
     char const*         window_title       = "";
+    display_mode_t      display_mode       = {};
     vec3                bgcolor            = { 0.1f, 0.4f, 1.0f };
 
     GLuint              imgui_font_texture;
 
-    impl(int width, int height, char const* window_title);
+    impl(int width, int height, char const* window_title, display_mode_t display_mode);
 
     void init(int argc, char** argv);
 
@@ -66,10 +67,11 @@ struct viewer_base::impl
 viewer_base* viewer_base::impl::viewer = nullptr;
     
 
-viewer_base::impl::impl(int width, int height, char const* window_title)
+viewer_base::impl::impl(int width, int height, char const* window_title, display_mode_t display_mode)
     : width(width)
     , height(height)
     , window_title(window_title)
+    , display_mode(display_mode)
 {
     // add default options (-fullscreen, -width, -height, -bgcolor)
 
@@ -216,9 +218,10 @@ void viewer_base::impl::space_mouse_button_press_func(space_mouse_event const& e
 viewer_base::viewer_base(
         int width,
         int height,
-        char const* window_title
+        char const* window_title,
+        display_mode_t display_mode
         )
-    : impl_(new impl(width, height, window_title))
+    : impl_(new impl(width, height, window_title, display_mode))
 {
     viewer_base::impl::viewer = this;
 
@@ -273,6 +276,11 @@ int viewer_base::width() const
 int viewer_base::height() const
 {
     return impl_->height;
+}
+
+display_mode_t viewer_base::display_mode() const
+{
+    return impl_->display_mode;
 }
 
 vec3 viewer_base::background_color() const
