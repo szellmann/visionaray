@@ -23,6 +23,10 @@ namespace visionaray
 namespace detail
 {
 
+//-------------------------------------------------------------------------------------------------
+// Helpers
+//
+
 VSNRAY_FUNC
 inline unsigned clz(unsigned val)
 {
@@ -35,6 +39,356 @@ inline unsigned clz(unsigned val)
 #endif
 }
 
+#ifdef __CUDACC__
+
+//-------------------------------------------------------------------------------------------------
+// Stolen from https://github.com/treecode/Bonsai/blob/master/runtime/profiling/derived_atomic_functions.h
+//
+
+VSNRAY_GPU_FUNC
+inline float atomicMin(float *address, float val)
+{
+    int ret = __float_as_int(*address);
+    while (val < __int_as_float(ret))
+    {
+        int old = ret;
+        if ((ret = atomicCAS((int *)address, old, __float_as_int(val))) == old)
+        {
+            break;
+        }
+    }
+    return __int_as_float(ret);
+}
+
+VSNRAY_GPU_FUNC
+inline float atomicMax(float *address, float val)
+{
+    int ret = __float_as_int(*address);
+    while (val > __int_as_float(ret))
+    {
+        int old = ret;
+        if ((ret = atomicCAS((int *)address, old, __float_as_int(val))) == old)
+        {
+            break;
+        }
+    }
+    return __int_as_float(ret);
+}
+
+#endif
+
+
+namespace lbvh
+{
+
+//-------------------------------------------------------------------------------------------------
+// Map primitive to morton code
+//
+
+struct prim_ref
+{
+    int id;
+    unsigned morton_code;
+
+    VSNRAY_FUNC
+    bool operator<(prim_ref rhs) const
+    {
+        return morton_code < rhs.morton_code;
+    }
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// Find node range that an inner node overlaps
+//
+
+VSNRAY_FUNC
+inline vec2i determine_range(prim_ref* refs, int num_prims, int i, int& split)
+{
+    auto delta = [&](int i, int j)
+    {
+        // Karras' delta(i,j) function
+        // Denotes the length of the longest common
+        // prefix between keys k_i and k_j
+
+        // Cf. Figure 4: "for simplicity, we define that
+        // delta(i,j) = -1 when j not in [0,n-1]"
+        if (j < 0 || j >= num_prims)
+        {
+            return -1;
+        }
+
+        unsigned xord = refs[i].morton_code ^ refs[j].morton_code;
+        if (xord == 0)
+        {
+            return static_cast<int>(clz((unsigned)i ^ (unsigned)j) + 32);
+        }
+        else
+        {
+            return static_cast<int>(clz(refs[i].morton_code ^ refs[j].morton_code));
+        }
+    };
+
+    // Determine direction of the range (+1 or -1)
+    int d = delta(i, i + 1) >= delta(i, i - 1) ? 1 : -1;
+
+    // Compute upper bound for the length of the range
+    int delta_min = delta(i, i - d);
+    int l_max = 2;
+    while (delta(i, i + l_max * d) > delta_min)
+    {
+        l_max *= 2;
+    }
+
+    // Find the other end using binary search
+    int l = 0;
+    for (int t = l_max >> 1; t >= 1; t >>= 1)
+    {
+        if (delta(i, i + (l + t) * d) > delta_min)
+            l += t;
+    }
+
+    int j = i + l * d;
+
+    // Find the split position using binary search
+    int delta_node = delta(i, j);
+    int s = 0;
+    float divf = 2.f;
+    int t = ceil(l / divf);
+    for(; t >= 1; divf *= 2.f, t = ceil(l / divf))
+    {
+        if (delta(i, i + (s + t) * d) > delta_node)
+            s += t;
+    }
+
+    split = i + s * d + min(d, 0);
+
+    if (d == 1)
+        return vec2i(i, j);
+    else
+        return vec2i(j, i);
+}
+#ifdef __CUDACC__
+
+//-------------------------------------------------------------------------------------------------
+// Node data structure only used for construction w/ Karras' algorithm. Alignment is bad, but
+// node has parent pointer!
+//
+
+struct node
+{
+    VSNRAY_GPU_FUNC node()
+        : bbox(vec3(numeric_limits<float>::max()), vec3(-numeric_limits<float>::max()))
+    {
+    }
+
+    aabb bbox;
+    int left = -1;
+    int right = -1;
+    int parent = -1;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// CUDA kernels
+//
+
+template <typename P>
+static __global__ void compute_bounds_and_centroids(
+        aabb*    prim_bounds,     // OUT: all primitive bounding boxes
+        vec3*    centroids,       // OUT: all primitive centroids
+        aabb*    scene_bounds,    // OUT: the scene bounding box
+        aabb*    centroid_bounds, // OUT: the centroid bounding box
+        P const* primitives,      // IN:  all primitives
+        int      num_prims        // IN:  number of primitives
+        )
+{
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (index < num_prims)
+    {
+        prim_bounds[index] = get_bounds(primitives[index]);
+        //scene_bounds->insert(prim_bounds[index]); // TODO: atomic (necessary?)
+
+        centroids[index] = prim_bounds[index].center();
+        atomicMin(&centroid_bounds->min.x, centroids[index].x);
+        atomicMin(&centroid_bounds->min.y, centroids[index].y);
+        atomicMin(&centroid_bounds->min.z, centroids[index].z);
+        atomicMax(&centroid_bounds->max.x, centroids[index].x);
+        atomicMax(&centroid_bounds->max.y, centroids[index].y);
+        atomicMax(&centroid_bounds->max.z, centroids[index].z);
+    }
+}
+
+static __global__ void assign_morton_codes(
+        prim_ref*   prim_refs,       // OUT: prim refs with morton codes
+        vec3 const* centroids,       // IN:  all centroids
+        aabb*       centroid_bounds, // IN:  the centroid bounding box
+        int         num_prims        // IN:  number of primitives
+        )
+{
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (index < num_prims)
+    {
+        vec3 centroid = centroids[index];
+
+        // Express centroid in [0..1] relative to bounding box
+        centroid -= centroid_bounds->center();
+        centroid = (centroid + centroid_bounds->size() * 0.5f) / centroid_bounds->size();
+
+        // Quantize centroid to 10-bit
+        centroid = min(max(centroid * 1024.0f, vec3(0.0f)), vec3(1023.0f));
+
+        prim_refs[index].id = index;
+        prim_refs[index].morton_code = morton_encode3D(
+                static_cast<int>(centroid.x),
+                static_cast<int>(centroid.y),
+                static_cast<int>(centroid.z)
+                );
+    }
+}
+
+static __global__ void build_hierarchy(
+        node*     inner,     // OUT: all inner nodes with pointers assigned
+        node*     leaves,    // OUT: all leaf nodes with parent pointers assigned
+        prim_ref* prim_refs, // IN:  prim refs with morton codes
+        int       num_prims  // IN:  number of primitives
+        )
+{
+    int num_leaves = num_prims;
+    int num_inner = num_leaves - 1;
+
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (index < num_inner)
+    {
+        // NOTE: This is [first..last], not [first..last)!!
+        int split = -1;
+        vec2i range = determine_range(prim_refs, num_prims, index, split);
+        int first = range.x;
+        int last = range.y;
+
+        int left = split;
+        int right = split + 1;
+
+        if (left == first)
+        {
+            // left child is leaf
+            inner[index].left = num_inner + left;
+            leaves[left].parent = index;
+        }
+        else
+        {
+            // left child is inner
+            inner[index].left = left;
+            inner[left].parent = index;
+        }
+
+        if (right == last)
+        {
+            // right child is leaf
+            inner[index].right = num_inner + right;
+            leaves[right].parent = index;
+        }
+        else
+        {
+            // right child is inner
+            inner[index].right = right;
+            inner[right].parent = index;
+        }
+    }
+}
+
+static __global__ void assign_node_bounds(
+        bvh_node* bvh_nodes,    // OUT: visionaray bvh nodes
+        node*     inner,        // IN:  all inner nodes
+        node*     leaves,       // IN:  all leaf nodes
+        aabb*     prim_bounds,  // IN:  all primitive bounding boxes
+        prim_ref* prim_refs,    // IN:  all prim refs
+        int       num_prims     // IN:  number of primitives
+        )
+{
+    // Inline function to determine index into bvh_nodes
+    // array (stores the two children next to each other,
+    // while the input node arrays don't)
+    auto bvh_node_index = [&](int current, int parent)
+    {
+        int result = 1; // step over root
+
+        if (inner[parent].left == current)
+        {
+            result += parent * 2;
+        }
+        else if (inner[parent].right == current)
+        {
+            result += parent * 2 + 1;
+        }
+        else
+        {
+            // Node is neither parent's left nor right child
+            // (should never happen)!
+            assert(0);
+        }
+
+        return result;
+    };
+
+
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+    int num_leaves = num_prims;
+    int num_inner = num_leaves - 1;
+
+    if (index >= num_leaves)
+    {
+        return;
+    }
+
+    // Start with leaf
+    leaves[index].bbox = prim_bounds[index];
+
+    // Atomically combine child bounding boxes and update parents
+    int curr = static_cast<int>(num_inner + index);
+    int next = leaves[index].parent;
+
+    // Insert leaf
+    int off = bvh_node_index(curr, next);
+    bvh_nodes[off].set_leaf(leaves[index].bbox, prim_refs[index].id, 1);
+
+    while (next >= 0)
+    {
+        atomicMin(&inner[next].bbox.min.x, leaves[index].bbox.min.x);
+        atomicMin(&inner[next].bbox.min.y, leaves[index].bbox.min.y);
+        atomicMin(&inner[next].bbox.min.z, leaves[index].bbox.min.z);
+        atomicMax(&inner[next].bbox.max.x, leaves[index].bbox.max.x);
+        atomicMax(&inner[next].bbox.max.y, leaves[index].bbox.max.y);
+        atomicMax(&inner[next].bbox.max.z, leaves[index].bbox.max.z);
+
+        if (inner[next].parent == -1)
+        {
+            break;
+        }
+
+        int off = bvh_node_index(next, inner[next].parent);
+//      int off_first = bvh_node_index(inner[next].left, next);
+        int off_first = 1 + next * 2; // save some instructions
+        bvh_nodes[off].set_inner(inner[next].bbox, off_first);
+
+        // Traverse up
+        next = inner[next].parent;
+    }
+
+    // Assign root
+    if (index == 0)
+    {
+        bvh_nodes[0].set_inner(inner[0].bbox, 1);
+    }
+}
+
+#endif // __CUDACC__
+
+} // lbvh
 } // detail
 
 struct lbvh_builder
@@ -214,6 +568,116 @@ struct lbvh_builder
 
         return true;
     }
+
+
+#ifdef __CUDACC__
+
+    //-------------------------------------------------------------------------
+    // GPU builder based on Karras, Maximizing parallelism in the construction
+    // of BVHs octrees and k-d trees (2012).
+    //
+
+    thrust::device_vector<detail::lbvh::prim_ref> d_prim_refs;
+    thrust::device_vector<aabb> d_prim_bounds;
+
+    template <typename P>
+    cuda_index_bvh<P> build(cuda_index_bvh<P> /* */, P* primitives, size_t num_prims)
+    {
+        using namespace detail::lbvh;
+
+        cuda_index_bvh<P> tree(primitives, num_prims);
+
+        P* first = primitives;
+        P* last = primitives + num_prims;
+
+
+        // Scene and centroid bounding boxes
+        aabb invalid;
+        invalid.invalidate();
+        thrust::device_vector<aabb> bounds(2, invalid);
+
+        aabb* scene_bounds_ptr = thrust::raw_pointer_cast(bounds.data());
+        aabb* centroid_bounds_ptr = thrust::raw_pointer_cast(bounds.data() + 1);
+
+
+        // Compute primitive bounding boxes and centroids
+        d_prim_bounds.resize(last - first);
+        thrust::device_vector<vec3> centroids(last - first);
+
+        {
+            size_t num_threads = 1024;
+
+            compute_bounds_and_centroids<<<div_up(num_prims, num_threads), num_threads>>>(
+                    thrust::raw_pointer_cast(d_prim_bounds.data()),
+                    thrust::raw_pointer_cast(centroids.data()),
+                    scene_bounds_ptr,
+                    centroid_bounds_ptr,
+                    primitives,
+                    num_prims
+                    );
+        }
+
+        // Compute morton codes for centroids
+        d_prim_refs.resize(last - first);
+
+        {
+            size_t num_threads = 1024;
+
+            assign_morton_codes<<<div_up(num_prims, num_threads), num_threads>>>(
+                    thrust::raw_pointer_cast(d_prim_refs.data()),
+                    thrust::raw_pointer_cast(centroids.data()),
+                    centroid_bounds_ptr,
+                    num_prims
+                    );
+        }
+
+        // Sort prim refs by morton codes
+        thrust::stable_sort(thrust::device, d_prim_refs.begin(), d_prim_refs.end());
+
+        // Use Karras' radix tree algorithm to build hierarchy
+        thrust::device_vector<node> inner(num_prims - 1);
+        thrust::device_vector<node> leaves(num_prims);
+
+        {
+            size_t num_threads = 1024;
+
+            build_hierarchy<<<div_up(num_prims, num_threads), num_threads>>>(
+                    thrust::raw_pointer_cast(inner.data()),
+                    thrust::raw_pointer_cast(leaves.data()),
+                    thrust::raw_pointer_cast(d_prim_refs.data()),
+                    num_prims
+                    );
+        }
+
+        // Expand nodes' bounding boxes by inserting leaves' bounding boxes
+        // and convert to Visionaray node format (stores the two children
+        // of a BVH node next to each other in memory)
+        tree.nodes().resize(inner.size() + leaves.size());
+
+        {
+            size_t num_threads = 1024;
+
+            assign_node_bounds<<<div_up(num_prims, num_threads), num_threads>>>(
+                    thrust::raw_pointer_cast(tree.nodes().data()),
+                    thrust::raw_pointer_cast(inner.data()),
+                    thrust::raw_pointer_cast(leaves.data()),
+                    thrust::raw_pointer_cast(d_prim_bounds.data()),
+                    thrust::raw_pointer_cast(d_prim_refs.data()),
+                    num_prims
+                    );
+        }
+
+        // Copy primitives to BVH (device to device copy!)
+        tree.primitives().resize(num_prims);
+        thrust::copy(thrust::device, first, last, tree.primitives().begin());
+
+        // Assign 0,1,2,3,.. indices
+        thrust::sequence(thrust::device, tree.indices().begin(), tree.indices().end());
+
+        return tree;
+    }
+
+#endif // __CUDACC__
 
 
     // TODO:
