@@ -27,6 +27,8 @@
 
 #include "sg/material.h"
 
+#include "export.h"
+
 #if VSNRAY_COMMON_HAVE_PTEX
 #include "ptex.h"
 #endif
@@ -61,7 +63,7 @@ class sphere;
 
 enum traversal_type { TraverseChildren, TraverseParents };
 
-class node_visitor
+class VSNRAY_COMMON_EXPORT node_visitor
 {
 public:
 
@@ -91,7 +93,7 @@ protected:
 // Texture base class
 //
 
-class texture
+class VSNRAY_COMMON_EXPORT texture
 {
 public:
     virtual ~texture();
@@ -110,7 +112,7 @@ private:
 //
 
 template <typename T>
-class texture2d : public texture, public texture_base<T, 2>
+class VSNRAY_COMMON_EXPORT texture2d : public texture, public texture_base<T, 2>
 {
 public:
 
@@ -164,7 +166,7 @@ private:
 // WDAS Ptex node
 //
 
-class ptex_texture : public texture
+class VSNRAY_COMMON_EXPORT ptex_texture : public texture
 {
 public:
 
@@ -190,7 +192,7 @@ private:
 // Node base class
 //
 
-class node : public std::enable_shared_from_this<node>
+class VSNRAY_COMMON_EXPORT node : public std::enable_shared_from_this<node>
 {
 public:
 
@@ -233,7 +235,7 @@ protected:
 // Camera node
 //
 
-class camera : public node, public thin_lens_camera
+class VSNRAY_COMMON_EXPORT camera : public node, public thin_lens_camera
 {
 public:
 
@@ -246,7 +248,7 @@ public:
 // Light base class
 //
 
-class light : public node
+class VSNRAY_COMMON_EXPORT light : public node
 {
 public:
 
@@ -261,7 +263,7 @@ public:
 // Point light node
 //
 
-class point_light : public light, public visionaray::point_light<float>
+class VSNRAY_COMMON_EXPORT point_light : public light, public visionaray::point_light<float>
 {
 public:
 
@@ -274,7 +276,7 @@ public:
 // Spot light node
 //
 
-class spot_light : public light, public visionaray::spot_light<float>
+class VSNRAY_COMMON_EXPORT spot_light : public light, public visionaray::spot_light<float>
 {
 public:
 
@@ -287,7 +289,7 @@ public:
 // Environment light node
 //
 
-class environment_light : public light
+class VSNRAY_COMMON_EXPORT environment_light : public light
 {
 public:
 
@@ -319,7 +321,7 @@ private:
 // Transform node
 //
 
-class transform : public node
+class VSNRAY_COMMON_EXPORT transform : public node
 {
 public:
 
@@ -343,7 +345,7 @@ private:
 // Surface properties node
 //
 
-class surface_properties : public node
+class VSNRAY_COMMON_EXPORT surface_properties : public node
 {
 public:
 
@@ -373,7 +375,7 @@ private:
 // Triangle mesh node
 //
 
-class triangle_mesh : public node
+class VSNRAY_COMMON_EXPORT triangle_mesh : public node
 {
 public:
 
@@ -401,7 +403,7 @@ public:
 // Indexed triangle mesh node
 //
 
-class indexed_triangle_mesh : public node
+class VSNRAY_COMMON_EXPORT indexed_triangle_mesh : public node
 {
 public:
 
@@ -441,7 +443,7 @@ public:
 // Sphere node
 //
 
-class sphere : public node
+class VSNRAY_COMMON_EXPORT sphere : public node
 {
 public:
 
