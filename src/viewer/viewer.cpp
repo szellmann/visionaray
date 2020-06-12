@@ -1238,19 +1238,37 @@ void renderer::build_scene()
     if (mod.scene_graph == nullptr)
     {
         // Single BVH
-        host_bvhs.resize(1);
-        if (build_strategy == LBVH)
+        if (build_strategy == LBVH && rt.mode() == host_device_rt::CPU)
         {
+            host_bvhs.resize(1);
+
             lbvh_builder builder;
 
+            //timer t;
             host_bvhs[0] = builder.build(host_bvh_type{}, mod.primitives.data(), mod.primitives.size());
+            //std::cout << t.elapsed() << '\n';
+        }
+        else if (build_strategy == LBVH && rt.mode() == host_device_rt::GPU)
+        {
+            device_bvhs.resize(1);
+
+            lbvh_builder builder;
+
+            //cuda::timer t;
+            thrust::device_vector<primitive_type> primitives(mod.primitives);
+            device_bvhs[0] = builder.build(device_bvh_type{}, thrust::raw_pointer_cast(primitives.data()), mod.primitives.size());
+            //std::cout << t.elapsed() << '\n';
         }
         else
         {
+            host_bvhs.resize(1);
+
             binned_sah_builder builder;
             builder.enable_spatial_splits(build_strategy == Split);
 
+            //timer t;
             host_bvhs[0] = builder.build(host_bvh_type{}, mod.primitives.data(), mod.primitives.size());
+            //std::cout << t.elapsed() << '\n';
         }
 
         if (!env_map_filename.empty() && boost::filesystem::exists(env_map_filename))
@@ -1539,18 +1557,21 @@ void renderer::render_hud()
     float focal_dist = cam.get_focal_distance();
     float lens_radius = cam.get_lens_radius();
 
-    traverse_depth_first(
-        host_bvhs[0],
-        [&](renderer::host_bvh_type::node_type const& node)
-        {
-            ++num_nodes;
-
-            if (is_leaf(node))
+    if (!host_bvhs.empty())
+    {
+        traverse_depth_first(
+            host_bvhs[0],
+            [&](renderer::host_bvh_type::node_type const& node)
             {
-                ++num_leaves;
+                ++num_nodes;
+
+                if (is_leaf(node))
+                {
+                    ++num_leaves;
+                }
             }
-        }
-        );
+            );
+    }
 
 
     static const std::string camera_file_base = "visionaray-camera";
@@ -2700,11 +2721,14 @@ int main(int argc, char** argv)
     // Copy data to GPU
     try
     {
-        // Build up lower level bvhs first
-        rend.device_bvhs.resize(rend.host_bvhs.size());
-        for (size_t i = 0; i < rend.host_bvhs.size(); ++i)
+        if (rend.build_strategy != renderer::LBVH)
         {
-            rend.device_bvhs[i] = renderer::device_bvh_type(rend.host_bvhs[i]);
+            // Build up lower level bvhs first
+            rend.device_bvhs.resize(rend.host_bvhs.size());
+            for (size_t i = 0; i < rend.host_bvhs.size(); ++i)
+            {
+                rend.device_bvhs[i] = renderer::device_bvh_type(rend.host_bvhs[i]);
+            }
         }
 
         // Make a deep copy of the top level bvh
