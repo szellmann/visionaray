@@ -191,6 +191,7 @@ set(COMMON_HEADERS
     blocking_queue.h
     cfile.h
     dds_image.h
+    export.h
     exr_image.h
     fbx_loader.h
     file_base.h
