@@ -35,7 +35,7 @@ namespace visionaray
 
 using namespace pbrt;
 
-void add_diffuse_texture(
+static void add_diffuse_texture(
         std::shared_ptr<sg::surface_properties>& sp,
         Texture::SP texture,
         std::string base_filename
@@ -103,7 +103,7 @@ void add_diffuse_texture(
     }
 }
 
-mat4 make_mat4(affine3f const& aff)
+static mat4 make_mat4(affine3f const& aff)
 {
     mat4 result = mat4::identity();
 
@@ -126,7 +126,7 @@ mat4 make_mat4(affine3f const& aff)
     return result;
 }
 
-std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape, std::string base_filename)
+static std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape, std::string base_filename)
 {
     auto sp = std::make_shared<sg::surface_properties>();
 
@@ -285,7 +285,7 @@ std::shared_ptr<sg::surface_properties> make_surface_properties(Shape::SP shape,
     return sp;
 }
 
-void make_scene_graph(
+static void make_scene_graph(
         Object::SP object,
         sg::node& parent,
         std::unordered_map<Shape::SP, std::shared_ptr<sg::indexed_triangle_mesh>>& shape2itm,
