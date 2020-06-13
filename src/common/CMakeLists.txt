@@ -8,7 +8,7 @@
 
 find_package(Boost COMPONENTS filesystem iostreams system REQUIRED)
 find_package(GLEW REQUIRED)
-find_package(GLUT REQUIRED)
+find_package(GLUT)
 find_package(JPEG)
 find_package(OpenEXR)
 find_package(OpenGL REQUIRED)
@@ -20,7 +20,9 @@ find_package(ZLIB)
 
 visionaray_use_package(Boost)
 visionaray_use_package(GLEW)
-visionaray_use_package(GLUT)
+if (GLUT_FOUND)
+    visionaray_use_package(GLUT)
+endif()
 visionaray_use_package(JPEG)
 visionaray_use_package(OpenEXR)
 visionaray_use_package(OpenGL)
@@ -217,7 +219,6 @@ set(COMMON_HEADERS
     tiff_image.h
     timer.h
     viewer_base.h
-    viewer_glut.h
     vsnray_loader.h
 
 )
@@ -261,10 +262,14 @@ set(COMMON_SOURCES
     tga_image.cpp
     tiff_image.cpp
     viewer_base.cpp
-    viewer_glut.cpp
     vsnray_loader.cpp
 
 )
+
+if (GLUT_FOUND)
+    set(COMMON_HEADERS ${COMMON_HEADERS} viewer_glut.h)
+    set(COMMON_SOURCES ${COMMON_SOURCES} viewer_glut.cpp)
+endif()
 
 if (APPLE AND VSNRAY_ENABLE_COCOA)
     set(COMMON_HEADERS ${COMMON_HEADERS} viewer_cocoa.h)
