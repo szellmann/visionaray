@@ -116,4 +116,24 @@ inline R pinhole_camera::primary_ray(R /* */, T const& x, T const& y, T const& w
     return r;
 }
 
+inline bool operator==(pinhole_camera const& a, pinhole_camera const& b)
+{
+    return a.get_view_matrix() == b.get_view_matrix()
+        && a.get_proj_matrix() == b.get_proj_matrix()
+        && a.get_viewport() == b.get_viewport()
+        && a.fovy() == b.fovy()
+        && a.aspect() == b.aspect()
+        && a.z_near() == b.z_near()
+        && a.z_far() == b.z_far()
+        && a.eye() == b.eye()
+        && a.center() == b.center()
+        && a.up() == b.up()
+        && a.distance() == b.distance();
+}
+
+inline bool operator!=(pinhole_camera const& a, pinhole_camera const& b)
+{
+    return !(a == b);
+}
+
 } // visionaray
