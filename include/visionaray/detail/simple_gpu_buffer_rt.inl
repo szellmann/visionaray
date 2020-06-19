@@ -57,7 +57,7 @@ void simple_gpu_buffer_rt<ColorFormat, DepthFormat>::clear_color_buffer(vec4 con
         c
         );
 
-    thrust::fill(thrust::device, color_buffer.begin(), color_buffer.end(), cc);
+    thrust::fill(color_buffer.begin(), color_buffer.end(), cc);
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
@@ -72,7 +72,7 @@ void simple_gpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth_buffer(float d)
         d
         );
 
-    thrust::fill(thrust::device, depth_buffer.begin(), depth_buffer.end(), dd);
+    thrust::fill(depth_buffer.begin(), depth_buffer.end(), dd);
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
