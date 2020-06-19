@@ -143,6 +143,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/semaphore.h
     ${HEADER_DIR}/detail/simple.inl
     ${HEADER_DIR}/detail/simple_buffer_rt.inl
+    ${HEADER_DIR}/detail/simple_gpu_buffer_rt.inl
     ${HEADER_DIR}/detail/simple_sched.h
     ${HEADER_DIR}/detail/simple_sched.inl
     ${HEADER_DIR}/detail/spectrum.inl
@@ -323,6 +324,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/scheduler.h
     ${HEADER_DIR}/shade_record.h
     ${HEADER_DIR}/simple_buffer_rt.h
+    ${HEADER_DIR}/simple_gpu_buffer_rt.h
     ${HEADER_DIR}/spectrum.h
     ${HEADER_DIR}/spot_light.h
     ${HEADER_DIR}/surface.h
