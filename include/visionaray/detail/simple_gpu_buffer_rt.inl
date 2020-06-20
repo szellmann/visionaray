@@ -13,25 +13,25 @@ namespace visionaray
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename simple_gpu_buffer_rt<ColorFormat, DepthFormat>::color_type* simple_gpu_buffer_rt<ColorFormat, DepthFormat>::color()
 {
-    return color_buffer.data();
+    return thrust::raw_pointer_cast(color_buffer.data());
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename simple_gpu_buffer_rt<ColorFormat, DepthFormat>::depth_type* simple_gpu_buffer_rt<ColorFormat, DepthFormat>::depth()
 {
-    return depth_buffer.data();
+    return thrust::raw_pointer_cast(depth_buffer.data());
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename simple_gpu_buffer_rt<ColorFormat, DepthFormat>::color_type const* simple_gpu_buffer_rt<ColorFormat, DepthFormat>::color() const
 {
-    return color_buffer.data();
+    return thrust::raw_pointer_cast(color_buffer.data());
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename simple_gpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* simple_gpu_buffer_rt<ColorFormat, DepthFormat>::depth() const
 {
-    return depth_buffer.data();
+    return thrust::raw_pointer_cast(depth_buffer.data());
 }
 
 
