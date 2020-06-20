@@ -18,8 +18,4 @@ if(NOT CUDA_FOUND)
     return()
 endif()
 
-visionaray_cuda_compile(EX_CUDA_UNIFIED_MEMORY_SOURCES main.cu)
-
-visionaray_add_executable(cuda_unified_memory
-    ${EX_CUDA_UNIFIED_MEMORY_SOURCES}
-)
+visionaray_add_cuda_executable(cuda_unified_memory main.cu)
