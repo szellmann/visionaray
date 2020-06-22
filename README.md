@@ -134,6 +134,10 @@ The viewer application and the examples use the following third-party libraries 
 - [RapidJSON](http://rapidjson.org/) library for parsing JSON scene descriptions.
 - [tinyply](https://github.com/ddiakopoulos/tinyply) library to load Stanford PLY models.
 
+Revision History
+----------------
+
+See the file [CHANGELOG.md](/CHANGELOG.md) for updates on feature addition and removals, bug fixes and general changes.
 
 Citation
 --------
