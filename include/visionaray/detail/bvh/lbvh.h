@@ -168,6 +168,7 @@ inline vec2i determine_range(prim_ref* refs, int num_prims, int i, int& split)
     else
         return vec2i(j, i);
 }
+
 #ifdef __CUDACC__
 
 //-------------------------------------------------------------------------------------------------
@@ -301,10 +302,51 @@ static __global__ void build_hierarchy(
 }
 
 static __global__ void assign_node_bounds(
-        bvh_node* bvh_nodes,    // OUT: visionaray bvh nodes
         node*     inner,        // IN:  all inner nodes
         node*     leaves,       // IN:  all leaf nodes
         aabb*     prim_bounds,  // IN:  all primitive bounding boxes
+        prim_ref* prim_refs,    // IN:  all prim refs
+        int       num_prims     // IN:  number of primitives
+        )
+{
+    int index = blockIdx.x * blockDim.x + threadIdx.x;
+
+    int num_leaves = num_prims;
+
+    if (index >= num_leaves)
+    {
+        return;
+    }
+
+    // Start with leaf
+    leaves[index].bbox = prim_bounds[prim_refs[index].id];
+
+    // Atomically combine child bounding boxes and update parents
+    int next = leaves[index].parent;
+
+    while (next >= 0)
+    {
+        atomicMin(&inner[next].bbox.min.x, leaves[index].bbox.min.x);
+        atomicMin(&inner[next].bbox.min.y, leaves[index].bbox.min.y);
+        atomicMin(&inner[next].bbox.min.z, leaves[index].bbox.min.z);
+        atomicMax(&inner[next].bbox.max.x, leaves[index].bbox.max.x);
+        atomicMax(&inner[next].bbox.max.y, leaves[index].bbox.max.y);
+        atomicMax(&inner[next].bbox.max.z, leaves[index].bbox.max.z);
+
+        if (inner[next].parent == -1)
+        {
+            break;
+        }
+
+        // Traverse up
+        next = inner[next].parent;
+    }
+}
+
+static __global__ void move_into_parents(
+        bvh_node* bvh_nodes,    // OUT: visionaray bvh nodes
+        node*     inner,        // IN:  all inner nodes
+        node*     leaves,       // IN:  all leaf nodes
         prim_ref* prim_refs,    // IN:  all prim refs
         int       num_prims     // IN:  number of primitives
         )
@@ -345,45 +387,30 @@ static __global__ void assign_node_bounds(
         return;
     }
 
-    // Start with leaf
-    leaves[index].bbox = prim_bounds[index];
-
-    // Atomically combine child bounding boxes and update parents
     int curr = static_cast<int>(num_inner + index);
-    int next = leaves[index].parent;
 
     // Insert leaf
-    int off = bvh_node_index(curr, next);
-    bvh_nodes[off].set_leaf(leaves[index].bbox, prim_refs[index].id, 1);
+    int off_leaf = bvh_node_index(curr, leaves[index].parent);
+    bvh_nodes[off_leaf].set_leaf(leaves[index].bbox, prim_refs[index].id, 1);
 
-    while (next >= 0)
+    if (index >= num_inner)
     {
-        atomicMin(&inner[next].bbox.min.x, leaves[index].bbox.min.x);
-        atomicMin(&inner[next].bbox.min.y, leaves[index].bbox.min.y);
-        atomicMin(&inner[next].bbox.min.z, leaves[index].bbox.min.z);
-        atomicMax(&inner[next].bbox.max.x, leaves[index].bbox.max.x);
-        atomicMax(&inner[next].bbox.max.y, leaves[index].bbox.max.y);
-        atomicMax(&inner[next].bbox.max.z, leaves[index].bbox.max.z);
-
-        if (inner[next].parent == -1)
-        {
-            break;
-        }
-
-        int off = bvh_node_index(next, inner[next].parent);
-//      int off_first = bvh_node_index(inner[next].left, next);
-        int off_first = 1 + next * 2; // save some instructions
-        bvh_nodes[off].set_inner(inner[next].bbox, off_first);
-
-        // Traverse up
-        next = inner[next].parent;
+        return;
     }
 
     // Assign root
     if (index == 0)
     {
         bvh_nodes[0].set_inner(inner[0].bbox, 1);
+        return;
     }
+
+    int off_inner = bvh_node_index(index, inner[index].parent);
+//  int off_first = bvh_node_index(inner[index].left, index);
+    int off_first = 1 + index * 2; // save some instructions
+    bvh_nodes[off_inner].set_inner(inner[index].bbox, off_first);
+
+    auto bbox = bvh_nodes[off_inner].get_bounds();
 }
 
 #endif // __CUDACC__
@@ -650,18 +677,29 @@ struct lbvh_builder
         }
 
         // Expand nodes' bounding boxes by inserting leaves' bounding boxes
-        // and convert to Visionaray node format (stores the two children
-        // of a BVH node next to each other in memory)
         tree.nodes().resize(inner.size() + leaves.size());
 
         {
             size_t num_threads = 1024;
 
             assign_node_bounds<<<div_up(num_prims, num_threads), num_threads>>>(
-                    thrust::raw_pointer_cast(tree.nodes().data()),
                     thrust::raw_pointer_cast(inner.data()),
                     thrust::raw_pointer_cast(leaves.data()),
                     thrust::raw_pointer_cast(d_prim_bounds.data()),
+                    thrust::raw_pointer_cast(d_prim_refs.data()),
+                    num_prims
+                    );
+        }
+
+        // Convert to Visionaray node format (stores the two children
+        // of a BVH node next to each other in memory)
+        {
+            size_t num_threads = 1024;
+
+            move_into_parents<<<div_up(num_prims, num_threads), num_threads>>>(
+                    thrust::raw_pointer_cast(tree.nodes().data()),
+                    thrust::raw_pointer_cast(inner.data()),
+                    thrust::raw_pointer_cast(leaves.data()),
                     thrust::raw_pointer_cast(d_prim_refs.data()),
                     num_prims
                     );
