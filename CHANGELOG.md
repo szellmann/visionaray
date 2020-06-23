@@ -1,5 +1,6 @@
 ## [Unreleased]
 ### Added
+- CPU-parallel BVH refitter. Refitting is used in juggler example.
 - New "juggler" example demonstrating dynamic scenes and procedural
 textures.
 

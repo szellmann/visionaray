@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <ostream>
+#include <thread>
 #include <vector>
 
 #include <GL/glew.h>
@@ -107,6 +108,7 @@ struct renderer : viewer_type
         : viewer_type(512, 512, "Visionaray Juggler Example")
         , bbox({ -1.0f, 0.0f, 0.0f }, { 1.0f, 3.0f, 2.0f })
         , host_sched(8)
+        , pool(std::thread::hardware_concurrency())
     {
         build_scene();
     }
@@ -156,6 +158,8 @@ struct renderer : viewer_type
     bool show_bvh = false;
 
     gl::bvh_outline_renderer                    outlines;
+
+    thread_pool pool;
 
     void build_scene();
 
@@ -601,8 +605,17 @@ void renderer::generate_frame(float t)
         primitives[i].prim_id = i;
     }
 
-    lbvh_builder builder;
-    bvh = builder.build(index_bvh<basic_sphere<float>>{}, primitives.data(), primitives.size());
+    if (bvh.num_nodes() == 0)
+    {
+        lbvh_builder builder;
+        bvh = builder.build(index_bvh<basic_sphere<float>>{}, primitives.data(), primitives.size());
+    }
+    else
+    {
+        bvh_refitter refitter;
+        refitter.refit(bvh, primitives.data(), primitives.size(), pool);
+    }
+
     outlines.init(bvh);
 }
 

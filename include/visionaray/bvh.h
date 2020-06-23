@@ -723,6 +723,7 @@ void traverse_parents(B const& b, N const& n, F func);
 #include "detail/bvh/intersect.inl"
 #include "detail/bvh/lbvh.h"
 #include "detail/bvh/prim_traits.h"
+#include "detail/bvh/refit.h"
 #include "detail/bvh/sah.h"
 #include "detail/bvh/statistics.h"
 #include "detail/bvh/traverse.h"
