@@ -503,10 +503,11 @@ public:
 
     template <typename P>
     explicit index_bvh_t(P* prims, size_t count)
-        : primitives_(prims, prims + count)
+        : primitives_(count)
         , nodes_(count == 0 ? 0 : 2 * count - 1)
         , indices_(count)
     {
+        copy(primitives_, prims, prims + count);
     }
 
     template <typename PV, typename NV, typename IV>
@@ -580,6 +581,14 @@ private:
         dst = src;
     }
 
+    template <typename DstVector, typename T>
+    void copy(DstVector& dst, T const* first, T const* last)
+    {
+        dst.resize(last - first);
+
+        memcpy(dst.data(), first, sizeof(T) * dst.size());
+    }
+
 #ifdef __CUDACC__
     template <typename T, typename SrcVector>
     void copy(thrust::device_vector<T>& dst, SrcVector const& src)
@@ -622,6 +631,21 @@ private:
             thrust::raw_pointer_cast(dst.data()),
             thrust::raw_pointer_cast(src.data()),
             sizeof(T) * src.size(),
+            cudaMemcpyDeviceToDevice
+            );
+    }
+
+    template <typename T>
+    void copy(thrust::device_vector<T>& dst, T const* first, T const* last)
+    {
+        // Trivial copy. In this case, we assume that first and last
+        // are _device_ pointer!
+        dst.resize(last - first);
+
+        cudaMemcpy(
+            thrust::raw_pointer_cast(dst.data()),
+            first,
+            sizeof(T) * dst.size(),
             cudaMemcpyDeviceToDevice
             );
     }
