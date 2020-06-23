@@ -1,4 +1,8 @@
 ## [Unreleased]
+### Added
+- New "juggler" example demonstrating dynamic scenes and procedural
+textures.
+
 ### Changed
 - pbrtParser is now a submodule instead of an external dependency
 supplied by the user.
