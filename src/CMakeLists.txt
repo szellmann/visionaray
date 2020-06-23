@@ -12,6 +12,7 @@ if(APPLE AND VSNRAY_ENABLE_CUDA)
 endif()
 
 if(VSNRAY_ENABLE_COMMON)
+add_subdirectory(3rdparty)
 add_subdirectory(common)
 endif()
 

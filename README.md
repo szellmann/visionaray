@@ -46,7 +46,6 @@ Additionally, in order to compile the viewer application and the [examples](http
 - [Libpng][8] (optional)
 - [LibTIFF][9] (optional)
 - [OpenEXR][10] (optional)
-- [PBRT-Parser][11] (optional)
 - [Ptex][13] (optional)
 
 
@@ -131,6 +130,7 @@ The viewer application and the examples link with the Visionaray-common library 
 The viewer application and the examples use the following third-party libraries (the Visionaray library can be built without these dependencies):
 - [CmdLine](https://github.com/abolz/CmdLine) library to handle command line arguments in the viewer and example applications.
 - [dear imgui](https://github.com/ocornut/imgui) library for GUI elements in the viewer and example applications.
+- [PBRT-Parser](https://github.com/ingowald/pbrt-parser) library to load 3D models in [pbrt](https://github.com/mmp/pbrt-v3) format.
 - [RapidJSON](http://rapidjson.org/) library for parsing JSON scene descriptions.
 - [tinyply](https://github.com/ddiakopoulos/tinyply) library to load Stanford PLY models.
 
@@ -170,6 +170,5 @@ Visionaray is licensed under the MIT License (MIT)
 [8]:    http://libpng.sourceforge.net
 [9]:    http://www.libtiff.org
 [10]:   http://www.openexr.com/
-[11]:   https://github.com/ingowald/pbrt-parser
 [12]:   https://www.opengl.org
 [13]:   https://github.com/wdas/ptex

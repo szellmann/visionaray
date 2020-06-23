@@ -12,9 +12,7 @@
 #include "moana_loader.h"
 #include "model.h"
 #include "obj_loader.h"
-#if VSNRAY_COMMON_HAVE_PBRTPARSER
 #include "pbrt_loader.h"
-#endif
 #include "ply_loader.h"
 #include "vsnray_loader.h"
 
@@ -78,11 +76,9 @@ bool load_model(FN const& fn, visionaray::model& mod, model_type mt)
         load_obj(fn, mod);
         return true;
 
-#if VSNRAY_COMMON_HAVE_PBRTPARSER
     case PBRT:
         load_pbrt(fn, mod);
         return true;
-#endif
 
     case PLY:
         load_ply(fn, mod);

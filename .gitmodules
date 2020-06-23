@@ -10,3 +10,6 @@
 [submodule "src/3rdparty/rapidjson"]
 	path = src/3rdparty/rapidjson
 	url = https://github.com/Tencent/rapidjson.git
+[submodule "src/3rdparty/pbrt-parser"]
+	path = src/3rdparty/pbrt-parser
+	url = https://github.com/ingowald/pbrt-parser
