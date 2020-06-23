@@ -1248,6 +1248,7 @@ void renderer::build_scene()
             host_bvhs[0] = builder.build(host_bvh_type{}, mod.primitives.data(), mod.primitives.size());
             //std::cout << t.elapsed() << '\n';
         }
+#ifdef __CUDACC__
         else if (build_strategy == LBVH && rt.mode() == host_device_rt::GPU)
         {
             device_bvhs.resize(1);
@@ -1259,6 +1260,7 @@ void renderer::build_scene()
             device_bvhs[0] = builder.build(device_bvh_type{}, thrust::raw_pointer_cast(primitives.data()), mod.primitives.size());
             //std::cout << t.elapsed() << '\n';
         }
+#endif
         else
         {
             host_bvhs.resize(1);
