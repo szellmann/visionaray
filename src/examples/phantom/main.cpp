@@ -448,9 +448,6 @@ inline void split_primitive(aabb& L, aabb& R, float plane, int axis, Curve const
 
 struct renderer : viewer_type
 {
-    using host_ray_type = basic_ray<float>;
-    using material_type = plastic<float>;
-
     renderer()
         : viewer_type(512, 512, "Visionaray Phantom Ray-Hair Intersector Example")
         , host_sched(8)
@@ -596,7 +593,7 @@ struct renderer : viewer_type
 
     pinhole_camera                              cam;
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
-    tiled_sched<host_ray_type>                  host_sched;
+    tiled_sched<basic_ray<float>>               host_sched;
 
     std::vector<Curve>                          curves;
     std::vector<aabb>                           bboxes;
