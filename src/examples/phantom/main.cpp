@@ -87,6 +87,47 @@ struct RayConeIntersection
 };
 
 
+inline bool intersectCylinder(basic_ray<float> const& ray, vec3 p0, vec3 p1, float ra)
+{
+    vec3  ba = p1 - p0;
+    vec3  oc = ray.ori - p0;
+
+    float baba = dot(ba, ba);
+    float bard = dot(ba, ray.dir);
+    float baoc = dot(ba, oc);
+
+    float k2 = baba - bard * bard;
+    float k1 = baba * dot(oc, ray.dir) - baoc * bard;
+    float k0 = baba * dot(oc, oc) - baoc * baoc - ra * ra * baba;
+
+    float h = k1 * k1 - k2 * k0;
+
+    if (h < 0.0f)
+    {
+        return false;
+    }
+
+    h = sqrtf(h);
+    float t = (-k1 - h) / k2;
+
+    // body
+    float y = baoc + t * bard;
+    if (y > 0.0f && y < baba)
+    {
+        return true;
+    }
+
+    // caps
+    t = ((y < 0.0f ? 0.0f : baba) - baoc) / bard;
+    if (fabsf(k1 + k2 * t) < h)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // Curve class
 //
@@ -256,6 +297,24 @@ struct TransformToRCC
 
 inline hit_record<basic_ray<float>, primitive<unsigned>> intersect(basic_ray<float> const& r, Curve const& curve)
 {
+    hit_record<basic_ray<float>, primitive<unsigned>> result;
+    result.hit = false;
+
+    // Early exit check against enclosing cylinder
+    auto distToCylinder = [&curve](vec3 pt) {
+        return length(cross(pt-curve.w0, pt-curve.w3)) / length(curve.w3 - curve.w0);
+    };
+
+    // TODO: could compute tighter bounding cylinder than this one!
+    float rmax = distToCylinder(curve.f(0.33333f));
+    rmax = fmaxf(rmax, distToCylinder(curve.f(0.66667f)));
+    rmax += curve.r;
+
+    if (!intersectCylinder(r, curve.w0, curve.w3, rmax))
+    {
+        return result;
+    }
+
     // Transform curve to RCC
     TransformToRCC rcc(r);
     Curve xcurve = make_curve(
@@ -272,8 +331,6 @@ inline hit_record<basic_ray<float>, primitive<unsigned>> intersect(basic_ray<flo
     // Compute curve end to start at
     float tstart = dot(xcurve.w3 - xcurve.w0, r.dir) > 0.0f ? 0.0f : 1.0f;
 
-    hit_record<basic_ray<float>, primitive<unsigned>> result;
-    result.hit = false;
     for (int ep = 0; ep < 2; ++ep)
     {
         float t   = tstart;
