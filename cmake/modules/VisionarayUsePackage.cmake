@@ -7,6 +7,7 @@
 #
 
 function(visionaray_use_package name)
+    string(TOLOWER ${name} lower_name)
     string(TOUPPER ${name} upper_name)
 
     if(NOT ${name}_FOUND AND NOT ${upper_name}_FOUND)
@@ -49,6 +50,10 @@ function(visionaray_use_package name)
             set(pkg_LIBS ${${name}_LIBRARY})
         elseif(${upper_name}_LIBRARY)
             set(pkg_LIBS ${${upper_name}_LIBRARY})
+        elseif(TARGET ${upper_name}::${upper_name})
+            set(pkg_LIBS ${upper_name}::${upper_name})
+        elseif(TARGET ${upper_name}::${lower_name})
+            set(pkg_LIBS ${${upper_name}::${lower_name}})
         endif()
     endif()
 
