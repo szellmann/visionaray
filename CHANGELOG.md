@@ -7,6 +7,8 @@ the API with a custom curve primitive type.
 textures.
 
 ### Changed
+- Switched to Ubuntu 16.04 with Travis-CI. We no longer support
+Ubuntu 14.04 and gcc 4.8 as that is too old for pbrtParser.
 - pbrtParser is now a submodule instead of an external dependency
 supplied by the user.
 
