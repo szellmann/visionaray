@@ -485,14 +485,21 @@ struct renderer : viewer_type
             auto p010 = split(p01.first);
             auto p011 = split(p01.second);
 
-            curves.push_back(p000.first);
-            curves.push_back(p000.second);
-            curves.push_back(p001.first);
-            curves.push_back(p001.second);
-            curves.push_back(p010.first);
-            curves.push_back(p010.second);
-            curves.push_back(p011.first);
-            curves.push_back(p011.second);
+            // 4x
+            curves.push_back(p00.first);
+            curves.push_back(p00.second);
+            curves.push_back(p01.first);
+            curves.push_back(p01.second);
+
+            // 8x
+            // curves.push_back(p000.first);
+            // curves.push_back(p000.second);
+            // curves.push_back(p001.first);
+            // curves.push_back(p001.second);
+            // curves.push_back(p010.first);
+            // curves.push_back(p010.second);
+            // curves.push_back(p011.first);
+            // curves.push_back(p011.second);
         }
 
         for (unsigned i = 0; i < curves.size(); ++i)
