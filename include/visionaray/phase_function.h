@@ -33,7 +33,7 @@ public:
     U tr(vector<3, U> const& wo, vector<3, U> const& wi) const
     {
         // TODO: calculate w/ high precision and add to math/constants.h
-        static const U one_over_four_pi = U(1.0) / (U(4.0) * constants::pi<U>());
+        const U one_over_four_pi = U(1.0) / (U(4.0) * constants::pi<U>());
 
         U cost = dot(wo, wi);
 
