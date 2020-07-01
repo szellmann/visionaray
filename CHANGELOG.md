@@ -12,6 +12,9 @@ Ubuntu 14.04 and gcc 4.8 as that is too old for pbrtParser.
 - pbrtParser is now a submodule instead of an external dependency
 supplied by the user.
 
+### Fixed
+- Fixed linking with homebrew GLEW on macOS.
+
 ## [0.1.1] - 2020-06-22
 ### Fixed
 - CUDA LBVH builder based on Karras' construction algorithm now
