@@ -1,5 +1,7 @@
 ## [Unreleased]
 ### Added
+- Phantom ray-hair intersector example demonstrating how to extend
+the API with a custom curve primitive type.
 - CPU-parallel BVH refitter. Refitting is used in juggler example.
 - New "juggler" example demonstrating dynamic scenes and procedural
 textures.
