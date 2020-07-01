@@ -302,7 +302,7 @@ inline hit_record<basic_ray<float>, primitive<unsigned>> intersect(basic_ray<flo
 
     // Early exit check against enclosing cylinder
     auto distToCylinder = [&curve](vec3 pt) {
-        return length(cross(pt - curve.w0, pt  -curve.w3)) / length(curve.w3 - curve.w0);
+        return length(cross(pt - curve.w0, pt - curve.w3)) / length(curve.w3 - curve.w0);
     };
 
     // TODO: could compute tighter bounding cylinder than this one!
