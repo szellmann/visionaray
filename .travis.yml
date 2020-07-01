@@ -42,7 +42,6 @@ addons:
     homebrew:
         packages:
             - glew
-        update: true
 
 script:
 
