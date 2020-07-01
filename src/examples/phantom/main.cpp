@@ -516,7 +516,7 @@ struct renderer : viewer_type
             }
             catch (std::runtime_error e)
             {
-                std::cout << "Failed!\n";
+                std::cout << "Failed: " << e.what() << '\n';
                 // ignore
             }
         }
