@@ -97,7 +97,7 @@ public:
             size_t              w,
             tex_address_mode    address_mode,
             tex_filter_mode     filter_mode,
-            tex_color_space     color_space,
+            tex_color_space     color_space = RGB,
             bool                normalized_coords = true
             )
         : width_(w)
