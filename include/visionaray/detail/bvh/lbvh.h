@@ -9,6 +9,11 @@
 #include <algorithm>
 #include <array>
 
+#ifdef __CUDACC__
+#include <thrust/device_vector.h>
+#include <thrust/sort.h>
+#endif
+
 #include <visionaray/aligned_vector.h>
 #include <visionaray/morton.h>
 
