@@ -37,8 +37,6 @@ endif()
 #
 #
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
 set(HEADER_DIR ${PROJECT_SOURCE_DIR}/include/visionaray)
 
 
@@ -365,6 +363,7 @@ visionaray_add_library(visionaray
     ${VSNRAY_SOURCES}
 )
 
+target_include_directories(visionaray PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # MSVC + CUDA: link with legacy stdio library
 
