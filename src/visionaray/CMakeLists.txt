@@ -37,8 +37,6 @@ endif()
 #
 #
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
 set(HEADER_DIR ${PROJECT_SOURCE_DIR}/include/visionaray)
 
 
@@ -53,8 +51,6 @@ endforeach()
 
 set(CONFIG_DIR ${__VSNRAY_VISIONARAY_CONFIG_DIR})
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CONFIG_DIR}/config.h)
-
-include_directories(${__VSNRAY_CONFIG_DIR})
 
 
 #---------------------------------------------------------------------------------------------------
@@ -365,6 +361,10 @@ visionaray_add_library(visionaray
     ${VSNRAY_SOURCES}
 )
 
+target_include_directories(visionaray
+  PUBLIC
+  ${PROJECT_SOURCE_DIR}/include
+  ${__VSNRAY_CONFIG_DIR})
 
 # MSVC + CUDA: link with legacy stdio library
 
