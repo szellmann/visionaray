@@ -5,9 +5,9 @@
 platform: x64
 
 environment:
-    BOOST_ROOT: C:/Libraries/boost_1_69_0
-    BOOST_LIBRARYDIR_WIN32: C:/Libraries/boost_1_69_0/lib32-msvc-15.0
-    BOOST_LIBRARYDIR_WIN64: C:/Libraries/boost_1_69_0/lib64-msvc-15.0
+    BOOST_ROOT: C:/Libraries/boost_1_60_0
+    BOOST_LIBRARYDIR_WIN32: C:/Libraries/boost_1_60_0/lib32-msvc-14.0
+    BOOST_LIBRARYDIR_WIN64: C:/Libraries/boost_1_60_0/lib64-msvc-14.0
 
 clone_folder:
     C:\projects\visionaray
@@ -35,11 +35,15 @@ build_script:
     - cd C:\projects\visionaray
     - mkdir build
     - cd build
-    - cmake -G "Visual Studio 15 2017 Win64"
+    - cmake -G "Visual Studio 14 2015 Win64"
       -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
       -DBOOST_ROOT="%BOOST_ROOT%"
       -DBOOST_LIBRARYDIR="%BOOST_LIBRARYDIR_WIN64%"
       -DBoost_USE_STATIC_LIBS="ON"
+      -DGLEW_INCLUDE_DIR="C:/projects/nupengl.core.0.1.0.1/build/native/include"
+      -DGLEW_LIBRARY="C:/projects/nupengl.core.0.1.0.1/build/native/lib/x64/glew32.lib"
+      -DGLUT_INCLUDE_DIR="C:/projects/nupengl.core.0.1.0.1/build/native/include"
+      -DGLUT_glut_LIBRARY="C:/projects/nupengl.core.0.1.0.1/build/native/lib/x64/freeglut.lib"
       -DVSNRAY_ENABLE_EXAMPLES=ON
       -DVSNRAY_ENABLE_COMPILE_FAILURE_TESTS=ON
       -DVSNRAY_ENABLE_UNITTESTS=ON
