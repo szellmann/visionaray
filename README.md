@@ -84,7 +84,7 @@ After being installed, the viewer application executable can be called using the
 vsnray-viewer <file>
 ```
 
-where `file` is either a path to a wavefront `obj` file, a `ply` file, or a `pbrt` file.
+where `file` is either a path to a wavefront `.obj` file, a `.ply` file, or a `.pbrt` file.
 
 Documentation
 -------------
