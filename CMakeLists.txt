@@ -69,10 +69,8 @@ set(VSNRAY_GRAPHICS_API "GL" CACHE STRING "Graphics API used to display images i
 
 
 #---------------------------------------------------------------------------------------------------
-# All VSNRAY_* options have to be specified before this include
+# Only add targets and subdirs after all  VSNRAY_* options have been specified
 #
-
-include(VisionarayHandleOptions)
 
 add_subdirectory(src)
 add_subdirectory(test)
