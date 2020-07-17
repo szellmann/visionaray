@@ -6,6 +6,11 @@
 #ifndef VSNRAY_DETAIL_PIXEL_ACCESS_H
 #define VSNRAY_DETAIL_PIXEL_ACCESS_H 1
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-attributes"
+#endif
+
 #include <type_traits>
 
 #include <visionaray/math/simd/type_traits.h>
@@ -1308,5 +1313,9 @@ inline void blend(
 
 } // detail
 } // visionaray
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 #endif // VSNRAY_DETAIL_PIXEL_ACCESS_H
