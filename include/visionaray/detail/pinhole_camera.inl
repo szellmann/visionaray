@@ -19,13 +19,12 @@ inline void pinhole_camera::look_at(vec3 const& eye, vec3 const& center, vec3 co
     vec3 s = normalize(cross(up, f));
     vec3 u = cross(f, s);
 
-    view_ = mat4
-    (
+    view_ = mat4(
         s.x, u.x, f.x, 0.0f,
         s.y, u.y, f.y, 0.0f,
         s.z, u.z, f.z, 0.0f,
         -dot(eye, s), -dot(eye, u), -dot(eye, f), 1.0f
-    );
+        );
 
 }
 
