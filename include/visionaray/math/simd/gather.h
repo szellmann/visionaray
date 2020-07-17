@@ -6,6 +6,11 @@
 #ifndef VSNRAY_MATH_SIMD_GATHER_H
 #define VSNRAY_MATH_SIMD_GATHER_H 1
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wignored-attributes"
+#endif
+
 #include <cstdint>
 #include <type_traits>
 
@@ -802,5 +807,9 @@ VSNRAY_FORCE_INLINE vector<Dim, float16> gather(vector<Dim, unorm<Bits>> const* 
 
 } // simd
 } // MATH_NAMESPACE
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 #endif // VSNRAY_MATH_SIMD_GATHER_H
