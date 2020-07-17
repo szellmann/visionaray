@@ -15,9 +15,7 @@ Getting Visionaray
 The Visionaray git repository can be cloned using the following commands:
 
 ```Shell
-git clone https://github.com/szellmann/visionaray.git
-cd visionaray
-git submodule update --init --recursive
+git clone --recursive https://github.com/szellmann/visionaray.git
 ```
 
 Build requirements
