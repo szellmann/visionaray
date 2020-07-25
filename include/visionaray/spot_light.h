@@ -8,7 +8,6 @@
 
 #include "detail/macros.h"
 #include "math/vector.h"
-#include "array.h"
 #include "light_sample.h"
 
 namespace visionaray
