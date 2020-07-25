@@ -19,8 +19,6 @@ include(VisionarayAddTarget)
 include(VisionarayUseFramework)
 include(VisionarayUsePackage)
 
-set(CMAKE_MACOSX_RPATH 1)
-
 
 #--------------------------------------------------------------------------------------------------
 # CMake policies to control backward compatible behavior
