@@ -7,8 +7,6 @@ Visionaray
 
 A C++ based, cross platform ray tracing library
 
-> **Note that the current version of Visionaray is an early preview. At this stage, the framework, including the API, are likely to undergo frequent changes.**
-
 Getting Visionaray
 ------------------
 
