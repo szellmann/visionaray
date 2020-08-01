@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <cstddef>
+#include <type_traits>
 
 #include "../array.h"
 
