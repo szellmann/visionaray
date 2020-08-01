@@ -4,6 +4,7 @@
 #include <common/config.h>
 
 #include <cassert>
+#include <cstdint>
 
 #if VSNRAY_COMMON_HAVE_3DCONNEXIONCLIENT
 #include <3DConnexionClient/ConnexionClient.h>
