@@ -6,6 +6,7 @@
 #ifndef VSNRAY_KERNELS_H
 #define VSNRAY_KERNELS_H 1
 
+#include <cstddef>
 #include <iterator>
 #include <limits>
 
