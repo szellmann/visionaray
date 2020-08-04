@@ -8,6 +8,7 @@
 
 #include "../input/keyboard.h"
 #include "../input/mouse.h"
+#include "../export.h"
 #include "camera_manipulator.h"
 
 
@@ -21,16 +22,16 @@ class zoom_manipulator : public camera_manipulator
 {
 public:
 
-    zoom_manipulator(
+    VSNRAY_COMMON_EXPORT zoom_manipulator(
             pinhole_camera& cam,
             mouse::buttons buttons,
             keyboard::key_modifiers modifiers = keyboard::NoKey
             );
-   ~zoom_manipulator();
+    VSNRAY_COMMON_EXPORT ~zoom_manipulator();
 
-    void handle_mouse_down(mouse_event const& event);
-    void handle_mouse_up(mouse_event const& event);
-    void handle_mouse_move(mouse_event const& event);
+    VSNRAY_COMMON_EXPORT void handle_mouse_down(mouse_event const& event);
+    VSNRAY_COMMON_EXPORT void handle_mouse_up(mouse_event const& event);
+    VSNRAY_COMMON_EXPORT void handle_mouse_move(mouse_event const& event);
 
 private:
 

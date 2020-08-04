@@ -38,7 +38,7 @@ public:
 
 protected:
 
-    virtual void on_idle();
+    VSNRAY_COMMON_EXPORT virtual void on_idle();
 
 private:
 

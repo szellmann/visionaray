@@ -84,17 +84,17 @@ public:
 
 protected:
 
-    virtual void on_close();
-    virtual void on_display();
-    virtual void on_idle();
-    virtual void on_key_press(key_event const& event);
-    virtual void on_key_release(key_event const& event);
-    virtual void on_mouse_move(mouse_event const& event);
-    virtual void on_mouse_down(mouse_event const& event);
-    virtual void on_mouse_up(mouse_event const& event);
-    virtual void on_space_mouse_move(space_mouse_event const& event);
-    virtual void on_space_mouse_button_press(space_mouse_event const& event);
-    virtual void on_resize(int w, int h);
+    VSNRAY_COMMON_EXPORT virtual void on_close();
+    VSNRAY_COMMON_EXPORT virtual void on_display();
+    VSNRAY_COMMON_EXPORT virtual void on_idle();
+    VSNRAY_COMMON_EXPORT virtual void on_key_press(key_event const& event);
+    VSNRAY_COMMON_EXPORT virtual void on_key_release(key_event const& event);
+    VSNRAY_COMMON_EXPORT virtual void on_mouse_move(mouse_event const& event);
+    VSNRAY_COMMON_EXPORT virtual void on_mouse_down(mouse_event const& event);
+    VSNRAY_COMMON_EXPORT virtual void on_mouse_up(mouse_event const& event);
+    VSNRAY_COMMON_EXPORT virtual void on_space_mouse_move(space_mouse_event const& event);
+    VSNRAY_COMMON_EXPORT virtual void on_space_mouse_button_press(space_mouse_event const& event);
+    VSNRAY_COMMON_EXPORT virtual void on_resize(int w, int h);
 
     void imgui_create_font_texture_opengl2();
     void imgui_destroy_font_texture_opengl2();
