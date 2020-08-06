@@ -283,7 +283,7 @@ if (VSNRAY_ENABLE_QT5)
     set(COMMON_SOURCES ${COMMON_SOURCES} viewer_qt.cpp)
 endif()
 
-if (VSNRAY_ENABLE_SDL2)
+if (VSNRAY_ENABLE_SDL2 AND SDL2_FOUND)
     set(COMMON_HEADERS ${COMMON_HEADERS} viewer_sdl2.h)
     set(COMMON_SOURCES ${COMMON_SOURCES} viewer_sdl2.cpp)
 endif()
