@@ -24,7 +24,7 @@ Build requirements
     tested with clang-900.0.39.2 on Mac OS X 10.13,
     tested with Microsoft Visual Studio 2015 VC14 for x64)
 
-- [CMake][1] version 2.8.11 or newer
+- [CMake][1] version 3.1.3 or newer
 - [OpenGL][12]
 - [GLEW][3]
 - [NVIDIA CUDA Toolkit][4] version 7.0 or newer (optional)
