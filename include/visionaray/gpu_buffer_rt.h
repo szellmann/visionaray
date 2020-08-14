@@ -8,6 +8,8 @@
 
 #include <thrust/device_vector.h>
 
+#include "math/forward.h"
+#include "math/vector.h"
 #include "pixel_traits.h"
 #include "render_target.h"
 
