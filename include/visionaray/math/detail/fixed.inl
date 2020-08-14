@@ -2,7 +2,6 @@
 // See the LICENSE file for details.
 
 #include <cmath>
-#include <type_traits>
 
 namespace MATH_NAMESPACE
 {
