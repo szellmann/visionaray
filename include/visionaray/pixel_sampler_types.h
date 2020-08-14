@@ -6,6 +6,8 @@
 #ifndef VSNRAY_PIXEL_SAMPLER_TYPES_H
 #define VSNRAY_PIXEL_SAMPLER_TYPES_H 1
 
+#include <cstddef>
+
 namespace visionaray
 {
 
