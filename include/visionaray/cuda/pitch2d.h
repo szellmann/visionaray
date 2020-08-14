@@ -6,6 +6,8 @@
 #ifndef VSNRAY_CUDA_PITCH2D_H
 #define VSNRAY_CUDA_PITCH2D_H 1
 
+#include <cstddef>
+
 #include <cuda_runtime_api.h>
 
 #include <visionaray/detail/macros.h>
