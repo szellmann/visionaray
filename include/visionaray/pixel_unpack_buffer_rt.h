@@ -8,6 +8,8 @@
 
 #include <memory>
 
+#include "math/forward.h"
+#include "math/vector.h"
 #include "detail/macros.h"
 #include "pixel_traits.h"
 #include "render_target.h"
