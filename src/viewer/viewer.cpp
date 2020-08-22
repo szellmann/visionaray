@@ -2542,10 +2542,35 @@ void renderer::on_key_press(key_event const& event)
         if (rt.mode() == host_device_rt::CPU)
         {
             rt.mode() = host_device_rt::GPU;
+
+            if (device_bvhs.empty())
+            {
+                // TODO: that'll currently not happen, but would be
+                // helpful to defer the copy to not run oom although
+                // the device is not even used
+                copy_bvhs(
+                    device_bvhs,
+                    device_top_level_bvh,
+                    host_bvhs,
+                    host_top_level_bvh,
+                    HostToDevice
+                    );
+            }
         }
         else
         {
             rt.mode() = host_device_rt::CPU;
+
+            /*if (host_bvhs.empty())
+            {
+                copy_bvhs(
+                    host_bvhs,
+                    host_top_level_bvh,
+                    device_bvhs,
+                    device_top_level_bvh,
+                    DeviceToHost
+                    );
+            }*/
         }
         counter.reset();
         clear_frame();
