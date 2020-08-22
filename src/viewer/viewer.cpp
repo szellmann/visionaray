@@ -1529,15 +1529,15 @@ void renderer::copy_bvhs(
         else if (ck == renderer::HostToDevice)
         {
             cudaMemcpy(
-                    thrust::raw_pointer_cast(dest_top_level_bvh.nodes().data()),
-                    source_top_level_bvh.nodes().data(),
+                    (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
+                    detail::get_pointer(source_top_level_bvh.nodes()),
                     sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
                     cudaMemcpyHostToDevice
                     );
 
             cudaMemcpy(
-                    thrust::raw_pointer_cast(dest_top_level_bvh.indices().data()),
-                    source_top_level_bvh.indices().data(),
+                    (void*)detail::get_pointer(dest_top_level_bvh.indices()),
+                    detail::get_pointer(source_top_level_bvh.indices()),
                     sizeof(unsigned) * source_top_level_bvh.num_indices(),
                     cudaMemcpyHostToDevice
                     );
@@ -1545,15 +1545,15 @@ void renderer::copy_bvhs(
         else if (ck == renderer::DeviceToHost)
         {
             cudaMemcpy(
-                    thrust::raw_pointer_cast(dest_top_level_bvh.nodes().data()),
-                    source_top_level_bvh.nodes().data(),
+                    (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
+                    detail::get_pointer(source_top_level_bvh.nodes()),
                     sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
                     cudaMemcpyDeviceToHost
                     );
 
             cudaMemcpy(
-                    thrust::raw_pointer_cast(dest_top_level_bvh.indices().data()),
-                    source_top_level_bvh.indices().data(),
+                    (void*)detail::get_pointer(dest_top_level_bvh.indices()),
+                    detail::get_pointer(source_top_level_bvh.indices()),
                     sizeof(unsigned) * source_top_level_bvh.num_indices(),
                     cudaMemcpyDeviceToHost
                     );
@@ -1561,15 +1561,15 @@ void renderer::copy_bvhs(
         else if (ck == renderer::DeviceToDevice)
         {
             cudaMemcpy(
-                    thrust::raw_pointer_cast(dest_top_level_bvh.nodes().data()),
-                    source_top_level_bvh.nodes().data(),
+                    (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
+                    detail::get_pointer(source_top_level_bvh.nodes()),
                     sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
                     cudaMemcpyDeviceToDevice
                     );
 
             cudaMemcpy(
-                    thrust::raw_pointer_cast(dest_top_level_bvh.indices().data()),
-                    source_top_level_bvh.indices().data(),
+                    (void*)detail::get_pointer(dest_top_level_bvh.indices()),
+                    detail::get_pointer(source_top_level_bvh.indices()),
                     sizeof(unsigned) * source_top_level_bvh.num_indices(),
                     cudaMemcpyDeviceToDevice
                     );
