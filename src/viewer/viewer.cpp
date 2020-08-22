@@ -514,6 +514,14 @@ struct renderer : viewer_type
 
     void build_scene();
 
+    template <typename DestInstances, typename DestTopLevel, typename SourceInstances, typename SourceTopLevel>
+    void copy_bvhs(
+        DestInstances&   dest_instance_bvhs,
+        DestTopLevel&    dest_top_level_bvh,
+        SourceInstances& source_instance_bvhs,
+        SourceTopLevel&  source_top_level_bvh
+        );
+
 protected:
 
     void on_close();
@@ -1455,6 +1463,69 @@ void renderer::build_scene()
     }
 
 //  std::cout << t.elapsed() << std::endl;
+}
+
+template <typename DestInstances, typename DestTopLevel, typename SourceInstances, typename SourceTopLevel>
+void renderer::copy_bvhs(
+        DestInstances&   dest_instance_bvhs,
+        DestTopLevel&    dest_top_level_bvh,
+        SourceInstances& source_instance_bvhs,
+        SourceTopLevel&  source_top_level_bvh
+        )
+{
+    // Build up lower level bvhs first
+    dest_instance_bvhs.resize(source_instance_bvhs.size());
+    for (size_t i = 0; i < source_instance_bvhs.size(); ++i)
+    {
+        dest_instance_bvhs[i] = renderer::device_bvh_type(source_instance_bvhs[i]);
+    }
+
+    // Make a deep copy of the top level bvh
+    if (source_top_level_bvh.num_primitives() > 0)
+    {
+        dest_top_level_bvh.primitives().resize(source_top_level_bvh.num_primitives());
+        dest_top_level_bvh.nodes().resize(source_top_level_bvh.num_nodes());
+        dest_top_level_bvh.indices().resize(source_top_level_bvh.num_indices());
+
+        // Linear search for each inst: This may obviously become fairly inefficient..
+        for (size_t i = 0; i < source_top_level_bvh.num_primitives(); ++i)
+        {
+            size_t index = size_t(-1);
+
+            for (size_t j = 0; j < source_instance_bvhs.size(); ++j)
+            {
+                if (source_instance_bvhs[j].ref() == source_top_level_bvh.primitive(i).get_ref())
+                {
+                    index = j;
+                    break;
+                }
+            }
+
+            assert(index < size_t(-1));
+
+            int indirect_index = source_top_level_bvh.indices()[i];
+
+            dest_top_level_bvh.primitives()[indirect_index] = {
+                    dest_instance_bvhs[index].ref(),
+                    inverse(source_top_level_bvh.primitive(i).transform_inv())
+                    };
+        }
+
+        // Copy nodes and indices
+        cudaMemcpy(
+                thrust::raw_pointer_cast(dest_top_level_bvh.nodes().data()),
+                source_top_level_bvh.nodes().data(),
+                sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
+                cudaMemcpyHostToDevice
+                );
+
+        cudaMemcpy(
+                thrust::raw_pointer_cast(dest_top_level_bvh.indices().data()),
+                source_top_level_bvh.indices().data(),
+                sizeof(unsigned) * source_top_level_bvh.num_indices(),
+                cudaMemcpyHostToDevice
+                );
+    }
 }
 
 
@@ -2725,59 +2796,12 @@ int main(int argc, char** argv)
     {
         if (rend.build_strategy != renderer::LBVH)
         {
-            // Build up lower level bvhs first
-            rend.device_bvhs.resize(rend.host_bvhs.size());
-            for (size_t i = 0; i < rend.host_bvhs.size(); ++i)
-            {
-                rend.device_bvhs[i] = renderer::device_bvh_type(rend.host_bvhs[i]);
-            }
-        }
-
-        // Make a deep copy of the top level bvh
-        if (rend.host_top_level_bvh.num_primitives() > 0)
-        {
-            rend.device_top_level_bvh.primitives().resize(rend.host_top_level_bvh.num_primitives());
-            rend.device_top_level_bvh.nodes().resize(rend.host_top_level_bvh.num_nodes());
-            rend.device_top_level_bvh.indices().resize(rend.host_top_level_bvh.num_indices());
-
-            // Linear search for each inst: This may obviously become fairly inefficient..
-            for (size_t i = 0; i < rend.host_top_level_bvh.num_primitives(); ++i)
-            {
-                size_t index = size_t(-1);
-
-                for (size_t j = 0; j < rend.host_bvhs.size(); ++j)
-                {
-                    if (rend.host_bvhs[j].ref() == rend.host_top_level_bvh.primitive(i).get_ref())
-                    {
-                        index = j;
-                        break;
-                    }
-                }
-
-                assert(index < size_t(-1));
-
-                int indirect_index = rend.host_top_level_bvh.indices()[i];
-
-                rend.device_top_level_bvh.primitives()[indirect_index] = {
-                        rend.device_bvhs[index].ref(),
-                        inverse(rend.host_top_level_bvh.primitive(i).transform_inv())
-                        };
-            }
-
-            // Copy nodes and indices
-            cudaMemcpy(
-                    thrust::raw_pointer_cast(rend.device_top_level_bvh.nodes().data()),
-                    rend.host_top_level_bvh.nodes().data(),
-                    sizeof(bvh_node) * rend.host_top_level_bvh.num_nodes(),
-                    cudaMemcpyHostToDevice
-                    );
-
-            cudaMemcpy(
-                    thrust::raw_pointer_cast(rend.device_top_level_bvh.indices().data()),
-                    rend.host_top_level_bvh.indices().data(),
-                    sizeof(unsigned) * rend.host_top_level_bvh.num_indices(),
-                    cudaMemcpyHostToDevice
-                    );
+            rend.copy_bvhs(
+                rend.device_bvhs,
+                rend.device_top_level_bvh,
+                rend.host_bvhs,
+                rend.host_top_level_bvh
+                );
         }
 
         rend.device_geometric_normals = rend.mod.geometric_normals;
