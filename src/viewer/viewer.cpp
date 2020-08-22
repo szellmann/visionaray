@@ -514,12 +514,21 @@ struct renderer : viewer_type
 
     void build_scene();
 
+    enum copy_kind
+    {
+        HostToHost,
+        HostToDevice,
+        DeviceToHost,
+        DeviceToDevice,
+    };
+
     template <typename DestInstances, typename DestTopLevel, typename SourceInstances, typename SourceTopLevel>
     void copy_bvhs(
         DestInstances&         dest_instance_bvhs,
         DestTopLevel&          dest_top_level_bvh,
         SourceInstances const& source_instance_bvhs,
-        SourceTopLevel const&  source_top_level_bvh
+        SourceTopLevel const&  source_top_level_bvh,
+        copy_kind              ck
         );
 
 protected:
@@ -1470,7 +1479,8 @@ void renderer::copy_bvhs(
         DestInstances&         dest_instance_bvhs,
         DestTopLevel&          dest_top_level_bvh,
         SourceInstances const& source_instance_bvhs,
-        SourceTopLevel const&  source_top_level_bvh
+        SourceTopLevel const&  source_top_level_bvh,
+        renderer::copy_kind    ck
         )
 {
     // Build up lower level bvhs first
@@ -1512,19 +1522,64 @@ void renderer::copy_bvhs(
         }
 
         // Copy nodes and indices
-        cudaMemcpy(
-                thrust::raw_pointer_cast(dest_top_level_bvh.nodes().data()),
-                source_top_level_bvh.nodes().data(),
-                sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
-                cudaMemcpyHostToDevice
-                );
+        if (ck == renderer::HostToHost)
+        {
+        }
+#ifdef __CUDACC__
+        else if (ck == renderer::HostToDevice)
+        {
+            cudaMemcpy(
+                    thrust::raw_pointer_cast(dest_top_level_bvh.nodes().data()),
+                    source_top_level_bvh.nodes().data(),
+                    sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
+                    cudaMemcpyHostToDevice
+                    );
 
-        cudaMemcpy(
-                thrust::raw_pointer_cast(dest_top_level_bvh.indices().data()),
-                source_top_level_bvh.indices().data(),
-                sizeof(unsigned) * source_top_level_bvh.num_indices(),
-                cudaMemcpyHostToDevice
-                );
+            cudaMemcpy(
+                    thrust::raw_pointer_cast(dest_top_level_bvh.indices().data()),
+                    source_top_level_bvh.indices().data(),
+                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
+                    cudaMemcpyHostToDevice
+                    );
+        }
+        else if (ck == renderer::DeviceToHost)
+        {
+            cudaMemcpy(
+                    thrust::raw_pointer_cast(dest_top_level_bvh.nodes().data()),
+                    source_top_level_bvh.nodes().data(),
+                    sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
+                    cudaMemcpyDeviceToHost
+                    );
+
+            cudaMemcpy(
+                    thrust::raw_pointer_cast(dest_top_level_bvh.indices().data()),
+                    source_top_level_bvh.indices().data(),
+                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
+                    cudaMemcpyDeviceToHost
+                    );
+        }
+        else if (ck == renderer::DeviceToDevice)
+        {
+            cudaMemcpy(
+                    thrust::raw_pointer_cast(dest_top_level_bvh.nodes().data()),
+                    source_top_level_bvh.nodes().data(),
+                    sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
+                    cudaMemcpyDeviceToDevice
+                    );
+
+            cudaMemcpy(
+                    thrust::raw_pointer_cast(dest_top_level_bvh.indices().data()),
+                    source_top_level_bvh.indices().data(),
+                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
+                    cudaMemcpyDeviceToDevice
+                    );
+        }
+#else
+        else
+        {
+            assert(0);
+        }
+#endif
     }
 }
 
@@ -2800,7 +2855,8 @@ int main(int argc, char** argv)
                 rend.device_bvhs,
                 rend.device_top_level_bvh,
                 rend.host_bvhs,
-                rend.host_top_level_bvh
+                rend.host_top_level_bvh,
+                renderer::HostToDevice
                 );
         }
 
