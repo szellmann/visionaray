@@ -516,10 +516,10 @@ struct renderer : viewer_type
 
     template <typename DestInstances, typename DestTopLevel, typename SourceInstances, typename SourceTopLevel>
     void copy_bvhs(
-        DestInstances&   dest_instance_bvhs,
-        DestTopLevel&    dest_top_level_bvh,
-        SourceInstances& source_instance_bvhs,
-        SourceTopLevel&  source_top_level_bvh
+        DestInstances&         dest_instance_bvhs,
+        DestTopLevel&          dest_top_level_bvh,
+        SourceInstances const& source_instance_bvhs,
+        SourceTopLevel const&  source_top_level_bvh
         );
 
 protected:
@@ -1467,10 +1467,10 @@ void renderer::build_scene()
 
 template <typename DestInstances, typename DestTopLevel, typename SourceInstances, typename SourceTopLevel>
 void renderer::copy_bvhs(
-        DestInstances&   dest_instance_bvhs,
-        DestTopLevel&    dest_top_level_bvh,
-        SourceInstances& source_instance_bvhs,
-        SourceTopLevel&  source_top_level_bvh
+        DestInstances&         dest_instance_bvhs,
+        DestTopLevel&          dest_top_level_bvh,
+        SourceInstances const& source_instance_bvhs,
+        SourceTopLevel const&  source_top_level_bvh
         )
 {
     // Build up lower level bvhs first
