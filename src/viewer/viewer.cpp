@@ -2561,7 +2561,7 @@ void renderer::on_key_press(key_event const& event)
         {
             rt.mode() = host_device_rt::CPU;
 
-            /*if (host_bvhs.empty())
+            if (host_bvhs.empty())
             {
                 copy_bvhs(
                     host_bvhs,
@@ -2570,7 +2570,7 @@ void renderer::on_key_press(key_event const& event)
                     device_top_level_bvh,
                     DeviceToHost
                     );
-            }*/
+            }
         }
         counter.reset();
         clear_frame();
