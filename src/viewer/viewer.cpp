@@ -1477,7 +1477,7 @@ void renderer::copy_bvhs(
     dest_instance_bvhs.resize(source_instance_bvhs.size());
     for (size_t i = 0; i < source_instance_bvhs.size(); ++i)
     {
-        dest_instance_bvhs[i] = renderer::device_bvh_type(source_instance_bvhs[i]);
+        dest_instance_bvhs[i] = typename DestInstances::value_type(source_instance_bvhs[i]);
     }
 
     // Make a deep copy of the top level bvh
