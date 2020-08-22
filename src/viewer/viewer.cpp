@@ -2874,7 +2874,7 @@ int main(int argc, char** argv)
     // Copy data to GPU
     try
     {
-        if (rend.build_strategy != renderer::LBVH)
+        if (rend.rt.mode() == host_device_rt::GPU && rend.build_strategy != renderer::LBVH)
         {
             rend.copy_bvhs(
                 rend.device_bvhs,
@@ -2885,6 +2885,8 @@ int main(int argc, char** argv)
                 );
         }
 
+        // TODO: similar to BVH uploads, when we're not yet rendering on
+        // the device, we could defer this, too!
         rend.device_geometric_normals = rend.mod.geometric_normals;
         rend.device_shading_normals = rend.mod.shading_normals;
         rend.device_tex_coords = rend.mod.tex_coords;
