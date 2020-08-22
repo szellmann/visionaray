@@ -2545,9 +2545,6 @@ void renderer::on_key_press(key_event const& event)
 
             if (device_bvhs.empty())
             {
-                // TODO: that'll currently not happen, but would be
-                // helpful to defer the copy to not run oom although
-                // the device is not even used
                 copy_bvhs(
                     device_bvhs,
                     device_top_level_bvh,
