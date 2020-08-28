@@ -16,6 +16,12 @@
 #include "../traversal_result.h"
 #include "hit_record.h"
 
+#ifdef __CUDA_ARCH__
+#define VSNRAY_FULL_STACK_TRAVERSAL__ 0
+#else
+#define VSNRAY_FULL_STACK_TRAVERSAL__ 1
+#endif
+
 namespace visionaray
 {
 
@@ -47,7 +53,7 @@ inline auto intersect(
             decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
             >, Traversal, MultiHitMax>::type
 {
-#if 1
+#if VSNRAY_FULL_STACK_TRAVERSAL__
     using namespace detail;
     using HR = hit_record_bvh<R, decltype(isect(ray, std::declval<typename BVH::primitive_type>()))>;
 
@@ -402,3 +408,5 @@ inline auto intersect(
 
 
 } // visionaray
+
+#undef VSNRAY_FULL_STACK_TRAVERSAL__
