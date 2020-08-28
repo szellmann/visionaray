@@ -345,6 +345,6 @@ VSNRAY_CONSTEXPR__ T const&& get(visionaray::array<T, N> const&& a)
 
 } // thrust
 
-#undef VSNRAY_CONSTEXPR__
-
 #endif
+
+#undef VSNRAY_CONSTEXPR__
