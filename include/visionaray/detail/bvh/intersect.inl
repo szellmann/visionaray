@@ -47,7 +47,7 @@ inline auto intersect(
             decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
             >, Traversal, MultiHitMax>::type
 {
-
+#if 1
     using namespace detail;
     using HR = hit_record_bvh<R, decltype(isect(ray, std::declval<typename BVH::primitive_type>()))>;
 
@@ -128,7 +128,179 @@ next:
     }
 
     return result;
+#else
+    using namespace detail;
+    using HR = hit_record_bvh<R, decltype(isect(ray, std::declval<typename BVH::primitive_type>()))>;
 
+    using RT = typename detail::traversal_result<HR, Traversal, MultiHitMax>::type;
+
+    RT result;
+
+    auto inv_dir = T(1.0) / ray.dir;
+
+    bvh_node node = b.node(0);
+
+    uint64_t level = 0x8000000000000000ULL;
+
+    uint64_t pop_level = -1;
+
+    uint64_t trail = 0;
+
+    unsigned st1 = -1;
+    unsigned st2 = -1;
+    unsigned st3 = -1;
+    unsigned st4 = -1;
+    unsigned st5 = -1;
+
+    auto push_st = [&](unsigned n)
+    {
+        st1 = st2;
+        st2 = st3;
+        st3 = st4;
+        st4 = st5;
+        st5 = n;
+    };
+
+    auto pop_st = [&]()
+    {
+        unsigned res = st5;
+        st5 = st4;
+        st4 = st3;
+        st3 = st2;
+        st2 = st1;
+        st1 = unsigned(-1);
+        return res;
+    };
+
+    auto empty_st = [&st5]()
+    {
+        return st5 == unsigned(-1);
+    };
+
+    auto push = [&](unsigned n)
+    {
+        return push_st(n);
+    };
+
+    auto pop = [&]()
+        -> bool
+    {
+        trail &= -level;
+        trail += level;
+
+        uint64_t temp = trail >> 1;
+        level = ((temp - 1) ^ temp) + 1;
+
+        if (trail & 0x8000000000000000ULL)
+        {
+            return true;
+        }
+
+        pop_level = level;
+
+        if (empty_st())
+        {
+            node = b.node(0);
+            level = 0x8000000000000000ULL;
+        }
+        else
+        {
+            node = b.node(pop_st());
+        }
+
+        return false;
+    };
+
+    while (true)
+    {
+        while (!is_leaf(node))
+        {
+            auto children = &b.node(node.get_child(0));
+
+            auto hr1 = isect(ray, children[0].get_bounds(), inv_dir);
+            auto hr2 = isect(ray, children[1].get_bounds(), inv_dir);
+
+            auto b1 = any( is_closer(hr1, result, max_t) );
+            auto b2 = any( is_closer(hr2, result, max_t) );
+
+            if (b1 && b2)
+            {
+                unsigned near_addr = all( hr1.tnear < hr2.tnear ) ? 0 : 1;
+                unsigned far_addr = !near_addr;
+                level >>= 1;
+                if ((trail & level) != 0)
+                {
+                    node = b.node(node.get_child(far_addr));
+                }
+                else
+                {
+                    push(node.get_child(far_addr));
+                    node = b.node(node.get_child(near_addr));
+                }
+            }
+            else if (b1 || b2)
+            {
+                level >>= 1;
+                if (level != pop_level)
+                {
+                    trail |= level;
+                    node = b1 ? b.node(node.get_child(0)) : b.node(node.get_child(1));
+                }
+                else
+                {
+                    bool end_traversal = pop();
+                    if (end_traversal)
+                    {
+                        return result;
+                    }
+                }
+            }
+            else
+            {
+                bool end_traversal = pop();
+                if (end_traversal)
+                {
+                    return result;
+                }
+            }
+        }
+
+
+        // while node contains untested primitives
+        //     perform a ray-primitive intersection test
+
+        for (auto i = node.get_indices().first; i != node.get_indices().last; ++i)
+        {
+            auto prim = b.primitive(i);
+
+            auto hr = HR(isect(ray, prim), i);
+            auto closer = update_cond(hr, result, max_t);
+
+#ifndef __CUDA_ARCH__
+            if (!any(closer))
+            {
+                continue;
+            }
+#endif
+
+            update_if(result, hr, closer);
+
+            exit_traversal<Traversal> early_exit;
+            if (early_exit.check(result))
+            {
+                return result;
+            }
+        }
+
+        bool end_traversal = pop();
+        if (end_traversal)
+        {
+            return result;
+        }
+    }
+
+    return result;
+#endif
 }
 
 
