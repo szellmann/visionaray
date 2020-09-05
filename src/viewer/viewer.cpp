@@ -2702,6 +2702,16 @@ void renderer::on_key_press(key_event const& event)
 
     case keyboard::Space:
         paused = !paused;
+
+        if (paused)
+        {
+            std::cout << "Path tracer convergence paused\n";
+        }
+        else
+        {
+            std::cout << "Path tracer convergence resumed\n";
+        }
+
         break;
 
     default:
