@@ -60,6 +60,7 @@
 #include <visionaray/detail/tbb_sched.h>
 #endif
 
+#include <common/input/keyboard.h>
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
@@ -507,6 +508,9 @@ struct renderer : viewer_type
     double                                      last_frame_time = 0.0;
     gl::bvh_outline_renderer                    outlines;
     gl::debug_callback                          gl_debug_callback;
+
+    // Control if new path tracer convergence frames are accumulated
+    bool                                        paused = false;
 
     bool                                        render_async  = false;
     std::future<void>                           render_future;
@@ -2140,6 +2144,11 @@ void renderer::render_hud()
 
 void renderer::render_impl()
 {
+    if (paused)
+    {
+        return;
+    }
+
     if (use_headlight)
     {
         point_light<float> headlight;
@@ -2689,6 +2698,10 @@ void renderer::on_key_press(key_event const& event)
 
             load_camera(filename);
         }
+        break;
+
+    case keyboard::Space:
+        paused = !paused;
         break;
 
     default:
