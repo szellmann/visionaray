@@ -26,8 +26,12 @@ Options:
    -colorspace=<ARG>      Color space:
       =rgb                - RGB color space for display
       =srgb               - sRGB color space for display
+   -device=<ARG>          Rendering device:
+      =cpu                - Rendering on the CPU
+      =gpu                - Rendering on the GPU
    -dof=<ARG>             Activate depth of field
    -envmap=<ARG>          HDR environment map
+   -frames=<ARG>          Number of path tracer convergence frames
    -fullscreen            Full screen window
    -headlight=<ARG>       Activate headlight
    -height=<ARG>          Window height
