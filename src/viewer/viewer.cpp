@@ -220,6 +220,14 @@ struct renderer : viewer_type
             cl::init(this->bounces)
             ) );
 
+        add_cmdline_option( cl::makeOption<unsigned&>(
+            cl::Parser<>(),
+            "frames",
+            cl::Desc("Number of path tracer convergence frames"),
+            cl::ArgRequired,
+            cl::init(this->frames)
+            ) );
+
         add_cmdline_option( cl::makeOption<vec3&, cl::ScalarType>(
             [&](StringRef name, StringRef /*arg*/, vec3& value)
             {
@@ -511,6 +519,9 @@ struct renderer : viewer_type
 
     // Control if new path tracer convergence frames are accumulated
     bool                                        paused = false;
+
+    // Number of path tracer convergece frames to be rendered (default: inf)
+    unsigned                                    frames = unsigned(-1);
 
     bool                                        render_async  = false;
     std::future<void>                           render_future;
@@ -2409,6 +2420,11 @@ void renderer::render_impl()
     if (use_headlight)
     {
         point_lights.erase(point_lights.end() - 1);
+    }
+
+    if (frames != unsigned(-1) && frame_num == frames)
+    {
+        paused = true;
     }
 }
 
