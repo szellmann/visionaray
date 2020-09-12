@@ -64,5 +64,5 @@ The viewer supports the following mouse interaction modes and keyboard shortcuts
 * **Key-v**: **Load** the file "visionaray-camera.txt" from the current working directory, if it exists, and adjust the **camera** accordingly.
 * **Key-F5**: Toggle **full screen** mode.
 * **Key-ESC**: Exit **full screen** mode.
-* **Key-SPACE**: Toggle path tracing convergence frame rendering paused or active.
+* **Key-Space**: Toggle path tracing convergence frame rendering paused or active.
 * **Key-q**: Quit viewer application.
