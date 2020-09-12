@@ -150,9 +150,10 @@ If you use Visionaray or some of its code for your scientific project, it would 
 @inproceedings{zellmann:visionaray,
 author = {Zellmann, Stefan and Wickeroth, Daniel and Lang, Ulrich},
 title = {Visionaray: A Cross-Platform Ray Tracing Template Library},
-booktitle = {Proceedings of the 10th Workshop on Software Engineering and Architectures for Realtime Interactive Systems (IEEE SEARIS 2017)},
+booktitle = {2017 IEEE 10th Workshop on Software Engineering and Architectures for Realtime Interactive Systems (SEARIS)},
 year = {2017},
-publisher = {IEEE}
+publisher = {IEEE},
+pages = {1-8},
 }
 ```
 
