@@ -1,7 +1,7 @@
 ## [Unreleased]
 ### Added
 - Experimental short stack BVH traversal with restart trail based on
-Laine 2010 HPG paper.
+Laine 2010 HPG paper (only on GPU).
 - Phantom ray-hair intersector example demonstrating how to extend
 the API with a custom curve primitive type.
 - CPU-parallel BVH refitter. Refitting is used in juggler example.
