@@ -1,5 +1,7 @@
 ## [Unreleased]
 ### Added
+- Set number of convergence frames rendered in viewer, pause and
+resume using Key-Space.
 - Experimental short stack BVH traversal with restart trail based on
 Laine 2010 HPG paper (only on GPU).
 - Phantom ray-hair intersector example demonstrating how to extend
