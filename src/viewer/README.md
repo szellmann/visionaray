@@ -35,6 +35,8 @@ Options:
    -fullscreen            Full screen window
    -headlight=<ARG>       Activate headlight
    -height=<ARG>          Window height
+   -screenshotbasename=<ARG>
+                          Base name (w/o suffix!) for screenshot files
    -ssaa=<ARG>            Supersampling anti-aliasing factor:
       =1                  - 1x supersampling
       =2                  - 2x supersampling

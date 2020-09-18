@@ -156,6 +156,14 @@ struct renderer : viewer_type
 
         add_cmdline_option( cl::makeOption<std::string&>(
             cl::Parser<>(),
+            "screenshotbasename",
+            cl::Desc("Base name (w/o suffix!) for screenshot files"),
+            cl::ArgRequired,
+            cl::init(this->screenshot_file_base)
+            ) );
+
+        add_cmdline_option( cl::makeOption<std::string&>(
+            cl::Parser<>(),
             "envmap",
             cl::Desc("HDR environment map"),
             cl::ArgRequired,
@@ -313,6 +321,14 @@ struct renderer : viewer_type
                     initial_camera = camera;
                 }
 
+                // Screenshot file base name
+                std::string screenshotbasename = screenshot_file_base;
+                err = ini.get_string("screenshotbasename", screenshotbasename, true /*remove quotes*/);
+                if (err == inifile::Ok)
+                {
+                    screenshot_file_base = screenshotbasename;
+                }
+
                 // bounces
                 uint32_t bounces = this->bounces;
                 err = ini.get_uint32("bounces", bounces);
@@ -459,6 +475,7 @@ struct renderer : viewer_type
     std::set<std::string>                       filenames;
     std::string                                 initial_camera;
     std::string                                 current_cam;
+    std::string                                 screenshot_file_base = "screenshot";
 
     model                                       mod;
     vec3                                        ambient         = vec3(-1.0f);
@@ -1680,7 +1697,6 @@ void renderer::clear_frame()
 
 void renderer::screenshot()
 {
-    static const std::string screenshot_file_base = "screenshot";
 #if VSNRAY_COMMON_HAVE_PNG
     static const std::string screenshot_file_suffix = ".png";
     image::save_option opt1;
