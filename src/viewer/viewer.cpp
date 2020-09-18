@@ -2485,7 +2485,13 @@ void renderer::on_key_press(key_event const& event)
     static const std::string camera_file_base = "visionaray-camera";
     static const std::string camera_file_suffix = ".txt";
 
+#if VSNRAY_COMMON_HAVE_PNG
+    static const std::string screenshot_filename = "screenshot.png";
+    image::save_option opt1;
+#else
     static const std::string screenshot_filename = "screenshot.pnm";
+    image::save_option opt1({"binary", true});
+#endif
 
     switch (event.key())
     {
@@ -2650,7 +2656,6 @@ void renderer::on_key_press(key_event const& event)
                 reinterpret_cast<uint8_t const*>(flipped.data())
                 );
 
-            image::save_option opt1({"binary", true});
             if (img.save(screenshot_filename, {opt1}))
             {
                 std::cout << "Screenshot saved to file: " << screenshot_filename << '\n';
