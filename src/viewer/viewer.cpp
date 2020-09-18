@@ -560,6 +560,7 @@ private:
     void load_camera(std::string filename);
     void init_bvh_outlines();
     void clear_frame();
+    void screenshot();
     void render_hud();
     void render_impl();
 
@@ -1674,6 +1675,75 @@ void renderer::clear_frame()
 
 
 //-------------------------------------------------------------------------------------------------
+// Take a screenshot
+//
+
+void renderer::screenshot()
+{
+#if VSNRAY_COMMON_HAVE_PNG
+    static const std::string screenshot_filename = "screenshot.png";
+    image::save_option opt1;
+#else
+    static const std::string screenshot_filename = "screenshot.pnm";
+    image::save_option opt1({"binary", true});
+#endif
+
+    // Swizzle to RGB8 for compatibility with pnm image
+    std::vector<vector<3, unorm<8>>> rgb(rt.width() * rt.height());
+    swizzle(
+        rgb.data(),
+        PF_RGB8,
+        rt.color(),
+        PF_RGBA32F,
+        rt.width() * rt.height(),
+        TruncateAlpha
+        );
+
+    if (rt.color_space() == host_device_rt::SRGB)
+    {
+        for (int y = 0; y < rt.height(); ++y)
+        {
+            for (int x = 0; x < rt.width(); ++x)
+            {
+                auto& color = rgb[y * rt.width() + x];
+                color.x = powf(color.x, 1 / 2.2f);
+                color.y = powf(color.y, 1 / 2.2f);
+                color.z = powf(color.z, 1 / 2.2f);
+            }
+        }
+    }
+
+    // Flip so that origin is (top|left)
+    std::vector<vector<3, unorm<8>>> flipped(rt.width() * rt.height());
+
+    for (int y = 0; y < rt.height(); ++y)
+    {
+        for (int x = 0; x < rt.width(); ++x)
+        {
+            int yy = rt.height() - y - 1;
+            flipped[yy * rt.width() + x] = rgb[y * rt.width() + x];
+        }
+    }
+
+    image img(
+        rt.width(),
+        rt.height(),
+        PF_RGB8,
+        reinterpret_cast<uint8_t const*>(flipped.data())
+        );
+
+    if (img.save(screenshot_filename, {opt1}))
+    {
+        std::cout << "Screenshot saved to file: " << screenshot_filename << '\n';
+    }
+    else
+    {
+        std::cerr << "Error saving screenshot to file: " << screenshot_filename << '\n';
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // HUD
 //
 
@@ -2485,14 +2555,6 @@ void renderer::on_key_press(key_event const& event)
     static const std::string camera_file_base = "visionaray-camera";
     static const std::string camera_file_suffix = ".txt";
 
-#if VSNRAY_COMMON_HAVE_PNG
-    static const std::string screenshot_filename = "screenshot.png";
-    image::save_option opt1;
-#else
-    static const std::string screenshot_filename = "screenshot.pnm";
-    image::save_option opt1({"binary", true});
-#endif
-
     switch (event.key())
     {
     case '1':
@@ -2611,61 +2673,7 @@ void renderer::on_key_press(key_event const& event)
         break;
 
     case 'p':
-        {
-            // Swizzle to RGB8 for compatibility with pnm image
-            std::vector<vector<3, unorm<8>>> rgb(rt.width() * rt.height());
-            swizzle(
-                rgb.data(),
-                PF_RGB8,
-                rt.color(),
-                PF_RGBA32F,
-                rt.width() * rt.height(),
-                TruncateAlpha
-                );
-
-            if (rt.color_space() == host_device_rt::SRGB)
-            {
-                for (int y = 0; y < rt.height(); ++y)
-                {
-                    for (int x = 0; x < rt.width(); ++x)
-                    {
-                        auto& color = rgb[y * rt.width() + x];
-                        color.x = powf(color.x, 1 / 2.2f);
-                        color.y = powf(color.y, 1 / 2.2f);
-                        color.z = powf(color.z, 1 / 2.2f);
-                    }
-                }
-            }
-
-            // Flip so that origin is (top|left)
-            std::vector<vector<3, unorm<8>>> flipped(rt.width() * rt.height());
-
-            for (int y = 0; y < rt.height(); ++y)
-            {
-                for (int x = 0; x < rt.width(); ++x)
-                {
-                    int yy = rt.height() - y - 1;
-                    flipped[yy * rt.width() + x] = rgb[y * rt.width() + x];
-                }
-            }
-
-            image img(
-                rt.width(),
-                rt.height(),
-                PF_RGB8,
-                reinterpret_cast<uint8_t const*>(flipped.data())
-                );
-
-            if (img.save(screenshot_filename, {opt1}))
-            {
-                std::cout << "Screenshot saved to file: " << screenshot_filename << '\n';
-            }
-            else
-            {
-                std::cerr << "Error saving screenshot to file: " << screenshot_filename << '\n';
-            }
-
-        }
+        screenshot();
         break;
 
     case 's':
