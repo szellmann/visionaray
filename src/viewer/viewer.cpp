@@ -1680,11 +1680,12 @@ void renderer::clear_frame()
 
 void renderer::screenshot()
 {
+    static const std::string screenshot_file_base = "screenshot";
 #if VSNRAY_COMMON_HAVE_PNG
-    static const std::string screenshot_filename = "screenshot.png";
+    static const std::string screenshot_file_suffix = ".png";
     image::save_option opt1;
 #else
-    static const std::string screenshot_filename = "screenshot.pnm";
+    static const std::string screenshot_file_suffix = ".pnm";
     image::save_option opt1({"binary", true});
 #endif
 
@@ -1732,13 +1733,33 @@ void renderer::screenshot()
         reinterpret_cast<uint8_t const*>(flipped.data())
         );
 
-    if (img.save(screenshot_filename, {opt1}))
+    int inc = 0;
+    std::string inc_str = "";
+
+    std::string filename = screenshot_file_base + inc_str + screenshot_file_suffix;
+
+    while (boost::filesystem::exists(filename))
     {
-        std::cout << "Screenshot saved to file: " << screenshot_filename << '\n';
+        ++inc;
+        inc_str = std::to_string(inc);
+
+        while (inc_str.length() < 4)
+        {
+            inc_str = std::string("0") + inc_str;
+        }
+
+        inc_str = std::string("-") + inc_str;
+
+        filename = screenshot_file_base + inc_str + screenshot_file_suffix;
+    }
+
+    if (img.save(filename, {opt1}))
+    {
+        std::cout << "Screenshot saved to file: " << filename << '\n';
     }
     else
     {
-        std::cerr << "Error saving screenshot to file: " << screenshot_filename << '\n';
+        std::cerr << "Error saving screenshot to file: " << filename << '\n';
     }
 }
 
