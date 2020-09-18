@@ -2494,6 +2494,11 @@ void renderer::render_impl()
 
     if (frames != unsigned(-1) && frame_num == frames)
     {
+        if (!paused)
+        {
+            screenshot();
+        }
+
         paused = true;
     }
 }
