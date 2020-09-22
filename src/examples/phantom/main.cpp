@@ -32,6 +32,7 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 
+#include <common/image.h>
 #include <common/make_materials.h>
 #include <common/model.h>
 #include <common/obj_loader.h>
@@ -625,7 +626,7 @@ struct renderer : viewer_type
         }
     }
 
-    thin_lens_camera                              cam;
+    thin_lens_camera                            cam;
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
     tiled_sched<basic_ray<float>>               host_sched;
 
@@ -645,6 +646,7 @@ struct renderer : viewer_type
 protected:
 
     void load_camera(std::string filename);
+    void screenshot();
     void on_display();
     void on_key_press(visionaray::key_event const& event);
     void on_mouse_move(visionaray::mouse_event const& event);
@@ -666,6 +668,96 @@ void renderer::load_camera(std::string filename)
         frame_num = 0;
         host_rt.clear_color_buffer();
         std::cout << "Load camera from file: " << filename << '\n';
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Take a screenshot
+//
+
+void renderer::screenshot()
+{
+    std::string screenshot_file_base = "screenshot";
+#if VSNRAY_COMMON_HAVE_PNG
+    static const std::string screenshot_file_suffix = ".png";
+    image::save_option opt1;
+#else
+    static const std::string screenshot_file_suffix = ".pnm";
+    image::save_option opt1({"binary", true});
+#endif
+
+    // Swizzle to RGB8 for compatibility with pnm image
+    std::vector<vector<3, unorm<8>>> rgb(host_rt.width() * host_rt.height());
+    swizzle(
+        rgb.data(),
+        PF_RGB8,
+        host_rt.color(),
+        PF_RGBA32F,
+        host_rt.width() * host_rt.height(),
+        TruncateAlpha
+        );
+
+    //if (rt.color_space() == host_device_rt::SRGB)
+    {
+        for (int y = 0; y < host_rt.height(); ++y)
+        {
+            for (int x = 0; x < host_rt.width(); ++x)
+            {
+                auto& color = rgb[y * host_rt.width() + x];
+                color.x = powf(color.x, 1 / 2.2f);
+                color.y = powf(color.y, 1 / 2.2f);
+                color.z = powf(color.z, 1 / 2.2f);
+            }
+        }
+    }
+
+    // Flip so that origin is (top|left)
+    std::vector<vector<3, unorm<8>>> flipped(host_rt.width() * host_rt.height());
+
+    for (int y = 0; y < host_rt.height(); ++y)
+    {
+        for (int x = 0; x < host_rt.width(); ++x)
+        {
+            int yy = host_rt.height() - y - 1;
+            flipped[yy * host_rt.width() + x] = rgb[y * host_rt.width() + x];
+        }
+    }
+
+    image img(
+        host_rt.width(),
+        host_rt.height(),
+        PF_RGB8,
+        reinterpret_cast<uint8_t const*>(flipped.data())
+        );
+
+    int inc = 0;
+    std::string inc_str = "";
+
+    std::string filename = screenshot_file_base + inc_str + screenshot_file_suffix;
+
+    while (boost::filesystem::exists(filename))
+    {
+        ++inc;
+        inc_str = std::to_string(inc);
+
+        while (inc_str.length() < 4)
+        {
+            inc_str = std::string("0") + inc_str;
+        }
+
+        inc_str = std::string("-") + inc_str;
+
+        filename = screenshot_file_base + inc_str + screenshot_file_suffix;
+    }
+
+    if (img.save(filename, {opt1}))
+    {
+        std::cout << "Screenshot saved to file: " << filename << '\n';
+    }
+    else
+    {
+        std::cerr << "Error saving screenshot to file: " << filename << '\n';
     }
 }
 
@@ -762,6 +854,10 @@ void renderer::on_key_press(visionaray::key_event const& event)
 
     switch (event.key())
     {
+    case 'p':
+        screenshot();
+        break;
+
     case 'u':
         {
             int inc = 0;
