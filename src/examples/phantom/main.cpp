@@ -25,8 +25,8 @@
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
-#include <visionaray/pinhole_camera.h>
 #include <visionaray/scheduler.h>
+#include <visionaray/thin_lens_camera.h>
 
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
@@ -625,7 +625,7 @@ struct renderer : viewer_type
         }
     }
 
-    pinhole_camera                              cam;
+    thin_lens_camera                              cam;
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
     tiled_sched<basic_ray<float>>               host_sched;
 
@@ -866,6 +866,8 @@ int main(int argc, char** argv)
     float aspect = rend.width() / static_cast<float>(rend.height());
 
     rend.cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
+    rend.cam.set_lens_radius(0.002f);
+    rend.cam.set_focal_distance(2.0f);
 
     // Load camera from file or set view-all
     std::ifstream file(rend.initial_camera);
