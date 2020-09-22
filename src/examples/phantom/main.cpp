@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <exception>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -443,6 +444,31 @@ inline void split_primitive(aabb& L, aabb& R, float plane, int axis, Curve const
 
 
 //-------------------------------------------------------------------------------------------------
+// I/O utility for camera lookat only - not fit for the general case!
+//
+
+std::istream& operator>>(std::istream& in, pinhole_camera& cam)
+{
+    vec3 eye;
+    vec3 center;
+    vec3 up;
+
+    in >> eye >> std::ws >> center >> std::ws >> up >> std::ws;
+    cam.look_at(eye, center, up);
+
+    return in;
+}
+
+std::ostream& operator<<(std::ostream& out, pinhole_camera const& cam)
+{
+    out << cam.eye() << '\n';
+    out << cam.center() << '\n';
+    out << cam.up() << '\n';
+    return out;
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // struct with state variables
 //
 
@@ -462,6 +488,14 @@ struct renderer : viewer_type
             cl::Positional,
             cl::Optional,
             cl::init(this->filename)
+            ) );
+
+        add_cmdline_option( cl::makeOption<std::string&>(
+            cl::Parser<>(),
+            "camera",
+            cl::Desc("Text file with camera parameters"),
+            cl::ArgRequired,
+            cl::init(this->initial_camera)
             ) );
     }
 
@@ -606,15 +640,34 @@ struct renderer : viewer_type
     vec3                                        ambient         = vec3(1.0f, 1.0f, 1.0f);
 
     std::string                                 filename;
+    std::string                                 initial_camera;
 
 protected:
 
+    void load_camera(std::string filename);
     void on_display();
     void on_key_press(visionaray::key_event const& event);
     void on_mouse_move(visionaray::mouse_event const& event);
     void on_resize(int w, int h);
 
 };
+
+
+//-------------------------------------------------------------------------------------------------
+// Load camera from file, reset frame counter and clear frame
+//
+
+void renderer::load_camera(std::string filename)
+{
+    std::ifstream file(filename);
+    if (file.good())
+    {
+        file >> cam;
+        frame_num = 0;
+        host_rt.clear_color_buffer();
+        std::cout << "Load camera from file: " << filename << '\n';
+    }
+}
 
 
 //-------------------------------------------------------------------------------------------------
@@ -704,6 +757,54 @@ void renderer::on_display()
 
 void renderer::on_key_press(visionaray::key_event const& event)
 {
+    static const std::string camera_file_base = "visionaray-camera";
+    static const std::string camera_file_suffix = ".txt";
+
+    switch (event.key())
+    {
+    case 'u':
+        {
+            int inc = 0;
+            std::string inc_str = "";
+
+            std::string filename = camera_file_base + inc_str + camera_file_suffix;
+
+            while (boost::filesystem::exists(filename))
+            {
+                ++inc;
+                inc_str = std::to_string(inc);
+
+                while (inc_str.length() < 4)
+                {
+                    inc_str = std::string("0") + inc_str;
+                }
+
+                inc_str = std::string("-") + inc_str;
+
+                filename = camera_file_base + inc_str + camera_file_suffix;
+            }
+
+            std::ofstream file(filename);
+            if (file.good())
+            {
+                std::cout << "Storing camera to file: " << filename << '\n';
+                file << cam;
+            }
+        }
+        break;
+
+    case 'v':
+        {
+            std::string filename = camera_file_base + camera_file_suffix;
+
+            load_camera(filename);
+        }
+        break;
+
+    default:
+        break;
+    }
+
     viewer_type::on_key_press(event);
 }
 
@@ -766,7 +867,16 @@ int main(int argc, char** argv)
 
     rend.cam.perspective(45.0f * constants::degrees_to_radians<float>(), aspect, 0.001f, 1000.0f);
 
-    rend.cam.view_all(rend.bbox);
+    // Load camera from file or set view-all
+    std::ifstream file(rend.initial_camera);
+    if (file.good())
+    {
+        file >> rend.cam;
+    }
+    else
+    {
+        rend.cam.view_all(rend.bbox);
+    }
 
     rend.add_manipulator( std::make_shared<arcball_manipulator>(rend.cam, mouse::Left) );
     rend.add_manipulator( std::make_shared<pan_manipulator>(rend.cam, mouse::Middle) );
