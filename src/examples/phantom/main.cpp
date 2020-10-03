@@ -573,10 +573,10 @@ struct renderer : viewer_type
             auto p0 = split(curve);
             auto p00 = split(p0.first);
             auto p01 = split(p0.second);
-            auto p000 = split(p00.first);
-            auto p001 = split(p00.second);
-            auto p010 = split(p01.first);
-            auto p011 = split(p01.second);
+            // auto p000 = split(p00.first);
+            // auto p001 = split(p00.second);
+            // auto p010 = split(p01.first);
+            // auto p011 = split(p01.second);
 
             // 4x
             curves.push_back(p00.first);
