@@ -12,6 +12,7 @@
 #include <sstream>
 
 #include "simd/type_traits.h"
+#include "aabb.h"
 #include "fixed.h"
 #include "matrix.h"
 #include "norm.h"
@@ -312,6 +313,25 @@ operator<<(std::basic_ostream<CharT, Traits>& out, rectangle<xywh_layout<T>, T> 
 
     return out << s.str();
 
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// aabb
+//
+
+template <typename T, size_t Dim, typename CharT, typename Traits>
+std::basic_ostream<CharT, Traits>&
+operator<<(std::basic_ostream<CharT, Traits>& out, basic_aabb<T, Dim> const& box)
+{
+    std::basic_ostringstream<CharT, Traits> s;
+    s.flags(out.flags());
+    s.imbue(out.getloc());
+    s.precision(out.precision());
+
+    s << box.min << box.max;
+
+    return out << s.str();
 }
 
 } // MATH_NAMESPACE
