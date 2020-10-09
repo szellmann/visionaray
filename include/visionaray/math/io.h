@@ -96,7 +96,6 @@ template <typename CharT, typename Traits, unsigned Bits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, snorm<Bits> u)
 {
-
     std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
@@ -105,14 +104,12 @@ operator<<(std::basic_ostream<CharT, Traits>& out, snorm<Bits> u)
     s << static_cast<float>(u);
 
     return out << s.str();
-
 }
 
 template <typename CharT, typename Traits, unsigned Bits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, unorm<Bits> u)
 {
-
     std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
@@ -121,7 +118,6 @@ operator<<(std::basic_ostream<CharT, Traits>& out, unorm<Bits> u)
     s << static_cast<float>(u);
 
     return out << s.str();
-
 }
 
 
@@ -133,7 +129,6 @@ template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, quaternion<T> const& q)
 {
-
     std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
@@ -142,7 +137,6 @@ operator<<(std::basic_ostream<CharT, Traits>& out, quaternion<T> const& q)
     s << '(' << q.w << ',' << q.x << ',' << q.y << ',' << q.z << ')';
 
     return out << s.str();
-
 }
 
 
@@ -174,7 +168,6 @@ template <size_t Dim, typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, vector<Dim, T> const& v)
 {
-
     std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
@@ -192,7 +185,6 @@ operator<<(std::basic_ostream<CharT, Traits>& out, vector<Dim, T> const& v)
     s << ')';
 
     return out << s.str();
-
 }
 
 
@@ -204,7 +196,6 @@ template <typename T, typename CharT, typename Traits>
 std::basic_istream<CharT, Traits>&
 operator>>(std::basic_istream<CharT, Traits>& in, matrix<4, 4, T>& m)
 {
-
     CharT ignore = '\0';
 
     in >> ignore; // '('
@@ -218,14 +209,12 @@ operator>>(std::basic_istream<CharT, Traits>& in, matrix<4, 4, T>& m)
     in >> ignore; // ')'
 
     return in;
-
 }
 
 template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, matrix<2, 2, T> const& m)
 {
-
     std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
@@ -234,14 +223,12 @@ operator<<(std::basic_ostream<CharT, Traits>& out, matrix<2, 2, T> const& m)
     s << '(' << m.col0 << ',' << m.col1 << ')';
 
     return out << s.str();
-
 }
 
 template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, matrix<3, 3, T> const& m)
 {
-
     std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
@@ -250,14 +237,12 @@ operator<<(std::basic_ostream<CharT, Traits>& out, matrix<3, 3, T> const& m)
     s << '(' << m.col0 << ',' << m.col1 << ',' << m.col2 << ')';
 
     return out << s.str();
-
 }
 
 template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, matrix<4, 4, T> const& m)
 {
-
     std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
@@ -266,14 +251,12 @@ operator<<(std::basic_ostream<CharT, Traits>& out, matrix<4, 4, T> const& m)
     s << '(' << m.col0 << ',' << m.col1 << ',' << m.col2 << ',' << m.col3 << ')';
 
     return out << s.str();
-
 }
 
 template <size_t N, size_t M, typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, matrix<N, M, T> const& m)
 {
-
     std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
@@ -291,7 +274,6 @@ operator<<(std::basic_ostream<CharT, Traits>& out, matrix<N, M, T> const& m)
     s << ')';
 
     return out << s.str();
-
 }
 
 
@@ -303,7 +285,6 @@ template <typename T, typename CharT, typename Traits>
 std::basic_ostream<CharT, Traits>&
 operator<<(std::basic_ostream<CharT, Traits>& out, rectangle<xywh_layout<T>, T> const& r)
 {
-
     std::basic_ostringstream<CharT, Traits> s;
     s.flags(out.flags());
     s.imbue(out.getloc());
@@ -312,7 +293,6 @@ operator<<(std::basic_ostream<CharT, Traits>& out, rectangle<xywh_layout<T>, T> 
     s << '(' << r.x << ',' << r.y << ',' << r.w << ',' << r.h << ')';
 
     return out << s.str();
-
 }
 
 
