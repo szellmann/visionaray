@@ -49,8 +49,8 @@ public:
     MATH_FUNC T* data();
     MATH_FUNC T const* data() const;
 
-    MATH_FUNC T& operator[](size_t i);
-    MATH_FUNC T const& operator[](size_t i) const;
+    MATH_FUNC T& operator[](unsigned i);
+    MATH_FUNC T const& operator[](unsigned i) const;
 
 };
 
@@ -91,8 +91,8 @@ public:
     MATH_FUNC T* data();
     MATH_FUNC T const* data() const;
 
-    MATH_FUNC T& operator[](size_t i);
-    MATH_FUNC T const& operator[](size_t i) const;
+    MATH_FUNC T& operator[](unsigned i);
+    MATH_FUNC T const& operator[](unsigned i) const;
 
     MATH_FUNC vector<2, T>& xy();
     MATH_FUNC vector<2, T> const& xy() const;
@@ -140,8 +140,8 @@ public:
     MATH_FUNC T* data();
     MATH_FUNC T const* data() const;
 
-    MATH_FUNC T& operator[](size_t i);
-    MATH_FUNC T const& operator[](size_t i) const;
+    MATH_FUNC T& operator[](unsigned i);
+    MATH_FUNC T const& operator[](unsigned i) const;
 
     MATH_FUNC vector<2, T>& xy();
     MATH_FUNC vector<2, T> const& xy() const;

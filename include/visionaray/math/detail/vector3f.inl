@@ -84,12 +84,12 @@ public:
         return reinterpret_cast<float const*>(this);
     }
 
-    MATH_FUNC float& operator[](size_t i)
+    MATH_FUNC float& operator[](unsigned i)
     {
         return data()[i];
     }
 
-    MATH_FUNC float const& operator[](size_t i) const
+    MATH_FUNC float const& operator[](unsigned i) const
     {
         return data()[i];
     }

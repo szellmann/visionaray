@@ -92,14 +92,14 @@ inline T const* vector<2, T>::data() const
 
 template <typename T>
 MATH_FUNC
-inline T& vector<2, T>::operator[](size_t i)
+inline T& vector<2, T>::operator[](unsigned i)
 {
     return data()[i];
 }
 
 template <typename T>
 MATH_FUNC
-inline T const& vector<2, T>::operator[](size_t i) const
+inline T const& vector<2, T>::operator[](unsigned i) const
 {
     return data()[i];
 }
