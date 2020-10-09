@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cstddef>
 #include <ostream>
 
 #include <visionaray/texture/texture.h>
@@ -49,14 +50,14 @@ inline spectrum<T>& spectrum<T>::operator=(spectrum<U> const& rhs)
 
 template <typename T>
 VSNRAY_FUNC
-inline T& spectrum<T>::operator[](size_t i)
+inline T& spectrum<T>::operator[](unsigned i)
 {
     return samples_[i];
 }
 
 template <typename T>
 VSNRAY_FUNC
-inline T const& spectrum<T>::operator[](size_t i) const
+inline T const& spectrum<T>::operator[](unsigned i) const
 {
     return samples_[i];
 }
@@ -280,7 +281,7 @@ operator<<(std::basic_ostream<CharT, Traits>& out, spectrum<T> const& v)
     s.precision(out.precision());
 
     s << '(';
-    for (size_t d = 0; d < spectrum<T>::num_samples; ++d)
+    for (unsigned d = 0; d < spectrum<T>::num_samples; ++d)
     {
         s << v[d];
         if (d < spectrum<T>::num_samples - 1)
@@ -314,7 +315,7 @@ inline spectrum<T> from_spd(SPD spd)
 
     spectrum<T> result;
 
-    for (size_t i = 0; i < spectrum<T>::num_samples; ++i)
+    for (unsigned i = 0; i < spectrum<T>::num_samples; ++i)
     {
         float f = i / static_cast<float>(spectrum<T>::num_samples - 1);
         float lambda = lerp( lambda_min, lambda_max, f );
@@ -338,7 +339,7 @@ inline spectrum<T> from_rgb(vector<3, T> const& rgb)
 
     spectrum<T> result;
 
-    for (size_t i = 0; i < spectrum<T>::num_samples; ++i)
+    for (unsigned i = 0; i < spectrum<T>::num_samples; ++i)
     {
         auto bin = (i * 3) / spectrum<T>::num_samples;
 

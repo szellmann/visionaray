@@ -6,8 +6,6 @@
 #ifndef VSNRAY_SPECTRUM_H
 #define VSNRAY_SPECTRUM_H 1
 
-#include <cstddef>
-
 #include "detail/macros.h"
 #include "math/vector.h"
 
@@ -51,8 +49,8 @@ public:
     template <typename U>
     VSNRAY_FUNC spectrum& operator=(spectrum<U> const& rhs);
 
-    VSNRAY_FUNC T& operator[](size_t i);
-    VSNRAY_FUNC T const& operator[](size_t i) const;
+    VSNRAY_FUNC T& operator[](unsigned i);
+    VSNRAY_FUNC T const& operator[](unsigned i) const;
 
     VSNRAY_FUNC T operator()(float lambda) const;
 
