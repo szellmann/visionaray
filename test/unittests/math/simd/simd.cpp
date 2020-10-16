@@ -1234,7 +1234,7 @@ TEST(SIMD, Transposition)
         // shuffle
 
         simd::float8 u(1, 2, 3, 4, 5, 6, 7, 8);
-        simd::float8 v(9, 10, 11, 12, 13, 14, 15, 16);std::cout << interleave_lo(u, v) << ' ' << interleave_hi(u, v) << '\n';
+        simd::float8 v(9, 10, 11, 12, 13, 14, 15, 16);
 
 
         // interleave_xx
