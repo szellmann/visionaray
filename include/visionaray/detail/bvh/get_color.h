@@ -8,6 +8,7 @@
 
 #include <type_traits>
 
+#include <visionaray/bvh_traits.h>
 #include <visionaray/tags.h>
 
 namespace visionaray

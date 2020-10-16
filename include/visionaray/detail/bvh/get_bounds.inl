@@ -4,6 +4,7 @@
 #include <type_traits>
 
 #include <visionaray/math/aabb.h>
+#include <visionaray/bvh_traits.h>
 
 namespace visionaray
 {
