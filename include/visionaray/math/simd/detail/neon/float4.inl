@@ -360,9 +360,9 @@ VSNRAY_FORCE_INLINE float4 sqrt(float4 const& v)
 {
     float32x4_t rsqrt = vrsqrteq_f32(v);
     // Newton-Raphson step
-    rsqrt = vrsqrtsq_f32(v * rsqrt, rsqrt) * rsqrt;
+    rsqrt = vrsqrtsq_f32(float32x4_t(v) * rsqrt, rsqrt) * rsqrt;
     // rsqrt => sqrt
-    return v * rsqrt;
+    return float32x4_t(v) * rsqrt;
 }
 
 VSNRAY_FORCE_INLINE mask4 isinf(float4 const& v)

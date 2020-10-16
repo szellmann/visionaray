@@ -188,12 +188,12 @@ VSNRAY_FORCE_INLINE int4 operator^(int4 const& u, int4 const& v)
 
 VSNRAY_FORCE_INLINE int4 operator<<(int4 const& a, int count)
 {
-    return vshlq_n_s32(a, count);
+    return vshlq_s32(a, vdupq_n_s32(count));
 }
 
 VSNRAY_FORCE_INLINE int4 operator>>(int4 const& a, int count)
 {
-    return vshrq_n_s32(a, count);
+    return vshlq_s32(a, vdupq_n_s32(-count));
 }
 
 
