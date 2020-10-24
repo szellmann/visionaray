@@ -2642,6 +2642,20 @@ void renderer::on_key_press(key_event const& event)
         clear_frame();
         break;
 
+    case '4':
+        std::cout << "Switching algorithm: BVH cost debugging\n";
+        if (!rt.get_double_buffering())
+        {
+            rt.set_double_buffering(true);
+
+            // Make sure that 2nd buffer is allocated!
+            rt.resize(width(), height());
+        }
+        algo = Costs;
+        counter.reset();
+        clear_frame();
+        break;
+
     case 'b':
         show_bvh = !show_bvh;
 
