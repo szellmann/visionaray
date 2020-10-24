@@ -36,11 +36,6 @@ set(RAPID_JSON_INCLUDE_DIR ${RAPID_JSON_DIR}/include)
 set(TINYPLY_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/tinyply)
 set(TINYPLY_INCLUDE_DIR ${TINYPLY_DIR}/source)
 
-if (NOT EXISTS ${CMD_LINE_DIR}/.git)
-    message(SEND_ERROR "Git submodules not initialized.\nPlease run \"git submodule update --init --recursive\"")
-    return()
-endif()
-
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 include_directories(${__VSNRAY_CONFIG_DIR})

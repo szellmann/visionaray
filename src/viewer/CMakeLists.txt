@@ -8,11 +8,6 @@ set(COMMON_DIR ${PROJECT_SOURCE_DIR}/src/common)
 set(IMGUI_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/imgui)
 set(IMGUI_INCLUDE_DIR ${IMGUI_DIR})
 
-if (NOT EXISTS ${CMD_LINE_DIR}/.git)
-    message(SEND_ERROR "Git submodules not initialized.\nPlease run \"git submodule update --init --recursive\"")
-    return()
-endif()
-
 
 #--------------------------------------------------------------------------------------------------
 # External libraries
