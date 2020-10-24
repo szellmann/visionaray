@@ -173,7 +173,8 @@ struct renderer : viewer_type
         add_cmdline_option( cl::makeOption<algorithm&>({
                 { "simple",             Simple,         "Simple ray casting kernel" },
                 { "whitted",            Whitted,        "Whitted style ray tracing kernel" },
-                { "pathtracing",        Pathtracing,    "Pathtracing global illumination kernel" }
+                { "pathtracing",        Pathtracing,    "Pathtracing global illumination kernel" },
+                { "costs",              Costs,          "BVH cost kernel" }
             },
             "algorithm",
             cl::Desc("Rendering algorithm"),
@@ -302,6 +303,10 @@ struct renderer : viewer_type
                     else if (algo == "pathtracing")
                     {
                         this->algo = Pathtracing;
+                    }
+                    else if (algo == "costs")
+                    {
+                        this->algo = Costs;
                     }
                 }
 
@@ -1866,10 +1871,11 @@ void renderer::render_hud()
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
     ImGui::Begin("Settings", &show_hud);
 
-    std::array<char const*, 3> algo_names = {{
+    std::array<char const*, 4> algo_names = {{
             "Simple",
             "Whitted",
-            "Path Tracing"
+            "Path Tracing",
+            "Costs"
             }};
 
     std::array<char const*, 4> ssaa_modes = {{
@@ -2073,7 +2079,14 @@ void renderer::render_hud()
                             algo = Pathtracing;
                             counter.reset();
                             clear_frame();
-                        } 
+                        }
+                        else if (i == 3)
+                        {
+                            rt.set_double_buffering(true);
+                            algo = Costs;
+                            counter.reset();
+                            clear_frame();
+                        }
                     }
 
                     if (selected)
