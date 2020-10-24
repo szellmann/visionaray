@@ -15,6 +15,8 @@
 #include <visionaray/thin_lens_camera.h>
 #include <visionaray/variant.h>
 
+#include "bvh_costs.h"
+
 namespace visionaray
 {
 
@@ -29,7 +31,7 @@ namespace visionaray
 
 
 
-enum algorithm { Simple, Whitted, Pathtracing };
+enum algorithm { Simple, Whitted, Pathtracing, Costs };
 
 
 //-------------------------------------------------------------------------------------------------
@@ -165,6 +167,14 @@ void call_kernel(
         sched.frame(
             pathtracing::kernel<KParams>({kparams}),
             make_sched_params(blend_params, std::forward<Args>(args)...)
+            );
+        break;
+    }
+    case Costs:
+    {
+        sched.frame(
+            bvh_costs_kernel<KParams>({kparams}),
+            make_sched_params(pixel_sampler::ssaa_type<1>{}, std::forward<Args>(args)...)
             );
         break;
     }
