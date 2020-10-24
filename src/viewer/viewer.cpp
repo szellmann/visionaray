@@ -2166,7 +2166,8 @@ void renderer::render_hud()
                 bc = 1;
             }
 
-            if (bc == 1){
+            if (bc == 1)
+            {
                 int inc = 0;
                 std::string inc_str = "";
 
