@@ -292,6 +292,8 @@ static void load_camera_file(std::string const& filename, std::shared_ptr<sg::no
                 assert(i <= 4);
             }
         }
+
+        std::cerr << "screenwindow (unused): " << sw[0] << ' ' << sw[1] << ' ' << sw[2] << ' ' << sw[3] << '\n';
     }
 
     // look
