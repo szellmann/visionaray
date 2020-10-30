@@ -148,15 +148,15 @@ next:
 
     uint64_t level = 0x8000000000000000ULL;
 
-    uint64_t pop_level = -1;
+    uint64_t pop_level = uint64_t(-1);
 
     uint64_t trail = 0;
 
-    unsigned st1 = -1;
-    unsigned st2 = -1;
-    unsigned st3 = -1;
-    unsigned st4 = -1;
-    unsigned st5 = -1;
+    unsigned st1 = unsigned(-1);
+    unsigned st2 = unsigned(-1);
+    unsigned st3 = unsigned(-1);
+    unsigned st4 = unsigned(-1);
+    unsigned st5 = unsigned(-1);
 
     auto push_st = [&](unsigned n)
     {
