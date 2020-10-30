@@ -95,16 +95,25 @@ typedef quaternion<float>                      quat;
 typedef matrix<2, 2, float>                    mat2f;
 typedef matrix<2, 2, double>                   mat2d;
 typedef matrix<2, 2, float>                    mat2;
+typedef matrix<2, 2, float>                    mat2x2f;
+typedef matrix<2, 2, double>                   mat2x2d;
+typedef matrix<2, 2, float>                    mat2x2;
 
 
 typedef matrix<3, 3, float>                    mat3f;
 typedef matrix<3, 3, double>                   mat3d;
 typedef matrix<3, 3, float>                    mat3;
+typedef matrix<3, 3, float>                    mat3x3f;
+typedef matrix<3, 3, double>                   mat3x3d;
+typedef matrix<3, 3, float>                    mat3x3;
 
 
 typedef matrix<4, 4, float>                    mat4f;
 typedef matrix<4, 4, double>                   mat4d;
 typedef matrix<4, 4, float>                    mat4;
+typedef matrix<4, 4, float>                    mat4x4f;
+typedef matrix<4, 4, double>                   mat4x4d;
+typedef matrix<4, 4, float>                    mat4x4;
 
 
 typedef basic_plane<3, int>                    plane3i;
