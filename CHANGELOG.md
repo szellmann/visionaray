@@ -1,5 +1,7 @@
 ## [Unreleased]
 ### Added
+- Add BVH cost debug kernel to viewer, can be activated by pressing
+KEY-4, or by passing -algorithm=costs on the command line.
 - Set number of convergence frames rendered in viewer, pause and
 resume using Key-Space.
 - Experimental short stack BVH traversal with restart trail based on
