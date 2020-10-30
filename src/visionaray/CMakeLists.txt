@@ -175,6 +175,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/matrix2.inl
     ${HEADER_DIR}/math/detail/matrix3.inl
     ${HEADER_DIR}/math/detail/matrix4.inl
+    ${HEADER_DIR}/math/detail/matrix4x3.inl
     ${HEADER_DIR}/math/detail/plane.inl
     ${HEADER_DIR}/math/detail/quaternion.inl
     ${HEADER_DIR}/math/detail/ray.inl
