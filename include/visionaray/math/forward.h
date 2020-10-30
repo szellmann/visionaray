@@ -108,6 +108,11 @@ typedef matrix<3, 3, double>                   mat3x3d;
 typedef matrix<3, 3, float>                    mat3x3;
 
 
+typedef matrix<4, 3, float>                    mat4x3f;
+typedef matrix<4, 3, double>                   mat4x3d;
+typedef matrix<4, 3, float>                    mat4x3;
+
+
 typedef matrix<4, 4, float>                    mat4f;
 typedef matrix<4, 4, double>                   mat4d;
 typedef matrix<4, 4, float>                    mat4;
