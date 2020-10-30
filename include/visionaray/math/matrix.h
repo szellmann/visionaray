@@ -168,6 +168,8 @@ public:
             T const& m03, T const& m13, T const& m23
             );
 
+    MATH_FUNC matrix(matrix<3, 3, T> const& m, vector<3, T> const& c3);
+
     MATH_FUNC
     explicit matrix(T const data[12]);
 

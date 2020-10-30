@@ -42,6 +42,16 @@ inline matrix<4, 3, T>::matrix(
 
 template <typename T>
 MATH_FUNC
+inline matrix<4, 3, T>::matrix(matrix<3, 3, T> const& m, vector<3, T> const& c3)
+    : col0(m.col0)
+    , col1(m.col1)
+    , col2(m.col2)
+    , col3(c3)
+{
+}
+
+template <typename T>
+MATH_FUNC
 inline matrix<4, 3, T>::matrix(T const data[12])
     : col0(&data[0])
     , col1(&data[3])
@@ -143,4 +153,121 @@ inline vector<4, T> operator*(vector<3, T> const& v, matrix<4, 3, T> const& m)
             );
 }
 
+
+//--------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+template <typename T>
+MATH_FUNC
+inline bool operator==(matrix<4, 3, T> const& a, matrix<4, 3, T> const& b)
+{
+    return a(0) == b(0) && a(1) == b(1) && a(2) == b(2) && a(3) == b(3);
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator!=(matrix<4, 3, T> const& a, matrix<4, 3, T> const& b)
+{
+    return !(a == b);
+}
+
+
+//--------------------------------------------------------------------------------------------------
+// Geometric functions
+//
+
+// Return top-left 3x3 matrix
+template <typename T>
+MATH_FUNC
+inline matrix<3, 3, T> top_left(matrix<4, 3, T> const& m)
+{
+    matrix<3, 3, T> result;
+
+    for (unsigned y = 0; y < 3; ++y)
+    {
+        for (unsigned x = 0; x < 3; ++x)
+        {
+            result(x, y) = m(y, x);
+        }
+    }
+
+    return result;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Misc.
+//
+
+template <typename M, typename T>
+MATH_FUNC
+matrix<4, 3, T> select(M const& m, matrix<4, 3, T> const& u, matrix<4, 3, T> const& v)
+{
+    return matrix<4, 3, T>( 
+            select(m, u.col0, v.col0),
+            select(m, u.col1, v.col1),
+            select(m, u.col2, v.col2),
+            select(m, u.col3, v.col3)
+            );  
+}
+
+namespace simd
+{
+
+//-------------------------------------------------------------------------------------------------
+// SIMD conversions
+//
+
+// unpack -------------------------------------------------
+
+template <
+    typename T,
+    typename = typename std::enable_if<is_simd_vector<T>::value>::type
+    >
+MATH_FUNC
+inline array<matrix<4, 3, element_type_t<T>>, num_elements<T>::value> unpack(matrix<4, 3, T> const& m)
+{
+    using U = element_type_t<T>;
+
+    U const* c0x = reinterpret_cast<U const*>(&m.col0.x);
+    U const* c1x = reinterpret_cast<U const*>(&m.col1.x);
+    U const* c2x = reinterpret_cast<U const*>(&m.col2.x);
+    U const* c3x = reinterpret_cast<U const*>(&m.col3.x);
+
+    U const* c0y = reinterpret_cast<U const*>(&m.col0.y);
+    U const* c1y = reinterpret_cast<U const*>(&m.col1.y);
+    U const* c2y = reinterpret_cast<U const*>(&m.col2.y);
+    U const* c3y = reinterpret_cast<U const*>(&m.col3.y);
+
+    U const* c0z = reinterpret_cast<U const*>(&m.col0.z);
+    U const* c1z = reinterpret_cast<U const*>(&m.col1.z);
+    U const* c2z = reinterpret_cast<U const*>(&m.col2.z);
+    U const* c3z = reinterpret_cast<U const*>(&m.col3.z);
+
+    array<matrix<4, 3, U>, num_elements<T>::value> result;
+
+    for (int i = 0; i < num_elements<T>::value; ++i)
+    {
+        result[i].col0.x = c0x[i];
+        result[i].col0.y = c0y[i];
+        result[i].col0.z = c0z[i];
+
+        result[i].col1.x = c1x[i];
+        result[i].col1.y = c1y[i];
+        result[i].col1.z = c1z[i];
+
+        result[i].col2.x = c2x[i];
+        result[i].col2.y = c2y[i];
+        result[i].col2.z = c2z[i];
+
+        result[i].col3.x = c3x[i];
+        result[i].col3.y = c3y[i];
+        result[i].col3.z = c3z[i];
+    }
+
+    return result;
+}
+
+} // simd
 } // MATH_NAMESPACE
