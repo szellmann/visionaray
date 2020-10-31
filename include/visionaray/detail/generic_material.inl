@@ -1,8 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <cstddef>
-
 #include <visionaray/array.h>
 #include <visionaray/material.h>
 
@@ -160,7 +158,7 @@ namespace simd
 // SIMD type used internally. Contains N generic materials
 //
 
-template <size_t N, typename ...Ts>
+template <unsigned N, typename ...Ts>
 class generic_material
 {
 public:
@@ -193,7 +191,7 @@ public:
     {
         array<spectrum<float>, N> amb;
 
-        for (size_t i = 0; i < N; ++i)
+        for (unsigned i = 0; i < N; ++i)
         {
             amb[i] = mats_[i].ambient();
         }
@@ -210,7 +208,7 @@ public:
 
         array<spectrum<float>, N> shaded;
 
-        for (size_t i = 0; i < N; ++i)
+        for (unsigned i = 0; i < N; ++i)
         {
             shaded[i] = mats_[i].shade(srs[i]);
         }
@@ -238,7 +236,7 @@ public:
         int_array                  inters;
         array<spectrum<float>, N>  sampled;
 
-        for (size_t i = 0; i < N; ++i)
+        for (unsigned i = 0; i < N; ++i)
         {
             sampled[i] = mats_[i].sample(srs[i], rds[i], pdfs[i], inters[i], gen.get_generator(i));
         }
@@ -262,7 +260,7 @@ public:
 
         float_array pdfs;
 
-        for (size_t i = 0; i < N; ++i)
+        for (unsigned i = 0; i < N; ++i)
         {
             pdfs[i] = mats_[i].pdf(srs[i], inters[i]);
         }
