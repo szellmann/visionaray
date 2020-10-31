@@ -304,8 +304,6 @@ next:
             return result;
         }
     }
-
-    return result;
 #endif
 }
 
