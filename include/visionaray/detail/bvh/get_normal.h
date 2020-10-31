@@ -97,8 +97,7 @@ template <
     typename Normals,
     typename HR,
     typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type,
-    typename = typename std::enable_if<!is_any_bvh_inst<Primitive>::value>::type
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_normal(Normals normals, HR const& hr, Primitive prim)
@@ -107,32 +106,10 @@ auto get_normal(Normals normals, HR const& hr, Primitive prim)
     return detail::get_normal_from_bvh(normals, hr, prim);
 }
 
-// Instance (TODO: one overload for instances that transforms and then dispatches..)
-template <
-    typename Normals,
-    typename HR,
-    typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type,
-    typename = typename std::enable_if<is_any_bvh_inst<Primitive>::value>::type,
-    typename = void
-    >
-VSNRAY_FUNC
-auto get_normal(Normals normals, HR const& hr, Primitive prim)
-    -> decltype( detail::get_normal_from_bvh(normals, hr, prim) )
-{
-    using T = typename HR::scalar_type;
-
-    auto n = detail::get_normal_from_bvh(normals, hr, prim);
-    n = normalize((transpose(hr.transform_inv) * vector<4, T>(n, T(1.0))).xyz());
-
-    return n;
-}
-
 template <
     typename HR,
     typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type,
-    typename = typename std::enable_if<!is_any_bvh_inst<Primitive>::value>::type
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_normal(HR const& hr, Primitive prim)
@@ -141,34 +118,13 @@ auto get_normal(HR const& hr, Primitive prim)
     return detail::get_normal_from_bvh(hr, prim);
 }
 
-// Instance (TODO: one overload for instances that transforms and then dispatches..)
-template <
-    typename HR,
-    typename Primitive,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type,
-    typename = typename std::enable_if<is_any_bvh_inst<Primitive>::value>::type,
-    typename = void
-    >
-VSNRAY_FUNC
-auto get_normal(HR const& hr, Primitive prim)
-    -> decltype( detail::get_normal_from_bvh(hr, prim) )
-{
-    using T = typename HR::scalar_type;
-
-    auto n = detail::get_normal_from_bvh(hr, prim);
-    n = normalize((transpose(hr.transform_inv) * vector<4, T>(n, T(1.0))).xyz());
-
-    return n;
-}
-
 
 template <
     typename Normals,
     typename HR,
     typename Primitive,
     typename NormalBinding,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type,
-    typename = typename std::enable_if<!is_any_bvh_inst<Primitive>::value>::type
+    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type
     >
 VSNRAY_FUNC
 auto get_shading_normal(
@@ -180,33 +136,6 @@ auto get_shading_normal(
     -> decltype( detail::get_normal_from_bvh(normals, hr, prim, NormalBinding{}) )
 {
     return detail::get_normal_from_bvh(normals, hr, prim, NormalBinding{});
-}
-
-// Instance (TODO)
-template <
-    typename Normals,
-    typename HR,
-    typename Primitive,
-    typename NormalBinding,
-    typename = typename std::enable_if<is_any_bvh<Primitive>::value>::type,
-    typename = typename std::enable_if<is_any_bvh_inst<Primitive>::value>::type,
-    typename = void
-    >
-VSNRAY_FUNC
-auto get_shading_normal(
-        Normals       normals,
-        HR const&     hr,
-        Primitive     prim,
-        NormalBinding /* */
-        )
-    -> decltype( detail::get_normal_from_bvh(normals, hr, prim, NormalBinding{}) )
-{
-    using T = typename HR::scalar_type;
-
-    auto n = detail::get_normal_from_bvh(normals, hr, prim, NormalBinding{});
-    n = normalize((transpose(hr.transform_inv) * vector<4, T>(n, T(1.0))).xyz());
-
-    return n;
 }
 
 } // visionaray

@@ -60,18 +60,12 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
 
     VSNRAY_FUNC hit_record_bvh_inst()
         : primitive_list_index_inst(0)
-        , transform_inv(matrix<4, 4, scalar_type>::identity())
     {
     }
 
-    VSNRAY_FUNC explicit hit_record_bvh_inst(
-            hit_record_bvh<R, Base> const& base,
-            int_type i,
-            matrix<4, 4, scalar_type> const& trans_inv
-            )
+    VSNRAY_FUNC explicit hit_record_bvh_inst(hit_record_bvh<R, Base> const& base, int_type i)
         : hit_record_bvh<R, Base>(base)
         , primitive_list_index_inst(i)
-        , transform_inv(trans_inv)
     {
     }
 
@@ -80,9 +74,6 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     // an indirect index by using BVH::primitive() - this index
     // is for *direct* access!)
     int_type primitive_list_index_inst;
-
-    // Inverse transformation matrix
-    matrix<4, 4, scalar_type> transform_inv;
 };
 
 
@@ -114,7 +105,6 @@ void update_if(
 {
     update_if(static_cast<hit_record_bvh<R, Base>&>(dst), static_cast<hit_record_bvh<R, Base> const&>(src), cond);
     dst.primitive_list_index_inst = select( cond, src.primitive_list_index_inst, dst.primitive_list_index_inst );
-    dst.transform_inv = select( cond, src.transform_inv, dst.transform_inv );
 }
 
 
@@ -188,8 +178,6 @@ inline auto unpack(
     int_array primitive_list_index_inst = {};
     store(primitive_list_index_inst, hr.primitive_list_index_inst);
 
-    auto transform_inv = unpack(hr.transform_inv);
-
     for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i] = hit_record_bvh_inst<ray, scalar_base_type>(
@@ -197,8 +185,7 @@ inline auto unpack(
                         scalar_base_type(base[i]),
                         primitive_list_index[i]
                         ),
-                primitive_list_index_inst[i],
-                transform_inv[i]
+                primitive_list_index_inst[i]
                 );
     }
 
