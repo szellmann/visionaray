@@ -8,7 +8,6 @@
 
 #include <cassert>
 #include <cstddef>
-#include <cstring>
 #include <type_traits>
 
 #ifdef __CUDACC__
@@ -52,8 +51,7 @@ inline T const* get_pointer(thrust::device_vector<T> const& vec)
 
 struct VSNRAY_ALIGN(32) bvh_node
 {
-    float bbox_min[3];
-    float bbox_max[3];
+    aabb bbox;
     union
     {
         unsigned first_child;
@@ -66,7 +64,7 @@ struct VSNRAY_ALIGN(32) bvh_node
 
     VSNRAY_FUNC aabb const& get_bounds() const
     {
-        return *reinterpret_cast<aabb const*>(this);
+        return bbox;
     }
 
     VSNRAY_FUNC unsigned get_child(unsigned i = 0) const
@@ -101,8 +99,7 @@ struct VSNRAY_ALIGN(32) bvh_node
 
     VSNRAY_FUNC void set_inner(aabb const& bounds, unsigned first_child_index)
     {
-        memcpy(bbox_min, &bounds.min, sizeof(bbox_min));
-        memcpy(bbox_max, &bounds.max, sizeof(bbox_max));
+        bbox = bounds;
         first_child = first_child_index;
         num_prims = 0;
     }
@@ -111,8 +108,7 @@ struct VSNRAY_ALIGN(32) bvh_node
     {
         assert(count > 0);
 
-        memcpy(bbox_min, &bounds.min, sizeof(bbox_min));
-        memcpy(bbox_max, &bounds.max, sizeof(bbox_max));
+        bbox = bounds;
         first_prim = first_primitive_index;
         num_prims = count;
     }
