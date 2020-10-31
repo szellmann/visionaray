@@ -1345,7 +1345,7 @@ void renderer::build_scene()
 
             // When we have an environment light , enforce the code path
             // with instances which will also support the light source
-            host_instances.push_back(host_bvhs[0].inst(mat4::identity()));
+            host_instances.push_back(host_bvhs[0].inst(mat4x3(mat3::identity(), vec3(0.0))));
 
             // Any builder will suffice, we only have one instance..
             lbvh_builder builder;
@@ -1387,7 +1387,7 @@ void renderer::build_scene()
         for (size_t i = 0; i < instances.size(); ++i)
         {
             size_t index = instances[i].index;
-            host_instances[i] = host_bvhs[index].inst(instances[i].transform);
+            host_instances[i] = host_bvhs[index].inst(mat4x3(top_left(instances[i].transform), instances[i].transform(3).xyz()));
         }
 
         // Single BVH
@@ -1555,7 +1555,10 @@ void renderer::copy_bvhs(
 
             dest_top_level_bvh.primitives()[indirect_index] = {
                     dest_instance_bvhs[index].ref(),
-                    inverse(source_top_level_bvh.primitive(i).transform_inv())
+                    mat4x3(
+                        inverse(source_top_level_bvh.primitive(i).affine_inv()),
+                        -source_top_level_bvh.primitive(i).trans_inv()
+                        )
                     };
         }
 

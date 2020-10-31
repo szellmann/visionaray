@@ -339,9 +339,7 @@ inline auto intersect(
     using RT = typename detail::traversal_result<HR, Traversal, MultiHitMax>::type;
 
     R transformed_ray = ray;
-    transformed_ray.ori = (matrix<4, 4, T>(b.transform_inv()) * vector<4, T>(ray.ori, T(1.0))).xyz();
-    transformed_ray.dir = (matrix<4, 4, T>(b.transform_inv()) * vector<4, T>(ray.dir, T(0.0))).xyz();
-    // NOTE: dir is in general *not* normalized!
+    b.transform_ray(transformed_ray);
 
     auto hr = intersect<Traversal, MultiHitMax>(
             transformed_ray,

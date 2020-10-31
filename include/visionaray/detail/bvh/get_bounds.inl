@@ -37,7 +37,8 @@ template <
 MATH_FUNC
 aabb get_bounds(BVH const& bvh)
 {
-    auto trans = inverse(bvh.transform_inv());
+    mat3 affine = inverse(bvh.affine_inv());
+    vec3 trans = -bvh.trans_inv();
 
     aabb bbox = get_bounds(bvh.get_ref());
 
@@ -48,7 +49,7 @@ aabb get_bounds(BVH const& bvh)
 
     for (vec3 v : vertices)
     {
-        v = (trans * vec4(v, 1.0f)).xyz();
+        v = affine * v + trans;
         result.insert(v);
     }
 

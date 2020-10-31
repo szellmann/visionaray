@@ -271,9 +271,10 @@ public:
 
     bvh_inst_t() = default;
 
-    bvh_inst_t(bvh_ref_t<PrimitiveType> const& ref, mat4 const& transform)
+    bvh_inst_t(bvh_ref_t<PrimitiveType> const& ref, mat4x3 const& transform)
         : ref_(ref)
-        , transform_inv_(inverse(transform))
+        , affine_inv_(inverse(top_left(transform)))
+        , trans_inv_(-transform(3))
     {
     }
 
@@ -302,14 +303,29 @@ public:
         return ref_;
     }
 
-    VSNRAY_FUNC mat4 const& transform_inv() const
+    VSNRAY_FUNC mat3 affine_inv() const
     {
-        return transform_inv_;
+        return affine_inv_;
+    }
+
+    VSNRAY_FUNC vec3 trans_inv() const
+    {
+        return trans_inv_;
     }
 
     VSNRAY_FUNC bool operator==(bvh_inst_t const& rhs) const
     {
-        return ref_ == rhs.ref_ && transform_inv_ == rhs.transform_inv_;
+        return ref_ == rhs.ref_ && affine_inv_ == rhs.affine_inv_ && trans_inv_ == rhs.trans_inv_;
+    }
+
+    template <typename Ray>
+    VSNRAY_FUNC void transform_ray(Ray& r) const
+    {
+        using T = typename Ray::scalar_type;
+
+        matrix<3, 3, T> aff_inv(affine_inv_);
+        r.ori = aff_inv * r.ori + vector<3, T>(trans_inv_);
+        r.dir = aff_inv * r.dir;
     }
 
 private:
@@ -317,8 +333,11 @@ private:
     // BVH ref
     bvh_ref_t<PrimitiveType> ref_;
 
-    // Inverse transformation matrix
-    mat4 transform_inv_;
+    // Inverse affine transformation matrix
+    mat3 affine_inv_;
+
+    // Inverse translation
+    vec3 trans_inv_;
 
 };
 
@@ -338,9 +357,10 @@ public:
 
     index_bvh_inst_t() = default;
 
-    index_bvh_inst_t(index_bvh_ref_t<PrimitiveType> const& ref, mat4 const& transform)
+    index_bvh_inst_t(index_bvh_ref_t<PrimitiveType> const& ref, mat4x3 const& transform)
         : ref_(ref)
-        , transform_inv_(inverse(transform))
+        , affine_inv_(inverse(top_left(transform)))
+        , trans_inv_(-transform(3))
     {
     }
 
@@ -374,14 +394,29 @@ public:
         return ref_;
     }
 
-    VSNRAY_FUNC mat4 const& transform_inv() const
+    VSNRAY_FUNC mat3 affine_inv() const
     {
-        return transform_inv_;
+        return affine_inv_;
+    }
+
+    VSNRAY_FUNC vec3 trans_inv() const
+    {
+        return trans_inv_;
     }
 
     VSNRAY_FUNC bool operator==(index_bvh_inst_t const& rhs) const
     {
-        return ref_ == rhs.ref_ && transform_inv_ == rhs.transform_inv_;
+        return ref_ == rhs.ref_ && affine_inv_ == rhs.affine_inv_ && trans_inv_ == rhs.trans_inv_;
+    }
+
+    template <typename Ray>
+    VSNRAY_FUNC void transform_ray(Ray& r) const
+    {
+        using T = typename Ray::scalar_type;
+
+        matrix<3, 3, T> aff_inv(affine_inv_);
+        r.ori = aff_inv * (r.ori + vector<3, T>(trans_inv_));
+        r.dir = aff_inv * r.dir;
     }
 
 private:
@@ -389,9 +424,11 @@ private:
     // BVH ref
     index_bvh_ref_t<PrimitiveType> ref_;
 
-    // Inverse transformation matrix
-    mat4 transform_inv_;
+    // Inverse affine transformation matrix
+    mat3 affine_inv_;
 
+    // Inverse translation
+    vec3 trans_inv_;
 };
 
 
@@ -450,7 +487,7 @@ public:
         return { p0, p1, n0, n1 };
     }
 
-    bvh_inst inst(mat4 const& transform)
+    bvh_inst inst(mat4x3 const& transform)
     {
         return bvh_inst(ref(), transform);
     }
@@ -539,7 +576,7 @@ public:
         return { p0, p1, n0, n1, i0, i1 };
     }
 
-    bvh_inst inst(mat4 const& transform)
+    bvh_inst inst(mat4x3 const& transform)
     {
         return bvh_inst(ref(), transform);
     }
