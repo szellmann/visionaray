@@ -187,7 +187,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/vector.inl
     ${HEADER_DIR}/math/detail/vector2.inl
     ${HEADER_DIR}/math/detail/vector3.inl
-    ${HEADER_DIR}/math/detail/vector3f.inl
     ${HEADER_DIR}/math/detail/vector4.inl
     ${HEADER_DIR}/math/detail/vector4f.inl
     ${HEADER_DIR}/math/simd/detail/avx/int8.inl

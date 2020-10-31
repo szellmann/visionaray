@@ -53,12 +53,12 @@ inline T const* get_pointer(thrust::device_vector<T> const& vec)
 struct VSNRAY_ALIGN(32) bvh_node
 {
     float bbox_min[3];
+    float bbox_max[3];
     union
     {
         unsigned first_child;
         unsigned first_prim;
     };
-    float bbox_max[3];
     unsigned num_prims;
 
     VSNRAY_FUNC bool is_inner() const { return num_prims == 0; }
@@ -66,7 +66,6 @@ struct VSNRAY_ALIGN(32) bvh_node
 
     VSNRAY_FUNC aabb const& get_bounds() const
     {
-        static_assert( sizeof(bvh_node) == sizeof(aabb), "Size mismatch" );
         return *reinterpret_cast<aabb const*>(this);
     }
 

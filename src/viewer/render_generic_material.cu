@@ -28,6 +28,8 @@ void render_generic_material_cu(
         unsigned                                                           ssaa_samples
         )
 {
+    // For some reason, this function causes nvcc on OSX to run into an inf loop..
+#ifndef __APPLE__
     using bvh_ref = cuda_index_bvh<basic_triangle<3, float>>::bvh_ref;
 
     thrust::device_vector<bvh_ref> primitives;
@@ -54,6 +56,7 @@ void render_generic_material_cu(
             );
 
     call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
+#endif
 }
 
 } // visionaray
