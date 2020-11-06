@@ -6,6 +6,7 @@
 #ifndef VSNRAY_MATH_INTERSECT_H
 #define VSNRAY_MATH_INTERSECT_H 1
 
+#include <cstddef>
 #include <type_traits>
 
 #include "simd/type_traits.h"
