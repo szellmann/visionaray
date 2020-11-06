@@ -6,7 +6,6 @@
 #ifndef VSNRAY_MATH_INTERSECT_H
 #define VSNRAY_MATH_INTERSECT_H 1
 
-#include <cstddef>
 #include <type_traits>
 
 #include "simd/type_traits.h"
@@ -303,7 +302,7 @@ namespace simd
 // general primitive --------------------------------------
 
 template <
-    size_t N,
+    unsigned N,
     typename T = float_from_simd_width_t<N>
     >
 MATH_FUNC
@@ -321,7 +320,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> pack(
     float* u = reinterpret_cast<float*>(&result.u);
     float* v = reinterpret_cast<float*>(&result.v);
 
-    for (size_t i = 0; i < N; ++i)
+    for (unsigned i = 0; i < N; ++i)
     {
         hit[i]       = hrs[i].hit ? 0xFFFFFFFF : 0x00000000;
         prim_id[i]   = hrs[i].prim_id;
@@ -370,7 +369,7 @@ inline array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> 
     store(v, hr.v);
 
     array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i].hit       = hit[i] != 0;
         result[i].prim_id   = prim_id[i];
@@ -416,7 +415,7 @@ inline array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float16>::
     store(v, hr.v);
 
     array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> result;
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i].hit       = hit[i] != 0;
         result[i].prim_id   = prim_id[i];
