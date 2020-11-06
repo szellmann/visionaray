@@ -6,7 +6,6 @@
 #ifndef VSNRAY_GET_TEX_COORD_H
 #define VSNRAY_GET_TEX_COORD_H 1
 
-#include <cstddef>
 #include <iterator>
 #include <type_traits>
 
@@ -176,7 +175,7 @@ inline auto get_tex_coord(HR const& hr, basic_sphere<T> const& sphere)
 template <
     typename TexCoords,
     typename HR,
-    size_t N,
+    unsigned N,
     typename Primitive
     >
 VSNRAY_FUNC
@@ -191,7 +190,7 @@ inline auto get_tex_coord(
 
     array<TC, N> result;
 
-    for (size_t i = 0; i < N; ++i)
+    for (unsigned i = 0; i < N; ++i)
     {
         result[i] = get_tex_coord(coords, hr[i], Primitive{});
     }
