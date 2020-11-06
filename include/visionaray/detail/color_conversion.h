@@ -6,6 +6,8 @@
 #ifndef VSNRAY_DETAIL_COLOR_CONVERSION_H
 #define VSNRAY_DETAIL_COLOR_CONVERSION_H 1
 
+#include <cstddef>
+
 #include <visionaray/math/detail/math.h>
 #include <visionaray/math/matrix.h>
 #include <visionaray/math/unorm.h>
@@ -234,7 +236,7 @@ inline vector<3, T> linear_to_srgb(vector<3, T> const& rgb)
 {
     vector<3, T> result;
 
-    for (size_t i = 0; i < 3; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         result[i] = select(
             rgb[i] <= T(0.0031308),
@@ -257,7 +259,7 @@ inline vector<3, T> srgb_to_linear(vector<3, T> const& srgb)
 {
     vector<3, T> result;
 
-    for (size_t i = 0; i < 3; ++i)
+    for (int i = 0; i < 3; ++i)
     {
         result[i] = select(
             srgb[i] <= T(0.04045),
