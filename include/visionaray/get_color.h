@@ -6,7 +6,6 @@
 #ifndef VSNRAY_GET_COLOR_H
 #define VSNRAY_GET_COLOR_H 1
 
-#include <cstddef>
 #include <iterator>
 #include <type_traits>
 
@@ -216,7 +215,7 @@ inline auto get_color(
 template <
     typename Colors,
     typename HR,
-    size_t N,
+    unsigned N,
     typename Primitive,
     typename ColorBinding
     >
@@ -233,7 +232,7 @@ inline auto get_color(
 
     array<C, N> result;
 
-    for (size_t i = 0; i < N; ++i)
+    for (unsigned i = 0; i < N; ++i)
     {
         result[i] = get_color(colors, hr[i], Primitive{}, ColorBinding{});
     }
