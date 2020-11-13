@@ -52,7 +52,7 @@ inline auto unpack(emissive<FloatT> const& mat)
 
     float const* ls = reinterpret_cast<float const*>(&mat.ls());
 
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         for (int j = 0; j < spectrum<float>::num_samples; ++j)
         {
@@ -107,7 +107,7 @@ inline auto unpack(matte<FloatT> const& mat)
     float const* ka = reinterpret_cast<float const*>(&mat.ka());
     float const* kd = reinterpret_cast<float const*>(&mat.kd());
 
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         for (int j = 0; j < spectrum<float>::num_samples; ++j)
         {
@@ -164,7 +164,7 @@ inline auto unpack(mirror<FloatT> const& mat)
 
     float const* kr = reinterpret_cast<float const*>(&mat.kr());
 
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         for (int j = 0; j < spectrum<float>::num_samples; ++j)
         {
@@ -231,7 +231,7 @@ inline auto unpack(plastic<FloatT> const& mat)
     float const* ks = reinterpret_cast<float const*>(&mat.ks());
     float const* se = reinterpret_cast<float const*>(&mat.specular_exp());
 
-    for (size_t i = 0; i < num_elements<FloatT>::value; ++i)
+    for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         for (int j = 0; j < spectrum<float>::num_samples; ++j)
         {
