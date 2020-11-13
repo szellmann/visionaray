@@ -225,6 +225,25 @@ inline matrix<3, 3, T> operator*(T const& s, matrix<3, 3, T> const& m)
 }
 
 
+//--------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+template <typename T>
+MATH_FUNC
+inline bool operator==(matrix<3, 3, T> const& a, matrix<3, 3, T> const& b)
+{
+    return a(0) == b(0) && a(1) == b(1) && a(2) == b(2);
+}
+
+template <typename T>
+MATH_FUNC
+inline bool operator!=(matrix<3, 3, T> const& a, matrix<3, 3, T> const& b)
+{
+    return !(a == b);
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // Geometric functions
 //
