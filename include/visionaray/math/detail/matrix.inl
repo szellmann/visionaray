@@ -69,4 +69,34 @@ inline matrix<N, M, T> matrix<N, M, T>::identity()
     return result;
 }
 
+
+//--------------------------------------------------------------------------------------------------
+// Comparisons
+//
+
+template <size_t N, size_t M, typename T>
+MATH_FUNC
+inline bool operator==(matrix<N, M, T> const& a, matrix<N, M, T> const& b)
+{
+    for (size_t i = 0; i < N; ++i)
+    {
+        for (size_t j = 0; j < M; ++j)
+        {
+            if (a(i, j) != b(i, j))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+template <size_t N, size_t M, typename T>
+MATH_FUNC
+inline bool operator!=(matrix<N, M, T> const& a, matrix<N, M, T> const& b)
+{
+    return !(a == b);
+}
+
 } // MATH_NAMESPACE
