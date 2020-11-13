@@ -58,9 +58,9 @@ inline matrix<N, M, T> matrix<N, M, T>::identity()
 
     matrix<N, M, T> result;
 
-    for (int i = 0; i < N; ++i)
+    for (size_t i = 0; i < N; ++i)
     {
-        for (int j = 0; j < M; ++j)
+        for (size_t j = 0; j < M; ++j)
         {
             result(i, j) = i == j ? T(1.0) : T(0.0);
         }
