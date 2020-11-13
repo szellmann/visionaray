@@ -54,7 +54,7 @@ auto get_normal_from_bvh(HR const& hr, Primitive prim)
     auto hrs = simd::unpack(hr);
 
     array<V, simd::num_elements<T>::value> arr;
-    for (size_t i = 0; i < simd::num_elements<T>::value; ++i)
+    for (unsigned i = 0; i < simd::num_elements<T>::value; ++i)
     {
         arr[i] = get_normal(
                 static_cast<BaseS const&>(hrs[i]),
