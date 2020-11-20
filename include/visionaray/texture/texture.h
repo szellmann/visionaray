@@ -12,7 +12,6 @@
 #include "detail/cuda_texture.h"
 #endif
 
-#include "detail/prefilter.h"
 #include "detail/sampler1d.h"
 #include "detail/sampler2d.h"
 #include "detail/sampler3d.h"
