@@ -3,6 +3,8 @@
 
 #include <thrust/device_vector.h>
 
+#include <visionaray/math/norm.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
 
