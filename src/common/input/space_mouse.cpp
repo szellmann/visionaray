@@ -102,6 +102,10 @@ bool init()
 
     // Register callback
     int16_t err = SetConnexionHandlers(message_handler, 0, 0, false);
+    if (err != 0)
+    {
+        return false;
+    }
 
     // Take space mouse over system-wide
     client_id = RegisterConnexionClient(
