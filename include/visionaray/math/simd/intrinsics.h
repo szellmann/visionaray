@@ -51,38 +51,38 @@
 #define VSNRAY_SIMD_ISA_NEON    1010
 #define VSNRAY_SIMD_ISA_NEON_FP 1020
 
-#ifndef VSNRAY_SIMD_ISA__
+#ifndef VSNRAY_SIMD_ISA_
 #if defined(__AVX512F__)                            && !defined(__CUDACC__) // nvcc does not support AVX intrinsics
-#define VSNRAY_SIMD_ISA__ VSNRAY_SIMD_ISA_AVX512F
+#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_AVX512F
 #elif defined(__AVX2__)                             && !defined(__CUDACC__)
-#define VSNRAY_SIMD_ISA__ VSNRAY_SIMD_ISA_AVX2
+#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_AVX2
 #elif defined(__AVX__)                              && !defined(__CUDACC__)
-#define VSNRAY_SIMD_ISA__ VSNRAY_SIMD_ISA_AVX
+#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_AVX
 #elif defined(__SSE4_2__)
-#define VSNRAY_SIMD_ISA__ VSNRAY_SIMD_ISA_SSE4_2
+#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_SSE4_2
 #elif defined(__SSE4_1__)
-#define VSNRAY_SIMD_ISA__ VSNRAY_SIMD_ISA_SSE4_1
+#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_SSE4_1
 #elif defined(__SSSE3__)
-#define VSNRAY_SIMD_ISA__ VSNRAY_SIMD_ISA_SSSE3
+#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_SSSE3
 #elif defined(__SSE3__)
-#define VSNRAY_SIMD_ISA__ VSNRAY_SIMD_ISA_SSE3
+#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_SSE3
 #elif defined(__SSE2__) || VSNRAY_ARCH == VSNRAY_ARCH_X86_64 // SSE2 is always available on 64-bit Intel compatible platforms
-#define VSNRAY_SIMD_ISA__ VSNRAY_SIMD_ISA_SSE2
+#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_SSE2
 #elif defined(__ARM_NEON) && defined(__ARM_NEON_FP)
-#define VSNRAY_SIMD_ISA__ VSNRAY_SIMD_ISA_NEON_FP
+#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_NEON_FP
 #elif defined(__ARM_NEON)
-#define VSNRAY_SIMD_ISA__ VSNRAY_SIMD_ISA_NEON
+#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_NEON
 #else
-#define VSNRAY_SIMD_ISA__ 0
+#define VSNRAY_SIMD_ISA_ 0
 #endif
 #endif
 
-// Undef VSNRAY_SIMD_ISA__ when compiling GPU device code
+// Undef VSNRAY_SIMD_ISA_ when compiling GPU device code
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ > 0
-#ifdef VSNRAY_SIMD_ISA__
-#undef VSNRAY_SIMD_ISA__
+#ifdef VSNRAY_SIMD_ISA_
+#undef VSNRAY_SIMD_ISA_
 #endif
-#define VSNRAY_SIMD_ISA__ 0
+#define VSNRAY_SIMD_ISA_ 0
 #endif
 
 // Intel Short Vector Math Library available?
@@ -99,18 +99,18 @@
 //
 
 #define VSNRAY_NO_SIMD_ISA                                                      \
-    VSNRAY_SIMD_ISA__ == 0
+    VSNRAY_SIMD_ISA_ == 0
 
 #define VSNRAY_SIMD_ISA_EQ(ISA) (                                               \
     ISA - VSNRAY_BASE_ARCH >= 0 &&                                              \
     ISA - VSNRAY_BASE_ARCH < 1000 &&                                            \
-    VSNRAY_SIMD_ISA__ == ISA                                                    \
+    VSNRAY_SIMD_ISA_ == ISA                                                     \
     )
 
 #define VSNRAY_SIMD_ISA_GE(ISA) (                                               \
     ISA - VSNRAY_BASE_ARCH >= 0 &&                                              \
     ISA - VSNRAY_BASE_ARCH < 1000 &&                                            \
-    VSNRAY_SIMD_ISA__ >= ISA                                                    \
+    VSNRAY_SIMD_ISA_ >= ISA                                                     \
     )
 
 //--------------------------------------------------------------------------------------------------
