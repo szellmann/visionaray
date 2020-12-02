@@ -1,8 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <vector>
-
 #include <visionaray/array.h>
 #include <visionaray/generic_material.h>
 
