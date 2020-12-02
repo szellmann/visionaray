@@ -6,7 +6,6 @@
 #ifndef VSNRAY_DETAIL_WHITTED_INL
 #define VSNRAY_DETAIL_WHITTED_INL 1
 
-#include <cstddef>
 #include <type_traits>
 
 #include <visionaray/array.h>
@@ -172,7 +171,7 @@ inline auto specular_bounce(
 }
 
 template <
-    size_t N,
+    unsigned N,
     typename ...Ts,
     typename T,
     typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
@@ -195,7 +194,7 @@ inline auto specular_bounce(
     float_array                kr;
     float_array                kt;
 
-    for (size_t i = 0; i < N; ++i)
+    for (unsigned i = 0; i < N; ++i)
     {
         auto res = specular_bounce(ms[i], vds[i], ns[i]);
         refl_dir[i] = res.reflected_dir;
