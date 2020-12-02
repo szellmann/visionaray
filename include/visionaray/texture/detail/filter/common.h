@@ -155,7 +155,7 @@ struct w0_func
     template <typename T>
     inline T operator()(T const& a)
     {
-        return T( (1.0 / 6.0) * (-(a * a * a) + 3.0 * a * a - 3.0 * a + 1.0) );
+        return (T(1.0) / T(6.0)) * (-(a * a * a) + T(3.0) * a * a - T(3.0) * a + T(1.0));
     }
 };
 
@@ -164,7 +164,7 @@ struct w1_func
     template <typename T>
     inline T operator()(T const& a)
     {
-        return T( (1.0 / 6.0) * (3.0 * a * a * a - 6.0 * a * a + 4.0) );
+        return (T(1.0) / T(6.0)) * (T(3.0) * a * a * a - T(6.0) * a * a + T(4.0));
     }
 };
 
@@ -173,7 +173,7 @@ struct w2_func
     template <typename T>
     inline T operator()(T const& a)
     {
-        return T( (1.0 / 6.0) * (-3.0 * a * a * a + 3.0 * a * a + 3.0 * a + 1.0) );
+        return (T(1.0) / T(6.0)) * (T(-3.0) * a * a * a + T(3.0) * a * a + T(3.0) * a + 1.0);
     }
 };
 
@@ -182,7 +182,7 @@ struct w3_func
     template <typename T>
     inline T operator()(T const& a)
     {
-        return T( (1.0 / 6.0) * (a * a * a) );
+        return (T(1.0) / T(6.0)) * (a * a * a);
     }
 };
 
@@ -198,7 +198,7 @@ struct w0_func
     template <typename T>
     inline T operator()(T const& a)
     {
-        return T( -0.5 * a * a * a + a * a - 0.5 * a );
+        return T(-0.5) * a * a * a + a * a - T(0.5) * a;
     }
 };
 
@@ -207,7 +207,7 @@ struct w1_func
     template <typename T>
     inline T operator()(T const& a)
     {
-        return T( 1.5 * a * a * a - 2.5 * a * a + 1.0 );
+        return T(1.5) * a * a * a - T(2.5) * a * a + T(1.0);
     }
 };
 
@@ -216,7 +216,7 @@ struct w2_func
     template <typename T>
     inline T operator()(T const& a)
     {
-        return T( -1.5 * a * a * a + 2.0 * a * a + 0.5 * a );
+        return T(-1.5) * a * a * a + T(2.0) * a * a + T(0.5) * a;
     }
 };
 
@@ -225,7 +225,7 @@ struct w3_func
     template <typename T>
     inline T operator()(T const& a)
     {
-        return T( 0.5 * a * a * a - 0.5 * a * a );
+        return T(0.5) * a * a * a - T(0.5) * a * a;
     }
 };
 
