@@ -76,6 +76,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/cuda/graphics_resource.h
     ${HEADER_DIR}/cuda/pitch2d.h
     ${HEADER_DIR}/cuda/pixel_pack_buffer.h
+    ${HEADER_DIR}/cuda/safe_call.h
     ${HEADER_DIR}/cuda/util.h
 
     # Details - subject to frequent change!
