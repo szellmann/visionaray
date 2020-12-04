@@ -16,6 +16,9 @@
 #include <thrust/device_vector.h>
 #endif
 
+#ifdef __CUDACC__
+#include "cuda/safe_call.h"
+#endif
 #include "detail/macros.h"
 #include "math/aabb.h"
 #include "math/forward.h"
@@ -622,12 +625,12 @@ private:
         // thinks the copy is not trivial...     ¯\_(ツ)_/¯
         dst.resize(src.size());
 
-        cudaMemcpy(
+        CUDA_SAFE_CALL(cudaMemcpy(
             thrust::raw_pointer_cast(dst.data()),
             src.data(),
             sizeof(T) * src.size(),
             cudaMemcpyHostToDevice
-            );
+            ));
     }
 
     template <typename DstVector, typename T>
@@ -636,12 +639,12 @@ private:
         // Trivial copy. See copy(device_vector, host_vector)
         dst.resize(src.size());
 
-        cudaMemcpy(
+        CUDA_SAFE_CALL(cudaMemcpy(
             dst.data(),
             thrust::raw_pointer_cast(src.data()),
             sizeof(T) * src.size(),
             cudaMemcpyDeviceToHost
-            );
+            ));
     }
 
     template <typename T>
@@ -650,12 +653,12 @@ private:
         // Trivial copy. See copy(device_vector, host_vector)
         dst.resize(src.size());
 
-        cudaMemcpy(
+        CUDA_SAFE_CALL(cudaMemcpy(
             thrust::raw_pointer_cast(dst.data()),
             thrust::raw_pointer_cast(src.data()),
             sizeof(T) * src.size(),
             cudaMemcpyDeviceToDevice
-            );
+            ));
     }
 #endif
 };
