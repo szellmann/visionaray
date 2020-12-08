@@ -251,5 +251,15 @@ VSNRAY_FORCE_INLINE mask4 operator!=(int4 const& u, int4 const& v)
 // Math functions
 //
 
+VSNRAY_FORCE_INLINE int4 min(int4 const& u, int4 const& v)
+{
+    return vminq_s32(u, v);
+}
+
+VSNRAY_FORCE_INLINE int4 max(int4 const& u, int4 const& v)
+{
+    return vmaxq_s32(u, v);
+}
+
 } // simd
 } // MATH_NAMESPACE
