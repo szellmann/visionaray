@@ -17,3 +17,6 @@ if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
 else()
     visionaray_add_executable(multi_hit main.cpp)
 endif()
+
+# Don't compile due to issues with simd overload of insert_sorted()
+set_target_properties(multi_hit PROPERTIES EXCLUDE_FROM_ALL TRUE)
