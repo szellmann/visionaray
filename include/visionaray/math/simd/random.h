@@ -6,6 +6,7 @@
 #ifndef VSNRAY_MATH_SIMD_RANDOM_H
 #define VSNRAY_MATH_SIMD_RANDOM_H 1
 
+#include "../config.h"
 #include "type_traits.h"
 
 #include <type_traits>
@@ -37,11 +38,13 @@ public:
 
 public:
 
+    MATH_FUNC
     linear_congruential_engine(T const& seed = T(default_seed))
         : x(seed)
     {
     }
 
+    MATH_FUNC
     T operator()()
     {
         x = (a * x + c) % m;
