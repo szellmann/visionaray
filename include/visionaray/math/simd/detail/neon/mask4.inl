@@ -51,8 +51,7 @@ VSNRAY_FORCE_INLINE mask4::basic_mask(bool b)
 
 VSNRAY_FORCE_INLINE int4 convert_to_int(mask4 const& a)
 {
-    // TODO!
-    throw std::runtime_error("Not implemented yet");
+    return a.i;
 }
 
 
