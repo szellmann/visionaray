@@ -52,7 +52,7 @@
 # TBB_LIBRARIES, the libraries to link against to use TBB.
 # TBB_DEBUG_LIBRARIES, the libraries to link against to use TBB with debug symbols.
 # TBB_FOUND, If false, don't try to use TBB.
-# TBB_INTERFACE_VERSION, as defined in tbb/tbb_stddef.h
+# TBB_INTERFACE_VERSION, as defined in tbb/version.h
 
 
 if (WIN32)
@@ -278,7 +278,7 @@ endif (NOT _TBB_INSTALL_DIR)
 
 if (TBB_FOUND)
   set(TBB_INTERFACE_VERSION 0)
-  FILE(READ "${TBB_INCLUDE_DIRS}/tbb/tbb_stddef.h" _TBB_VERSION_CONTENTS)
+  FILE(READ "${TBB_INCLUDE_DIRS}/tbb/version.h" _TBB_VERSION_CONTENTS)
   STRING(REGEX REPLACE ".*#define TBB_INTERFACE_VERSION ([0-9]+).*" "\\1" TBB_INTERFACE_VERSION "${_TBB_VERSION_CONTENTS}")
   set(TBB_INTERFACE_VERSION "${TBB_INTERFACE_VERSION}")
 endif (TBB_FOUND)
