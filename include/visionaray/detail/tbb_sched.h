@@ -8,7 +8,11 @@
 
 #include <tbb/blocked_range2d.h>
 #include <tbb/parallel_for.h>
+#if 1 // TODO: find out when that API changed
+#include <tbb/global_control.h>
+#else
 #include <tbb/task_scheduler_init.h>
+#endif
 
 #include "basic_sched.h"
 #include "range.h"
@@ -19,13 +23,21 @@ namespace visionaray
 struct tbb_sched_backend
 {
     explicit tbb_sched_backend(unsigned num_threads)
+#if 1 // TODO: find out when that API changed
+        : tbb_gc_(new tbb::global_control(tbb::global_control::max_allowed_parallelism, num_threads))
+#else
         : init_(num_threads)
+#endif
     {
     }
 
     void reset(unsigned num_threads)
     {
+#if 1 // TODO: find out when that API changed
+        tbb_gc_.reset(new tbb::global_control(tbb::global_control::max_allowed_parallelism, num_threads));
+#else
         init_.initialize(num_threads);
+#endif
     }
 
     template <typename Func>
@@ -59,7 +71,11 @@ struct tbb_sched_backend
             });
     }
 
+#if 1 // TODO: find out when that API changed
+    std::unique_ptr<tbb::global_control> tbb_gc_;
+#else
     tbb::task_scheduler_init init_;
+#endif
 };
 
 template <typename R>
