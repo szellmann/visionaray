@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "../make_generator.h"
+#include "../packet_traits.h"
 #include "range.h"
 #include "sched_common.h"
 
