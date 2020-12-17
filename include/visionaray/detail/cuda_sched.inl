@@ -10,42 +10,13 @@
 #include <visionaray/math/detail/math.h> // div_up
 #include <visionaray/make_generator.h>
 
+#include "../make_random_seed.h"
 #include "sched_common.h"
 
 namespace visionaray
 {
-
 namespace detail
 {
-
-//-------------------------------------------------------------------------------------------------
-// RNG seed
-//
-
-// https://code.google.com/p/thrust/source/browse/examples/monte_carlo.cu
-
-VSNRAY_GPU_FUNC
-inline unsigned cuda_hash(unsigned a)
-{
-    a = (a + 0x7ed55d16) + (a << 12);
-    a = (a ^ 0xc761c23c) ^ (a >> 19);
-    a = (a + 0x165667b1) + (a << 5);
-    a = (a + 0xd3a2646c) ^ (a << 9);
-    a = (a + 0xfd7046c5) + (a << 3);
-    a = (a ^ 0xb55a4f09) ^ (a >> 16);
-    return a;
-}
-
-VSNRAY_GPU_FUNC
-inline unsigned cuda_seed()
-{
-    unsigned x = blockIdx.x * blockDim.x + threadIdx.x;
-    unsigned y = blockIdx.y * blockDim.y + threadIdx.y;
-    unsigned w = blockDim.x * gridDim.x;
-
-    return cuda_hash(tic(float{} /*TODO*/) + y * w + x);
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // CUDA kernels
@@ -62,11 +33,15 @@ template <
 __global__ void render(
         PxSamplerT      sample_params,
         Rect            scissor_box,
+        unsigned        frame_id,
         RTRef           rt_ref,
         K               kernel,
         Args...         args
         )
 {
+    using S = typename R::scalar_type;
+    using I = typename simd::int_type<S>::type;
+
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
     auto y = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -75,11 +50,13 @@ __global__ void render(
         return;
     }
 
-    auto gen = make_generator(
-            typename R::scalar_type{},
-            sample_params,
-            detail::cuda_seed()
-            );
+    expand_pixel<S> ep;
+    auto seed = make_random_seed(
+        convert_to_int(ep.y(y)) * rt_ref.width() + convert_to_int(ep.x(x)),
+        I(frame_id)
+        );
+
+    auto gen = make_generator(S{}, sample_params, seed);
 
     auto r = detail::make_primary_rays(
             R{},
@@ -116,11 +93,15 @@ __global__ void render(
         PxSamplerT                      sample_params,
         Intersector                     intersector,
         Rect                            scissor_box,
+        unsigned                        frame_id,
         RTRef                           rt_ref,
         K                               kernel,
         Args...                         args
         )
 {
+    using S = typename R::scalar_type;
+    using I = typename simd::int_type<S>::type;
+
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
     auto y = blockIdx.y * blockDim.y + threadIdx.y;
 
@@ -129,8 +110,14 @@ __global__ void render(
         return;
     }
 
+    expand_pixel<S> ep;
+    auto seed = make_random_seed(
+        convert_to_int(ep.y(y)) * rt_ref.width() + convert_to_int(ep.x(x)),
+        I(frame_id)
+        );
+
     // TODO: support any sampler
-    random_generator<typename R::scalar_type> gen(detail::cuda_seed());
+    random_generator<typename R::scalar_type> gen(seed);
 
     auto r = detail::make_primary_rays(
             R{},
@@ -164,6 +151,7 @@ template <typename R, typename SP, typename Rect, typename ...Args>
 inline void cuda_sched_impl_call_render(
         std::false_type     /* has intersector */,
         SP&                 sparams,
+        unsigned            frame_id,
         dim3 const&         grid_size,
         dim3 const&         block_size,
         size_t              smem,
@@ -175,6 +163,7 @@ inline void cuda_sched_impl_call_render(
     render<R, typename SP::pixel_sampler_type><<<grid_size, block_size, smem, stream>>>(
             sparams.sample_params,
             scissor_box,
+            frame_id,
             std::forward<Args>(args)...
             );
 }
@@ -183,6 +172,7 @@ template <typename R, typename SP, typename Rect, typename ...Args>
 inline void cuda_sched_impl_call_render(
         std::true_type      /* has intersector */,
         SP const&           sparams,
+        unsigned            frame_id,
         dim3 const&         grid_size,
         dim3 const&         block_size,
         size_t              smem,
@@ -196,6 +186,7 @@ inline void cuda_sched_impl_call_render(
             sparams.sample_params,
             sparams.intersector,
             scissor_box,
+            frame_id,
             std::forward<Args>(args)...
             );
 }
@@ -205,6 +196,7 @@ template <typename R, typename K, typename SP>
 inline void cuda_sched_impl_frame(
         K                   kernel,
         SP                  sparams,
+        unsigned            frame_id,
         dim3 const&         block_size,
         size_t              smem,
         cudaStream_t const& stream
@@ -223,6 +215,7 @@ inline void cuda_sched_impl_frame(
     cuda_sched_impl_call_render<R>(
             typename detail::sched_params_has_intersector<SP>::type(),
             sparams,
+            frame_id,
             grid_size,
             block_size,
             smem,
@@ -266,6 +259,7 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, size_t smem, cudaStream_t c
     detail::cuda_sched_impl_frame<R>(
             kernel,
             sched_params,
+            frame_id_,
             dim3(block_size_.x, block_size_.y),
             smem,
             stream
@@ -274,6 +268,8 @@ void cuda_sched<R>::frame(K kernel, SP sched_params, size_t smem, cudaStream_t c
     sched_params.rt.end_frame();
 
     sched_params.cam.end_frame();
+
+    ++frame_id_;
 }
 
 } // visionaray

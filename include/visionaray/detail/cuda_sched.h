@@ -41,6 +41,7 @@ public:
 private:
 
     vec2ui block_size_ = vec2ui(16, 16);
+    unsigned frame_id_ = 0;
 
 };
 
