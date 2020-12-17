@@ -1,7 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/make_generator.h>
+#include "../make_generator.h"
+#include "../make_random_seed.h"
+#include "../packet_traits.h"
 
 #include "sched_common.h"
 
@@ -16,6 +18,9 @@ template <typename R>
 template <typename K, typename SP>
 void simple_sched<R>::frame(K kernel, SP sched_params)
 {
+    using S = typename R::scalar_type;
+    using I = typename simd::int_type<S>::type;
+
     sched_params.cam.begin_frame();
 
     sched_params.rt.begin_frame();
@@ -32,11 +37,13 @@ void simple_sched<R>::frame(K kernel, SP sched_params)
                 continue;
             }
 
-            auto gen = make_generator(
-                    typename R::scalar_type{},
-                    typename SP::pixel_sampler_type{},
-                    detail::tic(typename R::scalar_type{})
-                    );
+            expand_pixel<S> ep;
+            auto seed = make_random_seed(
+                convert_to_int(ep.y(y)) * sched_params.rt.width() + convert_to_int(ep.x(x)),
+                I(frame_id_)
+                );
+
+            auto gen = make_generator(S{}, typename SP::pixel_sampler_type{}, seed);
 
             auto r = detail::make_primary_rays(
                     R{},
@@ -68,6 +75,8 @@ void simple_sched<R>::frame(K kernel, SP sched_params)
     sched_params.rt.end_frame();
 
     sched_params.cam.end_frame();
+
+    ++frame_id_;
 }
 
 } // visionaray

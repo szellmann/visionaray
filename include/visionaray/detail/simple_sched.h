@@ -17,6 +17,10 @@ public:
     template <typename K, typename SP>
     void frame(K kernel, SP sched_params);
 
+private:
+
+    unsigned frame_id_ = 0;
+
 };
 
 } // visionaray
