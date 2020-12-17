@@ -11,6 +11,7 @@
 #include <visionaray/make_generator.h>
 
 #include "../make_random_seed.h"
+#include "../packet_traits.h"
 #include "sched_common.h"
 
 namespace visionaray
