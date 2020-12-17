@@ -13,6 +13,8 @@ the API with a custom curve primitive type.
 textures.
 
 ### Changed
+- Don't use clock as LCG seed anymore; rather compute hashes based on
+pixelID and frameID.
 - BVH instances now store 4x3 instead of 4x4 transform matrices.
 - vec3 is no longer aligned to 16 byte boundaries.
 - Switched to Ubuntu 16.04 with Travis-CI. We no longer support
@@ -21,6 +23,7 @@ Ubuntu 14.04 and gcc 4.8 as that is too old for pbrtParser.
 supplied by the user.
 
 ### Fixed
+- Various smaller fixes to make things run smoothly on Apple silicon.
 - Fixed linking with homebrew GLEW on macOS.
 
 ## [0.1.1] - 2020-06-22
