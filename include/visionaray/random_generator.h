@@ -6,7 +6,6 @@
 #ifndef VSNRAY_RANDOM_GENERATOR_H
 #define VSNRAY_RANDOM_GENERATOR_H 1
 
-#include <chrono>
 #include <cstddef>
 #include <type_traits>
 
@@ -21,54 +20,6 @@
 
 namespace visionaray
 {
-namespace detail
-{
-
-//-------------------------------------------------------------------------------------------------
-// TODO: move to a better place
-//
-
-#if defined(__CUDA_ARCH__)
-template <
-    typename T,
-    typename = typename std::enable_if<std::is_floating_point<T>::value>::type
-    >
-VSNRAY_GPU_FUNC
-inline unsigned tic(T /* */)
-{
-    return clock64();
-}
-#else
-template <
-    typename T,
-    typename = typename std::enable_if<std::is_floating_point<T>::value>::type
-    >
-VSNRAY_FUNC
-inline unsigned tic(T /* */)
-{
-    auto t = std::chrono::high_resolution_clock::now();
-    return t.time_since_epoch().count();
-}
-#endif
-
-template <
-    typename T,
-    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
-    >
-VSNRAY_FUNC array<unsigned, simd::num_elements<T>::value> tic(T /* */)
-{
-    array<unsigned, simd::num_elements<T>::value> result;
-
-    for (int i = 0; i < simd::num_elements<T>::value; ++i)
-    {
-        result[i] = tic(float{});
-    }
-
-    return result;
-}
-
-} // detail
-
 
 //-------------------------------------------------------------------------------------------------
 // random_generator classes, uses a standard pseudo RNG to generate samples
