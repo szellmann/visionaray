@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "../make_generator.h"
+#include "../make_random_seed.h"
 #include "../packet_traits.h"
 #include "range.h"
 #include "sched_common.h"
@@ -113,11 +114,16 @@ void basic_sched<B, R>::frame(K kernel, SP sched_params)
         tiled_range2d<int>(x0, nx, dx, y0, ny, dy), pw, ph,
         [=](int x, int y)
         {
-            auto gen = make_generator(
-                    typename R::scalar_type{},
-                    sched_params.sample_params,
-                    detail::tic(typename R::scalar_type{})
-                    );
+            using S = typename R::scalar_type;
+            using I = typename simd::int_type<S>::type;
+
+            expand_pixel<S> ep;
+            auto seed = make_random_seed(
+                convert_to_int(ep.y(y)) * sched_params.rt.width() + convert_to_int(ep.x(x)),
+                I(frame_id_)
+                );
+
+            auto gen = make_generator(S{}, sched_params.sample_params, seed);
 
             basic_sched_impl::call_sample_pixel(
                     typename detail::sched_params_has_intersector<SP>::type(),
@@ -136,6 +142,8 @@ void basic_sched<B, R>::frame(K kernel, SP sched_params)
     sched_params.rt.end_frame();
 
     sched_params.cam.end_frame();
+
+    ++frame_id_;
 }
 
 template <typename B, typename R>

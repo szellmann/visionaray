@@ -299,6 +299,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/kernels.h
     ${HEADER_DIR}/light_sample.h
     ${HEADER_DIR}/make_generator.h
+    ${HEADER_DIR}/make_random_seed.h
     ${HEADER_DIR}/material.h
     ${HEADER_DIR}/matrix_camera.h
     ${HEADER_DIR}/medium.h

@@ -27,6 +27,8 @@ private:
 
     Backend backend_;
 
+    unsigned frame_id_;
+
 };
 
 } // visionaray
