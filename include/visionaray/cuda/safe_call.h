@@ -17,7 +17,7 @@
 #ifndef NDEBUG
 #define CUDA_SAFE_CALL(FUNC) { visionaray::cuda::safe_call((FUNC), __FILE__, __LINE__); }
 #else
-#define CUDA_SAFE_CALL(FUNC)
+#define CUDA_SAFE_CALL(FUNC) FUNC
 #endif
 
 namespace visionaray
