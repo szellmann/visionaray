@@ -10,9 +10,29 @@
 
 #include "forward.h"
 
-
 namespace MATH_NAMESPACE
 {
+
+//-------------------------------------------------------------------------------------------------
+// vector traits
+//
+
+template <size_t Dim, typename T>
+struct vector_traits
+{
+    using value_type                = T;
+    using reference                 = T&;
+    using const_reference           = T const&;
+    using pointer                   = T*;
+    using const_pointer             = T const*;
+
+    using type                      = vector<Dim, T>;
+    using reference_to_vector       = vector<Dim, T>&;
+    using const_reference_to_vector = vector<Dim, T> const&;
+    using pointer_to_vector         = vector<Dim, T>*;
+    using const_pointer_to_vector   = vector<Dim, T> const*;
+};
+
 
 //--------------------------------------------------------------------------------------------------
 // vector2
@@ -22,8 +42,13 @@ template <typename T>
 class vector<2, T>
 {
 public:
+    using value_type      = typename vector_traits<2, T>::value_type;
+    using reference       = typename vector_traits<2, T>::reference;
+    using const_reference = typename vector_traits<2, T>::const_reference;
+    using pointer         = typename vector_traits<2, T>::pointer;
+    using const_pointer   = typename vector_traits<2, T>::const_pointer;
 
-    typedef T value_type;
+public:
 
     T x;
     T y;
@@ -63,8 +88,13 @@ template <typename T>
 class vector<3, T>
 {
 public:
+    using value_type      = typename vector_traits<3, T>::value_type;
+    using reference       = typename vector_traits<3, T>::reference;
+    using const_reference = typename vector_traits<3, T>::const_reference;
+    using pointer         = typename vector_traits<3, T>::pointer;
+    using const_pointer   = typename vector_traits<3, T>::const_pointer;
 
-    typedef T value_type;
+public:
 
     T x;
     T y;
@@ -108,8 +138,13 @@ template <typename T>
 class vector<4, T>
 {
 public:
+    using value_type      = typename vector_traits<4, T>::value_type;
+    using reference       = typename vector_traits<4, T>::reference;
+    using const_reference = typename vector_traits<4, T>::const_reference;
+    using pointer         = typename vector_traits<4, T>::pointer;
+    using const_pointer   = typename vector_traits<4, T>::const_pointer;
 
-    typedef T value_type;
+public:
 
     T x;
     T y;
@@ -160,8 +195,11 @@ template <size_t Dim, typename T>
 class vector
 {
 public:
-
-    using value_type = T;
+    using value_type      = typename vector_traits<Dim, T>::value_type;
+    using reference       = typename vector_traits<Dim, T>::reference;
+    using const_reference = typename vector_traits<Dim, T>::const_reference;
+    using pointer         = typename vector_traits<Dim, T>::pointer;
+    using const_pointer   = typename vector_traits<Dim, T>::const_pointer;
 
 public:
 
@@ -191,7 +229,6 @@ private:
     T data_[Dim];
 
 };
-
 
 } // MATH_NAMESPACE
 
