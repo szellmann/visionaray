@@ -121,7 +121,7 @@ public:
     using reference       = T&;
     using const_reference = T const&;
     using pointer         = T*;
-    using const_pointer   = T const*;
+    using const_pointer   = T const&;
 
 public:
 
