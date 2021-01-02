@@ -6,7 +6,18 @@
 #ifndef VSNRAY_PIXEL_UNPACK_BUFFER_RT
 #define VSNRAY_PIXEL_UNPACK_BUFFER_RT 1
 
+#include <visionaray/config.h>
+
 #include <memory>
+
+#if VSNRAY_HAVE_GLEW
+#include <GL/glew.h>
+#endif
+
+#include <visionaray/cuda/graphics_resource.h>
+#include <visionaray/gl/compositing.h>
+#include <visionaray/gl/handle.h>
+#include <visionaray/gl/util.h>
 
 #include "math/forward.h"
 #include "math/vector.h"
@@ -49,8 +60,13 @@ public:
 
 private:
 
-    struct impl;
-    std::unique_ptr<impl> const impl_;
+    std::unique_ptr<gl::depth_compositor> compositor;
+
+    cuda::graphics_resource               color_resource;
+    cuda::graphics_resource               depth_resource;
+
+    gl::buffer                            color_buffer;
+    gl::buffer                            depth_buffer;
 
 };
 
