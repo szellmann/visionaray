@@ -6,8 +6,6 @@
 #ifndef VSNRAY_COMMON_MODEL_H
 #define VSNRAY_COMMON_MODEL_H 1
 
-#include <common/config.h>
-
 #include <map>
 #include <memory>
 #include <string>
