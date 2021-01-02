@@ -19,7 +19,7 @@ namespace cuda
 
 graphics_resource::graphics_resource()
     : resource_(0)
-    , dev_ptr_(0)
+    , dev_ptr_(nullptr)
 {
 }
 
@@ -69,7 +69,7 @@ void* graphics_resource::map(size_t* size)
     if (err != cudaSuccess)
     {
         cudaGraphicsUnmapResources(1, &resource_);
-        dev_ptr_ = 0;
+        dev_ptr_ = nullptr;
     }
 
     return dev_ptr_;
@@ -83,13 +83,13 @@ void* graphics_resource::map()
 
 void graphics_resource::unmap()
 {
-    if (dev_ptr_ == 0)
+    if (dev_ptr_ == nullptr)
     {
         return;
     }
 
     cudaGraphicsUnmapResources(1, &resource_);
-    dev_ptr_ = 0;
+    dev_ptr_ = nullptr;
 }
 
 void* graphics_resource::dev_ptr() const
