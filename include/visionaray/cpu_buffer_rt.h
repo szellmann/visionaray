@@ -8,8 +8,10 @@
 
 #include <memory>
 
+#include "gl/compositing.h"
 #include "math/forward.h"
 #include "math/vector.h"
+#include "aligned_vector.h"
 #include "pixel_traits.h"
 #include "render_target.h"
 
@@ -48,8 +50,10 @@ public:
 
 private:
 
-    struct impl;
-    std::unique_ptr<impl> const impl_;
+    std::unique_ptr<gl::depth_compositor> compositor;
+
+    aligned_vector<color_type>            color_buffer;
+    aligned_vector<depth_type>            depth_buffer;
 
 };
 

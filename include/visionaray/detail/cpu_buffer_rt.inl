@@ -3,9 +3,6 @@
 
 #include <algorithm>
 
-#include <visionaray/gl/compositing.h>
-#include <visionaray/aligned_vector.h>
-
 #include "color_conversion.h"
 
 
@@ -13,28 +10,12 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
-// Private implementation
-//
-
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-struct cpu_buffer_rt<ColorFormat, DepthFormat>::impl
-{
-    impl() : compositor(nullptr) {}
-
-    std::unique_ptr<gl::depth_compositor>   compositor;
-
-    aligned_vector<color_type>              color_buffer;
-    aligned_vector<depth_type>              depth_buffer;
-};
-
-
-//-------------------------------------------------------------------------------------------------
 // cpu_buffer_rt
 //
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 cpu_buffer_rt<ColorFormat, DepthFormat>::cpu_buffer_rt()
-    : impl_(new impl)
+    : compositor(nullptr)
 {
 }
 
@@ -44,25 +25,25 @@ cpu_buffer_rt<ColorFormat, DepthFormat>::~cpu_buffer_rt() = default;
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename cpu_buffer_rt<ColorFormat, DepthFormat>::color_type* cpu_buffer_rt<ColorFormat, DepthFormat>::color()
 {
-    return impl_->color_buffer.data();
+    return color_buffer.data();
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename cpu_buffer_rt<ColorFormat, DepthFormat>::depth_type* cpu_buffer_rt<ColorFormat, DepthFormat>::depth()
 {
-    return impl_->depth_buffer.data();
+    return depth_buffer.data();
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename cpu_buffer_rt<ColorFormat, DepthFormat>::color_type const* cpu_buffer_rt<ColorFormat, DepthFormat>::color() const
 {
-    return impl_->color_buffer.data();
+    return color_buffer.data();
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename cpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* cpu_buffer_rt<ColorFormat, DepthFormat>::depth() const
 {
-    return impl_->depth_buffer.data();
+    return depth_buffer.data();
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
@@ -83,7 +64,7 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_color_buffer(vec4 const& c)
         c
         );
 
-    std::fill(impl_->color_buffer.begin(), impl_->color_buffer.end(), cc);
+    std::fill(color_buffer.begin(), color_buffer.end(), cc);
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
@@ -98,7 +79,7 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth_buffer(float d)
         d
         );
 
-    std::fill(impl_->depth_buffer.begin(), impl_->depth_buffer.end(), dd);
+    std::fill(depth_buffer.begin(), depth_buffer.end(), dd);
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
@@ -119,30 +100,30 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::resize(int w, int h)
 
     // Allocate storage
 
-    impl_->color_buffer.resize(w * h);
+    color_buffer.resize(w * h);
 
     if (DepthFormat != PF_UNSPECIFIED)
     {
-        impl_->depth_buffer.resize(w * h);
+        depth_buffer.resize(w * h);
     }
 
-    if (!impl_->compositor)
+    if (!compositor)
     {
-        impl_->compositor.reset(new gl::depth_compositor);
+        compositor.reset(new gl::depth_compositor);
     }
 
     // Allocate texture storage
 
     pixel_format_info cinfo = map_pixel_format(ColorFormat);
 
-    impl_->compositor->setup_color_texture(cinfo, w, h);
+    compositor->setup_color_texture(cinfo, w, h);
 
 
     if (DepthFormat != PF_UNSPECIFIED)
     {
         pixel_format_info dinfo = map_pixel_format(DepthFormat);
 
-        impl_->compositor->setup_depth_texture(dinfo, w, h);
+        compositor->setup_depth_texture(dinfo, w, h);
     }
 }
 
@@ -155,11 +136,11 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 
         pixel_format_info cinfo = map_pixel_format(ColorFormat);
 
-        impl_->compositor->update_color_texture(
+        compositor->update_color_texture(
                 cinfo,
                 width(),
                 height(),
-                impl_->color_buffer.data()
+                color_buffer.data()
                 );
 
 
@@ -167,30 +148,30 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 
         pixel_format_info dinfo = map_pixel_format(DepthFormat);
 
-        impl_->compositor->update_depth_texture(
+        compositor->update_depth_texture(
                 dinfo,
                 width(),
                 height(),
-                impl_->depth_buffer.data()
+                depth_buffer.data()
                 );
 
 
         // Combine textures using a shader
 
-        impl_->compositor->composite_textures();
+        compositor->composite_textures();
     }
     else
     {
         pixel_format_info cinfo = map_pixel_format(ColorFormat);
 
-        impl_->compositor->update_color_texture(
+        compositor->update_color_texture(
                 cinfo,
                 width(),
                 height(),
-                impl_->color_buffer.data()
+                color_buffer.data()
                 );
 
-        impl_->compositor->display_color_texture();
+        compositor->display_color_texture();
     }
 }
 
