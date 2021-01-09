@@ -213,10 +213,10 @@ inline array<R, 2> make_primary_rays(
 {
     using T = typename R::scalar_type;
 
-    array<R, 2> result;
-
-    result[0] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.25), expand_pixel<T>().y(y) - T(0.25), T(width), T(height));
-    result[1] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.25), expand_pixel<T>().y(y) + T(0.25), T(width), T(height));
+    array<R, 2> result{{
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.25), expand_pixel<T>().y(y) - T(0.25), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.25), expand_pixel<T>().y(y) + T(0.25), T(width), T(height))
+    }};
 
     return result;
 }
@@ -238,12 +238,12 @@ inline array<R, 4> make_primary_rays(
 {
     using T = typename R::scalar_type;
 
-    array<R, 4> result;
-
-    result[0] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.125), expand_pixel<T>().y(y) - T(0.375), T(width), T(height));
-    result[1] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.375), expand_pixel<T>().y(y) - T(0.125), T(width), T(height));
-    result[2] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.125), expand_pixel<T>().y(y) + T(0.375), T(width), T(height));
-    result[3] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.375), expand_pixel<T>().y(y) + T(0.125), T(width), T(height));
+    array<R, 4> result {{
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.125), expand_pixel<T>().y(y) - T(0.375), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.375), expand_pixel<T>().y(y) - T(0.125), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.125), expand_pixel<T>().y(y) + T(0.375), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.375), expand_pixel<T>().y(y) + T(0.125), T(width), T(height))
+    }};
 
     return result;
 }
@@ -265,16 +265,16 @@ inline array<R, 8> make_primary_rays(
 {
     using T = typename R::scalar_type;
 
-    array<R, 8> result;
-
-    result[0] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.125), expand_pixel<T>().y(y) - T(0.4375), T(width), T(height));
-    result[1] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.375), expand_pixel<T>().y(y) - T(0.3125), T(width), T(height));
-    result[2] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.375), expand_pixel<T>().y(y) - T(0.1875), T(width), T(height));
-    result[3] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.125), expand_pixel<T>().y(y) - T(0.0625), T(width), T(height));
-    result[4] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.125), expand_pixel<T>().y(y) + T(0.0625), T(width), T(height));
-    result[5] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.375), expand_pixel<T>().y(y) + T(0.1825), T(width), T(height));
-    result[6] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.375), expand_pixel<T>().y(y) + T(0.3125), T(width), T(height));
-    result[7] = invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.125), expand_pixel<T>().y(y) + T(0.4375), T(width), T(height));
+    array<R, 8> result {{
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.125), expand_pixel<T>().y(y) - T(0.4375), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.375), expand_pixel<T>().y(y) - T(0.3125), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.375), expand_pixel<T>().y(y) - T(0.1875), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.125), expand_pixel<T>().y(y) - T(0.0625), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.125), expand_pixel<T>().y(y) + T(0.0625), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.375), expand_pixel<T>().y(y) + T(0.1825), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) - T(0.375), expand_pixel<T>().y(y) + T(0.3125), T(width), T(height)),
+        invoke_cam_primary_ray(R{}, cam, gen, expand_pixel<T>().x(x) + T(0.125), expand_pixel<T>().y(y) + T(0.4375), T(width), T(height))
+    }};
 
     return result;
 }
