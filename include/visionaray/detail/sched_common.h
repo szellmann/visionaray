@@ -9,6 +9,9 @@
 #include <cstddef>
 #include <utility>
 
+#include <visionaray/math/forward.h>
+#include <visionaray/math/matrix.h>
+#include <visionaray/math/vector.h>
 #include <visionaray/array.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
