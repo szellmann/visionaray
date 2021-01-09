@@ -670,8 +670,8 @@ inline void sample_pixel_impl(
 
     auto ray_ptr = rays.data();
 
-    auto frame_begin = 0;
-    auto frame_end   = Num;
+    size_t frame_begin = 0;
+    size_t frame_end   = Num;
 
     pixel_access::store(
             pixel_format_constant<CF>{},
@@ -731,8 +731,8 @@ inline void sample_pixel_impl(
 
     auto ray_ptr = rays.data();
 
-    auto frame_begin = 0;
-    auto frame_end   = Num;
+    size_t frame_begin = 0;
+    size_t frame_end   = Num;
 
     pixel_access::store(
             pixel_format_constant<CF>{},
