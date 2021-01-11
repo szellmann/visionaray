@@ -34,6 +34,7 @@ Options:
    -envmap=<ARG>          HDR environment map
    -frames=<ARG>          Number of path tracer convergence frames
    -fullscreen            Full screen window
+   -groundplane=<ARG>     Add a ground plane
    -headlight=<ARG>       Activate headlight
    -height=<ARG>          Window height
    -screenshotbasename=<ARG>

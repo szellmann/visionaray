@@ -215,6 +215,14 @@ struct renderer : viewer_type
 
         add_cmdline_option( cl::makeOption<bool&>(
             cl::Parser<>(),
+            "groundplane",
+            cl::Desc("Add a ground plane"),
+            cl::ArgRequired,
+            cl::init(this->use_groundplane)
+            ) );
+
+        add_cmdline_option( cl::makeOption<bool&>(
+            cl::Parser<>(),
             "dof",
             cl::Desc("Activate depth of field"),
             cl::ArgRequired,
@@ -424,6 +432,14 @@ struct renderer : viewer_type
                     use_headlight = headlight;
                 }
 
+                // ground plane
+                bool groundplane = use_groundplane;
+                err = ini.get_bool("groundplane", groundplane);
+                if (err == inifile::Ok)
+                {
+                    use_groundplane = groundplane;
+                }
+
                 // Environment map
                 std::string envmap = env_map_filename;
                 err = ini.get_string("envmap", envmap, true /*remove quotes*/);
@@ -472,6 +488,7 @@ struct renderer : viewer_type
     algorithm                                   algo            = Simple;
     bvh_build_strategy                          build_strategy  = Binned;
     bool                                        use_headlight   = true;
+    bool                                        use_groundplane = false;
     bool                                        use_dof         = false;
     bool                                        show_hud        = true;
     bool                                        show_bvh        = false;
@@ -2908,6 +2925,72 @@ int main(int argc, char** argv)
     {
         std::cerr << "Failed loading model\n";
         return EXIT_FAILURE;
+    }
+
+    if (rend.use_groundplane)
+    {
+        vec3 size = rend.mod.bbox.size();
+        vec3 size2 = rend.mod.bbox.size() / 2.0f;
+
+        float max_len = max_element(size);
+
+        vec3 slack(1.5f, 1.0f, 1.5f);
+
+        vec3 v1 = rend.mod.bbox.center() + vec3(-max_len / 2.0f, -size2.y, -max_len / 2.0f) * slack;
+        vec3 v2 = rend.mod.bbox.center() + vec3(+max_len / 2.0f, -size2.y, -max_len / 2.0f) * slack;
+        vec3 v3 = rend.mod.bbox.center() + vec3(+max_len / 2.0f, -size2.y, +max_len / 2.0f) * slack;
+        vec3 v4 = rend.mod.bbox.center() + vec3(-max_len / 2.0f, -size2.y, +max_len / 2.0f) * slack;
+
+        basic_triangle<3, float> t1;
+        t1.v1 = v1;
+        t1.e1 = v2 - v1;
+        t1.e2 = v3 - v1;
+        t1.prim_id = static_cast<unsigned>(rend.mod.primitives.size());
+        t1.geom_id = static_cast<unsigned>(rend.mod.materials.size());
+        rend.mod.primitives.push_back(t1);
+
+        basic_triangle<3, float> t2;
+        t2.v1 = v1;
+        t2.e1 = v3 - v1;
+        t2.e2 = v4 - v1;
+        t2.prim_id = static_cast<unsigned>(rend.mod.primitives.size());
+        t2.geom_id = static_cast<unsigned>(rend.mod.materials.size());
+        rend.mod.primitives.push_back(t2);
+
+        rend.mod.geometric_normals.push_back({ 0.0f, 1.0f, 0.0f });
+        rend.mod.geometric_normals.push_back({ 0.0f, 1.0f, 0.0f });
+
+        if (!rend.mod.shading_normals.empty())
+        {
+            for (int i = 0; i < 6; ++i)
+            {
+                rend.mod.shading_normals.push_back({ 0.0f, 1.0f, 0.0f });
+            }
+        }
+
+        // Default obj material
+        sg::obj_material mat;
+        mat.cs = vec3(0.0f);
+        rend.mod.materials.push_back(mat);
+
+        // Dummy texture
+        using tex_type = model::texture_type;
+
+        tex_type tex(1, 1);
+        tex.set_address_mode(Wrap);
+        tex.set_filter_mode(Nearest);
+
+        vector<4, unorm<8>> dummy_texel(1.0f, 1.0f, 1.0f, 1.0f);
+        tex.reset(&dummy_texel);
+
+        rend.mod.texture_map.insert(std::make_pair("null", std::move(tex)));
+
+        // Maybe a "null" texture was already present and thus not inserted
+        //  ==> find the one that was already inserted
+        auto it = rend.mod.texture_map.find("null");
+
+        // Insert a ref
+        rend.mod.textures.push_back(tex_type::ref_type(it->second));
     }
 
     rend.build_scene();
