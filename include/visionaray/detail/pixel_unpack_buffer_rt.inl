@@ -4,9 +4,7 @@
 #include <cassert>
 #include <stdexcept>
 
-#include <thrust/fill.h>
-#include <thrust/execution_policy.h>
-
+#include "../cuda/fill.h"
 #include "color_conversion.h"
 
 
@@ -68,7 +66,7 @@ void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_color_buffer(vec4 c
 
     begin_frame();
 
-    thrust::fill(thrust::device, color(), color() + width() * height(), cc);
+    cuda::fill(color(), width() * height() * sizeof(color_type), &cc, sizeof(color_type));
 
     end_frame();
 }
@@ -89,7 +87,7 @@ void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_depth_buffer(float 
 
     begin_frame();
 
-    thrust::fill(thrust::device, depth(), depth() + width() * height(), dd);
+    cuda::fill(depth(), width() * height() * sizeof(depth_type), &dd, sizeof(depth_type));
 
     end_frame();
 }
