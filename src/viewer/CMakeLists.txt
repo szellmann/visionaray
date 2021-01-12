@@ -88,6 +88,7 @@ set(VIEWER_HEADERS
 )
 
 set(VIEWER_SOURCES
+    host_device_rt.cpp
     render_generic_material.cpp
     render_instances.cpp
     render_instances_ptex.cpp
@@ -96,7 +97,6 @@ set(VIEWER_SOURCES
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     visionaray_cuda_compile(VIEWER_CUDA_SOURCES
-        host_device_rt.cu
         render_generic_material.cu
         render_instances.cu
         render_plastic.cu
@@ -104,7 +104,6 @@ if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     )
 else()
     set(VIEWER_SOURCES ${VIEWER_SOURCES}
-        host_device_rt.cpp
         viewer.cpp
     )
 endif()

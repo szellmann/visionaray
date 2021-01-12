@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/config.h>
+
 #include <cassert>
 #include <utility>
 
@@ -8,7 +10,7 @@
 
 #include <visionaray/cpu_buffer_rt.h>
 
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
 #include <visionaray/gpu_buffer_rt.h>
 #include <visionaray/pixel_unpack_buffer_rt.h>
 #endif
@@ -39,7 +41,7 @@ struct host_device_rt::impl
     // Host render target
     cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> host_rt[2];
 
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
     // Device render target, uses PBO
     pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> direct_rt[2];
 
@@ -146,7 +148,7 @@ host_device_rt::ref_type host_device_rt::ref(buffer buf)
     }
     else
     {
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
         if (impl_->direct_rendering)
         {
             return impl_->direct_rt[impl_->buffer_index[buf]].ref();
@@ -165,7 +167,7 @@ host_device_rt::ref_type host_device_rt::ref(buffer buf)
 void host_device_rt::clear_color_buffer(vec4 const& color, buffer buf)
 {
     impl_->host_rt[impl_->buffer_index[buf]].clear_color_buffer(color);
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
     if (impl_->direct_rendering)
     {
         impl_->direct_rt[impl_->buffer_index[buf]].clear_color_buffer(color);
@@ -183,7 +185,7 @@ void host_device_rt::begin_frame(buffer buf)
     {
         impl_->host_rt[impl_->buffer_index[buf]].begin_frame();
     }
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
     else
     {
         if (impl_->direct_rendering)
@@ -204,7 +206,7 @@ void host_device_rt::end_frame(buffer buf)
     {
         impl_->host_rt[impl_->buffer_index[buf]].end_frame();
     }
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
     else
     {
         if (impl_->direct_rendering)
@@ -227,7 +229,7 @@ void host_device_rt::resize(int w, int h)
     for (int buf = 0; buf < num_buffers; ++buf)
     {
         impl_->host_rt[buf].resize(w, h);
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
         if (impl_->direct_rendering)
         {
             impl_->direct_rt[buf].resize(w, h);
@@ -262,7 +264,7 @@ void host_device_rt::display_color_buffer(buffer buf) const
     {
         impl_->host_rt[impl_->buffer_index[buf]].display_color_buffer();
     }
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
     else
     {
         if (impl_->direct_rendering)
