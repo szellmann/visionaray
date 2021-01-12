@@ -1,6 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cuda_runtime.h>
 #include <thrust/fill.h>
 #include <thrust/execution_policy.h>
 
