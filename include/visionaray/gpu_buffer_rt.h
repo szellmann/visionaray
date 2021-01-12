@@ -6,8 +6,6 @@
 #ifndef VSNRAY_GPU_BUFFER_RT_H
 #define VSNRAY_GPU_BUFFER_RT_H 1
 
-#include <thrust/device_vector.h>
-
 #include "math/forward.h"
 #include "math/vector.h"
 #include "pixel_traits.h"
@@ -47,8 +45,8 @@ public:
 
 private:
 
-    thrust::device_vector<color_type> color_buffer_;
-    thrust::device_vector<depth_type> depth_buffer_;
+    color_type* color_buffer_ = nullptr;
+    depth_type* depth_buffer_ = nullptr;
 
 };
 

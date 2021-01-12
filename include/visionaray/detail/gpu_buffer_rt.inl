@@ -1,7 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <thrust/copy.h>
 #include <thrust/fill.h>
 #include <thrust/execution_policy.h>
 
@@ -13,25 +12,25 @@ namespace visionaray
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename gpu_buffer_rt<ColorFormat, DepthFormat>::color_type* gpu_buffer_rt<ColorFormat, DepthFormat>::color()
 {
-    return thrust::raw_pointer_cast(color_buffer_.data());
+    return color_buffer_;
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename gpu_buffer_rt<ColorFormat, DepthFormat>::depth_type* gpu_buffer_rt<ColorFormat, DepthFormat>::depth()
 {
-    return thrust::raw_pointer_cast(depth_buffer_.data());
+    return depth_buffer_;
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename gpu_buffer_rt<ColorFormat, DepthFormat>::color_type const* gpu_buffer_rt<ColorFormat, DepthFormat>::color() const
 {
-    return thrust::raw_pointer_cast(color_buffer_.data());
+    return color_buffer_;
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename gpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* gpu_buffer_rt<ColorFormat, DepthFormat>::depth() const
 {
-    return thrust::raw_pointer_cast(depth_buffer_.data());
+    return depth_buffer_;
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
@@ -83,13 +82,20 @@ void gpu_buffer_rt<ColorFormat, DepthFormat>::end_frame()
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 void gpu_buffer_rt<ColorFormat, DepthFormat>::resize(int w, int h)
 {
+    if (w == width() && h == height())
+    {
+        return;
+    }
+
     render_target::resize(w, h);
 
-    color_buffer_.resize(w * h);
+    cudaFree(color_buffer_);
+    cudaMalloc((void**)&color_buffer_, w * h * sizeof(color_type));
 
     if (DepthFormat != PF_UNSPECIFIED)
     {
-        depth_buffer_.resize(w * h);
+        cudaFree(depth_buffer_);
+        cudaMalloc((void**)&depth_buffer_, w * h * sizeof(depth_type));
     }
 }
 
@@ -98,16 +104,23 @@ void gpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
 {
     cpu_buffer_rt<ColorFormat, DepthFormat> rt;
 
-    rt.resize( width(), height() );
+    rt.resize(width(), height());
 
-    // TODO:
-    // This won't compile if cpu_buffer_rt::XXX_traits::format
-    //      != gpu_buffer_rt::XXX_traits::format
-    thrust::copy( color_buffer_.begin(), color_buffer_.end(), rt.color() );
+    cudaMemcpy(
+        rt.color(),
+        color_buffer_,
+        width() * height() * sizeof(color_type),
+        cudaMemcpyDeviceToHost
+        );
 
     if (DepthFormat != PF_UNSPECIFIED)
     {
-        thrust::copy( depth_buffer_.begin(), depth_buffer_.end(), rt.depth() );
+        cudaMemcpy(
+            rt.depth(),
+            depth_buffer_,
+            width() * height() * sizeof(depth_type),
+            cudaMemcpyDeviceToHost
+            );
     }
 
     rt.display_color_buffer();
