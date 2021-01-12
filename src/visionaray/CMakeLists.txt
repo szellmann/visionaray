@@ -73,6 +73,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/cuda/array.h
     ${HEADER_DIR}/cuda/cast.h
     ${HEADER_DIR}/cuda/counting_sort.h
+    ${HEADER_DIR}/cuda/fill.h
     ${HEADER_DIR}/cuda/graphics_resource.h
     ${HEADER_DIR}/cuda/pitch2d.h
     ${HEADER_DIR}/cuda/pixel_pack_buffer.h
@@ -351,6 +352,12 @@ set(VSNRAY_SOURCES
 
 )
 
+if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
+    include_directories(${PROJECT_SOURCE_DIR}/include)
+    visionaray_cuda_compile(VSNRAY_CUDA_SOURCES
+        cuda/fill.cu
+    )
+endif()
 
 #--------------------------------------------------------------------------------------------------
 # Add library target
@@ -359,6 +366,7 @@ set(VSNRAY_SOURCES
 visionaray_add_library(visionaray
     ${VSNRAY_HEADERS}
     ${VSNRAY_SOURCES}
+    ${VSNRAY_CUDA_SOURCES}
 )
 
 target_include_directories(visionaray
