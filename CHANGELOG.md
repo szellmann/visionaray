@@ -1,5 +1,6 @@
 ## [Unreleased]
 ### Added
+- Support for HDR/radiance file format in visionaray-common library.
 - Added an optional ground plane in viewer.
 - Add BVH cost debug kernel to viewer, can be activated by pressing
 KEY-4, or by passing -algorithm=costs on the command line.
