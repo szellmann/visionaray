@@ -70,7 +70,6 @@ bool hdr_image::load(std::string const& filename)
     // resolution string ----------------------------------
 
     std::getline(file, line);
-    std::cout << "Line: " << line << std::endl;
 
     std::vector<std::string> res;
     boost::split(res, line, boost::is_any_of("\t "));
