@@ -77,6 +77,7 @@ bool hdr_image::load(std::string const& filename)
     if (res.size() != 4)
     {
         std::cerr << "Error: invalid resolution string in HDR file\n";
+        return false;
     }
 
     if (res[0] == "-Y" && res[2] == "+X")
@@ -87,6 +88,7 @@ bool hdr_image::load(std::string const& filename)
     else
     {
         std::cerr << "Error: unsupported resolution string in HDR file\n";
+        return false;
     }
 
     format_ = PF_RGB32F;
