@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <array>
+#include <cmath>
 #include <cstdint>
 #include <fstream>
 #include <iostream>
@@ -88,26 +90,82 @@ bool hdr_image::load(std::string const& filename)
         std::cerr << "Error: unsupported resolution string in HDR file\n";
     }
 
+    format_ = PF_RGB32F;
+
+    data_.resize(width_ * height_ * 3 * sizeof(float));
+
+    float* data = reinterpret_cast<float*>(data_.data());
+
     // scanlines ------------------------------------------
 
-    //while (std::getline(file, line))
-    for (size_t h = 0; h < height_; ++h)
+    for (size_t y = 0; y < height_; ++y)
     {
-        std::getline(file, line);
-        //auto bytes = reinterpret_cast<uint8_t const*>(line.c_str());
+        // Read the scanline header
+        // two bytes equal 2 indicate new format
+        // followed by upper and lower byte of
+        // the scanline length (< 32768)
+        uint8_t header[4];
+        file.read((char*)&header, sizeof(header));
 
-        //for (size_t w = 0; w < width_; ++w)
-        //{
-        //    uint8_t r = bytes[w * 4];
-        //    uint8_t g = bytes[w * 4 + 1];
-        //    uint8_t b = bytes[w * 4 + 2];
-        //    uint8_t e = bytes[w * 4 + 3];
+        if (header[0] == 2 && header[1] == 2)
+        {
+            unsigned len = (header[2] << 8) | header[3];
 
-        //    size_t rl = 1;
-        //    if (r == 2 && g == 2)
-        //    {
-        //    }
-        //}
+            using RGBE = std::array<uint8_t, 4>;
+            std::vector<RGBE> rgbe(len);
+
+            for (unsigned c = 0; c < 4; ++c)
+            {
+                uint8_t rl = 0;
+                uint8_t bytes[128];
+                unsigned x = 0;
+
+                while (x < len)
+                {
+                    file.read((char*)&rl, sizeof(rl));
+
+                    unsigned num_pixels = 0;
+
+                    if (rl > 128)
+                    {
+                        // This is a run
+                        num_pixels = rl & 127;
+                        file.read((char*)bytes, 1);
+
+                        for (unsigned i = 0; i < num_pixels; ++i)
+                        {
+                            rgbe[x + i][c] = bytes[0];
+                        }
+                    }
+                    else
+                    {
+                        num_pixels = rl;
+                        file.read((char*)bytes, num_pixels);
+
+                        for (unsigned i = 0; i < num_pixels; ++i)
+                        {
+                            rgbe[x + i][c] = bytes[i];
+                        }
+                    }
+
+                    x += num_pixels;
+                }
+            }
+
+            for (unsigned x = 0; x < len; ++x)
+            {
+                float e = rgbe[x][3] - 128;
+                float be = powf(2.0f, e);
+                *data++ = (rgbe[x][0] / 256.0f) * be;
+                *data++ = (rgbe[x][1] / 256.0f) * be;
+                *data++ = (rgbe[x][2] / 256.0f) * be;
+            }
+        }
+        else
+        {
+            std::cerr << "Unsuppored format\n";
+            return false;
+        }
     }
 
     return true;

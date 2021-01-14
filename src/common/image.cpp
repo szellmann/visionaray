@@ -211,19 +211,19 @@ bool image::load(std::string const& filename)
         return false;
     }
 
-//    case HDR:
-//    {
-//        hdr_image hdr;
-//        if (hdr.load(fn))
-//        {
-//            width_  = hdr.width_;
-//            height_ = hdr.height_;
-//            format_ = hdr.format_;
-//            data_   = std::move(hdr.data_);
-//            return true;
-//        }
-//        return false;
-//    }
+    case HDR:
+    {
+        hdr_image hdr;
+        if (hdr.load(fn))
+        {
+            width_  = hdr.width_;
+            height_ = hdr.height_;
+            format_ = hdr.format_;
+            data_   = std::move(hdr.data_);
+            return true;
+        }
+        return false;
+    }
 
     case PNM:
     {
