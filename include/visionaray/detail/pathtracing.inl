@@ -23,18 +23,7 @@ template <typename Light, typename T>
 VSNRAY_FUNC
 vector<4, T> sample_environment_light(Light const& env_light, vector<3, T> const& dir)
 {
-    vector<3, T> d = (matrix<4, 4, T>(env_light.world_to_light_transform()) * vector<4, T>(dir, T(0.0))).xyz();
-
-    auto x = atan2(d.x, d.z);
-    x = select(x < T(0.0), x + constants::two_pi<T>(), x);
-    auto y = acos(d.y);
-
-    auto u = x / constants::two_pi<T>();
-    auto v = y * constants::inv_pi<T>();
-
-    vector<2, T> tc(u, v);
-
-    return tex2D(env_light.texture(), tc) * vector<4, T>(to_rgba(env_light.scale()));
+    return vector<4, T>(env_light.intensity(dir), T(1.0));
 }
 
 template <typename T>

@@ -23,6 +23,9 @@ public:
 
 public:
 
+    template <typename U>
+    VSNRAY_FUNC vector<3, U> intensity(vector<3, U> const& dir) const;
+
     VSNRAY_FUNC Texture& texture();
     VSNRAY_FUNC Texture const& texture() const;
 
