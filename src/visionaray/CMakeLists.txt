@@ -109,6 +109,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/spd/measured.h
     ${HEADER_DIR}/detail/algorithm.h
     ${HEADER_DIR}/detail/aligned_allocator.h
+    ${HEADER_DIR}/detail/ambient_light.inl
     ${HEADER_DIR}/detail/area_light.inl
     ${HEADER_DIR}/detail/array.inl
     ${HEADER_DIR}/detail/basic_sched.h
@@ -275,6 +276,7 @@ set(VSNRAY_HEADERS
     # General library headers
 
     ${HEADER_DIR}/aligned_vector.h
+    ${HEADER_DIR}/ambient_light.h
     ${HEADER_DIR}/area_light.h
     ${HEADER_DIR}/array.h
     ${HEADER_DIR}/array_ref.h

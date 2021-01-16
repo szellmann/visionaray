@@ -386,7 +386,7 @@ void renderer::on_display()
 
         result_record<S> result;
 
-        result.color = kparams.bg_color;
+        result.color = vector<4, S>(kparams.environment_map.background_intensity(ray.dir), S(1.0));
 
         // use the closest_hit() intrinsic with a custom intersector
         auto hit_rec = closest_hit(

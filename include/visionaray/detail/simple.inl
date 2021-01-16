@@ -39,8 +39,10 @@ struct kernel
             hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
 
             auto surf = get_surface(hit_rec, params);
-            auto ambient = surf.material.ambient() * C(from_rgba(params.ambient_color));
-            auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgba(params.bg_color)) );
+            auto env = params.environment_map.intensity(ray.dir);
+            auto bgcolor = params.environment_map.background_intensity(ray.dir);
+            auto ambient = surf.material.ambient() * C(from_rgb(env));
+            auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgb(bgcolor)) );
             auto view_dir = -ray.dir;
 
             for (auto it = params.lights.begin; it != params.lights.end; ++it)
@@ -52,12 +54,12 @@ struct kernel
                 shaded_clr  += select( hit_rec.hit, clr, C(0.0) );
             }
 
-            result.color     = select( hit_rec.hit, to_rgba(shaded_clr), params.bg_color );
+            result.color     = select(hit_rec.hit, to_rgba(shaded_clr), vector<4, S>(bgcolor, S(1.0)));
             result.isect_pos = hit_rec.isect_pos;
         }
         else
         {
-            result.color = params.bg_color;
+            result.color = vector<4, S>(params.environment_map.background_intensity(ray.dir), S(1.0));
         }
 
         result.hit = hit_rec.hit;

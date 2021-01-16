@@ -13,6 +13,7 @@
 #include "math/forward.h"
 #include "math/vector.h"
 #include "prim_traits.h"
+#include "ambient_light.h"
 #include "tags.h"
 
 namespace visionaray
@@ -32,7 +33,6 @@ template <
     typename Colors,
     typename Textures,
     typename Lights,
-    typename Color,
     typename EnvMap
     >
 struct kernel_params
@@ -69,9 +69,6 @@ struct kernel_params
     unsigned num_bounces;
     float epsilon;
 
-    Color bg_color;
-    Color ambient_color;
-
     EnvMap environment_map;
 };
 
@@ -105,10 +102,15 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         std::nullptr_t*, // dummy texture type
         std::nullptr_t*, // dummy light type
-        vec4,
-        std::nullptr_t*  // dummy env map type
+        ambient_light<float>
         >
 {
+    ambient_light<float> al;
+    al.set_cl(ambient_color.xyz());
+    al.set_kl(ambient_color.w);
+    al.set_background_cl(bg_color.xyz());
+    al.set_background_kl(bg_color.w);
+
     return {
         { begin, end },
         nullptr, // geometric normals
@@ -120,9 +122,7 @@ auto make_kernel_params(
         { nullptr, nullptr }, // lights
         num_bounces,
         epsilon,
-        bg_color,
-        ambient_color,
-        nullptr  // env map
+        al
         };
 }
 
@@ -155,10 +155,15 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         std::nullptr_t*, // dummy texture type
         Lights,
-        vec4,
-        std::nullptr_t*  // dummy env map type
+        ambient_light<float>
         >
 {
+    ambient_light<float> al;
+    al.set_cl(ambient_color.xyz());
+    al.set_kl(ambient_color.w);
+    al.set_background_cl(bg_color.xyz());
+    al.set_background_kl(bg_color.w);
+
     return {
         { begin, end },
         nullptr, // geometric normals
@@ -170,9 +175,7 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
-        bg_color,
-        ambient_color,
-        nullptr  // env map
+        al
         };
 }
 
@@ -211,10 +214,15 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         std::nullptr_t*, // dummy texture type
         Lights,
-        vec4,
-        std::nullptr_t*  // dummy env map type
+        ambient_light<float>
         >
 {
+    ambient_light<float> al;
+    al.set_cl(ambient_color.xyz());
+    al.set_kl(ambient_color.w);
+    al.set_background_cl(bg_color.xyz());
+    al.set_background_kl(bg_color.w);
+
     return {
         { begin, end },
         geometric_normals,
@@ -226,9 +234,7 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
-        bg_color,
-        ambient_color,
-        nullptr  // env map
+        al
         };
 }
 
@@ -271,10 +277,15 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         Textures,
         Lights,
-        vec4,
-        std::nullptr_t* // dummy env map type
+        ambient_light<float>
         >
 {
+    ambient_light<float> al;
+    al.set_cl(ambient_color.xyz());
+    al.set_kl(ambient_color.w);
+    al.set_background_cl(bg_color.xyz());
+    al.set_background_kl(bg_color.w);
+
     return {
         { begin, end },
         geometric_normals,
@@ -286,9 +297,7 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
-        bg_color,
-        ambient_color,
-        nullptr  // env map
+        al
         };
 }
 
@@ -336,10 +345,15 @@ auto make_kernel_params(
         Colors,
         Textures,
         Lights,
-        vec4,
-        std::nullptr_t* // dummy env map type
+        ambient_light<float>
         >
 {
+    ambient_light<float> al;
+    al.set_cl(ambient_color.xyz());
+    al.set_kl(ambient_color.w);
+    al.set_background_cl(bg_color.xyz());
+    al.set_background_kl(bg_color.w);
+
     return {
         { begin, end },
         geometric_normals,
@@ -351,9 +365,7 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
-        bg_color,
-        ambient_color,
-        nullptr // env map
+        al
         };
 }
 
@@ -400,7 +412,6 @@ auto make_kernel_params(
         Colors,
         Textures,
         Lights,
-        vec4,
         EnvMap
         >
 {
@@ -415,8 +426,6 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
-        vec4(), // dummy bgcolor
-        vec4(), // ambient color
         environment_map
         };
 }

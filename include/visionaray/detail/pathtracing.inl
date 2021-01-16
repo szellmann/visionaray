@@ -26,13 +26,6 @@ vector<4, T> sample_environment_light(Light const& env_light, vector<3, T> const
     return vector<4, T>(env_light.intensity(dir), T(1.0));
 }
 
-template <typename T>
-VSNRAY_FUNC
-vector<4, T> sample_environment_light(std::nullptr_t*, vector<3, T> const&)
-{
-    return vector<4, T>(0.0);
-}
-
 template <typename Params>
 struct kernel
 {
@@ -58,12 +51,7 @@ struct kernel
         C throughput(1.0);
 
         result_record<S> result;
-        result.color = params.bg_color;
-
-        if (params.environment_map)
-        {
-            result.color = sample_environment_light(params.environment_map, ray.dir);
-        }
+        result.color = vector<4, S>(params.environment_map.background_intensity(ray.dir), S(1.0));
 
         for (unsigned bounce = 0; bounce < params.num_bounces; ++bounce)
         {
@@ -72,23 +60,12 @@ struct kernel
             // Handle rays that just exited
             auto exited = active_rays & !hit_rec.hit;
 
-            if (params.environment_map)
-            {
-                auto env = sample_environment_light(params.environment_map, ray.dir);
-                intensity += select(
-                    exited,
-                    from_rgba(env) * throughput,
-                    C(0.0)
-                    );
-            }
-            else
-            {
-                intensity += select(
-                    exited,
-                    C(from_rgba(params.ambient_color)) * throughput,
-                    C(0.0)
-                    );
-            }
+            auto env = sample_environment_light(params.environment_map, ray.dir);
+            intensity += select(
+                exited,
+                from_rgba(env) * throughput,
+                C(0.0)
+                );
 
 
             // Exit if no ray is active anymore
