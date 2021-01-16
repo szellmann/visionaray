@@ -19,13 +19,6 @@ namespace visionaray
 namespace pathtracing
 {
 
-template <typename Light, typename T>
-VSNRAY_FUNC
-vector<4, T> sample_environment_light(Light const& env_light, vector<3, T> const& dir)
-{
-    return vector<4, T>(env_light.intensity(dir), T(1.0));
-}
-
 template <typename Params>
 struct kernel
 {
@@ -60,10 +53,10 @@ struct kernel
             // Handle rays that just exited
             auto exited = active_rays & !hit_rec.hit;
 
-            auto env = sample_environment_light(params.environment_map, ray.dir);
+            auto env = params.environment_map.intensity(ray.dir);
             intensity += select(
                 exited,
-                from_rgba(env) * throughput,
+                from_rgb(env) * throughput,
                 C(0.0)
                 );
 
