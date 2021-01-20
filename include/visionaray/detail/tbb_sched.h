@@ -9,6 +9,7 @@
 #include <tbb/blocked_range2d.h>
 #include <tbb/parallel_for.h>
 #if 1 // TODO: find out when that API changed
+#define TBB_PREVIEW_GLOBAL_CONTROL 1
 #include <tbb/global_control.h>
 #else
 #include <tbb/task_scheduler_init.h>
