@@ -33,7 +33,7 @@ template <
     typename Colors,
     typename Textures,
     typename Lights,
-    typename EnvMap
+    typename AmbientLight
     >
 struct kernel_params
 {
@@ -69,7 +69,7 @@ struct kernel_params
     unsigned num_bounces;
     float epsilon;
 
-    EnvMap amb_light;
+    AmbientLight amb_light;
 };
 
 
@@ -381,7 +381,7 @@ template <
     typename Colors,
     typename Textures,
     typename Lights,
-    typename EnvMap,
+    typename AmbientLight,
     typename = typename std::enable_if<is_normal_binding<NormalBinding>::value>::type,
     typename = typename std::enable_if<is_color_binding<ColorBinding>::value>::type
     >
@@ -398,7 +398,7 @@ auto make_kernel_params(
         Textures const&     textures,
         Lights const&       lbegin,
         Lights const&       lend,
-        EnvMap const&       amb_light,
+        AmbientLight const& amb_light,
         unsigned            num_bounces     = 5,
         float               epsilon         = std::numeric_limits<float>::epsilon()
         )
@@ -412,7 +412,7 @@ auto make_kernel_params(
         Colors,
         Textures,
         Lights,
-        EnvMap
+        AmbientLight
         >
 {
     return {
