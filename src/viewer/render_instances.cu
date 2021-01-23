@@ -54,6 +54,7 @@ void render_instances_cu(
                 thrust::raw_pointer_cast(device_lights.data()),
                 thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
                 env_light,
+                env_light,
                 bounces,
                 epsilon
                 );

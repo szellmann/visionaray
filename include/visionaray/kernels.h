@@ -33,6 +33,7 @@ template <
     typename Colors,
     typename Textures,
     typename Lights,
+    typename BackgroundLight,
     typename AmbientLight
     >
 struct kernel_params
@@ -69,6 +70,7 @@ struct kernel_params
     unsigned num_bounces;
     float epsilon;
 
+    BackgroundLight background;
     AmbientLight amb_light;
 };
 
@@ -102,14 +104,17 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         std::nullptr_t*, // dummy texture type
         std::nullptr_t*, // dummy light type
+        ambient_light<float>,
         ambient_light<float>
         >
 {
+    ambient_light<float> bl;
+    bl.set_cl(bg_color.xyz());
+    bl.set_kl(bg_color.w);
+
     ambient_light<float> al;
     al.set_cl(ambient_color.xyz());
     al.set_kl(ambient_color.w);
-    al.set_background_cl(bg_color.xyz());
-    al.set_background_kl(bg_color.w);
 
     return {
         { begin, end },
@@ -122,6 +127,7 @@ auto make_kernel_params(
         { nullptr, nullptr }, // lights
         num_bounces,
         epsilon,
+        bl,
         al
         };
 }
@@ -155,14 +161,17 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         std::nullptr_t*, // dummy texture type
         Lights,
+        ambient_light<float>,
         ambient_light<float>
         >
 {
+    ambient_light<float> bl;
+    bl.set_cl(bg_color.xyz());
+    bl.set_kl(bg_color.w);
+
     ambient_light<float> al;
     al.set_cl(ambient_color.xyz());
     al.set_kl(ambient_color.w);
-    al.set_background_cl(bg_color.xyz());
-    al.set_background_kl(bg_color.w);
 
     return {
         { begin, end },
@@ -175,6 +184,7 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
+        bl,
         al
         };
 }
@@ -214,14 +224,17 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         std::nullptr_t*, // dummy texture type
         Lights,
+        ambient_light<float>,
         ambient_light<float>
         >
 {
+    ambient_light<float> bl;
+    bl.set_cl(bg_color.xyz());
+    bl.set_kl(bg_color.w);
+
     ambient_light<float> al;
     al.set_cl(ambient_color.xyz());
     al.set_kl(ambient_color.w);
-    al.set_background_cl(bg_color.xyz());
-    al.set_background_kl(bg_color.w);
 
     return {
         { begin, end },
@@ -234,6 +247,7 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
+        bl,
         al
         };
 }
@@ -277,14 +291,17 @@ auto make_kernel_params(
         vector<3, typename scalar_type<typename std::iterator_traits<Primitives>::value_type>::type>*,
         Textures,
         Lights,
+        ambient_light<float>,
         ambient_light<float>
         >
 {
+    ambient_light<float> bl;
+    bl.set_cl(bg_color.xyz());
+    bl.set_kl(bg_color.w);
+
     ambient_light<float> al;
     al.set_cl(ambient_color.xyz());
     al.set_kl(ambient_color.w);
-    al.set_background_cl(bg_color.xyz());
-    al.set_background_kl(bg_color.w);
 
     return {
         { begin, end },
@@ -297,6 +314,7 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
+        bl,
         al
         };
 }
@@ -345,14 +363,17 @@ auto make_kernel_params(
         Colors,
         Textures,
         Lights,
+        ambient_light<float>,
         ambient_light<float>
         >
 {
+    ambient_light<float> bl;
+    bl.set_cl(bg_color.xyz());
+    bl.set_kl(bg_color.w);
+
     ambient_light<float> al;
     al.set_cl(ambient_color.xyz());
     al.set_kl(ambient_color.w);
-    al.set_background_cl(bg_color.xyz());
-    al.set_background_kl(bg_color.w);
 
     return {
         { begin, end },
@@ -365,6 +386,7 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
+        bl,
         al
         };
 }
@@ -381,26 +403,28 @@ template <
     typename Colors,
     typename Textures,
     typename Lights,
+    typename BackgroundLight,
     typename AmbientLight,
     typename = typename std::enable_if<is_normal_binding<NormalBinding>::value>::type,
     typename = typename std::enable_if<is_color_binding<ColorBinding>::value>::type
     >
 auto make_kernel_params(
-        NormalBinding       /* */,
-        ColorBinding        /* */,
-        Primitives const&   begin,
-        Primitives const&   end,
-        Normals const&      geometric_normals,
-        Normals const&      shading_normals,
-        TexCoords const&    tex_coords,
-        Materials const&    materials,
-        Colors const&       colors,
-        Textures const&     textures,
-        Lights const&       lbegin,
-        Lights const&       lend,
-        AmbientLight const& amb_light,
-        unsigned            num_bounces     = 5,
-        float               epsilon         = std::numeric_limits<float>::epsilon()
+        NormalBinding          /* */,
+        ColorBinding           /* */,
+        Primitives const&      begin,
+        Primitives const&      end,
+        Normals const&         geometric_normals,
+        Normals const&         shading_normals,
+        TexCoords const&       tex_coords,
+        Materials const&       materials,
+        Colors const&          colors,
+        Textures const&        textures,
+        Lights const&          lbegin,
+        Lights const&          lend,
+        BackgroundLight const& background,
+        AmbientLight const&    amb_light,
+        unsigned               num_bounces = 5,
+        float                  epsilon = std::numeric_limits<float>::epsilon()
         )
     -> kernel_params<
         NormalBinding,
@@ -408,10 +432,10 @@ auto make_kernel_params(
         Primitives,
         Normals,
         TexCoords,
-        Materials,
-        Colors,
+        Materials, Colors,
         Textures,
         Lights,
+        BackgroundLight,
         AmbientLight
         >
 {
@@ -426,6 +450,7 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
+        background,
         amb_light
         };
 }

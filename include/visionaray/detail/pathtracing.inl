@@ -44,7 +44,7 @@ struct kernel
         C throughput(1.0);
 
         result_record<S> result;
-        result.color = vector<4, S>(params.amb_light.background_intensity(ray.dir), S(1.0));
+        result.color = vector<4, S>(params.background.intensity(ray.dir), S(1.0));
 
         for (unsigned bounce = 0; bounce < params.num_bounces; ++bounce)
         {

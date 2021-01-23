@@ -52,6 +52,7 @@ void render_instances_cpp(
                 lights.data(),
                 lights.data() + lights.size(),
                 env_light,
+                env_light,
                 bounces,
                 epsilon
                 );
