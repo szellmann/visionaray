@@ -69,7 +69,7 @@ struct kernel_params
     unsigned num_bounces;
     float epsilon;
 
-    EnvMap environment_map;
+    EnvMap amb_light;
 };
 
 
@@ -398,7 +398,7 @@ auto make_kernel_params(
         Textures const&     textures,
         Lights const&       lbegin,
         Lights const&       lend,
-        EnvMap const&       environment_map,
+        EnvMap const&       amb_light,
         unsigned            num_bounces     = 5,
         float               epsilon         = std::numeric_limits<float>::epsilon()
         )
@@ -426,7 +426,7 @@ auto make_kernel_params(
         { lbegin, lend },
         num_bounces,
         epsilon,
-        environment_map
+        amb_light
         };
 }
 } // visionaray

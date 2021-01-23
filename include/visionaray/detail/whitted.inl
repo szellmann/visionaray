@@ -244,22 +244,22 @@ struct kernel
         else
         {
             result.hit = false;
-            result.color = vector<4, S>(params.environment_map.background_intensity(ray.dir), S(1.0));
+            result.color = vector<4, S>(params.amb_light.background_intensity(ray.dir), S(1.0));
             return result;
         }
 
         C color(0.0);
 
         unsigned depth = 0;
-        C no_hit_color(from_rgb(params.environment_map.background_intensity(ray.dir)));
+        C no_hit_color(from_rgb(params.amb_light.background_intensity(ray.dir)));
         S throughput(1.0);
         while (any(hit_rec.hit) && any(throughput > S(params.epsilon)) && depth++ < params.num_bounces)
         {
             hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
 
             auto surf = get_surface(hit_rec, params);
-            auto env = params.environment_map.intensity(ray.dir);
-            auto bgcolor = params.environment_map.background_intensity(ray.dir);
+            auto env = params.amb_light.intensity(ray.dir);
+            auto bgcolor = params.amb_light.background_intensity(ray.dir);
             auto ambient = surf.material.ambient() * C(from_rgb(env));
             auto shaded_clr = select( hit_rec.hit, ambient, C(from_rgb(bgcolor)) );
             auto view_dir = -ray.dir;
@@ -311,7 +311,7 @@ struct kernel
         result.color = select(
                 result.hit,
                 to_rgba(color),
-                vector<4, S>(params.environment_map.intensity(ray.dir), S(1.0))
+                vector<4, S>(params.amb_light.intensity(ray.dir), S(1.0))
                 );
 
         return result;

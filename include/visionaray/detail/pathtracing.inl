@@ -44,7 +44,7 @@ struct kernel
         C throughput(1.0);
 
         result_record<S> result;
-        result.color = vector<4, S>(params.environment_map.background_intensity(ray.dir), S(1.0));
+        result.color = vector<4, S>(params.amb_light.background_intensity(ray.dir), S(1.0));
 
         for (unsigned bounce = 0; bounce < params.num_bounces; ++bounce)
         {
@@ -53,7 +53,7 @@ struct kernel
             // Handle rays that just exited
             auto exited = active_rays & !hit_rec.hit;
 
-            auto env = params.environment_map.intensity(ray.dir);
+            auto env = params.amb_light.intensity(ray.dir);
             intensity += select(
                 exited,
                 from_rgb(env) * throughput,
