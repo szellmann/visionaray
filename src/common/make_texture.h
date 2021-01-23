@@ -112,6 +112,12 @@ inline void make_texture(Texture& tex, image const& img)
         auto data_ptr = reinterpret_cast<vector<3, unorm< 8>> const*>(img.data());
         tex.reset(data_ptr, PF_RGB8, PF_RGBA32F, AlphaIsOne);
     }
+    else if (img.format() == PF_RGBA8)
+    {
+        // Up-convert to float
+        auto data_ptr = reinterpret_cast<vector<4, unorm< 8>> const*>(img.data());
+        tex.reset(data_ptr, PF_RGBA8, PF_RGBA32F);
+    }
     else
     {
         std::cerr << "Warning: unsupported pixel format\n";
