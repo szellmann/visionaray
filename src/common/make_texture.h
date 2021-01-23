@@ -102,13 +102,13 @@ inline void make_texture(Texture& tex, image const& img)
     }
     else if (img.format() == PF_RGBA32F)
     {
-        // Down-convert to 8-bit, add alpha=1.0
+        // "Native" texture format
         auto data_ptr = reinterpret_cast<vector<4, float> const*>(img.data());
         tex.reset(data_ptr);
     }
     else if (img.format() == PF_RGB8)
     {
-        // Add alpha=1.0
+        // Up-convert to float and add alpha=1.0
         auto data_ptr = reinterpret_cast<vector<3, unorm< 8>> const*>(img.data());
         tex.reset(data_ptr, PF_RGB8, PF_RGBA32F, AlphaIsOne);
     }
