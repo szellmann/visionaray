@@ -23,13 +23,6 @@ VSNRAY_FUNC vector<3, U> environment_light<T, Texture>::intensity(vector<3, U> c
 }
 
 template <typename T, typename Texture>
-template <typename U>
-VSNRAY_FUNC vector<3, U> environment_light<T, Texture>::background_intensity(vector<3, U> const& dir) const
-{
-    return intensity(dir);
-}
-
-template <typename T, typename Texture>
 VSNRAY_FUNC
 Texture& environment_light<T, Texture>::texture()
 {
