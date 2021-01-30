@@ -60,7 +60,6 @@ Building the Visionaray library and viewer application
 
 It is strongly recommended to build Visionaray in release mode, as the source code relies heavily on function inlining by the compiler, and executables may be extremely slow without that optimization.
 It is also recommended to supply an architecture flag that corresponds to the CPU architecture you are targeting.
-Please ensure that you have C++11 support activated.
 
 ```Shell
 cd visionaray
