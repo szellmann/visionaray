@@ -14,7 +14,7 @@ template <
     typename = typename std::enable_if<!is_any_bvh_inst<BVH>::value>::type
     >
 VSNRAY_FUNC
-aabb get_bounds(BVH const& bvh)
+inline aabb get_bounds(BVH const& bvh)
 {
     aabb result;
     result.invalidate();
@@ -35,7 +35,7 @@ template <
     typename = void
     >
 VSNRAY_FUNC
-aabb get_bounds(BVH const& bvh)
+inline aabb get_bounds(BVH const& bvh)
 {
     mat3 affine = inverse(bvh.affine_inv());
     vec3 trans = -bvh.trans_inv();
