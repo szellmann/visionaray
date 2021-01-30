@@ -27,7 +27,7 @@ Build requirements
 ------------------
 
 - C++11 compliant compiler
-   (tested with g++-5.4.0 on Ubuntu 16.04 x86_64,
+   (tested with g++-7.4.0 on Ubuntu 18.04 x86_64,
     tested with clang-900.0.39.2 on Mac OS X 10.13,
     tested with Microsoft Visual Studio 2015 VC14 for x64)
 
