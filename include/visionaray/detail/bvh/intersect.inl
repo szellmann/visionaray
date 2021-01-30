@@ -45,7 +45,7 @@ inline auto intersect(
         R const&     ray,
         BVH const&   b,
         Intersector& isect,
-        T            max_t = numeric_limits<T>::max(),
+        T            tmax = numeric_limits<T>::max(),
         Cond         update_cond = Cond()
         )
     -> typename detail::traversal_result< hit_record_bvh<
@@ -82,8 +82,8 @@ next:
             auto hr1 = isect(ray, children[0].get_bounds(), inv_dir);
             auto hr2 = isect(ray, children[1].get_bounds(), inv_dir);
 
-            auto b1 = any( is_closer(hr1, result, max_t) );
-            auto b2 = any( is_closer(hr2, result, max_t) );
+            auto b1 = any( is_closer(hr1, result, tmax) );
+            auto b2 = any( is_closer(hr2, result, tmax) );
 
             if (b1 && b2)
             {
@@ -114,7 +114,7 @@ next:
             auto prim = b.primitive(i);
 
             auto hr = HR(isect(ray, prim), i);
-            auto closer = update_cond(hr, result, max_t);
+            auto closer = update_cond(hr, result, tmax);
 
 #ifndef __CUDA_ARCH__
             if (!any(closer))
@@ -226,8 +226,8 @@ next:
             auto hr1 = isect(ray, children[0].get_bounds(), inv_dir);
             auto hr2 = isect(ray, children[1].get_bounds(), inv_dir);
 
-            auto b1 = any( is_closer(hr1, result, max_t) );
-            auto b2 = any( is_closer(hr2, result, max_t) );
+            auto b1 = any(is_closer(hr1, result, tmax));
+            auto b2 = any(is_closer(hr2, result, tmax));
 
             if (b1 && b2)
             {
@@ -280,7 +280,7 @@ next:
             auto prim = b.primitive(i);
 
             auto hr = HR(isect(ray, prim), i);
-            auto closer = update_cond(hr, result, max_t);
+            auto closer = update_cond(hr, result, tmax);
 
 #ifndef __CUDA_ARCH__
             if (!any(closer))
@@ -325,7 +325,7 @@ inline auto intersect(
         R const&     ray,
         BVH const&   b,
         Intersector& isect,
-        T            max_t = numeric_limits<T>::max(),
+        T            tmax = numeric_limits<T>::max(),
         Cond         update_cond = Cond()
         )
     -> typename detail::traversal_result< hit_record_bvh_inst<
@@ -345,7 +345,7 @@ inline auto intersect(
             transformed_ray,
             b.get_ref(),
             isect,
-            max_t,
+            tmax,
             update_cond
             );
 
