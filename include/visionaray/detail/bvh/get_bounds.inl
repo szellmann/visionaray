@@ -13,7 +13,7 @@ template <
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<!is_any_bvh_inst<BVH>::value>::type
     >
-MATH_FUNC
+VSNRAY_FUNC
 aabb get_bounds(BVH const& bvh)
 {
     aabb result;
@@ -34,7 +34,7 @@ template <
     typename = typename std::enable_if<is_any_bvh_inst<BVH>::value>::type,
     typename = void
     >
-MATH_FUNC
+VSNRAY_FUNC
 aabb get_bounds(BVH const& bvh)
 {
     mat3 affine = inverse(bvh.affine_inv());
