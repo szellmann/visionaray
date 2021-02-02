@@ -432,8 +432,8 @@ static void load_obj(
     auto normals = std::make_shared<normal_vector>();
     face_vector faces;
 
-    string_ref comment;
-    string_ref mtl_file;
+    //string_ref comment;
+    //string_ref mtl_file;
     string_ref group_name;
     string_ref mtl_name;
 
