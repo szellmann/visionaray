@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include <visionaray/math/forward.h>
 #include <visionaray/math/vector.h>
 
 #include "export.h"
