@@ -91,7 +91,7 @@ using viewer_type = viewer_glut;
 // Helpers
 //
 
-enum copy_kind
+enum class copy_kind
 {
     HostToHost,
     HostToDevice,
@@ -105,7 +105,7 @@ static void copy_bvhs(
         DestTopLevel&          dest_top_level_bvh,
         SourceInstances const& source_instance_bvhs,
         SourceTopLevel const&  source_top_level_bvh,
-        copy_kind    ck
+        copy_kind              ck
         )
 {
     // Build up lower level bvhs first
@@ -150,11 +150,11 @@ static void copy_bvhs(
         }
 
         // Copy nodes and indices
-        if (ck == HostToHost)
+        if (ck == copy_kind::HostToHost)
         {
         }
 #ifdef __CUDACC__
-        else if (ck == HostToDevice)
+        else if (ck == copy_kind::HostToDevice)
         {
             cudaMemcpy(
                     (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
@@ -170,7 +170,7 @@ static void copy_bvhs(
                     cudaMemcpyHostToDevice
                     );
         }
-        else if (ck == DeviceToHost)
+        else if (ck == copy_kind::DeviceToHost)
         {
             cudaMemcpy(
                     (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
@@ -186,7 +186,7 @@ static void copy_bvhs(
                     cudaMemcpyDeviceToHost
                     );
         }
-        else if (ck == DeviceToDevice)
+        else if (ck == copy_kind::DeviceToDevice)
         {
             cudaMemcpy(
                     (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
@@ -2728,7 +2728,7 @@ void renderer::on_key_press(key_event const& event)
                     device_top_level_bvh,
                     host_bvhs,
                     host_top_level_bvh,
-                    HostToDevice
+                    copy_kind::HostToDevice
                     );
             }
         }
@@ -2743,7 +2743,7 @@ void renderer::on_key_press(key_event const& event)
                     host_top_level_bvh,
                     device_bvhs,
                     device_top_level_bvh,
-                    DeviceToHost
+                    copy_kind::DeviceToHost
                     );
             }
         }
@@ -3081,7 +3081,7 @@ int main(int argc, char** argv)
                 rend.device_top_level_bvh,
                 rend.host_bvhs,
                 rend.host_top_level_bvh,
-                HostToDevice
+                copy_kind::HostToDevice
                 );
         }
 
