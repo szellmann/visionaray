@@ -88,6 +88,131 @@ using viewer_type = viewer_glut;
 
 
 //-------------------------------------------------------------------------------------------------
+// Helpers
+//
+
+enum copy_kind
+{
+    HostToHost,
+    HostToDevice,
+    DeviceToHost,
+    DeviceToDevice,
+};
+
+template <typename DestInstances, typename DestTopLevel, typename SourceInstances, typename SourceTopLevel>
+static void copy_bvhs(
+        DestInstances&         dest_instance_bvhs,
+        DestTopLevel&          dest_top_level_bvh,
+        SourceInstances const& source_instance_bvhs,
+        SourceTopLevel const&  source_top_level_bvh,
+        copy_kind    ck
+        )
+{
+    // Build up lower level bvhs first
+    dest_instance_bvhs.resize(source_instance_bvhs.size());
+    for (size_t i = 0; i < source_instance_bvhs.size(); ++i)
+    {
+        dest_instance_bvhs[i] = typename DestInstances::value_type(source_instance_bvhs[i]);
+    }
+
+    // Make a deep copy of the top level bvh
+    if (source_top_level_bvh.num_primitives() > 0)
+    {
+        dest_top_level_bvh.primitives().resize(source_top_level_bvh.num_primitives());
+        dest_top_level_bvh.nodes().resize(source_top_level_bvh.num_nodes());
+        dest_top_level_bvh.indices().resize(source_top_level_bvh.num_indices());
+
+        // Linear search for each inst: This may obviously become fairly inefficient..
+        for (size_t i = 0; i < source_top_level_bvh.num_primitives(); ++i)
+        {
+            size_t index = size_t(-1);
+
+            for (size_t j = 0; j < source_instance_bvhs.size(); ++j)
+            {
+                if (source_instance_bvhs[j].ref() == source_top_level_bvh.primitive(i).get_ref())
+                {
+                    index = j;
+                    break;
+                }
+            }
+
+            assert(index < size_t(-1));
+
+            int indirect_index = source_top_level_bvh.indices()[i];
+
+            dest_top_level_bvh.primitives()[indirect_index] = {
+                    dest_instance_bvhs[index].ref(),
+                    mat4x3(
+                        inverse(source_top_level_bvh.primitive(i).affine_inv()),
+                        -source_top_level_bvh.primitive(i).trans_inv()
+                        )
+                    };
+        }
+
+        // Copy nodes and indices
+        if (ck == HostToHost)
+        {
+        }
+#ifdef __CUDACC__
+        else if (ck == HostToDevice)
+        {
+            cudaMemcpy(
+                    (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
+                    detail::get_pointer(source_top_level_bvh.nodes()),
+                    sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
+                    cudaMemcpyHostToDevice
+                    );
+
+            cudaMemcpy(
+                    (void*)detail::get_pointer(dest_top_level_bvh.indices()),
+                    detail::get_pointer(source_top_level_bvh.indices()),
+                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
+                    cudaMemcpyHostToDevice
+                    );
+        }
+        else if (ck == DeviceToHost)
+        {
+            cudaMemcpy(
+                    (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
+                    detail::get_pointer(source_top_level_bvh.nodes()),
+                    sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
+                    cudaMemcpyDeviceToHost
+                    );
+
+            cudaMemcpy(
+                    (void*)detail::get_pointer(dest_top_level_bvh.indices()),
+                    detail::get_pointer(source_top_level_bvh.indices()),
+                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
+                    cudaMemcpyDeviceToHost
+                    );
+        }
+        else if (ck == DeviceToDevice)
+        {
+            cudaMemcpy(
+                    (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
+                    detail::get_pointer(source_top_level_bvh.nodes()),
+                    sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
+                    cudaMemcpyDeviceToDevice
+                    );
+
+            cudaMemcpy(
+                    (void*)detail::get_pointer(dest_top_level_bvh.indices()),
+                    detail::get_pointer(source_top_level_bvh.indices()),
+                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
+                    cudaMemcpyDeviceToDevice
+                    );
+        }
+#else
+        else
+        {
+            assert(0);
+        }
+#endif
+    }
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // Renderer, stores state, geometry, normals, ...
 //
 
@@ -567,23 +692,6 @@ struct renderer : viewer_type
     std::mutex                                  display_mutex;
 
     void build_scene();
-
-    enum copy_kind
-    {
-        HostToHost,
-        HostToDevice,
-        DeviceToHost,
-        DeviceToDevice,
-    };
-
-    template <typename DestInstances, typename DestTopLevel, typename SourceInstances, typename SourceTopLevel>
-    void copy_bvhs(
-        DestInstances&         dest_instance_bvhs,
-        DestTopLevel&          dest_top_level_bvh,
-        SourceInstances const& source_instance_bvhs,
-        SourceTopLevel const&  source_top_level_bvh,
-        copy_kind              ck
-        );
 
 protected:
 
@@ -1528,119 +1636,6 @@ void renderer::build_scene()
 
 //  std::cout << t.elapsed() << std::endl;
 }
-
-template <typename DestInstances, typename DestTopLevel, typename SourceInstances, typename SourceTopLevel>
-void renderer::copy_bvhs(
-        DestInstances&         dest_instance_bvhs,
-        DestTopLevel&          dest_top_level_bvh,
-        SourceInstances const& source_instance_bvhs,
-        SourceTopLevel const&  source_top_level_bvh,
-        renderer::copy_kind    ck
-        )
-{
-    // Build up lower level bvhs first
-    dest_instance_bvhs.resize(source_instance_bvhs.size());
-    for (size_t i = 0; i < source_instance_bvhs.size(); ++i)
-    {
-        dest_instance_bvhs[i] = typename DestInstances::value_type(source_instance_bvhs[i]);
-    }
-
-    // Make a deep copy of the top level bvh
-    if (source_top_level_bvh.num_primitives() > 0)
-    {
-        dest_top_level_bvh.primitives().resize(source_top_level_bvh.num_primitives());
-        dest_top_level_bvh.nodes().resize(source_top_level_bvh.num_nodes());
-        dest_top_level_bvh.indices().resize(source_top_level_bvh.num_indices());
-
-        // Linear search for each inst: This may obviously become fairly inefficient..
-        for (size_t i = 0; i < source_top_level_bvh.num_primitives(); ++i)
-        {
-            size_t index = size_t(-1);
-
-            for (size_t j = 0; j < source_instance_bvhs.size(); ++j)
-            {
-                if (source_instance_bvhs[j].ref() == source_top_level_bvh.primitive(i).get_ref())
-                {
-                    index = j;
-                    break;
-                }
-            }
-
-            assert(index < size_t(-1));
-
-            int indirect_index = source_top_level_bvh.indices()[i];
-
-            dest_top_level_bvh.primitives()[indirect_index] = {
-                    dest_instance_bvhs[index].ref(),
-                    mat4x3(
-                        inverse(source_top_level_bvh.primitive(i).affine_inv()),
-                        -source_top_level_bvh.primitive(i).trans_inv()
-                        )
-                    };
-        }
-
-        // Copy nodes and indices
-        if (ck == renderer::HostToHost)
-        {
-        }
-#ifdef __CUDACC__
-        else if (ck == renderer::HostToDevice)
-        {
-            cudaMemcpy(
-                    (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
-                    detail::get_pointer(source_top_level_bvh.nodes()),
-                    sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
-                    cudaMemcpyHostToDevice
-                    );
-
-            cudaMemcpy(
-                    (void*)detail::get_pointer(dest_top_level_bvh.indices()),
-                    detail::get_pointer(source_top_level_bvh.indices()),
-                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
-                    cudaMemcpyHostToDevice
-                    );
-        }
-        else if (ck == renderer::DeviceToHost)
-        {
-            cudaMemcpy(
-                    (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
-                    detail::get_pointer(source_top_level_bvh.nodes()),
-                    sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
-                    cudaMemcpyDeviceToHost
-                    );
-
-            cudaMemcpy(
-                    (void*)detail::get_pointer(dest_top_level_bvh.indices()),
-                    detail::get_pointer(source_top_level_bvh.indices()),
-                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
-                    cudaMemcpyDeviceToHost
-                    );
-        }
-        else if (ck == renderer::DeviceToDevice)
-        {
-            cudaMemcpy(
-                    (void*)detail::get_pointer(dest_top_level_bvh.nodes()),
-                    detail::get_pointer(source_top_level_bvh.nodes()),
-                    sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
-                    cudaMemcpyDeviceToDevice
-                    );
-
-            cudaMemcpy(
-                    (void*)detail::get_pointer(dest_top_level_bvh.indices()),
-                    detail::get_pointer(source_top_level_bvh.indices()),
-                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
-                    cudaMemcpyDeviceToDevice
-                    );
-        }
-#else
-        else
-        {
-            assert(0);
-        }
-#endif
-    }
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // Load camera from file, reset frame counter and clear frame
@@ -3081,12 +3076,12 @@ int main(int argc, char** argv)
     {
         if (rend.rt.mode() == host_device_rt::GPU && rend.build_strategy != renderer::LBVH)
         {
-            rend.copy_bvhs(
+            copy_bvhs(
                 rend.device_bvhs,
                 rend.device_top_level_bvh,
                 rend.host_bvhs,
                 rend.host_top_level_bvh,
-                renderer::HostToDevice
+                HostToDevice
                 );
         }
 
