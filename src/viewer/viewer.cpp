@@ -691,6 +691,10 @@ struct renderer : viewer_type
     std::future<void>                           render_future;
     std::mutex                                  display_mutex;
 
+
+    static const std::string camera_file_base;
+    static const std::string camera_file_suffix;
+
     void build_scene();
 
 protected:
@@ -712,6 +716,9 @@ private:
     void render_impl();
 
 };
+
+const std::string renderer::camera_file_base = "visionaray-camera";
+const std::string renderer::camera_file_suffix = ".txt";
 
 
 //-------------------------------------------------------------------------------------------------
@@ -1844,9 +1851,6 @@ void renderer::render_hud()
     }
 
 
-    static const std::string camera_file_base = "visionaray-camera";
-    static const std::string camera_file_suffix = ".txt";
-
     std::vector<std::string> camera_names;
 
     camera_names.push_back("<reset...>");
@@ -2623,9 +2627,6 @@ void renderer::on_display()
 
 void renderer::on_key_press(key_event const& event)
 {
-    static const std::string camera_file_base = "visionaray-camera";
-    static const std::string camera_file_suffix = ".txt";
-
     switch (event.key())
     {
     case '1':
