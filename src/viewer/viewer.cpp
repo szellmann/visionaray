@@ -725,7 +725,7 @@ const std::string renderer::camera_file_suffix = ".txt";
 // Map obj material to generic material
 //
 
-generic_material_t map_material(sg::obj_material const& mat)
+inline generic_material_t map_material(sg::obj_material const& mat)
 {
     // Add emissive material if emissive component > 0
     if (length(mat.ce) > 0.0f)
@@ -782,7 +782,7 @@ generic_material_t map_material(sg::obj_material const& mat)
 // Map disney material to generic material
 //
 
-generic_material_t map_material(sg::disney_material const& mat)
+inline generic_material_t map_material(sg::disney_material const& mat)
 {
     // TODO..
     if (mat.refractive > 0.0f)
@@ -811,7 +811,7 @@ generic_material_t map_material(sg::disney_material const& mat)
 // Map metal material to generic material
 //
 
-generic_material_t map_material(sg::metal_material const& mat)
+inline generic_material_t map_material(sg::metal_material const& mat)
 {
     // TODO: consolidate glass and sg::glass_material (?)
     metal<float> mt;
@@ -826,7 +826,7 @@ generic_material_t map_material(sg::metal_material const& mat)
 // Map glass material to generic material
 //
 
-generic_material_t map_material(sg::glass_material const& mat)
+inline generic_material_t map_material(sg::glass_material const& mat)
 {
     // TODO: consolidate glass and sg::glass_material (?)
     glass<float> gl;
@@ -843,7 +843,7 @@ generic_material_t map_material(sg::glass_material const& mat)
 // I/O utility for camera lookat only - not fit for the general case!
 //
 
-std::istream& operator>>(std::istream& in, pinhole_camera& cam)
+inline std::istream& operator>>(std::istream& in, pinhole_camera& cam)
 {
     vec3 eye;
     vec3 center;
@@ -855,7 +855,7 @@ std::istream& operator>>(std::istream& in, pinhole_camera& cam)
     return in;
 }
 
-std::ostream& operator<<(std::ostream& out, pinhole_camera const& cam)
+inline std::ostream& operator<<(std::ostream& out, pinhole_camera const& cam)
 {
     out << cam.eye() << '\n';
     out << cam.center() << '\n';
@@ -875,7 +875,7 @@ struct icosahedron
     aligned_vector<vec3> normals;
 };
 
-icosahedron make_icosahedron()
+inline icosahedron make_icosahedron()
 {
     static constexpr float X = 0.525731112119133606f;
     static constexpr float Z = 0.850650808352039932f;
