@@ -89,7 +89,7 @@ static int png_num_components(int color_type)
 // png_image
 //
 
-png_image::png_image(size_t width, size_t height, pixel_format format, uint8_t const* data)
+png_image::png_image(int width, int height, pixel_format format, uint8_t const* data)
     : image_base(width, height, format, data)
 {
 }
@@ -187,8 +187,8 @@ bool png_image::load(std::string const& filename)
 
     png_read_end(context.png, context.info);
 
-    width_  = static_cast<size_t>(w);
-    height_ = static_cast<size_t>(h);
+    width_  = static_cast<int>(w);
+    height_ = static_cast<int>(h);
 
     return true;
 #else
@@ -251,9 +251,9 @@ bool png_image::save(std::string const& filename, file_base::save_options const&
     size_t pitch = width_ * 3;
     context.row = new png_byte[pitch];
 
-    for (size_t y = 0; y < height_; ++y)
+    for (int y = 0; y < height_; ++y)
     {
-        for (size_t x = 0; x < width_; ++x)
+        for (int x = 0; x < width_; ++x)
         {
             std::memcpy(
                 context.row + x * 3,

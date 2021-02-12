@@ -82,8 +82,8 @@ bool hdr_image::load(std::string const& filename)
 
     if (res[0] == "-Y" && res[2] == "+X")
     {
-        width_  = boost::lexical_cast<size_t>(res[3]);
-        height_ = boost::lexical_cast<size_t>(res[1]);
+        width_  = boost::lexical_cast<int>(res[3]);
+        height_ = boost::lexical_cast<int>(res[1]);
     }
     else
     {
@@ -99,7 +99,7 @@ bool hdr_image::load(std::string const& filename)
 
     // scanlines ------------------------------------------
 
-    for (size_t y = 0; y < height_; ++y)
+    for (int y = 0; y < height_; ++y)
     {
         // Read the scanline header
         // two bytes equal 2 indicate new format

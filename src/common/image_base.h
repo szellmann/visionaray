@@ -6,7 +6,6 @@
 #ifndef VSNRAY_COMMON_IMAGE_BASE_H
 #define VSNRAY_COMMOM_IMAGE_BASE_H 1
 
-#include <cstddef>
 #include <cstdint>
 #include <utility>
 #include <vector>
@@ -34,10 +33,10 @@ public:
     virtual ~image_base() = default;
 
     // Construct image from width, height, format, and data (data is copied).
-    image_base(size_t width, size_t height, pixel_format format, uint8_t const* data);
+    image_base(int width, int height, pixel_format format, uint8_t const* data);
 
-    size_t width() const;
-    size_t height() const;
+    int width() const;
+    int height() const;
 
     pixel_format format() const;
 
@@ -45,8 +44,8 @@ public:
 
 protected:
 
-    size_t width_;
-    size_t height_;
+    int width_;
+    int height_;
 
     pixel_format format_ = PF_RGB8;
 

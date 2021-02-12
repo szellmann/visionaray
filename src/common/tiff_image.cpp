@@ -66,8 +66,8 @@ bool tiff_image::load(std::string const& filename)
 
     if (TIFFReadRGBAImage(file.get(), w, h, reinterpret_cast<uint32*>(data_.data()), 0))
     {
-        width_ = w;
-        height_ = h;
+        width_ = static_cast<int>(w);
+        height_ = static_cast<int>(h);
     }
 
     return true;

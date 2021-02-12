@@ -147,7 +147,7 @@ static void save_binary(
 // pnm_image
 //
 
-pnm_image::pnm_image(size_t width, size_t height, pixel_format format, uint8_t const* data)
+pnm_image::pnm_image(int width, int height, pixel_format format, uint8_t const* data)
     : image_base(width, height, format, data)
 {
 }
@@ -237,8 +237,8 @@ bool pnm_image::load(std::string const& filename)
         return false;
     }
 
-    width_  = static_cast<size_t>(header[0]);
-    height_ = static_cast<size_t>(header[1]);
+    width_  = header[0];
+    height_ = header[1];
     int max_value = header[2];
 
     switch (fmt)

@@ -21,7 +21,7 @@ public:
     pnm_image() = default;
 
     // Construct image from width, height, format, and data (data is copied).
-    pnm_image(size_t width, size_t height, pixel_format format, uint8_t const* data);
+    pnm_image(int width, int height, pixel_format format, uint8_t const* data);
 
     bool load(std::string const& filename);
 

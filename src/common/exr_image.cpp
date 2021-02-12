@@ -28,8 +28,8 @@ namespace visionaray
 static void store_rgb32f(
         aligned_vector<uint8_t>&       dst,
         Imf::Array2D<Imf::Rgba> const& src,
-        size_t                         width,
-        size_t                         height
+        int                            width,
+        int                            height
         )
 {
     auto pitch = width * sizeof(vec3);
@@ -37,9 +37,9 @@ static void store_rgb32f(
 
     vec3* arr = reinterpret_cast<vec3*>(dst.data());
 
-    for (size_t y = 0; y < height; ++y)
+    for (int y = 0; y < height; ++y)
     {
-        for (size_t x = 0; x < width; ++x)
+        for (int x = 0; x < width; ++x)
         {
             arr[y * width + x].x = static_cast<float>(src[y][x].r);
             arr[y * width + x].y = static_cast<float>(src[y][x].g);
@@ -51,8 +51,8 @@ static void store_rgb32f(
 static void store_rgba32f(
         aligned_vector<uint8_t>&       dst,
         Imf::Array2D<Imf::Rgba> const& src,
-        size_t                         width,
-        size_t                         height
+        int                            width,
+        int                            height
         )
 {
     auto pitch = width * sizeof(vec4);
@@ -60,9 +60,9 @@ static void store_rgba32f(
 
     vec4* arr = reinterpret_cast<vec4*>(dst.data());
 
-    for (size_t y = 0; y < height; ++y)
+    for (int y = 0; y < height; ++y)
     {
-        for (size_t x = 0; x < width; ++x)
+        for (int x = 0; x < width; ++x)
         {
             arr[y * width + x].x = static_cast<float>(src[y][x].r);
             arr[y * width + x].y = static_cast<float>(src[y][x].g);

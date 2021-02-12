@@ -180,8 +180,8 @@ bool tga_image::load(std::string const& filename)
 
     // Allocate storage
 
-    width_  = static_cast<size_t>(header.width);
-    height_ = static_cast<size_t>(header.height);
+    width_  = static_cast<int>(header.width);
+    height_ = static_cast<int>(header.height);
     format_ = map_pixel_depth(header.bits_per_pixel);
     auto pitch = header.width * (header.bits_per_pixel / 8);
     data_.resize(pitch * header.height);

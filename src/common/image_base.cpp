@@ -2,31 +2,32 @@
 // See the LICENSE file for details.
 
 #include <algorithm>
+#include <cstddef>
 
 #include "image_base.h"
 
 namespace visionaray
 {
 
-image_base::image_base(size_t width, size_t height, pixel_format format, uint8_t const* data)
+image_base::image_base(int width, int height, pixel_format format, uint8_t const* data)
     : width_(width)
     , height_(height)
     , format_(format)
 {
     pixel_format_info info = map_pixel_format(format_);
 
-    size_t len = width_ * height_ * info.size;
+    size_t len = width_ * size_t(height_) * info.size;
     data_.resize(len);
 
     std::copy(data, data + len, data_.begin());
 }
 
-size_t image_base::width() const
+int image_base::width() const
 {
     return width_;
 }
 
-size_t image_base::height() const
+int image_base::height() const
 {
     return height_;
 }

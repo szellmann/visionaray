@@ -291,8 +291,8 @@ bool dds_image::load(std::string const& filename)
         return false;
     }
 
-    width_ = header.width;
-    height_ = header.height;
+    width_ = static_cast<int>(header.width);
+    height_ = static_cast<int>(header.height);
 
     auto format = get_pixel_format(header.pixel_format);
     if (format == DDS_PF_UNKNOWN)

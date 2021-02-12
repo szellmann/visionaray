@@ -118,7 +118,7 @@ namespace visionaray
 // image members
 //
 
-image::image(size_t width, size_t height, pixel_format format, uint8_t const* data)
+image::image(int width, int height, pixel_format format, uint8_t const* data)
     : image_base(width, height, format, data)
 {
 }

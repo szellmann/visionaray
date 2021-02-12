@@ -22,7 +22,7 @@ public:
     VSNRAY_COMMON_EXPORT image() = default;
  
     // Construct image from width, height, format, and data (data is copied).
-    VSNRAY_COMMON_EXPORT image(size_t width, size_t height, pixel_format format, uint8_t const* data);
+    VSNRAY_COMMON_EXPORT image(int width, int height, pixel_format format, uint8_t const* data);
 
     VSNRAY_COMMON_EXPORT bool load(std::string const& filename);
     VSNRAY_COMMON_EXPORT bool save(std::string const& filename, save_options const& options);

@@ -6,7 +6,6 @@
 #ifndef VSNRAY_COMMON_PNG_IMAGE_H
 #define VSNRAY_COMMON_PNG_IMAGE_H 1
 
-#include <cstddef>
 #include <cstdint>
 #include <string>
 
@@ -23,7 +22,7 @@ public:
     png_image() = default;
 
     // Construct image from width, height, format, and data (data is copied).
-    png_image(size_t width, size_t height, pixel_format format, uint8_t const* data);
+    png_image(int width, int height, pixel_format format, uint8_t const* data);
 
     bool load(std::string const& filename);
 
