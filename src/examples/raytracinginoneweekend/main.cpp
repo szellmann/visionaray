@@ -23,7 +23,6 @@
 #include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
-#include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/thin_lens_camera.h>
 
