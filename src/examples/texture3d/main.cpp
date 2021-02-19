@@ -59,6 +59,14 @@ struct renderer : viewer_type
             cl::init(this->filename)
             ) );
 
+        add_cmdline_option( cl::makeOption<unsigned&>(
+            cl::Parser<>(),
+            "spp",
+            cl::Desc("Pixels per sample for path tracing"),
+            cl::ArgRequired,
+            cl::init(this->spp)
+            ) );
+
         add_cmdline_option( cl::makeOption<vec3&, cl::ScalarType>(
             [&](StringRef name, StringRef /*arg*/, vec3& value)
             {
@@ -170,15 +178,16 @@ struct renderer : viewer_type
 
     model mod;
     bvh<model::triangle_type>                   host_bvh;
-    unsigned                                    frame_num       = 0;
-    vec3                                        ambient         = vec3(1.0f, 1.0f, 1.0f);
+    unsigned                                    frame_num  = 0;
+    unsigned                                    spp        = 1;
+    vec3                                        ambient    = vec3(1.0f, 1.0f, 1.0f);
 
     texture<vec4, 3>                            tex;
     aligned_vector<vec3>                        tex_coords;
     aligned_vector<material_type>               materials;
-    vec3i                                       texsize         = vec3i(8, 8, 8);
-    vec3                                        color1          = vec3(1.0f, 1.0f, 0.7f);
-    vec3                                        color2          = vec3(0.4f, 0.0f, 0.0f);
+    vec3i                                       texsize    = vec3i(8, 8, 8);
+    vec3                                        color1     = vec3(1.0f, 1.0f, 0.7f);
+    vec3                                        color2     = vec3(0.4f, 0.0f, 0.0f);
 
 protected:
 
@@ -223,6 +232,7 @@ void renderer::on_display()
     // this file!)
 
     pixel_sampler::jittered_blend_type blend_params;
+    blend_params.spp = spp;
     float alpha = 1.0f / ++frame_num;
     blend_params.sfactor = alpha;
     blend_params.dfactor = 1.0f - alpha;

@@ -1,4 +1,6 @@
 ## [Unreleased]
+### Added
+- Added an -spp flag to various examples.
 
 ## [0.2.0] - 2021-02-19
 ### Added

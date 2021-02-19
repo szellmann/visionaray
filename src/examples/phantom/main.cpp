@@ -500,6 +500,14 @@ struct renderer : viewer_type
             cl::ArgRequired,
             cl::init(this->initial_camera)
             ) );
+
+        add_cmdline_option( cl::makeOption<unsigned&>(
+            cl::Parser<>(),
+            "spp",
+            cl::Desc("Pixels per sample for path tracing"),
+            cl::ArgRequired,
+            cl::init(this->spp)
+            ) );
     }
 
     void build_scene()
@@ -640,6 +648,7 @@ struct renderer : viewer_type
     aabb                                        bbox;
 
     unsigned                                    frame_num       = 0;
+    unsigned                                    spp             = 1;
     vec3                                        ambient         = vec3(1.0f, 1.0f, 1.0f);
 
     std::string                                 filename;
@@ -790,6 +799,7 @@ void renderer::on_display()
     // this file!)
 
     pixel_sampler::jittered_blend_type blend_params;
+    blend_params.spp = spp;
     float alpha = 1.0f / ++frame_num;
     blend_params.sfactor = alpha;
     blend_params.dfactor = 1.0f - alpha;

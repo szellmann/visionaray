@@ -12,6 +12,9 @@
 
 #include <GL/glew.h>
 
+#include <Support/CmdLine.h>
+#include <Support/CmdLineUtil.h>
+
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/aligned_vector.h>
@@ -67,6 +70,16 @@ struct renderer : viewer_type
         , bbox({ -3.0f, -3.0f, -3.0f }, { 3.0f, 3.0f, 3.0f })
         , host_sched(8)
     {
+        using namespace support;
+
+        add_cmdline_option( cl::makeOption<unsigned&>(
+            cl::Parser<>(),
+            "spp",
+            cl::Desc("Pixels per sample for path tracing"),
+            cl::ArgRequired,
+            cl::init(this->spp)
+            ) );
+
         random_scene();
 
         set_background_color(vec3(0.5f, 0.7f, 1.0f));
@@ -78,6 +91,7 @@ struct renderer : viewer_type
     tiled_sched<host_ray_type>                  host_sched;
 
     unsigned                                    frame_num   = 0;
+    unsigned                                    spp         = 1;
 
     // rendering data
 
@@ -210,6 +224,7 @@ void renderer::on_display()
     // some setup
 
     pixel_sampler::basic_jittered_blend_type<float> blend_params;
+    blend_params.spp = spp;
     float alpha = 1.0f / ++frame_num;
     blend_params.sfactor = alpha;
     blend_params.dfactor = 1.0f - alpha;

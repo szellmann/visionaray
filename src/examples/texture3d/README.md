@@ -17,6 +17,7 @@ Options:
    -color2                Second color
    -fullscreen            Full screen window
    -height=<ARG>          Window height
+   -spp=<ARG>             Pixels per sample for path tracing
    -texsize               Size of the 3D texture
    -width=<ARG>           Window width
 ```
