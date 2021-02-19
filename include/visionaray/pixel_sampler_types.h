@@ -6,8 +6,6 @@
 #ifndef VSNRAY_PIXEL_SAMPLER_TYPES_H
 #define VSNRAY_PIXEL_SAMPLER_TYPES_H 1
 
-#include <cstddef>
-
 namespace visionaray
 {
 
@@ -35,6 +33,8 @@ struct uniform_type : base_type
 template <typename T>
 struct basic_jittered_blend_type : base_type
 {
+    unsigned spp = 1;
+
     T sfactor;
     T dfactor;
 };
