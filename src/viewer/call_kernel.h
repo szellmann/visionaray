@@ -116,12 +116,13 @@ void call_kernel(
     case Pathtracing:
     {
         float alpha = 1.0f / ++frame_num;
-        pixel_sampler::jittered_blend_type blend_params;
-        blend_params.sfactor = alpha;
-        blend_params.dfactor = 1.0f - alpha;
+        pixel_sampler::jittered_blend_type jps;
+        jps.spp = spp;
+        jps.sfactor = alpha;
+        jps.dfactor = 1.0f - alpha;
         sched.frame(
             pathtracing::kernel<KParams>({kparams}),
-            make_sched_params(blend_params, std::forward<Args>(args)...)
+            make_sched_params(jps, std::forward<Args>(args)...)
             );
         break;
     }

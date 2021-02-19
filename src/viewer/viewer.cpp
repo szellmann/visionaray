@@ -318,6 +318,7 @@ struct renderer : viewer_type
             cl::init(this->build_strategy)
             ) );
 
+        // The following two options both manipulate spp
         add_cmdline_option( cl::makeOption<unsigned&>({
                 { "1",      1,      "1x supersampling" },
                 { "2",      2,      "2x supersampling" },
@@ -327,7 +328,15 @@ struct renderer : viewer_type
             "ssaa",
             cl::Desc("Supersampling anti-aliasing factor"),
             cl::ArgRequired,
-            cl::init(this->ssaa_samples)
+            cl::init(this->spp)
+            ) );
+
+        add_cmdline_option( cl::makeOption<unsigned&>(
+            cl::Parser<>(),
+            "spp",
+            cl::Desc("Pixels per sample for path tracing"),
+            cl::ArgRequired,
+            cl::init(this->spp)
             ) );
 
         add_cmdline_option( cl::makeOption<bool&>(
@@ -574,11 +583,19 @@ struct renderer : viewer_type
                 }
 
                 // Supersampling
-                uint32_t ssaa = ssaa_samples;
+                uint32_t ssaa = spp;
                 err = ini.get_uint32("ssaa", ssaa);
                 if (err == inifile::Ok)
                 {
-                    ssaa_samples = ssaa;
+                    spp = ssaa;
+                }
+
+                // Jittered supersampling (also manipulates this->spp!)
+                uint32_t local_spp = spp;
+                err = ini.get_uint32("spp", local_spp);
+                if (err == inifile::Ok)
+                {
+                    spp = local_spp;
                 }
 
 #ifdef __CUDACC__
@@ -609,7 +626,7 @@ struct renderer : viewer_type
     int                                         h               = 800;
     unsigned                                    frame_num       = 0;
     unsigned                                    bounces         = 0;
-    unsigned                                    ssaa_samples    = 1;
+    unsigned                                    spp             = 1;
     algorithm                                   algo            = Simple;
     bvh_build_strategy                          build_strategy  = Binned;
     bool                                        use_headlight   = true;
@@ -1941,7 +1958,7 @@ void renderer::render_hud()
             }
             else
             {
-                ImGui::Text("SPP: %dx SSAA", ssaa_samples);
+                ImGui::Text("SPP: %dx SSAA", spp);
             }
 
             ImGui::Text("Device: %s", rt.mode() == host_device_rt::GPU ? "GPU" : "CPU");
@@ -1997,8 +2014,8 @@ void renderer::render_hud()
             }
             ImGui::PopItemWidth();
 
-            int nbit = sizeof(ssaa_samples) * 8;
-            int ssaa_log2 = nbit - 1 - detail::clz(ssaa_samples);
+            int nbit = sizeof(spp) * 8;
+            int ssaa_log2 = nbit - 1 - detail::clz(spp);
             std::string currentssaa = ssaa_modes[ssaa_log2];
             if (ImGui::BeginCombo("SPP", currentssaa.c_str()))
             {
@@ -2011,7 +2028,7 @@ void renderer::render_hud()
                         currentssaa = ssaa_modes[i];
                         if (ssaa_modes[i] == ssaa_modes[0])
                         {
-                            ssaa_samples = 1;
+                            spp = 1;
                             if (algo != Pathtracing)
                             {
                                 counter.reset();
@@ -2020,7 +2037,7 @@ void renderer::render_hud()
                         }
                         else if (ssaa_modes[i] == ssaa_modes[1])
                         {
-                            ssaa_samples = 2;
+                            spp = 2;
                             if (algo != Pathtracing)
                             {
                                 counter.reset();
@@ -2029,7 +2046,7 @@ void renderer::render_hud()
                         }
                         else if (ssaa_modes[i] == ssaa_modes[2])
                         {
-                            ssaa_samples = 4;
+                            spp = 4;
                             if (algo != Pathtracing)
                             {
                                 counter.reset();
@@ -2039,7 +2056,7 @@ void renderer::render_hud()
                         else if ( ssaa_modes[i] == ssaa_modes[3])
                         {
 
-                            ssaa_samples = 8;
+                            spp = 8;
                             if (algo != Pathtracing)
                             {
                                 counter.reset();
@@ -2370,7 +2387,7 @@ void renderer::render_impl()
                         camx,
                         frame_num,
                         algo,
-                        ssaa_samples,
+                        spp,
                         env_light
                         );
             }
@@ -2395,7 +2412,7 @@ void renderer::render_impl()
                         camx,
                         frame_num,
                         algo,
-                        ssaa_samples,
+                        spp,
                         env_light
                         );
             }
@@ -2420,7 +2437,7 @@ void renderer::render_impl()
                     camx,
                     frame_num,
                     algo,
-                    ssaa_samples
+                    spp
                     );
         }
         else
@@ -2442,7 +2459,7 @@ void renderer::render_impl()
                     camx,
                     frame_num,
                     algo,
-                    ssaa_samples
+                    spp
                     );
         }
     }
@@ -2488,7 +2505,7 @@ void renderer::render_impl()
                         camx,
                         frame_num,
                         algo,
-                        ssaa_samples,
+                        spp,
                         device_env_light
                         );
             }
@@ -2512,7 +2529,7 @@ void renderer::render_impl()
                     camx,
                     frame_num,
                     algo,
-                    ssaa_samples
+                    spp
                     );
         }
         else
@@ -2534,7 +2551,7 @@ void renderer::render_impl()
                     camx,
                     frame_num,
                     algo,
-                    ssaa_samples
+                    spp
                     );
         }
     }
@@ -2763,10 +2780,10 @@ void renderer::on_key_press(key_event const& event)
         break;
 
     case 's':
-        ssaa_samples *= 2;
-        if (ssaa_samples > 8)
+        spp *= 2;
+        if (spp > 8)
         {
-            ssaa_samples = 1;
+            spp = 1;
         }
 
         if (algo != Pathtracing)
