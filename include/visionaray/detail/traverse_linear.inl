@@ -364,17 +364,7 @@ template <
     >
 VSNRAY_FUNC
 inline auto multi_hit(R const& r, Primitives begin, Primitives end)
-    // Workaround gcc-4.8.1 ICE
-    // The following FAILS with lots of recursive template instantiations!
-//  -> decltype( multi_hit<N>(r, begin, end, std::declval<default_intersector&>()) )
-    -> decltype( detail::traverse<detail::MultiHit, N>(
-            is_any_bvh<Primitive>{},
-            is_closer_t(),
-            r,
-            begin,
-            end,
-            std::declval<default_intersector&>()
-            ) )
+    -> decltype(multi_hit<N>(r, begin, end, std::declval<default_intersector&>()))
 {
     default_intersector ignore;
     return multi_hit<N>(r, begin, end, ignore);
