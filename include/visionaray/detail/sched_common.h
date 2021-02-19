@@ -342,18 +342,30 @@ inline void sample_pixel_impl(
         Camera const&                               cam
         )
 {
-    auto r = make_primary_rays(
-            R{},
-            blend_params,
-            gen,
-            x,
-            y,
-            width,
-            height,
-            cam
-            );
+    using RR = decltype(invoke_kernel(kernel, R{}, gen, x, y));
 
-    auto result = invoke_kernel(kernel, r, gen, x, y);
+    RR rr;
+
+    for (unsigned s = 0; s < blend_params.spp; ++s)
+    {
+        auto r = make_primary_rays(
+                R{},
+                blend_params,
+                gen,
+                x,
+                y,
+                width,
+                height,
+                cam
+                );
+
+        auto result = invoke_kernel(kernel, r, gen, x, y);
+
+        rr.hit |= result.hit;
+        rr.color += result.color;
+    }
+
+    rr.color /= typename RR::scalar_type((float)blend_params.spp);
 
     pixel_access::blend(
             pixel_format_constant<CF>{},
@@ -362,7 +374,7 @@ inline void sample_pixel_impl(
             y,
             width,
             height,
-            result,
+            rr,
             rt_ref.color(),
             blend_params.sfactor,
             blend_params.dfactor
@@ -394,19 +406,37 @@ inline void sample_pixel_impl(
 {
     using S = typename R::scalar_type;
 
-    auto r = make_primary_rays(
-            R{},
-            blend_params,
-            gen,
-            x,
-            y,
-            width,
-            height,
-            cam
-            );
+    using RR = decltype(invoke_kernel(kernel, R{}, gen, x, y));
 
-    auto result = invoke_kernel(kernel, r, gen, x, y);
-    result.depth = select(result.hit, depth_transform(r, result.depth, cam), S(1.0));
+    RR rr;
+
+    for (unsigned s = 0; s < blend_params.spp; ++s)
+    {
+        auto r = make_primary_rays(
+                R{},
+                blend_params,
+                gen,
+                x,
+                y,
+                width,
+                height,
+                cam
+                );
+
+        auto result = invoke_kernel(kernel, r, gen, x, y);
+
+        rr.hit |= result.hit;
+        rr.color += result.color;
+
+        // Arbitrarily assign the depth of _one_ hit pixel
+        if (visionaray::any(result.hit))
+        {
+            result.depth = select(result.hit, depth_transform(r, result.depth, cam), S(1.0));
+            rr.depth = result.depth;
+        }
+    }
+
+    rr.color /= typename RR::scalar_type((float)blend_params.spp);
 
     pixel_access::blend(
             pixel_format_constant<CF>{},
@@ -417,7 +447,7 @@ inline void sample_pixel_impl(
             y,
             width,
             height,
-            result,
+            rr,
             rt_ref.color(),
             rt_ref.depth(),
             blend_params.sfactor,
