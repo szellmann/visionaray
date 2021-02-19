@@ -45,21 +45,10 @@ void simple_sched<R>::frame(K kernel, SP sched_params)
 
             auto gen = make_generator(S{}, typename SP::pixel_sampler_type{}, seed);
 
-            auto r = detail::make_primary_rays(
-                    R{},
-                    typename SP::pixel_sampler_type{},
-                    gen,
-                    x,
-                    y,
-                    sched_params.rt.width(),
-                    sched_params.rt.height(),
-                    sched_params.cam
-                    );
-
             sample_pixel(
                     kernel,
                     typename SP::pixel_sampler_type{},
-                    r,
+                    R{},
                     gen,
                     sched_params.rt.ref(),
                     x,

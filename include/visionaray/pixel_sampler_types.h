@@ -24,10 +24,7 @@ struct base_type {};
 // Built-in pixel sampler types ---------------------------
 
 // Place one uniform sample
-struct uniform_type : base_type
-{
-    static constexpr unsigned spp = 1;
-};
+struct uniform_type : base_type {};
 
 // Jittered and successive blending
 template <typename T>

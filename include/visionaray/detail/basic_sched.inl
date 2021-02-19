@@ -111,20 +111,9 @@ void basic_sched<B, R>::frame(K kernel, SP sched_params)
 
             auto gen = make_generator(S{}, sched_params.sample_params, seed);
 
-            auto r = detail::make_primary_rays(
-                    R{},
-                    sched_params.sample_params,
-                    gen,
-                    x,
-                    y,
-                    sched_params.rt.width(),
-                    sched_params.rt.height(),
-                    sched_params.cam
-                    );
-
             basic_sched_impl::call_sample_pixel(
                     typename detail::sched_params_has_intersector<SP>::type(),
-                    r,
+                    R{},
                     kernel,
                     sched_params,
                     gen,

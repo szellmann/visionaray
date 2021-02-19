@@ -59,19 +59,10 @@ __global__ void render(
 
     auto gen = make_generator(S{}, sample_params, seed);
 
-    auto r = detail::make_primary_rays(
-            R{},
-            sample_params,
-            gen,
-            x,
-            y,
-            args...
-            );
-
     sample_pixel(
             kernel,
             sample_params,
-            r,
+            R{},
             gen,
             rt_ref,
             x,
@@ -120,21 +111,12 @@ __global__ void render(
     // TODO: support any sampler
     random_generator<typename R::scalar_type> gen(seed);
 
-    auto r = detail::make_primary_rays(
-            R{},
-            sample_params,
-            gen,
-            x,
-            y,
-            args...
-            );
-
     sample_pixel(
             detail::have_intersector_tag(),
             intersector,
             kernel,
             sample_params,
-            r,
+            R{},
             gen,
             rt_ref,
             x,
