@@ -83,7 +83,7 @@ struct raytracing_kernel
         result_record<float> result;
         result.hit = hr.hit;
         result.color = hr.hit ? vec4(1.0f) : vec4(0.0f);
-        result.isect_pos = r.ori + r.dir * hr.t;
+        result.depth = hr.t;
         return result;
     }
 
