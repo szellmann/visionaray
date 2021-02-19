@@ -6,6 +6,7 @@
 #ifndef VSNRAY_DETAIL_COLOR_CONVERSION_H
 #define VSNRAY_DETAIL_COLOR_CONVERSION_H 1
 
+#include <cassert>
 #include <cstddef>
 
 #include <visionaray/math/detail/math.h>
@@ -288,6 +289,18 @@ inline void convert(
     target = static_cast<TargetType>(source);
 }
 
+// To PF_UNSPECIFIED (noop)
+template <pixel_format SF, typename TargetType, typename SourceType>
+VSNRAY_FUNC
+inline void convert(
+        pixel_format_constant<PF_UNSPECIFIED> /* */,
+        pixel_format_constant<SF>             /* */,
+        TargetType&                           /* */,
+        SourceType const&                     /* */
+        )
+{
+    assert(0);
+}
 
 // PF_DEPTH32F to PF_DEPTH24_STENCIL8 conversion
 

@@ -6,12 +6,14 @@
 #ifndef VSNRAY_DETAIL_SCHED_COMMON_H
 #define VSNRAY_DETAIL_SCHED_COMMON_H 1
 
+#include <type_traits>
 #include <utility>
 
 #include <visionaray/math/forward.h>
 #include <visionaray/math/matrix.h>
 #include <visionaray/math/vector.h>
 #include <visionaray/packet_traits.h>
+#include <visionaray/matrix_camera.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/pixel_sampler_types.h>
 #include <visionaray/render_target.h>
@@ -133,33 +135,72 @@ inline auto invoke_cam_primary_ray(
 
 
 //-------------------------------------------------------------------------------------------------
-// make primary rays
+// Get SSAA pixel offsets from uniform sampler
 //
-// Generates a single (or several when using anti-aliased rendering) primary rays
-// for a pixel position
+
+template <typename T>
+VSNRAY_FUNC
+inline vector<2, T> get_uniform_pixel_offset(
+        T                           /* */,
+        pixel_sampler::uniform_type ps,
+        unsigned                    s
+        )
+{
+    switch (ps.ssaa_factor)
+    {
+    case 2: // 2x SSAA
+        if (s == 0) return { T(-0.25), T(-0.25) };
+        else        return { T( 0.25), T( 0.25) };
+
+    case 4: // 4x SSAA
+        if (s == 0)      return { T(-0.125), T(-0.325) };
+        else if (s == 1) return { T( 0.375), T(-0.125) };
+        else if (s == 2) return { T( 0.125), T( 0.375) };
+        else             return { T(-0.375), T( 0.125) };
+
+    case 8: // 8x SSAA
+        if (s == 0)      return { T(-0.125), T(-0.4375) };
+        else if (s == 1) return { T( 0.375), T(-0.3125) };
+        else if (s == 2) return { T(-0.375), T(-0.1875) };
+        else if (s == 3) return { T( 0.125), T(-0.0625) };
+        else if (s == 4) return { T(-0.125), T( 0.0625) };
+        else if (s == 5) return { T( 0.375), T( 0.1825) };
+        else if (s == 6) return { T(-0.375), T( 0.1825) };
+        else             return { T( 0.125), T( 0.4375) };
+
+    default: // No SSAA
+        return { T(0.0), T(0.0) };
+    }
+}
+
+//-------------------------------------------------------------------------------------------------
+// Generates a primary ray for a pixel position
 //
 
 template <typename R, typename Generator, typename Camera>
 VSNRAY_FUNC
-inline R make_primary_rays(
+inline R make_primary_ray(
         R                           /* */,
-        pixel_sampler::uniform_type /* */,
+        pixel_sampler::uniform_type ps,
         Generator&                  gen,
         int                         x,
         int                         y,
         int                         width,
         int                         height,
+        unsigned                    sample,
         Camera const&               cam
         )
 {
     using T = typename R::scalar_type;
 
+    vector<2, T> off = get_uniform_pixel_offset(T{}, ps, sample);
+
     return invoke_cam_primary_ray(
             R{},
             cam,
             gen,
-            expand_pixel<T>().x(x),
-            expand_pixel<T>().y(y),
+            expand_pixel<T>().x(x) + off.x,
+            expand_pixel<T>().y(y) + off.y,
             T(width),
             T(height)
             );
@@ -167,7 +208,7 @@ inline R make_primary_rays(
 
 template <typename R, typename T, typename Generator, typename Camera>
 VSNRAY_FUNC
-inline R make_primary_rays(
+inline R make_primary_ray(
         R                               /* */,
         pixel_sampler::basic_jittered_blend_type<T> /* */,
         Generator&                                  gen,
@@ -200,7 +241,14 @@ inline R make_primary_rays(
 
 template <typename R, typename T, typename Camera>
 VSNRAY_FUNC
-inline T depth_transform(R const& r, T const& depth, Camera cam)
+inline T depth_transform(R, T, Camera)
+{
+    return T(-1.0f);
+}
+
+template <typename R, typename T>
+VSNRAY_FUNC
+inline T depth_transform(R const& r, T const& depth, matrix_camera const& cam)
 {
     vector<3, T> isect_pos = r.ori + r.dir * depth;
 
@@ -222,97 +270,81 @@ template <
     typename K,
     typename R,
     typename Generator,
-    pixel_format CF,
+    typename RenderTargetRef,
     typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
-        K                               kernel,
-        pixel_sampler::uniform_type     /* */,
-        R                               /* */,
-        Generator&                      gen,
-        render_target_ref<CF>           rt_ref,
-        int                             x,
-        int                             y,
-        int                             width,
-        int                             height,
-        Camera const&                   cam
+        K                           kernel,
+        pixel_sampler::uniform_type ps,
+        R                           /* */,
+        Generator&                  gen,
+        RenderTargetRef             rt_ref,
+        int                         x,
+        int                         y,
+        int                         width,
+        int                         height,
+        Camera const&               cam
         )
 {
-    auto r = make_primary_rays(
-            R{},
-            pixel_sampler::uniform_type{},
-            gen,
-            x,
-            y,
-            width,
-            height,
-            cam
-            );
+    using RR = decltype(invoke_kernel(kernel, R{}, gen, x, y));
+    using S = typename RR::scalar_type;
 
-    auto result = invoke_kernel(kernel, r, gen, x, y);
+    RR rr;
+
+    for (unsigned s = 0; s < ps.ssaa_factor; ++s)
+    {
+        auto r = make_primary_ray(
+                R{},
+                ps,
+                gen,
+                x,
+                y,
+                width,
+                height,
+                s,
+                cam
+                );
+
+        auto result = invoke_kernel(kernel, r, gen, x, y);
+
+        // Arbitrarily assign the depth of _one_ pixel that recorded a hit
+        if (RenderTargetRef::depth_format != PF_UNSPECIFIED && visionaray::any(result.hit))
+        {
+            result.depth = select(result.hit, depth_transform(r, result.depth, cam), S(1.0));
+            rr.depth = result.depth;
+        }
+
+        rr.hit |= result.hit;
+        rr.color += result.color;
+    }
+
+    rr.color /= S((float)ps.ssaa_factor);
 
     pixel_access::store(
-            pixel_format_constant<CF>{},
+            pixel_format_constant<RenderTargetRef::color_format>{},
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
             width,
             height,
-            result,
+            rr,
             rt_ref.color()
             );
-}
 
-template <
-    typename K,
-    typename R,
-    typename Generator,
-    pixel_format CF,
-    pixel_format DF,
-    typename Camera
-    >
-VSNRAY_FUNC
-inline void sample_pixel_impl(
-        K                               kernel,
-        pixel_sampler::uniform_type     /* */,
-        R                               /* */,
-        Generator&                      gen,
-        render_target_ref<CF, DF>       rt_ref,
-        int                             x,
-        int                             y,
-        int                             width,
-        int                             height,
-        Camera const&                   cam
-        )
-{
-    auto r = make_primary_rays(
-            R{},
-            pixel_sampler::uniform_type{},
-            gen,
-            x,
-            y,
-            width,
-            height,
-            cam
-            );
-
-    auto result = invoke_kernel(kernel, r, gen, x, y);
-    result.depth = select(result.hit, depth_transform(r, result.depth, cam), typename R::scalar_type(1.0));
-
-    pixel_access::store(
-            pixel_format_constant<CF>{},
-            pixel_format_constant<PF_RGBA32F>{},
-            pixel_format_constant<DF>{},
-            pixel_format_constant<PF_DEPTH32F>{},
-            x,
-            y,
-            width,
-            height,
-            result,
-            rt_ref.color(),
-            rt_ref.depth()
-            );
+    if (RenderTargetRef::depth_format != PF_UNSPECIFIED)
+    {
+        pixel_access::store(
+                pixel_format_constant<RenderTargetRef::depth_format>{},
+                pixel_format_constant<PF_DEPTH32F>{},
+                x,
+                y,
+                width,
+                height,
+                rr,
+                rt_ref.depth()
+                );
+    }
 }
 
 
@@ -325,16 +357,16 @@ template <
     typename T,
     typename R,
     typename Generator,
-    pixel_format CF,
+    typename RenderTargetRef,
     typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         K                                           kernel,
-        pixel_sampler::basic_jittered_blend_type<T> blend_params,
+        pixel_sampler::basic_jittered_blend_type<T> ps,
         R                                           /* */,
         Generator&                                  gen,
-        render_target_ref<CF>                       rt_ref,
+        RenderTargetRef                             rt_ref,
         int                                         x,
         int                                         y,
         int                                         width,
@@ -343,14 +375,15 @@ inline void sample_pixel_impl(
         )
 {
     using RR = decltype(invoke_kernel(kernel, R{}, gen, x, y));
+    using S = typename RR::scalar_type;
 
     RR rr;
 
-    for (unsigned s = 0; s < blend_params.spp; ++s)
+    for (unsigned s = 0; s < ps.spp; ++s)
     {
-        auto r = make_primary_rays(
+        auto r = make_primary_ray(
                 R{},
-                blend_params,
+                ps,
                 gen,
                 x,
                 y,
@@ -361,98 +394,47 @@ inline void sample_pixel_impl(
 
         auto result = invoke_kernel(kernel, r, gen, x, y);
 
-        rr.hit |= result.hit;
-        rr.color += result.color;
-    }
-
-    rr.color /= typename RR::scalar_type((float)blend_params.spp);
-
-    pixel_access::blend(
-            pixel_format_constant<CF>{},
-            pixel_format_constant<PF_RGBA32F>{},
-            x,
-            y,
-            width,
-            height,
-            rr,
-            rt_ref.color(),
-            blend_params.sfactor,
-            blend_params.dfactor
-            );
-}
-
-template <
-    typename K,
-    typename T,
-    typename R,
-    typename Generator,
-    pixel_format CF,
-    pixel_format DF,
-    typename Camera
-    >
-VSNRAY_FUNC
-inline void sample_pixel_impl(
-        K                                           kernel,
-        pixel_sampler::basic_jittered_blend_type<T> blend_params,
-        R                                           /* */,
-        Generator&                                  gen,
-        render_target_ref<CF, DF>                   rt_ref,
-        int                                         x,
-        int                                         y,
-        int                                         width,
-        int                                         height,
-        Camera const&                               cam
-        )
-{
-    using S = typename R::scalar_type;
-
-    using RR = decltype(invoke_kernel(kernel, R{}, gen, x, y));
-
-    RR rr;
-
-    for (unsigned s = 0; s < blend_params.spp; ++s)
-    {
-        auto r = make_primary_rays(
-                R{},
-                blend_params,
-                gen,
-                x,
-                y,
-                width,
-                height,
-                cam
-                );
-
-        auto result = invoke_kernel(kernel, r, gen, x, y);
-
-        rr.hit |= result.hit;
-        rr.color += result.color;
-
-        // Arbitrarily assign the depth of _one_ hit pixel
-        if (visionaray::any(result.hit))
+        // Arbitrarily assign the depth of _one_ pixel that recorded a hit
+        if (RenderTargetRef::depth_format != PF_UNSPECIFIED && visionaray::any(result.hit))
         {
             result.depth = select(result.hit, depth_transform(r, result.depth, cam), S(1.0));
             rr.depth = result.depth;
         }
+
+        rr.hit |= result.hit;
+        rr.color += result.color;
     }
 
-    rr.color /= typename RR::scalar_type((float)blend_params.spp);
+    rr.color /= S((float)ps.spp);
 
     pixel_access::blend(
-            pixel_format_constant<CF>{},
+            pixel_format_constant<RenderTargetRef::color_format>{},
             pixel_format_constant<PF_RGBA32F>{},
-            pixel_format_constant<DF>{},
-            pixel_format_constant<PF_DEPTH32F>{},
             x,
             y,
             width,
             height,
             rr,
             rt_ref.color(),
-            rt_ref.depth(),
-            blend_params.sfactor,
-            blend_params.dfactor
+            ps.sfactor,
+            ps.dfactor
             );
+
+    // Don't blend, but simply override depth buffer
+    // That's a pretty whacky way of assembling pixels anyway...
+    if (RenderTargetRef::depth_format != PF_UNSPECIFIED)
+    {
+        pixel_access::store(
+                pixel_format_constant<RenderTargetRef::depth_format>{},
+                pixel_format_constant<PF_DEPTH32F>{},
+                x,
+                y,
+                width,
+                height,
+                rr,
+                rt_ref.depth()
+                );
+    }
 }
 
 //-------------------------------------------------------------------------------------------------

@@ -1249,66 +1249,6 @@ inline void blend(
         );
 }
 
-//-------------------------------------------------------------------------------------------------
-// Blend color and depth from result record on top of output buffers
-//
-
-template <
-    pixel_format DFC,
-    pixel_format SFC,
-    pixel_format DFD,
-    pixel_format SFD,
-    typename S,
-    typename OutputColor,
-    typename Depth,
-    typename T
-    >
-VSNRAY_FUNC
-inline void blend(
-        pixel_format_constant<DFC>  /* dst format color */,
-        pixel_format_constant<SFC>  /* src format color */,
-        pixel_format_constant<DFD>  /* dst format depth */,
-        pixel_format_constant<SFD>  /* src format depth */,
-        int                         x,
-        int                         y,
-        int                         width,
-        int                         height,
-        result_record<S> const&     rr,
-        OutputColor*                color_buffer,
-        Depth*                      depth_buffer,
-        T const&                    sfactor,
-        T const&                    dfactor
-        )
-{
-    // Blend color
-    blend(
-        pixel_format_constant<DFC>{},
-        pixel_format_constant<SFC>{},
-        x,
-        y,
-        width,
-        height,
-        rr.color,
-        color_buffer,
-        sfactor,
-        dfactor
-        );
-
-    // Blend depth
-    blend(
-        pixel_format_constant<DFD>{},
-        pixel_format_constant<SFD>{},
-        x,
-        y,
-        width,
-        height,
-        rr.depth,
-        depth_buffer,
-        sfactor,
-        dfactor
-        );
-}
-
 } // pixel_access
 
 } // detail

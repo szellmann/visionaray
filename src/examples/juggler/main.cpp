@@ -638,12 +638,10 @@ void renderer::on_display()
 {
     // some setup
 
-    auto sparams = make_sched_params(
-            pixel_sampler::uniform_type{},
-            cam,
-            host_rt
-            );
+    pixel_sampler::uniform_type ps;
+    ps.ssaa_factor = 4; // 4x SSAA
 
+    auto sparams = make_sched_params(ps, cam, host_rt);
 
 
     // a light positioned slightly distant above the scene

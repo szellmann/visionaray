@@ -23,8 +23,11 @@ struct base_type {};
 
 // Built-in pixel sampler types ---------------------------
 
-// Place one uniform sample
-struct uniform_type : base_type {};
+// Uniform (change spp to 2x, 4x, or 8x for SSAA)
+struct uniform_type : base_type
+{
+    unsigned ssaa_factor = 1; // 1,2,4,8
+};
 
 // Jittered and successive blending
 template <typename T>

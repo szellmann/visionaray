@@ -94,25 +94,25 @@ void call_kernel(
     {
 
     case Simple:
-        if (spp == 1)
-        {
-            sched.frame(
-                simple::kernel<KParams>({kparams}),
-                make_sched_params(pixel_sampler::uniform_type{}, std::forward<Args>(args)...)
-                );
-        }
+    {
+        pixel_sampler::uniform_type ups;
+        ups.ssaa_factor = spp;
+        sched.frame(
+            simple::kernel<KParams>({kparams}),
+            make_sched_params(ups, std::forward<Args>(args)...)
+            );
         break;
-
+    }
     case Whitted:
-        if (spp == 1)
-        {
-            sched.frame(
-                whitted::kernel<KParams>({kparams}),
-                make_sched_params(pixel_sampler::uniform_type{}, std::forward<Args>(args)...)
-                );
-        }
+    {
+        pixel_sampler::uniform_type ups;
+        ups.ssaa_factor = spp;
+        sched.frame(
+            whitted::kernel<KParams>({kparams}),
+            make_sched_params(ups, std::forward<Args>(args)...)
+            );
         break;
-
+    }
     case Pathtracing:
     {
         float alpha = 1.0f / ++frame_num;
