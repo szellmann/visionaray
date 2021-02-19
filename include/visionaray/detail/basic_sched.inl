@@ -22,20 +22,13 @@ namespace basic_sched_impl
 template <typename R, typename K, typename SP, typename Generator, typename ...Args>
 void call_sample_pixel(
         std::false_type /* has intersector */,
-        R               /* */,
+        R const&        r,
         K               kernel,
         SP              sparams,
         Generator&      gen,
         Args&&...       args
         )
 {
-    auto r = detail::make_primary_rays(
-            R{},
-            sparams.sample_params,
-            gen,
-            std::forward<Args>(args)...
-            );
-
     sample_pixel(
             kernel,
             sparams.sample_params,
@@ -49,20 +42,13 @@ void call_sample_pixel(
 template <typename R, typename K, typename SP, typename Generator, typename ...Args>
 void call_sample_pixel(
         std::true_type  /* has intersector */,
-        R               /* */,
+        R const&        r,
         K               kernel,
         SP              sparams,
         Generator&      gen,
         Args&&...       args
         )
 {
-    auto r = detail::make_primary_rays(
-            R{},
-            sparams.sample_params,
-            gen,
-            std::forward<Args>(args)...
-            );
-
     sample_pixel(
             detail::have_intersector_tag(),
             sparams.intersector,
@@ -125,9 +111,20 @@ void basic_sched<B, R>::frame(K kernel, SP sched_params)
 
             auto gen = make_generator(S{}, sched_params.sample_params, seed);
 
+            auto r = detail::make_primary_rays(
+                    R{},
+                    sched_params.sample_params,
+                    gen,
+                    x,
+                    y,
+                    sched_params.rt.width(),
+                    sched_params.rt.height(),
+                    sched_params.cam
+                    );
+
             basic_sched_impl::call_sample_pixel(
                     typename detail::sched_params_has_intersector<SP>::type(),
-                    R{},
+                    r,
                     kernel,
                     sched_params,
                     gen,
