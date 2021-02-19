@@ -25,12 +25,11 @@ struct base_type {};
 
 // Built-in pixel sampler types ---------------------------
 
-// Supersampling anti-aliasing
-template <size_t NumSamples>
-struct ssaa_type : base_type {};
-
-// 1x SSAA (no supersampling)
-using uniform_type = ssaa_type<1>;
+// Place one uniform sample
+struct uniform_type : base_type
+{
+    static constexpr unsigned spp = 1;
+};
 
 // Jittered pixel positions
 struct jittered_type : base_type {};

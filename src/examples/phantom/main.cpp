@@ -796,8 +796,6 @@ void renderer::on_display()
 
     // Note: alternative samplers are:
     //  pixel_sampler::uniform_type
-    //  pixel_sampler::ssaa_type<[1|2|4|8}>
-    // (uniform_type and ssaa_type<1> will behave the same!)
     // You can also leave this argument out, then you'll get
     // the default: pixel_sampler::uniform_type
     auto sparams = make_sched_params(

@@ -44,7 +44,7 @@ inline void call_kernel(
         Sched&                                           sched,
         KParams const&                                   kparams,
         unsigned&                                        frame_num,
-        unsigned                                         ssaa_samples,
+        unsigned                                         spp,
         variant<pinhole_camera, thin_lens_camera> const& cam,
         RT&                                              rt
         )
@@ -56,7 +56,7 @@ inline void call_kernel(
                 sched,
                 kparams,
                 frame_num,
-                ssaa_samples,
+                spp,
                 *cam.as<thin_lens_camera>(),
                 rt
                 );
@@ -68,7 +68,7 @@ inline void call_kernel(
                 sched,
                 kparams,
                 frame_num,
-                ssaa_samples,
+                spp,
                 *cam.as<pinhole_camera>(),
                 rt
                 );
@@ -79,9 +79,6 @@ inline void call_kernel(
 //-------------------------------------------------------------------------------------------------
 // Call one of the built-in kernels
 //
-// Simple, Whitted: mind ssaa_samples
-// Pathtracing:     jittered-blend sampling
-//
 
 template <typename Sched, typename KParams, typename ...Args>
 void call_kernel(
@@ -89,7 +86,7 @@ void call_kernel(
         Sched&          sched,
         KParams const&  kparams,
         unsigned&       frame_num,
-        unsigned        ssaa_samples,
+        unsigned        spp,
         Args&&...       args
         )
 {
@@ -97,63 +94,21 @@ void call_kernel(
     {
 
     case Simple:
-        if (ssaa_samples == 1)
+        if (spp == 1)
         {
             sched.frame(
                 simple::kernel<KParams>({kparams}),
-                make_sched_params(pixel_sampler::ssaa_type<1>{}, std::forward<Args>(args)...)
-                );
-        }
-        else if (ssaa_samples == 2)
-        {
-            sched.frame(
-                simple::kernel<KParams>({kparams}),
-                make_sched_params(pixel_sampler::ssaa_type<2>{}, std::forward<Args>(args)...)
-                );
-        }
-        else if (ssaa_samples == 4)
-        {
-            sched.frame(
-                simple::kernel<KParams>({kparams}),
-                make_sched_params(pixel_sampler::ssaa_type<4>{}, std::forward<Args>(args)...)
-                );
-        }
-        else if (ssaa_samples == 8)
-        {
-            sched.frame(
-                simple::kernel<KParams>({kparams}),
-                make_sched_params(pixel_sampler::ssaa_type<8>{}, std::forward<Args>(args)...)
+                make_sched_params(pixel_sampler::uniform_type{}, std::forward<Args>(args)...)
                 );
         }
         break;
 
     case Whitted:
-        if (ssaa_samples == 1)
+        if (spp == 1)
         {
             sched.frame(
                 whitted::kernel<KParams>({kparams}),
-                make_sched_params(pixel_sampler::ssaa_type<1>{}, std::forward<Args>(args)...)
-                );
-        }
-        else if (ssaa_samples == 2)
-        {
-            sched.frame(
-                whitted::kernel<KParams>({kparams}),
-                make_sched_params(pixel_sampler::ssaa_type<2>{}, std::forward<Args>(args)...)
-                );
-        }
-        else if (ssaa_samples == 4)
-        {
-            sched.frame(
-                whitted::kernel<KParams>({kparams}),
-                make_sched_params(pixel_sampler::ssaa_type<4>{}, std::forward<Args>(args)...)
-                );
-        }
-        else if (ssaa_samples == 8)
-        {
-            sched.frame(
-                whitted::kernel<KParams>({kparams}),
-                make_sched_params(pixel_sampler::ssaa_type<8>{}, std::forward<Args>(args)...)
+                make_sched_params(pixel_sampler::uniform_type{}, std::forward<Args>(args)...)
                 );
         }
         break;
@@ -174,7 +129,7 @@ void call_kernel(
     {
         sched.frame(
             bvh_costs_kernel<KParams>({kparams}),
-            make_sched_params(pixel_sampler::ssaa_type<1>{}, std::forward<Args>(args)...)
+            make_sched_params(pixel_sampler::uniform_type{}, std::forward<Args>(args)...)
             );
         break;
     }
