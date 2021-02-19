@@ -594,59 +594,6 @@ inline void store(
         );
 }
 
-//-------------------------------------------------------------------------------------------------
-// Store color and depth from result record to output buffers
-//
-
-template <
-    pixel_format DFC,
-    pixel_format SFC,
-    pixel_format DFD,
-    pixel_format SFD,
-    typename T,
-    typename Color,
-    typename Depth
-    >
-VSNRAY_FUNC
-inline void store(
-        pixel_format_constant<DFC>  /* dst format color */,
-        pixel_format_constant<SFC>  /* src format color */,
-        pixel_format_constant<DFD>  /* dst format depth */,
-        pixel_format_constant<SFD>  /* src format depth */,
-        int                         x,
-        int                         y,
-        int                         width,
-        int                         height,
-        result_record<T> const&     rr,
-        Color*                      color_buffer,
-        Depth*                      depth_buffer
-        )
-{
-    // Store color
-    store(
-        pixel_format_constant<DFC>{},
-        pixel_format_constant<SFC>{},
-        x,
-        y,
-        width,
-        height,
-        rr.color,
-        color_buffer
-        );
-
-    // Store depth
-    store(
-        pixel_format_constant<DFD>{},
-        pixel_format_constant<SFD>{},
-        x,
-        y,
-        width,
-        height,
-        rr.depth,
-        depth_buffer
-        );
-}
-
 
 // Get -------------------------------------------------------------------
 
