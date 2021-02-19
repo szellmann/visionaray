@@ -205,7 +205,7 @@ void renderer::on_display()
         if (any(hit_rec.hit))
         {
             hit_rec.isect_pos = ray.ori + ray.dir * hit_rec.t;
-            result.isect_pos  = hit_rec.isect_pos;
+            result.depth  = hit_rec.t;
 
             C clr(1.0);
 

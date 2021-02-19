@@ -414,7 +414,7 @@ void renderer::on_display()
                     result.color
                     );
 
-            result.isect_pos = hit_rec.isect_pos;
+            result.depth = hit_rec.t;
         }
 
         result.hit = hit_rec.hit;

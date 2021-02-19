@@ -54,8 +54,8 @@ struct kernel
                 shaded_clr  += select( hit_rec.hit, clr, C(0.0) );
             }
 
-            result.color     = select(hit_rec.hit, to_rgba(shaded_clr), vector<4, S>(bgcolor, S(1.0)));
-            result.isect_pos = hit_rec.isect_pos;
+            result.color = select(hit_rec.hit, to_rgba(shaded_clr), vector<4, S>(bgcolor, S(1.0)));
+            result.depth = hit_rec.t;
         }
         else
         {

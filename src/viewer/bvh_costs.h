@@ -71,14 +71,14 @@ struct bvh_costs_kernel
 
         bvh_cost_intersector i;
 
-        auto hit_rec        = closest_hit(ray, params.prims.begin, params.prims.end, i);
+        auto hit_rec = closest_hit(ray, params.prims.begin, params.prims.end, i);
 
-        S t                 = select(hit_rec.hit, i.num_boxes * wb + i.num_tris * wp, S(0.0));
-        auto rgb            = temperature_to_rgb(t / S(120.0)); // plot max. 120 ray interactions..
+        S t          = select(hit_rec.hit, i.num_boxes * wb + i.num_tris * wp, S(0.0));
+        auto rgb     = temperature_to_rgb(t / S(120.0)); // plot max. 120 ray interactions..
 
-        result.hit          = hit_rec.hit;
-        result.color        = C(rgb, S(1.0));
-        result.isect_pos    = ray.ori + ray.dir * hit_rec.t;
+        result.hit   = hit_rec.hit;
+        result.color = C(rgb, S(1.0));
+        result.depth = hit_rec.t;
         return result;
     }
 

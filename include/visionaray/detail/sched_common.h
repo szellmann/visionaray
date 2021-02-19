@@ -195,13 +195,15 @@ inline R make_primary_rays(
 
 
 //-------------------------------------------------------------------------------------------------
-// Depth transform
+// Transform depth from ray to OpenGL/raster coordinates
 //
 
-template <typename T, typename Camera>
+template <typename R, typename T, typename Camera>
 VSNRAY_FUNC
-inline T depth_transform(vector<3, T> const& isect_pos, Camera cam)
+inline T depth_transform(R const& r, T const& depth, Camera cam)
 {
+    vector<3, T> isect_pos = r.ori + r.dir * depth;
+
     matrix<4, 4, T> view_matrix(cam.get_view_matrix());
     matrix<4, 4, T> proj_matrix(cam.get_proj_matrix());
 
@@ -275,7 +277,7 @@ inline void sample_pixel_impl(
         )
 {
     auto result = invoke_kernel(kernel, r, gen, x, y);
-    result.depth = select( result.hit, depth_transform(result.isect_pos, cam), typename R::scalar_type(1.0) );
+    result.depth = select(result.hit, depth_transform(r, result.depth, cam), typename R::scalar_type(1.0));
     pixel_access::store(
             pixel_format_constant<CF>{},
             pixel_format_constant<PF_RGBA32F>{},
@@ -363,7 +365,7 @@ inline void sample_pixel_impl(
 
     auto result = invoke_kernel(kernel, r, gen, x, y);
 
-    result.depth = select( result.hit, depth_transform(result.isect_pos, cam), S(1.0) );
+    result.depth = select(result.hit, depth_transform(r, result.depth, cam), S(1.0));
 
     pixel_access::blend(
             pixel_format_constant<CF>{},

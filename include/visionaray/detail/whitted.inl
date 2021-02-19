@@ -239,7 +239,7 @@ struct kernel
         if (any(hit_rec.hit))
         {
             result.hit = hit_rec.hit;
-            result.isect_pos = ray.ori + ray.dir * hit_rec.t;
+            result.depth = hit_rec.t;
         }
         else
         {

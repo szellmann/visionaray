@@ -27,7 +27,6 @@ struct result_record
     mask_type   hit       = mask_type(false);
     color_type  color     = color_type(0.0);
     scalar_type depth     = scalar_type(0.0);
-    vec_type    isect_pos = vec_type(0.0);
 };
 
 } // visionaray
