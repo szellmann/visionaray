@@ -328,7 +328,7 @@ inline void sample_pixel_impl(
             y,
             width,
             height,
-            rr,
+            rr.color,
             rt_ref.color()
             );
 
@@ -341,7 +341,7 @@ inline void sample_pixel_impl(
                 y,
                 width,
                 height,
-                rr,
+                rr.depth,
                 rt_ref.depth()
                 );
     }
@@ -414,7 +414,7 @@ inline void sample_pixel_impl(
             y,
             width,
             height,
-            rr,
+            rr.color,
             rt_ref.color(),
             ps.sfactor,
             ps.dfactor
@@ -431,7 +431,7 @@ inline void sample_pixel_impl(
                 y,
                 width,
                 height,
-                rr,
+                rr.depth,
                 rt_ref.depth()
                 );
     }

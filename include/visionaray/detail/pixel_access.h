@@ -19,7 +19,6 @@
 #include <visionaray/blending.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
-#include <visionaray/result_record.h>
 
 #include "color_conversion.h"
 #include "macros.h"
@@ -562,36 +561,6 @@ inline void store(
             }
         }
     }
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Store color from result record to output color buffer
-//
-
-template <pixel_format DF, pixel_format SF, typename T, typename OutputColor>
-VSNRAY_FUNC
-inline void store(
-        pixel_format_constant<DF>   /* dst format */,
-        pixel_format_constant<SF>   /* src format */,
-        int                         x,
-        int                         y,
-        int                         width,
-        int                         height,
-        result_record<T> const&     rr,
-        OutputColor*                buffer
-        )
-{
-    store(
-        pixel_format_constant<DF>{},
-        pixel_format_constant<SF>{},
-        x,
-        y,
-        width,
-        height,
-        rr.color,
-        buffer
-        );
 }
 
 
@@ -1160,40 +1129,6 @@ inline void blend(
     dst = blend(color, sfactor, dst, dfactor);
 
     store(pixel_format_constant<DF>{}, pixel_format_constant<SF>{}, x, y, width, height, dst, buffer);
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// Blend color from result record on top of output color buffer
-//
-
-template <pixel_format DF, pixel_format SF, typename S, typename OutputColor, typename T>
-VSNRAY_FUNC
-inline void blend(
-        pixel_format_constant<DF>   /* dst format */,
-        pixel_format_constant<SF>   /* src format */,
-        int                         x,
-        int                         y,
-        int                         width,
-        int                         height,
-        result_record<S> const&     rr,
-        OutputColor*                color_buffer,
-        T const&                    sfactor,
-        T const&                    dfactor
-        )
-{
-    blend(
-        pixel_format_constant<DF>{},
-        pixel_format_constant<SF>{},
-        x,
-        y,
-        width,
-        height,
-        rr.color,
-        color_buffer,
-        sfactor,
-        dfactor
-        );
 }
 
 } // pixel_access
