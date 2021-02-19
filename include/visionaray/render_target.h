@@ -44,6 +44,9 @@ private:
 template <pixel_format ColorFormat, pixel_format DepthFormat = PF_UNSPECIFIED>
 struct render_target_ref
 {
+    constexpr static pixel_format color_format = ColorFormat;
+    constexpr static pixel_format depth_format = DepthFormat;
+
     using color_type = typename pixel_traits<ColorFormat>::type;
     using depth_type = typename pixel_traits<DepthFormat>::type;
 
