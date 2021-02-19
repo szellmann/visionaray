@@ -31,12 +31,9 @@ struct uniform_type : base_type
     static constexpr unsigned spp = 1;
 };
 
-// Jittered pixel positions
-struct jittered_type : base_type {};
-
 // Jittered and successive blending
 template <typename T>
-struct basic_jittered_blend_type : jittered_type
+struct basic_jittered_blend_type : base_type
 {
     T sfactor;
     T dfactor;
