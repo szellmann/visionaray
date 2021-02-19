@@ -1,5 +1,6 @@
 ## [Unreleased]
 ### Added
+- "Ray tracing in one weekend" example using CUDA.
 - Added an -spp flag to various examples.
 
 ## [0.2.0] - 2021-02-19
