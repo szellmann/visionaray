@@ -309,10 +309,10 @@ inline void sample_pixel_impl(
         auto result = invoke_kernel(kernel, r, gen, x, y);
 
         // Arbitrarily assign the depth of _one_ pixel that recorded a hit
-        if (RenderTargetRef::depth_format != PF_UNSPECIFIED && visionaray::any(result.hit))
+        if (RenderTargetRef::depth_format != PF_UNSPECIFIED)
         {
             result.depth = select(result.hit, depth_transform(r, result.depth, cam), S(1.0));
-            rr.depth = result.depth;
+            rr.depth += result.depth;
         }
 
         rr.hit |= result.hit;
@@ -320,6 +320,7 @@ inline void sample_pixel_impl(
     }
 
     rr.color /= S((float)ps.ssaa_factor);
+    rr.depth /= S((float)ps.ssaa_factor);
 
     pixel_access::store(
             pixel_format_constant<RenderTargetRef::color_format>{},
@@ -332,7 +333,7 @@ inline void sample_pixel_impl(
             rt_ref.color()
             );
 
-    if (RenderTargetRef::depth_format != PF_UNSPECIFIED)
+    if (RenderTargetRef::depth_format != PF_UNSPECIFIED && visionaray::any(rr.hit))
     {
         pixel_access::store(
                 pixel_format_constant<RenderTargetRef::depth_format>{},
@@ -395,10 +396,10 @@ inline void sample_pixel_impl(
         auto result = invoke_kernel(kernel, r, gen, x, y);
 
         // Arbitrarily assign the depth of _one_ pixel that recorded a hit
-        if (RenderTargetRef::depth_format != PF_UNSPECIFIED && visionaray::any(result.hit))
+        if (RenderTargetRef::depth_format != PF_UNSPECIFIED)
         {
             result.depth = select(result.hit, depth_transform(r, result.depth, cam), S(1.0));
-            rr.depth = result.depth;
+            rr.depth += result.depth;
         }
 
         rr.hit |= result.hit;
@@ -406,6 +407,7 @@ inline void sample_pixel_impl(
     }
 
     rr.color /= S((float)ps.spp);
+    rr.depth /= S((float)ps.spp);
 
     pixel_access::blend(
             pixel_format_constant<RenderTargetRef::color_format>{},
@@ -420,9 +422,7 @@ inline void sample_pixel_impl(
             ps.dfactor
             );
 
-    // Don't blend, but simply override depth buffer
-    // That's a pretty whacky way of assembling pixels anyway...
-    if (RenderTargetRef::depth_format != PF_UNSPECIFIED)
+    if (RenderTargetRef::depth_format != PF_UNSPECIFIED && visionaray::any(rr.hit))
     {
         pixel_access::store(
                 pixel_format_constant<RenderTargetRef::depth_format>{},
