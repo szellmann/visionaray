@@ -1,5 +1,8 @@
 ## [Unreleased]
+
+## [0.2.0] - 2021-02-19
 ### Added
+- Added an -spp flag to viewer that is used by the path tracer.
 - Support for HDR/radiance file format in visionaray-common library.
 - Added an optional ground plane in viewer.
 - Add BVH cost debug kernel to viewer, can be activated by pressing
@@ -15,6 +18,8 @@ the API with a custom curve primitive type.
 textures.
 
 ### Changed
+- Pixel sampler types now store parameters indicating ssaa factors or
+spp. Those are now evaluated at runtime.
 - Don't use clock as LCG seed anymore; rather compute hashes based on
 pixelID and frameID.
 - BVH instances now store 4x3 instead of 4x4 transform matrices.
@@ -23,6 +28,12 @@ pixelID and frameID.
 Ubuntu 14.04 and gcc 4.8 as that is too old for pbrtParser.
 - pbrtParser is now a submodule instead of an external dependency
 supplied by the user.
+
+### Removed
+- pixel_sampler::ssaa_type<N> was removed and bumped into
+pixel_sampler::uniform_type.
+- pixel_sampler::jittered_type was removed; the same can be achieved
+by using jittered_blend_type and tampering with the blend parameters.
 
 ### Fixed
 - Various smaller fixes to make things run smoothly on Apple silicon.
