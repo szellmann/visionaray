@@ -6,7 +6,6 @@
 #ifndef VSNRAY_DETAIL_SCHED_COMMON_H
 #define VSNRAY_DETAIL_SCHED_COMMON_H 1
 
-#include <type_traits>
 #include <utility>
 
 #include <visionaray/math/forward.h>
