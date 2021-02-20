@@ -302,6 +302,19 @@ inline void convert(
     assert(0);
 }
 
+// From PF_UNSPECIFIED (noop)
+template <pixel_format TF, typename TargetType, typename SourceType>
+VSNRAY_FUNC
+inline void convert(
+        pixel_format_constant<TF>             /* */,
+        pixel_format_constant<PF_UNSPECIFIED> /* */,
+        TargetType&                           /* */,
+        SourceType const&                     /* */
+        )
+{
+    assert(0);
+}
+
 // PF_DEPTH32F to PF_DEPTH24_STENCIL8 conversion
 
 template <typename TargetType, typename SourceType>
