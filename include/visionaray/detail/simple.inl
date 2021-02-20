@@ -6,6 +6,7 @@
 #ifndef VSNRAY_DETAIL_SIMPLE_INL
 #define VSNRAY_DETAIL_SIMPLE_INL 1
 
+#include <visionaray/math/vector.h>
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
 #include <visionaray/spectrum.h>
@@ -27,7 +28,7 @@ struct kernel
     VSNRAY_FUNC result_record<typename R::scalar_type> operator()(Intersector& isect, R ray) const
     {
         using S = typename R::scalar_type;
-        using V = typename result_record<S>::vec_type;
+        using V = vector<3, S>;
         using C = spectrum<S>;
 
         result_record<S> result;

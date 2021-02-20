@@ -6,6 +6,7 @@
 #ifndef VSNRAY_DETAIL_PATHTRACING_INL
 #define VSNRAY_DETAIL_PATHTRACING_INL 1
 
+#include <visionaray/math/vector.h>
 #include <visionaray/get_area.h>
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
@@ -34,7 +35,7 @@ struct kernel
     {
         using S = typename R::scalar_type;
         using I = simd::int_type_t<S>;
-        using V = typename result_record<S>::vec_type;
+        using V = vector<3, S>;
         using C = spectrum<S>;
 
         simd::mask_type_t<S> active_rays = true;

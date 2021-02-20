@@ -8,6 +8,7 @@
 
 #include <type_traits>
 
+#include <visionaray/math/vector.h>
 #include <visionaray/array.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/get_surface.h>
@@ -229,7 +230,7 @@ struct kernel
     {
 
         using S = typename R::scalar_type;
-        using V = typename result_record<S>::vec_type;
+        using V = vector<3, S>;
         using C = spectrum<S>;
 
         result_record<S> result;
