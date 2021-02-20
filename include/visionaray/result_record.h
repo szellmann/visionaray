@@ -24,9 +24,9 @@ struct result_record
     using vec_type    = vector<3, T>;
     using color_type  = vector<4, T>;
 
-    mask_type   hit       = mask_type(false);
-    color_type  color     = color_type(0.0);
-    scalar_type depth     = scalar_type(0.0);
+    mask_type   hit   = mask_type(false);
+    color_type  color = color_type(0.0);
+    scalar_type depth = scalar_type(0.0);
 };
 
 } // visionaray
