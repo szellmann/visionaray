@@ -1954,11 +1954,11 @@ void renderer::render_hud()
             ImGui::SameLine();
             if (algo == Pathtracing)
             {
-                ImGui::Text("SPP: %7u", std::max(1U, frame_num));
+                ImGui::Text("Frames: %7u", std::max(1U, frame_num));
             }
             else
             {
-                ImGui::Text("SPP: %dx SSAA", spp);
+                ImGui::Text("SSAA: %dx", spp);
             }
 
             ImGui::Text("Device: %s", rt.mode() == host_device_rt::GPU ? "GPU" : "CPU");
