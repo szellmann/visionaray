@@ -114,7 +114,7 @@ set(UNITTESTS_SOURCES
     medium.cpp
     morton.cpp
     phase_function.cpp
-    render_target.cpp
+    #render_target.cpp
     sampling.cpp
     swizzle.cpp
     variant.cpp
