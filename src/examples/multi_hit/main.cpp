@@ -202,7 +202,7 @@ struct kernel
         // Use closest hit in the sequence
         // for visibility testing
         result.hit = hit_rec[0].hit;
-        result.isect_pos  = ray.ori + ray.dir * hit_rec[0].t;
+        result.depth = hit_rec[0].t;
 
 
         // Do smth. useful with the hit records
