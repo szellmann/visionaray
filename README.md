@@ -41,7 +41,7 @@ Build requirements
 - When targeting NVIDIA CUDA, make sure you have a C++11 compliant version (v7.0 or newer)
 - Visionaray supports Fermi+ NVIDIA GPUs (e.g. >= GeForce 400 series or >= Quadro {4|5|6}000) (Visionaray does not support texturing on Fermi GPUs, bindless texture support is available with Kepler+ GPUs)
 
-Additionally, in order to compile the viewer application and the [examples](https://github.com/szellmann/visionaray/tree/master/src/examples), the following packages are needed or recommended:
+Additionally, in order to compile the viewer application and the [examples](/src/examples), the following packages are needed or recommended:
 
 - [Boost][2]
 - [GLUT][5] or [FreeGLUT][6]
