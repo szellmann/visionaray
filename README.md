@@ -123,7 +123,7 @@ Visionaray comes with a rudimentary viewer (see above) and a set of [example app
 
 The viewer application and the examples link with the Visionaray-common library that provides functionality such as windowing classes or mouse interaction. The Visionaray-common library is **not part of the public API** and interfaces may change between releases.
 
-- [src/common](/src/common): library private to the viewer and example applications
+- [src/common](/src/common): private library used by the viewer and example applications
 
 ### Third-party libraries
 
