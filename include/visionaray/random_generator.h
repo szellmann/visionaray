@@ -14,6 +14,7 @@
 #include <random>
 #endif
 
+#include "detail/macros.h"
 #include "math/simd/type_traits.h"
 #include "array.h"
 
