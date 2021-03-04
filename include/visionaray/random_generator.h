@@ -6,7 +6,6 @@
 #ifndef VSNRAY_RANDOM_GENERATOR_H
 #define VSNRAY_RANDOM_GENERATOR_H 1
 
-#include <cstddef>
 #include <type_traits>
 
 #if defined(__CUDACC__)
@@ -94,7 +93,7 @@ public:
     }
 
     // TODO: maybe don't have a random_generatorN at all?
-    VSNRAY_FUNC generator_type& get_generator(size_t i)
+    VSNRAY_FUNC generator_type& get_generator(unsigned i)
     {
         return generators_[i];
     }
