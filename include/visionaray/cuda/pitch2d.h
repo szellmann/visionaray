@@ -10,8 +10,6 @@
 
 #include <cuda_runtime_api.h>
 
-#include <visionaray/detail/macros.h>
-
 namespace visionaray
 {
 namespace cuda
