@@ -3,6 +3,8 @@
 
 #include <visionaray/config.h>
 
+#if VSNRAY_HAVE_CUDA
+
 #include <stdexcept>
 
 #if VSNRAY_HAVE_GLEW
@@ -86,3 +88,5 @@ void const* pixel_pack_buffer::data() const
 
 } // cuda
 } // visionaray
+
+#endif // VSNRAY_HAVE_CUDA

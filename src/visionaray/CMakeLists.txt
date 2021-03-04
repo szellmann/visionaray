@@ -340,6 +340,7 @@ set(VSNRAY_HEADERS
 set(VSNRAY_SOURCES
 
     cuda/graphics_resource.cpp
+    cuda/pixel_pack_buffer.cpp
 
     gl/bvh_outline_renderer.cpp
     gl/compositing.cpp
@@ -358,7 +359,6 @@ if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     include_directories(${__VSNRAY_CONFIG_DIR})
     visionaray_cuda_compile(VSNRAY_CUDA_SOURCES
         cuda/fill.cu
-        cuda/pixel_pack_buffer.cu
     )
 endif()
 
