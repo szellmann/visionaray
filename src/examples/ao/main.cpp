@@ -215,6 +215,8 @@ void renderer::on_display()
                 model::triangle_type{}
                 );
 
+            n = faceforward(n, -ray.dir, n);
+
             V u;
             V v;
             V w = n;
