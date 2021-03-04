@@ -39,6 +39,4 @@ private:
 } // cuda
 } // visionaray
 
-#include "detail/pixel_pack_buffer.inl"
-
 #endif // VSNRAY_CUDA_PIXEL_PACK_BUFFER_H

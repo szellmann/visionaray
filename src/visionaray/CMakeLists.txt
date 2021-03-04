@@ -69,7 +69,6 @@ set(VSNRAY_HEADERS
 
     # CUDA
 
-    ${HEADER_DIR}/cuda/detail/pixel_pack_buffer.inl
     ${HEADER_DIR}/cuda/array.h
     ${HEADER_DIR}/cuda/cast.h
     ${HEADER_DIR}/cuda/counting_sort.h
@@ -356,8 +355,10 @@ set(VSNRAY_SOURCES
 
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     include_directories(${PROJECT_SOURCE_DIR}/include)
+    include_directories(${__VSNRAY_CONFIG_DIR})
     visionaray_cuda_compile(VSNRAY_CUDA_SOURCES
         cuda/fill.cu
+        cuda/pixel_pack_buffer.cu
     )
 endif()
 

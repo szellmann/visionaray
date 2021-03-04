@@ -9,9 +9,9 @@
 #include <GL/glew.h>
 #endif
 
+#include <visionaray/cuda/graphics_resource.h>
+#include <visionaray/cuda/pixel_pack_buffer.h>
 #include <visionaray/gl/handle.h>
-
-#include "../graphics_resource.h"
 
 
 namespace visionaray
