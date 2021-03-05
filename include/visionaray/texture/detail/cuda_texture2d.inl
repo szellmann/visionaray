@@ -7,6 +7,7 @@
 #include <utility>
 
 #include <visionaray/cuda/pitch2d.h>
+#include <visionaray/cuda/texture_object.h>
 
 namespace visionaray
 {

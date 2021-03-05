@@ -7,6 +7,7 @@
 #include <utility>
 
 #include <visionaray/cuda/array.h>
+#include <visionaray/cuda/texture_object.h>
 
 namespace visionaray
 {
