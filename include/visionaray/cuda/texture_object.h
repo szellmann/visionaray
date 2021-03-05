@@ -36,7 +36,7 @@ public:
 
     texture_object& operator=(texture_object&& rhs)
     {
-        reset( rhs.release() );
+        reset(rhs.release());
         return *this;
     }
 
