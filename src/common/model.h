@@ -20,6 +20,7 @@
 #include <visionaray/aligned_vector.h>
 
 #include "sg/material.h"
+#include "export.h"
 #include "file_base.h"
 
 namespace visionaray
@@ -55,13 +56,13 @@ public:
     model();
 
     // Load single file
-    bool load(std::string const& filename);
+    VSNRAY_COMMON_EXPORT bool load(std::string const& filename);
 
     // Save to file
-    bool save(std::string const& filename, save_options const& options);
+    VSNRAY_COMMON_EXPORT bool save(std::string const& filename, save_options const& options);
 
     // Load multiple files at once
-    bool load(std::vector<std::string> const& filenames);
+    VSNRAY_COMMON_EXPORT bool load(std::vector<std::string> const& filenames);
 
 public:
 

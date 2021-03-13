@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "export.h"
 #include "file_base.h"
 
 namespace visionaray
@@ -16,9 +17,9 @@ namespace visionaray
 
 class model;
 
-void load_pbrt(std::string const& filename, model& mod);
-//void save_pbrt(std::string const& filename, model const& mod, file_base::save_options const& options);
-void load_pbrt(std::vector<std::string> const& filenames, model& mod);
+VSNRAY_COMMON_EXPORT void load_pbrt(std::string const& filename, model& mod);
+//VSNRAY_COMMON_EXPORT void save_pbrt(std::string const& filename, model const& mod, file_base::save_options const& options);
+VSNRAY_COMMON_EXPORT void load_pbrt(std::vector<std::string> const& filenames, model& mod);
 
 } // visionaray
 
