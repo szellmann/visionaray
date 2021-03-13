@@ -91,7 +91,7 @@ where `file` is either a path to a wavefront `.obj` file, a `.ply` file, or a `.
 Documentation
 -------------
 
-Thorough documentation can be found in the [Wiki](https://github.com/szellmann/visionaray/wiki).
+Documentation can be found in the [Wiki](https://github.com/szellmann/visionaray/wiki).
 
 
 Source Code Organization
@@ -99,18 +99,18 @@ Source Code Organization
 
 ### Library
 
-Visionaray is a template library, so that most algorithms are implemented in headers located under `include/visionaray`.
+Visionaray is a template library, so that most algorithms are implemented in header files located under `include/visionaray`.
 
 - [include/visionaray/math](/include/visionaray/math): GLSL-inspired math templates, wrappers for SIMD types, geometric primitives
 - [include/visionaray/texture](/include/visionaray/texture): texture management templates and texture access routines
 - [include/visionaray](/include/visionaray): misc. ray tracing templates, BVHs, render targets, etc.
 
-Visionaray can optionally interoperate with graphics and GPGPU APIs. Interoperability with the respective libraries is compiled into the Visionaray library. When not needing GPU interoperability, chances are high that you don't need to link with Visionaray, but can rather use it as a header only library.
+Visionaray can optionally interoperate with graphics and GPGPU APIs. Interoperability with the respective libraries is compiled into the Visionaray library. When GPU interoperability isn't requierd, chances are high that you don't need to link with Visionaray but can rather use it as a header only library.
 
 - [include/visionaray/cuda/](/include/visionaray/cuda/), [src/visionaray/cuda](/src/visionaray/cuda): CUDA interoperability classes
 - [include/visionaray/gl](/include/visionaray/gl), [src/visionaray/gl](/src/visionaray/gl): OpenGL(ES) interoperability classes
 
-Headers in `./detail` subfolders are not part of the public API. Code in namespace `detail` contains private implementation. Template class implementations go into files ending with `.inl`, which are included at the bottom of the public interface header file.
+Files in `./detail` subfolders are not part of the public API. Code in namespace `detail` contains private implementation. Template class implementations go into files ending with `.inl`, which are included at the bottom of the public interface header file.
 
 ### Applications
 
