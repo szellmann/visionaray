@@ -1,11 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#pragma once
-
-#ifndef VSNRAY_DETAIL_PATHTRACING_INL
-#define VSNRAY_DETAIL_PATHTRACING_INL 1
-
 #include <visionaray/math/vector.h>
 #include <visionaray/get_area.h>
 #include <visionaray/get_surface.h>
@@ -219,5 +214,3 @@ struct kernel
 
 } // pathtracing
 } // visionaray
-
-#endif // VSNRAY_DETAIL_PATHTRACING_INL

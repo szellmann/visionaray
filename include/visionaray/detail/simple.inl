@@ -1,17 +1,11 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#pragma once
-
-#ifndef VSNRAY_DETAIL_SIMPLE_INL
-#define VSNRAY_DETAIL_SIMPLE_INL 1
-
 #include <visionaray/math/vector.h>
 #include <visionaray/get_surface.h>
 #include <visionaray/result_record.h>
 #include <visionaray/spectrum.h>
 #include <visionaray/traverse.h>
-
 
 namespace visionaray
 {
@@ -77,5 +71,3 @@ struct kernel
 
 } // simple
 } // visionaray
-
-#endif // VSNRAY_DETAIL_SIMPLE_INL

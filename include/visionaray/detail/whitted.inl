@@ -1,11 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#pragma once
-
-#ifndef VSNRAY_DETAIL_WHITTED_INL
-#define VSNRAY_DETAIL_WHITTED_INL 1
-
 #include <type_traits>
 
 #include <visionaray/math/vector.h>
@@ -329,5 +324,3 @@ struct kernel
 
 } // whitted
 } // visionaray
-
-#endif // VSNRAY_DETAIL_WHITTED_INL
