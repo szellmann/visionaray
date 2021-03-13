@@ -9,14 +9,13 @@
 #include <GLES2/gl2.h>
 #endif
 
-#include <visionaray/gl/bvh_outline_renderer.h>
 #include <visionaray/gl/handle.h>
 #include <visionaray/gl/program.h>
 #include <visionaray/gl/shader.h>
 
+#include "bvh_outline_renderer.h"
+
 namespace visionaray
-{
-namespace gl
 {
 
 //-------------------------------------------------------------------------------------------------
@@ -164,7 +163,7 @@ bool bvh_outline_renderer::init_gl(float const* data, size_t size)
 
 
     // Setup vbo
-    impl_->vertex_buffer.reset(create_buffer());
+    impl_->vertex_buffer.reset(gl::create_buffer());
 
     glBindBuffer(GL_ARRAY_BUFFER, impl_->vertex_buffer.get());
     glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
@@ -181,5 +180,4 @@ bool bvh_outline_renderer::init_gl(float const* data, size_t size)
 #endif
 }
 
-} // gl
 } // visionaray

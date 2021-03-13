@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_GL_BVH_OUTLINE_RENDERER_H
-#define VSNRAY_GL_BVH_OUTLINE_RENDERER_H 1
+#ifndef VSNRAY_COMMON_BVH_OUTLINE_RENDERER_H
+#define VSNRAY_COMMON_BVH_OUTLINE_RENDERER_H 1
 
 #include <cstddef>
 #include <memory>
@@ -16,8 +16,6 @@
 #include <visionaray/export.h>
 
 namespace visionaray
-{
-namespace gl
 {
 
 //-------------------------------------------------------------------------------------------------
@@ -141,7 +139,6 @@ private:
 
 };
 
-} // gl
 } // visionaray
 
-#endif // VSNRAY_GL_BVH_OUTLINE_RENDERER_H
+#endif // VSNRAY_COMMON_BVH_OUTLINE_RENDERER_H

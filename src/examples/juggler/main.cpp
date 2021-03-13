@@ -12,8 +12,6 @@
 
 #include <visionaray/detail/platform.h>
 
-#include <visionaray/gl/bvh_outline_renderer.h>
-
 #include <visionaray/math/io.h>
 
 #include <visionaray/texture/texture_traits.h>
@@ -31,6 +29,7 @@
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/bvh_outline_renderer.h>
 #include <common/timer.h>
 #include <common/viewer_glut.h>
 
@@ -157,7 +156,7 @@ struct renderer : viewer_type
 
     bool show_bvh = false;
 
-    gl::bvh_outline_renderer                    outlines;
+    bvh_outline_renderer                outlines;
 
     thread_pool pool;
 

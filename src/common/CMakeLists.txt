@@ -188,6 +188,7 @@ set(COMMON_HEADERS
     sg/material.h
 
     blocking_queue.h
+    bvh_outline_renderer.h
     cfile.h
     dds_image.h
     export.h
@@ -238,6 +239,7 @@ set(COMMON_SOURCES
     manip/translate_manipulator.cpp
     manip/zoom_manipulator.cpp
 
+    bvh_outline_renderer.cpp
     dds_image.cpp
     exr_image.cpp
     fbx_loader.cpp

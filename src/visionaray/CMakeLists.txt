@@ -160,7 +160,6 @@ set(VSNRAY_HEADERS
 
     # OpenGL
 
-    ${HEADER_DIR}/gl/bvh_outline_renderer.h
     ${HEADER_DIR}/gl/compositing.h
     ${HEADER_DIR}/gl/debug_callback.h
     ${HEADER_DIR}/gl/handle.h
@@ -343,7 +342,6 @@ set(VSNRAY_SOURCES
     cuda/graphics_resource.cpp
     cuda/pixel_pack_buffer.cpp
 
-    gl/bvh_outline_renderer.cpp
     gl/compositing.cpp
     gl/debug_callback.cpp
     gl/handle.cpp

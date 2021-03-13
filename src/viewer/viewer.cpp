@@ -39,7 +39,6 @@
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
-#include <visionaray/gl/bvh_outline_renderer.h>
 #include <visionaray/gl/debug_callback.h>
 #include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
@@ -64,6 +63,7 @@
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/bvh_outline_renderer.h>
 #include <common/inifile.h>
 #include <common/make_materials.h>
 #include <common/make_texture.h>
@@ -695,7 +695,7 @@ struct renderer : viewer_type
 
     visionaray::frame_counter                   counter;
     double                                      last_frame_time = 0.0;
-    gl::bvh_outline_renderer                    outlines;
+    bvh_outline_renderer                        outlines;
     gl::debug_callback                          gl_debug_callback;
 
     // Control if new path tracer convergence frames are accumulated
