@@ -452,24 +452,6 @@ inline void sample_pixel_choose_intersector_impl(Args&&... args)
 // w/ intersector
 //
 
-template <typename K, typename I>
-struct call_kernel_with_intersector
-{
-    K& kernel;
-    I& isect;
-
-    VSNRAY_FUNC
-    explicit call_kernel_with_intersector(K& k, I& i) : kernel(k) , isect(i) {}
-
-    template <typename ...Args>
-    VSNRAY_FUNC
-    auto operator()(Args&&... args) const
-        -> decltype( kernel(isect, std::forward<Args>(args)...) )
-    {
-        return kernel(isect, std::forward<Args>(args)...);
-    }
-};
-
 template <typename K, typename Intersector, typename ...Args>
 VSNRAY_FUNC
 inline void sample_pixel_choose_intersector_impl(
@@ -479,7 +461,12 @@ inline void sample_pixel_choose_intersector_impl(
         Args&&...               args
         )
 {
-    auto caller = call_kernel_with_intersector<K, Intersector>(kernel, isect);
+    auto caller = [&kernel, &isect](Args&&...args)
+        -> decltype(kernel(isect, std::forward<Args>(args)...))
+    {
+        return kernel(isect, std::forward<Args>(args)...);
+    };
+
     detail::sample_pixel_impl(
             caller,
             std::forward<Args>(args)...
