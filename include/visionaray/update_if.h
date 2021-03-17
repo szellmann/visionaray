@@ -52,9 +52,7 @@ VSNRAY_FUNC
 auto is_closer(HR const& query, HR const& reference)
     -> decltype(query.t < reference.t)
 {
-    using T = decltype(query.t);
-
-    return query.hit && ( query.t >= T(0.0) && query.t < reference.t );
+    return query.hit && query.t < reference.t;
 }
 
 // query is box, reference is general primitive
@@ -64,7 +62,7 @@ VSNRAY_FUNC
 auto is_closer(hit_record<R, basic_aabb<T>> const& query, HR const& reference)
     -> decltype(query.tnear < reference.t)
 {
-    return query.hit && query.tnear < reference.t && query.tfar >= T(0.0);
+    return query.hit && query.tnear < reference.t;
 }
 
 
