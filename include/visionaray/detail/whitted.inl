@@ -267,8 +267,10 @@ struct kernel
                 auto clr = surf.shade(view_dir, light_dir, it->intensity(hit_rec.isect_pos));
 
                 R shadow_ray(
-                        hit_rec.isect_pos + light_dir * S(params.epsilon),
-                        light_dir
+                        hit_rec.isect_pos + light_dir * S(params.epsilon), // origin
+                        light_dir,                                         // direction
+                        S(0.0),                                            // tmin
+                        length(hit_rec.isect_pos - V(it->position()))      // tmax
                         );
 
                 // only cast a shadow if occluder between light source and hit pos
@@ -276,7 +278,6 @@ struct kernel
                         shadow_ray,
                         params.prims.begin,
                         params.prims.end,
-                        length(hit_rec.isect_pos - V(it->position())),
                         isect
                         );
 

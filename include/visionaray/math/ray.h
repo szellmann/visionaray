@@ -22,11 +22,25 @@ public:
 
 public:
 
-    vec_type ori;
-    vec_type dir;
+    vector<3, T> ori;
+    vector<3, T> dir;
+
+    T tmin;
+    T tmax;
 
     basic_ray() = default;
+
+    // Constructor with origin and direction, tmin is 0.0 and tmax is
+    // numeric_limits::max<T>
     MATH_FUNC basic_ray(vector<3, T> const& o, vector<3, T> const& d);
+
+    // Constructor with origin, direction, tmin, and tmax
+    MATH_FUNC basic_ray(
+            vector<3, T> const& o,
+            vector<3, T> const& d,
+            T const& tmin,
+            T const& tmax
+            );
 
 };
 

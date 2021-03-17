@@ -146,11 +146,13 @@ struct kernel
                 auto ldotln = abs(dot(-L, ln));
 
                 R shadow_ray(
-                    hit_rec.isect_pos + L * S(params.epsilon),
-                    L
+                    hit_rec.isect_pos + L * S(params.epsilon), // origin
+                    L,                                         // direction
+                    S(params.epsilon),                         // tmin
+                    ld - S(params.epsilon)                     // tmax
                     );
 
-                auto lhr = any_hit(shadow_ray, params.prims.begin, params.prims.end, ld - S(2.0f * params.epsilon), isect);
+                auto lhr = any_hit(shadow_ray, params.prims.begin, params.prims.end, isect);
 
                 auto brdf_pdf = surf.pdf(view_dir, L, inter);
                 auto prob = max_element(throughput.samples());

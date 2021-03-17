@@ -62,12 +62,11 @@ struct basic_intersector
             multi_hit_max<1>        /* */,
             R const&                ray,
             P const&                prim,
-            typename R::scalar_type max_t,
             Cond                    update_cond = Cond()
             )
-        -> decltype( intersect<detail::AnyHit>(ray, prim, std::declval<Derived&>(), max_t, update_cond) )
+        -> decltype( intersect<detail::AnyHit>(ray, prim, std::declval<Derived&>(), update_cond) )
     {
-        return intersect<detail::AnyHit>(ray, prim, *static_cast<Derived*>(this), max_t, update_cond);
+        return intersect<detail::AnyHit>(ray, prim, *static_cast<Derived*>(this), update_cond);
     }
 
 
@@ -85,12 +84,11 @@ struct basic_intersector
             multi_hit_max<1>        /* */,
             R const&                ray,
             P const&                prim,
-            typename R::scalar_type max_t,
             Cond                    update_cond = Cond()
             )
-        -> decltype( intersect<detail::ClosestHit>(ray, prim, std::declval<Derived&>(), max_t, update_cond) )
+        -> decltype( intersect<detail::ClosestHit>(ray, prim, std::declval<Derived&>(), update_cond) )
     {
-        return intersect<detail::ClosestHit>(ray, prim, *static_cast<Derived*>(this), max_t, update_cond);
+        return intersect<detail::ClosestHit>(ray, prim, *static_cast<Derived*>(this), update_cond);
     }
 
 
@@ -109,12 +107,11 @@ struct basic_intersector
             multi_hit_max<N>        /* */,
             R const&                ray,
             P const&                prim,
-            typename R::scalar_type max_t,
             Cond                    update_cond = Cond()
             )
-        -> decltype( intersect<detail::MultiHit, N>(ray, prim, std::declval<Derived&>(), max_t, update_cond) )
+        -> decltype( intersect<detail::MultiHit, N>(ray, prim, std::declval<Derived&>(), update_cond) )
     {
-        return intersect<detail::MultiHit, N>(ray, prim, *static_cast<Derived*>(this), max_t, update_cond);
+        return intersect<detail::MultiHit, N>(ray, prim, *static_cast<Derived*>(this), update_cond);
     }
 };
 

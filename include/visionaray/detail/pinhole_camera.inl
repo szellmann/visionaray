@@ -4,6 +4,8 @@
 #include <cassert>
 #include <cmath>
 
+#include <visionaray/math/limits.h>
+
 namespace visionaray
 {
 
@@ -112,6 +114,8 @@ inline R pinhole_camera::primary_ray(R /* */, T const& x, T const& y, T const& w
     R r;
     r.ori = vector<3, T>(eye_);
     r.dir = normalize(vector<3, T>(U) * u + vector<3, T>(V) * v + vector<3, T>(W));
+    r.tmin = T(0.0);
+    r.tmax = numeric_limits<T>::max();
     return r;
 }
 

@@ -5,7 +5,6 @@
 #include <type_traits>
 #include <utility>
 
-#include <visionaray/math/limits.h>
 #include <visionaray/math/matrix.h>
 #include <visionaray/intersector.h>
 #include <visionaray/update_if.h>
@@ -45,7 +44,6 @@ inline auto intersect(
         R const&     ray,
         BVH const&   b,
         Intersector& isect,
-        T            tmax = numeric_limits<T>::max(),
         Cond         update_cond = Cond()
         )
     -> typename detail::traversal_result< hit_record_bvh<
@@ -82,8 +80,8 @@ next:
             auto hr1 = isect(ray, children[0].get_bounds(), inv_dir);
             auto hr2 = isect(ray, children[1].get_bounds(), inv_dir);
 
-            auto b1 = any( is_closer(hr1, result, tmax) );
-            auto b2 = any( is_closer(hr2, result, tmax) );
+            auto b1 = any(is_closer(hr1, result, ray.tmin, ray.tmax));
+            auto b2 = any(is_closer(hr2, result, ray.tmin, ray.tmax));
 
             if (b1 && b2)
             {
@@ -114,7 +112,7 @@ next:
             auto prim = b.primitive(i);
 
             auto hr = HR(isect(ray, prim), i);
-            auto closer = update_cond(hr, result, tmax);
+            auto closer = update_cond(hr, result, ray.tmin, ray.tmax);
 
 #ifndef __CUDA_ARCH__
             if (!any(closer))
@@ -226,8 +224,8 @@ next:
             auto hr1 = isect(ray, children[0].get_bounds(), inv_dir);
             auto hr2 = isect(ray, children[1].get_bounds(), inv_dir);
 
-            auto b1 = any(is_closer(hr1, result, tmax));
-            auto b2 = any(is_closer(hr2, result, tmax));
+            auto b1 = any(is_closer(hr1, result, ray.tmin, ray.tmax));
+            auto b2 = any(is_closer(hr2, result, ray.tmin, ray.tmax));
 
             if (b1 && b2)
             {
@@ -280,7 +278,7 @@ next:
             auto prim = b.primitive(i);
 
             auto hr = HR(isect(ray, prim), i);
-            auto closer = update_cond(hr, result, tmax);
+            auto closer = update_cond(hr, result, ray.tmin, ray.tmax);
 
 #ifndef __CUDA_ARCH__
             if (!any(closer))
@@ -325,7 +323,6 @@ inline auto intersect(
         R const&     ray,
         BVH const&   b,
         Intersector& isect,
-        T            tmax = numeric_limits<T>::max(),
         Cond         update_cond = Cond()
         )
     -> typename detail::traversal_result< hit_record_bvh_inst<
@@ -345,7 +342,6 @@ inline auto intersect(
             transformed_ray,
             b.get_ref(),
             isect,
-            tmax,
             update_cond
             );
 
@@ -373,9 +369,9 @@ inline auto intersect(
         Intersector& isect,
         Cond         update_cond = Cond()
         )
-    -> decltype(intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<typename R::scalar_type>::max(), update_cond))
+    -> decltype(intersect<detail::ClosestHit>(ray, b, isect, update_cond))
 {
-    return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<typename R::scalar_type>::max(), update_cond);
+    return intersect<detail::ClosestHit>(ray, b, isect, update_cond);
 }
 
 // overload w/ default intersector ------------------------
@@ -395,11 +391,11 @@ inline auto intersect(
     -> decltype(intersect<detail::ClosestHit>(
             ray,
             b,
-            std::declval<default_intersector&>(), numeric_limits<typename R::scalar_type>::max(), update_cond)
+            std::declval<default_intersector&>(), update_cond)
             )
 {
     default_intersector isect;
-    return intersect<detail::ClosestHit>(ray, b, isect, numeric_limits<typename R::scalar_type>::max(), update_cond);
+    return intersect<detail::ClosestHit>(ray, b, isect, update_cond);
 }
 
 

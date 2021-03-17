@@ -39,7 +39,6 @@ inline auto traverse(
         R const&                        r,
         P                               begin,
         P                               end,
-        typename R::scalar_type const&  max_t,
         Intersector&                    isect
         )
     -> typename traversal_result<decltype( isect(r, *begin) ), Traversal, MultiHitMax>::type
@@ -51,7 +50,7 @@ inline auto traverse(
     for (P it = begin; it != end; ++it)
     {
         auto hr = isect(r, *it);
-        update_if(result, hr, update_cond(hr, result, max_t));
+        update_if(result, hr, update_cond(hr, result, r.tmin, r.tmax));
 
         exit_traversal<Traversal> early_exit;
         if (early_exit.check(result))
@@ -84,7 +83,6 @@ inline auto traverse(
         R const&                        r,
         P                               begin,
         P                               end,
-        typename R::scalar_type const&  max_t,
         Intersector&                    isect
         )
     -> decltype( isect(
@@ -92,7 +90,6 @@ inline auto traverse(
             std::integral_constant<size_t, MultiHitMax>{},
             r,
             *begin,
-            max_t,
             update_cond
             ) )
 {
@@ -101,7 +98,6 @@ inline auto traverse(
             std::integral_constant<size_t, MultiHitMax>{},
             r,
             *begin,
-            max_t,
             update_cond
             ) );
 
@@ -114,11 +110,10 @@ inline auto traverse(
                 std::integral_constant<size_t, MultiHitMax>{},
                 r,
                 *it,
-                max_t,
                 update_cond
                 );
 
-        update_if(result, hr, update_cond(hr, result, max_t));
+        update_if(result, hr, update_cond(hr, result, r.tmin, r.tmax));
 
         exit_traversal<Traversal> early_exit;
         if (early_exit.check(result))
@@ -174,7 +169,7 @@ inline auto traverse(
 
 
 //-------------------------------------------------------------------------------------------------
-// any hit w/o max_t
+// any hit
 //
 
 template <
@@ -216,60 +211,6 @@ inline auto any_hit(R const& r, P begin, P end)
 {
     default_intersector ignore;
     return any_hit(r, begin, end, ignore);
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// any hit with max_t
-//
-
-template <
-    typename R,
-    typename Primitives,
-    typename Intersector,
-    typename Primitive = typename std::iterator_traits<Primitives>::value_type
-    >
-VSNRAY_FUNC
-inline auto any_hit(
-        R const&                        r,
-        Primitives                      begin,
-        Primitives                      end,
-        typename R::scalar_type const&  max_t,
-        Intersector&                    isect
-        )
-    -> decltype( detail::traverse<detail::AnyHit>(
-            is_any_bvh<Primitive>{},
-            is_closer_t(),
-            r,
-            begin,
-            end,
-            max_t,
-            isect
-            ) )
-{
-    return detail::traverse<detail::AnyHit>(
-            is_any_bvh<Primitive>{},
-            is_closer_t(),
-            r,
-            begin,
-            end,
-            max_t,
-            isect
-            );
-}
-
-template <typename R, typename Primitives>
-VSNRAY_FUNC
-inline auto any_hit(
-        R const&                        r,
-        Primitives                      begin,
-        Primitives                      end,
-        typename R::scalar_type const&  max_t
-        )
-    -> decltype( any_hit(r, begin, end, max_t, std::declval<default_intersector&>() ) )
-{
-    default_intersector ignore;
-    return any_hit(r, begin, end, max_t, ignore);
 }
 
 

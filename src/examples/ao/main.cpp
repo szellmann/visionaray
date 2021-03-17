@@ -235,12 +235,13 @@ void renderer::on_display()
                 R ao_ray;
                 ao_ray.ori = hit_rec.isect_pos + dir * S(1E-3f);
                 ao_ray.dir = dir;
+                ao_ray.tmin = S(0.0);
+                ao_ray.tmax = radius;
 
                 auto ao_rec = any_hit(
                         ao_ray,
                         prims_begin,
-                        prims_end,
-                        radius
+                        prims_end
                         );
 
                 ao = select(

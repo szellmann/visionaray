@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/math/limits.h>
+
 namespace visionaray
 {
 
@@ -55,6 +57,8 @@ inline R matrix_camera::primary_ray(R /* */, T const& x, T const& y, T const& wi
     R r;
     r.ori =            o.xyz() / o.w;
     r.dir = normalize( d.xyz() / d.w - r.ori );
+    r.tmin = T(0.0);
+    r.tmax = numeric_limits<T>::max();
     return r;
 }
 
