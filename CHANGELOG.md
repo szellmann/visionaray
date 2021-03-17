@@ -3,6 +3,12 @@
 - "Ray tracing in one weekend" example using CUDA.
 - Added an -spp flag to various examples.
 
+### Changed
+- Rays now store tmin and tmax, therefore the public interfaces of
+functions like any_hit() or is_closer() has changed. It is required
+for users who construct rays themselves to fill those values
+accordingly.
+
 ## [0.2.0] - 2021-02-19
 ### Added
 - Added an -spp flag to viewer that is used by the path tracer.
