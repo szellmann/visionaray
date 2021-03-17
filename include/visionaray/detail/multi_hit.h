@@ -194,7 +194,7 @@ template <
     typename T
     >
 VSNRAY_FUNC
-inline simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T max_t)
+inline simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T const& tmin, T const& tmax)
 {
     using RT = simd::mask_type_t<T>;
 
@@ -202,7 +202,7 @@ inline simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T 
 
     for (size_t i = 0; i < reference.size(); ++i)
     {
-        result |= is_closer(query, reference[i], max_t);
+        result |= is_closer(query, reference[i], tmin, tmax);
 
         if (all(result))
         {
@@ -222,11 +222,12 @@ template <
     typename T
     >
 VSNRAY_FUNC
-inline simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T max_t)
+inline simd::mask_type_t<T> is_closer(HR1 const& query, HR2 const& reference, T const& tmin, T const& tmax)
 {
     VSNRAY_UNUSED(query);
     VSNRAY_UNUSED(reference);
-    VSNRAY_UNUSED(max_t);
+    VSNRAY_UNUSED(tmin);
+    VSNRAY_UNUSED(tmax);
 
     return simd::mask_type_t<T>(true);
 }
