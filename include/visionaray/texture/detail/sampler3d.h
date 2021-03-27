@@ -37,7 +37,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
-inline T tex3D_impl_expand_types(
+inline vector<4, T> tex3D_impl_expand_types(
         T const*                                tex,
         vector<3, FloatT> const&                coord,
         vector<3, int> const&                   texsize,
@@ -48,7 +48,7 @@ inline T tex3D_impl_expand_types(
     using return_type   = T;
     using internal_type = FloatT;
 
-    return choose_filter(
+    T res = choose_filter(
             return_type{},
             internal_type{},
             tex,
@@ -57,6 +57,8 @@ inline T tex3D_impl_expand_types(
             filter_mode,
             address_mode
             );
+
+    return vector<4, T>(res, T(0.0), T(0.0), T(0.0));
 }
 
 template <
@@ -66,7 +68,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
-inline vector<Dim, T> tex3D_impl_expand_types(
+inline vector<4, T> tex3D_impl_expand_types(
         vector<Dim, T> const*                   tex,
         vector<3, FloatT> const&                coord,
         vector<3, int> const&                   texsize,
@@ -77,7 +79,7 @@ inline vector<Dim, T> tex3D_impl_expand_types(
     using return_type   = vector<Dim, T>;
     using internal_type = vector<Dim, FloatT>;
 
-    return choose_filter(
+    auto res = choose_filter(
             return_type{},
             internal_type{},
             tex,
@@ -86,6 +88,22 @@ inline vector<Dim, T> tex3D_impl_expand_types(
             filter_mode,
             address_mode
             );
+
+    vector<4, T> result;
+
+    for (size_t i = 0; i < 4; ++i)
+    {
+        if (i < Dim)
+        {
+            result[i] = res[i];
+        }
+        else
+        {
+            result[i] = T(0.0);
+        }
+    }
+
+    return result;
 }
 
 
@@ -97,7 +115,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
-inline FloatT tex3D_impl_expand_types(
+inline vector<4, FloatT> tex3D_impl_expand_types(
         unorm<Bits> const*                      tex,
         vector<3, FloatT> const&                coord,
         vector<3, int> const&                   texsize,
@@ -120,8 +138,12 @@ inline FloatT tex3D_impl_expand_types(
             address_mode
             );
 
-    // normalize only once upon return
-    return unorm_to_float<Bits>(tmp);
+    return vector<4, FloatT>(
+            unorm_to_float<Bits>(tmp), // normalize only once upon return
+            FloatT(0.0f),
+            FloatT(0.0f),
+            FloatT(0.0f)
+            );
 }
 
 
@@ -133,7 +155,7 @@ template <
     typename = typename std::enable_if<!std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-inline FloatT tex3D_impl_expand_types(
+inline vector<4, FloatT> tex3D_impl_expand_types(
         T const*                                    tex,
         vector<3, FloatT> const&                    coord,
         vector<3, simd::int_type_t<FloatT>> const&  texsize,
@@ -144,7 +166,7 @@ inline FloatT tex3D_impl_expand_types(
     using return_type   = FloatT;
     using internal_type = FloatT;
 
-    return choose_filter(
+    FloatT res = choose_filter(
             return_type{},
             internal_type{},
             tex,
@@ -153,6 +175,8 @@ inline FloatT tex3D_impl_expand_types(
             filter_mode,
             address_mode
             );
+
+    return vector<4, FloatT>(res, FloatT(0.0f), FloatT(0.0f), FloatT(0.0f));
 }
 
 
@@ -163,7 +187,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-inline FloatT tex3D_impl_expand_types(
+inline vector<4, FloatT> tex3D_impl_expand_types(
         unorm<Bits> const*                          tex,
         vector<3, FloatT> const&                    coord,
         vector<3, simd::int_type_t<FloatT>> const&  texsize,
@@ -186,8 +210,12 @@ inline FloatT tex3D_impl_expand_types(
             address_mode
             );
 
-    // normalize only once upon return
-    return unorm_to_float<Bits>(tmp);
+    return vector<4, FloatT>(
+            unorm_to_float<Bits>(tmp), // normalize only once upon return
+            FloatT(0.0f),
+            FloatT(0.0f),
+            FloatT(0.0f)
+            );
 }
 
 
@@ -199,7 +227,7 @@ template <
     typename = typename std::enable_if<std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-inline simd::int_type_t<FloatT> tex3D_impl_expand_types(
+inline vector<4, simd::int_type_t<FloatT>> tex3D_impl_expand_types(
         T const*                                    tex,
         vector<3, FloatT> const&                    coord,
         vector<3, simd::int_type_t<FloatT>> const&  texsize,
@@ -210,7 +238,7 @@ inline simd::int_type_t<FloatT> tex3D_impl_expand_types(
     using return_type   = simd::int_type_t<FloatT>;
     using internal_type = FloatT;
 
-    return choose_filter(
+    auto res = choose_filter(
             return_type{},
             internal_type{},
             tex,
@@ -219,6 +247,9 @@ inline simd::int_type_t<FloatT> tex3D_impl_expand_types(
             filter_mode,
             address_mode
             );
+
+    return_type zero(0);
+    return { res, zero, zero, zero };
 }
 
 

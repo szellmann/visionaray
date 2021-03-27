@@ -137,7 +137,7 @@ void renderer::on_display()
 
             // sample volume and do post-classification
             auto voxel = tex3D(volume, tex_coord);
-            C color = tex1D(transfunc, voxel);
+            C color = tex1D(transfunc, voxel.x);
 
             // premultiplied alpha
             color.xyz() *= color.w;
