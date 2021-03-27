@@ -38,7 +38,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
-inline T tex1D_impl_expand_types(
+inline vector<4, T> tex1D_impl_expand_types(
         T const*                                tex,
         FloatT                                  coord,
         int                                     texsize,
@@ -46,10 +46,10 @@ inline T tex1D_impl_expand_types(
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
-    using return_type   = T;
+    using return_type   = vector<4, T>;
     using internal_type = FloatT;
 
-    return choose_filter(
+    T res = choose_filter(
             return_type{},
             internal_type{},
             tex,
@@ -58,6 +58,8 @@ inline T tex1D_impl_expand_types(
             filter_mode,
             address_mode
             );
+
+    return { res, T(0.0), T(0.0), T(0.0) };
 }
 
 template <
@@ -67,7 +69,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
-inline vector<Dim, T> tex1D_impl_expand_types(
+inline vector<4, T> tex1D_impl_expand_types(
         vector<Dim, T> const*                   tex,
         FloatT                                  coord,
         int                                     texsize,
@@ -78,7 +80,7 @@ inline vector<Dim, T> tex1D_impl_expand_types(
     using return_type   = vector<Dim, T>;
     using internal_type = vector<Dim, FloatT>;
 
-    return choose_filter(
+    T res = choose_filter(
             return_type{},
             internal_type{},
             tex,
@@ -87,6 +89,20 @@ inline vector<Dim, T> tex1D_impl_expand_types(
             filter_mode,
             address_mode
             );
+
+    vector<4, T> result;
+
+    for (size_t i = 0; i < 4; ++i)
+    {
+        if (i < Dim)
+        {
+            result[i] = res[i];
+        }
+        else
+        {
+            result[i] = T(0.0);
+        }
+    }
 }
 
 
@@ -129,7 +145,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
-inline simd::float4 tex1D_impl_expand_types(
+inline vector<4, simd::float4> tex1D_impl_expand_types(
         simd::float4 const*                     tex,
         FloatT                                  coord,
         int                                     texsize,
@@ -140,7 +156,7 @@ inline simd::float4 tex1D_impl_expand_types(
     using return_type   = simd::float4;
     using internal_type = simd::float4;
 
-    return choose_filter(
+    simd::float4 res = choose_filter(
             return_type{},
             internal_type{},
             tex,
@@ -149,6 +165,8 @@ inline simd::float4 tex1D_impl_expand_types(
             filter_mode,
             address_mode
             );
+
+    return { res, simd::float4(0.0f), simd::float4(0.0f), simd::float4(0.0f) };
 }
 
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
@@ -160,7 +178,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
-inline simd::float8 tex1D_impl_expand_types(
+inline vector<4, simd::float8> tex1D_impl_expand_types(
         simd::float8 const*                     tex,
         FloatT                                  coord,
         int                                     texsize,
@@ -171,7 +189,7 @@ inline simd::float8 tex1D_impl_expand_types(
     using return_type   = simd::float8;
     using internal_type = simd::float8;
 
-    return choose_filter(
+    simd::float8 res = choose_filter(
             return_type{},
             internal_type{},
             tex,
@@ -180,6 +198,8 @@ inline simd::float8 tex1D_impl_expand_types(
             filter_mode,
             address_mode
             );
+
+    return { res, simd::float8(0.0f), simd::float8(0.0f), simd::float8(0.0f) };
 }
 
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
