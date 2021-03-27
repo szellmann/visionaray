@@ -103,6 +103,8 @@ inline vector<4, T> tex1D_impl_expand_types(
             result[i] = T(0.0);
         }
     }
+
+    return result;
 }
 
 
