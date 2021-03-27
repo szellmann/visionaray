@@ -80,7 +80,7 @@ inline vector<4, T> tex1D_impl_expand_types(
     using return_type   = vector<Dim, T>;
     using internal_type = vector<Dim, FloatT>;
 
-    T res = choose_filter(
+    auto res = choose_filter(
             return_type{},
             internal_type{},
             tex,
