@@ -45,16 +45,6 @@ public:
     {
     }
 
-    value_type& operator()(size_t x, size_t y, size_t z)
-    {
-        return base_type::data()[z * width_ * height_ + y * width_ + x];
-    }
-
-    value_type const& operator()(size_t x, size_t y, size_t z) const
-    {
-        return base_type::data()[z * width_ * height_ + y * width_ + x];
-    }
-
 
     vector<3, size_t> size() const
     {

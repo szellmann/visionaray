@@ -43,16 +43,6 @@ public:
     {
     }
 
-    value_type& operator()(size_t x, size_t y)
-    {
-        return base_type::data()[y * width_ + x];
-    }
-
-    value_type const& operator()(size_t x, size_t y) const
-    {
-        return base_type::data()[y * width_ + x];
-    }
-
 
     vector<2, size_t> size() const
     {

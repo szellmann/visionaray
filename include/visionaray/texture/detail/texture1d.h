@@ -41,16 +41,6 @@ public:
     {
     }
 
-    value_type& operator()(size_t x)
-    {
-        return base_type::data()[x];
-    }
-
-    value_type const& operator()(size_t x) const
-    {
-        return base_type::data()[x];
-    }
-
 
     size_t size() const { return width_; }
 
