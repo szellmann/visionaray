@@ -23,7 +23,7 @@
 namespace visionaray
 {
 
-template <size_t Dim, typename TextureStorage>
+template <unsigned Dim, typename TextureStorage>
 class texture_base : public TextureStorage
 {
 public:
@@ -73,7 +73,7 @@ public:
         return TextureStorage::size()[2];
     }
 
-    void set_address_mode(size_t index, tex_address_mode mode)
+    void set_address_mode(unsigned index, tex_address_mode mode)
     {
         assert(index < Dim);
         address_mode_[index] = mode;
@@ -81,7 +81,7 @@ public:
 
     void set_address_mode(tex_address_mode mode)
     {
-        for (size_t d = 0; d < Dim; ++d)
+        for (unsigned d = 0; d < Dim; ++d)
         {
             address_mode_[d] = mode;
         }
@@ -92,7 +92,7 @@ public:
         address_mode_ = mode;
     }
 
-    tex_address_mode get_address_mode(size_t index) const
+    tex_address_mode get_address_mode(unsigned index) const
     {
         assert(index < Dim);
         return address_mode_[index];
@@ -147,7 +147,7 @@ protected:
 // Simple linear storage type. Data is aligned to allow for SIMD access
 //
 
-template <typename T, size_t Dim, size_t A = 16>
+template <typename T, unsigned Dim, size_t A = 16>
 class aligned_storage
 {
 public:
@@ -295,7 +295,7 @@ protected:
 // what size the pointee is supposed to have
 //
 
-template <typename T, size_t Dim>
+template <typename T, unsigned Dim>
 class pointer_storage
 {
 public:
@@ -366,7 +366,7 @@ protected:
 };
 
 
-template <typename T, size_t Dim>
+template <typename T, unsigned Dim>
 struct texture_ref : texture_base<Dim, pointer_storage<T, Dim>>
 {
     using base_type = texture_base<Dim, pointer_storage<T, Dim>>;
@@ -374,7 +374,7 @@ struct texture_ref : texture_base<Dim, pointer_storage<T, Dim>>
     using base_type::base_type;
 };
 
-template <typename T, size_t Dim>
+template <typename T, unsigned Dim>
 struct texture : texture_base<Dim, aligned_storage<T, Dim, 16>>
 {
     using base_type = texture_base<Dim, aligned_storage<T, Dim, 16>>;
