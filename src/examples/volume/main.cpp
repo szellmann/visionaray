@@ -84,10 +84,15 @@ struct renderer : viewer_type
     tiled_sched<host_ray_type>                  host_sched;
 
 
-    // texture references
-
-    texture_ref<float, 3>                       volume;
-    texture_ref<vec4, 1>                        transfunc;
+    // Texture references. In this simple example, we manage
+    // the texture memory ourselves, and can use texture_pointer_ref
+    // as a view into the data to make use of texture interpolation,
+    // texture wrap modes, etc. In general, the user will _not_
+    // manage the texture memory themself. See the other examples
+    // For use of the texture classes with an internal storage
+    // represenation
+    texture_pointer_ref<float, 3>               volume;
+    texture_pointer_ref<vec4, 1>                transfunc;
 
 protected:
 

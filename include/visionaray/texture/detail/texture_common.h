@@ -141,6 +141,24 @@ protected:
 };
 
 
+//-------------------------------------------------------------------------------------------------
+// Use this class as a view to linear (user-managed) memory
+// Expected memory layout: textures are stored one row after another (2D)
+// 3D textures are stored slice by slice, where each slice is a 2D texture
+//
+
+template <typename T, unsigned Dim>
+struct texture_pointer_ref : texture_base<Dim, pointer_storage<T, Dim>>
+{
+    using base_type = texture_base<Dim, pointer_storage<T, Dim>>;
+    enum { dimensions = Dim };
+    using base_type::base_type;
+};
+
+//-------------------------------------------------------------------------------------------------
+// This class serves as a view into texture<T, Dim>
+//
+
 template <typename T, unsigned Dim>
 struct texture_ref : texture_base<Dim, pointer_storage<T, Dim>>
 {
@@ -148,6 +166,10 @@ struct texture_ref : texture_base<Dim, pointer_storage<T, Dim>>
     enum { dimensions = Dim };
     using base_type::base_type;
 };
+
+//-------------------------------------------------------------------------------------------------
+// Texture storage class. Use texture_ref<T, Dim> as a view to the data
+//
 
 template <typename T, unsigned Dim>
 struct texture : texture_base<Dim, aligned_storage<T, Dim, 16>>
