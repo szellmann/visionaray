@@ -167,6 +167,18 @@ struct texture_ref : texture_base<Dim, pointer_storage<T, Dim>>
     using base_type::base_type;
 };
 
+// Specialization, uses tiling (TODO..)
+
+
+// Specialization, uses bricking
+template <typename T>
+struct texture_ref<T, 3> : texture_base<3, pointer_storage<T, 3>>
+{
+    using base_type = texture_base<3, pointer_storage<T, 3>>;
+    enum { dimensions = 3 };
+    using base_type::base_type;
+};
+
 //-------------------------------------------------------------------------------------------------
 // Texture storage class. Use texture_ref<T, Dim> as a view to the data
 //
@@ -178,6 +190,19 @@ struct texture : texture_base<Dim, aligned_storage<T, Dim, 16>>
     enum { dimensions = Dim };
     using base_type::base_type;
     using ref_type = texture_ref<T, Dim>;
+};
+
+// Specialization, uses tiling (TODO..)
+
+
+// Specialization, uses bricking
+template <typename T>
+struct texture<T, 3> : texture_base<3, aligned_storage<T, 3, 16>>
+{
+    using base_type = texture_base<3, aligned_storage<T, 3, 16>>;
+    enum { dimensions = 3 };
+    using base_type::base_type;
+    using ref_type = texture_ref<T, 3>;
 };
 
 

@@ -6,6 +6,8 @@
 #ifndef VSNRAY_TEXTURE_H
 #define VSNRAY_TEXTURE_H 1
 
+#include <cassert>
+
 #include <visionaray/detail/macros.h>
 
 #ifdef __CUDACC__
