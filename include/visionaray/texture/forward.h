@@ -6,8 +6,6 @@
 #ifndef VSNRAY_TEXTURE_FORWARD_H
 #define VSNRAY_TEXTURE_FORWARD_H 1
 
-#include <cstddef>
-
 namespace visionaray
 {
 
@@ -40,10 +38,10 @@ enum tex_color_space
 };
 
 
-template <typename T, size_t Dim>
+template <typename T, unsigned Dim>
 class cuda_texture;
 
-template <typename T, size_t Dim>
+template <typename T, unsigned Dim>
 class cuda_texture_ref;
 
 } // visionaray
