@@ -12,7 +12,6 @@
 #include <algorithm>
 #include <array>
 
-#include <visionaray/math/norm.h>
 #include <visionaray/math/vector.h>
 #include <visionaray/aligned_vector.h>
 #include <visionaray/pixel_format.h>
