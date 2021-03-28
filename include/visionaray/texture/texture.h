@@ -15,10 +15,7 @@
 #include "detail/sampler1d.h"
 #include "detail/sampler2d.h"
 #include "detail/sampler3d.h"
-#include "detail/texture1d.h"
-#include "detail/texture2d.h"
-#include "detail/texture3d.h"
-
+#include "detail/texture_common.h"
 
 namespace visionaray
 {

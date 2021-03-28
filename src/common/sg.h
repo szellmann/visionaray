@@ -112,11 +112,11 @@ private:
 //
 
 template <typename T>
-class VSNRAY_COMMON_EXPORT texture2d : public texture, public texture_base<T, 2>
+class VSNRAY_COMMON_EXPORT texture2d : public texture, public visionaray::texture<T, 2>
 {
 public:
 
-    using ref_type = texture_ref_base<T, 2>;
+    using ref_type = typename visionaray::texture<T, 2>::ref_type;
     using value_type = T;
 
 public:
@@ -126,8 +126,8 @@ public:
     texture2d(texture2d&&) = default;
 
     // Copy-construct from base
-    texture2d(texture_base<T, 2> const& base)
-        : texture_base<T, 2>(base)
+    texture2d(visionaray::texture<T, 2> const& base)
+        : visionaray::texture<T, 2>(base)
     {
     }
 
@@ -135,9 +135,9 @@ public:
     texture2d& operator=(texture2d&&) = default;
 
     // Copy-assign base
-    texture2d& operator=(texture_base<T, 2> const& base)
+    texture2d& operator=(visionaray::texture<T, 2> const& base)
     {
-        reinterpret_cast<texture_base<T, 2>*>(this) = base;
+        reinterpret_cast<visionaray::texture<T, 2>*>(this) = base;
         return *this;
     }
 
@@ -146,8 +146,9 @@ public:
         width_ = w;
         height_ = h;
 
-        // Resize data vector from base
-        texture_base<T, 2>::data_.resize(w * h);
+        // Resize using visionaray::texture
+        // storagebase class
+        visionaray::texture<T, 2>::realloc(w, h);
     }
 
     int width() const { return width_; }

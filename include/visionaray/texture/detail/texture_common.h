@@ -20,20 +20,62 @@
 
 #include "../forward.h"
 
-
 namespace visionaray
 {
 
-template <size_t Dim>
-class texture_params_base
+template <size_t Dim, typename TextureStorage>
+class texture_base : public TextureStorage
 {
 public:
+    using TextureStorage::TextureStorage;
 
-    texture_params_base() = default;
+public:
+
+    texture_base() = default;
+
+    texture_base(unsigned size[Dim])
+        : TextureStorage(size)
+    {
+    }
+
+    // Conversion from one texture type to another; no
+    // guarantees that this might work!
+    // This is e.g. used for ref()'ing
+    template <typename OtherStorage>
+    explicit texture_base(texture_base<Dim, OtherStorage> const& other)
+        : TextureStorage(other.data(), other.size())
+        , address_mode_(other.get_address_mode())
+        , filter_mode_(other.get_filter_mode())
+        , color_space_(other.get_color_space())
+        , normalized_coords_(other.get_normalized_coords())
+    {
+    }
+
+    texture_base(texture_base<Dim, TextureStorage> const& other) = default;
+    texture_base(texture_base<Dim, TextureStorage>&& other) = default;
+
+    texture_base& operator=(texture_base<Dim, TextureStorage> const& other) = default;
+    texture_base& operator=(texture_base<Dim, TextureStorage>&& other) = default;
+
+    // For compatibility
+    inline unsigned width() const
+    {
+        return TextureStorage::size()[0];
+    }
+
+    inline unsigned height() const
+    {
+        return TextureStorage::size()[1];
+    }
+
+    inline unsigned depth() const
+    {
+        return TextureStorage::size()[2];
+    }
 
     void set_address_mode(size_t index, tex_address_mode mode)
     {
-        assert( index < Dim );
+        assert(index < Dim);
         address_mode_[index] = mode;
     }
 
@@ -52,7 +94,7 @@ public:
 
     tex_address_mode get_address_mode(size_t index) const
     {
-        assert( index < Dim );
+        assert(index < Dim);
         return address_mode_[index];
     }
 
@@ -101,26 +143,71 @@ protected:
 };
 
 
-template <typename T, size_t Dim>
-class texture_base : public texture_params_base<Dim>
+//-------------------------------------------------------------------------------------------------
+// Simple linear storage type. Data is aligned to allow for SIMD access
+//
+
+template <typename T, size_t Dim, size_t A = 16>
+class aligned_storage
 {
 public:
 
     using value_type = T;
-    enum { dimensions = Dim };
 
 public:
 
-    texture_base() = default;
+    aligned_storage() = default;
 
-    explicit texture_base(size_t size)
-        : data_(aligned_vector<T>(size))
+    explicit aligned_storage(std::array<unsigned, Dim> size)
+        : data_(linear_size(size))
+        , size_(size)
     {
+    }
+
+    explicit aligned_storage(unsigned w)
+    {
+        realloc(w);
+    }
+
+    explicit aligned_storage(unsigned w, unsigned h)
+    {
+        realloc(w, h);
+    }
+
+    explicit aligned_storage(unsigned w, unsigned h, unsigned d)
+    {
+        realloc(w, h, d);
+    }
+
+    std::array<unsigned, Dim> size() const
+    {
+        return size_;
+    }
+
+    void realloc(unsigned w)
+    {
+        size_[0] = w;
+        data_.resize(linear_size(size_));
+    }
+
+    void realloc(unsigned w, unsigned h)
+    {
+        size_[0] = w;
+        size_[1] = h;
+        data_.resize(linear_size(size_));
+    }
+
+    void realloc(unsigned w, unsigned h, unsigned d)
+    {
+        size_[0] = w;
+        size_[1] = h;
+        size_[2] = d;
+        data_.resize(linear_size(size_));
     }
 
     void reset(T const* data)
     {
-        std::copy( data, data + data_.size(), data_.begin() );
+        std::copy(data, data + data_.size(), data_.begin());
     }
 
     void reset(
@@ -177,37 +264,83 @@ public:
 
     operator bool() const
     {
-        return data_.size() != 0;
+        return !data_.empty();
     }
 
 protected:
 
-    aligned_vector<T> data_;
+    inline size_t linear_size(std::array<unsigned, 1> size)
+    {
+        return size_t(size[0]);
+    }
+
+    inline size_t linear_size(std::array<unsigned, 2> size)
+    {
+        return size[0] * size_t(size[1]);
+    }
+
+    inline size_t linear_size(std::array<unsigned, 3> size)
+    {
+        return size[0] * size[1] * size_t(size[2]);
+    }
+
+    aligned_vector<T, A> data_;
+    std::array<unsigned, Dim> size_;
 
 };
 
+
+//-------------------------------------------------------------------------------------------------
+// Storage that is managed by the user; we only store a pointer and in addition know
+// what size the pointee is supposed to have
+//
+
 template <typename T, size_t Dim>
-class texture_ref_base : public texture_params_base<Dim>
+class pointer_storage
 {
 public:
 
     using value_type = T;
-    using base_type  = texture_params_base<Dim>;
     enum { dimensions = Dim };
 
 public:
 
-    texture_ref_base() = default;
+    pointer_storage() = default;
 
-    explicit texture_ref_base(size_t size)
+    explicit pointer_storage(std::array<unsigned, Dim> size)
+        : data_(nullptr)
+        , size_(size)
     {
-        VSNRAY_UNUSED(size);
     }
 
-    texture_ref_base(texture_base<T, Dim> const& tex)
-        : base_type(tex)
-        , data_(tex.data())
+    explicit pointer_storage(T const* data, std::array<unsigned, Dim> size)
+        : data_(data)
+        , size_(size)
     {
+    }
+
+    // For backwards-compatibility
+    explicit pointer_storage(unsigned w)
+    {
+        size_[0] = w;
+    }
+
+    explicit pointer_storage(unsigned w, unsigned h)
+    {
+        size_[0] = w;
+        size_[1] = h;
+    }
+
+    explicit pointer_storage(unsigned w, unsigned h, unsigned d)
+    {
+        size_[0] = w;
+        size_[1] = h;
+        size_[2] = d;
+    }
+
+    std::array<unsigned, Dim> size() const
+    {
+        return size_;
     }
 
     void reset(T const* data)
@@ -227,8 +360,27 @@ public:
 
 protected:
 
-    T const* data_;
+    T const* data_ = nullptr;
+    std::array<unsigned, Dim> size_ {{ 0 }};
 
+};
+
+
+template <typename T, size_t Dim>
+struct texture_ref : texture_base<Dim, pointer_storage<T, Dim>>
+{
+    using base_type = texture_base<Dim, pointer_storage<T, Dim>>;
+    enum { dimensions = Dim };
+    using base_type::base_type;
+};
+
+template <typename T, size_t Dim>
+struct texture : texture_base<Dim, aligned_storage<T, Dim, 16>>
+{
+    using base_type = texture_base<Dim, aligned_storage<T, Dim, 16>>;
+    enum { dimensions = Dim };
+    using base_type::base_type;
+    using ref_type = texture_ref<T, Dim>;
 };
 
 

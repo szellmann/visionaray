@@ -256,7 +256,7 @@ struct renderer : viewer_type
         using namespace support;
 
         // Init null environment light
-        env_light.texture() = env_map;
+        env_light.texture() = texture_ref<vec4, 2>(env_map);
 
         // Parse inifile (but cmdline overrides!)
         parse_inifile({ "vsnray-viewer.ini", "viewer.ini" });

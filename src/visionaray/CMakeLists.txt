@@ -264,9 +264,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/texture/detail/sampler1d.h
     ${HEADER_DIR}/texture/detail/sampler2d.h
     ${HEADER_DIR}/texture/detail/sampler3d.h
-    ${HEADER_DIR}/texture/detail/texture1d.h
-    ${HEADER_DIR}/texture/detail/texture2d.h
-    ${HEADER_DIR}/texture/detail/texture3d.h
     ${HEADER_DIR}/texture/detail/texture_common.h
     ${HEADER_DIR}/texture/forward.h
     ${HEADER_DIR}/texture/texture.h

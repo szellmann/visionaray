@@ -185,7 +185,14 @@ void load_ply(std::string const& filename, model& mod)
             tex.set_address_mode(Wrap);
             tex.set_filter_mode(Nearest);
             tex.reset(&dummy_texel);
-            mod.textures.push_back(std::move(tex));
+            mod.texture_map.insert(std::make_pair("null", std::move(tex)));
+
+            // Maybe a "null" texture was already present and thus not inserted
+            //  ==> find the one that was already inserted
+            auto it = mod.texture_map.find("null");
+
+            // Insert a ref
+            mod.textures.push_back(model::texture_type::ref_type(it->second));
         }
     }
     catch (std::exception const& e)
