@@ -256,6 +256,8 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/texture/detail/filter/cubic_opt.h
     ${HEADER_DIR}/texture/detail/filter/linear.h
     ${HEADER_DIR}/texture/detail/filter/nearest.h
+    ${HEADER_DIR}/texture/detail/storage_types/aligned_storage.h
+    ${HEADER_DIR}/texture/detail/storage_types/pointer_storage.h
     ${HEADER_DIR}/texture/detail/cuda_texture.h
     ${HEADER_DIR}/texture/detail/cuda_texture1d.inl
     ${HEADER_DIR}/texture/detail/cuda_texture2d.inl
