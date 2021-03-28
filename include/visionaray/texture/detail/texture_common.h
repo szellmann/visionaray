@@ -232,48 +232,6 @@ protected:
 };
 
 
-template <typename T, typename Derived>
-class prefilterable
-{
-public:
-
-    typedef T value_type;
-    typedef short element_type;
-
-    element_type* prefiltered_data;
-
-
-    prefilterable() : prefiltered_data(0), filter_mode_(Nearest) {}
-
-    void set_filter_mode(tex_filter_mode mode)
-    {
-        if (mode == BSplineInterpol)
-        {
-            Derived* d = static_cast<Derived*>(this);
-
-            prefiltered_.resize( d->size() );
-            prefiltered_data = &prefiltered_[0];
-            std::transform(
-                    &(d->data)[0],
-                    &(d->data)[d->size()],
-                    prefiltered_.begin(),
-                    [](value_type val) { return static_cast<element_type>(val); }
-                    );
-            convert_for_bspline_interpol( d );
-        }
-
-        filter_mode_ = mode;
-    }
-
-    tex_filter_mode get_filter_mode() const { return filter_mode_; }
-
-protected:
-
-    tex_filter_mode filter_mode_;
-    aligned_vector<element_type> prefiltered_;
-
-};
-
 template <typename T>
 VSNRAY_FUNC
 inline T apply_color_conversion(T const& t, tex_color_space const& color_space)
