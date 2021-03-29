@@ -7,7 +7,6 @@
 #define VSNRAY_TEXTURE_DETAIL_SAMPLER3D_H 1
 
 #include <array>
-#include <cstddef>
 #include <type_traits>
 #include <utility>
 
@@ -16,6 +15,7 @@
 #include <visionaray/math/unorm.h>
 #include <visionaray/math/vector.h>
 
+#include "filter/arithmetic_types.h"
 #include "filter.h"
 #include "texture_common.h"
 
@@ -29,66 +29,6 @@ namespace detail
 // Dispatch function overloads to deduce texture type and internal texture type
 //
 
-// any texture, non-simd coordinates
-
-template <
-    typename T,
-    typename FloatT,
-    typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
-    typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
-    >
-inline T tex3D_impl_expand_types(
-        T const*                                tex,
-        vector<3, FloatT> const&                coord,
-        vector<3, int> const&                   texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 3> const&  address_mode
-        )
-{
-    using return_type   = T;
-    using internal_type = FloatT;
-
-    return choose_filter(
-            return_type{},
-            internal_type{},
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-template <
-    size_t Dim,
-    typename T,
-    typename FloatT,
-    typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
-    typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
-    >
-inline vector<Dim, T> tex3D_impl_expand_types(
-        vector<Dim, T> const*                   tex,
-        vector<3, FloatT> const&                coord,
-        vector<3, int> const&                   texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 3> const&  address_mode
-        )
-{
-    using return_type   = vector<Dim, T>;
-    using internal_type = vector<Dim, FloatT>;
-
-    return choose_filter(
-            return_type{},
-            internal_type{},
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-
 // normalized floating point texture, non-simd coordinates
 
 template <
@@ -97,7 +37,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
-inline FloatT tex3D_impl_expand_types(
+inline FloatT texND_impl_expand_types(
         unorm<Bits> const*                      tex,
         vector<3, FloatT> const&                coord,
         vector<3, int> const&                   texsize,
@@ -127,33 +67,33 @@ inline FloatT tex3D_impl_expand_types(
 
 // any texture, simd coordinates
 
-template <
-    typename T,
-    typename FloatT,
-    typename = typename std::enable_if<!std::is_integral<T>::value>::type,
-    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
-    >
-inline FloatT tex3D_impl_expand_types(
-        T const*                                    tex,
-        vector<3, FloatT> const&                    coord,
-        vector<3, simd::int_type_t<FloatT>> const&  texsize,
-        tex_filter_mode                             filter_mode,
-        std::array<tex_address_mode, 3> const&      address_mode
-        )
-{
-    using return_type   = FloatT;
-    using internal_type = FloatT;
-
-    return choose_filter(
-            return_type{},
-            internal_type{},
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
+// template <
+//     typename T,
+//     typename FloatT,
+//     typename = typename std::enable_if<!std::is_integral<T>::value>::type,
+//     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
+//     >
+// inline FloatT texND_impl_expand_types(
+//         T const*                                    tex,
+//         vector<3, FloatT> const&                    coord,
+//         vector<3, simd::int_type_t<FloatT>> const&  texsize,
+//         tex_filter_mode                             filter_mode,
+//         std::array<tex_address_mode, 3> const&      address_mode
+//         )
+// {
+//     using return_type   = FloatT;
+//     using internal_type = FloatT;
+// 
+//     return choose_filter(
+//             return_type{},
+//             internal_type{},
+//             tex,
+//             coord,
+//             texsize,
+//             filter_mode,
+//             address_mode
+//             );
+// }
 
 
 // normalized floating point texture, simd coordinates
@@ -163,7 +103,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-inline FloatT tex3D_impl_expand_types(
+inline FloatT texND_impl_expand_types(
         unorm<Bits> const*                          tex,
         vector<3, FloatT> const&                    coord,
         vector<3, simd::int_type_t<FloatT>> const&  texsize,
@@ -199,7 +139,7 @@ template <
     typename = typename std::enable_if<std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-inline simd::int_type_t<FloatT> tex3D_impl_expand_types(
+inline simd::int_type_t<FloatT> texND_impl_expand_types(
         T const*                                    tex,
         vector<3, FloatT> const&                    coord,
         vector<3, simd::int_type_t<FloatT>> const&  texsize,
@@ -218,40 +158,6 @@ inline simd::int_type_t<FloatT> tex3D_impl_expand_types(
             texsize,
             filter_mode,
             address_mode
-            );
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// tex3D() dispatch function
-//
-
-template <typename Tex, typename FloatT>
-inline auto tex3D_impl(Tex const& tex, vector<3, FloatT> coord)
-    -> decltype( tex3D_impl_expand_types(
-            tex.data(),
-            coord,
-            vector<3, decltype(convert_to_int(std::declval<FloatT>()))>(),
-            tex.get_filter_mode(),
-            tex.get_address_mode()
-            ) )
-{
-    static_assert(Tex::dimensions == 3, "Incompatible texture type");
-
-    using I = simd::int_type_t<FloatT>;
-
-    vector<3, I> texsize(
-            static_cast<int>(tex.width()),
-            static_cast<int>(tex.height()),
-            static_cast<int>(tex.depth())
-            );
-
-    return tex3D_impl_expand_types(
-            tex.data(),
-            coord,
-            texsize,
-            tex.get_filter_mode(),
-            tex.get_address_mode()
             );
 }
 

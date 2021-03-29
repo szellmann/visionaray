@@ -7,7 +7,6 @@
 #define VSNRAY_TEXTURE_DETAIL_SAMPLER1D_H 1
 
 #include <array>
-#include <cstddef>
 #include <type_traits>
 
 #include <visionaray/math/simd/avx.h>
@@ -17,6 +16,7 @@
 #include <visionaray/math/simd/type_traits.h>
 #include <visionaray/math/vector.h>
 
+#include "filter/arithmetic_types.h"
 #include "filter.h"
 #include "texture_common.h"
 
@@ -30,74 +30,14 @@ namespace detail
 // Dispatch function overloads to deduce texture type and internal texture type
 //
 
-// any texture, non-simd coordinates
-
-template <
-    typename T,
-    typename FloatT,
-    typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
-    typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
-    >
-inline T tex1D_impl_expand_types(
-        T const*                                tex,
-        FloatT                                  coord,
-        int                                     texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 1> const&  address_mode
-        )
-{
-    using return_type   = T;
-    using internal_type = FloatT;
-
-    return choose_filter(
-            return_type{},
-            internal_type{},
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-template <
-    size_t Dim,
-    typename T,
-    typename FloatT,
-    typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
-    typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
-    >
-inline vector<Dim, T> tex1D_impl_expand_types(
-        vector<Dim, T> const*                   tex,
-        FloatT                                  coord,
-        int                                     texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 1> const&  address_mode
-        )
-{
-    using return_type   = vector<Dim, T>;
-    using internal_type = vector<Dim, FloatT>;
-
-    return choose_filter(
-            return_type{},
-            internal_type{},
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-
-// SIMD: AoS textures
+// any texture, simd coordinates
 
 template <
     typename T,
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
-inline vector<4, FloatT> tex1D_impl_expand_types(
+inline vector<4, FloatT> texND_impl_expand_types(
         vector<4, T> const*                     tex,
         FloatT const&                           coord,
         simd::int_type_t<FloatT> const&         texsize,
@@ -129,7 +69,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
-inline simd::float4 tex1D_impl_expand_types(
+inline simd::float4 texND_impl_expand_types(
         simd::float4 const*                     tex,
         FloatT                                  coord,
         int                                     texsize,
@@ -160,7 +100,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
-inline simd::float8 tex1D_impl_expand_types(
+inline simd::float8 texND_impl_expand_types(
         simd::float8 const*                     tex,
         FloatT                                  coord,
         int                                     texsize,
@@ -191,7 +131,7 @@ inline simd::float8 tex1D_impl_expand_types(
 
 template <typename Tex, typename FloatT>
 inline auto tex1D_impl(Tex const& tex, FloatT coord)
-    -> decltype( tex1D_impl_expand_types(
+    -> decltype( texND_impl_expand_types(
             tex.data(),
             coord,
             simd::int_type_t<FloatT>(),
@@ -205,7 +145,7 @@ inline auto tex1D_impl(Tex const& tex, FloatT coord)
 
     I texsize = static_cast<int>(tex.width());
 
-    return tex1D_impl_expand_types(
+    return texND_impl_expand_types(
             tex.data(),
             coord,
             texsize,

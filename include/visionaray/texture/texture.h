@@ -17,6 +17,7 @@
 #include "detail/sampler1d.h"
 #include "detail/sampler2d.h"
 #include "detail/sampler3d.h"
+#include "detail/sampler.h"
 #include "detail/texture_common.h"
 
 namespace visionaray
@@ -30,31 +31,32 @@ inline auto tex1D(Tex const& tex, FloatT const& coord)
 
     assert(tex.get_normalized_coords() && "Unnormalized coordinates on CPU not implemented yet");
 
+    // TODO: also use tex_fetch_impl here!
     return detail::tex1D_impl( tex, coord );
 }
 
 
 template <typename Tex, typename FloatT>
 inline auto tex2D(Tex const& tex, vector<2, FloatT> const& coord)
-    -> decltype( detail::tex2D_impl(tex, coord) )
+    -> decltype( detail::tex_fetch_impl(tex, coord) )
 {
     static_assert(Tex::dimensions == 2, "Incompatible texture type");
 
     assert(tex.get_normalized_coords() && "Unnormalized coordinates on CPU not implemented yet");
 
-    return detail::tex2D_impl( tex, coord );
+    return detail::tex_fetch_impl( tex, coord );
 }
 
 
 template <typename Tex, typename FloatT>
 inline auto tex3D(Tex const& tex, vector<3, FloatT> const& coord)
-    -> decltype( detail::tex3D_impl(tex, coord) )
+    -> decltype( detail::tex_fetch_impl(tex, coord) )
 {
     static_assert(Tex::dimensions == 3, "Incompatible texture type");
 
     assert(tex.get_normalized_coords() && "Unnormalized coordinates on CPU not implemented yet");
 
-    return detail::tex3D_impl( tex, coord );
+    return detail::tex_fetch_impl( tex, coord );
 }
 
 

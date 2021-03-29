@@ -251,6 +251,7 @@ set(VSNRAY_HEADERS
 
     # Texture access
 
+    ${HEADER_DIR}/texture/detail/filter/arithmetic_types.h
     ${HEADER_DIR}/texture/detail/filter/common.h
     ${HEADER_DIR}/texture/detail/filter/cubic.h
     ${HEADER_DIR}/texture/detail/filter/cubic_opt.h
@@ -263,6 +264,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/texture/detail/cuda_texture2d.inl
     ${HEADER_DIR}/texture/detail/cuda_texture3d.inl
     ${HEADER_DIR}/texture/detail/filter.h
+    ${HEADER_DIR}/texture/detail/sampler.h
     ${HEADER_DIR}/texture/detail/sampler1d.h
     ${HEADER_DIR}/texture/detail/sampler2d.h
     ${HEADER_DIR}/texture/detail/sampler3d.h
