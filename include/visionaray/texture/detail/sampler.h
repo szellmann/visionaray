@@ -28,6 +28,7 @@ namespace detail
 template <
     typename TexelType,
     typename CoordinateType,
+    typename TexSize,
     typename = typename std::enable_if<std::is_floating_point<CoordinateType>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<CoordinateType>::value>::type,
     unsigned Dim,
@@ -36,7 +37,7 @@ template <
 inline typename AT::return_type texND_impl_expand_types(
         TexelType const*                         tex,
         CoordinateType                           coord,
-        int                                      texsize,
+        TexSize                                  texsize,
         tex_filter_mode                          filter_mode,
         std::array<tex_address_mode, Dim> const& address_mode
         )
@@ -62,15 +63,16 @@ template <
     size_t Dim,
     typename T,
     typename FloatT,
+    typename TexSize,
     typename = typename std::enable_if<!std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline FloatT texND_impl_expand_types(
-        T const*                                     tex,
-        vector<Dim, FloatT> const&                   coord,
-        vector<Dim, simd::int_type_t<FloatT>> const& texsize,
-        tex_filter_mode                              filter_mode,
-        std::array<tex_address_mode, Dim> const&     address_mode
+        T const*                                    tex,
+        vector<Dim, FloatT> const&                  coord,
+        TexSize                                     texsize,
+        tex_filter_mode                             filter_mode,
+        std::array<tex_address_mode, Dim> const&    address_mode
         )
 {
     using return_type   = FloatT;
@@ -93,15 +95,16 @@ template <
     size_t Dim2,
     typename T,
     typename FloatT,
+    typename TexSize,
     typename = typename std::enable_if<!std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline vector<Dim1, FloatT> texND_impl_expand_types(
-        vector<Dim1, T> const*                        tex,
-        vector<Dim2, FloatT> const&                   coord,
-        vector<Dim2, simd::int_type_t<FloatT>> const& texsize,
-        tex_filter_mode                               filter_mode,
-        std::array<tex_address_mode, Dim2> const&     address_mode
+        vector<Dim1, T> const*                      tex,
+        vector<Dim2, FloatT> const&                 coord,
+        TexSize                                     texsize,
+        tex_filter_mode                             filter_mode,
+        std::array<tex_address_mode, Dim2> const&   address_mode
         )
 {
     using return_type   = vector<Dim1, FloatT>;

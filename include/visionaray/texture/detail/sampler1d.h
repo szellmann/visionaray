@@ -35,12 +35,13 @@ namespace detail
 template <
     typename T,
     typename FloatT,
+    typename TexSize,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline vector<4, FloatT> texND_impl_expand_types(
         vector<4, T> const*                     tex,
         FloatT const&                           coord,
-        simd::int_type_t<FloatT> const&         texsize,
+        TexSize                                 texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -66,13 +67,14 @@ inline vector<4, FloatT> texND_impl_expand_types(
 
 template <
     typename FloatT,
+    typename TexSize,
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
 inline simd::float4 texND_impl_expand_types(
         simd::float4 const*                     tex,
         FloatT                                  coord,
-        int                                     texsize,
+        TexSize                                 texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -97,13 +99,14 @@ inline simd::float4 texND_impl_expand_types(
 
 template <
     typename FloatT,
+    typename TexSize,
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
 inline simd::float8 texND_impl_expand_types(
         simd::float8 const*                     tex,
         FloatT                                  coord,
-        int                                     texsize,
+        TexSize                                 texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
         )

@@ -35,13 +35,14 @@ template <
     size_t Dim,
     unsigned Bits,
     typename FloatT,
+    typename TexSize,
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
 inline vector<Dim, FloatT> texND_impl_expand_types(
         vector<Dim, unorm<Bits>> const*         tex,
         vector<2, FloatT> const&                coord,
-        vector<2, int> const&                   texsize,
+        TexSize                                 texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 2> const&  address_mode
         )

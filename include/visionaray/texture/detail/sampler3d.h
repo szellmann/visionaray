@@ -34,13 +34,14 @@ namespace detail
 template <
     unsigned Bits,
     typename FloatT,
+    typename TexSize,
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
 inline FloatT texND_impl_expand_types(
         unorm<Bits> const*                      tex,
         vector<3, FloatT> const&                coord,
-        vector<3, int> const&                   texsize,
+        TexSize                                 texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 3> const&  address_mode
         )
@@ -65,50 +66,20 @@ inline FloatT texND_impl_expand_types(
 }
 
 
-// any texture, simd coordinates
-
-// template <
-//     typename T,
-//     typename FloatT,
-//     typename = typename std::enable_if<!std::is_integral<T>::value>::type,
-//     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
-//     >
-// inline FloatT texND_impl_expand_types(
-//         T const*                                    tex,
-//         vector<3, FloatT> const&                    coord,
-//         vector<3, simd::int_type_t<FloatT>> const&  texsize,
-//         tex_filter_mode                             filter_mode,
-//         std::array<tex_address_mode, 3> const&      address_mode
-//         )
-// {
-//     using return_type   = FloatT;
-//     using internal_type = FloatT;
-// 
-//     return choose_filter(
-//             return_type{},
-//             internal_type{},
-//             tex,
-//             coord,
-//             texsize,
-//             filter_mode,
-//             address_mode
-//             );
-// }
-
-
 // normalized floating point texture, simd coordinates
 
 template <
     unsigned Bits,
     typename FloatT,
+    typename TexSize,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline FloatT texND_impl_expand_types(
-        unorm<Bits> const*                          tex,
-        vector<3, FloatT> const&                    coord,
-        vector<3, simd::int_type_t<FloatT>> const&  texsize,
-        tex_filter_mode                             filter_mode,
-        std::array<tex_address_mode, 3> const&      address_mode
+        unorm<Bits> const*                      tex,
+        vector<3, FloatT> const&                coord,
+        TexSize                                 texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 3> const&  address_mode
         )
 {
     using return_type   = simd::int_type_t<FloatT>;
@@ -136,15 +107,16 @@ inline FloatT texND_impl_expand_types(
 template <
     typename T,
     typename FloatT,
+    typename TexSize,
     typename = typename std::enable_if<std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline simd::int_type_t<FloatT> texND_impl_expand_types(
-        T const*                                    tex,
-        vector<3, FloatT> const&                    coord,
-        vector<3, simd::int_type_t<FloatT>> const&  texsize,
-        tex_filter_mode                             filter_mode,
-        std::array<tex_address_mode, 3> const&      address_mode
+        T const*                                tex,
+        vector<3, FloatT> const&                coord,
+        TexSize                                 texsize,
+        tex_filter_mode                         filter_mode,
+        std::array<tex_address_mode, 3> const&  address_mode
         )
 {
     using return_type   = simd::int_type_t<FloatT>;
