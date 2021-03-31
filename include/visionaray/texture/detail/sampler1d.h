@@ -129,15 +129,15 @@ inline simd::float8 texND_impl_expand_types(
 
 
 //-------------------------------------------------------------------------------------------------
-// tex1D() dispatch function
+// texND() dispatch function, coordinate type is scalar!
 //
 
 template <typename Tex, typename FloatT>
-inline auto tex1D_impl(Tex const& tex, FloatT coord)
+inline auto tex_fetch_impl(Tex const& tex, FloatT coord)
     -> decltype( texND_impl_expand_types(
             tex.data(),
             coord,
-            simd::int_type_t<FloatT>(),
+            vector<Tex::dimensions, decltype(convert_to_int(std::declval<FloatT>()))>(),
             tex.get_filter_mode(),
             tex.get_address_mode()
             ) )
@@ -146,7 +146,8 @@ inline auto tex1D_impl(Tex const& tex, FloatT coord)
 
     using I = simd::int_type_t<FloatT>;
 
-    I texsize = static_cast<int>(tex.width());
+    vector<Tex::dimensions, I> texsize;
+    texsize[0] = I(static_cast<int>(tex.width()));
 
     return texND_impl_expand_types(
             tex.data(),

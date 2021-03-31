@@ -39,19 +39,19 @@ inline ReturnT linear(
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(0.5) / FloatT(texsize),
-            texsize,
+            coord - FloatT(0.5) / FloatT(texsize[0]),
+            texsize[0],
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord + FloatT(0.5) / FloatT(texsize),
-            texsize,
+            coord + FloatT(0.5) / FloatT(texsize[0]),
+            texsize[0],
             address_mode
             );
 
-    auto lo = min(convert_to_int(coord1 * FloatT(texsize)), texsize - TexSize(1));
-    auto hi = min(convert_to_int(coord2 * FloatT(texsize)), texsize - TexSize(1));
+    auto lo = min(convert_to_int(coord1 * FloatT(texsize[0])), texsize[0] - typename TexSize::value_type(1));
+    auto hi = min(convert_to_int(coord2 * FloatT(texsize[0])), texsize[0] - typename TexSize::value_type(1));
 
     InternalT samples[2] =
     {
@@ -59,7 +59,7 @@ inline ReturnT linear(
         InternalT( point(tex, hi, ReturnT{}) )
     };
 
-    auto u = coord1 * FloatT(texsize) - FloatT(lo);
+    auto u = coord1 * FloatT(texsize[0]) - FloatT(lo);
 
     return ReturnT(lerp(samples[0], samples[1], u));
 }

@@ -38,9 +38,9 @@ inline ReturnT nearest(
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
-    coord = map_tex_coord(coord, texsize, address_mode);
+    coord = map_tex_coord(coord, texsize[0], address_mode);
 
-    auto lo = convert_to_int(coord * FloatT(texsize));
+    auto lo = convert_to_int(coord * FloatT(texsize[0]));
     return point(tex, lo, ReturnT{});
 }
 

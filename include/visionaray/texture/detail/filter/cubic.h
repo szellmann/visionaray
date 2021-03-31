@@ -47,38 +47,38 @@ inline ReturnT cubic(
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(1.5) / FloatT(texsize),
-            texsize,
+            coord - FloatT(1.5) / FloatT(texsize[0]),
+            texsize[0],
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord - FloatT(0.5) / FloatT(texsize),
-            texsize,
+            coord - FloatT(0.5) / FloatT(texsize[0]),
+            texsize[0],
             address_mode
             );
 
     auto coord3 = map_tex_coord(
-            coord + FloatT(0.5) / FloatT(texsize),
-            texsize,
+            coord + FloatT(0.5) / FloatT(texsize[0]),
+            texsize[0],
             address_mode
             );
 
     auto coord4 = map_tex_coord(
-            coord + FloatT(1.5) / FloatT(texsize),
-            texsize,
+            coord + FloatT(1.5) / FloatT(texsize[0]),
+            texsize[0],
             address_mode
             );
 
     decltype(convert_to_int(FloatT{})) pos[4] =
     {
-        convert_to_int(coord1 * FloatT(texsize)),
-        convert_to_int(coord2 * FloatT(texsize)),
-        convert_to_int(coord3 * FloatT(texsize)),
-        convert_to_int(coord4 * FloatT(texsize))
+        convert_to_int(coord1 * FloatT(texsize[0])),
+        convert_to_int(coord2 * FloatT(texsize[0])),
+        convert_to_int(coord3 * FloatT(texsize[0])),
+        convert_to_int(coord4 * FloatT(texsize[0]))
     };
 
-    auto u = (coord2 * FloatT(texsize)) - FloatT(pos[1]);
+    auto u = (coord2 * FloatT(texsize[0])) - FloatT(pos[1]);
 
     auto sample = [&](int i) -> InternalT
     {

@@ -44,15 +44,15 @@ inline ReturnT cubic_opt(
     bspline::w2_func w2;
     bspline::w3_func w3;
 
-    auto x = coord * FloatT(texsize) - FloatT(0.5);
+    auto x = coord * FloatT(texsize[0]) - FloatT(0.5);
     auto floorx = floor(x);
     auto fracx  = x - floor(x);
 
     auto tmp0 = ( w1(fracx) ) / ( w0(fracx) + w1(fracx) );
-    auto h0   = ( floorx - FloatT(0.5) + tmp0 ) / FloatT(texsize);
+    auto h0   = ( floorx - FloatT(0.5) + tmp0 ) / FloatT(texsize[0]);
 
     auto tmp1 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
-    auto h1   = ( floorx + FloatT(1.5) + tmp1 ) / FloatT(texsize);
+    auto h1   = ( floorx + FloatT(1.5) + tmp1 ) / FloatT(texsize[0]);
 
     auto f_0  = InternalT( linear(ReturnT{}, InternalT{}, tex, h0, texsize, address_mode) );
     auto f_1  = InternalT( linear(ReturnT{}, InternalT{}, tex, h1, texsize, address_mode) );
