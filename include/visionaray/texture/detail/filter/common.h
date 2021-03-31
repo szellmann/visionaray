@@ -80,15 +80,15 @@ inline vector<Dim, F> map_tex_coord(
 // Functions to map 1D index to texture coordinates
 //
 
-template <typename T>
-inline T index(T x, T y, vector<2, T> const& texsize)
+template <typename T, typename TexSize>
+inline T linear_index(T x, T y, TexSize texsize)
 {
     return y * texsize[0] + x;
 }
 
 
-template <typename T>
-inline T index(T x, T y, T z, vector<3, T> const& texsize)
+template <typename T, typename TexSize>
+inline T linear_index(T x, T y, T z, TexSize texsize)
 {
     return z * texsize[0] * texsize[1] + y * texsize[0] + x;
 }

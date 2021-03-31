@@ -155,7 +155,7 @@ inline ReturnT cubic(
     {
         return InternalT( point(
                 tex,
-                index(pos[i].x, pos[j].y, texsize),
+                linear_index(pos[i].x, pos[j].y, texsize),
                 ReturnT{}
                 ) );
     };
@@ -235,7 +235,7 @@ inline ReturnT cubic(
     {
         return InternalT( point(
                 tex,
-                index(pos[i].x, pos[j].y, pos[k].z, texsize),
+                linear_index(pos[i].x, pos[j].y, pos[k].z, texsize),
                 ReturnT{}
                 ) );
     };

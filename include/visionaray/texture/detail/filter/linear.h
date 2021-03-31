@@ -102,10 +102,10 @@ inline ReturnT linear(
 
     InternalT samples[4] =
     {
-        InternalT( point(tex, index( lo.x, lo.y, texsize ), ReturnT{}) ),
-        InternalT( point(tex, index( hi.x, lo.y, texsize ), ReturnT{}) ),
-        InternalT( point(tex, index( lo.x, hi.y, texsize ), ReturnT{}) ),
-        InternalT( point(tex, index( hi.x, hi.y, texsize ), ReturnT{}) )
+        InternalT( point(tex, linear_index( lo.x, lo.y, texsize ), ReturnT{}) ),
+        InternalT( point(tex, linear_index( hi.x, lo.y, texsize ), ReturnT{}) ),
+        InternalT( point(tex, linear_index( lo.x, hi.y, texsize ), ReturnT{}) ),
+        InternalT( point(tex, linear_index( hi.x, hi.y, texsize ), ReturnT{}) )
     };
 
 
@@ -155,14 +155,14 @@ inline ReturnT linear(
 
     InternalT samples[8] =
     {
-        InternalT( point(tex, index( lo.x, lo.y, lo.z, texsize ), ReturnT{}) ),
-        InternalT( point(tex, index( hi.x, lo.y, lo.z, texsize ), ReturnT{}) ),
-        InternalT( point(tex, index( lo.x, hi.y, lo.z, texsize ), ReturnT{}) ),
-        InternalT( point(tex, index( hi.x, hi.y, lo.z, texsize ), ReturnT{}) ),
-        InternalT( point(tex, index( lo.x, lo.y, hi.z, texsize ), ReturnT{}) ),
-        InternalT( point(tex, index( hi.x, lo.y, hi.z, texsize ), ReturnT{}) ),
-        InternalT( point(tex, index( lo.x, hi.y, hi.z, texsize ), ReturnT{}) ),
-        InternalT( point(tex, index( hi.x, hi.y, hi.z, texsize ), ReturnT{}) )
+        InternalT( point(tex, linear_index( lo.x, lo.y, lo.z, texsize ), ReturnT{}) ),
+        InternalT( point(tex, linear_index( hi.x, lo.y, lo.z, texsize ), ReturnT{}) ),
+        InternalT( point(tex, linear_index( lo.x, hi.y, lo.z, texsize ), ReturnT{}) ),
+        InternalT( point(tex, linear_index( hi.x, hi.y, lo.z, texsize ), ReturnT{}) ),
+        InternalT( point(tex, linear_index( lo.x, lo.y, hi.z, texsize ), ReturnT{}) ),
+        InternalT( point(tex, linear_index( hi.x, lo.y, hi.z, texsize ), ReturnT{}) ),
+        InternalT( point(tex, linear_index( lo.x, hi.y, hi.z, texsize ), ReturnT{}) ),
+        InternalT( point(tex, linear_index( hi.x, hi.y, hi.z, texsize ), ReturnT{}) )
     };
 
 
