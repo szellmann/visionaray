@@ -28,14 +28,14 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
-    typename SizeT
+    typename TexSize
     >
 inline ReturnT cubic_opt(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         FloatT                                  coord,
-        SizeT                                   texsize,
+        TexSize                                 texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
@@ -70,14 +70,14 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
-    typename SizeT
+    typename TexSize
     >
 inline ReturnT cubic_opt(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<2, FloatT>                       coord,
-        vector<2, SizeT>                        texsize,
+        TexSize                                 texsize,
         std::array<tex_address_mode, 2> const&  address_mode
         )
 {
@@ -129,14 +129,14 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
-    typename SizeT
+    typename TexSize
     >
 inline ReturnT cubic_opt(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<3, FloatT>                       coord,
-        vector<3, SizeT>                        texsize,
+        TexSize                                 texsize,
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {

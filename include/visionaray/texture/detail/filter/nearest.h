@@ -27,14 +27,14 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
-    typename SizeT
+    typename TexSize
     >
 inline ReturnT nearest(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         FloatT                                  coord,
-        SizeT                                   texsize,
+        TexSize                                 texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
@@ -54,14 +54,14 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
-    typename SizeT
+    typename TexSize
     >
 inline ReturnT nearest(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<2, FloatT>                       coord,
-        vector<2, SizeT>                        texsize,
+        TexSize                                 texsize,
         std::array<tex_address_mode, 2> const&  address_mode
         )
 {
@@ -69,7 +69,7 @@ inline ReturnT nearest(
 
     auto lo = convert_to_int(coord * vector<2, FloatT>(texsize));
 
-    auto idx = index(lo[0], lo[1], texsize);
+    auto idx = linear_index(lo[0], lo[1], texsize);
     return point(tex, idx, ReturnT{});
 }
 
@@ -83,14 +83,14 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
-    typename SizeT
+    typename TexSize
     >
 inline ReturnT nearest(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<3, FloatT>                       coord,
-        vector<3, SizeT>                        texsize,
+        TexSize                                 texsize,
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {
@@ -98,7 +98,7 @@ inline ReturnT nearest(
 
     auto lo = convert_to_int(coord * vector<3, FloatT>(texsize));
 
-    auto idx = index(lo[0], lo[1], lo[2], texsize);
+    auto idx = linear_index(lo[0], lo[1], lo[2], texsize);
     return point(tex, idx, ReturnT{});
 }
 

@@ -27,14 +27,14 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
-    typename SizeT
+    typename TexSize
     >
 inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         FloatT const&                           coord,
-        SizeT const&                            texsize,
+        TexSize                                 texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
@@ -50,8 +50,8 @@ inline ReturnT linear(
             address_mode
             );
 
-    auto lo = min(convert_to_int(coord1 * FloatT(texsize)), texsize - SizeT(1));
-    auto hi = min(convert_to_int(coord2 * FloatT(texsize)), texsize - SizeT(1));
+    auto lo = min(convert_to_int(coord1 * FloatT(texsize)), texsize - TexSize(1));
+    auto hi = min(convert_to_int(coord2 * FloatT(texsize)), texsize - TexSize(1));
 
     InternalT samples[2] =
     {
@@ -74,14 +74,14 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
-    typename SizeT
+    typename TexSize
     >
 inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<2, FloatT> const&                coord,
-        vector<2, SizeT>  const&                texsize,
+        TexSize                                 texsize,
         std::array<tex_address_mode, 2> const&  address_mode
         )
 {
@@ -97,8 +97,8 @@ inline ReturnT linear(
             address_mode
             );
 
-    auto lo = min(convert_to_int(coord1 * vector<2, FloatT>(texsize)), texsize - SizeT(1));
-    auto hi = min(convert_to_int(coord2 * vector<2, FloatT>(texsize)), texsize - SizeT(1));
+    auto lo = min(convert_to_int(coord1 * vector<2, FloatT>(texsize)), texsize - TexSize(1));
+    auto hi = min(convert_to_int(coord2 * vector<2, FloatT>(texsize)), texsize - TexSize(1));
 
     InternalT samples[4] =
     {
@@ -127,14 +127,14 @@ template <
     typename InternalT,
     typename TexelT,
     typename FloatT,
-    typename SizeT
+    typename TexSize
     >
 inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
         vector<3, FloatT> const&                coord,
-        vector<3, SizeT> const&                 texsize,
+        TexSize                                 texsize,
         std::array<tex_address_mode, 3> const&  address_mode
         )
 {
@@ -150,8 +150,8 @@ inline ReturnT linear(
             address_mode
             );
 
-    auto lo = min(convert_to_int(coord1 * vector<3, FloatT>(texsize)), texsize - SizeT(1));
-    auto hi = min(convert_to_int(coord2 * vector<3, FloatT>(texsize)), texsize - SizeT(1));
+    auto lo = min(convert_to_int(coord1 * vector<3, FloatT>(texsize)), texsize - TexSize(1));
+    auto hi = min(convert_to_int(coord2 * vector<3, FloatT>(texsize)), texsize - TexSize(1));
 
     InternalT samples[8] =
     {
