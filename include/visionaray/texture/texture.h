@@ -25,13 +25,13 @@ namespace visionaray
 
 template <typename Tex, typename FloatT>
 inline auto tex1D(Tex const& tex, FloatT const& coord)
-    -> decltype( detail::tex_fetch_impl(tex, coord) )
+    -> decltype( detail::tex_fetch_impl(tex, vector<1, FloatT>(coord)) )
 {
     static_assert(Tex::dimensions == 1, "Incompatible texture type");
 
     assert(tex.get_normalized_coords() && "Unnormalized coordinates on CPU not implemented yet");
 
-    return detail::tex_fetch_impl( tex, coord );
+    return detail::tex_fetch_impl( tex, vector<1, FloatT>(coord) );
 }
 
 

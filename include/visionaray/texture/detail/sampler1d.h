@@ -40,7 +40,7 @@ template <
     >
 inline vector<4, FloatT> texND_impl_expand_types(
         vector<4, T> const*                     tex,
-        FloatT const&                           coord,
+        vector<1, FloatT> const&                coord,
         TexSize                                 texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
@@ -53,7 +53,7 @@ inline vector<4, FloatT> texND_impl_expand_types(
             return_type{},
             internal_type{},
             tex,
-            coord,
+            coord[0],
             texsize,
             filter_mode,
             address_mode
@@ -73,7 +73,7 @@ template <
     >
 inline simd::float4 texND_impl_expand_types(
         simd::float4 const*                     tex,
-        FloatT                                  coord,
+        vector<1, FloatT> const&                coord,
         TexSize                                 texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
@@ -86,7 +86,7 @@ inline simd::float4 texND_impl_expand_types(
             return_type{},
             internal_type{},
             tex,
-            coord,
+            coord[0],
             texsize,
             filter_mode,
             address_mode
@@ -105,7 +105,7 @@ template <
     >
 inline simd::float8 texND_impl_expand_types(
         simd::float8 const*                     tex,
-        FloatT                                  coord,
+        vector<1, FloatT> const&                coord,
         TexSize                                 texsize,
         tex_filter_mode                         filter_mode,
         std::array<tex_address_mode, 1> const&  address_mode
@@ -118,7 +118,7 @@ inline simd::float8 texND_impl_expand_types(
             return_type{},
             internal_type{},
             tex,
-            coord,
+            coord[0],
             texsize,
             filter_mode,
             address_mode
@@ -126,37 +126,6 @@ inline simd::float8 texND_impl_expand_types(
 }
 
 #endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
-
-
-//-------------------------------------------------------------------------------------------------
-// texND() dispatch function, coordinate type is scalar!
-//
-
-template <typename Tex, typename FloatT>
-inline auto tex_fetch_impl(Tex const& tex, FloatT coord)
-    -> decltype( texND_impl_expand_types(
-            tex.data(),
-            coord,
-            vector<Tex::dimensions, decltype(convert_to_int(std::declval<FloatT>()))>(),
-            tex.get_filter_mode(),
-            tex.get_address_mode()
-            ) )
-{
-    static_assert(Tex::dimensions == 1, "Incompatible texture type");
-
-    using I = simd::int_type_t<FloatT>;
-
-    vector<Tex::dimensions, I> texsize;
-    texsize[0] = I(static_cast<int>(tex.width()));
-
-    return texND_impl_expand_types(
-            tex.data(),
-            coord,
-            texsize,
-            tex.get_filter_mode(),
-            tex.get_address_mode()
-            );
-}
 
 } // detail
 } // visionaray
