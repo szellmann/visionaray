@@ -26,14 +26,12 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT
     >
 inline ReturnT choose_filter(
         ReturnT       /* */,
         InternalT     /* */,
         Tex const&    tex,
-        TexelT const& ptr,
         FloatT        coord
         )
 {
@@ -47,7 +45,6 @@ inline ReturnT choose_filter(
                 ReturnT{},
                 InternalT{},
                 tex,
-                ptr,
                 coord
                 );
 
@@ -56,7 +53,6 @@ inline ReturnT choose_filter(
                 ReturnT{},
                 InternalT{},
                 tex,
-                ptr,
                 coord
                 );
 
@@ -65,7 +61,6 @@ inline ReturnT choose_filter(
                 ReturnT{},
                 InternalT{},
                 tex,
-                ptr,
                 coord
                 );
 
@@ -74,7 +69,6 @@ inline ReturnT choose_filter(
                 ReturnT{},
                 InternalT{},
                 tex,
-                ptr,
                 coord,
                 cspline::w0_func(),
                 cspline::w1_func(),

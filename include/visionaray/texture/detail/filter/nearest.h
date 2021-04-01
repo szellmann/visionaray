@@ -24,14 +24,12 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT
     >
 inline ReturnT nearest(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
-        TexelT const*     ptr,
         vector<1, FloatT> coord
         )
 {
@@ -42,7 +40,7 @@ inline ReturnT nearest(
     coord = tex.remap_texture_coordinate(coord);
 
     auto lo = convert_to_int(coord * texsizef);
-    return point(ptr, lo[0], ReturnT{});
+    return point(tex.data(), lo[0], ReturnT{});
 }
 
 
@@ -54,14 +52,12 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT
     >
 inline ReturnT nearest(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
-        TexelT const*     ptr,
         vector<2, FloatT> coord
         )
 {
@@ -74,7 +70,7 @@ inline ReturnT nearest(
     auto lo = convert_to_int(coord * texsizef);
 
     auto idx = linear_index(lo[0], lo[1], texsize);
-    return point(ptr, idx, ReturnT{});
+    return point(tex.data(), idx, ReturnT{});
 }
 
 
@@ -86,14 +82,12 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT
     >
 inline ReturnT nearest(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
-        TexelT const*     ptr,
         vector<3, FloatT> coord
         )
 {
@@ -106,7 +100,7 @@ inline ReturnT nearest(
     auto lo = convert_to_int(coord * texsizef);
 
     auto idx = linear_index(lo[0], lo[1], lo[2], texsize);
-    return point(ptr, idx, ReturnT{});
+    return point(tex.data(), idx, ReturnT{});
 }
 
 } // detail

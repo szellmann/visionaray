@@ -24,14 +24,12 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT
     >
 inline ReturnT linear(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
-        TexelT const*     ptr,
         vector<1, FloatT> coord
         )
 {
@@ -49,8 +47,8 @@ inline ReturnT linear(
 
     InternalT samples[2] =
     {
-        InternalT( point(ptr, lo[0], ReturnT{}) ),
-        InternalT( point(ptr, hi[0], ReturnT{}) )
+        InternalT( point(tex.data(), lo[0], ReturnT{}) ),
+        InternalT( point(tex.data(), hi[0], ReturnT{}) )
     };
 
     auto u = coord1[0] * FloatT(texsize[0]) - FloatT(lo[0]);
@@ -67,14 +65,12 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT
     >
 inline ReturnT linear(
         ReturnT                  /* */,
         InternalT                /* */,
         Tex const&               tex,
-        TexelT const*            ptr,
         vector<2, FloatT> const& coord
         )
 {
@@ -92,10 +88,10 @@ inline ReturnT linear(
 
     InternalT samples[4] =
     {
-        InternalT( point(ptr, linear_index( lo.x, lo.y, tex.size() ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, lo.y, tex.size() ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( lo.x, hi.y, tex.size() ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, hi.y, tex.size() ), ReturnT{}) )
+        InternalT( point(tex.data(), linear_index( lo.x, lo.y, tex.size() ), ReturnT{}) ),
+        InternalT( point(tex.data(), linear_index( hi.x, lo.y, tex.size() ), ReturnT{}) ),
+        InternalT( point(tex.data(), linear_index( lo.x, hi.y, tex.size() ), ReturnT{}) ),
+        InternalT( point(tex.data(), linear_index( hi.x, hi.y, tex.size() ), ReturnT{}) )
     };
 
 
@@ -116,14 +112,12 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT
     >
 inline ReturnT linear(
         ReturnT                  /* */,
         InternalT                /* */,
         Tex const&               tex,
-        TexelT const*            ptr,
         vector<3, FloatT> const& coord
         )
 {
@@ -141,14 +135,14 @@ inline ReturnT linear(
 
     InternalT samples[8] =
     {
-        InternalT( point(ptr, linear_index( lo.x, lo.y, lo.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, lo.y, lo.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( lo.x, hi.y, lo.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, hi.y, lo.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( lo.x, lo.y, hi.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, lo.y, hi.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( lo.x, hi.y, hi.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, hi.y, hi.z, tex.size() ), ReturnT{}) )
+        InternalT( point(tex.data(), linear_index( lo.x, lo.y, lo.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(tex.data(), linear_index( hi.x, lo.y, lo.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(tex.data(), linear_index( lo.x, hi.y, lo.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(tex.data(), linear_index( hi.x, hi.y, lo.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(tex.data(), linear_index( lo.x, lo.y, hi.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(tex.data(), linear_index( hi.x, lo.y, hi.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(tex.data(), linear_index( lo.x, hi.y, hi.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(tex.data(), linear_index( hi.x, hi.y, hi.z, tex.size() ), ReturnT{}) )
     };
 
 

@@ -25,14 +25,12 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT
     >
 inline ReturnT cubic_opt(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
-        TexelT const*     ptr,
         vector<1, FloatT> coord
         )
 {
@@ -55,8 +53,8 @@ inline ReturnT cubic_opt(
     auto tmp1 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
     auto h1   = ( floorx + FloatT(1.5) + tmp1 ) / texsizef[0];
 
-    auto f_0  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<1, FloatT>(h0)) );
-    auto f_1  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<1, FloatT>(h1)) );
+    auto f_0  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<1, FloatT>(h0)) );
+    auto f_1  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<1, FloatT>(h1)) );
 
     return ReturnT(g0(fracx) * f_0 + g1(fracx) * f_1);
 }
@@ -70,14 +68,12 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT
     >
 inline ReturnT cubic_opt(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
-        TexelT const*     ptr,
         vector<2, FloatT> coord
         )
 {
@@ -112,10 +108,10 @@ inline ReturnT cubic_opt(
     auto h_11  = ( floory + FloatT(1.5) + tmp11 ) / texsizef[1];
 
 
-    auto f_00  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<2, FloatT>(h_00, h_01)) );
-    auto f_10  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<2, FloatT>(h_10, h_01)) );
-    auto f_01  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<2, FloatT>(h_00, h_11)) );
-    auto f_11  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<2, FloatT>(h_10, h_11)) );
+    auto f_00  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<2, FloatT>(h_00, h_01)) );
+    auto f_10  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<2, FloatT>(h_10, h_01)) );
+    auto f_01  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<2, FloatT>(h_00, h_11)) );
+    auto f_11  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<2, FloatT>(h_10, h_11)) );
 
     auto f_0   = g0(fracx) * f_00 + g1(fracx) * f_10;
     auto f_1   = g0(fracx) * f_01 + g1(fracx) * f_11;
@@ -132,14 +128,12 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT
     >
 inline ReturnT cubic_opt(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
-        TexelT const*     ptr,
         vector<3, FloatT> coord
         )
 {
@@ -184,15 +178,15 @@ inline ReturnT cubic_opt(
     auto h_101  = ( floorz + FloatT(1.5) + tmp101 ) / texsizef[2];
 
 
-    auto f_000  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_000, h_010, h_001)) );
-    auto f_100  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_100, h_010, h_001)) );
-    auto f_010  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_000, h_110, h_001)) );
-    auto f_110  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_100, h_110, h_001)) );
+    auto f_000  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_000, h_010, h_001)) );
+    auto f_100  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_100, h_010, h_001)) );
+    auto f_010  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_000, h_110, h_001)) );
+    auto f_110  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_100, h_110, h_001)) );
 
-    auto f_001  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_000, h_010, h_101)) );
-    auto f_101  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_100, h_010, h_101)) );
-    auto f_011  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_000, h_110 ,h_101)) );
-    auto f_111  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_100, h_110, h_101)) );
+    auto f_001  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_000, h_010, h_101)) );
+    auto f_101  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_100, h_010, h_101)) );
+    auto f_011  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_000, h_110 ,h_101)) );
+    auto f_111  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_100, h_110, h_101)) );
 
     auto f_00   = g0(fracx) * f_000 + g1(fracx) * f_100;
     auto f_10   = g0(fracx) * f_010 + g1(fracx) * f_110;

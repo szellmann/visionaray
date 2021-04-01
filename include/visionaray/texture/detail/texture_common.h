@@ -191,6 +191,7 @@ protected:
 template <typename T, unsigned Dim>
 struct texture_pointer_ref : texture_base<Dim, pointer_storage<T, Dim>>
 {
+    using value_type = T;
     using base_type = texture_base<Dim, pointer_storage<T, Dim>>;
     enum { dimensions = Dim };
     using base_type::base_type;
@@ -203,6 +204,7 @@ struct texture_pointer_ref : texture_base<Dim, pointer_storage<T, Dim>>
 template <typename T, unsigned Dim>
 struct texture_ref : texture_base<Dim, pointer_storage<T, Dim>>
 {
+    using value_type = T;
     using base_type = texture_base<Dim, pointer_storage<T, Dim>>;
     enum { dimensions = Dim };
     using base_type::base_type;
@@ -215,6 +217,7 @@ struct texture_ref : texture_base<Dim, pointer_storage<T, Dim>>
 template <typename T>
 struct texture_ref<T, 3> : texture_base<3, pointer_storage<T, 3>>
 {
+    using value_type = T;
     using base_type = texture_base<3, pointer_storage<T, 3>>;
     enum { dimensions = 3 };
     using base_type::base_type;
@@ -227,6 +230,7 @@ struct texture_ref<T, 3> : texture_base<3, pointer_storage<T, 3>>
 template <typename T, unsigned Dim>
 struct texture : texture_base<Dim, aligned_storage<T, Dim, 16>>
 {
+    using value_type = T;
     using base_type = texture_base<Dim, aligned_storage<T, Dim, 16>>;
     enum { dimensions = Dim };
     using base_type::base_type;
@@ -240,6 +244,7 @@ struct texture : texture_base<Dim, aligned_storage<T, Dim, 16>>
 template <typename T>
 struct texture<T, 3> : texture_base<3, aligned_storage<T, 3, 16>>
 {
+    using value_type = T;
     using base_type = texture_base<3, aligned_storage<T, 3, 16>>;
     enum { dimensions = 3 };
     using base_type::base_type;

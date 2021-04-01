@@ -24,7 +24,6 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT,
     typename W0,
     typename W1,
@@ -35,7 +34,6 @@ inline ReturnT cubic(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
-        TexelT const*     ptr,
         vector<1, FloatT> coord,
         W0                w0,
         W1                w1,
@@ -64,7 +62,7 @@ inline ReturnT cubic(
 
     auto sample = [&](int i) -> InternalT
     {
-        return InternalT( point(ptr, pos[i], ReturnT{}) );
+        return InternalT( point(tex.data(), pos[i], ReturnT{}) );
     };
 
     return ReturnT(w0(u) * sample(0) + w1(u) * sample(1) + w2(u) * sample(2) + w3(u) * sample(3));
@@ -79,7 +77,6 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT,
     typename W0,
     typename W1,
@@ -90,7 +87,6 @@ inline ReturnT cubic(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
-        TexelT const*     ptr,
         vector<2, FloatT> coord,
         W0                w0,
         W1                w1,
@@ -120,7 +116,7 @@ inline ReturnT cubic(
     auto sample = [&](int i, int j) -> InternalT
     {
         return InternalT( point(
-                ptr,
+                tex.data(),
                 linear_index(pos[i].x, pos[j].y, tex.size()),
                 ReturnT{}
                 ) );
@@ -143,7 +139,6 @@ template <
     typename ReturnT,
     typename InternalT,
     typename Tex,
-    typename TexelT,
     typename FloatT,
     typename W0,
     typename W1,
@@ -154,7 +149,6 @@ inline ReturnT cubic(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
-        TexelT const*     ptr,
         vector<3, FloatT> coord,
         W0                w0,
         W1                w1,
@@ -184,7 +178,7 @@ inline ReturnT cubic(
     auto sample = [&](int i, int j, int k) -> InternalT
     {
         return InternalT( point(
-                ptr,
+                tex.data(),
                 linear_index(pos[i].x, pos[j].y, pos[k].z, tex.size()),
                 ReturnT{}
                 ) );
