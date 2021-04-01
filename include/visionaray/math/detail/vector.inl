@@ -38,7 +38,11 @@ template <typename U>
 MATH_FUNC
 inline vector<Dim, T>::vector(vector<Dim, U> const& rhs)
 {
-    algo::copy(rhs.data(), rhs.data() + Dim, data_);
+    // Cannot copy, use static casts
+    for (size_t d = 0; d < Dim; ++d)
+    {
+        data_[d] = static_cast<T>(rhs.data()[d]);
+    }
 }
 
 template <size_t Dim, typename T>
