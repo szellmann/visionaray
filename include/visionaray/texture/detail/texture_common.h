@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <array>
 
+#include <visionaray/math/detail/math.h>
 #include <visionaray/math/vector.h>
 
 #include "../forward.h"
@@ -54,6 +55,46 @@ public:
 
     texture_base& operator=(texture_base<Dim, TextureStorage> const& other) = default;
     texture_base& operator=(texture_base<Dim, TextureStorage>&& other) = default;
+
+    // Applies the appropriate texture address mode to
+    // boundary texture coordinates
+    template <typename CoordType>
+    CoordType remap_texture_coordinate(CoordType coord) const
+    {
+        using F = typename CoordType::value_type;
+        using I = decltype(convert_to_int(F{}));
+
+        CoordType result;
+
+        for (unsigned d = 0; d < Dim; ++d)
+        {
+            int texsize = static_cast<int>(TextureStorage::size()[d]);
+            F N = convert_to_float((int)texsize);
+
+            switch (address_mode_[d])
+            {
+            case Mirror:
+                result[d] = select(
+                    (convert_to_int(floor(coord[d])) & I(1)) == 1, // if is odd
+                    convert_to_float(texsize - 1) / convert_to_float(texsize) - (coord[d] - floor(coord[d])),
+                    coord[d] - floor(coord[d])
+                    );
+                break;
+
+            case Wrap:
+                result[d] = coord[d] - floor(coord[d]);
+                break;
+
+            case Clamp:
+                // fall-through
+            default:
+                result[d] = clamp(coord[d], F(0.0), F(1.0) - F(1.0) / N);
+                break;
+            }
+        }
+
+        return result;
+    }
 
     // For compatibility
     inline unsigned width() const

@@ -6,8 +6,6 @@
 #ifndef VSNRAY_TEXTURE_DETAIL_FILTER_CUBIC_OPT_H
 #define VSNRAY_TEXTURE_DETAIL_FILTER_CUBIC_OPT_H 1
 
-#include <array>
-
 #include <visionaray/math/detail/math.h>
 #include <visionaray/math/vector.h>
 
@@ -26,17 +24,18 @@ namespace detail
 template <
     typename ReturnT,
     typename InternalT,
+    typename Tex,
     typename TexelT,
     typename FloatT,
     typename TexSize
     >
 inline ReturnT cubic_opt(
-        ReturnT                                 /* */,
-        InternalT                               /* */,
-        TexelT const*                           tex,
-        vector<1, FloatT>                       coord,
-        TexSize                                 texsize,
-        std::array<tex_address_mode, 1> const&  address_mode
+        ReturnT           /* */,
+        InternalT         /* */,
+        Tex const&        tex,
+        TexelT const*     ptr,
+        vector<1, FloatT> coord,
+        TexSize           texsize
         )
 {
     bspline::w0_func w0;
@@ -54,8 +53,8 @@ inline ReturnT cubic_opt(
     auto tmp1 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
     auto h1   = ( floorx + FloatT(1.5) + tmp1 ) / FloatT(texsize[0]);
 
-    auto f_0  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<1, FloatT>(h0), texsize, address_mode) );
-    auto f_1  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<1, FloatT>(h1), texsize, address_mode) );
+    auto f_0  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<1, FloatT>(h0), texsize) );
+    auto f_1  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<1, FloatT>(h1), texsize) );
 
     return ReturnT(g0(fracx) * f_0 + g1(fracx) * f_1);
 }
@@ -68,17 +67,18 @@ inline ReturnT cubic_opt(
 template <
     typename ReturnT,
     typename InternalT,
+    typename Tex,
     typename TexelT,
     typename FloatT,
     typename TexSize
     >
 inline ReturnT cubic_opt(
-        ReturnT                                 /* */,
-        InternalT                               /* */,
-        TexelT const*                           tex,
-        vector<2, FloatT>                       coord,
-        TexSize                                 texsize,
-        std::array<tex_address_mode, 2> const&  address_mode
+        ReturnT           /* */,
+        InternalT         /* */,
+        Tex const&        tex,
+        TexelT const*     ptr,
+        vector<2, FloatT> coord,
+        TexSize           texsize
         )
 {
     bspline::w0_func w0;
@@ -108,10 +108,10 @@ inline ReturnT cubic_opt(
     auto h_11  = ( floory + FloatT(1.5) + tmp11 ) / FloatT(texsize.y);
 
 
-    auto f_00  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<2, FloatT>(h_00, h_01), texsize, address_mode) );
-    auto f_10  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<2, FloatT>(h_10, h_01), texsize, address_mode) );
-    auto f_01  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<2, FloatT>(h_00, h_11), texsize, address_mode) );
-    auto f_11  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<2, FloatT>(h_10, h_11), texsize, address_mode) );
+    auto f_00  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<2, FloatT>(h_00, h_01), texsize) );
+    auto f_10  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<2, FloatT>(h_10, h_01), texsize) );
+    auto f_01  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<2, FloatT>(h_00, h_11), texsize) );
+    auto f_11  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<2, FloatT>(h_10, h_11), texsize) );
 
     auto f_0   = g0(fracx) * f_00 + g1(fracx) * f_10;
     auto f_1   = g0(fracx) * f_01 + g1(fracx) * f_11;
@@ -127,17 +127,18 @@ inline ReturnT cubic_opt(
 template <
     typename ReturnT,
     typename InternalT,
+    typename Tex,
     typename TexelT,
     typename FloatT,
     typename TexSize
     >
 inline ReturnT cubic_opt(
-        ReturnT                                 /* */,
-        InternalT                               /* */,
-        TexelT const*                           tex,
-        vector<3, FloatT>                       coord,
-        TexSize                                 texsize,
-        std::array<tex_address_mode, 3> const&  address_mode
+        ReturnT           /* */,
+        InternalT         /* */,
+        Tex const&        tex,
+        TexelT const*     ptr,
+        vector<3, FloatT> coord,
+        TexSize           texsize
         )
 {
     bspline::w0_func w0;
@@ -177,15 +178,15 @@ inline ReturnT cubic_opt(
     auto h_101  = ( floorz + FloatT(1.5) + tmp101 ) / FloatT(texsize.z);
 
 
-    auto f_000  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_000, h_010, h_001), texsize, address_mode) );
-    auto f_100  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_100, h_010, h_001), texsize, address_mode) );
-    auto f_010  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_000, h_110, h_001), texsize, address_mode) );
-    auto f_110  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_100, h_110, h_001), texsize, address_mode) );
+    auto f_000  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_000, h_010, h_001), texsize) );
+    auto f_100  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_100, h_010, h_001), texsize) );
+    auto f_010  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_000, h_110, h_001), texsize) );
+    auto f_110  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_100, h_110, h_001), texsize) );
 
-    auto f_001  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_000, h_010, h_101), texsize, address_mode) );
-    auto f_101  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_100, h_010, h_101), texsize, address_mode) );
-    auto f_011  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_000, h_110 ,h_101), texsize, address_mode) );
-    auto f_111  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<3, FloatT>(h_100, h_110, h_101), texsize, address_mode) );
+    auto f_001  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_000, h_010, h_101), texsize) );
+    auto f_101  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_100, h_010, h_101), texsize) );
+    auto f_011  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_000, h_110 ,h_101), texsize) );
+    auto f_111  = InternalT( linear(ReturnT{}, InternalT{}, tex, ptr, vector<3, FloatT>(h_100, h_110, h_101), texsize) );
 
     auto f_00   = g0(fracx) * f_000 + g1(fracx) * f_100;
     auto f_10   = g0(fracx) * f_010 + g1(fracx) * f_110;

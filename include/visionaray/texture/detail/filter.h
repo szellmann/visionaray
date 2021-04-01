@@ -25,22 +25,21 @@ namespace detail
 template <
     typename ReturnT,
     typename InternalT,
+    typename Tex,
     typename TexelT,
     typename FloatT,
-    typename SizeT,
-    typename AddressMode
+    typename SizeT
     >
 inline ReturnT choose_filter(
-        ReturnT             /* */,
-        InternalT           /* */,
-        TexelT const&       tex,
-        FloatT              coord,
-        SizeT               texsize,
-        tex_filter_mode     filter_mode,
-        AddressMode const&  address_mode
+        ReturnT       /* */,
+        InternalT     /* */,
+        Tex const&    tex,
+        TexelT const& ptr,
+        FloatT        coord,
+        SizeT         texsize
         )
 {
-    switch (filter_mode)
+    switch (tex.get_filter_mode())
     {
 
     default:
@@ -50,9 +49,9 @@ inline ReturnT choose_filter(
                 ReturnT{},
                 InternalT{},
                 tex,
+                ptr,
                 coord,
-                texsize,
-                address_mode
+                texsize
                 );
 
     case visionaray::Linear:
@@ -60,9 +59,9 @@ inline ReturnT choose_filter(
                 ReturnT{},
                 InternalT{},
                 tex,
+                ptr,
                 coord,
-                texsize,
-                address_mode
+                texsize
                 );
 
     case visionaray::BSpline:
@@ -70,9 +69,9 @@ inline ReturnT choose_filter(
                 ReturnT{},
                 InternalT{},
                 tex,
+                ptr,
                 coord,
-                texsize,
-                address_mode
+                texsize
                 );
 
     case visionaray::CardinalSpline:
@@ -80,9 +79,9 @@ inline ReturnT choose_filter(
                 ReturnT{},
                 InternalT{},
                 tex,
+                ptr,
                 coord,
                 texsize,
-                address_mode,
                 cspline::w0_func(),
                 cspline::w1_func(),
                 cspline::w2_func(),

@@ -6,8 +6,6 @@
 #ifndef VSNRAY_TEXTURE_DETAIL_FILTER_CUBIC_H
 #define VSNRAY_TEXTURE_DETAIL_FILTER_CUBIC_H 1
 
-#include <array>
-
 #include <visionaray/math/detail/math.h>
 #include <visionaray/math/vector.h>
 
@@ -25,6 +23,7 @@ namespace detail
 template <
     typename ReturnT,
     typename InternalT,
+    typename Tex,
     typename TexelT,
     typename FloatT,
     typename TexSize,
@@ -34,55 +33,36 @@ template <
     typename W3
     >
 inline ReturnT cubic(
-        ReturnT                                 /* */,
-        InternalT                               /* */,
-        TexelT const*                           tex,
-        vector<1, FloatT>                       coord,
-        TexSize                                 texsize,
-        std::array<tex_address_mode, 1> const&  address_mode,
-        W0                                      w0,
-        W1                                      w1,
-        W2                                      w2,
-        W3                                      w3
+        ReturnT           /* */,
+        InternalT         /* */,
+        Tex const&        tex,
+        TexelT const*     ptr,
+        vector<1, FloatT> coord,
+        TexSize           texsize,
+        W0                w0,
+        W1                w1,
+        W2                w2,
+        W3                w3
         )
 {
-    auto coord1 = map_tex_coord(
-            coord[0] - FloatT(1.5) / FloatT(texsize[0]),
-            texsize[0],
-            address_mode
-            );
-
-    auto coord2 = map_tex_coord(
-            coord[0] - FloatT(0.5) / FloatT(texsize[0]),
-            texsize[0],
-            address_mode
-            );
-
-    auto coord3 = map_tex_coord(
-            coord[0] + FloatT(0.5) / FloatT(texsize[0]),
-            texsize[0],
-            address_mode
-            );
-
-    auto coord4 = map_tex_coord(
-            coord[0] + FloatT(1.5) / FloatT(texsize[0]),
-            texsize[0],
-            address_mode
-            );
+    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(1.5) / vector<1, FloatT>(texsize));
+    auto coord2 = tex.remap_texture_coordinate(coord - FloatT(0.5) / vector<1, FloatT>(texsize));
+    auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / vector<1, FloatT>(texsize));
+    auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / vector<1, FloatT>(texsize));
 
     decltype(convert_to_int(FloatT{})) pos[4] =
     {
-        convert_to_int(coord1 * FloatT(texsize[0])),
-        convert_to_int(coord2 * FloatT(texsize[0])),
-        convert_to_int(coord3 * FloatT(texsize[0])),
-        convert_to_int(coord4 * FloatT(texsize[0]))
+        convert_to_int(coord1[0] * FloatT(texsize[0])),
+        convert_to_int(coord2[0] * FloatT(texsize[0])),
+        convert_to_int(coord3[0] * FloatT(texsize[0])),
+        convert_to_int(coord4[0] * FloatT(texsize[0]))
     };
 
-    auto u = (coord2 * FloatT(texsize[0])) - FloatT(pos[1]);
+    auto u = (coord2[0] * FloatT(texsize[0])) - FloatT(pos[1]);
 
     auto sample = [&](int i) -> InternalT
     {
-        return InternalT( point(tex, pos[i], ReturnT{}) );
+        return InternalT( point(ptr, pos[i], ReturnT{}) );
     };
 
     return ReturnT(w0(u) * sample(0) + w1(u) * sample(1) + w2(u) * sample(2) + w3(u) * sample(3));
@@ -96,6 +76,7 @@ inline ReturnT cubic(
 template <
     typename ReturnT,
     typename InternalT,
+    typename Tex,
     typename TexelT,
     typename FloatT,
     typename TexSize,
@@ -105,41 +86,22 @@ template <
     typename W3
     >
 inline ReturnT cubic(
-        ReturnT                                 /* */,
-        InternalT                               /* */,
-        TexelT const*                           tex,
-        vector<2, FloatT>                       coord,
-        TexSize                                 texsize,
-        std::array<tex_address_mode, 2> const&  address_mode,
-        W0                                      w0,
-        W1                                      w1,
-        W2                                      w2,
-        W3                                      w3
+        ReturnT           /* */,
+        InternalT         /* */,
+        Tex const&        tex,
+        TexelT const*     ptr,
+        vector<2, FloatT> coord,
+        TexSize           texsize,
+        W0                w0,
+        W1                w1,
+        W2                w2,
+        W3                w3
         )
 {
-    auto coord1 = map_tex_coord(
-            coord - FloatT(1.5) / vector<2, FloatT>(texsize),
-            texsize,
-            address_mode
-            );
-
-    auto coord2 = map_tex_coord(
-            coord - FloatT(0.5) / vector<2, FloatT>(texsize),
-            texsize,
-            address_mode
-            );
-
-    auto coord3 = map_tex_coord(
-            coord + FloatT(0.5) / vector<2, FloatT>(texsize),
-            texsize,
-            address_mode
-            );
-
-    auto coord4 = map_tex_coord(
-            coord + FloatT(1.5) / vector<2, FloatT>(texsize),
-            texsize,
-            address_mode
-            );
+    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(1.5) / vector<2, FloatT>(texsize));
+    auto coord2 = tex.remap_texture_coordinate(coord - FloatT(0.5) / vector<2, FloatT>(texsize));
+    auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / vector<2, FloatT>(texsize));
+    auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / vector<2, FloatT>(texsize));
 
     vector<2, decltype(convert_to_int(FloatT{}))> pos[4] =
     {
@@ -154,7 +116,7 @@ inline ReturnT cubic(
     auto sample = [&](int i, int j) -> InternalT
     {
         return InternalT( point(
-                tex,
+                ptr,
                 linear_index(pos[i].x, pos[j].y, texsize),
                 ReturnT{}
                 ) );
@@ -176,6 +138,7 @@ inline ReturnT cubic(
 template <
     typename ReturnT,
     typename InternalT,
+    typename Tex,
     typename TexelT,
     typename FloatT,
     typename TexSize,
@@ -185,41 +148,22 @@ template <
     typename W3
     >
 inline ReturnT cubic(
-        ReturnT                                 /* */,
-        InternalT                               /* */,
-        TexelT const*                           tex,
-        vector<3, FloatT>                       coord,
-        TexSize                                 texsize,
-        std::array<tex_address_mode, 3> const&  address_mode,
-        W0                                      w0,
-        W1                                      w1,
-        W2                                      w2,
-        W3                                      w3
+        ReturnT           /* */,
+        InternalT         /* */,
+        Tex const&        tex,
+        TexelT const*     ptr,
+        vector<3, FloatT> coord,
+        TexSize           texsize,
+        W0                w0,
+        W1                w1,
+        W2                w2,
+        W3                w3
         )
 {
-    auto coord1 = map_tex_coord(
-            coord - FloatT(1.5) / vector<3, FloatT>(texsize),
-            texsize,
-            address_mode
-            );
-
-    auto coord2 = map_tex_coord(
-            coord - FloatT(0.5) / vector<3, FloatT>(texsize),
-            texsize,
-            address_mode
-            );
-
-    auto coord3 = map_tex_coord(
-            coord + FloatT(0.5) / vector<3, FloatT>(texsize),
-            texsize,
-            address_mode
-            );
-
-    auto coord4 = map_tex_coord(
-            coord + FloatT(1.5) / vector<3, FloatT>(texsize),
-            texsize,
-            address_mode
-            );
+    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(1.5) / vector<3, FloatT>(texsize));
+    auto coord2 = tex.remap_texture_coordinate(coord - FloatT(0.5) / vector<3, FloatT>(texsize));
+    auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / vector<3, FloatT>(texsize));
+    auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / vector<3, FloatT>(texsize));
 
     vector<3, decltype(convert_to_int(FloatT{}))> pos[4] =
     {
@@ -234,7 +178,7 @@ inline ReturnT cubic(
     auto sample = [&](int i, int j, int k) -> InternalT
     {
         return InternalT( point(
-                tex,
+                ptr,
                 linear_index(pos[i].x, pos[j].y, pos[k].z, texsize),
                 ReturnT{}
                 ) );

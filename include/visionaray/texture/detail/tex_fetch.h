@@ -25,18 +25,17 @@ namespace detail
 // any texture, non-simd coordinates
 
 template <
+    typename Tex,
     typename TexelType,
     typename CoordinateType,
     typename TexSize,
-    typename  AddressMode,
     typename AT = arithmetic_types<TexelType, typename CoordinateType::value_type>
     >
 inline typename AT::return_type texND_impl_expand_types(
-        TexelType const* tex,
+        Tex const&       tex,
+        TexelType const* ptr,
         CoordinateType   coord,
-        TexSize          texsize,
-        tex_filter_mode  filter_mode,
-        AddressMode      address_mode
+        TexSize          texsize
         )
 {
     using return_type   = typename AT::return_type;
@@ -46,44 +45,41 @@ inline typename AT::return_type texND_impl_expand_types(
             return_type{},
             internal_type{},
             tex,
+            ptr,
             coord,
-            texsize,
-            filter_mode,
-            address_mode
+            texsize
             );
 }
 
 // Overload for unorm textures, non-simd coordinates
 template <
+    typename Tex,
     size_t Dims,
     unsigned Bits,
     typename FloatT,
     typename TexSize,
-    typename AddressMode,
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
 inline FloatT texND_impl_expand_types(
-        unorm<Bits> const*          tex,
+        Tex const&                  tex,
+        unorm<Bits> const*          ptr,
         vector<Dims, FloatT> const& coord,
-        TexSize                     texsize,
-        tex_filter_mode             filter_mode,
-        AddressMode                 address_mode
+        TexSize                     texsize
         )
 {
-    using return_type   = int;
-    using internal_type = FloatT;
-
     // use unnormalized types for internal calculations
     // to avoid the normalization overhead
+    using return_type   = typename best_uint<Bits>::type;
+    using internal_type = FloatT;
+
     auto tmp = choose_filter(
             return_type{},
             internal_type{},
-            reinterpret_cast<typename best_uint<Bits>::type const*>(tex),
+            tex,
+            ptr,
             coord,
-            texsize,
-            filter_mode,
-            address_mode
+            texsize
             );
 
     // normalize only once upon return
@@ -92,36 +88,34 @@ inline FloatT texND_impl_expand_types(
 
 // Overload for vectors of unorms, non-simd coordinates
 template <
+    typename Tex,
     size_t Dim1,
     size_t Dim2,
     unsigned Bits,
     typename FloatT,
     typename TexSize,
-    typename AddressMode,
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
 inline vector<Dim1, FloatT> texND_impl_expand_types(
-        vector<Dim1, unorm<Bits>> const* tex,
+        Tex const&                       tex,
+        vector<Dim1, unorm<Bits>> const* ptr,
         vector<Dim2, FloatT> const&      coord,
-        TexSize                          texsize,
-        tex_filter_mode                  filter_mode,
-        AddressMode                      address_mode
+        TexSize                          texsize
         )
 {
-    using return_type   = vector<Dim1, int>;
-    using internal_type = vector<Dim1, FloatT>;
-
     // use unnormalized types for internal calculations
     // to avoid the normalization overhead
+    using return_type   = vector<Dim1, typename best_uint<Bits>::type>;
+    using internal_type = vector<Dim1, FloatT>;
+
     auto tmp = choose_filter(
             return_type{},
             internal_type{},
-            reinterpret_cast<vector<Dim1, typename best_uint<Bits>::type> const*>(tex),
+            tex,
+            ptr,
             coord,
-            texsize,
-            filter_mode,
-            address_mode
+            texsize
             );
 
     // normalize only once upon return
@@ -129,7 +123,7 @@ inline vector<Dim1, FloatT> texND_impl_expand_types(
 
     for (size_t d = 0; d < Dim1; ++d)
     {
-        result[d] = unorm_to_float<Bits>(tmp[d]);
+        result[d] = unorm_to_float<Bits>((int)tmp[d]);
     }
 
     return result;
@@ -137,34 +131,32 @@ inline vector<Dim1, FloatT> texND_impl_expand_types(
 
 // normalized floating point texture, simd coordinates
 template <
+    typename Tex,
     size_t Dim,
     unsigned Bits,
     typename FloatT,
     typename TexSize,
-    typename AddressMode,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline FloatT texND_impl_expand_types(
-        unorm<Bits> const*         tex,
+        Tex const&                 tex,
+        unorm<Bits> const*         ptr,
         vector<Dim, FloatT> const& coord,
-        TexSize                    texsize,
-        tex_filter_mode            filter_mode,
-        AddressMode                address_mode
+        TexSize                    texsize
         )
 {
+    // use unnormalized types for internal calculations
+    // to avoid the normalization overhead
     using return_type   = simd::int_type_t<FloatT>;
     using internal_type = FloatT;
 
-    // use unnormalized types for internal calculations
-    // to avoid the normalization overhead
     auto tmp = choose_filter(
             return_type{},
             internal_type{},
-            reinterpret_cast<typename best_uint<Bits>::type const*>(tex),
+            tex,
+            ptr,
             coord,
-            texsize,
-            filter_mode,
-            address_mode
+            texsize
             );
 
     // normalize only once upon return
@@ -174,20 +166,19 @@ inline FloatT texND_impl_expand_types(
 // integer texture, simd coordinates
 
 template <
+    typename Tex,
     size_t Dim,
     typename T,
     typename FloatT,
     typename TexSize,
-    typename AddressMode,
     typename = typename std::enable_if<std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline simd::int_type_t<FloatT> texND_impl_expand_types(
-        T const*                   tex,
+        Tex const&                 tex,
+        T const*                   ptr,
         vector<Dim, FloatT> const& coord,
-        TexSize                    texsize,
-        tex_filter_mode            filter_mode,
-        AddressMode                address_mode
+        TexSize                    texsize
         )
 {
     using return_type   = simd::int_type_t<FloatT>;
@@ -197,10 +188,9 @@ inline simd::int_type_t<FloatT> texND_impl_expand_types(
             return_type{},
             internal_type{},
             tex,
+            ptr,
             coord,
-            texsize,
-            filter_mode,
-            address_mode
+            texsize
             );
 }
 
@@ -212,11 +202,10 @@ inline simd::int_type_t<FloatT> texND_impl_expand_types(
 template <typename Tex, typename FloatT>
 inline auto tex_fetch_impl(Tex const& tex, vector<Tex::dimensions, FloatT> coord)
     -> decltype( texND_impl_expand_types(
+            tex,
             tex.data(),
             coord,
-            vector<Tex::dimensions, decltype(convert_to_int(std::declval<FloatT>()))>(),
-            tex.get_filter_mode(),
-            tex.get_address_mode()
+            vector<Tex::dimensions, decltype(convert_to_int(std::declval<FloatT>()))>()
             ) )
 {
     using I = simd::int_type_t<FloatT>;
@@ -228,11 +217,10 @@ inline auto tex_fetch_impl(Tex const& tex, vector<Tex::dimensions, FloatT> coord
     }
 
     return apply_color_conversion(texND_impl_expand_types(
+            tex,
             tex.data(),
             coord,
-            texsize,
-            tex.get_filter_mode(),
-            tex.get_address_mode()
+            texsize
             ), tex.get_color_space());
 }
 

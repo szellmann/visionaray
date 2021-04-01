@@ -6,8 +6,6 @@
 #ifndef VSNRAY_TEXTURE_DETAIL_FILTER_COMMON_H
 #define VSNRAY_TEXTURE_DETAIL_FILTER_COMMON_H 1
 
-#include <array>
-#include <cstddef>
 #include <type_traits>
 
 #include <visionaray/detail/macros.h>
@@ -15,66 +13,10 @@
 #include <visionaray/math/simd/gather.h>
 #include <visionaray/math/vector.h>
 
-#include "../../forward.h"
-
-
 namespace visionaray
 {
 namespace detail
 {
-
-//-------------------------------------------------------------------------------------------------
-// Remap tex coord based on address mode
-//
-
-template <typename F, typename I>
-inline F map_tex_coord(F const& coord, I const& texsize, tex_address_mode mode)
-{
-    F N = convert_to_float(texsize);
-
-    switch (mode)
-    {
-
-    case Mirror:
-        return select(
-            (convert_to_int(floor(coord)) & I(1)) == 1, // if is odd
-            convert_to_float(texsize - 1) / convert_to_float(texsize) - (coord - floor(coord)),
-            coord - floor(coord)
-            );
-
-    case Wrap:
-        return coord - floor(coord);
-
-    case Clamp:
-        // fall-through
-    default:
-        return clamp( coord, F(0.0), F(1.0) - F(1.0) / N );
-    }
-}
-
-template <typename F, typename I>
-inline F map_tex_coord(F const& coord, I const& texsize, std::array<tex_address_mode, 1> const& mode)
-{
-    return map_tex_coord(coord, texsize, mode[0]);
-}
-
-template <size_t Dim, typename F, typename I>
-inline vector<Dim, F> map_tex_coord(
-        vector<Dim, F> const&                       coord,
-        vector<Dim, I> const&                       texsize,
-        std::array<tex_address_mode, Dim> const&    mode
-        )
-{
-    vector<Dim, F> result;
-
-    for (size_t d = 0; d < Dim; ++d)
-    {
-        result[d] = map_tex_coord( coord[d], texsize[d], mode[d] );
-    }
-
-    return result;
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // Functions to map 1D index to texture coordinates
