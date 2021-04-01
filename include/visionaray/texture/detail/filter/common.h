@@ -125,22 +125,6 @@ inline RT point(
 }
 
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
-// SIMD: special case, if multi-channel texture, assume SoA
-
-inline simd::float4 point(
-        simd::float4 const* tex,
-        int                 coord,
-        simd::float4        /* result type */
-        )
-{
-    return tex[coord];
-}
-
-#endif // VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-
-
 //-------------------------------------------------------------------------------------------------
 // Weight functions for higher order texture interpolation
 //
