@@ -27,9 +27,6 @@ struct arithmetic_types
 
     // Type returned by the filter functions
     using return_type = TexelType;
-
-    // Integer type, for example for texture sizes
-    using int_type = unsigned;
 };
 
 // Vector texture, we can use float for internal arithmetic
@@ -41,9 +38,6 @@ struct arithmetic_types<vector<Dim, T>, CoordinateType>
 
     // Type returned by the filter functions
     using return_type = vector<Dim, T>;
-
-    // Integer type, for example for texture sizes
-    using int_type = unsigned;
 };
 
 // Scalar texture, but calculations are simd, therefore the
@@ -56,9 +50,6 @@ struct arithmetic_types<TexelType, simd::float4>
 
     // Type returned by the filter functions
     using return_type = simd::float4;
-
-    // Integer type, for example for texture sizes
-    using int_type = simd::int4;
 };
 
 // Same for AVX
@@ -70,9 +61,6 @@ struct arithmetic_types<TexelType, simd::float8>
 
     // Type returned by the filter functions
     using return_type = simd::float8;
-
-    // Integer type, for example for texture sizes
-    using int_type = simd::int8;
 };
 
 // Vector texture, but calculations are simd, therefore the
@@ -85,9 +73,6 @@ struct arithmetic_types<vector<Dim, T>, simd::float4>
 
     // Type returned by the filter functions
     using return_type = vector<Dim, simd::float4>;
-
-    // Integer type, for example for texture sizes
-    using int_type = simd::int4;
 };
 
 // Same for AVX
@@ -99,9 +84,6 @@ struct arithmetic_types<vector<Dim, T>, simd::float8>
 
     // Type returned by the filter functions
     using return_type = vector<Dim, simd::float8>;
-
-    // Integer type, for example for texture sizes
-    using int_type = simd::int8;
 };
 
 } // visionaray
