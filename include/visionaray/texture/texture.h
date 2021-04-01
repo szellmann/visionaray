@@ -14,7 +14,7 @@
 #include "detail/cuda_texture.h"
 #endif
 
-#include "detail/sampler.h"
+#include "detail/tex_fetch.h"
 #include "detail/texture_common.h"
 
 namespace visionaray
