@@ -6,6 +6,7 @@
 #ifndef VSNRAY_TEXTURE_DETAIL_SAMPLER_H
 #define VSNRAY_TEXTURE_DETAIL_SAMPLER_H 1
 
+#include <cstddef>
 #include <type_traits>
 
 #include "filter/arithmetic_types.h"
