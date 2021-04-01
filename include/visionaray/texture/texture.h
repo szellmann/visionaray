@@ -14,8 +14,6 @@
 #include "detail/cuda_texture.h"
 #endif
 
-#include "detail/sampler2d.h"
-#include "detail/sampler3d.h"
 #include "detail/sampler.h"
 #include "detail/texture_common.h"
 

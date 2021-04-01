@@ -265,8 +265,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/texture/detail/cuda_texture3d.inl
     ${HEADER_DIR}/texture/detail/filter.h
     ${HEADER_DIR}/texture/detail/sampler.h
-    ${HEADER_DIR}/texture/detail/sampler2d.h
-    ${HEADER_DIR}/texture/detail/sampler3d.h
     ${HEADER_DIR}/texture/detail/texture_common.h
     ${HEADER_DIR}/texture/forward.h
     ${HEADER_DIR}/texture/texture.h
