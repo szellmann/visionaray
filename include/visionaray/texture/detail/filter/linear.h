@@ -25,23 +25,27 @@ template <
     typename InternalT,
     typename Tex,
     typename TexelT,
-    typename FloatT,
-    typename TexSize
+    typename FloatT
     >
 inline ReturnT linear(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
         TexelT const*     ptr,
-        vector<1, FloatT> coord,
-        TexSize           texsize
+        vector<1, FloatT> coord
         )
 {
-    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(0.5) / vector<1, FloatT>(texsize));
-    auto coord2 = tex.remap_texture_coordinate(coord + FloatT(0.5) / vector<1, FloatT>(texsize));
+    using F = FloatT;
+    using I = decltype(convert_to_int(FloatT{}));
+    auto texsize = tex.size();
+    vector<1, F> texsizef(F((float)texsize[0]));
+    vector<1, I> texsize_minus_one(texsize[0] - 1);
 
-    auto lo = min(convert_to_int(coord1 * vector<1, FloatT>(texsize)), texsize - TexSize(1));
-    auto hi = min(convert_to_int(coord2 * vector<1, FloatT>(texsize)), texsize - TexSize(1));
+    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(0.5) / texsizef);
+    auto coord2 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
+
+    auto lo = min(convert_to_int(coord1 * texsizef), texsize_minus_one);
+    auto hi = min(convert_to_int(coord2 * texsizef), texsize_minus_one);
 
     InternalT samples[2] =
     {
@@ -64,34 +68,38 @@ template <
     typename InternalT,
     typename Tex,
     typename TexelT,
-    typename FloatT,
-    typename TexSize
+    typename FloatT
     >
 inline ReturnT linear(
         ReturnT                  /* */,
         InternalT                /* */,
         Tex const&               tex,
         TexelT const*            ptr,
-        vector<2, FloatT> const& coord,
-        TexSize                  texsize
+        vector<2, FloatT> const& coord
         )
 {
-    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(0.5) / vector<2, FloatT>(texsize));
-    auto coord2 = tex.remap_texture_coordinate(coord + FloatT(0.5) / vector<2, FloatT>(texsize));
+    using F = FloatT;
+    using I = decltype(convert_to_int(FloatT{}));
+    auto texsize = tex.size();
+    vector<2, F> texsizef(F((float)texsize[0]), F((float)texsize[1]));
+    vector<2, I> texsize_minus_one(texsize[0] - 1, texsize[1] - 1);
 
-    auto lo = min(convert_to_int(coord1 * vector<2, FloatT>(texsize)), texsize - TexSize(1));
-    auto hi = min(convert_to_int(coord2 * vector<2, FloatT>(texsize)), texsize - TexSize(1));
+    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(0.5) / texsizef);
+    auto coord2 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
+
+    auto lo = min(convert_to_int(coord1 * texsizef), texsize_minus_one);
+    auto hi = min(convert_to_int(coord2 * texsizef), texsize_minus_one);
 
     InternalT samples[4] =
     {
-        InternalT( point(ptr, linear_index( lo.x, lo.y, texsize ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, lo.y, texsize ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( lo.x, hi.y, texsize ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, hi.y, texsize ), ReturnT{}) )
+        InternalT( point(ptr, linear_index( lo.x, lo.y, tex.size() ), ReturnT{}) ),
+        InternalT( point(ptr, linear_index( hi.x, lo.y, tex.size() ), ReturnT{}) ),
+        InternalT( point(ptr, linear_index( lo.x, hi.y, tex.size() ), ReturnT{}) ),
+        InternalT( point(ptr, linear_index( hi.x, hi.y, tex.size() ), ReturnT{}) )
     };
 
 
-    auto uv = coord1 * vector<2, FloatT>(texsize) - vector<2, FloatT>(lo);
+    auto uv = coord1 * texsizef - vector<2, FloatT>(lo);
 
     auto p1 = lerp(samples[0], samples[1], uv[0]);
     auto p2 = lerp(samples[2], samples[3], uv[0]);
@@ -109,38 +117,42 @@ template <
     typename InternalT,
     typename Tex,
     typename TexelT,
-    typename FloatT,
-    typename TexSize
+    typename FloatT
     >
 inline ReturnT linear(
         ReturnT                  /* */,
         InternalT                /* */,
         Tex const&               tex,
         TexelT const*            ptr,
-        vector<3, FloatT> const& coord,
-        TexSize                  texsize
+        vector<3, FloatT> const& coord
         )
 {
-    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(0.5) / vector<3, FloatT>(texsize));
-    auto coord2 = tex.remap_texture_coordinate(coord + FloatT(0.5) / vector<3, FloatT>(texsize));
+    using F = FloatT;
+    using I = decltype(convert_to_int(FloatT{}));
+    auto texsize = tex.size();
+    vector<3, F> texsizef(F((float)texsize[0]), F((float)texsize[1]), F((float)texsize[2]));
+    vector<3, I> texsize_minus_one(texsize[0] - 1, texsize[1] - 1, texsize[2] - 1);
 
-    auto lo = min(convert_to_int(coord1 * vector<3, FloatT>(texsize)), texsize - TexSize(1));
-    auto hi = min(convert_to_int(coord2 * vector<3, FloatT>(texsize)), texsize - TexSize(1));
+    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(0.5) / texsizef);
+    auto coord2 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
+
+    auto lo = min(convert_to_int(coord1 * texsizef), texsize_minus_one);
+    auto hi = min(convert_to_int(coord2 * texsizef), texsize_minus_one);
 
     InternalT samples[8] =
     {
-        InternalT( point(ptr, linear_index( lo.x, lo.y, lo.z, texsize ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, lo.y, lo.z, texsize ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( lo.x, hi.y, lo.z, texsize ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, hi.y, lo.z, texsize ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( lo.x, lo.y, hi.z, texsize ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, lo.y, hi.z, texsize ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( lo.x, hi.y, hi.z, texsize ), ReturnT{}) ),
-        InternalT( point(ptr, linear_index( hi.x, hi.y, hi.z, texsize ), ReturnT{}) )
+        InternalT( point(ptr, linear_index( lo.x, lo.y, lo.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(ptr, linear_index( hi.x, lo.y, lo.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(ptr, linear_index( lo.x, hi.y, lo.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(ptr, linear_index( hi.x, hi.y, lo.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(ptr, linear_index( lo.x, lo.y, hi.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(ptr, linear_index( hi.x, lo.y, hi.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(ptr, linear_index( lo.x, hi.y, hi.z, tex.size() ), ReturnT{}) ),
+        InternalT( point(ptr, linear_index( hi.x, hi.y, hi.z, tex.size() ), ReturnT{}) )
     };
 
 
-    auto uvw = coord1 * vector<3, FloatT>(texsize) - vector<3, FloatT>(lo);
+    auto uvw = coord1 * texsizef - vector<3, FloatT>(lo);
 
     auto p1  = lerp(samples[0], samples[1], uvw[0]);
     auto p2  = lerp(samples[2], samples[3], uvw[0]);

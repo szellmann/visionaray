@@ -27,16 +27,14 @@ template <
     typename InternalT,
     typename Tex,
     typename TexelT,
-    typename FloatT,
-    typename SizeT
+    typename FloatT
     >
 inline ReturnT choose_filter(
         ReturnT       /* */,
         InternalT     /* */,
         Tex const&    tex,
         TexelT const& ptr,
-        FloatT        coord,
-        SizeT         texsize
+        FloatT        coord
         )
 {
     switch (tex.get_filter_mode())
@@ -50,8 +48,7 @@ inline ReturnT choose_filter(
                 InternalT{},
                 tex,
                 ptr,
-                coord,
-                texsize
+                coord
                 );
 
     case visionaray::Linear:
@@ -60,8 +57,7 @@ inline ReturnT choose_filter(
                 InternalT{},
                 tex,
                 ptr,
-                coord,
-                texsize
+                coord
                 );
 
     case visionaray::BSpline:
@@ -70,8 +66,7 @@ inline ReturnT choose_filter(
                 InternalT{},
                 tex,
                 ptr,
-                coord,
-                texsize
+                coord
                 );
 
     case visionaray::CardinalSpline:
@@ -81,7 +76,6 @@ inline ReturnT choose_filter(
                 tex,
                 ptr,
                 coord,
-                texsize,
                 cspline::w0_func(),
                 cspline::w1_func(),
                 cspline::w2_func(),

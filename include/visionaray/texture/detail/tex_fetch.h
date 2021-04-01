@@ -28,14 +28,12 @@ template <
     typename Tex,
     typename TexelType,
     typename CoordinateType,
-    typename TexSize,
     typename AT = arithmetic_types<TexelType, typename CoordinateType::value_type>
     >
 inline typename AT::return_type texND_impl_expand_types(
         Tex const&       tex,
         TexelType const* ptr,
-        CoordinateType   coord,
-        TexSize          texsize
+        CoordinateType   coord
         )
 {
     using return_type   = typename AT::return_type;
@@ -46,8 +44,7 @@ inline typename AT::return_type texND_impl_expand_types(
             internal_type{},
             tex,
             ptr,
-            coord,
-            texsize
+            coord
             );
 }
 
@@ -57,15 +54,13 @@ template <
     size_t Dims,
     unsigned Bits,
     typename FloatT,
-    typename TexSize,
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
 inline FloatT texND_impl_expand_types(
         Tex const&                  tex,
         unorm<Bits> const*          ptr,
-        vector<Dims, FloatT> const& coord,
-        TexSize                     texsize
+        vector<Dims, FloatT> const& coord
         )
 {
     // use unnormalized types for internal calculations
@@ -78,8 +73,7 @@ inline FloatT texND_impl_expand_types(
             internal_type{},
             tex,
             ptr,
-            coord,
-            texsize
+            coord
             );
 
     // normalize only once upon return
@@ -93,15 +87,13 @@ template <
     size_t Dim2,
     unsigned Bits,
     typename FloatT,
-    typename TexSize,
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
 inline vector<Dim1, FloatT> texND_impl_expand_types(
         Tex const&                       tex,
         vector<Dim1, unorm<Bits>> const* ptr,
-        vector<Dim2, FloatT> const&      coord,
-        TexSize                          texsize
+        vector<Dim2, FloatT> const&      coord
         )
 {
     // use unnormalized types for internal calculations
@@ -114,8 +106,7 @@ inline vector<Dim1, FloatT> texND_impl_expand_types(
             internal_type{},
             tex,
             ptr,
-            coord,
-            texsize
+            coord
             );
 
     // normalize only once upon return
@@ -135,14 +126,12 @@ template <
     size_t Dim,
     unsigned Bits,
     typename FloatT,
-    typename TexSize,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline FloatT texND_impl_expand_types(
         Tex const&                 tex,
         unorm<Bits> const*         ptr,
-        vector<Dim, FloatT> const& coord,
-        TexSize                    texsize
+        vector<Dim, FloatT> const& coord
         )
 {
     // use unnormalized types for internal calculations
@@ -155,8 +144,7 @@ inline FloatT texND_impl_expand_types(
             internal_type{},
             tex,
             ptr,
-            coord,
-            texsize
+            coord
             );
 
     // normalize only once upon return
@@ -170,15 +158,13 @@ template <
     size_t Dim,
     typename T,
     typename FloatT,
-    typename TexSize,
     typename = typename std::enable_if<std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
 inline simd::int_type_t<FloatT> texND_impl_expand_types(
         Tex const&                 tex,
         T const*                   ptr,
-        vector<Dim, FloatT> const& coord,
-        TexSize                    texsize
+        vector<Dim, FloatT> const& coord
         )
 {
     using return_type   = simd::int_type_t<FloatT>;
@@ -189,8 +175,7 @@ inline simd::int_type_t<FloatT> texND_impl_expand_types(
             internal_type{},
             tex,
             ptr,
-            coord,
-            texsize
+            coord
             );
 }
 
@@ -201,27 +186,12 @@ inline simd::int_type_t<FloatT> texND_impl_expand_types(
 
 template <typename Tex, typename FloatT>
 inline auto tex_fetch_impl(Tex const& tex, vector<Tex::dimensions, FloatT> coord)
-    -> decltype( texND_impl_expand_types(
-            tex,
-            tex.data(),
-            coord,
-            vector<Tex::dimensions, decltype(convert_to_int(std::declval<FloatT>()))>()
-            ) )
+    -> decltype(texND_impl_expand_types(tex, tex.data(), coord))
 {
-    using I = simd::int_type_t<FloatT>;
-
-    vector<Tex::dimensions, I> texsize;
-    for (int i = 0; i < Tex::dimensions; ++i)
-    {
-        texsize[i] = I(static_cast<int>(tex.size()[i]));
-    }
-
-    return apply_color_conversion(texND_impl_expand_types(
-            tex,
-            tex.data(),
-            coord,
-            texsize
-            ), tex.get_color_space());
+    return apply_color_conversion(
+            texND_impl_expand_types(tex, tex.data(), coord),
+            tex.get_color_space()
+            );
 }
 
 } // detail

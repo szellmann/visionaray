@@ -25,22 +25,24 @@ template <
     typename InternalT,
     typename Tex,
     typename TexelT,
-    typename FloatT,
-    typename TexSize
+    typename FloatT
     >
 inline ReturnT nearest(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
         TexelT const*     ptr,
-        vector<1, FloatT> coord,
-        TexSize           texsize
+        vector<1, FloatT> coord
         )
 {
+    using F = FloatT;
+    auto texsize = tex.size();
+    vector<1, F> texsizef(F((float)texsize[0]));
+
     coord = tex.remap_texture_coordinate(coord);
 
-    auto lo = convert_to_int(coord[0] * FloatT(texsize[0]));
-    return point(ptr, lo, ReturnT{});
+    auto lo = convert_to_int(coord * texsizef);
+    return point(ptr, lo[0], ReturnT{});
 }
 
 
@@ -53,21 +55,23 @@ template <
     typename InternalT,
     typename Tex,
     typename TexelT,
-    typename FloatT,
-    typename TexSize
+    typename FloatT
     >
 inline ReturnT nearest(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
         TexelT const*     ptr,
-        vector<2, FloatT> coord,
-        TexSize           texsize
+        vector<2, FloatT> coord
         )
 {
+    using F = FloatT;
+    auto texsize = tex.size();
+    vector<2, F> texsizef(F((float)texsize[0]), F((float)texsize[1]));
+
     coord = tex.remap_texture_coordinate(coord);
 
-    auto lo = convert_to_int(coord * vector<2, FloatT>(texsize));
+    auto lo = convert_to_int(coord * texsizef);
 
     auto idx = linear_index(lo[0], lo[1], texsize);
     return point(ptr, idx, ReturnT{});
@@ -83,21 +87,23 @@ template <
     typename InternalT,
     typename Tex,
     typename TexelT,
-    typename FloatT,
-    typename TexSize
+    typename FloatT
     >
 inline ReturnT nearest(
         ReturnT           /* */,
         InternalT         /* */,
         Tex const&        tex,
         TexelT const*     ptr,
-        vector<3, FloatT> coord,
-        TexSize           texsize
+        vector<3, FloatT> coord
         )
 {
+    using F = FloatT;
+    auto texsize = tex.size();
+    vector<3, F> texsizef(F((float)texsize[0]), F((float)texsize[1]), F((float)texsize[2]));
+
     coord = tex.remap_texture_coordinate(coord);
 
-    auto lo = convert_to_int(coord * vector<3, FloatT>(texsize));
+    auto lo = convert_to_int(coord * texsizef);
 
     auto idx = linear_index(lo[0], lo[1], lo[2], texsize);
     return point(ptr, idx, ReturnT{});

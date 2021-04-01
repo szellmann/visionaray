@@ -26,7 +26,6 @@ template <
     typename Tex,
     typename TexelT,
     typename FloatT,
-    typename TexSize,
     typename W0,
     typename W1,
     typename W2,
@@ -38,27 +37,30 @@ inline ReturnT cubic(
         Tex const&        tex,
         TexelT const*     ptr,
         vector<1, FloatT> coord,
-        TexSize           texsize,
         W0                w0,
         W1                w1,
         W2                w2,
         W3                w3
         )
 {
-    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(1.5) / vector<1, FloatT>(texsize));
-    auto coord2 = tex.remap_texture_coordinate(coord - FloatT(0.5) / vector<1, FloatT>(texsize));
-    auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / vector<1, FloatT>(texsize));
-    auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / vector<1, FloatT>(texsize));
+    using F = FloatT;
+    auto texsize = tex.size();
+    vector<1, F> texsizef(F((float)texsize[0]));
+
+    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(1.5) / texsizef);
+    auto coord2 = tex.remap_texture_coordinate(coord - FloatT(0.5) / texsizef);
+    auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
+    auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / texsizef);
 
     decltype(convert_to_int(FloatT{})) pos[4] =
     {
-        convert_to_int(coord1[0] * FloatT(texsize[0])),
-        convert_to_int(coord2[0] * FloatT(texsize[0])),
-        convert_to_int(coord3[0] * FloatT(texsize[0])),
-        convert_to_int(coord4[0] * FloatT(texsize[0]))
+        convert_to_int(coord1[0] * texsizef[0]),
+        convert_to_int(coord2[0] * texsizef[0]),
+        convert_to_int(coord3[0] * texsizef[0]),
+        convert_to_int(coord4[0] * texsizef[0])
     };
 
-    auto u = (coord2[0] * FloatT(texsize[0])) - FloatT(pos[1]);
+    auto u = (coord2[0] * texsizef[0]) - FloatT(pos[1]);
 
     auto sample = [&](int i) -> InternalT
     {
@@ -79,7 +81,6 @@ template <
     typename Tex,
     typename TexelT,
     typename FloatT,
-    typename TexSize,
     typename W0,
     typename W1,
     typename W2,
@@ -91,33 +92,36 @@ inline ReturnT cubic(
         Tex const&        tex,
         TexelT const*     ptr,
         vector<2, FloatT> coord,
-        TexSize           texsize,
         W0                w0,
         W1                w1,
         W2                w2,
         W3                w3
         )
 {
-    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(1.5) / vector<2, FloatT>(texsize));
-    auto coord2 = tex.remap_texture_coordinate(coord - FloatT(0.5) / vector<2, FloatT>(texsize));
-    auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / vector<2, FloatT>(texsize));
-    auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / vector<2, FloatT>(texsize));
+    using F = FloatT;
+    auto texsize = tex.size();
+    vector<2, F> texsizef(F((float)texsize[0]), F((float)texsize[1]));
+
+    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(1.5) / texsizef);
+    auto coord2 = tex.remap_texture_coordinate(coord - FloatT(0.5) / texsizef);
+    auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
+    auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / texsizef);
 
     vector<2, decltype(convert_to_int(FloatT{}))> pos[4] =
     {
-        convert_to_int(coord1 * vector<2, FloatT>(texsize)),
-        convert_to_int(coord2 * vector<2, FloatT>(texsize)),
-        convert_to_int(coord3 * vector<2, FloatT>(texsize)),
-        convert_to_int(coord4 * vector<2, FloatT>(texsize))
+        convert_to_int(coord1 * texsizef),
+        convert_to_int(coord2 * texsizef),
+        convert_to_int(coord3 * texsizef),
+        convert_to_int(coord4 * texsizef)
     };
 
-    auto uv = (coord2 * vector<2, FloatT>(texsize)) - vector<2, FloatT>(pos[1]);
+    auto uv = (coord2 * texsizef) - vector<2, FloatT>(pos[1]);
 
     auto sample = [&](int i, int j) -> InternalT
     {
         return InternalT( point(
                 ptr,
-                linear_index(pos[i].x, pos[j].y, texsize),
+                linear_index(pos[i].x, pos[j].y, tex.size()),
                 ReturnT{}
                 ) );
     };
@@ -141,7 +145,6 @@ template <
     typename Tex,
     typename TexelT,
     typename FloatT,
-    typename TexSize,
     typename W0,
     typename W1,
     typename W2,
@@ -153,33 +156,36 @@ inline ReturnT cubic(
         Tex const&        tex,
         TexelT const*     ptr,
         vector<3, FloatT> coord,
-        TexSize           texsize,
         W0                w0,
         W1                w1,
         W2                w2,
         W3                w3
         )
 {
-    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(1.5) / vector<3, FloatT>(texsize));
-    auto coord2 = tex.remap_texture_coordinate(coord - FloatT(0.5) / vector<3, FloatT>(texsize));
-    auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / vector<3, FloatT>(texsize));
-    auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / vector<3, FloatT>(texsize));
+    using F = FloatT;
+    auto texsize = tex.size();
+    vector<3, F> texsizef(F((float)texsize[0]), F((float)texsize[1]), F((float)texsize[2]));
+
+    auto coord1 = tex.remap_texture_coordinate(coord - FloatT(1.5) / texsizef);
+    auto coord2 = tex.remap_texture_coordinate(coord - FloatT(0.5) / texsizef);
+    auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
+    auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / texsizef);
 
     vector<3, decltype(convert_to_int(FloatT{}))> pos[4] =
     {
-        convert_to_int(coord1 * vector<3, FloatT>(texsize)),
-        convert_to_int(coord2 * vector<3, FloatT>(texsize)),
-        convert_to_int(coord3 * vector<3, FloatT>(texsize)),
-        convert_to_int(coord4 * vector<3, FloatT>(texsize))
+        convert_to_int(coord1 * texsizef),
+        convert_to_int(coord2 * texsizef),
+        convert_to_int(coord3 * texsizef),
+        convert_to_int(coord4 * texsizef)
     };
 
-    auto uvw = (coord2 * vector<3, FloatT>(texsize)) - vector<3, FloatT>(pos[1]);
+    auto uvw = (coord2 * texsizef) - vector<3, FloatT>(pos[1]);
 
     auto sample = [&](int i, int j, int k) -> InternalT
     {
         return InternalT( point(
                 ptr,
-                linear_index(pos[i].x, pos[j].y, pos[k].z, texsize),
+                linear_index(pos[i].x, pos[j].y, pos[k].z, tex.size()),
                 ReturnT{}
                 ) );
     };

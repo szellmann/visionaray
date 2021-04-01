@@ -25,14 +25,14 @@ namespace detail
 template <typename T, typename TexSize>
 inline T linear_index(T x, T y, TexSize texsize)
 {
-    return y * texsize[0] + x;
+    return y * T(texsize[0]) + x;
 }
 
 
 template <typename T, typename TexSize>
 inline T linear_index(T x, T y, T z, TexSize texsize)
 {
-    return z * texsize[0] * texsize[1] + y * texsize[0] + x;
+    return z * T(texsize[0]) * T(texsize[1]) + y * T(texsize[0]) + x;
 }
 
 
