@@ -29,9 +29,7 @@ template <
     typename CoordinateType,
     typename TexSize,
     typename  AddressMode,
-    typename = typename std::enable_if<std::is_floating_point<CoordinateType>::value>::type,
-    typename = typename std::enable_if<!simd::is_simd_vector<CoordinateType>::value>::type,
-    typename AT = arithmetic_types<TexelType, CoordinateType>
+    typename AT = arithmetic_types<TexelType, typename CoordinateType::value_type>
     >
 inline typename AT::return_type texND_impl_expand_types(
         TexelType const* tex,
@@ -43,73 +41,6 @@ inline typename AT::return_type texND_impl_expand_types(
 {
     using return_type   = typename AT::return_type;
     using internal_type = typename AT::internal_type;
-
-    return choose_filter(
-            return_type{},
-            internal_type{},
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-
-// any texture, simd coordinates
-
-template <
-    size_t Dim,
-    typename T,
-    typename FloatT,
-    typename TexSize,
-    typename AddressMode,
-    typename = typename std::enable_if<!std::is_integral<T>::value>::type,
-    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
-    >
-inline FloatT texND_impl_expand_types(
-        T const*                   tex,
-        vector<Dim, FloatT> const& coord,
-        TexSize                    texsize,
-        tex_filter_mode            filter_mode,
-        AddressMode                address_mode
-        )
-{
-    using return_type   = FloatT;
-    using internal_type = FloatT;
-
-    return choose_filter(
-            return_type{},
-            internal_type{},
-            tex,
-            coord,
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-// Overload for vector textures, we can prob. get rid of this (TODO!)
-template <
-    size_t Dim1, // TODO: that's what arithmetic types are for..
-    size_t Dim2,
-    typename T,
-    typename FloatT,
-    typename TexSize,
-    typename AddressMode,
-    typename = typename std::enable_if<!std::is_integral<T>::value>::type,
-    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
-    >
-inline vector<Dim1, FloatT> texND_impl_expand_types(
-        vector<Dim1, T> const*      tex,
-        vector<Dim2, FloatT> const& coord,
-        TexSize                     texsize,
-        tex_filter_mode             filter_mode,
-        AddressMode                 address_mode
-        )
-{
-    using return_type   = vector<Dim1, FloatT>;
-    using internal_type = vector<Dim1, FloatT>;
 
     return choose_filter(
             return_type{},
@@ -239,7 +170,6 @@ inline FloatT texND_impl_expand_types(
     // normalize only once upon return
     return unorm_to_float<Bits>(tmp);
 }
-
 
 // integer texture, simd coordinates
 

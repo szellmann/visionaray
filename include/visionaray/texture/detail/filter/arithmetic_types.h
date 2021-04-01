@@ -8,6 +8,7 @@
 
 #include <cstddef>
 
+#include <visionaray/math/simd/simd.h>
 #include <visionaray/math/vector.h>
 
 namespace visionaray
@@ -43,6 +44,64 @@ struct arithmetic_types<vector<Dim, T>, CoordinateType>
 
     // Integer type, for example for texture sizes
     using int_type = unsigned;
+};
+
+// Scalar texture, but calculations are simd, therefore the
+// return type is simd, too!
+template <typename  TexelType>
+struct arithmetic_types<TexelType, simd::float4>
+{
+    // Type used for internal calculations by the filter functions
+    using internal_type = simd::float4;
+
+    // Type returned by the filter functions
+    using return_type = simd::float4;
+
+    // Integer type, for example for texture sizes
+    using int_type = simd::int4;
+};
+
+// Same for AVX
+template <typename  TexelType>
+struct arithmetic_types<TexelType, simd::float8>
+{
+    // Type used for internal calculations by the filter functions
+    using internal_type = simd::float8;
+
+    // Type returned by the filter functions
+    using return_type = simd::float8;
+
+    // Integer type, for example for texture sizes
+    using int_type = simd::int8;
+};
+
+// Vector texture, but calculations are simd, therefore the
+// return type is simd, too!
+template <size_t Dim, typename  T>
+struct arithmetic_types<vector<Dim, T>, simd::float4>
+{
+    // Type used for internal calculations by the filter functions
+    using internal_type = vector<Dim, simd::float4>;
+
+    // Type returned by the filter functions
+    using return_type = vector<Dim, simd::float4>;
+
+    // Integer type, for example for texture sizes
+    using int_type = simd::int4;
+};
+
+// Same for AVX
+template <size_t Dim, typename  T>
+struct arithmetic_types<vector<Dim, T>, simd::float8>
+{
+    // Type used for internal calculations by the filter functions
+    using internal_type = vector<Dim, simd::float8>;
+
+    // Type returned by the filter functions
+    using return_type = vector<Dim, simd::float8>;
+
+    // Integer type, for example for texture sizes
+    using int_type = simd::int8;
 };
 
 } // visionaray
