@@ -9,7 +9,6 @@
 #include <array>
 #include <cstddef>
 #include <type_traits>
-#include <utility>
 
 #include <visionaray/math/detail/math.h>
 #include <visionaray/math/simd/type_traits.h>
