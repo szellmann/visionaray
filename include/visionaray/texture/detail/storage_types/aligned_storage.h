@@ -9,7 +9,10 @@
 #include <algorithm>
 #include <array>
 #include <cstddef>
+#include <type_traits>
 
+#include <visionaray/math/simd/gather.h>
+#include <visionaray/math/simd/type_traits.h>
 #include <visionaray/aligned_vector.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/swizzle.h>
@@ -56,6 +59,24 @@ public:
     std::array<unsigned, Dim> size() const
     {
         return size_;
+    }
+
+    template <typename U, typename I>
+    U value(U /* */, I const& x) const
+    {
+        return access(U{}, x);
+    }
+
+    template <typename U, typename I>
+    U value(U /* */, I const& x, I const& y) const
+    {
+        return access(U{}, y * I(size()[0]) + x);
+    }
+
+    template <typename U, typename I>
+    U value(U /* */, I const& x, I const& y, I const& z) const
+    {
+        return access(z * I(size()[0]) * I(size()[1]) + y * I(size()[0]) + x);
     }
 
     void realloc(unsigned w)
@@ -156,6 +177,22 @@ protected:
     inline size_t linear_size(std::array<unsigned, 3> size)
     {
         return size[0] * size[1] * size_t(size[2]);
+    }
+
+    template <typename U, typename I>
+    U access(U /* */, I const& index) const
+    {
+        return U(data_[index]);
+    }
+
+    template <
+        typename U,
+        typename I,
+        typename = typename std::enable_if<simd::is_simd_vector<I>::value>::type
+        >
+    U access(U /* */, I const& index) const
+    {
+        return U(gather(data_, index));
     }
 
     aligned_vector<T, A> data_;

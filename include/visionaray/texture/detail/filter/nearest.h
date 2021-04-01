@@ -40,7 +40,8 @@ inline ReturnT nearest(
     coord = tex.remap_texture_coordinate(coord);
 
     auto lo = convert_to_int(coord * texsizef);
-    return point(tex.data(), lo[0], ReturnT{});
+
+    return tex.value(ReturnT{}, lo[0]);
 }
 
 
@@ -69,8 +70,7 @@ inline ReturnT nearest(
 
     auto lo = convert_to_int(coord * texsizef);
 
-    auto idx = linear_index(lo[0], lo[1], texsize);
-    return point(tex.data(), idx, ReturnT{});
+    return tex.value(ReturnT{}, lo[0], lo[1]);
 }
 
 
@@ -99,8 +99,7 @@ inline ReturnT nearest(
 
     auto lo = convert_to_int(coord * texsizef);
 
-    auto idx = linear_index(lo[0], lo[1], lo[2], texsize);
-    return point(tex.data(), idx, ReturnT{});
+    return tex.value(ReturnT{}, lo[0], lo[1], lo[2]);
 }
 
 } // detail

@@ -7,6 +7,10 @@
 #define VSNRAY_TEXTURE_DETAIL_STORAGE_TYPES_POINTER_STORAGE_H 1
 
 #include <array>
+#include <type_traits>
+
+#include <visionaray/math/simd/gather.h>
+#include <visionaray/math/simd/type_traits.h>
 
 namespace visionaray
 {
@@ -64,6 +68,24 @@ public:
         return size_;
     }
 
+    template <typename U, typename I>
+    U value(U /* */, I const& x) const
+    {
+        return access(U{}, x);
+    }
+
+    template <typename U, typename I>
+    U value(U /* */, I const& x, I const& y) const
+    {
+        return access(U{}, y * I(size()[0]) + x);
+    }
+
+    template <typename U, typename I>
+    U value(U /* */, I const& x, I const& y, I const& z) const
+    {
+        return access(U{}, z * I(size()[0]) * I(size()[1]) + y * I(size()[0]) + x);
+    }
+
     void reset(T const* data)
     {
         data_ = data;
@@ -83,6 +105,27 @@ protected:
 
     T const* data_ = nullptr;
     std::array<unsigned, Dim> size_ {{ 0 }};
+
+    template <
+        typename U,
+        typename I,
+        typename = typename std::enable_if<!simd::is_simd_vector<I>::value>::type
+        >
+    U access(U /* */, I const& index) const
+    {
+        return U(data_[index]);
+    }
+
+    template <
+        typename U,
+        typename I,
+        typename = typename std::enable_if<simd::is_simd_vector<I>::value>::type,
+        typename = void
+        >
+    U access(U /* */, I const& index) const
+    {
+        return U(gather(data_, index));
+    }
 
 };
 

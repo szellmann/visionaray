@@ -45,11 +45,10 @@ inline ReturnT linear(
     auto lo = min(convert_to_int(coord1 * texsizef), texsize_minus_one);
     auto hi = min(convert_to_int(coord2 * texsizef), texsize_minus_one);
 
-    InternalT samples[2] =
-    {
-        InternalT( point(tex.data(), lo[0], ReturnT{}) ),
-        InternalT( point(tex.data(), hi[0], ReturnT{}) )
-    };
+    InternalT samples[2] = {
+        InternalT(tex.value(ReturnT{}, lo[0])),
+        InternalT(tex.value(ReturnT{}, hi[0]))
+        };
 
     auto u = coord1[0] * FloatT(texsize[0]) - FloatT(lo[0]);
 
@@ -86,13 +85,12 @@ inline ReturnT linear(
     auto lo = min(convert_to_int(coord1 * texsizef), texsize_minus_one);
     auto hi = min(convert_to_int(coord2 * texsizef), texsize_minus_one);
 
-    InternalT samples[4] =
-    {
-        InternalT( point(tex.data(), linear_index( lo.x, lo.y, tex.size() ), ReturnT{}) ),
-        InternalT( point(tex.data(), linear_index( hi.x, lo.y, tex.size() ), ReturnT{}) ),
-        InternalT( point(tex.data(), linear_index( lo.x, hi.y, tex.size() ), ReturnT{}) ),
-        InternalT( point(tex.data(), linear_index( hi.x, hi.y, tex.size() ), ReturnT{}) )
-    };
+    InternalT samples[4] = {
+        InternalT(tex.value(ReturnT{}, lo.x, lo.y)),
+        InternalT(tex.value(ReturnT{}, hi.x, lo.y)),
+        InternalT(tex.value(ReturnT{}, lo.x, hi.y)),
+        InternalT(tex.value(ReturnT{}, hi.x, hi.y))
+        };
 
 
     auto uv = coord1 * texsizef - vector<2, FloatT>(lo);
@@ -133,17 +131,16 @@ inline ReturnT linear(
     auto lo = min(convert_to_int(coord1 * texsizef), texsize_minus_one);
     auto hi = min(convert_to_int(coord2 * texsizef), texsize_minus_one);
 
-    InternalT samples[8] =
-    {
-        InternalT( point(tex.data(), linear_index( lo.x, lo.y, lo.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(tex.data(), linear_index( hi.x, lo.y, lo.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(tex.data(), linear_index( lo.x, hi.y, lo.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(tex.data(), linear_index( hi.x, hi.y, lo.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(tex.data(), linear_index( lo.x, lo.y, hi.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(tex.data(), linear_index( hi.x, lo.y, hi.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(tex.data(), linear_index( lo.x, hi.y, hi.z, tex.size() ), ReturnT{}) ),
-        InternalT( point(tex.data(), linear_index( hi.x, hi.y, hi.z, tex.size() ), ReturnT{}) )
-    };
+    InternalT samples[8] = {
+        InternalT(tex.value(ReturnT{}, lo.x, lo.y, lo.z)),
+        InternalT(tex.value(ReturnT{}, hi.x, lo.y, lo.z)),
+        InternalT(tex.value(ReturnT{}, lo.x, hi.y, lo.z)),
+        InternalT(tex.value(ReturnT{}, hi.x, hi.y, lo.z)),
+        InternalT(tex.value(ReturnT{}, lo.x, lo.y, hi.z)),
+        InternalT(tex.value(ReturnT{}, hi.x, lo.y, hi.z)),
+        InternalT(tex.value(ReturnT{}, lo.x, hi.y, hi.z)),
+        InternalT(tex.value(ReturnT{}, hi.x, hi.y, hi.z))
+        };
 
 
     auto uvw = coord1 * texsizef - vector<3, FloatT>(lo);

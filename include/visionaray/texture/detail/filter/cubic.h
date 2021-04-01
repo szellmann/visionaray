@@ -62,7 +62,7 @@ inline ReturnT cubic(
 
     auto sample = [&](int i) -> InternalT
     {
-        return InternalT( point(tex.data(), pos[i], ReturnT{}) );
+        return InternalT(tex.value(ReturnT{}, pos[i]));
     };
 
     return ReturnT(w0(u) * sample(0) + w1(u) * sample(1) + w2(u) * sample(2) + w3(u) * sample(3));
@@ -103,23 +103,18 @@ inline ReturnT cubic(
     auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
     auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / texsizef);
 
-    vector<2, decltype(convert_to_int(FloatT{}))> pos[4] =
-    {
+    vector<2, decltype(convert_to_int(FloatT{}))> pos[4] = {
         convert_to_int(coord1 * texsizef),
         convert_to_int(coord2 * texsizef),
         convert_to_int(coord3 * texsizef),
         convert_to_int(coord4 * texsizef)
-    };
+        };
 
     auto uv = (coord2 * texsizef) - vector<2, FloatT>(pos[1]);
 
     auto sample = [&](int i, int j) -> InternalT
     {
-        return InternalT( point(
-                tex.data(),
-                linear_index(pos[i].x, pos[j].y, tex.size()),
-                ReturnT{}
-                ) );
+        return InternalT(tex.value(ReturnT{}, pos[i].x, pos[j].y));
     };
 
     auto f0 = w0(uv.x) * sample(0, 0) + w1(uv.x) * sample(1, 0) + w2(uv.x) * sample(2, 0) + w3(uv.x) * sample(3, 0);
@@ -165,23 +160,18 @@ inline ReturnT cubic(
     auto coord3 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
     auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / texsizef);
 
-    vector<3, decltype(convert_to_int(FloatT{}))> pos[4] =
-    {
+    vector<3, decltype(convert_to_int(FloatT{}))> pos[4] = {
         convert_to_int(coord1 * texsizef),
         convert_to_int(coord2 * texsizef),
         convert_to_int(coord3 * texsizef),
         convert_to_int(coord4 * texsizef)
-    };
+        };
 
     auto uvw = (coord2 * texsizef) - vector<3, FloatT>(pos[1]);
 
     auto sample = [&](int i, int j, int k) -> InternalT
     {
-        return InternalT( point(
-                tex.data(),
-                linear_index(pos[i].x, pos[j].y, pos[k].z, tex.size()),
-                ReturnT{}
-                ) );
+        return InternalT(tex.value(ReturnT{}, pos[i].x, pos[j].y, pos[k].z));
     };
 
     auto f00 = w0(uvw.x) * sample(0, 0, 0) + w1(uvw.x) * sample(1, 0, 0) + w2(uvw.x) * sample(2, 0, 0) + w3(uvw.x) * sample(3, 0, 0);

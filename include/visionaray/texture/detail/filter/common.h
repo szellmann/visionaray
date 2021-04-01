@@ -6,66 +6,12 @@
 #ifndef VSNRAY_TEXTURE_DETAIL_FILTER_COMMON_H
 #define VSNRAY_TEXTURE_DETAIL_FILTER_COMMON_H 1
 
-#include <type_traits>
-
-#include <visionaray/detail/macros.h>
 #include <visionaray/math/detail/math.h>
-#include <visionaray/math/simd/gather.h>
-#include <visionaray/math/vector.h>
 
 namespace visionaray
 {
 namespace detail
 {
-
-//-------------------------------------------------------------------------------------------------
-// Functions to map 1D index to texture coordinates
-//
-
-template <typename T, typename TexSize>
-inline T linear_index(T x, T y, TexSize texsize)
-{
-    return y * T(texsize[0]) + x;
-}
-
-
-template <typename T, typename TexSize>
-inline T linear_index(T x, T y, T z, TexSize texsize)
-{
-    return z * T(texsize[0]) * T(texsize[1]) + y * T(texsize[0]) + x;
-}
-
-
-
-//-------------------------------------------------------------------------------------------------
-// Array access functions for scalar and SIMD types
-// Return type as 3rd value for overload resolution!
-//
-
-template <typename RT, typename T>
-inline RT point(T const* tex, ptrdiff_t idx, RT = RT())
-{
-    return RT(tex[idx]);
-}
-
-
-// SIMD: if multi-channel texture, assume AoS
-
-template <
-    typename T,
-    typename IndexT,
-    typename RT,
-    typename = typename std::enable_if<simd::is_simd_vector<IndexT>::value>::type
-    >
-inline RT point(
-        T const*        tex,
-        IndexT const&   index,
-        RT              /* */
-        )
-{
-    return gather(tex, index);
-}
-
 
 //-------------------------------------------------------------------------------------------------
 // Weight functions for higher order texture interpolation
