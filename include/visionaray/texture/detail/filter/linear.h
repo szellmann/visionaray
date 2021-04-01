@@ -33,19 +33,19 @@ inline ReturnT linear(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
-        FloatT const&                           coord,
+        vector<1, FloatT>                       coord,
         TexSize                                 texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(0.5) / FloatT(texsize[0]),
+            coord[0] - FloatT(0.5) / FloatT(texsize[0]),
             texsize[0],
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord + FloatT(0.5) / FloatT(texsize[0]),
+            coord[0] + FloatT(0.5) / FloatT(texsize[0]),
             texsize[0],
             address_mode
             );

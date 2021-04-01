@@ -34,7 +34,7 @@ inline ReturnT cubic_opt(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
-        FloatT                                  coord,
+        vector<1, FloatT>                       coord,
         TexSize                                 texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
@@ -44,7 +44,7 @@ inline ReturnT cubic_opt(
     bspline::w2_func w2;
     bspline::w3_func w3;
 
-    auto x = coord * FloatT(texsize[0]) - FloatT(0.5);
+    auto x = coord[0] * FloatT(texsize[0]) - FloatT(0.5);
     auto floorx = floor(x);
     auto fracx  = x - floor(x);
 
@@ -54,8 +54,8 @@ inline ReturnT cubic_opt(
     auto tmp1 = ( w3(fracx) ) / ( w2(fracx) + w3(fracx) );
     auto h1   = ( floorx + FloatT(1.5) + tmp1 ) / FloatT(texsize[0]);
 
-    auto f_0  = InternalT( linear(ReturnT{}, InternalT{}, tex, h0, texsize, address_mode) );
-    auto f_1  = InternalT( linear(ReturnT{}, InternalT{}, tex, h1, texsize, address_mode) );
+    auto f_0  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<1, FloatT>(h0), texsize, address_mode) );
+    auto f_1  = InternalT( linear(ReturnT{}, InternalT{}, tex, vector<1, FloatT>(h1), texsize, address_mode) );
 
     return ReturnT(g0(fracx) * f_0 + g1(fracx) * f_1);
 }

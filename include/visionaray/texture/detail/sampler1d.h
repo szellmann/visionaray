@@ -30,37 +30,6 @@ namespace detail
 // Dispatch function overloads to deduce texture type and internal texture type
 //
 
-// any texture, simd coordinates
-
-template <
-    typename T,
-    typename FloatT,
-    typename TexSize,
-    typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
-    >
-inline vector<4, FloatT> texND_impl_expand_types(
-        vector<4, T> const*                     tex,
-        vector<1, FloatT> const&                coord,
-        TexSize                                 texsize,
-        tex_filter_mode                         filter_mode,
-        std::array<tex_address_mode, 1> const&  address_mode
-        )
-{
-    using return_type   = vector<4, FloatT>;
-    using internal_type = vector<4, FloatT>;
-
-    return choose_filter(
-            return_type{},
-            internal_type{},
-            tex,
-            coord[0],
-            texsize,
-            filter_mode,
-            address_mode
-            );
-}
-
-
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // SIMD: SoA textures
@@ -86,7 +55,7 @@ inline simd::float4 texND_impl_expand_types(
             return_type{},
             internal_type{},
             tex,
-            coord[0],
+            coord,
             texsize,
             filter_mode,
             address_mode
@@ -118,7 +87,7 @@ inline simd::float8 texND_impl_expand_types(
             return_type{},
             internal_type{},
             tex,
-            coord[0],
+            coord,
             texsize,
             filter_mode,
             address_mode

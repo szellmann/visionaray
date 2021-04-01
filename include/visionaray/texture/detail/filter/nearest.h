@@ -33,14 +33,14 @@ inline ReturnT nearest(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
-        FloatT                                  coord,
+        vector<1, FloatT>                       coord,
         TexSize                                 texsize,
         std::array<tex_address_mode, 1> const&  address_mode
         )
 {
-    coord = map_tex_coord(coord, texsize[0], address_mode);
+    coord[0] = map_tex_coord(coord[0], texsize[0], address_mode);
 
-    auto lo = convert_to_int(coord * FloatT(texsize[0]));
+    auto lo = convert_to_int(coord[0] * FloatT(texsize[0]));
     return point(tex, lo, ReturnT{});
 }
 

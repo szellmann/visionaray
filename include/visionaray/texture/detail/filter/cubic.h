@@ -37,7 +37,7 @@ inline ReturnT cubic(
         ReturnT                                 /* */,
         InternalT                               /* */,
         TexelT const*                           tex,
-        FloatT                                  coord,
+        vector<1, FloatT>                       coord,
         TexSize                                 texsize,
         std::array<tex_address_mode, 1> const&  address_mode,
         W0                                      w0,
@@ -47,25 +47,25 @@ inline ReturnT cubic(
         )
 {
     auto coord1 = map_tex_coord(
-            coord - FloatT(1.5) / FloatT(texsize[0]),
+            coord[0] - FloatT(1.5) / FloatT(texsize[0]),
             texsize[0],
             address_mode
             );
 
     auto coord2 = map_tex_coord(
-            coord - FloatT(0.5) / FloatT(texsize[0]),
+            coord[0] - FloatT(0.5) / FloatT(texsize[0]),
             texsize[0],
             address_mode
             );
 
     auto coord3 = map_tex_coord(
-            coord + FloatT(0.5) / FloatT(texsize[0]),
+            coord[0] + FloatT(0.5) / FloatT(texsize[0]),
             texsize[0],
             address_mode
             );
 
     auto coord4 = map_tex_coord(
-            coord + FloatT(1.5) / FloatT(texsize[0]),
+            coord[0] + FloatT(1.5) / FloatT(texsize[0]),
             texsize[0],
             address_mode
             );
