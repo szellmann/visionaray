@@ -987,9 +987,9 @@ inline T hmul(vector<Dim, T> const& u)
 template <size_t Dim, typename T>
 MATH_FUNC
 inline auto convert_to_float(vector<Dim, T> const& v)
-    -> vector<Dim, decltype(convert_to_float(v.x))>
+    -> vector<Dim, decltype(convert_to_float(v[0]))>
 {
-    vector<Dim, decltype(convert_to_float(v.x))> result;
+    vector<Dim, decltype(convert_to_float(v[0]))> result;
 
     for (size_t d = 0; d < Dim; ++d)
     {
@@ -1002,9 +1002,9 @@ inline auto convert_to_float(vector<Dim, T> const& v)
 template <size_t Dim, typename T>
 MATH_FUNC
 inline auto convert_to_int(vector<Dim, T> const& v)
-    -> vector<Dim, decltype(convert_to_int(v.x))>
+    -> vector<Dim, decltype(convert_to_int(v[0]))>
 {
-    vector<Dim, decltype(convert_to_int(v.x))> result;
+    vector<Dim, decltype(convert_to_int(v[0]))> result;
 
     for (size_t d = 0; d < Dim; ++d)
     {
