@@ -75,7 +75,7 @@ VSNRAY_FUNC
 auto is_closer(HR const& query, HR const& reference, T const& tmin, T const& tmax)
     -> decltype(is_closer(query, reference))
 {
-    return is_closer(query, reference) && query.t > tmin && query.t < tmax;
+    return is_closer(query, reference) && query.t >= tmin && query.t <= tmax;
 }
 
 // specialization for aabb
@@ -89,7 +89,7 @@ auto is_closer(
         )
     -> decltype(is_closer(query, reference))
 {
-    return is_closer(query, reference) && query.tfar > tmin && query.tnear < tmax;
+    return is_closer(query, reference) && query.tfar >= tmin && query.tnear <= tmax;
 }
 
 
