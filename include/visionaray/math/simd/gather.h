@@ -11,6 +11,7 @@
 #pragma GCC diagnostic ignored "-Wignored-attributes"
 #endif
 
+#include <cstddef>
 #include <cstdint>
 #include <type_traits>
 
