@@ -189,19 +189,6 @@ protected:
 //
 
 template <typename T, unsigned Dim>
-struct texture_pointer_ref : texture_base<Dim, pointer_storage<T, Dim>>
-{
-    using value_type = T;
-    using base_type = texture_base<Dim, pointer_storage<T, Dim>>;
-    enum { dimensions = Dim };
-    using base_type::base_type;
-};
-
-//-------------------------------------------------------------------------------------------------
-// This class serves as a view into texture<T, Dim>
-//
-
-template <typename T, unsigned Dim>
 struct texture_ref : texture_base<Dim, pointer_storage<T, Dim>>
 {
     using value_type = T;

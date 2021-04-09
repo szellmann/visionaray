@@ -386,8 +386,8 @@ struct renderer : viewer_type
     // textures and texture references
 
     // On the CPU, we can simply "ref" the arrays with data
-    std::vector<texture_pointer_ref<float, 3>>                  volumes;
-    std::vector<texture_pointer_ref<vec4, 1>>                   transfuncs;
+    std::vector<texture_ref<float, 3>>                          volumes;
+    std::vector<texture_ref<vec4, 1>>                           transfuncs;
 
 #ifdef __CUDACC__
     // On the GPU, we need permanent storage in texture memory
