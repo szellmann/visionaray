@@ -4,6 +4,7 @@
 - Added an -spp flag to various examples.
 
 ### Changed
+- Significantly overhauled CPU texture implementation.
 - Rays now store tmin and tmax, therefore the public interfaces of
 functions like any_hit() or is_closer() has changed. It is required
 for users who construct rays themselves to fill those values
