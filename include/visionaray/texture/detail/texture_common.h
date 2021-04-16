@@ -15,12 +15,39 @@
 #include <visionaray/math/detail/math.h>
 #include <visionaray/math/vector.h>
 
-#include "../forward.h"
 #include "storage_types/aligned_storage.h"
 #include "storage_types/pointer_storage.h"
 
 namespace visionaray
 {
+
+//--------------------------------------------------------------------------------------------------
+//
+//
+
+enum tex_address_mode
+{
+    Wrap = 0,
+    Mirror,
+    Clamp,
+    Border
+};
+
+
+enum tex_filter_mode
+{
+    Nearest = 0,
+    Linear,
+    BSpline,
+    BSplineInterpol,
+    CardinalSpline
+};
+
+enum tex_color_space
+{
+    RGB = 0,
+    sRGB
+};
 
 template <unsigned Dim, typename TextureStorage>
 class texture_base : public TextureStorage

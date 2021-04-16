@@ -15,7 +15,6 @@
 #include <visionaray/math/triangle.h>
 #include <visionaray/math/unorm.h>
 #include <visionaray/math/vector.h>
-#include <visionaray/texture/forward.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
 
