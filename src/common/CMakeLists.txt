@@ -187,7 +187,6 @@ set(COMMON_HEADERS
     sg/io.h
     sg/material.h
 
-    blocking_queue.h
     bvh_outline_renderer.h
     cfile.h
     dds_image.h
