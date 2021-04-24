@@ -40,6 +40,8 @@ TEST(GetNormal, BVH)
     ray r;
     r.ori = vec3(0.5f, -0.5f, 2.0f);
     r.dir = normalize( vec3(0.0f, 0.0f, -1.0f) );
+    r.tmin = 0.0f;
+    r.tmax = numeric_limits<float>::max();
     auto hr = intersect(r, bvh);
 
     // Make some basic assumptions about the hit record
@@ -60,6 +62,8 @@ TEST(GetNormal, BVH)
     simd::ray4 r4;
     r4.ori = vector<3, simd::float4>(r.ori);
     r4.dir = vector<3, simd::float4>(r.dir);
+    r4.tmin = simd::float4(0.0f);
+    r4.tmax = numeric_limits<simd::float4>::max();
     auto hr4 = intersect(r4, bvh);
 
     // Again make some basic assumptions about the hit record
