@@ -6,14 +6,10 @@
 #ifndef VSNRAY_COMMON_PTEX_H
 #define VSNRAY_COMMON_PTEX_H 1
 
-#include <common/config.h>
-
 #include <memory>
 #include <string>
 
-#if VSNRAY_COMMON_HAVE_PTEX
 #include <Ptexture.h>
-#endif
 
 #include <visionaray/math/simd/type_traits.h>
 
