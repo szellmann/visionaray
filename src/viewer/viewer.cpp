@@ -2560,18 +2560,18 @@ void renderer::render_impl()
     last_frame_time = counter.register_frame();
 
 #if VSNRAY_COMMON_HAVE_PTEX
-//  if (ptex_textures.size() > 0)
-//  {
-//      PtexCache::Stats stats;
-//      ptex_textures[0].cache.get()->get()->getStats(stats);
-//      std::cout << "Mem used:        " << stats.memUsed << '\n';
-//      std::cout << "Peak mem used:   " << stats.peakMemUsed << '\n';
-//      std::cout << "Files open:      " << stats.filesOpen << '\n';
-//      std::cout << "Peak files open: " << stats.peakFilesOpen << '\n';
-//      std::cout << "Files accessed:  " << stats.filesAccessed << '\n';
-//      std::cout << "File reopens:    " << stats.fileReopens << '\n';
-//      std::cout << "Block reads:     " << stats.blockReads << '\n';
-//  }
+    if (ptex_textures.size() > 0)
+    {
+        PtexCache::Stats stats;
+        ptex_textures[0].cache.get()->get()->getStats(stats);
+        std::cout << "Mem used:        " << stats.memUsed << '\n';
+        std::cout << "Peak mem used:   " << stats.peakMemUsed << '\n';
+        std::cout << "Files open:      " << stats.filesOpen << '\n';
+        std::cout << "Peak files open: " << stats.peakFilesOpen << '\n';
+        std::cout << "Files accessed:  " << stats.filesAccessed << '\n';
+        std::cout << "File reopens:    " << stats.fileReopens << '\n';
+        std::cout << "Block reads:     " << stats.blockReads << '\n';
+    }
 #endif
 
     if (use_headlight)
