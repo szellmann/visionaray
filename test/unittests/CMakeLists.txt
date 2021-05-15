@@ -21,6 +21,12 @@ visionaray_use_package(Boost)
 visionaray_use_package(CUDA)
 visionaray_use_package(TBB)
 
+if (VSNRAY_ENABLE_PTEX)
+    find_package(Ptex)
+    find_package(ZLIB)
+    visionaray_use_package(Ptex)
+    visionaray_use_package(ZLIB)
+endif()
 
 #--------------------------------------------------------------------------------------------------
 # Add googletest as an external project and import its libraries
@@ -93,6 +99,7 @@ include_directories(${__VSNRAY_CONFIG_DIR})
 set(UNITTESTS_SOURCES
     bvh/build.cpp
     bvh/traverse.cpp
+    common/sg.cpp
     detail/algorithm.cpp
     detail/parallel_algorithm.cpp
     math/simd/gather.cpp
