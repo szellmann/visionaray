@@ -10,6 +10,7 @@
 #define VSNRAY_VERSION_MINOR 2
 #define VSNRAY_VERSION_PATCH 0
 
+#define VSNRAY_VERSION (VSNRAY_VERSION_MAJOR * 100 + VSNRAY_VERSION_MINOR * 10 + VSNRAY_VERSION_PATCH)
 
 //-------------------------------------------------------------------------------------------------
 // Convenience macros to obtain version info
