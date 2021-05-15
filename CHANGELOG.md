@@ -1,5 +1,7 @@
 ## [Unreleased]
 ### Added
+- macro VSNRAY_VERSION that can be used in addition to the other
+version-related macros.
 - Texture storage classes for bricked 3D texture accesses. Those
 however didn't prove to be faster than row-major texture storage so
 were only added for optional use with the base texture templates.
