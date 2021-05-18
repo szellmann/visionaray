@@ -27,10 +27,10 @@ namespace cuda
 
 inline void safe_call(cudaError_t code, char const* file, int line)
 {
-   if (code != cudaSuccess)
-   {
-      fprintf(stderr, "CUDA error: %s %s:%i\n", cudaGetErrorString(code), file, line);
-   }
+    if (code != cudaSuccess)
+    {
+        fprintf(stderr, "CUDA error: %s %s:%i\n", cudaGetErrorString(code), file, line);
+    }
 }
 
 } // cuda
