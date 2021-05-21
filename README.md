@@ -37,7 +37,7 @@ Build requirements
 - [GLEW][3]
 - [NVIDIA CUDA Toolkit][4] version 7.0 or newer (optional)
 
-- All external dependencies but CMake should be installed as developer packages containing C/C++ header files
+- Libraries need to be installed as developer packages containing C/C++ header files
 - The OpenGL and GLEW dependency can optionally be relaxed by setting `VSNRAY_GRAPHICS_API=None` with CMake
 - When targeting NVIDIA CUDA, make sure you have a C++11 compliant version (v7.0 or newer)
 - Visionaray supports Fermi+ NVIDIA GPUs (e.g. >= GeForce 400 series or >= Quadro {4|5|6}000) (Visionaray does not support texturing on Fermi GPUs, bindless texture support is available with Kepler+ GPUs)
