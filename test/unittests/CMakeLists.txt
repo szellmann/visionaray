@@ -99,7 +99,6 @@ include_directories(${__VSNRAY_CONFIG_DIR})
 set(UNITTESTS_SOURCES
     bvh/build.cpp
     bvh/traverse.cpp
-    common/sg.cpp
     detail/algorithm.cpp
     detail/parallel_algorithm.cpp
     math/simd/gather.cpp
