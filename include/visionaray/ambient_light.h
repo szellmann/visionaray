@@ -6,6 +6,7 @@
 #ifndef VSNRAY_AMBIENT_LIGHT_H
 #define VSNRAY_AMBIENT_LIGHT_H 1
 
+#include "detail/macros.h"
 #include "math/vector.h"
 
 namespace visionaray
