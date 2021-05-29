@@ -78,8 +78,8 @@ See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Get
 Visionaray Viewer
 -----------------
 
-Visionaray comes with a viewer application that supports a number of different 3D file formats. The viewer application is primarily targeted at developers, as a tool for debugging and testing.
-After being installed, the viewer application executable can be called using the following command:
+Visionaray comes with a viewer that supports a number of different 3D file formats. The viewer is primarily targeted at developers, as a tool for debugging and testing.
+After being installed, the viewer can be invoked using the following command:
 
 ```Shell
 vsnray-viewer <file>
