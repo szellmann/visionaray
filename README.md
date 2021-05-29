@@ -104,7 +104,7 @@ Visionaray is a template library, so that most algorithms are implemented in hea
 - [include/visionaray/texture](/include/visionaray/texture): texture management templates and texture access routines
 - [include/visionaray](/include/visionaray): misc. ray tracing templates, BVHs, render targets, etc.
 
-Visionaray can optionally interoperate with graphics and GPGPU APIs. Interoperability with the respective libraries is compiled into the Visionaray library. When GPU interoperability isn't requierd, chances are high that you don't need to link with Visionaray but can rather use it as a header only library.
+Visionaray can optionally interoperate with graphics and GPGPU APIs. Interoperability with the respective libraries is compiled into the Visionaray library. When GPU interoperability isn't required, chances are high that you don't need to link with Visionaray but can rather use it as a header only library.
 
 - [include/visionaray/cuda/](/include/visionaray/cuda/), [src/visionaray/cuda](/src/visionaray/cuda): CUDA interoperability classes
 - [include/visionaray/gl](/include/visionaray/gl), [src/visionaray/gl](/src/visionaray/gl): OpenGL(ES) interoperability classes
