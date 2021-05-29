@@ -40,7 +40,7 @@ Build requirements
 - Libraries need to be installed as developer packages containing C/C++ header files
 - The OpenGL and GLEW dependency can optionally be relaxed by setting `VSNRAY_GRAPHICS_API=None` with CMake
 
-In order to compile the viewer application and the [examples](/src/examples), the following _additional_ packages are needed or recommended:
+In order to compile the viewer and the [examples](/src/examples), the following _additional_ packages are needed or recommended:
 
 - [Boost][2]
 - [GLUT][5] or [FreeGLUT][6]
@@ -52,8 +52,8 @@ In order to compile the viewer application and the [examples](/src/examples), th
 
 
 
-Building the Visionaray library and viewer application
-------------------------------------------------------
+Building the Visionaray library and viewer
+------------------------------------------
 
 ### Linux and Mac OS X
 
@@ -70,7 +70,7 @@ make
 make install
 ```
 
-The headers, libraries and viewer application will then be located in the standard install path of your operating system (usually `/usr/local`).
+The headers, libraries and viewer will then be located in the standard install path of your operating system (usually `/usr/local`).
 
 See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Getting-started) and the [Troubleshooting section](https://github.com/szellmann/visionaray/wiki/Troubleshooting) in the [Wiki](https://github.com/szellmann/visionaray/wiki) for further information.
 
@@ -113,14 +113,14 @@ Files in `detail/` subfolders are not part of the public API. Code in namespace 
 
 ### Applications
 
-Visionaray comes with a viewer (see above) and a set of [example applications](/src/examples). Those are found in
+Visionaray comes with a viewer (see above) and a set of [examples](/src/examples). Those are found in
 
-- [src/viewer](/src/viewer): visionaray viewer application
-- [src/examples](/src/examples): visionaray example applications
+- [src/viewer](/src/viewer): visionaray viewer 
+- [src/examples](/src/examples): visionaray examples
 
 ### Common library
 
-The viewer application and the examples link with the Visionaray-common library that provides functionality such as windowing classes or mouse interaction. The Visionaray-common library is **not part of the public API** and interfaces may change between releases.
+The viewer and the examples link with the Visionaray-common library that provides functionality such as windowing classes or mouse interaction. The Visionaray-common library is **not part of the public API** and interfaces may change between releases.
 
 - [src/common](/src/common): private library used by the viewer and example applications
 
@@ -128,9 +128,9 @@ The viewer application and the examples link with the Visionaray-common library 
 
 - [src/3rdparty](/src/3rdparty): third-party code goes in here
 
-The viewer application and the examples use the following third-party libraries (the Visionaray library can be built without these dependencies):
-- [CmdLine](https://github.com/abolz/CmdLine) library to handle command line arguments in the viewer and example applications.
-- [dear imgui](https://github.com/ocornut/imgui) library for GUI elements in the viewer and example applications.
+The viewer and the examples use the following third-party libraries (the Visionaray library can be built without these dependencies):
+- [CmdLine](https://github.com/abolz/CmdLine) library to handle command line arguments in the viewer and examples.
+- [dear imgui](https://github.com/ocornut/imgui) library for GUI elements in the viewer and examples.
 - [PBRT-Parser](https://github.com/ingowald/pbrt-parser) library to load 3D models in [pbrt](https://github.com/mmp/pbrt-v3) format.
 - [RapidJSON](http://rapidjson.org/) library for parsing JSON scene descriptions.
 - [tinyply](https://github.com/ddiakopoulos/tinyply) library to load Stanford PLY models.
