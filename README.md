@@ -129,7 +129,7 @@ The viewer and the examples link with the Visionaray-common library that provide
 - [src/3rdparty](/src/3rdparty): third-party code goes in here
 
 The viewer and the examples use the following third-party libraries (the Visionaray library can be built without these dependencies):
-- [CmdLine](https://github.com/abolz/CmdLine) library to handle command line arguments in the viewer and examples.
+- [CmdLine](https://github.com/abolz/CmdLine) library to handle command line arguments in the viewer and examples. (Archived, TODO: port to [CmdLine2](https://github.com/abolz/CmdLine2).)
 - [dear imgui](https://github.com/ocornut/imgui) library for GUI elements in the viewer and examples.
 - [PBRT-Parser](https://github.com/ingowald/pbrt-parser) library to load 3D models in [pbrt](https://github.com/mmp/pbrt-v3) format.
 - [RapidJSON](http://rapidjson.org/) library for parsing JSON scene descriptions.
