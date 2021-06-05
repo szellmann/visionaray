@@ -15,13 +15,13 @@ namespace visionaray
 
 struct surface_interaction
 {
-    static const int Unspecified          = 1 << 0;
-    static const int Emission             = 1 << 1;
-    static const int Diffuse              = 1 << 2;
-    static const int SpecularReflection   = 1 << 3;
-    static const int SpecularTransmission = 1 << 4;
-    static const int GlossyReflection     = 1 << 5;
-    static const int GlossyTransmission   = 1 << 6;
+    enum { Unspecified          = 1 << 0 };
+    enum { Emission             = 1 << 1 };
+    enum { Diffuse              = 1 << 2 };
+    enum { SpecularReflection   = 1 << 3 };
+    enum { SpecularTransmission = 1 << 4 };
+    enum { GlossyReflection     = 1 << 5 };
+    enum { GlossyTransmission   = 1 << 6 };
 };
 
 } // visionaray
