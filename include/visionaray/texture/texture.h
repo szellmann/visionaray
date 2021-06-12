@@ -22,34 +22,37 @@ namespace visionaray
 
 template <typename Tex, typename FloatT>
 inline auto tex1D(Tex const& tex, FloatT const& coord)
+    -> decltype( detail::tex_fetch_impl(tex, vector<1, FloatT>(coord)) )
 {
     static_assert(Tex::dimensions == 1, "Incompatible texture type");
 
     assert(tex.get_normalized_coords() && "Unnormalized coordinates on CPU not implemented yet");
 
-    return detail::tex_fetch_impl(tex, vector<1, FloatT>(coord));
+    return detail::tex_fetch_impl( tex, vector<1, FloatT>(coord) );
 }
 
 
 template <typename Tex, typename FloatT>
 inline auto tex2D(Tex const& tex, vector<2, FloatT> const& coord)
+    -> decltype( detail::tex_fetch_impl(tex, coord) )
 {
     static_assert(Tex::dimensions == 2, "Incompatible texture type");
 
     assert(tex.get_normalized_coords() && "Unnormalized coordinates on CPU not implemented yet");
 
-    return detail::tex_fetch_impl(tex, coord);
+    return detail::tex_fetch_impl( tex, coord );
 }
 
 
 template <typename Tex, typename FloatT>
 inline auto tex3D(Tex const& tex, vector<3, FloatT> const& coord)
+    -> decltype( detail::tex_fetch_impl(tex, coord) )
 {
     static_assert(Tex::dimensions == 3, "Incompatible texture type");
 
     assert(tex.get_normalized_coords() && "Unnormalized coordinates on CPU not implemented yet");
 
-    return detail::tex_fetch_impl(tex, coord);
+    return detail::tex_fetch_impl( tex, coord );
 }
 
 
