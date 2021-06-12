@@ -40,51 +40,58 @@ namespace visionaray
 // is_texture
 //
 
-namespace detail
-{
-
-template <typename T>
-struct is_texture_impl
-{
-    template <typename U>
-    static constexpr std::true_type test(decltype(tex1D(std::declval<U>(), 0.0f))*);
-
-    template <typename U>
-    static constexpr std::true_type test(decltype(tex2D(std::declval<U>(), vector<2, float>(0.0f)))*, void* = 0);
-
-    template <typename U>
-    static constexpr std::true_type test(decltype(tex3D(std::declval<U>(), vector<3, float>(0.0f)))*, void* = 0, void* = 0);
-
-    template <typename U>
-    static constexpr std::false_type test(...);
-
-    using type = decltype(test<typename std::decay<T>::type>(nullptr));
-};
-
-} // detail
-
-
-template <typename T>
-struct is_texture : detail::is_texture_impl<T>::type
-{
-};
+// namespace detail
+// {
+// 
+// template <typename T>
+// struct is_texture_impl
+// {
+//     template <typename U>
+//     static constexpr std::true_type test(decltype(tex1D(std::declval<U>(), 0.0f))*);
+// 
+//     template <typename U>
+//     static constexpr std::true_type test(decltype(tex2D(std::declval<U>(), vector<2, float>(0.0f)))*, void* = 0);
+// 
+//     template <typename U>
+//     static constexpr std::true_type test(decltype(tex3D(std::declval<U>(), vector<3, float>(0.0f)))*, void* = 0, void* = 0);
+// 
+//     template <typename U>
+//     static constexpr std::false_type test(...);
+// 
+//     using type = decltype(test<typename std::decay<T>::type>(nullptr));
+// };
+// 
+// } // detail
+// 
+// 
+// template <typename T>
+// struct is_texture : detail::is_texture_impl<T>::type
+// {
+// };
 
 
 //-------------------------------------------------------------------------------------------------
 // texture_dimensions
 //
 
-template <typename T, typename Enable = void>
+template <typename T>
 struct texture_dimensions
+{
+    enum { value = T::dimensions };
+};
+
+// TODO: make SFINAE work here and get rid of this specialization
+template <>
+struct texture_dimensions<std::nullptr_t>
 {
     enum { value = 0 };
 };
 
-template <typename T>
-struct texture_dimensions<T, typename std::enable_if<is_texture<T>::value>::type>
-{
-    enum { value = T::dimensions };
-};
+// template <typename T>
+// struct texture_dimensions<T, typename std::enable_if<is_texture<T>::value>::type>
+// {
+//     enum { value = T::dimensions };
+// };
 
 } // visionaray
 
