@@ -26,7 +26,7 @@ git submodule update --init --recursive
 Build requirements
 ------------------
 
-- C++11 compliant compiler
+- C++14 compliant compiler
    (tested with g++-7.4.0 on Ubuntu 18.04 x86_64,
     tested with clang-900.0.39.2 on Mac OS X 10.13,
     tested with clang-1200.0.32.28 on Mac OS X 11.0.1 arm-64 (M1),
