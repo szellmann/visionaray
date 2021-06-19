@@ -26,7 +26,7 @@ std::string& node::name()
 {
     if (meta_data_ == nullptr)
     {
-        meta_data_ = make_unique<meta_data>();
+        meta_data_ = std::make_unique<meta_data>();
     }
 
     return meta_data_->name;
@@ -36,7 +36,7 @@ std::string const& node::name() const
 {
     if (meta_data_ == nullptr)
     {
-        const_cast<node*>(this)->meta_data_ = make_unique<meta_data>();
+        const_cast<node*>(this)->meta_data_ = std::make_unique<meta_data>();
     }
 
     return meta_data_->name;
@@ -46,7 +46,7 @@ uint64_t& node::flags()
 {
     if (meta_data_ == nullptr)
     {
-        meta_data_ = make_unique<meta_data>();
+        meta_data_ = std::make_unique<meta_data>();
     }
 
     return meta_data_->flags;
@@ -56,7 +56,7 @@ uint64_t const& node::flags() const
 {
     if (meta_data_ == nullptr)
     {
-        const_cast<node*>(this)->meta_data_ = make_unique<meta_data>();
+        const_cast<node*>(this)->meta_data_ = std::make_unique<meta_data>();
     }
 
     return meta_data_->flags;
