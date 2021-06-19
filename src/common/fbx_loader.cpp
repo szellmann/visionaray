@@ -262,7 +262,7 @@ std::unique_ptr<fbx_node> fbx_document::parse_fbx_node(std::ifstream& stream)
         return nullptr;
     }
 
-    auto node = make_unique<fbx_node>();
+    auto node = std::make_unique<fbx_node>();
 
     uint32_t num_properties;
     uint32_t property_list_len;
@@ -355,7 +355,7 @@ fbx_node::properties fbx_document::parse_fbx_properties(char* data, size_t len)
 
 std::unique_ptr<fbx_property_raw> fbx_document::parse_fbx_property_raw(char* data, size_t& offset)
 {
-    auto result = make_unique<fbx_property_raw>();
+    auto result = std::make_unique<fbx_property_raw>();
 
     uint32_t len = 0;
     std::memcpy(&len, data + offset, sizeof(len));
@@ -370,7 +370,7 @@ std::unique_ptr<fbx_property_raw> fbx_document::parse_fbx_property_raw(char* dat
 
 std::unique_ptr<fbx_property_string> fbx_document::parse_fbx_property_string(char* data, size_t& offset)
 {
-    auto result = make_unique<fbx_property_string>();
+    auto result = std::make_unique<fbx_property_string>();
 
     uint32_t len = 0;
     std::memcpy(&len, data + offset, sizeof(len));
@@ -387,7 +387,7 @@ std::unique_ptr<fbx_property_string> fbx_document::parse_fbx_property_string(cha
 
 std::unique_ptr<fbx_property_int32s> fbx_document::parse_fbx_property_int32s(char* data, size_t& offset)
 {
-    auto result = make_unique<fbx_property_int32s>();
+    auto result = std::make_unique<fbx_property_int32s>();
 
     parse_fbx_property_array(*result, data, offset);
 
@@ -396,7 +396,7 @@ std::unique_ptr<fbx_property_int32s> fbx_document::parse_fbx_property_int32s(cha
 
 std::unique_ptr<fbx_property_int64s> fbx_document::parse_fbx_property_int64s(char* data, size_t& offset)
 {
-    auto result = make_unique<fbx_property_int64s>();
+    auto result = std::make_unique<fbx_property_int64s>();
 
     parse_fbx_property_array(*result, data, offset);
 
@@ -405,7 +405,7 @@ std::unique_ptr<fbx_property_int64s> fbx_document::parse_fbx_property_int64s(cha
 
 std::unique_ptr<fbx_property_floats> fbx_document::parse_fbx_property_floats(char* data, size_t& offset)
 {
-    auto result = make_unique<fbx_property_floats>();
+    auto result = std::make_unique<fbx_property_floats>();
 
     parse_fbx_property_array(*result, data, offset);
 
@@ -414,7 +414,7 @@ std::unique_ptr<fbx_property_floats> fbx_document::parse_fbx_property_floats(cha
 
 std::unique_ptr<fbx_property_doubles> fbx_document::parse_fbx_property_doubles(char* data, size_t& offset)
 {
-    auto result = make_unique<fbx_property_doubles>();
+    auto result = std::make_unique<fbx_property_doubles>();
 
     parse_fbx_property_array(*result, data, offset);
 
