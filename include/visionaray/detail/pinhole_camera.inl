@@ -87,9 +87,9 @@ inline void pinhole_camera::view_all(aabb const& box, vec3 const& up)
 inline void pinhole_camera::begin_frame()
 {
     // front, side, and up vectors form an orthonormal basis
-    auto f = normalize(eye_ - center_);
-    auto s = normalize(cross(up_, f));
-    auto u =           cross(f, s);
+    vec3 f = normalize(eye_ - center_);
+    vec3 s = normalize(cross(up_, f));
+    vec3 u =           cross(f, s);
 
     U = s * tan(fovy_ / 2.0f) * aspect_;
     V = u * tan(fovy_ / 2.0f);
@@ -104,8 +104,8 @@ template <typename R, typename T>
 VSNRAY_FUNC
 inline R pinhole_camera::primary_ray(R /* */, T const& x, T const& y, T const& width, T const& height) const
 {
-    auto u = T(2.0) * (x + T(0.5)) / width  - T(1.0);
-    auto v = T(2.0) * (y + T(0.5)) / height - T(1.0);
+    T u = T(2.0) * (x + T(0.5)) / width  - T(1.0);
+    T v = T(2.0) * (y + T(0.5)) / height - T(1.0);
 
     R r;
     r.ori = vector<3, T>(eye_);
