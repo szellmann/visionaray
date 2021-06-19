@@ -11,7 +11,6 @@ namespace visionaray
 
 inline void pinhole_camera::look_at(vec3 const& eye, vec3 const& center, vec3 const& up)
 {
-
     eye_      = eye;
     center_   = center;
     up_       = up;
@@ -27,12 +26,10 @@ inline void pinhole_camera::look_at(vec3 const& eye, vec3 const& center, vec3 co
         s.z, u.z, f.z, 0.0f,
         -dot(eye, s), -dot(eye, u), -dot(eye, f), 1.0f
         );
-
 }
 
 inline void pinhole_camera::perspective(float fovy, float aspect, float z_near, float z_far)
 {
-
     assert( z_near > 0.0f );
 
     fovy_   = fovy;
@@ -61,7 +58,6 @@ inline void pinhole_camera::perspective(float fovy, float aspect, float z_near, 
     proj_(3, 1) = 0.0f;
     proj_(3, 2) = -1.0f;
     proj_(3, 3) = 0.0f;
-
 }
 
 inline void pinhole_camera::set_viewport(recti const& viewport)
