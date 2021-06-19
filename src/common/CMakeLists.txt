@@ -198,7 +198,6 @@ set(COMMON_HEADERS
     image.h
     image_base.h
     jpeg_image.h
-    make_unique.h
     make_materials.h
     make_texture.h
     moana_loader.h

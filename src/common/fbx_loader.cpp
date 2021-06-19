@@ -19,7 +19,6 @@
 #endif
 
 #include "fbx_loader.h"
-#include "make_unique.h"
 #include "model.h"
 #include "sg.h"
 

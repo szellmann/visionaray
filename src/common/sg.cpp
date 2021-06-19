@@ -5,7 +5,6 @@
 #include <cassert>
 #include <cstring>
 
-#include "make_unique.h"
 #include "model.h"
 #include "sg.h"
 
