@@ -107,14 +107,14 @@ inline void convert_for_bspline_interpol(texture_ref<T, 2> const* tex)
     // row-wise
     for (unsigned row = 0; row < tex->height(); ++row)
     {
-        T* ptr = &(*tex)[row * tex->width()]; // TODO: use operator()
+        T const* ptr = &(*tex)[row * tex->width()]; // TODO: use operator()
         convert_to_bspline_coeffs(ptr, tex->width(), 1);
     }
 
     // column-wise
     for (unsigned col = 0; col < tex->width(); ++col)
     {
-        T* ptr = &(*tex)[col]; // TODO: use operator()
+        T const* ptr = &(*tex)[col]; // TODO: use operator()
         convert_to_bspline_coeffs(ptr, tex->height(), tex->width());
     }
 }
@@ -148,7 +148,7 @@ inline void convert_for_bspline_interpol(texture_ref<T, 3> const* tex)
     {
         for (unsigned x = 0; x < tex->width(); ++x)
         {
-            short* ptr = &tmp[y * tex->width() + x];
+            short const* ptr = &tmp[y * tex->width() + x];
             convert_to_bspline_coeffs(ptr, tex->depth(), tex->width() * tex->height());
         }
     }
