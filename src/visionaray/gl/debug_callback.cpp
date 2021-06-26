@@ -11,6 +11,7 @@
 
 #if defined(VSNRAY_OS_DARWIN) || defined(VSNRAY_OS_LINUX)
 #include <execinfo.h>
+#include <signal.h>
 #endif
 
 #ifdef VSNRAY_OS_WIN32
@@ -130,7 +131,7 @@ static void debug_callback_func(
         }
 #else
         std::cerr << gl::backtrace() << '\n';
-        throw std::runtime_error("OpenGL error");
+        raise(SIGINT);
 #endif
     }
 }
