@@ -79,7 +79,7 @@ inline void convert_to_bspline_coeffs(short* c, unsigned len, unsigned stride)
 
     *c = voxel_type( init_anticausal_coeff(c) );
 
-    for (ptrdiff_t k = len - 2; 0 <= k; --k)
+    for (int k = len - 2; 0 <= k; --k)
     {
         c -= stride;
         *c = voxel_type( Pole * (*(c + stride) - float_type(*c)) );
