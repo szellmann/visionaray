@@ -31,7 +31,7 @@ inline float init_causal_coeff(short* c, unsigned len, unsigned stride)
     typedef float float_type;
 //  typedef short voxel_type;
 
-    unsigned const Horizon = min<unsigned>(12, len);
+    unsigned const Horizon = min(12U, len);
 
     float_type zk(Pole);
     float_type sum = float_type(*c) ;
