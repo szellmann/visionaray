@@ -92,16 +92,16 @@ inline void convert_to_bspline_coeffs(short* c, size_t len, size_t stride)
 
 
 template <typename T>
-inline void convert_for_bspline_interpol(texture_ref<T, 1>* tex)
+inline void convert_for_bspline_interpol(texture_ref<T, 1> const* tex)
 {
     using namespace detail;
 
-    T* ptr = &(*tex)(0);
+    T const* ptr = &(*tex)(0);
     convert_to_bspline_coeffs(ptr, tex->size(), 1);
 }
 
 template <typename T>
-inline void convert_for_bspline_interpol(texture_ref<T, 2>* tex)
+inline void convert_for_bspline_interpol(texture_ref<T, 2> const* tex)
 {
     using namespace detail;
 
@@ -121,7 +121,7 @@ inline void convert_for_bspline_interpol(texture_ref<T, 2>* tex)
 }
 
 template <typename T>
-inline void convert_for_bspline_interpol(texture_ref<T, 3>* tex)
+inline void convert_for_bspline_interpol(texture_ref<T, 3> const* tex)
 {
     using namespace detail;
 
