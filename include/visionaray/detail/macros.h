@@ -108,16 +108,6 @@
 
 
 //-------------------------------------------------------------------------------------------------
-// VSNRAY_NOT_COPYABLE
-// Place in private section of class to disallow copying and assignment
-//
-
-#define VSNRAY_NOT_COPYABLE(T)                                      \
-  T(T const& rhs) = delete;                                         \
-  T& operator=(T const& rhs) = delete;
-
-
-//-------------------------------------------------------------------------------------------------
 // VSNRAY_THREAD_LOCAL
 // Mark variables thread-local
 //
