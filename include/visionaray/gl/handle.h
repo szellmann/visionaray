@@ -16,7 +16,6 @@
 #include "types.h"
 #endif
 
-#include <visionaray/detail/macros.h>
 #include <visionaray/detail/platform.h>
 #include <visionaray/export.h>
 
@@ -33,6 +32,10 @@ public:
     explicit handle(GLuint name = 0) : name_(name) {}
    ~handle() { reset(); }
 
+    // Not copyable!
+    handle(handle const&) = delete;
+    handle& operator=(handle&) = delete;
+
     void reset(GLuint name = 0)
     {
         if (name_ != 0)
@@ -45,8 +48,6 @@ public:
     GLuint get() const { return name_; }
 
 protected:
-
-    VSNRAY_NOT_COPYABLE(handle)
 
     GLuint name_;
 

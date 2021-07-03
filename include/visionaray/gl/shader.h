@@ -16,8 +16,6 @@
 #include "types.h"
 #endif
 
-#include <visionaray/detail/macros.h>
-
 namespace visionaray
 {
 namespace gl
@@ -30,6 +28,9 @@ public:
     explicit shader(GLuint name = 0);
    ~shader();
 
+    shader(shader const&) = delete;
+    shader& operator=(shader&) = delete;
+
     void destroy();
 
     void reset(GLuint name = 0);
@@ -41,8 +42,6 @@ public:
     bool check_compiled() const;
 
 private:
-
-    VSNRAY_NOT_COPYABLE(shader)
 
     GLuint name_;
 };

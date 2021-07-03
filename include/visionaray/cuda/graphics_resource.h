@@ -8,7 +8,6 @@
 
 #include <cuda_runtime_api.h>
 
-#include <visionaray/detail/macros.h>
 #include <visionaray/export.h>
 
 namespace visionaray
@@ -23,6 +22,10 @@ public:
     VSNRAY_EXPORT graphics_resource();
     VSNRAY_EXPORT ~graphics_resource();
 
+    // Not copyable!
+    graphics_resource(graphics_resource const&) = delete;
+    graphics_resource operator=(graphics_resource&) = delete;
+
     VSNRAY_EXPORT cudaGraphicsResource_t get() const;
 
     VSNRAY_EXPORT cudaError_t register_buffer(unsigned buffer, cudaGraphicsRegisterFlags flags = cudaGraphicsRegisterFlagsNone);
@@ -36,8 +39,6 @@ public:
     VSNRAY_EXPORT void* dev_ptr() const;
 
 private:
-
-    VSNRAY_NOT_COPYABLE(graphics_resource)
 
     cudaGraphicsResource_t resource_;
     void* dev_ptr_;

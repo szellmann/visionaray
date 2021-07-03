@@ -16,7 +16,6 @@
 #include "types.h"
 #endif
 
-#include <visionaray/detail/macros.h>
 #include <visionaray/detail/platform.h>
 
 namespace visionaray
@@ -34,6 +33,9 @@ public:
 
    ~program();
 
+    program(program const&) = delete;
+    program& operator=(program&) = delete;
+
     void destroy();
 
     void reset(GLuint name = 0);
@@ -50,8 +52,6 @@ public:
     bool check_linked() const;
 
 protected:
-
-    VSNRAY_NOT_COPYABLE(program)
 
     // This program
     GLuint name_;
