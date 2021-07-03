@@ -9,6 +9,8 @@ were only added for optional use with the base texture templates.
 - Added an -spp flag to various examples.
 
 ### Changed
+- Remove VSNRAY_NOT_COPYABLE() macro. Better to use C++11 delete
+on copy ctor/assignment operator for this.
 - Switched to C++14.
 - Significantly overhauled CPU texture implementation.
 - Rays now store tmin and tmax, therefore the public interfaces of
