@@ -113,8 +113,8 @@
 //
 
 #define VSNRAY_NOT_COPYABLE(T)                                      \
-  T(T const& rhs);                                                  \
-  T& operator=(T const& rhs);
+  T(T const& rhs) = delete;                                         \
+  T& operator=(T const& rhs) = delete;
 
 
 //-------------------------------------------------------------------------------------------------
