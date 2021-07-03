@@ -60,11 +60,6 @@ public:
     explicit buffer(GLuint name = 0) : handle<buffer>(name) {}
 
     VSNRAY_EXPORT void destroy();
-
-private:
-
-    VSNRAY_NOT_COPYABLE(buffer)
-
 };
 
 
@@ -75,11 +70,6 @@ public:
     explicit framebuffer(GLuint name = 0) : handle<framebuffer>(name) {}
 
     VSNRAY_EXPORT void destroy();
-
-private:
-
-    VSNRAY_NOT_COPYABLE(framebuffer)
-
 };
 
 
@@ -90,11 +80,6 @@ public:
     explicit renderbuffer(GLuint name = 0) : handle<renderbuffer>(name) {}
 
     VSNRAY_EXPORT void destroy();
-
-private:
-
-    VSNRAY_NOT_COPYABLE(renderbuffer)
-
 };
 
 
@@ -105,11 +90,6 @@ public:
     explicit texture(GLuint name = 0) : handle<texture>(name) {}
 
     VSNRAY_EXPORT void destroy();
-
-private:
-
-    VSNRAY_NOT_COPYABLE(texture)
-
 };
 
 
@@ -120,11 +100,6 @@ public:
     explicit vertex_array(GLuint name = 0) : handle<vertex_array>(name) {}
 
     VSNRAY_EXPORT void destroy();
-
-private:
-
-    VSNRAY_NOT_COPYABLE(vertex_array)
-
 };
 
 
