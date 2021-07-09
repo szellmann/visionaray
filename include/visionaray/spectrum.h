@@ -54,8 +54,8 @@ public:
 
     VSNRAY_FUNC T operator()(float lambda) const;
 
-    VSNRAY_FUNC vector<num_samples, T>&       samples()       { return samples_; }
-    VSNRAY_FUNC vector<num_samples, T> const& samples() const { return samples_; }
+    VSNRAY_FUNC vector<num_samples, T>& samples();
+    VSNRAY_FUNC vector<num_samples, T> const& samples() const;
 
 private:
 
