@@ -58,7 +58,7 @@ static std::string backtrace()
     }
     return std::string();
 #else
-    return std::string("not implemented");
+    return "not implemented";
 #endif
 }
 
