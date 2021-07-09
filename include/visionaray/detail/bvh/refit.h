@@ -7,6 +7,7 @@
 #define VSNRAY_DETAIL_BVH_REFIT_H 1
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <mutex>
 #include <thread>
