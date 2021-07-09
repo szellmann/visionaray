@@ -9,6 +9,7 @@
 #include "math/detail/math.h"
 #include "math/constants.h"
 #include "math/limits.h"
+#include "math/vector.h"
 
 namespace visionaray
 {
