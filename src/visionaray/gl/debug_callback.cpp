@@ -56,7 +56,7 @@ static std::string backtrace()
         free(symbols);
         return str.str();
     }
-    return std::string();
+    return "";
 #else
     return "not implemented";
 #endif
