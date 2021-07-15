@@ -3,6 +3,8 @@
 
 #include <common/config.h>
 
+#include <iostream>
+#include <ostream>
 #include <type_traits>
 #include <unordered_map>
 
@@ -185,6 +187,11 @@ bool model::load(std::vector<std::string> const& filenames)
 
             return success;
         }
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return false;
     }
     catch (...)
     {
