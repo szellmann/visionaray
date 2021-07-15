@@ -168,7 +168,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
     {
         if (N != 2)
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Type is Vec2u8 but N != 2");
         }
 
         if (md.encoding == data_file::meta_data::Ascii)
@@ -190,7 +190,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
     {
         if (N != 2)
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Type is Vec2f but N != 2");
         }
 
         if (md.encoding == data_file::meta_data::Ascii)
@@ -212,7 +212,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
     {
         if (N != 3)
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Type is Vec3u8 but N != 3");
         }
 
         if (md.encoding == data_file::meta_data::Ascii)
@@ -234,7 +234,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
     {
         if (N != 3)
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Type is Vec3f but N != 3");
         }
 
         if (md.encoding == data_file::meta_data::Ascii)
@@ -256,7 +256,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
     {
         if (N != 4)
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Type is Vec3u8 but N != 4");
         }
 
         if (md.encoding == data_file::meta_data::Ascii)
@@ -278,7 +278,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
     {
         if (N != 4)
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Type is Vec4f but N != 4");
         }
 
         if (md.encoding == data_file::meta_data::Ascii)
@@ -326,7 +326,7 @@ void parse_optional(float& f, Object const& obj, char const* member)
 
         if (!val.IsFloat())
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("FLOAT: Optional value is not of type float");
         }
 
         f = val.GetFloat();
@@ -342,12 +342,12 @@ void parse_optional(vector<N, float>& v, Object const& obj, char const* member)
 
         if (!val.IsArray())
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("VecNf: Optional value is not an array");
         }
 
         if (val.Capacity() != N)
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("VecNf: Optional value's capacity is not N");
         }
 
         for (size_t i = 0; i < N; ++i)
@@ -366,12 +366,12 @@ void parse_optional(recti& r, Object const& obj, char const* member)
 
         if (!val.IsArray())
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("RECT: Optional value is not an array");
         }
 
         if (val.Capacity() != 4)
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("RECT: Optional value's capacity is not 4");
         }
 
         for (size_t i = 0; i < 4; ++i)
@@ -411,7 +411,7 @@ bool parse_tex_address_mode_impl(Object const& obj, char const* attr, tex_addres
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Address mode is unknown");
         }
 
         return true;
@@ -535,7 +535,7 @@ tex_filter_mode parse_tex_filter_mode(Object const& obj)
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Filter mode is unknown");
         }
     }
 
@@ -559,7 +559,7 @@ tex_color_space parse_tex_color_space(Object const& obj)
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Color space is unknown");
         }
     }
 
@@ -631,7 +631,7 @@ void vsnray_parser::parse_children(std::shared_ptr<sg::node> parent, rapidjson::
 {
     if (!entries.IsArray())
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Children entry list is not an array");
     }
 
     parent->children().resize(entries.Capacity());
@@ -646,7 +646,7 @@ void vsnray_parser::parse_children(std::shared_ptr<sg::node> parent, rapidjson::
 
     if (i != entries.Capacity())
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Entry list's capacity doesn't equal the expected number of children");
     }
 }
 
@@ -702,7 +702,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_node(Object const& obj)
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Node type unknown");
         }
 
         // Parse common node properties
@@ -724,7 +724,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_node(Object const& obj)
     }
     else
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Object doesn't have a \"type\" member");
     }
 
     return result;
@@ -953,7 +953,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_include(Object const& obj)
                 }
                 else
                 {
-                    throw std::runtime_error("");
+                    throw std::runtime_error("Included model contains 0 primitives");
                 }
             }
             else
@@ -964,12 +964,12 @@ std::shared_ptr<sg::node> vsnray_parser::parse_include(Object const& obj)
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Couldn't load include file");
         }
     }
     else
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Include path is invalid");
     }
 
     return inc;
@@ -1071,7 +1071,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_transform(Object const& obj)
 
         if (mat.Capacity() != 16)
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Matrix transform must contain 16 elements");
         }
 
         for (rapidjson::SizeType i = 0; i < mat.Capacity(); ++i)
@@ -1142,12 +1142,12 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
             }
             else
             {
-                throw std::runtime_error("");
+                throw std::runtime_error("Not a valid material identifier");
             }
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Material doesn't have a \"type\" member");
         }
     }
     else
@@ -1237,13 +1237,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
 
                 if (!parse_as_vec3f(md, mesh->vertices))
                 {
-                    throw std::runtime_error("");
+                    throw std::runtime_error("Couldn't parse vertices");
                 }
             }
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Vertices object is invalid");
         }
     }
 
@@ -1271,13 +1271,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
 
                 if (!parse_as_vec3f(md, mesh->normals))
                 {
-                    throw std::runtime_error("");
+                    throw std::runtime_error("Couldn't parse normals");
                 }
             }
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Normals object is invalid");
         }
     }
     else
@@ -1322,13 +1322,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
 
                 if (!parse_as_vec2f(md, mesh->tex_coords))
                 {
-                    throw std::runtime_error("");
+                    throw std::runtime_error("Couldn't parse texture coordinates");
                 }
             }
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Texture coordinates is invalid");
         }
     }
     else
@@ -1365,13 +1365,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_triangle_mesh(Object const& obj)
 
                 if (!parse_as_vec3f(md, mesh->colors))
                 {
-                    throw std::runtime_error("");
+                    throw std::runtime_error("Couldn't parse colors");
                 }
             }
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Colors object is invalid");
         }
     }
     else
@@ -1403,7 +1403,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
     }
     else
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Missing member \"vertex_indices\"");
     }
 
     if (obj.HasMember("normal_indices"))
@@ -1462,7 +1462,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
 
                 if (!parse_as_vec3f(md, *mesh->vertices))
                 {
-                    throw std::runtime_error("");
+                    throw std::runtime_error("Couldn't parse vertices");
                 }
             }
         }
@@ -1494,13 +1494,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
 
                 if (!parse_as_vec3f(md, *mesh->normals))
                 {
-                    throw std::runtime_error("");
+                    throw std::runtime_error("Couldn't parse normals");
                 }
             }
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Normals object is invalid");
         }
     }
 
@@ -1529,13 +1529,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
 
                 if (!parse_as_vec2f(md, *mesh->tex_coords))
                 {
-                    throw std::runtime_error("");
+                    throw std::runtime_error("Couldn't parse texture coordinates");
                 }
             }
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Texture coordinates object is invalid");
         }
     }
 
@@ -1565,13 +1565,13 @@ std::shared_ptr<sg::node> vsnray_parser::parse_indexed_triangle_mesh(Object cons
 
                 if (!parse_as_vec3f(md, *mesh->colors))
                 {
-                    throw std::runtime_error("");
+                    throw std::runtime_error("Couldn't parse colors");
                 }
             }
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Colors object is invalid");
         }
     }
 
@@ -1589,7 +1589,7 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
     }
     else
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Missing path");
     }
 
     if (obj.HasMember("encoding"))
@@ -1605,12 +1605,12 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Invalid encoding");
         }
     }
     else
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Missing member \"encoding\"");
     }
 
     if (obj.HasMember("data_type"))
@@ -1627,12 +1627,12 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Couldn't find \"data_type\"");
         }
     }
     else
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Missing member \"data_type\"");
     }
 
     if (obj.HasMember("num_items"))
@@ -1641,7 +1641,7 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
     }
     else
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Missing member \"num_items\"");
     }
 
     if (obj.HasMember("compression"))
@@ -1653,7 +1653,7 @@ data_file::meta_data vsnray_parser::parse_file_meta_data(Object const& obj)
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Invalid compression kind");
         }
     }
 
@@ -1959,7 +1959,7 @@ void vsnray_writer::write_surface_properties(Object obj, std::shared_ptr<sg::sur
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Invalid material");
         }
 
         obj.AddMember(
@@ -1999,7 +1999,7 @@ void vsnray_writer::write_surface_properties(Object obj, std::shared_ptr<sg::sur
 #endif // VSNRAY_COMMON_HAVE_PTEX
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Invalid texture type");
         }
     }
 }
@@ -2089,20 +2089,20 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
     // Don't overwrite
     if (boost::filesystem::exists(md.path))
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("File exists, not overwriting");
     }
 
     // Check for consistency
     if (static_cast<int>(cont.size()) != md.num_items)
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Inconsistent container size");
     }
 
     std::ofstream file(md.path, std::ios::binary);
 
     if (!file.good())
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Cannot open file");
     }
 
     // Write data
@@ -2112,7 +2112,7 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
     }
     catch (std::ios_base::failure)
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Failed to write to file");
     }
 
     assert(boost::filesystem::exists(md.path));
@@ -2133,7 +2133,7 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
     }
     else
     {
-        throw std::runtime_error("");
+        throw std::runtime_error("Missing data type");
     }
 
     assert(!data_type.empty());
@@ -2179,7 +2179,7 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
     else
     {
         // Not implemented yet
-        throw std::runtime_error("");
+        throw std::runtime_error("Not implemented yet");
     }
 }
 
@@ -2232,7 +2232,7 @@ std::string vsnray_writer::make_inline_filename(std::string node_name, std::stri
         {
             if (!node_name.empty())
             {
-                throw std::runtime_error("");
+                throw std::runtime_error("Node name not empty");
             }
         }
     }
@@ -2304,7 +2304,7 @@ void load_vsnray(std::vector<std::string> const& filenames, model& mod)
         }
         else
         {
-            throw std::runtime_error("");
+            throw std::runtime_error("Invalid JSON document, not an object");
         }
     }
 
