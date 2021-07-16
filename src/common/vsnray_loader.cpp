@@ -7,6 +7,7 @@
 #include <array>
 #include <cassert>
 #include <cstddef>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -1172,6 +1173,15 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
         if (can_load)
         {
             filename = std::string(diffuse_obj["filename"].GetString());
+
+            if (filename[0] == '~')
+            {
+                char const* home = getenv("HOME");
+                if (home != nullptr)
+                {
+                    filename = std::string(home) + filename.substr(1, filename.size() - 1);
+                }
+            }
 
             can_load &= boost::filesystem::exists(filename);
         }
