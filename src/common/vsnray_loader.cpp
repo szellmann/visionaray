@@ -788,6 +788,15 @@ std::shared_ptr<sg::node> vsnray_parser::parse_include(Object const& obj)
     {
         std::string path_string(obj["path"].GetString());
 
+        if (path_string[0] == '~')
+        {
+            char const* home = getenv("HOME");
+            if (home != nullptr)
+            {
+                path_string = std::string(home) + path_string.substr(1, path_string.size() - 1);
+            }
+        }
+
         boost::filesystem::path p(path_string);
 
         if (!p.is_absolute())
