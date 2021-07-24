@@ -44,9 +44,9 @@ inline void unproject(
         )
 {
     vector<4, T> u(
-            T(2.0 * (win[0] - viewport[0]) / viewport[2] - 1.0),
-            T(2.0 * (win[1] - viewport[1]) / viewport[3] - 1.0),
-            T(2.0 * win[2] - 1.0),
+            T(2.0) * (win[0] - viewport[0]) / viewport[2] - T(1.0),
+            T(2.0) * (win[1] - viewport[1]) / viewport[3] - T(1.0),
+            T(2.0) * win[2] - T(1.0),
             T(1.0)
             );
 
