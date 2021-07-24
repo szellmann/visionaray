@@ -28,9 +28,9 @@ inline void project(
 
     auto v = tmp.xyz() / tmp.w;
 
-    win[0] = viewport[0] + viewport[2] * (v[0] + 1) / 2;
-    win[1] = viewport[1] + viewport[3] * (v[1] + 1) / 2;
-    win[2] = (v[2] + 1) / 2;
+    win[0] = viewport[0] + viewport[2] * (v[0] + 1) / T(2.0);
+    win[1] = viewport[1] + viewport[3] * (v[1] + 1) / T(2.0);
+    win[2] = (v[2] + 1) / T(2.0);
 }
 
 template <typename T>
