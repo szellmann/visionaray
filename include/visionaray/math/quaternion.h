@@ -6,6 +6,7 @@
 #ifndef VSNRAY_MATH_QUATERNION_H
 #define VSNRAY_MATH_QUATERNION_H 1
 
+#include "config.h"
 #include "vector.h"
 
 namespace MATH_NAMESPACE
