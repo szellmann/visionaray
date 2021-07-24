@@ -6,6 +6,7 @@
 #ifndef VSNRAY_MATH_PROJECT_H
 #define VSNRAY_MATH_PROJECT_H 1
 
+#include "config.h"
 #include "matrix.h"
 #include "rectangle.h"
 #include "vector.h"
