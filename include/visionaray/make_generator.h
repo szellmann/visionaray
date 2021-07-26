@@ -33,6 +33,12 @@ struct make_generator_impl
     using generator_type = void_t;
 };
 
+template <typename T>
+struct make_generator_impl<T, pixel_sampler::jittered_type>
+{
+    using generator_type = random_generator<T>;
+};
+
 template <typename T, typename U>
 struct make_generator_impl<T, pixel_sampler::basic_jittered_blend_type<U>>
 {

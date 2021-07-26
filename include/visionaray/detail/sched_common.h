@@ -205,31 +205,31 @@ inline R make_primary_ray(
             );
 }
 
-template <typename R, typename T, typename Generator, typename Camera>
+template <typename R, typename Generator, typename Camera>
 VSNRAY_FUNC
 inline R make_primary_ray(
         R                               /* */,
-        pixel_sampler::basic_jittered_blend_type<T> /* */,
-        Generator&                                  gen,
-        int                                         x,
-        int                                         y,
-        int                                         width,
-        int                                         height,
-        Camera const&                               cam
+        pixel_sampler::jittered_type    /* */,
+        Generator&                      gen,
+        int                             x,
+        int                             y,
+        int                             width,
+        int                             height,
+        Camera const&                   cam
         )
 {
-    using U = typename R::scalar_type;
+    using T = typename R::scalar_type;
 
-    vector<2, U> jitter(gen.next() - U(0.5), gen.next() - U(0.5));
+    vector<2, T> jitter(gen.next() - T(0.5), gen.next() - T(0.5));
 
     return invoke_cam_primary_ray(
             R{},
             cam,
             gen,
-            expand_pixel<U>().x(x) + jitter.x,
-            expand_pixel<U>().y(y) + jitter.y,
-            U(width),
-            U(height)
+            expand_pixel<T>().x(x) + jitter.x,
+            expand_pixel<T>().y(y) + jitter.y,
+            T(width),
+            T(height)
             );
 }
 
@@ -345,6 +345,47 @@ inline void sample_pixel_impl(
                 rt_ref.depth()
                 );
     }
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Jittered pixel sampler
+//
+
+template <
+    typename K,
+    typename R,
+    typename Generator,
+    pixel_format CF,
+    typename Camera
+    >
+VSNRAY_FUNC
+inline void sample_pixel_impl(
+        K                               kernel,
+        pixel_sampler::jittered_type    /* */,
+        R const&                        r,
+        Generator&                      gen,
+        render_target_ref<CF>           rt_ref,
+        int                             x,
+        int                             y,
+        int                             width,
+        int                             height,
+        Camera const&                   cam
+        )
+{
+    VSNRAY_UNUSED(cam);
+
+    auto result = invoke_kernel(kernel, r, gen, x, y);
+    pixel_access::store(
+            pixel_format_constant<CF>{},
+            pixel_format_constant<PF_RGBA32F>{},
+            x,
+            y,
+            width,
+            height,
+            result,
+            rt_ref.color()
+            );
 }
 
 
