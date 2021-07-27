@@ -356,16 +356,16 @@ template <
     typename K,
     typename R,
     typename Generator,
-    pixel_format CF,
+    typename RenderTargetRef,
     typename Camera
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
         K                               kernel,
-        pixel_sampler::jittered_type    /* */,
-        R const&                        r,
+        pixel_sampler::jittered_type    ps,
+        R const&                        /* */,
         Generator&                      gen,
-        render_target_ref<CF>           rt_ref,
+        RenderTargetRef                 rt_ref,
         int                             x,
         int                             y,
         int                             width,
@@ -375,9 +375,31 @@ inline void sample_pixel_impl(
 {
     VSNRAY_UNUSED(cam);
 
+    using RR = decltype(invoke_kernel(kernel, R{}, gen, x, y));
+    using S = typename RR::scalar_type;
+
+    auto r = make_primary_ray(
+            R{},
+            ps,
+            gen,
+            x,
+            y,
+            width,
+            height,
+            cam
+            );
+
     auto result = invoke_kernel(kernel, r, gen, x, y);
+
+    // Arbitrarily assign the depth of _one_ pixel that recorded a hit
+    if (RenderTargetRef::depth_format != PF_UNSPECIFIED)
+    {
+        result.depth = select(result.hit, depth_transform(r, result.depth, cam), S(1.0));
+    }
+
+
     pixel_access::store(
-            pixel_format_constant<CF>{},
+            pixel_format_constant<RenderTargetRef::color_format>{},
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
