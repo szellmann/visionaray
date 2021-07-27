@@ -383,7 +383,7 @@ inline void sample_pixel_impl(
             y,
             width,
             height,
-            result,
+            result.color,
             rt_ref.color()
             );
 }
