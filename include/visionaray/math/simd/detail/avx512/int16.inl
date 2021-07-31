@@ -95,7 +95,7 @@ VSNRAY_FORCE_INLINE void store(unsigned dst[16], int16 const& v)
     return _mm512_store_si512(reinterpret_cast<__m512i*>(dst), v);
 }
 
-template <size_t I>
+template <unsigned I>
 VSNRAY_FORCE_INLINE int& get(int16& v)
 {
     static_assert(I >= 0 && I < 16, "Index out of range for SIMD vector access");
@@ -103,7 +103,7 @@ VSNRAY_FORCE_INLINE int& get(int16& v)
     return reinterpret_cast<int*>(&v)[I];
 }
 
-template <size_t I>
+template <unsigned I>
 VSNRAY_FORCE_INLINE int const& get(int16 const& v)
 {
     static_assert(I >= 0 && I < 16, "Index out of range for SIMD vector access");
