@@ -106,7 +106,7 @@ VSNRAY_FORCE_INLINE void store_non_temporal(float dst[4], float4 const& v)
     _mm_stream_ps(dst, v);
 }
 
-template <size_t I>
+template <unsigned I>
 VSNRAY_FORCE_INLINE float& get(float4& v)
 {
     static_assert(I < 4, "Index out of range for SIMD vector access");
@@ -114,7 +114,7 @@ VSNRAY_FORCE_INLINE float& get(float4& v)
     return reinterpret_cast<float*>(&v)[I];
 }
 
-template <size_t I>
+template <unsigned I>
 VSNRAY_FORCE_INLINE float const& get(float4 const& v)
 {
     static_assert(I < 4, "Index out of range for SIMD vector access");
