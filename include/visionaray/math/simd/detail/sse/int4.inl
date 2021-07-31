@@ -109,7 +109,7 @@ VSNRAY_FORCE_INLINE int4 shuffle(int4 const& a)
 template <unsigned I>
 VSNRAY_FORCE_INLINE int& get(int4& v)
 {
-    static_assert(I >= 0 && I < 4, "Index out of range for SIMD vector access");
+    static_assert(I < 4, "Index out of range for SIMD vector access");
 
     return reinterpret_cast<int*>(&v)[I];
 }
@@ -117,7 +117,7 @@ VSNRAY_FORCE_INLINE int& get(int4& v)
 template <unsigned I>
 VSNRAY_FORCE_INLINE int const& get(int4 const& v)
 {
-    static_assert(I >= 0 && I < 4, "Index out of range for SIMD vector access");
+    static_assert(I < 4, "Index out of range for SIMD vector access");
 
     return reinterpret_cast<int const*>(&v)[I];
 }

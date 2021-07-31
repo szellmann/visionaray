@@ -112,7 +112,7 @@ VSNRAY_FORCE_INLINE void store_non_temporal(unsigned dst[8], int8 const& v)
 template <unsigned I>
 VSNRAY_FORCE_INLINE int& get(int8& v)
 {
-    static_assert(I >= 0 && I < 8, "Index out of range for SIMD vector access");
+    static_assert(I < 8, "Index out of range for SIMD vector access");
 
     return reinterpret_cast<int*>(&v)[I];
 }
@@ -120,7 +120,7 @@ VSNRAY_FORCE_INLINE int& get(int8& v)
 template <unsigned I>
 VSNRAY_FORCE_INLINE int const& get(int8 const& v)
 {
-    static_assert(I >= 0 && I < 8, "Index out of range for SIMD vector access");
+    static_assert(I < 8, "Index out of range for SIMD vector access");
 
     return reinterpret_cast<int const*>(&v)[I];
 }

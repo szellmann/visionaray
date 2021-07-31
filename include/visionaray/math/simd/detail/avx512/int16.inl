@@ -98,7 +98,7 @@ VSNRAY_FORCE_INLINE void store(unsigned dst[16], int16 const& v)
 template <unsigned I>
 VSNRAY_FORCE_INLINE int& get(int16& v)
 {
-    static_assert(I >= 0 && I < 16, "Index out of range for SIMD vector access");
+    static_assert(I < 16, "Index out of range for SIMD vector access");
 
     return reinterpret_cast<int*>(&v)[I];
 }
@@ -106,7 +106,7 @@ VSNRAY_FORCE_INLINE int& get(int16& v)
 template <unsigned I>
 VSNRAY_FORCE_INLINE int const& get(int16 const& v)
 {
-    static_assert(I >= 0 && I < 16, "Index out of range for SIMD vector access");
+    static_assert(I < 16, "Index out of range for SIMD vector access");
 
     return reinterpret_cast<int const*>(&v)[I];
 }
