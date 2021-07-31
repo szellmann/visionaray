@@ -102,7 +102,7 @@ VSNRAY_FORCE_INLINE void store(unsigned dst[4], int4 const& v)
     vst1q_s32(reinterpret_cast<int*>(dst), v);
 }
 
-template <size_t I>
+template <unsigned I>
 VSNRAY_FORCE_INLINE int& get(int4& v)
 {
     static_assert(I >= 0 && I < 4, "Index out of range for SIMD vector access");
@@ -110,7 +110,7 @@ VSNRAY_FORCE_INLINE int& get(int4& v)
     return reinterpret_cast<int*>(&v)[I];
 }
 
-template <size_t I>
+template <unsigned I>
 VSNRAY_FORCE_INLINE int const& get(int4 const& v)
 {
     static_assert(I >= 0 && I < 4, "Index out of range for SIMD vector access");
