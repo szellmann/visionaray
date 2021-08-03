@@ -243,6 +243,7 @@ void viewer_sdl2::init(int argc, char** argv)
 
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
+    ImGui::GetStyle().WindowRounding = 8.0f;
 
     imgui_create_font_texture_opengl2();
 

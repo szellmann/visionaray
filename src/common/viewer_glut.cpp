@@ -145,6 +145,7 @@ void viewer_glut::impl::init(
 
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
+    ImGui::GetStyle().WindowRounding = 8.0f;
 
     viewer->imgui_create_font_texture_opengl2();
 
