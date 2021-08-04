@@ -84,20 +84,6 @@ inline T spectrum<T>::operator()(float lambda) const
     return tex1D(tex, coord);
 }
 
-template <typename T>
-VSNRAY_FUNC
-inline vector<spectrum<T>::num_samples, T>& spectrum<T>::samples()
-{
-    return samples_;
-}
-
-template <typename T>
-VSNRAY_FUNC
-inline vector<spectrum<T>::num_samples, T> const& spectrum<T>::samples() const
-{
-    return samples_;
-}
-
 
 //--------------------------------------------------------------------------------------------------
 // Basic arithmetic
