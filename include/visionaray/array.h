@@ -6,10 +6,12 @@
 #ifndef VSNRAY_ARRAY_H
 #define VSNRAY_ARRAY_H 1
 
+#include <visionaray/config.h>
+
 #include <cstddef>
 #include <iterator>
 
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_THRUST
 #include <thrust/iterator/reverse_iterator.h>
 #endif
 
@@ -38,7 +40,7 @@ struct array
     using iterator                   = T*;
     using const_iterator             = T const*;
 
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_THRUST
     using reverse_iterator           = thrust::reverse_iterator<iterator>;
     using const_reverse_iterator     = thrust::reverse_iterator<const_iterator>;
 #else

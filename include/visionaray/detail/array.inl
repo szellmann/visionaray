@@ -1,10 +1,12 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <visionaray/config.h>
+
 #include <stdexcept>
 #include <utility>
 
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_THRUST
 #include <thrust/swap.h>
 #endif
 
@@ -228,7 +230,7 @@ template <typename T, size_t N>
 VSNRAY_FUNC
 inline void array<T, N>::swap(array<T, N>& rhs)
 {
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_THRUST
     using thrust::swap;
 #else
     using std::swap;
@@ -306,7 +308,7 @@ VSNRAY_CONSTEXPR_ T const&& get(visionaray::array<T, N> const&& a)
 } // std
 
 
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_THRUST
 
 namespace thrust
 {
