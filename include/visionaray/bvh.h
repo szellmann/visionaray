@@ -6,17 +6,12 @@
 #ifndef VSNRAY_BVH_H
 #define VSNRAY_BVH_H 1
 
-#include <visionaray/config.h>
-
 #include <cassert>
 #include <cstddef>
 #include <type_traits>
 
 #ifdef __CUDACC__
 #include <cuda_runtime.h>
-#endif
-
-#if VSNRAY_HAVE_THRUST
 #include <thrust/copy.h>
 #include <thrust/device_vector.h>
 #endif
@@ -43,7 +38,7 @@ inline auto get_pointer(Container const& vec)
     return vec.data();
 }
 
-#if defined(__CUDACC__) && VSNRAY_HAVE_THRUST
+#ifdef __CUDACC__
 template <typename T>
 inline T const* get_pointer(thrust::device_vector<T> const& vec)
 {
@@ -620,7 +615,7 @@ private:
         dst = src;
     }
 
-#if defined(__CUDACC__) && VSNRAY_HAVE_THRUST
+#ifdef __CUDACC__
     template <typename T, typename SrcVector>
     void copy(thrust::device_vector<T>& dst, SrcVector const& src)
     {
@@ -730,7 +725,7 @@ using bvh               = bvh_t<aligned_vector<P>, aligned_vector<bvh_node, 32>>
 template <typename P>
 using index_bvh         = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node, 32>, aligned_vector<unsigned>>;
 
-#if defined(__CUDACC__) && VSNRAY_HAVE_THRUST
+#ifdef __CUDACC__
 template <typename P>
 using cuda_bvh          = bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>>;
 template <typename P>

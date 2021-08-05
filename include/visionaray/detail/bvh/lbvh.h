@@ -6,12 +6,10 @@
 #ifndef VSNRAY_DETAIL_BVH_LBVH_H
 #define VSNRAY_DETAIL_BVH_LBVH_H 1
 
-#include <visionaray/config.h>
-
 #include <algorithm>
 #include <array>
 
-#if VSNRAY_HAVE_THRUST
+#ifdef __CUDACC__
 #include <thrust/device_vector.h>
 #include <thrust/sort.h>
 #endif
@@ -604,7 +602,7 @@ struct lbvh_builder
     }
 
 
-#if defined(__CUDACC__) && VSNRAY_HAVE_THRUST
+#ifdef __CUDACC__
 
     //-------------------------------------------------------------------------
     // GPU builder based on Karras, Maximizing parallelism in the construction
@@ -722,7 +720,7 @@ struct lbvh_builder
         return tree;
     }
 
-#endif // __CUDACC__ && VSNRAY_HAVE_THRUST
+#endif // __CUDACC__
 
 
     // TODO:

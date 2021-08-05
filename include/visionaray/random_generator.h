@@ -6,11 +6,9 @@
 #ifndef VSNRAY_RANDOM_GENERATOR_H
 #define VSNRAY_RANDOM_GENERATOR_H 1
 
-#include <visionaray/config.h>
-
 #include <type_traits>
 
-#if defined(__CUDACC__) && VSNRAY_HAVE_THRUST
+#if defined(__CUDACC__)
 #include <thrust/random.h>
 #else
 #include <random>
@@ -36,7 +34,7 @@ public:
 
 public:
 
-#if defined(__CUDACC__) && VSNRAY_HAVE_THRUST
+#if defined(__CUDACC__)
     typedef thrust::default_random_engine rand_engine;
     typedef thrust::uniform_real_distribution<T> uniform_dist;
 #else
