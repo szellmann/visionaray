@@ -15,5 +15,6 @@
 #cmakedefine01 VSNRAY_HAVE_OPENGLES
 #cmakedefine01 VSNRAY_HAVE_TBB
 #cmakedefine01 VSNRAY_HAVE_THREADS
+#cmakedefine01 VSNRAY_HAVE_THRUST
 
 #endif // VSNRAY_CONFIG_H

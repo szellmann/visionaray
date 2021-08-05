@@ -23,6 +23,7 @@ endif()
 if (VSNRAY_ENABLE_CUDA)
     find_package(CUDA)
     visionaray_use_package(CUDA)
+    set(VSNRAY_HAVE_THRUST 1)
 endif()
 
 # TBB

@@ -33,6 +33,7 @@ visionaray_use_package(ZLIB)
 if (VSNRAY_ENABLE_CUDA)
     find_package(CUDA)
     visionaray_use_package(CUDA)
+    set(VSNRAY_COMMON_HAVE_THRUST 1)
 endif()
 
 # Cocoa
