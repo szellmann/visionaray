@@ -593,7 +593,7 @@ void load_pbrt(std::string const& filename, model& mod)
 
         make_scene_graph(scene->world, *root, shape2itm, mat2prop, filename);
     }
-    catch (std::runtime_error e)
+    catch (std::runtime_error& e)
     {
         // TODO
         throw e;
