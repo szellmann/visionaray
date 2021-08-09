@@ -68,19 +68,64 @@ public:
         return size_;
     }
 
-    template <typename U, typename I>
+    template <
+        typename U,
+        typename I,
+        typename = typename std::enable_if<!simd::is_simd_vector<I>::value>::type
+        >
+    U value(U /* */, I const& x) const
+    {
+        return access(U{}, size_t(x));
+    }
+
+    template <
+        typename U,
+        typename I,
+        typename = typename std::enable_if<!simd::is_simd_vector<I>::value>::type
+        >
+    U value(U /* */, I const& x, I const& y) const
+    {
+        return access(U{}, y * I(size()[0]) + size_t(x));
+    }
+
+    template <
+        typename U,
+        typename I,
+        typename = typename std::enable_if<!simd::is_simd_vector<I>::value>::type
+        >
+    U value(U /* */, I const& x, I const& y, I const& z) const
+    {
+        return access(U{}, z * I(size()[0]) * I(size()[1]) + y * I(size()[0]) + size_t(x));
+    }
+
+    template <
+        typename U,
+        typename I,
+        typename = typename std::enable_if<simd::is_simd_vector<I>::value>::type,
+        typename = void
+        >
     U value(U /* */, I const& x) const
     {
         return access(U{}, x);
     }
 
-    template <typename U, typename I>
+    template <
+        typename U,
+        typename I,
+        typename = typename std::enable_if<simd::is_simd_vector<I>::value>::type,
+        typename = void
+        >
     U value(U /* */, I const& x, I const& y) const
     {
         return access(U{}, y * I(size()[0]) + x);
     }
 
-    template <typename U, typename I>
+    template <
+        typename U,
+        typename I,
+        typename = typename std::enable_if<simd::is_simd_vector<I>::value>::type,
+        typename = void
+        >
     U value(U /* */, I const& x, I const& y, I const& z) const
     {
         return access(U{}, z * I(size()[0]) * I(size()[1]) + y * I(size()[0]) + x);
