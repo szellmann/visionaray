@@ -2129,7 +2129,7 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
     {
         file.write(reinterpret_cast<char const*>(cont.data()), cont.size() * sizeof(typename Container::value_type));
     }
-    catch (std::ios_base::failure)
+    catch (std::ios_base::failure&)
     {
         throw std::runtime_error("Failed to write to file");
     }
