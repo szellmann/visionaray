@@ -79,6 +79,40 @@ private:
 
 
 //-------------------------------------------------------------------------------------------------
+// Simple 3-D range class
+//
+
+template <typename I>
+class range3d
+{
+public:
+    static_assert(std::is_integral<I>::value, "Type must be integral.");
+
+    VSNRAY_FUNC range3d(I rb, I re, I cb, I ce, I sb, I se)
+        : rows_(rb, re)
+        , cols_(cb, ce)
+        , slices_(sb, se)
+    {
+    }
+
+    VSNRAY_FUNC range1d<I>& rows()               { return rows_; }
+    VSNRAY_FUNC range1d<I> const& rows() const   { return rows_; }
+
+    VSNRAY_FUNC range1d<I>& cols()               { return cols_; }
+    VSNRAY_FUNC range1d<I> const& cols() const   { return cols_; }
+
+    VSNRAY_FUNC range1d<I>& slices()             { return slices_; }
+    VSNRAY_FUNC range1d<I> const& slices() const { return slices_; }
+
+private:
+
+    range1d<I> rows_;
+    range1d<I> cols_;
+    range1d<I> slices_;
+};
+
+
+//-------------------------------------------------------------------------------------------------
 // 1-D tiled range class
 //
 
@@ -145,6 +179,40 @@ private:
 
     tiled_range1d<I> rows_;
     tiled_range1d<I> cols_;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+// 3-D tiled range class
+//
+
+template <typename I>
+class tiled_range3d
+{
+public:
+    static_assert(std::is_integral<I>::value, "Type must be integral.");
+
+    VSNRAY_FUNC tiled_range3d(I rb, I re, I rts, I cb, I ce, I cts, I sb, I se, I sts)
+        : rows_(rb, re, rts)
+        , cols_(cb, ce, cts)
+        , slices_(sb, se, sts)
+    {
+    }
+
+    VSNRAY_FUNC tiled_range1d<I>& rows()               { return rows_; }
+    VSNRAY_FUNC tiled_range1d<I> const& rows() const   { return rows_; }
+
+    VSNRAY_FUNC tiled_range1d<I>& cols()               { return cols_; }
+    VSNRAY_FUNC tiled_range1d<I> const& cols() const   { return cols_; }
+
+    VSNRAY_FUNC tiled_range1d<I>& slices()             { return slices_; }
+    VSNRAY_FUNC tiled_range1d<I> const& slices() const { return slices_; }
+
+private:
+
+    tiled_range1d<I> rows_;
+    tiled_range1d<I> cols_;
+    tiled_range1d<I> slices_;
 };
 
 } // visionaray
