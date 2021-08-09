@@ -7,6 +7,7 @@
 #define VSNRAY_TEXTURE_DETAIL_STORAGE_TYPES_POINTER_STORAGE_H 1
 
 #include <array>
+#include <cstddef>
 #include <type_traits>
 
 #include <visionaray/math/simd/gather.h>
