@@ -86,7 +86,7 @@ public:
         >
     U value(U /* */, I const& x, I const& y) const
     {
-        return access(U{}, y * I(size()[0]) + size_t(x));
+        return access(U{}, y * size_t(size()[0]) + x);
     }
 
     template <
@@ -96,7 +96,7 @@ public:
         >
     U value(U /* */, I const& x, I const& y, I const& z) const
     {
-        return access(U{}, z * I(size()[0]) * I(size()[1]) + y * I(size()[0]) + size_t(x));
+        return access(U{}, z * size_t(size()[0]) * I(size()[1]) + y * I(size()[0]) + x);
     }
 
     template <
@@ -152,12 +152,8 @@ protected:
     T const* data_ = nullptr;
     std::array<unsigned, Dim> size_ {{ 0 }};
 
-    template <
-        typename U,
-        typename I,
-        typename = typename std::enable_if<!simd::is_simd_vector<I>::value>::type
-        >
-    U access(U /* */, I const& index) const
+    template <typename U>
+    U access(U /* */, size_t index) const
     {
         return U(data_[index]);
     }
@@ -165,8 +161,7 @@ protected:
     template <
         typename U,
         typename I,
-        typename = typename std::enable_if<simd::is_simd_vector<I>::value>::type,
-        typename = void
+        typename = typename std::enable_if<simd::is_simd_vector<I>::value>::type
         >
     U access(U /* */, I const& index) const
     {
