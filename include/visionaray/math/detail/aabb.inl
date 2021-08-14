@@ -3,7 +3,9 @@
 
 #include <utility>
 
+#include "../simd/type_traits.h"
 #include "../axis.h"
+#include "../config.h"
 #include "../limits.h"
 
 
@@ -320,5 +322,45 @@ inline array<vector<3, T>, 8> compute_vertices(basic_aabb<T, Dim> const& box)
         { min.x, min.y, min.z }
     }};
 }
+
+
+namespace simd
+{
+
+//-------------------------------------------------------------------------------------------------
+// SIMD conversions
+//
+
+// pack ---------------------------------------------------
+
+template <typename T, size_t N> // only for 3D aabb!
+MATH_FUNC
+inline basic_aabb<float_from_simd_width_t<N>, 3> pack(array<basic_aabb<T, 3>, N> const& boxes)
+{
+    using U = float_from_simd_width_t<N>; // TODO: generalize, not just float!
+
+    basic_aabb<U, 3> result;
+
+    T* minx = reinterpret_cast<T*>(&result.min.x);
+    T* miny = reinterpret_cast<T*>(&result.min.y);
+    T* minz = reinterpret_cast<T*>(&result.min.z);
+    T* maxx = reinterpret_cast<T*>(&result.max.x);
+    T* maxy = reinterpret_cast<T*>(&result.max.y);
+    T* maxz = reinterpret_cast<T*>(&result.max.z);
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        minx[i] = boxes[i].min.x;
+        miny[i] = boxes[i].min.y;
+        minz[i] = boxes[i].min.z;
+        maxx[i] = boxes[i].max.x;
+        maxy[i] = boxes[i].max.y;
+        maxz[i] = boxes[i].max.z;
+    }
+
+    return result;
+}
+
+} // simd
 
 } // MATH_NAMESPACE

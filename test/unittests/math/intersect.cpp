@@ -20,20 +20,14 @@ TEST(Intersect, Ray1AABB4)
             vector<3, float>(1.0f, 0.0f, 0.0f)
             );
 
-    array<vector<3, float>, 4> box_mins = {{
-            { -3.5f, -0.5f, -0.5f },
-            { -2.5f, -0.5f, -0.5f },
-            { -1.5f, -0.5f, -0.5f },
-            { -0.5f, -0.5f, -0.5f },
-            }};
-    array<vector<3, float>, 4> box_maxs = {{
-            { -2.5f, +0.5f, +0.5f },
-            { -1.5f, +0.5f, +0.5f },
-            { -0.5f, +0.5f, +0.5f },
-            { +0.5f, +0.5f, +0.5f },
-            }};
+    array<aabb, 4> boxes {
+            aabb({ -3.5f, -0.5f, -0.5f }, { -2.5f, +0.5f, +0.5f }),
+            aabb({ -2.5f, -0.5f, -0.5f }, { -1.5f, +0.5f, +0.5f }),
+            aabb({ -1.5f, -0.5f, -0.5f }, { -0.5f, +0.5f, +0.5f }),
+            aabb({ -0.5f, -0.5f, -0.5f }, { +0.5f, +0.5f, +0.5f })
+            };
 
-    basic_aabb<simd::float4> box(simd::pack(box_mins), simd::pack(box_maxs));
+    basic_aabb<simd::float4> box(simd::pack(boxes));
 
     auto hr = intersect(r, box);
 
