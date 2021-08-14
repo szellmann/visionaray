@@ -104,6 +104,7 @@ set(UNITTESTS_SOURCES
     math/simd/gather.cpp
     math/simd/select.cpp
     math/simd/simd.cpp
+    math/intersect.cpp
     math/simd/trans.cpp
     math/matrix.cpp
     math/ray.cpp

@@ -60,6 +60,70 @@ inline hit_record<basic_ray<T>, basic_aabb<U>> intersect(
     return result;
 }
 
+//-------------------------------------------------------------------------------------------------
+// simd overload: ray1 / aabbN
+//
+
+// TODO: combine those three using type traits!
+template <>
+struct hit_record<basic_ray<float>, basic_aabb<simd::float4>>
+{
+    using T = simd::float4;
+
+    using scalar_type = T;
+    using mask_type = simd::mask_type_t<T>;
+
+    mask_type   hit   = mask_type(false);
+    scalar_type tnear =  numeric_limits<T>::max();
+    scalar_type tfar  = -numeric_limits<T>::max();
+};
+
+template <>
+struct hit_record<basic_ray<float>, basic_aabb<simd::float8>>
+{
+    using T = simd::float8;
+
+    using scalar_type = T;
+    using mask_type = simd::mask_type_t<T>;
+
+    mask_type   hit   = mask_type(false);
+    scalar_type tnear =  numeric_limits<T>::max();
+    scalar_type tfar  = -numeric_limits<T>::max();
+};
+
+template <>
+struct hit_record<basic_ray<float>, basic_aabb<simd::float16>>
+{
+    using T = simd::float16;
+
+    using scalar_type = T;
+    using mask_type = simd::mask_type_t<T>;
+
+    mask_type   hit   = mask_type(false);
+    scalar_type tnear =  numeric_limits<T>::max();
+    scalar_type tfar  = -numeric_limits<T>::max();
+};
+
+template <typename T, typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type>
+MATH_FUNC
+inline hit_record<basic_ray<float>, basic_aabb<T>> intersect(
+        basic_ray<float> const& ray,
+        basic_aabb<T> const&    aabb,
+        vector<3, float>        inv_dir
+        )
+{
+    hit_record<basic_ray<float>, basic_aabb<T>> result;
+
+    vector<3, T> t1 = (aabb.min - vector<3, T>(ray.ori)) * vector<3, T>(inv_dir);
+    vector<3, T> t2 = (aabb.max - vector<3, T>(ray.ori)) * vector<3, T>(inv_dir);
+
+    result.tnear = min_max( t1.x, t2.x, min_max(t1.y, t2.y, min(t1.z, t2.z)) );
+    result.tfar  = max_min( t1.x, t2.x, max_min(t1.y, t2.y, max(t1.z, t2.z)) );
+    result.hit   = result.tfar >= result.tnear;
+
+    return result;
+}
+
 template <typename T, typename U>
 MATH_FUNC
 inline hit_record<basic_ray<T>, basic_aabb<U>> intersect(
