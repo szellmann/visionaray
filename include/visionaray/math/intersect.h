@@ -219,6 +219,88 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_triangle
     return result;
 }
 
+//-------------------------------------------------------------------------------------------------
+// simd overload: ray1 / triangleN
+//
+
+template <typename R>
+struct hit_record<R, primitive<simd::int4>>
+{
+    using T = simd::float4;
+    using scalar_type = T;
+    using int_type = simd::int_type_t<T>;
+    using mask_type = simd::mask_type_t<T>;
+
+    mask_type hit          = mask_type(false);
+    int_type prim_id       = int_type(0);
+    int_type geom_id       = int_type(0);
+
+    T t                    = numeric_limits<T>::max();
+    vector<3, T> isect_pos;
+
+    T u                    = T(0.0);
+    T v                    = T(0.0);
+};
+
+template <
+    typename T,
+    typename I = typename simd::int_type<T>::type,
+    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
+    >
+MATH_FUNC
+inline hit_record<basic_ray<float>, primitive<I>> intersect(
+        basic_ray<float> const& ray,
+        basic_triangle<3, T, I> const& tri
+        )
+{
+    using vec_type = vector<3, T>;
+
+    hit_record<basic_ray<float>, primitive<I>> result;
+    result.t = T(-1.0);
+
+    vec_type ori(ray.ori);
+    vec_type dir(ray.dir);
+
+    vec_type s1 = cross(dir, tri.e2);
+    T div = dot(s1, tri.e1);
+
+    result.hit = ( div != T(0.0) );
+
+    if ( !any(result.hit) )
+    {
+        return result;
+    }
+
+    T inv_div = T(1.0) / div;
+
+    vec_type d = ori - tri.v1;
+    T b1 = dot(d, s1) * inv_div;
+
+    result.hit &= ( b1 >= T(0.0) && b1 <= T(1.0) );
+
+    if ( !any(result.hit) )
+    {
+        return result;
+    }
+
+    vec_type s2 = cross(d, tri.e1);
+    T b2 = dot(dir, s2) * inv_div;
+
+    result.hit &= ( b2 >= T(0.0) && b1 + b2 <= T(1.0) );
+
+    if ( !any(result.hit) )
+    {
+        return result;
+    }
+
+    result.prim_id = tri.prim_id;
+    result.geom_id = tri.geom_id;
+    result.t = dot(tri.e2, s2) * inv_div;
+    result.u = b1;
+    result.v = b2;
+    return result;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // ray / sphere
