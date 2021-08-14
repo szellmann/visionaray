@@ -12,7 +12,7 @@
 using namespace visionaray;
 
 
-TEST(Intersect, RayAABB4)
+TEST(Intersect, Ray1AABB4)
 {
     basic_ray<float> r(
             vector<3, float>(-2.0f, 0.0f, 0.0f),
