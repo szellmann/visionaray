@@ -88,6 +88,9 @@ namespace simd
 //      get the number of vector components for a SIMD vector type
 //      default: value := 1
 //
+//  - wider_simd_type
+//      given two FP types, returns the one with the greater SIMD width
+//
 //
 //-------------------------------------------------------------------------------------------------
 
@@ -988,6 +991,101 @@ template <>
 struct num_elements<simd::mask16>
 {
     enum { value = 16 };
+};
+
+//-------------------------------------------------------------------------------------------------
+// Given two floating point types, return the one with the wider simd width
+//
+
+// general ------------------------------------------------
+
+template <typename T, typename U>
+struct wider_simd_type
+{
+};
+
+template <>
+struct wider_simd_type<float, float>
+{
+    using type = float;
+};
+
+// SSE ----------------------------------------------------
+
+template <>
+struct wider_simd_type<float, simd::float4>
+{
+    using type = simd::float4;
+};
+
+template <>
+struct wider_simd_type<simd::float4, float>
+{
+    using type = simd::float4;
+};
+
+// AVX ----------------------------------------------------
+
+template <>
+struct wider_simd_type<float, simd::float8>
+{
+    using type = simd::float8;
+};
+
+template <>
+struct wider_simd_type<simd::float8, float>
+{
+    using type = simd::float8;
+};
+
+template <>
+struct wider_simd_type<simd::float4, simd::float8>
+{
+    using type = simd::float8;
+};
+
+template <>
+struct wider_simd_type<simd::float8, simd::float4>
+{
+    using type = simd::float8;
+};
+
+// AVX-512 ------------------------------------------------
+
+template <>
+struct wider_simd_type<float, simd::float16>
+{
+    using type = simd::float16;
+};
+
+template <>
+struct wider_simd_type<simd::float16, float>
+{
+    using type = simd::float16;
+};
+
+template <>
+struct wider_simd_type<simd::float4, simd::float16>
+{
+    using type = simd::float16;
+};
+
+template <>
+struct wider_simd_type<simd::float16, simd::float4>
+{
+    using type = simd::float16;
+};
+
+template <>
+struct wider_simd_type<simd::float8, simd::float16>
+{
+    using type = simd::float16;
+};
+
+template <>
+struct wider_simd_type<simd::float16, simd::float8>
+{
+    using type = simd::float16;
 };
 
 } // simd
