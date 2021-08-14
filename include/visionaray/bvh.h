@@ -693,9 +693,7 @@ template <typename T>
 struct is_index_bvh<index_bvh_inst_t<T>> : std::true_type {};
 
 template <typename T>
-struct is_any_bvh : std::integral_constant<bool, is_bvh<T>::value || is_index_bvh<T>::value>
-{
-};
+struct is_any_bvh : std::integral_constant<bool, is_bvh<T>::value || is_index_bvh<T>::value> {};
 
 
 template <typename T>
@@ -711,9 +709,7 @@ template <typename T>
 struct is_index_bvh_inst<index_bvh_inst_t<T>> : std::true_type {};
 
 template <typename T>
-struct is_any_bvh_inst : std::integral_constant<bool, is_bvh_inst<T>::value || is_index_bvh_inst<T>::value>
-{
-};
+struct is_any_bvh_inst : std::integral_constant<bool, is_bvh_inst<T>::value || is_index_bvh_inst<T>::value> {};
 
 
 //-------------------------------------------------------------------------------------------------
