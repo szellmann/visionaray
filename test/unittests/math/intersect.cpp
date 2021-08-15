@@ -64,51 +64,33 @@ TEST(Intersect, Ray1Tri4)
             vector<3, float>(1.0f, 0.0f, 0.0f)
             );
 
-    VSNRAY_ALIGN(16) int prim_ids[4] = { 0, 1, 2, 3 };
-    VSNRAY_ALIGN(16) int geom_ids[4] = { 0, 0, 0, 0 };
+    array<basic_triangle<3, float>, 4> tris;
 
-    array<vector<3, float>, 4> v1s = {{
-            { -3.0f, -1.0f, -1.0f },
-            { -2.0f, -1.0f, -1.0f },
-            { -1.0f, -1.0f, -1.0f },
-            { -0.0f, -1.0f, -1.0f }
-            }};
+    tris[0].prim_id = 0;
+    tris[0].geom_id = 0;
+    tris[0].v1 = vec3(-3.0f, -1.0f, -1.0f);
+    tris[0].e1 = vec3(-3.0f, -1.0f, +1.0f) - tris[0].v1;
+    tris[0].e2 = vec3(-3.0f,  1.0f,  0.0f) - tris[0].v1;
 
-    array<vector<3, float>, 4> v2s = {{
-            { -3.0f, -1.0f, +1.0f },
-            { -2.0f, -1.0f, +1.0f },
-            { -1.0f, -1.0f, +1.0f },
-            { -0.0f, -1.0f, +1.0f }
-            }};
+    tris[1].prim_id = 1;
+    tris[1].geom_id = 0;
+    tris[1].v1 = vec3(-2.0f, -1.0f, -1.0f);
+    tris[1].e1 = vec3(-2.0f, -1.0f, +1.0f) - tris[1].v1;
+    tris[1].e2 = vec3(-2.0f,  1.0f,  0.0f) - tris[1].v1;
 
-    array<vector<3, float>, 4> v3s = {{
-            { -3.0f,  1.0f,  0.0f },
-            { -2.0f,  1.0f,  0.0f },
-            { -1.0f,  1.0f,  0.0f },
-            { -0.0f,  1.0f,  0.0f }
-            }};
+    tris[2].prim_id = 2;
+    tris[2].geom_id = 0;
+    tris[2].v1 = vec3(-1.0f, -1.0f, -1.0f);
+    tris[2].e1 = vec3(-1.0f, -1.0f, +1.0f) - tris[2].v1;
+    tris[2].e2 = vec3(-1.0f,  1.0f,  0.0f) - tris[2].v1;
 
-    array<vector<3, float>, 4> e1s = {{
-            v2s[0] - v1s[0],
-            v2s[1] - v1s[1],
-            v2s[2] - v1s[2],
-            v2s[3] - v1s[3]
-            }};
+    tris[3].prim_id = 3;
+    tris[3].geom_id = 0;
+    tris[3].v1 = vec3(-0.0f, -1.0f, -1.0f);
+    tris[3].e1 = vec3(-0.0f, -1.0f, +1.0f) - tris[3].v1;
+    tris[3].e2 = vec3(-0.0f,  1.0f,  0.0f) - tris[3].v1;
 
-    array<vector<3, float>, 4> e2s = {{
-            v3s[0] - v1s[0],
-            v3s[1] - v1s[1],
-            v3s[2] - v1s[2],
-            v3s[3] - v1s[3]
-            }};
-
-    basic_triangle<3, simd::float4, simd::int4> tri(
-            simd::pack(v1s),
-            simd::pack(e1s),
-            simd::pack(e2s)
-            );
-    tri.prim_id = simd::int4(prim_ids);
-    tri.geom_id = simd::int4(geom_ids);
+    auto tri = simd::pack(tris);
 
     auto hr = intersect(r, tri);
 

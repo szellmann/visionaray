@@ -1,7 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include "../simd/type_traits.h"
 #include "../aabb.h"
+#include "../config.h"
 #include "../rectangle.h"
 
 namespace MATH_NAMESPACE
@@ -85,4 +87,61 @@ inline array<vector<Dim, T>,3> compute_vertices(basic_triangle<Dim, T, P> const&
     return {{ t.v1, t.v1 + t.e1, t.v1 + t.e2 }};
 }
 
+namespace simd
+{
+
+//-------------------------------------------------------------------------------------------------
+// SIMD conversions
+//
+
+// pack ---------------------------------------------------
+
+template <typename T, typename P, size_t N> // only for 3D triangle!
+MATH_FUNC
+inline basic_triangle<3, float_from_simd_width_t<N>, int_from_simd_width_t<N>> pack(
+        array<basic_triangle<3, T, P>, N> const& tris
+        )
+{
+    using U = float_from_simd_width_t<N>; // TODO: generalize, not just float!
+    using I = int_from_simd_width_t<N>;
+
+    basic_triangle<3, U, I> result;
+
+    int* prim_id = reinterpret_cast<int*>(&result.prim_id);
+    int* geom_id = reinterpret_cast<int*>(&result.geom_id);
+
+    T* v1x = reinterpret_cast<T*>(&result.v1.x);
+    T* v1y = reinterpret_cast<T*>(&result.v1.y);
+    T* v1z = reinterpret_cast<T*>(&result.v1.z);
+
+    T* e1x = reinterpret_cast<T*>(&result.e1.x);
+    T* e1y = reinterpret_cast<T*>(&result.e1.y);
+    T* e1z = reinterpret_cast<T*>(&result.e1.z);
+
+    T* e2x = reinterpret_cast<T*>(&result.e2.x);
+    T* e2y = reinterpret_cast<T*>(&result.e2.y);
+    T* e2z = reinterpret_cast<T*>(&result.e2.z);
+
+    for (size_t i = 0; i < N; ++i)
+    {
+        prim_id[i] = tris[i].prim_id;
+        geom_id[i] = tris[i].geom_id;
+
+        v1x[i] = tris[i].v1.x;
+        v1y[i] = tris[i].v1.y;
+        v1z[i] = tris[i].v1.z;
+
+        e1x[i] = tris[i].e1.x;
+        e1y[i] = tris[i].e1.y;
+        e1z[i] = tris[i].e1.z;
+
+        e2x[i] = tris[i].e2.x;
+        e2y[i] = tris[i].e2.y;
+        e2z[i] = tris[i].e2.z;
+    }
+
+    return result;
+}
+
+} // simd
 } // MATH_NAMESPACE
