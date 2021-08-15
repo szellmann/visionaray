@@ -348,7 +348,7 @@ static __global__ void assign_node_bounds(
     }
 }
 
-static __global__ void move_into_parents(
+static __global__ void collapse(
         bvh_node* bvh_nodes,    // OUT: visionaray bvh nodes
         node*     inner,        // IN:  all inner nodes
         node*     leaves,       // IN:  all leaf nodes
@@ -701,7 +701,7 @@ struct lbvh_builder
         {
             size_t num_threads = 1024;
 
-            move_into_parents<<<div_up(num_prims, num_threads), num_threads>>>(
+            collapse<<<div_up(num_prims, num_threads), num_threads>>>(
                     thrust::raw_pointer_cast(tree.nodes().data()),
                     thrust::raw_pointer_cast(inner.data()),
                     thrust::raw_pointer_cast(leaves.data()),
