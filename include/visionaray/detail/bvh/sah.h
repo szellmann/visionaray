@@ -699,11 +699,18 @@ struct binned_sah_builder
         return leaf_size;
     }
 
+    struct split_record
+    {
+        bool do_split;
+        unsigned char axis;
+        unsigned char sign;
+    };
+
     // Return true if the leaf should be split into two new leaves. In this case
     // sr.leaves contains the information of the left/right leaves and the
     // method returns true. If the leaf should not be split, returns false.
     template <typename Data>
-    bool split(leaf_infos& childs, leaf_info const& leaf, Data const& data, int max_leaf_size)
+    split_record split(leaf_infos& childs, leaf_info const& leaf, Data const& data, int max_leaf_size)
     {
         // FIXME:
         // Create a leaf if max_depth is reached...
@@ -713,7 +720,7 @@ struct binned_sah_builder
 
         if (leaf_size <= max_leaf_size)
         {
-            return false;
+            return { false, 0, 0 };
         }
 
         // Find the split axis (TODO: Test all axes...)
@@ -724,7 +731,7 @@ struct binned_sah_builder
 
         if (size[axis] <= 0.0f)
         {
-            return false;
+            return { false, 0, 0 };
         }
 
         // Object split --------------------------------------------------------
@@ -749,7 +756,7 @@ struct binned_sah_builder
 
                 if (size[axis] <= 0.0f)
                 {
-                    return false;
+                    return { false, 0, 0 };
                 }
 
                 projection pr2(leaf.prim_bounds, static_cast<int>(axis));
@@ -771,7 +778,7 @@ struct binned_sah_builder
 
         if (sr.cost > leaf_costs)
         {
-            return false;
+            return { false, 0, 0, };
         }
 
         // Found a new split point.
@@ -786,7 +793,8 @@ struct binned_sah_builder
             perform_object_partition(childs, sr, refs, leaf, pr);
         }
 
-        return true;
+        unsigned char sign = sr.prim_bounds[0].min[axis] < sr.prim_bounds[1].min[axis] ? 0 : 1;
+        return { true, static_cast<unsigned char>(axis), sign };
     }
 };
 

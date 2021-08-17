@@ -60,7 +60,9 @@ struct VSNRAY_ALIGN(32) bvh_node
         unsigned first_child;
         unsigned first_prim;
     };
-    unsigned num_prims;
+    unsigned short num_prims;
+    unsigned char ordered_traversal_axis;
+    unsigned char ordered_traversal_sign;
 
     VSNRAY_FUNC bool is_inner() const { return num_prims == 0; }
     VSNRAY_FUNC bool is_leaf() const { return num_prims != 0; }
@@ -97,14 +99,18 @@ struct VSNRAY_ALIGN(32) bvh_node
     VSNRAY_FUNC unsigned get_num_primitives() const
     {
         assert(is_leaf());
-        return num_prims;
+        return static_cast<unsigned>(num_prims);
     }
 
-    VSNRAY_FUNC void set_inner(aabb const& bounds, unsigned first_child_index)
+    VSNRAY_FUNC void set_inner(
+            aabb const& bounds, unsigned first_child_index, unsigned char axis, unsigned char sign
+            )
     {
         bbox = bounds;
         first_child = first_child_index;
         num_prims = 0;
+        ordered_traversal_axis = axis;
+        ordered_traversal_sign = sign;
     }
 
     VSNRAY_FUNC void set_leaf(aabb const& bounds, unsigned first_primitive_index, unsigned count)
@@ -113,7 +119,7 @@ struct VSNRAY_ALIGN(32) bvh_node
 
         bbox = bounds;
         first_prim = first_primitive_index;
-        num_prims = count;
+        num_prims = static_cast<unsigned short>(count);
     }
 };
 

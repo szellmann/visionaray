@@ -406,14 +406,14 @@ static __global__ void collapse(
     // Assign root
     if (index == 0)
     {
-        bvh_nodes[0].set_inner(inner[0].bbox, 1);
+        bvh_nodes[0].set_inner(inner[0].bbox, 1, 0, 0);
         return;
     }
 
     int off_inner = bvh_node_index(index, inner[index].parent);
 //  int off_first = bvh_node_index(inner[index].left, index);
     int off_first = 1 + index * 2; // save some instructions
-    bvh_nodes[off_inner].set_inner(inner[index].bbox, off_first);
+    bvh_nodes[off_inner].set_inner(inner[index].bbox, off_first, 0, 0);
 
     auto bbox = bvh_nodes[off_inner].get_bounds();
 }
@@ -563,15 +563,22 @@ struct lbvh_builder
         return leaf.last - leaf.first;
     }
 
+    struct split_record
+    {
+        bool do_split;
+        unsigned char axis;
+        unsigned char sign;
+    };
+
     // Return true if the leaf should be split into two new leaves. In this case
     // sr.leaves contains the information of the left/right leaves and the
     // method returns true. If the leaf should not be split, returns false.
     template <typename Data>
-    bool split(leaf_infos& childs, leaf_info const& leaf, Data const& /*data*/, int max_leaf_size)
+    split_record split(leaf_infos& childs, leaf_info const& leaf, Data const& /*data*/, int max_leaf_size)
     {
         if (leaf.last - leaf.first <= max_leaf_size)
         {
-            return false;
+            return { false, 0, 0 };
         }
 
         int split = find_split(prim_refs.data(), leaf.first, leaf.last);
@@ -598,7 +605,7 @@ struct lbvh_builder
                     );
         }
 
-        return true;
+        return { true, 0, 0 };
     }
 
 

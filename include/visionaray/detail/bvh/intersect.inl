@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <utility>
 
+#include <visionaray/math/simd/type_traits.h>
 #include <visionaray/math/matrix.h>
 #include <visionaray/intersector.h>
 #include <visionaray/update_if.h>
@@ -57,6 +58,9 @@ inline auto intersect(
 
     using RT = typename detail::traversal_result<HR, Traversal, MultiHitMax>::type;
 
+    using I = typename simd::int_type_t<T>;
+    using M = typename simd::mask_type_t<T>;
+
     RT result;
 
     stack<32> st;
@@ -70,36 +74,65 @@ next:
     {
         auto node = b.node(st.pop());
 
-        // while node does not contain primitives
-        //     traverse to the next node
-
-        while (!is_leaf(node))
+        if (simd::is_simd_vector<T>::value)
         {
-            auto children = &b.node(node.get_child(0));
+            // while node does not contain primitives
+            //     traverse to the next node
 
-            auto hr1 = isect(ray, children[0].get_bounds(), inv_dir);
-            auto hr2 = isect(ray, children[1].get_bounds(), inv_dir);
+            while (!is_leaf(node))
+            {   
+                auto children = &b.node(node.get_child(0));
 
-            auto b1 = any(is_closer(hr1, result, ray.tmin, ray.tmax));
-            auto b2 = any(is_closer(hr2, result, ray.tmin, ray.tmax));
+                auto hr1 = isect(ray, children[0].get_bounds(), inv_dir);
+                auto hr2 = isect(ray, children[1].get_bounds(), inv_dir);
 
-            if (b1 && b2)
-            {
-                unsigned near_addr = all( hr1.tnear < hr2.tnear ) ? 0 : 1;
-                st.push(node.get_child(!near_addr));
-                node = b.node(node.get_child(near_addr));
+                auto b1 = any(is_closer(hr1, result, ray.tmin, ray.tmax));
+                auto b2 = any(is_closer(hr2, result, ray.tmin, ray.tmax));
+
+                if (b1 && b2) 
+                {   
+                    unsigned near_addr = all( hr1.tnear < hr2.tnear ) ? 0 : 1;
+                    st.push(node.get_child(!near_addr));
+                    node = b.node(node.get_child(near_addr));
+                }   
+                else if (b1)
+                {   
+                    node = b.node(node.get_child(0));
+                }   
+                else if (b2)
+                {   
+                    node = b.node(node.get_child(1));
+                }   
+                else
+                {   
+                    goto next;
+                }   
             }
-            else if (b1)
+        }
+        else
+        {
+            while (true)
             {
-                node = b.node(node.get_child(0));
-            }
-            else if (b2)
-            {
-                node = b.node(node.get_child(1));
-            }
-            else
-            {
-                goto next;
+                auto hr = isect(ray, node.get_bounds(), inv_dir);
+                auto hit = any(is_closer(hr, result, ray.tmin, ray.tmax));
+
+                if (!hit)
+                {
+                    goto next;
+                }
+
+                if (node.is_leaf())
+                {
+                    break;
+                }
+
+                I sign((int)node.ordered_traversal_sign);
+                I sign_rd = reinterpret_as_int(ray.dir[node.ordered_traversal_axis]) >> 31;
+                unsigned near = any(M(sign ^ sign_rd));
+                unsigned far = !near;
+
+                st.push(node.get_child(far));
+                node = b.node(node.get_child(near));
             }
         }
 

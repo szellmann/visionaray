@@ -401,5 +401,13 @@ VSNRAY_FORCE_INLINE float4 approx_rsqrt(float4 const& v)
     return _mm_rsqrt_ps(v);
 }
 
+VSNRAY_FORCE_INLINE float4 copysign(float4 x, float4 y)
+{
+    const float4 m= _mm_set1_ps(-0.0f);
+    float4 a = _mm_and_ps(x, m);
+    float4 b = _mm_andnot_ps(m, y);
+    return _mm_or_ps(a, b);
+}
+
 } // simd
 } // MATH_NAMESPACE

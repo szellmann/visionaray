@@ -38,11 +38,11 @@ inline void build_top_down_impl(
 
     auto split = builder.split(childs, leaf, data, max_leaf_size);
 
-    if (split)
+    if (split.do_split)
     {
         auto first_child_index = static_cast<int>(nodes.size());
 
-        nodes[index].set_inner(leaf.prim_bounds, first_child_index);
+        nodes[index].set_inner(leaf.prim_bounds, first_child_index, split.axis, split.sign);
 
         nodes.emplace_back();
         nodes.emplace_back();
