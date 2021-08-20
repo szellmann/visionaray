@@ -76,6 +76,21 @@ public:
         threads.reset(nullptr);
     }
 
+    // Function to return an integer index in [0,N) given an opaque
+    // thread handle
+    unsigned get_thread_index(std::thread::id tid)
+    {
+        for (unsigned i = 0; i < num_threads; ++i)
+        {
+            if (threads[i].get_id() == tid)
+            {
+                return i;
+            }
+        }
+
+        return unsigned(-1);
+    }
+
     template <typename Func>
     void run(Func f, long queue_length)
     {
