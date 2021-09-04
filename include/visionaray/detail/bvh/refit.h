@@ -90,7 +90,12 @@ struct bvh_refitter
 
                     if (n.is_inner())
                     {
-                        tree.nodes()[i].set_inner(bbox, n.get_child(0));
+                        tree.nodes()[i].set_inner(
+                                bbox,
+                                n.get_child(0),
+                                n.ordered_traversal_axis,
+                                n.ordered_traversal_sign
+                                );
                     }
                     else
                     {
