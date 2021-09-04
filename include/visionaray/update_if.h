@@ -50,7 +50,6 @@ void update_if(HR& dst, HR const& src, Cond const& cond)
 template <typename HR>
 VSNRAY_FUNC
 auto is_closer(HR const& query, HR const& reference)
-    -> decltype(query.t < reference.t)
 {
     return query.hit && query.t < reference.t;
 }
@@ -60,7 +59,6 @@ auto is_closer(HR const& query, HR const& reference)
 template <typename R, typename T, typename HR>
 VSNRAY_FUNC
 auto is_closer(hit_record<R, basic_aabb<T>> const& query, HR const& reference)
-    -> decltype(query.tnear < reference.t)
 {
     return query.hit && query.tnear < reference.t;
 }
@@ -73,7 +71,6 @@ auto is_closer(hit_record<R, basic_aabb<T>> const& query, HR const& reference)
 template <typename HR, typename T>
 VSNRAY_FUNC
 auto is_closer(HR const& query, HR const& reference, T const& tmin, T const& tmax)
-    -> decltype(is_closer(query, reference))
 {
     return is_closer(query, reference) && query.t >= tmin && query.t <= tmax;
 }
@@ -87,7 +84,6 @@ auto is_closer(
         typename R::scalar_type const& tmin,
         typename R::scalar_type const& tmax
         )
-    -> decltype(is_closer(query, reference))
 {
     return is_closer(query, reference) && query.tfar >= tmin && query.tnear <= tmax;
 }
@@ -102,7 +98,6 @@ struct is_closer_t
     template <typename HR1, typename HR2>
     VSNRAY_FUNC
     auto operator()(HR1 const& query, HR2 const& reference)
-        -> decltype(is_closer(query, reference))
     {
         return is_closer(query, reference);
     }
@@ -110,7 +105,6 @@ struct is_closer_t
     template <typename HR1, typename HR2, typename T>
     VSNRAY_FUNC
     auto operator()(HR1 const& query, HR2 const& reference, T const& tmin, T const& tmax)
-        -> decltype(is_closer(query, reference, tmin, tmax))
     {
         return is_closer(query, reference, tmin, tmax);
     }
