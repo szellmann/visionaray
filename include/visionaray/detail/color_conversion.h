@@ -123,7 +123,7 @@ inline vector<3, T> spd_to_rgb(SPD const& spd, T lmin = T(400.0), T lmax = T(700
     T z(0.0);
     T n(0.0);
 
-    for (float lambda = lmin; lambda <= lmax; lambda += step)
+    for (T lambda = lmin; lambda <= lmax; lambda += step)
     {
         auto p = spd(lambda);
 
