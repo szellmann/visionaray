@@ -41,7 +41,6 @@ inline auto traverse(
         P                               end,
         Intersector&                    isect
         )
-    -> typename traversal_result<decltype( isect(r, *begin) ), Traversal, MultiHitMax>::type
 {
     using RT = typename traversal_result<decltype( isect(r, *begin) ), Traversal, MultiHitMax>::type;
 
@@ -85,13 +84,6 @@ inline auto traverse(
         P                               end,
         Intersector&                    isect
         )
-    -> decltype( isect(
-            std::integral_constant<int, Traversal>{},
-            std::integral_constant<size_t, MultiHitMax>{},
-            r,
-            *begin,
-            update_cond
-            ) )
 {
     using RT = decltype( isect(
             std::integral_constant<int, Traversal>{},
