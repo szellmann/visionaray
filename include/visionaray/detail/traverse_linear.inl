@@ -185,14 +185,6 @@ inline auto any_hit(
         Primitives      end,
         Intersector&    isect
         )
-    -> decltype( detail::traverse<detail::AnyHit>(
-            is_any_bvh<Primitive>{},
-            is_closer_t(),
-            r,
-            begin,
-            end,
-            isect
-            ) )
 {
     return detail::traverse<detail::AnyHit>(
             is_any_bvh<Primitive>{},
@@ -207,7 +199,6 @@ inline auto any_hit(
 template <typename R, typename P>
 VSNRAY_FUNC
 inline auto any_hit(R const& r, P begin, P end)
-    -> decltype( intersect(r, *begin) )
 {
     default_intersector ignore;
     return any_hit(r, begin, end, ignore);
@@ -231,14 +222,6 @@ inline auto closest_hit(
         Primitives      end,
         Intersector&    isect
         )
-    -> decltype( detail::traverse<detail::ClosestHit>(
-            is_any_bvh<Primitive>{},
-            is_closer_t(),
-            r,
-            begin,
-            end,
-            isect
-            ) )
 {
     return detail::traverse<detail::ClosestHit>(
             is_any_bvh<Primitive>{},
@@ -253,7 +236,6 @@ inline auto closest_hit(
 template <typename R, typename Primitives>
 VSNRAY_FUNC
 inline auto closest_hit(R const& r, Primitives begin, Primitives end)
-    -> decltype( closest_hit(r, begin, end, std::declval<default_intersector&>()) )
 {
     default_intersector ignore;
     return closest_hit(r, begin, end, ignore);
@@ -278,14 +260,6 @@ inline auto multi_hit(
         Primitives      end,
         Intersector&    isect
         )
-    -> decltype( detail::traverse<detail::MultiHit, N>(
-            is_any_bvh<Primitive>{},
-            is_closer_t(),
-            r,
-            begin,
-            end,
-            isect
-            ) )
 {
     return detail::traverse<detail::MultiHit, N>(
             is_any_bvh<Primitive>{},
@@ -305,7 +279,6 @@ template <
     >
 VSNRAY_FUNC
 inline auto multi_hit(R const& r, Primitives begin, Primitives end)
-    -> decltype(multi_hit<N>(r, begin, end, std::declval<default_intersector&>()))
 {
     default_intersector ignore;
     return multi_hit<N>(r, begin, end, ignore);
