@@ -24,7 +24,7 @@ void parallel_for(thread_pool& pool, range1d<I> const& range, Func const& func)
     I tile_size = div_up(len, static_cast<I>(pool.num_threads));
     I num_tiles = div_up(len, tile_size);
 
-    pool.run([=](unsigned tile_index)
+    pool.run([=](long tile_index)
         {
             I first = static_cast<I>(tile_index) * tile_size;
             I last = min(first + tile_size, len);
@@ -34,7 +34,7 @@ void parallel_for(thread_pool& pool, range1d<I> const& range, Func const& func)
                 func(i);
             }
 
-        }, static_cast<unsigned>(num_tiles));
+        }, static_cast<long>(num_tiles));
 }
 
 template <typename I, typename Func>
@@ -45,14 +45,14 @@ void parallel_for(thread_pool& pool, tiled_range1d<I> const& range, Func const& 
     I tile_size = range.tile_size();
     I num_tiles = div_up(len, tile_size);
 
-    pool.run([=](unsigned tile_index)
+    pool.run([=](long tile_index)
         {
             I first = static_cast<I>(tile_index) * tile_size + beg;
             I last = min(first + tile_size, beg + len);
 
             func(range1d<I>(first, last));
 
-        }, static_cast<unsigned>(num_tiles));
+        }, static_cast<long>(num_tiles));
 }
 
 template <typename I, typename Func>
@@ -67,7 +67,7 @@ void parallel_for(thread_pool& pool, tiled_range2d<I> const& range, Func const& 
     I num_tiles_x = div_up(width, tile_width);
     I num_tiles_y = div_up(height, tile_height);
 
-    pool.run([=](unsigned tile_index)
+    pool.run([=](long tile_index)
         {
             I first_x = (tile_index % num_tiles_x) * tile_width + first_row;
             I last_x = min(first_x + tile_width, first_row + width);
@@ -77,7 +77,7 @@ void parallel_for(thread_pool& pool, tiled_range2d<I> const& range, Func const& 
 
             func(range2d<I>(first_x, last_x, first_y, last_y));
 
-        }, static_cast<unsigned>(num_tiles_x * num_tiles_y));
+        }, static_cast<long>(num_tiles_x * num_tiles_y));
 }
 
 } // visionaray
