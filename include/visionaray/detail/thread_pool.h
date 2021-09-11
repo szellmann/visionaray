@@ -92,7 +92,7 @@ public:
     }
 
     template <typename Func>
-    void run(Func f, long queue_length)
+    void run(Func f, unsigned queue_length)
     {
         // Set worker function
         func = f;
@@ -131,9 +131,9 @@ private:
         std::atomic<bool>       start_threads;
         std::atomic<bool>       join_threads;
 
-        std::atomic<long>       num_work_items;
-        std::atomic<long>       work_item_counter;
-        std::atomic<long>       work_items_finished_counter;
+        std::atomic<unsigned>   num_work_items;
+        std::atomic<unsigned>   work_item_counter;
+        std::atomic<unsigned>   work_items_finished_counter;
     } sync_params;
 
     void thread_loop()
