@@ -14,7 +14,9 @@
 
 #include <GL/glew.h>
 
+#if VSNRAY_COMMON_HAVE_PBRT_PARSER
 #include <pbrtParser/Scene.h>
+#endif
 
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
@@ -514,6 +516,7 @@ struct renderer : viewer_type
     {
         std::vector<Curve> actual_curves;
 
+#if VSNRAY_COMMON_HAVE_PBRT_PARSER
         std::shared_ptr<pbrt::Scene> scene;
 
         if (!filename.empty())
@@ -562,6 +565,7 @@ struct renderer : viewer_type
                 // ignore
             }
         }
+#endif
 
         // Add some dummy data when file couldn't be loaded / file name was empty
         if (actual_curves.empty())
