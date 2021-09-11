@@ -45,6 +45,12 @@ if (APPLE AND VSNRAY_ENABLE_COCOA)
     visionaray_link_libraries(${CORE_VIDEO_LIBRARY})
 endif()
 
+# pbrtParser
+
+if (VSNRAY_ENABLE_PBRT_PARSER)
+    set(VSNRAY_COMMON_HAVE_PBRT_PARSER 1)
+endif()
+
 # Ptex
 
 if (VSNRAY_ENABLE_PTEX)
@@ -103,7 +109,9 @@ endif()
 
 visionaray_link_libraries(visionaray)
 
-visionaray_link_libraries(pbrtParser)
+if (VSNRAY_ENABLE_PBRT_PARSER)
+    visionaray_link_libraries(pbrtParser)
+endif()
 
 if (WIN32)
     add_definitions(-DBOOST_ALL_NO_LIB)

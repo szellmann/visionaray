@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <common/config.h>
+
 #include <algorithm>
 #include <cctype>
 #include <cstring> // memcpy
@@ -10,7 +12,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
+#if VSNRAY_COMMON_HAVE_PBRT_PARSER
 #include <pbrtParser/Scene.h>
+#endif
 
 #include <visionaray/detail/spd/blackbody.h>
 #include <visionaray/detail/spd/measured.h>
@@ -26,6 +30,8 @@
 
 namespace visionaray
 {
+
+#if VSNRAY_COMMON_HAVE_PBRT_PARSER
 
 using namespace pbrt;
 
@@ -559,8 +565,11 @@ static void make_scene_graph(
     }
 }
 
+#endif // VSNRAY_COMMON_HAVE_PBRT_PARSER
+
 void load_pbrt(std::string const& filename, model& mod)
 {
+#if VSNRAY_COMMON_HAVE_PBRT_PARSER
     auto root = std::make_shared<sg::node>();
 
     // If we find a material that is already in use, we just hang
@@ -607,8 +616,10 @@ void load_pbrt(std::string const& filename, model& mod)
     {
         mod.scene_graph->add_child(root);
     }
+#else
     VSNRAY_UNUSED(filename);
     VSNRAY_UNUSED(mod);
+#endif // VSNRAY_COMMON_HAVE_PBRT_PARSER
 }
 
 void load_pbrt(std::vector<std::string> const& filenames, model& mod)
