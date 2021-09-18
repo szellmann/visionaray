@@ -169,7 +169,6 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_surface_impl(HR const& hr, Params const& params)
-    -> typename simd_decl_surface<Params, typename HR::scalar_type>::type
 {
     using T = typename HR::scalar_type;
 
@@ -194,7 +193,6 @@ inline auto get_surface_impl(HR const& hr, Params const& params)
 template <typename HR, typename Params>
 VSNRAY_FUNC
 inline auto get_surface(HR const& hr, Params const& p)
-    -> decltype(detail::get_surface_impl(hr, p))
 {
     return detail::get_surface_impl(hr, p);
 }
