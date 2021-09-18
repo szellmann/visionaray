@@ -28,7 +28,6 @@ namespace visionaray
 template <typename Normals, typename HR, typename Primitive>
 VSNRAY_FUNC
 inline auto get_normal(Normals normals, HR const& hr, Primitive const& prim)
-    -> typename std::iterator_traits<Normals>::value_type
 {
     VSNRAY_UNUSED(normals);
 
@@ -52,7 +51,6 @@ inline auto get_normal(
         HR const&                   hr,
         basic_triangle<3, T>        /* */
         )
-    -> typename std::iterator_traits<Normals>::value_type
 {
     return normals[hr.prim_id];
 }
@@ -73,7 +71,6 @@ inline auto get_normal(
         HR const&                   hr,
         basic_triangle<3, T>        /* */
         )
-    -> vector<3, typename HR::scalar_type>
 {
     using U = typename HR::scalar_type;
     using N = typename std::iterator_traits<Normals>::value_type;
@@ -136,7 +133,6 @@ inline vector<3, T> get_normal(HR const& hr, basic_plane<3, T> const& plane)
 template <typename HR, typename T>
 VSNRAY_FUNC
 inline auto get_normal(HR const& hr, basic_sphere<T> const& sphere)
-    -> decltype(hr.isect_pos)
 {
     using V = decltype(hr.isect_pos);
     using S = typename V::value_type;
