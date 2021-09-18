@@ -67,10 +67,6 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_shading_normal(HR const& hr, Primitive prim)
-    -> decltype( get_normal(
-            hr,
-            prim
-            ) )
 {
     return get_normal(hr, prim);
 }
