@@ -9,10 +9,6 @@
 #include <cstddef>
 #include <iterator>
 
-#ifdef __CUDACC__
-#include <thrust/iterator/reverse_iterator.h>
-#endif
-
 #include "detail/macros.h"
 
 namespace visionaray
@@ -38,13 +34,9 @@ struct array
     using iterator                   = T*;
     using const_iterator             = T const*;
 
-#ifdef __CUDACC__
-    using reverse_iterator           = thrust::reverse_iterator<iterator>;
-    using const_reverse_iterator     = thrust::reverse_iterator<const_iterator>;
-#else
+    // TODO: those won't work on the device!
     using reverse_iterator           = std::reverse_iterator<iterator>;
     using const_reverse_iterator     = std::reverse_iterator<const_iterator>;
-#endif
 
 
     VSNRAY_FUNC reference              at(size_type pos);
