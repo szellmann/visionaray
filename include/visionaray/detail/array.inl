@@ -228,7 +228,7 @@ template <typename T, size_t N>
 VSNRAY_FUNC
 inline void array<T, N>::swap(array<T, N>& rhs)
 {
-#ifdef __CUDACC__
+#ifdef __CUDA_ARCH__
     using thrust::swap;
 #else
     using std::swap;
