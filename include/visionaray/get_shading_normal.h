@@ -54,7 +54,6 @@ inline auto get_shading_normal(
         Primitive     prim,
         NormalBinding binding
         )
-    -> typename std::iterator_traits<Normals>::value_type
 {
     VSNRAY_UNUSED(normals);
     VSNRAY_UNUSED(binding);
@@ -94,7 +93,6 @@ inline auto get_shading_normal(
         basic_triangle<3, T>        /* */,
         normals_per_vertex_binding  /* */
         )
-    -> typename std::iterator_traits<Normals>::value_type
 {
     return normalize( lerp(
             normals[hr.prim_id * 3],
