@@ -277,7 +277,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/area_light.h
     ${HEADER_DIR}/array.h
     ${HEADER_DIR}/array_ref.h
-    ${HEADER_DIR}/blending.h
     ${HEADER_DIR}/brdf.h
     ${HEADER_DIR}/bvh.h
     ${HEADER_DIR}/cpu_buffer_rt.h
