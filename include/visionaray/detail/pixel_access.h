@@ -16,6 +16,7 @@
 #include <visionaray/math/simd/type_traits.h>
 #include <visionaray/math/vector.h>
 #include <visionaray/array.h>
+#include <visionaray/blending.h>
 #include <visionaray/packet_traits.h>
 #include <visionaray/pixel_format.h>
 
@@ -1033,26 +1034,6 @@ inline void get(
 }
 
 // Blend ------------------------------------------------------------------
-
-namespace blending
-{
-
-enum scale_factor
-{
-    Zero,
-    One,
-    SrcColor,
-    OneMinusSrcColor,
-    DstColor,
-    OneMinusDstColor,
-    SrcAlpha,
-    OneMinusSrcAlpha,
-    DstAlpha,
-    OneMinusDstAlpha,
-};
-
-} // blending
-
 
 template <typename T, typename U>
 VSNRAY_FUNC
