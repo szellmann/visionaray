@@ -10,6 +10,30 @@ namespace visionaray
 {
 
 //-------------------------------------------------------------------------------------------------
+// Blending scale factors for compositing pixel samplers
+//
+
+namespace blending
+{
+
+enum scale_factor
+{
+    Zero,
+    One,
+    SrcColor,
+    OneMinusSrcColor,
+    DstColor,
+    OneMinusDstColor,
+    SrcAlpha,
+    OneMinusSrcAlpha,
+    DstAlpha,
+    OneMinusDstAlpha,
+};
+
+} // blending
+
+
+//-------------------------------------------------------------------------------------------------
 // Pixel sampler types for use in scheduler params
 //
 
