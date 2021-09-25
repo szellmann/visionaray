@@ -33,7 +33,7 @@ struct basic_intersector
     auto operator()(R const& ray, P const& prim, Args&&... args)
         -> decltype( intersect(ray, prim, std::forward<Args>(args)...) )
     {
-        return intersect(ray, prim);
+        return intersect(ray, prim, std::forward<Args>(args)...);
     }
 
 
