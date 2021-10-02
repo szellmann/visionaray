@@ -55,8 +55,8 @@ inline array<unsigned, simd::num_elements<I>::value> make_random_seed(I val0, I 
     simd::store(arr_v0, val0);
     simd::store(arr_v1, val1);
 
-    int pw = packet_size<S>::w;
-    int ph = packet_size<S>::h;
+    constexpr int pw = packet_size<S>::w;
+    constexpr int ph = packet_size<S>::h;
 
     for (int i = 0; i < pw * ph; ++i)
     {
