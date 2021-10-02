@@ -67,8 +67,8 @@ struct packet_size<simd::float16>
 template <typename T>
 struct expand_pixel
 {
-    VSNRAY_FUNC inline T x(int x) { return T(x); }
-    VSNRAY_FUNC inline T y(int y) { return T(y); }
+    VSNRAY_FUNC inline constexpr T x(int x) { return T(x); }
+    VSNRAY_FUNC inline constexpr T y(int y) { return T(y); }
 };
 
 template <>
