@@ -34,7 +34,7 @@ template <
     typename F = simd::float_type_t<I>
     >
 VSNRAY_FUNC
-inline F radical_inverse(I n)
+inline F radical_inverse(I const& n)
 {
     F result(0.0);
     F inv_base(1.0f / Base);
