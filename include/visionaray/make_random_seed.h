@@ -6,6 +6,7 @@
 #ifndef VSNRAY_MAKE_RANDOM_SEED_H
 #define VSNRAY_MAKE_RANDOM_SEED_H 1
 
+#include "detail/macros.h"
 #include "math/simd/type_traits.h"
 #include "array.h"
 #include "packet_traits.h"
