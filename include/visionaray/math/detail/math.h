@@ -527,6 +527,13 @@ inline T lerp(T const& a, T const& b, T const& c, S const& u, S const& v)
     return s1 + s2 + s3;
 }
 
+template <typename T, typename S>
+MATH_FUNC
+inline T inverse_lerp(T const& a, T const& b, S const& x)
+{
+    return (T(x) - T(a)) / (b - a);
+}
+
 template <typename T>
 MATH_FUNC
 inline T step(T const& edge, T const& x)
