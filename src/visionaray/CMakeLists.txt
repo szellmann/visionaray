@@ -68,19 +68,6 @@ set(VSNRAY_HEADERS
 
     ${CONFIG_DIR}/config.h
 
-    # CUDA
-
-    ${HEADER_DIR}/cuda/array.h
-    ${HEADER_DIR}/cuda/cast.h
-    ${HEADER_DIR}/cuda/counting_sort.h
-    ${HEADER_DIR}/cuda/fill.h
-    ${HEADER_DIR}/cuda/graphics_resource.h
-    ${HEADER_DIR}/cuda/pitch2d.h
-    ${HEADER_DIR}/cuda/pixel_pack_buffer.h
-    ${HEADER_DIR}/cuda/safe_call.h
-    ${HEADER_DIR}/cuda/texture_object.h
-    ${HEADER_DIR}/cuda/util.h
-
     # Details - subject to frequent change!
 
     ${HEADER_DIR}/detail/bvh/build.h
@@ -336,9 +323,6 @@ set(VSNRAY_HEADERS
 
 set(VSNRAY_SOURCES
 
-    cuda/graphics_resource.cpp
-    cuda/pixel_pack_buffer.cpp
-
     gl/compositing.cpp
     gl/debug_callback.cpp
     gl/handle.cpp
@@ -353,6 +337,31 @@ set(VSNRAY_SOURCES
 if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
     include_directories(${PROJECT_SOURCE_DIR}/include)
     include_directories(${__VSNRAY_CONFIG_DIR})
+
+    set(VSNRAY_HEADERS
+        ${VSNRAY_HEADERS}
+
+        # CUDA
+
+        ${HEADER_DIR}/cuda/array.h
+        ${HEADER_DIR}/cuda/cast.h
+        ${HEADER_DIR}/cuda/counting_sort.h
+        ${HEADER_DIR}/cuda/fill.h
+        ${HEADER_DIR}/cuda/graphics_resource.h
+        ${HEADER_DIR}/cuda/pitch2d.h
+        ${HEADER_DIR}/cuda/pixel_pack_buffer.h
+        ${HEADER_DIR}/cuda/safe_call.h
+        ${HEADER_DIR}/cuda/texture_object.h
+        ${HEADER_DIR}/cuda/util.h
+    )
+
+    set(VSNRAY_SOURCES
+        ${VSNRAY_SOURCES}
+
+        cuda/graphics_resource.cpp
+        cuda/pixel_pack_buffer.cpp
+    )
+
     visionaray_cuda_compile(VSNRAY_CUDA_SOURCES
         cuda/fill.cu
     )
