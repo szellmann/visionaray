@@ -198,7 +198,7 @@ bool png_image::load(std::string const& filename)
 #endif
 }
 
-bool png_image::save(std::string const& filename, file_base::save_options const& options)
+bool png_image::save(std::string const& filename, file_base::save_options const& /*options*/)
 {
 #if VSNRAY_COMMON_HAVE_PNG
     cfile file(filename.c_str(), "wb");
