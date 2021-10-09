@@ -124,7 +124,6 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_tex_coord(HR const& hr, basic_sphere<T> const& sphere)
-    -> vector<2, typename HR::scalar_type>
 {
     using S = typename HR::scalar_type;
 
@@ -144,7 +143,6 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_tex_coord(HR const& hr, basic_sphere<T> const& sphere)
-    -> vector<2, typename HR::scalar_type>
 {
     using U = typename HR::scalar_type;
     using TC = vector<2, simd::element_type<U>>;
@@ -183,7 +181,6 @@ inline auto get_tex_coord(
         array<HR, N> const& hr,
         Primitive           /* */
         )
-    -> array<typename std::iterator_traits<TexCoords>::value_type, N>
 {
     using TC = typename std::iterator_traits<TexCoords>::value_type;
 
