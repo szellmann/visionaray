@@ -73,7 +73,6 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_tex_coord(TexCoords tex_coords, HR const& hr, basic_triangle<3, T> /* */)
-    -> vector<2, typename HR::scalar_type>
 {
     using U = typename HR::scalar_type;
     using TC = typename std::iterator_traits<TexCoords>::value_type;
