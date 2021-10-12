@@ -113,7 +113,7 @@ Files in `detail/` subfolders are not part of the public API. Code in namespace 
 
 ### Applications
 
-Visionaray comes with a viewer (see above) and a set of [examples](/src/examples). Those are found in
+Visionaray comes with a viewer (see above) and a set of [examples](/src/examples). Those can be found in
 
 - [src/viewer](/src/viewer): visionaray viewer 
 - [src/examples](/src/examples): visionaray examples
