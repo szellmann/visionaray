@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "../cuda/fill.h"
+#include "../gl/util.h"
 #include "color_conversion.h"
 
 

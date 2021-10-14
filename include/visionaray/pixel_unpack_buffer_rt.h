@@ -17,7 +17,6 @@
 #include "cuda/graphics_resource.h"
 #include "gl/compositing.h"
 #include "gl/handle.h"
-#include "gl/util.h"
 #include "math/forward.h"
 #include "math/vector.h"
 #include "detail/macros.h"
