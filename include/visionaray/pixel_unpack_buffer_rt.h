@@ -14,11 +14,10 @@
 #include <GL/glew.h>
 #endif
 
-#include <visionaray/cuda/graphics_resource.h>
-#include <visionaray/gl/compositing.h>
-#include <visionaray/gl/handle.h>
-#include <visionaray/gl/util.h>
-
+#include "cuda/graphics_resource.h"
+#include "gl/compositing.h"
+#include "gl/handle.h"
+#include "gl/util.h"
 #include "math/forward.h"
 #include "math/vector.h"
 #include "detail/macros.h"
