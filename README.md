@@ -144,7 +144,7 @@ Linking with the Visionaray library isn't necessary in this case. Only if you us
 
 It's easy to adapt that to use CUDA, by using `__device__` lambdas, different scheduler types, and a bit of `thrust` for data management. The changes would amount to 10-15 extra lines of codes. Check out the [src/examples](examples) to see how this works.
 
-This should generate the following image:
+This should generate the following image (subject to some potential, minor differences based on your STL implementation's random number generator):
 
 ![result.png](https://raw.githubusercontent.com/wiki/szellmann/visionaray/img/result.png)
 
