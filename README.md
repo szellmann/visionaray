@@ -51,6 +51,71 @@ In order to compile the viewer and the [examples](/src/examples), the following 
 - [Ptex][13] (optional)
 
 
+Mini Example
+------------
+
+The following example illustrates how easy it is to write a simple ray tracing program with Visionaray.
+
+```cpp
+#include <random>
+#include <vector>
+#include <visionaray/math/math.h>
+#include <visionaray/bvh.h>
+#include <visionaray/pinhole_camera.h>
+#include <visionaray/scheduler.h>
+#include <visionaray/simple_buffer_rt.h>
+#include <visionaray/traverse.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION 1
+#include "stb/stb_image_write.h"
+
+using namespace visionaray;
+
+int main() {
+    aabb bbox{{-1.f,-1.f,-1.f},{1.f,1.f,1.f}};
+    pinhole_camera cam;
+    cam.set_viewport(0,0,1024,1024);
+    cam.perspective(45.f*constants::pi<float>()/180.f,1.f,.001f,1000.f);
+    cam.view_all(bbox);
+
+    simple_buffer_rt<PF_RGBA8, PF_UNSPECIFIED> renderTarget;
+    renderTarget.resize(1024,1024);
+
+    int numThreads=8;
+    tiled_sched<ray> sched(numThreads);;
+    auto sparams = make_sched_params(cam,renderTarget);
+
+    std::default_random_engine rand;
+    std::uniform_real_distribution<float> c(-1.f,1.f);
+    std::uniform_real_distribution<float> r(.001f,.05f);
+    std::vector<basic_sphere<float>> spheres(500);
+    for (int i=0; i<500; ++i) {
+        spheres[i].prim_id = i;
+        spheres[i].center = vec3(c(rand),c(rand),c(rand));
+        spheres[i].radius = r(rand);
+    }
+
+    lbvh_builder builder;
+    auto bvh = builder.build(index_bvh<basic_sphere<float>>{},spheres.data(),
+                             spheres.size());
+    auto ref = bvh.ref();
+
+    sched.frame([=](ray r) -> vec4 {
+        auto hr = closest_hit(r,&ref,&ref+1);
+        if (hr.hit) return vec4(vec3(1.f,.9f,.4f)*spheres[hr.prim_id].radius*20.f,1.f);
+        else return vec4(0.f,0.f,0.f,1.f);
+    }, sparams);
+
+    stbi_write_png("result.png",1024,1024,4,renderTarget.color(),1024*sizeof(uint32_t));
+}
+```
+
+Just build as follows (this assumes that you have the STB headers in your include path (https://github.com/nothings/stb):
+
+```Shell
+c++ mini.cpp -std=c++14 -I/path/to/visionaray/include -o mini
+```
+
+This should generate the following image:
 
 Building the Visionaray library and viewer
 ------------------------------------------
