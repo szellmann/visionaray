@@ -117,6 +117,8 @@ c++ mini.cpp -std=c++14 -I/path/to/visionaray/include -o mini
 
 This should generate the following image:
 
+<img>https://raw.githubusercontent.com/wiki/szellmann/visionaray/img/traversal_types.png</img>
+
 Building the Visionaray library and viewer
 ------------------------------------------
 
