@@ -104,7 +104,7 @@ int main() {
     renderTarget.resize(1024,1024);
 
     int numThreads=8;
-    tiled_sched<ray> sched(numThreads);;
+    tiled_sched<ray> sched(numThreads);
     auto sparams = make_sched_params(cam,renderTarget);
 
     std::default_random_engine rand;
