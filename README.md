@@ -51,6 +51,29 @@ In order to compile the viewer and the [examples](/src/examples), the following 
 - [Ptex][13] (optional)
 
 
+Building the Visionaray library and viewer
+------------------------------------------
+
+### Linux and Mac OS X
+
+It is strongly recommended to build Visionaray in release mode, as the source code relies heavily on function inlining by the compiler, and executables may be extremely slow without that optimization.
+It is also recommended to supply an architecture flag that corresponds to the CPU architecture you are targeting.
+
+```Shell
+cd visionaray
+mkdir build
+cd build
+
+cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native"
+make
+make install
+```
+
+The headers, libraries and viewer will then be located in the standard install path of your operating system (usually `/usr/local`).
+
+See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Getting-started) and the [Troubleshooting section](https://github.com/szellmann/visionaray/wiki/Troubleshooting) in the [Wiki](https://github.com/szellmann/visionaray/wiki) for further information.
+
+
 Mini Example
 ------------
 
@@ -124,28 +147,6 @@ It's easy to adapt that to use CUDA, by using `__device__` lambdas, different sc
 This should generate the following image:
 
 ![result.png](https://raw.githubusercontent.com/wiki/szellmann/visionaray/img/result.png)
-
-Building the Visionaray library and viewer
-------------------------------------------
-
-### Linux and Mac OS X
-
-It is strongly recommended to build Visionaray in release mode, as the source code relies heavily on function inlining by the compiler, and executables may be extremely slow without that optimization.
-It is also recommended to supply an architecture flag that corresponds to the CPU architecture you are targeting.
-
-```Shell
-cd visionaray
-mkdir build
-cd build
-
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-march=native"
-make
-make install
-```
-
-The headers, libraries and viewer will then be located in the standard install path of your operating system (usually `/usr/local`).
-
-See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Getting-started) and the [Troubleshooting section](https://github.com/szellmann/visionaray/wiki/Troubleshooting) in the [Wiki](https://github.com/szellmann/visionaray/wiki) for further information.
 
 
 Visionaray Viewer
