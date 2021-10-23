@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_GL_DEBUG_CALLBACK_H
-#define VSNRAY_GL_DEBUG_CALLBACK_H 1
+#ifndef VSNRAY_COMMON_GL_DEBUG_CALLBACK_H
+#define VSNRAY_COMMON_GL_DEBUG_CALLBACK_H 1
 
 #include <visionaray/export.h>
 
@@ -92,4 +92,4 @@ private:
 } // gl
 } // visionaray
 
-#endif // VSNRAY_GL_DEBUG_CALLBACK_H
+#endif // VSNRAY_COMMON_GL_DEBUG_CALLBACK_H

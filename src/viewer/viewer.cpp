@@ -39,7 +39,6 @@
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
-#include <visionaray/gl/debug_callback.h>
 #include <visionaray/math/math.h>
 #include <visionaray/texture/texture.h>
 #include <visionaray/aligned_vector.h>
@@ -64,6 +63,7 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 #include <common/bvh_outline_renderer.h>
+#include <common/gl_debug_callback.h>
 #include <common/inifile.h>
 #include <common/make_materials.h>
 #include <common/make_texture.h>

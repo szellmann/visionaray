@@ -203,6 +203,7 @@ set(COMMON_HEADERS
     exr_image.h
     fbx_loader.h
     file_base.h
+    gl_debug_callback.h
     hdr_image.h
     image.h
     image_base.h
@@ -251,6 +252,7 @@ set(COMMON_SOURCES
     exr_image.cpp
     fbx_loader.cpp
     file_base.cpp
+    gl_debug_callback.cpp
     hdr_image.cpp
     image.cpp
     image_base.cpp
