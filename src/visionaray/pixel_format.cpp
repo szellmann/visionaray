@@ -141,7 +141,7 @@ pixel_format map_gl_format(unsigned format, unsigned type, unsigned size)
     key.type   = type;
     key.size   = size;
 
-    auto value = std::find_if(
+    auto pf = std::find_if(
             gl_formats.begin(),
             gl_formats.end(),
             [&](std::pair<format_key, pixel_format> const& value) -> bool
@@ -151,12 +151,12 @@ pixel_format map_gl_format(unsigned format, unsigned type, unsigned size)
             }
             );
 
-    if (value == gl_formats.end())
+    if (pf == gl_formats.end())
     {
         return PF_UNSPECIFIED;
     }
 
-    return value->second;
+    return pf->second;
 }
 
 
