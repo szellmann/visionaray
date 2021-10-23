@@ -144,7 +144,7 @@ pixel_format map_gl_format(unsigned format, unsigned type, unsigned size)
     auto pf = std::find_if(
             gl_formats.begin(),
             gl_formats.end(),
-            [&](std::pair<format_key, pixel_format> const& value) -> bool
+            [key](std::pair<format_key, pixel_format> const& value) -> bool
             {
                 auto val = value.first;
                 return val.format == key.format && val.type == key.type && val.size == key.size;
