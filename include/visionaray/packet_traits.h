@@ -6,6 +6,7 @@
 #ifndef VSNRAY_PACKET_TRAITS_H
 #define VSNRAY_PACKET_TRAITS_H 1
 
+#include "detail/macros.h"
 #include "math/simd/avx.h"
 #include "math/simd/avx512.h"
 #include "math/simd/builtin.h"
