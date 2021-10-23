@@ -31,10 +31,8 @@ namespace detail
 // deduce simd surface type from params -------------------
 
 template <typename Params, typename T>
-struct simd_decl_surface
+class simd_decl_surface
 {
-private:
-
     enum { Size_ = simd::num_elements<T>::value };
     using N_     = typename Params::normal_type;
     using C_     = typename Params::color_type;
