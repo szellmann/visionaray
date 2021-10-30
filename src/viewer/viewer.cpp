@@ -223,7 +223,7 @@ struct renderer : viewer_type
     using tex_coord_type            = model::tex_coord_type;
     using color_type                = model::color_type;
     using host_bvh_type             = index_bvh<primitive_type>;
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
     using device_bvh_type           = cuda_index_bvh<primitive_type>;
     using device_tex_type           = cuda_texture<vector<4, unorm<8>>, 2>;
     using device_tex_ref_type       = typename device_tex_type::ref_type;
@@ -247,7 +247,7 @@ struct renderer : viewer_type
             true /* direct rendering */,
             host_device_rt::SRGB
             )
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
         , device_sched(8, 8)
 #endif
         , env_map(0, 0)
@@ -402,7 +402,7 @@ struct renderer : viewer_type
             cl::init(rt.color_space())
             ) );
 
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
         add_cmdline_option( cl::makeOption<host_device_rt::mode_type&>({
                 { "cpu", host_device_rt::CPU, "Rendering on the CPU" },
                 { "gpu", host_device_rt::GPU, "Rendering on the GPU" },
@@ -598,7 +598,7 @@ struct renderer : viewer_type
                     spp = local_spp;
                 }
 
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
                 // Device (CPU or GPU)
                 std::string device = "";
                 err = ini.get_string("device", device);
@@ -657,7 +657,7 @@ struct renderer : viewer_type
     aligned_vector<ptex::face_id_t>             ptex_tex_coords;
     aligned_vector<ptex::texture>               ptex_textures;
 #endif
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
     cuda_index_bvh<device_bvh_type::bvh_inst>   device_top_level_bvh;
     std::vector<device_bvh_type>                device_bvhs;
     thrust::device_vector<normal_type>          device_geometric_normals;
@@ -672,7 +672,7 @@ struct renderer : viewer_type
 
     host_sched_t<ray_type_cpu>                  host_sched;
     host_device_rt                              rt;
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
     cuda_sched<ray_type_gpu>                    device_sched;
 #endif
     thin_lens_camera                            cam;
@@ -680,7 +680,7 @@ struct renderer : viewer_type
     std::string                                 env_map_filename;
     visionaray::texture<vec4, 2>                env_map;
     host_environment_light                      env_light;
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
     visionaray::cuda_texture<vec4, 2>           device_env_map;
     device_environment_light                    device_env_light;
 #endif
@@ -1452,7 +1452,7 @@ void renderer::build_scene()
             host_bvhs[0] = builder.build(host_bvh_type{}, mod.primitives.data(), mod.primitives.size());
             //std::cout << t.elapsed() << '\n';
         }
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
         else if (build_strategy == LBVH && rt.mode() == host_device_rt::GPU)
         {
             device_bvhs.resize(1);
@@ -1697,7 +1697,7 @@ void renderer::init_bvh_outlines()
             outlines.init(host_bvhs[0]);
         }
     }
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
     else if (rt.mode() == host_device_rt::GPU)
     {
         if (device_top_level_bvh.num_nodes() > 0)
@@ -2463,7 +2463,7 @@ void renderer::render_impl()
                     );
         }
     }
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
     else if (rt.mode() == host_device_rt::GPU)
     {
         if (device_top_level_bvh.num_primitives() > 0)
@@ -2734,7 +2734,7 @@ void renderer::on_key_press(key_event const& event)
         break;
 
    case 'm':
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
         if (rt.mode() == host_device_rt::CPU)
         {
             rt.mode() = host_device_rt::GPU;
@@ -2893,7 +2893,7 @@ int main(int argc, char** argv)
 {
     renderer rend;
 
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
     int device = 0;
     cudaDeviceProp prop;
     if (rend.rt.direct_rendering() && cudaChooseDevice(&device, &prop) != cudaSuccess)
@@ -3088,7 +3088,7 @@ int main(int argc, char** argv)
 
     std::cout << "Ready\n";
 
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
     // Copy data to GPU
     try
     {
