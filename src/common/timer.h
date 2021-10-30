@@ -6,9 +6,11 @@
 #ifndef VSNRAY_COMMON_TIMER_H
 #define VSNRAY_COMMON_TIMER_H 1
 
+#include <common/config.h>
+
 #include <chrono>
 
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
 #include <cuda_runtime_api.h>
 #endif
 
@@ -50,7 +52,7 @@ private:
 };
 
 
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
 
 namespace cuda
 {
@@ -157,7 +159,7 @@ private:
 
 using frame_counter = basic_frame_counter<timer>;
 
-#ifdef __CUDACC__
+#if VSNRAY_HAVE_CUDA
 namespace cuda
 {
 using frame_counter = basic_frame_counter<cuda::timer>;
