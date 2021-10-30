@@ -153,7 +153,7 @@ static void copy_bvhs(
         if (ck == copy_kind::HostToHost)
         {
         }
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
         else if (ck == copy_kind::HostToDevice)
         {
             cudaMemcpy(
