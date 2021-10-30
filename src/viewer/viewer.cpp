@@ -29,7 +29,7 @@
 
 #include <boost/filesystem.hpp>
 
-#ifdef __CUDACC__
+#if VSNRAY_COMMON_HAVE_CUDA
 #include <cuda_runtime_api.h>
 #include <thrust/device_vector.h>
 #endif
