@@ -539,7 +539,7 @@ struct renderer : viewer_type
         using namespace std::chrono;
         auto now = high_resolution_clock::now();
         auto secs = duration_cast<milliseconds>(now.time_since_epoch()).count();
-        mat4 rot = mat4::rotation(normalize(vec3(1.0f, 0.0f, 1.0f)), secs / 2000.0f);
+        mat4 rot = mat4::rotation(normalize(vec3(1.0f, 0.0f, 1.0f)), (int)secs / 2000.0f);
 
         // Store OpenGL state
         GLint array_buffer_binding = 0;
