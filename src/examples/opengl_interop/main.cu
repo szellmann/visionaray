@@ -22,7 +22,6 @@
 
 #include <visionaray/detail/platform.h>
 
-#include <visionaray/gl/debug_callback.h>
 #include <visionaray/gl/handle.h>
 #include <visionaray/gl/program.h>
 #include <visionaray/gl/shader.h>
@@ -39,6 +38,7 @@
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/gl_debug_callback.h>
 #include <common/png_image.h>
 #include <common/viewer_glut.h>
 
