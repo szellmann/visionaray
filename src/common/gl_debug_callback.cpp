@@ -24,7 +24,7 @@
 #include <GL/glew.h>
 #endif
 
-#include <visionaray/gl/debug_callback.h>
+#include "gl_debug_callback.h"
 
 
 namespace visionaray
