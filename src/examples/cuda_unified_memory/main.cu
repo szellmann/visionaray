@@ -11,6 +11,9 @@
 #include <string>
 #include <vector>
 
+#include <thrust/device_vector.h>
+#include <thrust/host_vector.h>
+
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>
 
