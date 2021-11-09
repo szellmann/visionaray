@@ -5,10 +5,10 @@ find_package(GLUT REQUIRED)
 
 visionaray_use_package(GLUT)
 
-set(EX_RRT_SOURCES
+set(EX_VOLUMETRIC_PATHTRACER_SOURCES
     main.cpp
 )
 
-visionaray_add_executable(rrt
-    ${EX_RRT_SOURCES}
+visionaray_add_executable(volumetric_pathtracer
+    ${EX_VOLUMETRIC_PATHTRACER_SOURCES}
 )
