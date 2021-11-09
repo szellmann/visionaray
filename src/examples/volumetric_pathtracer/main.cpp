@@ -170,7 +170,7 @@ struct renderer : viewer_type
     using model_manipulators = std::vector<std::shared_ptr<model_manipulator>>;
 
     renderer()
-        : viewer_type(512, 512, "Visionaray Residual Ratio Tracking Example")
+        : viewer_type(512, 512, "Visionaray Volumetric Pathtracer Example")
         , bbox({ -0.5f, -0.5f, -0.5f }, { 0.5f, 0.5f, 0.5f })
         , host_sched(8)
     {
