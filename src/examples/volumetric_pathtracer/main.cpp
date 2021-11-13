@@ -85,8 +85,11 @@ struct volume
     // Emission
     vec3 Le(vec3 const& pos) const
     {
+#if 1
+        (void)pos;
         return vec3(0.0f);
-
+#else
+        // Example showing how to selectively make voxels emissive
         if (pos.x > 0.16f && pos.y > 0.16f && pos.z > 0.16f)
          //&& pos.x < 0.33f && pos.y < 0.33f && pos.z < 0.33f)
         {
@@ -97,6 +100,7 @@ struct volume
         {
             return vec3(0.0f);
         }
+#endif
     }
 };
 
