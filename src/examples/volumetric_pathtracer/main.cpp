@@ -12,8 +12,6 @@
 
 #include <visionaray/math/math.h>
 
-#include <visionaray/texture/texture.h>
-
 #include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/phase_function.h>
 #include <visionaray/pinhole_camera.h>
