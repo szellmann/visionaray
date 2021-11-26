@@ -40,11 +40,11 @@ public:
 
     void render();
 
-private:
-
     bool handle_mouse_down(mouse_event const& event);
     bool handle_mouse_up(mouse_event const& event);
     bool handle_mouse_move(mouse_event const& event);
+
+private:
 
     int select_from_mouse_pointer(mouse_event const& event);
 
