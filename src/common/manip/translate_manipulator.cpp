@@ -214,9 +214,9 @@ bool translate_manipulator::handle_space_mouse_move(visionaray::space_mouse_even
 {
     if (event.type() == space_mouse::Translation)
     {
-        float dx = -static_cast<float>(event.pos().x) / 100000.f;
-        float dy =  static_cast<float>(event.pos().z) / 100000.f;
-        float dz = -static_cast<float>(event.pos().y) / 100000.f;
+        float dx = -static_cast<float>(event.pos().x) / 100000.0f;
+        float dy =  static_cast<float>(event.pos().z) / 100000.0f;
+        float dz = -static_cast<float>(event.pos().y) / 100000.0f;
         float s = 2.0f * camera_.distance();
         vec3 Z = normalize( camera_.eye() - camera_.center() );
         vec3 Y = camera_.up();
