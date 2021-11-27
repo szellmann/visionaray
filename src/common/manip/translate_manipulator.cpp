@@ -124,6 +124,9 @@ void translate_manipulator::render()
     glLoadMatrixf(camera_.get_view_matrix().data());
     glMultMatrixf(model_matrix_.data());
 
+    GLint prev_line_width = 1;
+    glGetIntegerv(GL_LINE_WIDTH, &prev_line_width);
+
     glLineWidth(line_width_);
 
     glBegin(GL_LINES);
@@ -139,6 +142,8 @@ void translate_manipulator::render()
         glVertex3f(0.0f, 0.0f, 0.2f);
         glVertex3f(0.0f, 0.0f, size);
     glEnd();
+
+    glLineWidth(prev_line_width);
 
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();

@@ -125,6 +125,9 @@ void rotate_manipulator::render()
     auto right = normalize(cross(dir, vec3(0.0f, 1.0f, 0.0f)));
     auto up    = cross(dir, right);
 
+    GLint prev_line_width = 1;
+    glGetIntegerv(GL_LINE_WIDTH, &prev_line_width);
+
     glLineWidth(line_width_);
 
     glBegin(GL_LINES);
@@ -202,6 +205,8 @@ void rotate_manipulator::render()
         );
     glEnd();
 
+
+    glLineWidth(prev_line_width);
 
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
