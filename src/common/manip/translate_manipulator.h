@@ -19,7 +19,8 @@ public:
             pinhole_camera const& cam,
             mat4& model_matrix,
             vec3 size,
-            mouse::buttons buttons
+            mouse::buttons buttons,
+            int line_width = 1
             );
 
     void render();
@@ -44,6 +45,7 @@ private:
     mouse::buttons buttons_;
     mouse::pos down_pos_;
 
+    int line_width_ = 1;
 };
 
 } // visionaray

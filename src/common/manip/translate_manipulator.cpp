@@ -91,10 +91,12 @@ translate_manipulator::translate_manipulator(
         pinhole_camera const& cam,
         mat4& model_matrix,
         vec3 size,
-        mouse::buttons buttons
+        mouse::buttons buttons,
+        int line_width
         )
     : model_manipulator(cam, model_matrix, size)
     , buttons_(buttons)
+    , line_width_(line_width)
 {
 }
 
@@ -121,6 +123,8 @@ void translate_manipulator::render()
     glPushMatrix();
     glLoadMatrixf(camera_.get_view_matrix().data());
     glMultMatrixf(model_matrix_.data());
+
+    glLineWidth(line_width_);
 
     glBegin(GL_LINES);
         glColor3f(1.0f, 0.0f, 0.0f);
