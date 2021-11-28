@@ -57,6 +57,27 @@ inline matrix<3, 3, T>::matrix(T const data[9])
 template <typename T>
 template <typename U>
 MATH_FUNC
+inline matrix<3, 3, T>::matrix(matrix<2, 2, U> const& rhs)
+    : col0(vector<3, T>(rhs.col0, U(0.0)))
+    , col1(vector<3, T>(rhs.col1, U(0.0)))
+    , col2(vector<3, T>(U(0.0), U(0.0), U(1.0)))
+{
+}
+
+template <typename T>
+template <typename U>
+MATH_FUNC
+inline matrix<3, 3, T>& matrix<3, 3, T>::operator=(matrix<2, 2, U> const& rhs)
+{
+    col0 = vector<3, T>(rhs.col0, U(0.0));
+    col1 = vector<3, T>(rhs.col1, U(0.0));
+    col2 = vector<3, T>(U(0.0), U(0.0), U(1.0));
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+MATH_FUNC
 inline matrix<3, 3, T>::matrix(matrix<3, 3, U> const& rhs)
     : col0(rhs.col0)
     , col1(rhs.col1)

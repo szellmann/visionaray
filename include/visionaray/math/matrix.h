@@ -105,6 +105,16 @@ public:
     MATH_FUNC
     explicit matrix(T const data[9]);
 
+    // Construct LU from mat2, set to identity elsewhere
+    template <typename U>
+    MATH_FUNC
+    explicit matrix(matrix<2, 2, U> const& rhs);
+
+    // Assign LU from mat2, set to identity elsewhere
+    template <typename U>
+    MATH_FUNC
+    matrix& operator=(matrix<2, 2, U> const& rhs);
+
     template <typename U>
     MATH_FUNC
     explicit matrix(matrix<3, 3, U> const& rhs);
