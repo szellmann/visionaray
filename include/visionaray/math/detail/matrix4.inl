@@ -63,6 +63,52 @@ inline matrix<4, 4, T>::matrix(T const data[16])
 template <typename T>
 template <typename U>
 MATH_FUNC
+inline matrix<4, 4, T>::matrix(matrix<3, 3, U> const& rhs)
+    : col0(vector<4, T>(rhs.col0, U(0.0)))
+    , col1(vector<4, T>(rhs.col1, U(0.0)))
+    , col2(vector<4, T>(rhs.col2, U(0.0)))
+    , col3(vector<4, T>(U(0.0), U(0.0), U(0.0), U(1.0)))
+{
+}
+
+template <typename T>
+template <typename U>
+MATH_FUNC
+inline matrix<4, 4, T>& matrix<4, 4, T>::operator=(matrix<3, 3, U> const& rhs)
+{
+    col0 = vector<4, T>(rhs.col0, U(0.0));
+    col1 = vector<4, T>(rhs.col1, U(0.0));
+    col2 = vector<4, T>(rhs.col2, U(0.0));
+    col3 = vector<4, T>(U(0.0), U(0.0), U(0.0), U(1.0));
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+MATH_FUNC
+inline matrix<4, 4, T>::matrix(matrix<4, 3, U> const& rhs)
+    : col0(vector<4, T>(rhs.col0, U(0.0)))
+    , col1(vector<4, T>(rhs.col1, U(0.0)))
+    , col2(vector<4, T>(rhs.col2, U(0.0)))
+    , col3(vector<4, T>(rhs.col3, U(1.0)))
+{
+}
+
+template <typename T>
+template <typename U>
+MATH_FUNC
+inline matrix<4, 4, T>& matrix<4, 4, T>::operator=(matrix<4, 3, U> const& rhs)
+{
+    col0 = vector<4, T>(rhs.col0, U(0.0));
+    col1 = vector<4, T>(rhs.col1, U(0.0));
+    col2 = vector<4, T>(rhs.col2, U(0.0));
+    col3 = vector<4, T>(rhs.col3, U(1.0));
+    return *this;
+}
+
+template <typename T>
+template <typename U>
+MATH_FUNC
 inline matrix<4, 4, T>::matrix(matrix<4, 4, U> const& rhs)
     : col0(rhs.col0)
     , col1(rhs.col1)
