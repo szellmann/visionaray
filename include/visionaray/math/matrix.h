@@ -173,6 +173,16 @@ public:
     MATH_FUNC
     explicit matrix(T const data[12]);
 
+    // Construct  LU from mat3, set translatory part to (0,0,0)
+    template <typename U>
+    MATH_FUNC
+    explicit matrix(matrix<3, 3, U> const& rhs);
+
+    // Assign LU from mat3, set translatory part to (0,0,0)
+    template <typename U>
+    MATH_FUNC
+    matrix& operator=(matrix<3, 3, U> const& rhs);
+
     template <typename U>
     MATH_FUNC
     explicit matrix(matrix<4, 3, U> const& rhs);
