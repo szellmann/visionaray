@@ -62,9 +62,10 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     {
     }
 
-    VSNRAY_FUNC explicit hit_record_bvh_inst(hit_record_bvh<R, Base> const& base, int_type i)
+    VSNRAY_FUNC explicit hit_record_bvh_inst(hit_record_bvh<R, Base> const& base, int_type i, int inst_id)
         : hit_record_bvh<R, Base>(base)
         , primitive_list_index_inst(i)
+        , inst_id(inst_id)
     {
     }
 
@@ -73,6 +74,9 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     // an indirect index by using BVH::primitive() - this index
     // is for *direct* access!)
     int_type primitive_list_index_inst;
+
+    // User-supplied instance ID; -1 means that it wasn't set
+    int_type inst_id = int_type(-1);
 };
 
 
@@ -104,6 +108,7 @@ void update_if(
 {
     update_if(static_cast<hit_record_bvh<R, Base>&>(dst), static_cast<hit_record_bvh<R, Base> const&>(src), cond);
     dst.primitive_list_index_inst = select( cond, src.primitive_list_index_inst, dst.primitive_list_index_inst );
+    dst.inst_id = select( cond, src.inst_id, dst.inst_id );
 }
 
 
@@ -177,6 +182,9 @@ inline auto unpack(
     int_array primitive_list_index_inst = {};
     store(primitive_list_index_inst, hr.primitive_list_index_inst);
 
+    int_array inst_id = {};
+    store(inst_id, hr.inst_id);
+
     for (unsigned i = 0; i < num_elements<FloatT>::value; ++i)
     {
         result[i] = hit_record_bvh_inst<ray, scalar_base_type>(
@@ -184,7 +192,8 @@ inline auto unpack(
                         scalar_base_type(base[i]),
                         primitive_list_index[i]
                         ),
-                primitive_list_index_inst[i]
+                primitive_list_index_inst[i],
+                inst_id[i]
                 );
     }
 

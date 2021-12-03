@@ -82,7 +82,8 @@ inline typename Params::color_type get_tex_color(
 
     auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params, hr));
 
-    auto const& tex = params.textures[hr.geom_id];
+    int mat_id = hr.inst_id < 0 ? hr.geom_id : hr.inst_id;
+    auto const& tex = params.textures[mat_id];
     return C(tex1D(tex, coord));
 }
 
@@ -98,7 +99,8 @@ inline typename Params::color_type get_tex_color(
 
     auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params, hr));
 
-    auto const& tex = params.textures[hr.geom_id];
+    int mat_id = hr.inst_id < 0 ? hr.geom_id : hr.inst_id;
+    auto const& tex = params.textures[mat_id];
     return C(tex2D(tex, coord));
 }
 
@@ -114,7 +116,8 @@ inline typename Params::color_type get_tex_color(
 
     auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params, hr));
 
-    auto const& tex = params.textures[hr.geom_id];
+    int mat_id = hr.inst_id < 0 ? hr.geom_id : hr.inst_id;
+    auto const& tex = params.textures[mat_id];
     return C(tex3D(tex, coord));
 }
 
@@ -152,7 +155,8 @@ inline auto get_surface_impl(HR const& hr, Params const& params)
                         std::integral_constant<int, texture_dimensions<typename Params::texture_type>::value>{}
                         ) : C(1.0);
 
-    return { gn, sn, color * tc, params.materials[hr.geom_id] };
+    int mat_id = hr.inst_id < 0 ? hr.geom_id : hr.inst_id;
+    return { gn, sn, color * tc, params.materials[mat_id] };
 }
 
 

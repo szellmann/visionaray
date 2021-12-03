@@ -337,6 +337,16 @@ public:
         r.dir = aff_inv * r.dir;
     }
 
+    VSNRAY_FUNC void set_inst_id(int id)
+    {
+        inst_id_ = id;
+    }
+
+    VSNRAY_FUNC int get_inst_id() const
+    {
+        return inst_id_;
+    }
+
 private:
 
     // BVH ref
@@ -347,6 +357,9 @@ private:
 
     // Inverse translation
     vec3 trans_inv_;
+
+    // Instance ID
+    int inst_id_ = -1;
 
 };
 
@@ -428,6 +441,16 @@ public:
         r.dir = aff_inv * r.dir;
     }
 
+    VSNRAY_FUNC void set_inst_id(int id)
+    {
+        inst_id_ = id;
+    }
+
+    VSNRAY_FUNC int get_inst_id() const
+    {
+        return inst_id_;
+    }
+
 private:
 
     // BVH ref
@@ -438,6 +461,9 @@ private:
 
     // Inverse translation
     vec3 trans_inv_;
+
+    // Instance ID
+    int inst_id_ = -1;
 };
 
 

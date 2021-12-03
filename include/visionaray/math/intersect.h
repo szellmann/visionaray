@@ -151,6 +151,7 @@ struct hit_record<R, primitive<unsigned>>
     mask_type hit          = mask_type(false);
     int_type prim_id       = int_type(0);
     int_type geom_id       = int_type(0);
+    int_type inst_id       = int_type(-1);
 
     T t                    = numeric_limits<T>::max();
     vector<3, T> isect_pos;

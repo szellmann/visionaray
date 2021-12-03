@@ -378,7 +378,7 @@ inline auto intersect(
             update_cond
             );
 
-    return RT(hr, hr.primitive_list_index);
+    return RT(hr, hr.primitive_list_index, b.get_inst_id());
 }
 
 
