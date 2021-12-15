@@ -28,6 +28,7 @@ public:
 
     VSNRAY_COMMON_EXPORT void init(int argc, char** argv);
 
+    VSNRAY_COMMON_EXPORT void set_window_title(char const* window_title);
     VSNRAY_COMMON_EXPORT void event_loop();
     VSNRAY_COMMON_EXPORT void resize(int width, int height);
     VSNRAY_COMMON_EXPORT void swap_buffers();

@@ -303,6 +303,11 @@ void viewer_base::set_background_color(vec3 color)
     impl_->bgcolor = color;
 }
 
+void viewer_base::set_window_title(char const* window_title)
+{
+    impl_->window_title = window_title;
+}
+
 void viewer_base::event_loop()
 {
 }

@@ -475,6 +475,12 @@ void viewer_glut::init(int argc, char** argv)
     impl_->init(argc, argv, window_title(), full_screen(), width(), height());
 }
 
+void viewer_glut::set_window_title(char const* window_title)
+{
+    viewer_base::set_window_title(window_title);
+    glutSetWindowTitle(window_title);
+}
+
 void viewer_glut::event_loop()
 {
     glutMainLoop();

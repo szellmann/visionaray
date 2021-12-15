@@ -74,6 +74,7 @@ public:
 
     VSNRAY_COMMON_EXPORT void set_background_color(vec3 color);
 
+    VSNRAY_COMMON_EXPORT virtual void set_window_title(char const* window_title);
     VSNRAY_COMMON_EXPORT virtual void event_loop();
     VSNRAY_COMMON_EXPORT virtual void resize(int width, int height);
     VSNRAY_COMMON_EXPORT virtual void swap_buffers();
