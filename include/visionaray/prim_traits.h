@@ -8,11 +8,11 @@
 
 #include <cstddef>
 
-#include <visionaray/math/plane.h>
-#include <visionaray/math/sphere.h>
-#include <visionaray/math/triangle.h>
+#include "math/plane.h"
+#include "math/sphere.h"
+#include "math/triangle.h"
 
-#include <visionaray/tags.h>
+#include "tags.h"
 
 namespace visionaray
 {
