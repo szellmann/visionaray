@@ -8,16 +8,15 @@
 
 #include <utility>
 
-#include <visionaray/math/forward.h>
-#include <visionaray/math/matrix.h>
-#include <visionaray/math/vector.h>
-#include <visionaray/packet_traits.h>
-#include <visionaray/matrix_camera.h>
-#include <visionaray/pixel_format.h>
-#include <visionaray/pixel_sampler_types.h>
-#include <visionaray/render_target.h>
-#include <visionaray/result_record.h>
-
+#include "../math/forward.h"
+#include "../math/matrix.h"
+#include "../math/vector.h"
+#include "../packet_traits.h"
+#include "../matrix_camera.h"
+#include "../pixel_format.h"
+#include "../pixel_sampler_types.h"
+#include "../render_target.h"
+#include "../result_record.h"
 #include "macros.h"
 #include "pixel_access.h"
 #include "tags.h"
