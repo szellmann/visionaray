@@ -39,7 +39,7 @@ struct host_device_rt::impl
     color_space_type color_space;
 
     // Host render target
-    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> host_rt[2];
+    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED, PF_RGBA32F> host_rt[2];
 
 #if VSNRAY_HAVE_CUDA
     // Device render target, uses PBO
@@ -164,9 +164,10 @@ host_device_rt::ref_type host_device_rt::ref(buffer buf)
     }
 }
 
-void host_device_rt::clear_color_buffer(vec4 const& color, buffer buf)
+void host_device_rt::clear(vec4 const& color, buffer buf)
 {
     impl_->host_rt[impl_->buffer_index[buf]].clear_color_buffer(color);
+    impl_->host_rt[impl_->buffer_index[buf]].clear_accum_buffer(color);
 #if VSNRAY_HAVE_CUDA
     if (impl_->direct_rendering)
     {

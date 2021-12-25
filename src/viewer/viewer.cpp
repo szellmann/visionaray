@@ -1730,7 +1730,7 @@ void renderer::clear_frame()
 
     if (algo == Pathtracing)
     {
-        rt.clear_color_buffer();
+        rt.clear();
     }
 }
 

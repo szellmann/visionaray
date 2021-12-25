@@ -13,47 +13,59 @@ namespace visionaray
 // cpu_buffer_rt
 //
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-cpu_buffer_rt<ColorFormat, DepthFormat>::cpu_buffer_rt()
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::cpu_buffer_rt()
     : compositor(nullptr)
 {
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-cpu_buffer_rt<ColorFormat, DepthFormat>::~cpu_buffer_rt() = default;
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::~cpu_buffer_rt() = default;
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-typename cpu_buffer_rt<ColorFormat, DepthFormat>::color_type* cpu_buffer_rt<ColorFormat, DepthFormat>::color()
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::color_type* cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::color()
 {
     return color_buffer.data();
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-typename cpu_buffer_rt<ColorFormat, DepthFormat>::depth_type* cpu_buffer_rt<ColorFormat, DepthFormat>::depth()
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::depth_type* cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::depth()
 {
     return depth_buffer.data();
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-typename cpu_buffer_rt<ColorFormat, DepthFormat>::color_type const* cpu_buffer_rt<ColorFormat, DepthFormat>::color() const
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::accum_type* cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::accum()
+{
+    return accum_buffer.data();
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::color_type const* cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::color() const
 {
     return color_buffer.data();
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-typename cpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* cpu_buffer_rt<ColorFormat, DepthFormat>::depth() const
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::depth_type const* cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::depth() const
 {
     return depth_buffer.data();
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-typename cpu_buffer_rt<ColorFormat, DepthFormat>::ref_type cpu_buffer_rt<ColorFormat, DepthFormat>::ref()
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::accum_type const* cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::accum() const
 {
-    return { color(), depth(), width(), height() };
+    return accum_buffer.data();
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_color_buffer(vec4 const& c)
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+typename cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::ref_type cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::ref()
+{
+    return { color(), depth(), accum(), width(), height() };
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::clear_color_buffer(vec4 const& c)
 {
     // Convert from RGBA32F to internal color format
     color_type cc;
@@ -67,8 +79,8 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_color_buffer(vec4 const& c)
     std::fill(color_buffer.begin(), color_buffer.end(), cc);
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth_buffer(float d)
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::clear_depth_buffer(float d)
 {
     // Convert from DEPTH32F to internal depth format
     depth_type dd;
@@ -82,18 +94,33 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth_buffer(float d)
     std::fill(depth_buffer.begin(), depth_buffer.end(), dd);
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-void cpu_buffer_rt<ColorFormat, DepthFormat>::begin_frame()
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::clear_accum_buffer(vec4 const& c)
+{
+    // Convert from RGBA32F to internal color format
+    color_type cc;
+    convert(
+        pixel_format_constant<AccumFormat>{},
+        pixel_format_constant<PF_RGBA32F>{},
+        cc,
+        c
+        );
+
+    std::fill(accum_buffer.begin(), accum_buffer.end(), cc);
+}
+
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::begin_frame()
 {
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-void cpu_buffer_rt<ColorFormat, DepthFormat>::end_frame()
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::end_frame()
 {
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-void cpu_buffer_rt<ColorFormat, DepthFormat>::resize(int w, int h)
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::resize(int w, int h)
 {
     render_target::resize(w, h);
 
@@ -105,6 +132,11 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::resize(int w, int h)
     if (DepthFormat != PF_UNSPECIFIED)
     {
         depth_buffer.resize(w * h);
+    }
+
+    if (AccumFormat != PF_UNSPECIFIED)
+    {
+        accum_buffer.resize(w * h);
     }
 
     if (!compositor)
@@ -127,8 +159,8 @@ void cpu_buffer_rt<ColorFormat, DepthFormat>::resize(int w, int h)
     }
 }
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
-void cpu_buffer_rt<ColorFormat, DepthFormat>::display_color_buffer() const
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
+void cpu_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::display_color_buffer() const
 {
     if (DepthFormat != PF_UNSPECIFIED)
     {

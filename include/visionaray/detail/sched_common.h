@@ -411,7 +411,7 @@ inline void sample_pixel_impl(
 
 
 //-------------------------------------------------------------------------------------------------
-// Jittered pixel sampler, result is blended on top of color buffer
+// Jittered pixel sampler, result is blended in accum buffer before storing in color buffer
 //
 
 template <
@@ -420,7 +420,8 @@ template <
     typename R,
     typename Generator,
     typename RenderTargetRef,
-    typename Camera
+    typename Camera,
+    typename = typename std::enable_if<RenderTargetRef::accum_format != PF_UNSPECIFIED>::type
     >
 VSNRAY_FUNC
 inline void sample_pixel_impl(
@@ -471,16 +472,42 @@ inline void sample_pixel_impl(
     rr.depth /= S((float)ps.spp);
 
     pixel_access::blend(
-            pixel_format_constant<RenderTargetRef::color_format>{},
+            pixel_format_constant<RenderTargetRef::accum_format>{},
             pixel_format_constant<PF_RGBA32F>{},
             x,
             y,
             width,
             height,
             rr.color,
-            rt_ref.color(),
+            rt_ref.accum(),
             ps.sfactor,
             ps.dfactor
+            );
+
+    using AT = typename RR::color_type;
+
+    AT blended_color;
+
+    pixel_access::get(
+            pixel_format_constant<RenderTargetRef::accum_format>{},
+            pixel_format_constant<RenderTargetRef::accum_format>{},
+            x,
+            y,
+            width,
+            height,
+            blended_color,
+            rt_ref.accum()
+            );
+
+    pixel_access::store(
+            pixel_format_constant<RenderTargetRef::color_format>{},
+            pixel_format_constant<RenderTargetRef::accum_format>{},
+            x,
+            y,
+            width,
+            height,
+            blended_color,
+            rt_ref.color()
             );
 
     if (RenderTargetRef::depth_format != PF_UNSPECIFIED && visionaray::any(rr.hit))

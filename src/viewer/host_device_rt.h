@@ -18,7 +18,7 @@ class host_device_rt : public render_target
 public:
 
     using color_type = typename pixel_traits<PF_RGBA32F>::type;
-    using ref_type = render_target_ref<PF_RGBA32F, PF_UNSPECIFIED>;
+    using ref_type = render_target_ref<PF_RGBA32F, PF_UNSPECIFIED, PF_RGBA32F>;
 
     enum buffer
     {
@@ -66,7 +66,7 @@ public:
 
     ref_type ref(buffer buf = Back);
 
-    void clear_color_buffer(vec4 const& color = vec4(0.0f), buffer buf = Back);
+    void clear(vec4 const& color = vec4(0.0f), buffer buf = Back);
     void begin_frame(buffer buf = Back);
     void end_frame(buffer buf = Back);
     void resize(int w, int h);
