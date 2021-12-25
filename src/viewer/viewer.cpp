@@ -1843,7 +1843,7 @@ void renderer::render_hud()
     int x = visionaray::clamp( mouse_pos.x, 0, w - 1 );
     int y = visionaray::clamp( mouse_pos.y, 0, h - 1 );
     auto color = rt.color();
-    auto rgba = color[(h - 1 - y) * w + x];
+    vec4 rgba(color[(h - 1 - y) * w + x]);
 
     int num_nodes = 0;
     int num_leaves = 0;
