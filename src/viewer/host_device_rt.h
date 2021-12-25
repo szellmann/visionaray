@@ -17,8 +17,8 @@ class host_device_rt : public render_target
 {
 public:
 
-    using color_type = typename pixel_traits<PF_RGBA32F>::type;
-    using ref_type = render_target_ref<PF_RGBA32F, PF_UNSPECIFIED, PF_RGBA32F>;
+    using color_type = typename pixel_traits<PF_RGBA8>::type;
+    using ref_type = render_target_ref<PF_RGBA8, PF_UNSPECIFIED, PF_RGBA32F>;
 
     enum buffer
     {

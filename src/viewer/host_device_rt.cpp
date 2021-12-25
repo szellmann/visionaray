@@ -39,7 +39,7 @@ struct host_device_rt::impl
     color_space_type color_space;
 
     // Host render target
-    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED, PF_RGBA32F> host_rt[2];
+    cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED, PF_RGBA32F> host_rt[2];
 
 #if VSNRAY_HAVE_CUDA
     // Device render target, uses PBO
