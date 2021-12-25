@@ -1,4 +1,8 @@
 ## [Unreleased]
+### Changed
+- An accumulation buffer was now added to the builtin render targets
+where colors are blended in. For blending kernels, the accumulation
+buffer pixel format needs to be specified.
 
 ## [0.3.0] - 2021-12-25
 ### Added
