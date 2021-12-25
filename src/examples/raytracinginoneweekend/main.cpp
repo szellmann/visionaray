@@ -86,7 +86,7 @@ struct renderer : viewer_type
 
     aabb                                        bbox;
     thin_lens_camera                            cam;
-    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
+    cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED, PF_RGBA32F> host_rt;
     tiled_sched<host_ray_type>                  host_sched;
 
     unsigned                                    frame_num   = 0;

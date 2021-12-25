@@ -641,7 +641,7 @@ struct renderer : viewer_type
     }
 
     thin_lens_camera                            cam;
-    cpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED>   host_rt;
+    cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED, PF_RGBA32F> host_rt;
     tiled_sched<basic_ray<float>>               host_sched;
 
     std::vector<Curve>                          curves;
