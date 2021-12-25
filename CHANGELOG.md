@@ -1,4 +1,6 @@
 ## [Unreleased]
+
+## [0.3.0] - 2021-12-25
 ### Added
 - macro VSNRAY_VERSION that can be used in addition to the other
 version-related macros.
