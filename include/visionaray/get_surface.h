@@ -80,7 +80,7 @@ inline typename Params::color_type get_tex_color(
 {
     using C = typename Params::color_type;
 
-    auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params, hr));
+    auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params.prims.begin, hr));
 
     int mat_id = hr.inst_id < 0 ? hr.geom_id : hr.inst_id;
     auto const& tex = params.textures[mat_id];
@@ -97,7 +97,7 @@ inline typename Params::color_type get_tex_color(
 {
     using C = typename Params::color_type;
 
-    auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params, hr));
+    auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params.prims.begin, hr));
 
     int mat_id = hr.inst_id < 0 ? hr.geom_id : hr.inst_id;
     auto const& tex = params.textures[mat_id];
@@ -114,7 +114,7 @@ inline typename Params::color_type get_tex_color(
 {
     using C = typename Params::color_type;
 
-    auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params, hr));
+    auto coord = get_tex_coord(params.tex_coords, hr, get_primitive(params.prims.begin, hr));
 
     int mat_id = hr.inst_id < 0 ? hr.geom_id : hr.inst_id;
     auto const& tex = params.textures[mat_id];
@@ -141,7 +141,7 @@ inline auto get_surface_impl(HR const& hr, Params const& params)
 {
     using C = typename Params::color_type;
 
-    auto const& prim = get_primitive(params, hr);
+    auto const& prim = get_primitive(params.prims.begin, hr);
 
     auto const& gns = params.geometric_normals;
     auto const& sns = params.shading_normals;
