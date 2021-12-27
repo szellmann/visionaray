@@ -133,7 +133,12 @@ struct kernel
 
             if (num_lights > 0)
             {
-                auto ls = sample_random_light(params.lights.begin, params.lights.end, gen);
+                auto ls = sample_random_light(
+                        params.lights.begin,
+                        params.lights.end,
+                        hit_rec.isect_pos,
+                        gen
+                        );
 
                 auto ld = length(ls.pos - hit_rec.isect_pos);
                 auto L = normalize(ls.pos - hit_rec.isect_pos);

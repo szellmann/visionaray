@@ -172,10 +172,11 @@ template <
         !detail::has_sample<typename std::iterator_traits<Lights>::value_type, Generator>::value>::type
     >
 VSNRAY_FUNC
-light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen)
+light_sample<T> sample_random_light(Lights begin, Lights end, vector<3, T> const& reference_point, Generator& gen)
 {
     VSNRAY_UNUSED(begin);
     VSNRAY_UNUSED(end);
+    VSNRAY_UNUSED(reference_point);
     VSNRAY_UNUSED(gen);
 
     return {};
@@ -191,7 +192,7 @@ template <
         detail::has_sample<typename std::iterator_traits<Lights>::value_type, Generator>::value>::type
     >
 VSNRAY_FUNC
-light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen)
+light_sample<T> sample_random_light(Lights begin, Lights end, vector<3, T> const& reference_point, Generator& gen)
 {
     auto num_lights = end - begin;
 
@@ -199,7 +200,7 @@ light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen)
 
     int light_id = static_cast<int>(u * num_lights);
 
-    return begin[light_id].sample(gen);
+    return begin[light_id].sample(reference_point, gen);
 }
 
 // simd
@@ -211,7 +212,7 @@ template <
     typename = typename std::enable_if<
         detail::has_sample<typename std::iterator_traits<Lights>::value_type, Generator>::value>::type
     >
-light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen, T = T())
+light_sample<T> sample_random_light(Lights begin, Lights end, vector<3, T> const& reference_point, Generator& gen, T = T())
 {
     using float_array = simd::aligned_array_t<T>;
 
@@ -224,6 +225,8 @@ light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen, T 
 
     light_sample<T> result;
 
+    auto rp = simd::unpack(reference_point);
+
     array<vector<3, float>, simd::num_elements<T>::value> poss;
     array<vector<3, float>, simd::num_elements<T>::value> intensities;
     array<vector<3, float>, simd::num_elements<T>::value> normals;
@@ -234,7 +237,7 @@ light_sample<T> sample_random_light(Lights begin, Lights end, Generator& gen, T 
     {
         int light_id = static_cast<int>(uf[i] * num_lights);
 
-        auto ls = begin[light_id].sample(gen.get_generator(i));
+        auto ls = begin[light_id].sample(rp[i], gen.get_generator(i));
 
         poss[i] = ls.pos;
         intensities[i] = ls.intensity;

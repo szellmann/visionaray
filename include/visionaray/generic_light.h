@@ -44,7 +44,7 @@ public:
 
     // Get a single sampled position (always the same).
     template <typename Generator, typename U = typename Generator::value_type>
-    VSNRAY_FUNC light_sample<U> sample(Generator& gen) const;
+    VSNRAY_FUNC light_sample<U> sample(vector<3, U> const& reference_point, Generator& gen) const;
 
     // Get the light position.
     VSNRAY_FUNC vector<3, typename T::scalar_type> position() const;

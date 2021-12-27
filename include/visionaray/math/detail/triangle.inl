@@ -68,8 +68,10 @@ inline rectangle<min_max_layout<2, T>, T> get_bounds(basic_triangle<2, T, P> con
 
 template <size_t Dim, typename T, typename P, typename Generator, typename U = typename Generator::value_type>
 MATH_FUNC
-inline vector<3, U> sample_surface(basic_triangle<Dim, T, P> const& t, Generator& gen)
+inline vector<3, U> sample_surface(basic_triangle<Dim, T, P> const& t, vector<3, U> const& reference_point, Generator& gen)
 {
+    VSNRAY_UNUSED(reference_point);
+
     U u1 = gen.next();
     U u2 = gen.next();
 

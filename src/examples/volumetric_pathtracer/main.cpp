@@ -305,7 +305,7 @@ void renderer::on_display()
                 // NEE
                 if (true)
                 {
-                    vec3 sphere_sample = sample_surface(sph, gen);
+                    vec3 sphere_sample = sample_surface(sph, r.ori, gen);
                     vec3 dir = normalize(sphere_sample - r.ori);
                     ray shadow_ray;
                     shadow_ray.ori = r.ori + dir * 1e-3f;

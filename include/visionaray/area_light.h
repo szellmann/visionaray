@@ -32,7 +32,7 @@ public:
     VSNRAY_FUNC vector<3, U> intensity(vector<3, U> const& pos) const;
 
     template <typename Generator, typename U = typename Generator::value_type>
-    VSNRAY_FUNC light_sample<U> sample(Generator& gen) const;
+    VSNRAY_FUNC light_sample<U> sample(vector<3, U> const& reference_point, Generator& gen) const;
 
     // Return center of bounding box
     // TODO: maybe return something more meaningful, e.g. center of gravity?

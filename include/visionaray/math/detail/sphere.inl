@@ -49,8 +49,9 @@ inline basic_aabb<T> get_bounds(basic_sphere<T, P> const& s)
 
 template <typename T, typename P, typename Generator, typename U = typename Generator::value_type>
 MATH_FUNC
-inline vector<3, U> sample_surface(basic_sphere<T, P> const& s, Generator& gen)
+inline vector<3, U> sample_surface(basic_sphere<T, P> const& s, vector<3, U> const& reference_point,  Generator& gen)
 {
+    VSNRAY_UNUSED(reference_point);
     return uniform_sample_sphere(gen.next(), gen.next()) * U(s.radius) + vector<3, U>(s.center);
 }
 

@@ -26,9 +26,9 @@ vector<3, U> generic_light<T, Ts...>::intensity(vector<3, U> const& pos) const
 template <typename T, typename ...Ts>
 template <typename Generator, typename U>
 VSNRAY_FUNC
-light_sample<U> generic_light<T, Ts...>::sample(Generator& gen) const
+light_sample<U> generic_light<T, Ts...>::sample(vector<3, U> const& reference_point, Generator& gen) const
 {
-    return apply_visitor( sample_visitor<Generator, U>(gen), *this );
+    return apply_visitor( sample_visitor<Generator, U>(reference_point, gen), *this );
 }
 
 template <typename T, typename ...Ts>
@@ -71,15 +71,20 @@ struct generic_light<T, Ts...>::sample_visitor
     using return_type = light_sample<U>;
 
     VSNRAY_FUNC
-    sample_visitor(Generator& gen) : gen_(gen) {}
+    sample_visitor(vector<3, U> const& reference_point, Generator& gen)
+        : reference_point_(reference_point)
+        , gen_(gen)
+    {
+    }
 
     template <typename X>
     VSNRAY_FUNC
     return_type operator()(X const& ref) const
     {
-        return ref.sample(gen_);
+        return ref.sample(reference_point_, gen_);
     }
 
+    vector<3, U> const& reference_point_;
     Generator& gen_;
 };
 

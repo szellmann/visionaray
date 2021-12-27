@@ -22,12 +22,13 @@ namespace visionaray
 // TODO!!
 template <
     typename P,
+    typename PT,
     typename = typename std::enable_if<is_any_bvh<P>::value>::type,
     typename Generator,
     typename U = typename Generator::value_type
     >
 VSNRAY_FUNC
-inline vector<3, U> sample_surface(P, Generator&)
+inline vector<3, U> sample_surface(P, PT, Generator&)
 {
     return {};
 }
