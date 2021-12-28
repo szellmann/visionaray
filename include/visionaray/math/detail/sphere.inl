@@ -51,8 +51,31 @@ template <typename T, typename P, typename Generator, typename U = typename Gene
 MATH_FUNC
 inline vector<3, U> sample_surface(basic_sphere<T, P> const& s, vector<3, U> const& reference_point,  Generator& gen)
 {
-    VSNRAY_UNUSED(reference_point);
-    return uniform_sample_sphere(gen.next(), gen.next()) * U(s.radius) + vector<3, U>(s.center);
+    auto inside = length(reference_point - s.center) < s.radius;
+
+    auto sample = uniform_sample_sphere(gen.next(), gen.next()) * U(s.radius) + vector<3, U>(s.center);
+
+    if (all(inside))
+    {
+        return sample;
+    }
+
+    auto n = (sample - s.center) / s.radius;
+    auto v = sample + reference_point;
+
+    while (all(dot(n,v) < 0.0f || inside))
+    {
+        sample = select(
+                inside,
+                sample,
+                uniform_sample_sphere(gen.next(), gen.next()) * U(s.radius) + vector<3, U>(s.center)
+                );
+
+        n = (sample - s.center) / s.radius;
+        v = sample + reference_point;
+    }
+
+    return sample;
 }
 
 template <typename T, typename P>
