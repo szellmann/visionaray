@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "export.h"
 #include "image_base.h"
 
 namespace visionaray
@@ -17,7 +18,7 @@ class tga_image : public image_base
 {
 public:
 
-    bool load(std::string const& filename);
+    VSNRAY_COMMON_EXPORT bool load(std::string const& filename);
 
 };
 
