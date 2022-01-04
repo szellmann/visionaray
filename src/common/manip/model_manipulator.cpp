@@ -15,6 +15,7 @@ model_manipulator::model_manipulator(
     : camera_(cam)
     , model_matrix_(model_matrix)
     , size_(size)
+    , pos_(vec3(0.0f, 0.0f, 0.0f))
     , active_(false)
 {
 }
@@ -31,6 +32,11 @@ void model_manipulator::set_active(bool active)
 bool model_manipulator::active() const
 {
     return active_;
+}
+
+void model_manipulator::set_position(vec3 const& pos)
+{
+    pos_ = pos;
 }
 
 void model_manipulator::render()

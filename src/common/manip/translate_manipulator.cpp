@@ -25,10 +25,10 @@ using namespace visionaray;
 // Projection
 //
 
-static vec2i get_projected_center(pinhole_camera const& cam, mat4 const& model_matrix)
+static vec2i get_projected_center(pinhole_camera const& cam, mat4 const& model_matrix, vec3 const& pos)
 {
     vec3 win;
-    vec3 obj(0.0f);
+    vec3 obj(pos);
 
     project(
         win,
@@ -41,9 +41,9 @@ static vec2i get_projected_center(pinhole_camera const& cam, mat4 const& model_m
     return vec2i(win.xy());
 }
 
-static recti get_projected_center_rect(pinhole_camera const& cam, mat4 const& model_matrix)
+static recti get_projected_center_rect(pinhole_camera const& cam, mat4 const& model_matrix, vec3 const& pos)
 {
-    vec2i c = get_projected_center(cam, model_matrix);
+    vec2i c = get_projected_center(cam, model_matrix, pos);
     return recti(c.x - 10, c.y - 10, 20, 20);
 }
 
@@ -106,7 +106,7 @@ void translate_manipulator::render()
 
     auto size = max_element(get_scaling(model_matrix_)/* really? */ * vec4(size_, 1.0f));
 
-    vec2i c = get_projected_center(camera_, model_matrix_);
+    vec2i c = get_projected_center(camera_, model_matrix_, pos_);
 
     vec4 color(0.0f, 1.0f, 1.0f, 1.0f);
     draw_line(c + vec2i(-10, -10), 20, color, cartesian_axis<2>::X, 1);
@@ -131,16 +131,16 @@ void translate_manipulator::render()
 
     glBegin(GL_LINES);
         glColor3f(1.0f, 0.0f, 0.0f);
-        glVertex3f(0.2f, 0.0f, 0.0f);
-        glVertex3f(size, 0.0f, 0.0f);
+        glVertex3f(pos_.x + 0.2f, pos_.y, pos_.z);
+        glVertex3f(pos_.x + size, pos_.y, pos_.z);
 
         glColor3f(0.0f, 1.0f, 0.0f);
-        glVertex3f(0.0f, 0.2f, 0.0f);
-        glVertex3f(0.0f, size, 0.0f);
+        glVertex3f(pos_.x, pos_.y + 0.2f, pos_.z);
+        glVertex3f(pos_.x, pos_.y + size, pos_.z);
 
         glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(0.0f, 0.0f, 0.2f);
-        glVertex3f(0.0f, 0.0f, size);
+        glVertex3f(pos_.x, pos_.y, pos_.z + 0.2f);
+        glVertex3f(pos_.x, pos_.y, pos_.z + size);
     glEnd();
 
     glLineWidth(prev_line_width);
@@ -157,7 +157,7 @@ void translate_manipulator::render()
 bool translate_manipulator::handle_mouse_down(visionaray::mouse_event const& event)
 {
     auto brect = flip(
-            get_projected_center_rect(camera_, model_matrix_),
+            get_projected_center_rect(camera_, model_matrix_, pos_),
             camera_.get_viewport()
             );
 

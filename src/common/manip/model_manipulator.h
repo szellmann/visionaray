@@ -32,6 +32,8 @@ public:
     void set_active(bool active);
     bool active() const;
 
+    void set_position(vec3 const& pos);
+
     virtual void render();
 
     virtual bool handle_key_press(key_event const& event);
@@ -50,6 +52,7 @@ protected:
     pinhole_camera const& camera_;
     mat4& model_matrix_;
     vec3 size_;
+    vec3 pos_;
 
     bool active_;
 
