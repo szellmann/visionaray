@@ -127,15 +127,15 @@ void register_event_callback(event_type type, event_callback cb)
 
 void cleanup()
 {
-	if (SetConnexionHandlers != 0)
-	{
+    if (SetConnexionHandlers != 0)
+    {
         if (client_id)
         {
             UnregisterConnexionClient(client_id);
         }
 
         CleanupConnexionHandlers();
-	}
+    }
 }
 
 } // space_mouse
