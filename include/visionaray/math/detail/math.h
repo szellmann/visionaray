@@ -10,6 +10,10 @@
 #include <cstring>
 #include <type_traits>
 
+#if !defined(__aarch64__)
+#include <x86intrin.h>
+#endif
+
 #include "../config.h"
 
 
@@ -73,6 +77,23 @@ using std::round;
 using std::sin;
 using std::sqrt;
 using std::tan;
+#endif
+
+#ifdef __CUDACC__
+using ::clock64;
+#else
+inline uint64_t clock64()
+{
+#if defined(__aarch64__)
+    uint64_t cnt;
+    asm volatile("mrs %0, cntvct_el0" : "=r" (cnt));
+    return cnt;
+#else
+    unsigned int lo,hi;
+    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
+    return ((uint64_t)hi << 32) | lo;
+#endif
+}
 #endif
 
 #ifdef __CUDACC__
