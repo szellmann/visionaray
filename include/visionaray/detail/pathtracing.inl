@@ -219,6 +219,7 @@ struct kernel
         result.color = select( result.hit, to_rgba(intensity), result.color );
 #ifdef VSNRAY_PERF_DEBUG
         uint64_t clock_end = clock64();
+        float heat_map_scale = 1.0f;
         float t = (clock_end - clock_begin) * heat_map_scale;
         result.color = over(vector<4, S>(vector<3, S>(temperature_to_rgb(t)), S(0.5)), result.color);
 #endif
@@ -235,10 +236,6 @@ struct kernel
         default_intersector ignore;
         return (*this)(ignore, ray, gen);
     }
-
-#ifdef VSNRAY_PERF_DEBUG
-    float heat_map_scale = 1.0f;
-#endif
 };
 
 } // pathtracing
