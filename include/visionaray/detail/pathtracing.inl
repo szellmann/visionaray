@@ -10,7 +10,7 @@
 #include <visionaray/surface_interaction.h>
 #include <visionaray/traverse.h>
 
-#define VSNRAY_PERF_DEBUG 0
+// #define VSNRAY_PERF_DEBUG 1
 
 namespace visionaray
 {
