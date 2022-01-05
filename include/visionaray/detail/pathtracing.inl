@@ -10,10 +10,20 @@
 #include <visionaray/surface_interaction.h>
 #include <visionaray/traverse.h>
 
+#define VSNRAY_PERF_DEBUG 0
+
 namespace visionaray
 {
 namespace pathtracing
 {
+
+#ifdef VSNRAY_PERF_DEBUG
+template <typename T>
+VSNRAY_FUNC inline vector<4, T> over(vector<4, T> const& a, vector<4, T> const& b)
+{
+    return a + (T(1.0) - a.w) * b;
+}
+#endif
 
 template <typename Params>
 struct kernel
@@ -28,6 +38,9 @@ struct kernel
             Generator& gen
             ) const
     {
+#ifdef VSNRAY_PERF_DEBUG
+        uint64_t clock_begin = clock64();
+#endif
         using S = typename R::scalar_type;
         using I = simd::int_type_t<S>;
         using V = vector<3, S>;
@@ -204,6 +217,11 @@ struct kernel
         }
 
         result.color = select( result.hit, to_rgba(intensity), result.color );
+#ifdef VSNRAY_PERF_DEBUG
+        uint64_t clock_end = clock64();
+        float t = (clock_end - clock_begin) * heat_map_scale;
+        result.color = over(vector<4, S>(vector<3, S>(temperature_to_rgb(t)), S(0.5)), result.color);
+#endif
 
         return result;
     }
@@ -217,6 +235,10 @@ struct kernel
         default_intersector ignore;
         return (*this)(ignore, ray, gen);
     }
+
+#ifdef VSNRAY_PERF_DEBUG
+    float heat_map_scale = 1.0f;
+#endif
 };
 
 } // pathtracing
