@@ -103,6 +103,7 @@ void rotate_manipulator::render()
     auto scaling = get_scaling(model_matrix_);
     auto radius = (length((scaling * vec4(size_, 1.0f)).xyz()) / 2.0f) * ball_.radius;
     vec3 center(model_matrix_(0, 3), model_matrix_(1, 3), model_matrix_(2, 3));
+    center += pos_;
 
     mat3 mm3(model_matrix_(0).xyz(), model_matrix_(1).xyz(), model_matrix_(2).xyz());
     auto X = normalize(mm3 * vec3(1.0f, 0.0f, 0.0f));
@@ -363,7 +364,7 @@ disci rotate_manipulator::bounding_disc()
     project(
             win_center,
             vec3(0.0f),
-            camera_.get_view_matrix() * model_matrix_,
+            camera_.get_view_matrix() * mat4::translation(pos_) * model_matrix_,
             camera_.get_proj_matrix(),
             camera_.get_viewport()
             );
@@ -371,7 +372,7 @@ disci rotate_manipulator::bounding_disc()
     project(
             win_right,
             vec3(0.0f),
-            mat4::translation(radius * ball_.radius, 0.0f, 0.0f) * camera_.get_view_matrix() * model_matrix_,
+            mat4::translation(radius * ball_.radius, 0.0f, 0.0f) * camera_.get_view_matrix() * mat4::translation(pos_) * model_matrix_,
             camera_.get_proj_matrix(),
             camera_.get_viewport()
             );
