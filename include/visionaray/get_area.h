@@ -9,7 +9,6 @@
 #include <cstddef>
 #include <iterator>
 #include <type_traits>
-#include <utility>
 
 #include "detail/macros.h"
 #include "math/simd/type_traits.h"
