@@ -152,7 +152,6 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_area(Primitives const& prims, HR const& hr, void* = nullptr)
-    -> typename HR::scalar_type
 {
     auto& b = prims[0]; // TODO: currently only two levels supported (i.e. one top-level BVH)
 
@@ -172,7 +171,6 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_area(Primitives const& prims, HR const& hr, void* = nullptr)
-    -> typename HR::scalar_type
 {
     using T = typename HR::scalar_type;
     using float_array = simd::aligned_array_t<T>;
