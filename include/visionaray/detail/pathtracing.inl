@@ -12,6 +12,14 @@
 
 // #define VSNRAY_PERF_DEBUG 1
 
+#ifdef VSNRAY_PERF_DEBUG
+#ifdef __CUDACC__
+#define CLOCK clock
+#else
+#define CLOCK clock64
+#endif
+#endif
+
 namespace visionaray
 {
 namespace pathtracing
@@ -39,7 +47,7 @@ struct kernel
             ) const
     {
 #ifdef VSNRAY_PERF_DEBUG
-        uint64_t clock_begin = clock64();
+        uint64_t clock_begin = CLOCK();
 #endif
         using S = typename R::scalar_type;
         using I = simd::int_type_t<S>;
@@ -218,7 +226,7 @@ struct kernel
 
         result.color = select( result.hit, to_rgba(intensity), result.color );
 #ifdef VSNRAY_PERF_DEBUG
-        uint64_t clock_end = clock64();
+        uint64_t clock_end = CLOCK();
         float heat_map_scale = 1.0f;
         float t = (clock_end - clock_begin) * heat_map_scale;
         result.color = over(vector<4, S>(vector<3, S>(temperature_to_rgb(t)), S(0.5)), result.color);

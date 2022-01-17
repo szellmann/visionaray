@@ -80,7 +80,7 @@ using std::tan;
 #endif
 
 #ifdef __CUDACC__
-using ::clock64;
+using ::clock;
 #else
 inline uint64_t clock64()
 {
