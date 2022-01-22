@@ -21,7 +21,8 @@ namespace visionaray
 template <
     pixel_format ColorFormat,
     pixel_format DepthFormat,
-    pixel_format AccumFormat = PF_UNSPECIFIED>
+    pixel_format AccumFormat = PF_UNSPECIFIED
+    >
 class cpu_buffer_rt : public render_target
 {
 public:
