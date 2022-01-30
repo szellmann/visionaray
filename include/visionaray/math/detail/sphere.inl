@@ -3,6 +3,7 @@
 
 #include <visionaray/sampling.h>
 
+#include "../aabb.h"
 #include "../constants.h"
 #include "math.h"
 
