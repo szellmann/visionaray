@@ -50,6 +50,9 @@ template <typename T>
 class basic_ray;
 
 template <typename T, typename P = unsigned>
+class basic_cylinder;
+
+template <typename T, typename P = unsigned>
 class basic_sphere;
 
 template <size_t Dim, typename T, typename P = unsigned>

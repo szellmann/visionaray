@@ -11,6 +11,7 @@
 #include "simd/type_traits.h"
 #include "aabb.h"
 #include "config.h"
+#include "cylinder.h"
 #include "limits.h"
 #include "plane.h"
 #include "ray.h"
@@ -340,6 +341,65 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_sphere<U
     result.t = select(t1 >= T(0.0) && t2 >= T(0.0), min(t1, t2), result.t);
     result.t = select(t1 >= T(0.0) && t2 <  T(0.0), t1,          result.t);
     result.t = select(t1 <  T(0.0) && t2 >= T(0.0), t2,          result.t);
+    return result;
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// ray / cylinder
+//
+
+template <typename R, typename U>
+MATH_FUNC
+inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_cylinder<U, unsigned> const& cylinder)
+{
+    using T = typename R::scalar_type;
+    using vec_type = vector<3, T>;
+
+    vec_type ori = ray.ori;
+    T min_dist = max(
+        T(0.0),
+        min(
+            length(cylinder.v1 - ori) - cylinder.radius * T(2.0),
+            length(cylinder.v2 - ori) - cylinder.radius * T(2.0))
+        );
+
+    ori = ori + min_dist * ray.dir;
+
+    vec_type ba = cylinder.v2 - cylinder.v1;
+    vec_type oc = ori - cylinder.v1;
+
+    T baba = dot(ba, ba);
+    T bard = dot(ba, ray.dir);
+    T baoc = dot(ba, oc);
+
+    T k2 = baba - bard * bard;
+    T k1 = baba * dot(oc, ray.dir) - baoc * bard;
+    T k0 = baba * dot(oc, oc) - baoc * baoc - cylinder.radius * cylinder.radius * baba;
+
+    T h = k1 * k1 - k2 * k0;
+
+    auto valid = h >= T(0.0);
+
+    h = select(valid, sqrt(h), h);
+    T t = (-k1 - h) / k2;
+
+    hit_record<R, primitive<unsigned>> result;
+    result.t = T(-1.0);
+
+    // body
+    T y = baoc + t * bard;
+
+    auto hit1 = valid && y > T(0.0) && y < baba;
+    result.t = select(hit1, min_dist + t, result.t);
+
+    auto hit2 = valid && abs(k1 + k2 * t) < h;
+
+    t = select(y < T(0.0), - baoc / bard, (baba - baoc) / bard);
+    result.t = select(!hit1 && hit2,t, result.t);
+    result.hit = hit1 || hit2;
+    result.prim_id = cylinder.prim_id;
+    result.geom_id = cylinder.geom_id;
     return result;
 }
 

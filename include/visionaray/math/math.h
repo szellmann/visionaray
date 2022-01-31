@@ -13,6 +13,7 @@
 #include "axis.h"
 #include "constants.h"
 #include "coordinates.h"
+#include "cylinder.h"
 #include "fixed.h"
 #include "intersect.h"
 #include "io.h"
