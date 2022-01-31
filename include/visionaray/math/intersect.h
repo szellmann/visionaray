@@ -393,9 +393,9 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_cylinder
     auto hit1 = valid && y > T(0.0) && y < baba;
     result.t = select(hit1, min_dist + t, result.t);
 
+    t = select(y < T(0.0), - baoc / bard, (baba - baoc) / bard);
     auto hit2 = valid && abs(k1 + k2 * t) < h;
 
-    t = select(y < T(0.0), - baoc / bard, (baba - baoc) / bard);
     result.t = select(!hit1 && hit2,t, result.t);
     result.hit = hit1 || hit2;
     result.prim_id = cylinder.prim_id;
