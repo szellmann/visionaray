@@ -135,7 +135,7 @@ inline auto get_normal(HR const& hr, basic_cylinder<T> const& cylinder)
         return axis;
     }
 
-    T t = dot((hr.isect_pos - cylinder.v1), axis);
+    S t = dot((hr.isect_pos - cylinder.v1), axis);
     V pt = cylinder.v1 + t * axis;
 
     return normalize(hr.isect_pos - pt);
