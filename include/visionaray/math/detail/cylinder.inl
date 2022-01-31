@@ -32,22 +32,14 @@ template <typename T, typename P>
 MATH_FUNC
 inline basic_aabb<T> get_bounds(basic_cylinder<T, P> const& c)
 {
-    vector<3, T> a = c.v2 - c.v1;
-    T aa = dot(a, a);
-
-    vector<3, T> e(
-        c.radius * sqrt(T(1.0) - a.x * a.x / aa),
-        c.radius * sqrt(T(1.0) - a.y * a.y / aa),
-        c.radius * sqrt(T(1.0) - a.z * a.z / aa)
-        );
-
-    vector<3, T> pa = min(c.v1 - e, c.v2 - e);
-    vector<3, T> pb = max(c.v1 - e, c.v2 - e);
+    vector<3, T> r(c.radius);
 
     basic_aabb<T> result;
     result.invalidate();
-    result.insert(pa);
-    result.insert(pb);
+    result.insert(c.v1 - r);
+    result.insert(c.v1 + r);
+    result.insert(c.v2 - r);
+    result.insert(c.v2 + r);
     return result;
 }
 
