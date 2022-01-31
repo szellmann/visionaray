@@ -8,10 +8,12 @@
 
 #include <cassert>
 #include <array>
+#include <stdexcept>
 #include <type_traits>
 #include <vector>
 
 #include <visionaray/math/aabb.h>
+#include <visionaray/math/cylinder.h>
 #include <visionaray/math/sphere.h>
 #include <visionaray/math/triangle.h>
 
@@ -63,6 +65,12 @@ void split_primitive(aabb& L, aabb& R, float plane, int axis, basic_triangle<Dim
     detail::split_edge(L, R, v0, v1, plane, axis);
     detail::split_edge(L, R, v1, v2, plane, axis);
     detail::split_edge(L, R, v2, v0, plane, axis);
+}
+
+template <typename T, typename P>
+void split_primitive(aabb&, aabb&, float, int, basic_cylinder<T, P> const&)
+{
+    throw std::runtime_error("not implemented yet");
 }
 
 template <typename T, typename P>
