@@ -43,6 +43,7 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_area(Primitives const& prims, HR const& hr)
+    -> decltype(area(std::declval<Primitive>()))
 {
     return area(prims[hr.prim_id]);
 }
@@ -89,6 +90,7 @@ template <
     >
 VSNRAY_FUNC
 inline auto get_area(Primitives const& prims, HR const& hr)
+    -> decltype(area(std::declval<typename Primitive::primitive_type>()))
 {
     // Find the BVH that contains prim_id
     size_t num_primitives_total = 0;
