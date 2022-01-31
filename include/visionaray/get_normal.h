@@ -11,6 +11,7 @@
 
 #include "detail/macros.h"
 #include "math/simd/type_traits.h"
+#include "math/cylinder.h"
 #include "math/plane.h"
 #include "math/sphere.h"
 #include "math/triangle.h"
@@ -109,6 +110,35 @@ inline vector<3, T> get_normal(HR const& hr, basic_triangle<3, T> const& triangl
     VSNRAY_UNUSED(hr);
 
     return normalize(cross(triangle.e1, triangle.e2));
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Get normal on cylinder surface
+//
+
+template <typename HR, typename T>
+VSNRAY_FUNC
+inline auto get_normal(HR const& hr, basic_cylinder<T> const& cylinder)
+{
+    using V = decltype(hr.isect_pos);
+    using S = typename V::value_type;
+
+    V axis = normalize(cylinder.v2 - cylinder.v1);
+
+    if (length(hr.isect_pos - cylinder.v1) < cylinder.radius)
+    {
+        return -axis;
+    }
+    else if (length(hr.isect_pos - cylinder.v2) < cylinder.radius)
+    {
+        return axis;
+    }
+
+    T t = dot((hr.isect_pos - cylinder.v1), axis);
+    V pt = cylinder.v1 + t * axis;
+
+    return normalize(hr.isect_pos - pt);
 }
 
 
