@@ -1,4 +1,7 @@
 ## [Unreleased]
+### Added
+- Added cylinder as built-in primitive.
+
 ### Changed
 - An accumulation buffer was now added to the builtin render targets
 where colors are blended in. For blending kernels, the accumulation
