@@ -18,6 +18,21 @@ namespace visionaray
 // Used by the traversal functions (linear traversal, BVH traversal, etc.)
 //-------------------------------------------------------------------------------------------------
 
+template <typename M, typename HR>
+VSNRAY_FUNC
+HR select(M const& m, HR const& hr1, HR const& hr2)
+{
+    HR result;
+    result.hit     = select(m, hr1.hit, hr2.hit);
+    result.t       = select(m, hr1.t, hr2.t);
+    result.prim_id = select(m, hr1.prim_id, hr2.prim_id);
+    result.geom_id = select(m, hr1.geom_id, hr2.geom_id);
+    result.inst_id = select(m, hr1.inst_id, hr2.inst_id);
+    result.u       = select(m, hr1.u, hr2.v);
+    result.v       = select(m, hr1.u, hr2.v);
+    return result;
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // update_if()
