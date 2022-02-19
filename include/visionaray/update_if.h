@@ -49,6 +49,7 @@ void update_if(HR& dst, HR const& src, Cond const& cond)
     dst.t        = select(cond, src.t, dst.t);
     dst.prim_id  = select(cond, src.prim_id, dst.prim_id);
     dst.geom_id  = select(cond, src.geom_id, dst.geom_id);
+    dst.inst_id  = select(cond, src.inst_id, dst.inst_id);
     dst.u        = select(cond, src.u, dst.u);
     dst.v        = select(cond, src.v, dst.v);
 }
