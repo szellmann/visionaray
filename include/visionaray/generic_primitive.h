@@ -15,6 +15,10 @@ namespace visionaray
 //-------------------------------------------------------------------------------------------------
 // Generic primitive
 //
+// Type that is based on variant; by using a tagged union, primitive types stored in an
+// accelerator like this don't require virtual inheritance. This is a performance optimization
+// to avoid virtual inheritance in inner loops
+//
 
 template <typename ...Ts>
 class generic_primitive;
