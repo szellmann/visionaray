@@ -13,6 +13,14 @@
 namespace visionaray
 {
 
+//-------------------------------------------------------------------------------------------------
+// Camera class that internally stores view and projection matrices
+//
+// When this camera generates primary rays, it will do so by starting in OpenGL-like NDC,
+// with rays that are perpendicular to the image plane, and transforms them to world
+// coordinates using the inverse of the internal matrices
+//
+
 class matrix_camera
 {
 public:
