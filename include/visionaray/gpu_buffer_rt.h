@@ -55,6 +55,7 @@ private:
 
     color_type* color_buffer_ = nullptr;
     depth_type* depth_buffer_ = nullptr;
+    accum_type* accum_buffer_ = nullptr;
 
 };
 
