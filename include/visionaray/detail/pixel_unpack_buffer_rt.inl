@@ -33,6 +33,7 @@ typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::depth_ty
     return static_cast<depth_type*>(depth_resource.dev_ptr());
 }
 
+template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
 typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::accum_type* pixel_unpack_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::accum()
 {
     return static_cast<accum_type*>(accum_resource.dev_ptr());
@@ -63,7 +64,7 @@ typename pixel_unpack_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::ref_type
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat, pixel_format AccumFormat>
-void pixel_unpack_buffer_rt<ColorFormat, DepthFormat>::clear_color_buffer(vec4 const& c)
+void pixel_unpack_buffer_rt<ColorFormat, DepthFormat, AccumFormat>::clear_color_buffer(vec4 const& c)
 {
     assert(color() == 0 && "clear_color_buffer() called between begin_frame() and end_frame()");
 
