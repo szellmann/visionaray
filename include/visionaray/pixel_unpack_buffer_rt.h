@@ -26,13 +26,18 @@
 namespace visionaray
 {
 
-template <pixel_format ColorFormat, pixel_format DepthFormat>
+template <
+    pixel_format ColorFormat,
+    pixel_format DepthFormat,
+    pixel_format AccumFormat = PF_UNSPECIFIED
+    >
 class pixel_unpack_buffer_rt : public render_target
 {
 public:
 
     using color_type    = typename pixel_traits<ColorFormat>::type;
     using depth_type    = typename pixel_traits<DepthFormat>::type;
+    using accum_type    = typename pixel_traits<DepthFormat>::type;
 
     using ref_type      = render_target_ref<ColorFormat, DepthFormat>;
 
@@ -43,14 +48,17 @@ public:
 
     color_type* color();
     depth_type* depth();
+    accum_type* accum();
 
     color_type const* color() const;
     depth_type const* depth() const;
+    accum_type const* accum() const;
 
     ref_type ref();
 
     void clear_color_buffer(vec4 const& color = vec4(0.0f));
     void clear_depth_buffer(float depth = 1.0f);
+    void clear_accum_buffer(vec4 const& color = vec4(0.0f));
     void begin_frame();
     void end_frame();
     void resize(int w, int h);
@@ -62,9 +70,11 @@ private:
 
     cuda::graphics_resource               color_resource;
     cuda::graphics_resource               depth_resource;
+    cuda::graphics_resource               accum_resource;
 
     gl::buffer                            color_buffer;
     gl::buffer                            depth_buffer;
+    gl::buffer                            accum_buffer;
 
 };
 
