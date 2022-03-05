@@ -34,7 +34,7 @@ Build requirements
 - [CMake][1] version 3.1.3 or newer
 - [OpenGL][12]
 - [GLEW][3]
-- [NVIDIA CUDA Toolkit][4] version 7.0 or newer (optional)
+- [NVIDIA CUDA Toolkit][4] (optional)
 
 - Libraries need to be installed as developer packages containing C/C++ header files
 - The OpenGL and GLEW dependency can optionally be relaxed by setting `VSNRAY_GRAPHICS_API=None` with CMake
