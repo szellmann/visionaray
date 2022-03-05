@@ -76,14 +76,14 @@ See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Get
 Visionaray Viewer
 -----------------
 
-Visionaray comes with a viewer that supports a number of different 3D file formats. The viewer is primarily targeted at developers, as a tool for debugging and testing.
-After being installed, the viewer can be invoked using the following command:
+The viewer is optional but build by default. It supports a number of different 3D file formats. The viewer is primarily targeted at developers, as a tool for debugging and testing.
+Use the CMake variable `VSNRAY_ENABLE_VIEWER` to exclude the viewer from build. With a standard install, the viewer can be invoked using the following command:
 
 ```Shell
 vsnray-viewer <file>
 ```
 
-where `file` is either a path to a wavefront `.obj` file, a `.ply` file, or a `.pbrt` file.
+Supported file formats are wavefront `.obj`, `.ply`, and `.pbrt.
 
 Documentation
 -------------
