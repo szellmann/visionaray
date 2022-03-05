@@ -43,10 +43,10 @@ struct host_device_rt::impl
 
 #if VSNRAY_HAVE_CUDA
     // Device render target, uses PBO
-    pixel_unpack_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> direct_rt[2];
+    pixel_unpack_buffer_rt<PF_RGBA8, PF_UNSPECIFIED, PF_RGBA32F> direct_rt[2];
 
     // Device render target, copy pixels over host
-    gpu_buffer_rt<PF_RGBA32F, PF_UNSPECIFIED> indirect_rt[2];
+    gpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED, PF_RGBA32F> indirect_rt[2];
 #endif
 
     // Index of front and back buffer, either 0 or 1
