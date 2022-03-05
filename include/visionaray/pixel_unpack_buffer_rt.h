@@ -37,7 +37,7 @@ public:
 
     using color_type    = typename pixel_traits<ColorFormat>::type;
     using depth_type    = typename pixel_traits<DepthFormat>::type;
-    using accum_type    = typename pixel_traits<DepthFormat>::type;
+    using accum_type    = typename pixel_traits<AccumFormat>::type;
 
     using ref_type      = render_target_ref<ColorFormat, DepthFormat, AccumFormat>;
 
