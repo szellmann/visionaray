@@ -623,9 +623,6 @@ inline array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float16>::
     int_array geom_id;
     store(geom_id, hr.geom_id);
 
-    int_array inst_id;
-    store(inst_id, hr.inst_id);
-
     float_array t;
     store(t, hr.t);
 
@@ -643,7 +640,6 @@ inline array<hit_record<ray, primitive<unsigned>>, num_elements<simd::float16>::
         result[i].hit       = hit[i] != 0;
         result[i].prim_id   = prim_id[i];
         result[i].geom_id   = geom_id[i];
-        result[i].inst_id   = inst_id[i];
         result[i].t         = t[i];
         result[i].isect_pos = isect_pos[i];
         result[i].u         = u[i];
