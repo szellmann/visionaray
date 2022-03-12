@@ -215,7 +215,6 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_triangle
 
     result.prim_id = tri.prim_id;
     result.geom_id = tri.geom_id;
-    result.inst_id = tri.inst_id;
     result.t = dot(e2, s2) * inv_div;
     result.u = b1;
     result.v = b2;
@@ -237,7 +236,6 @@ struct hit_record<R, primitive<simd::int4>>
     mask_type hit          = mask_type(false);
     int_type prim_id       = int_type(0);
     int_type geom_id       = int_type(0);
-    int_type inst_id       = int_type(0);
 
     T t                    = numeric_limits<T>::max();
     vector<3, T> isect_pos;
@@ -299,7 +297,6 @@ inline hit_record<basic_ray<float>, primitive<I>> intersect(
 
     result.prim_id = tri.prim_id;
     result.geom_id = tri.geom_id;
-    result.inst_id = tri.inst_id;
     result.t = dot(tri.e2, s2) * inv_div;
     result.u = b1;
     result.v = b2;
@@ -340,7 +337,6 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_sphere<U
     result.hit = valid && (t1 >= T(0.0) || t2 >= T(0.0));
     result.prim_id = sphere.prim_id;
     result.geom_id = sphere.geom_id;
-    result.inst_id = sphere.inst_id;
     result.t = T(-1.0);
     result.t = select(t1 >= T(0.0) && t2 >= T(0.0), min(t1, t2), result.t);
     result.t = select(t1 >= T(0.0) && t2 <  T(0.0), t1,          result.t);
@@ -405,7 +401,6 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_cylinder
     result.hit = hit1 || hit2;
     result.prim_id = cylinder.prim_id;
     result.geom_id = cylinder.geom_id;
-    result.inst_id = cylinder.inst_id;
     return result;
 }
 
@@ -431,7 +426,6 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_plane<3,
 
     result.prim_id = p.prim_id;
     result.geom_id = p.geom_id;
-    result.inst_id = p.inst_id;
 
     result.t = select(
             result.hit,
