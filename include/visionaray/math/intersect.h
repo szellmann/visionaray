@@ -529,6 +529,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> pack(
     int* hit = reinterpret_cast<int*>(&result.hit);
     int* prim_id = reinterpret_cast<int*>(&result.prim_id);
     int* geom_id = reinterpret_cast<int*>(&result.geom_id);
+    int* inst_id = reinterpret_cast<int*>(&result.inst_id);
     float* t = reinterpret_cast<float*>(&result.t);
     array<vec3, N> isect_pos;
     float* u = reinterpret_cast<float*>(&result.u);
@@ -539,6 +540,7 @@ inline hit_record<basic_ray<T>, primitive<unsigned>> pack(
         hit[i]       = hrs[i].hit ? 0xFFFFFFFF : 0x00000000;
         prim_id[i]   = hrs[i].prim_id;
         geom_id[i]   = hrs[i].geom_id;
+        inst_id[i]   = hrs[i].inst_id;
         t[i]         = hrs[i].t;
         isect_pos[i] = hrs[i].isect_pos;
         u[i]         = hrs[i].u;
@@ -571,6 +573,9 @@ inline array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> 
     int_array geom_id;
     store(geom_id, hr.geom_id);
 
+    int_array inst_id;
+    store(inst_id, hr.inst_id);
+
     float_array t;
     store(t, hr.t);
 
@@ -588,6 +593,7 @@ inline array<hit_record<ray, primitive<unsigned>>, num_elements<FloatT>::value> 
         result[i].hit       = hit[i] != 0;
         result[i].prim_id   = prim_id[i];
         result[i].geom_id   = geom_id[i];
+        result[i].inst_id   = inst_id[i];
         result[i].t         = t[i];
         result[i].isect_pos = isect_pos[i];
         result[i].u         = u[i];
