@@ -98,8 +98,8 @@ void host_device_rt::set_double_buffering(bool double_buffering)
     }
     else
     {
-        // Both indices the same, so when we swap buffers, in
-        // the single buffering case nothing gets ever swapped
+        // Both indices the same, so when we swap buffers, in the
+        // single buffering case nothing will ever get swapped
         impl_->buffer_index[0] = 0;
         impl_->buffer_index[1] = 0;
     }
