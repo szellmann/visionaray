@@ -12,8 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "export.h"
-
 namespace visionaray
 {
 
@@ -39,32 +37,32 @@ public:
 
 public:
 
-    VSNRAY_COMMON_EXPORT inifile(std::string filename);
+    inifile(std::string filename);
 
-    VSNRAY_COMMON_EXPORT bool good() const;
+    bool good() const;
 
-    VSNRAY_COMMON_EXPORT error_code get_bool(std::string key, bool& value);
+    error_code get_bool(std::string key, bool& value);
 
-    VSNRAY_COMMON_EXPORT error_code get_int8(std::string key, int8_t& value);
-    VSNRAY_COMMON_EXPORT error_code get_int16(std::string key, int16_t& value);
-    VSNRAY_COMMON_EXPORT error_code get_int32(std::string key, int32_t& value);
-    VSNRAY_COMMON_EXPORT error_code get_int64(std::string key, int64_t& value);
+    error_code get_int8(std::string key, int8_t& value);
+    error_code get_int16(std::string key, int16_t& value);
+    error_code get_int32(std::string key, int32_t& value);
+    error_code get_int64(std::string key, int64_t& value);
 
-    VSNRAY_COMMON_EXPORT error_code get_uint8(std::string key, uint8_t& value);
-    VSNRAY_COMMON_EXPORT error_code get_uint16(std::string key, uint16_t& value);
-    VSNRAY_COMMON_EXPORT error_code get_uint32(std::string key, uint32_t& value);
-    VSNRAY_COMMON_EXPORT error_code get_uint64(std::string key, uint64_t& value);
+    error_code get_uint8(std::string key, uint8_t& value);
+    error_code get_uint16(std::string key, uint16_t& value);
+    error_code get_uint32(std::string key, uint32_t& value);
+    error_code get_uint64(std::string key, uint64_t& value);
 
-    VSNRAY_COMMON_EXPORT error_code get_float(std::string key, float& value);
-    VSNRAY_COMMON_EXPORT error_code get_double(std::string key, double& value);
-    VSNRAY_COMMON_EXPORT error_code get_long_double(std::string key, long double& value);
+    error_code get_float(std::string key, float& value);
+    error_code get_double(std::string key, double& value);
+    error_code get_long_double(std::string key, long double& value);
 
-    VSNRAY_COMMON_EXPORT error_code get_string(std::string key, std::string& value, bool remove_quotes = false);
+    error_code get_string(std::string key, std::string& value, bool remove_quotes = false);
 
-    VSNRAY_COMMON_EXPORT error_code get_vec3i(std::string key, int32_t& x, int32_t& y, int32_t& z);
-    VSNRAY_COMMON_EXPORT error_code get_vec3ui(std::string key, uint32_t& x, uint32_t& y, uint32_t& z);
-    VSNRAY_COMMON_EXPORT error_code get_vec3f(std::string key, float& x, float& y, float& z);
-    VSNRAY_COMMON_EXPORT error_code get_vec3d(std::string key, double& x, double& y, double& z);
+    error_code get_vec3i(std::string key, int32_t& x, int32_t& y, int32_t& z);
+    error_code get_vec3ui(std::string key, uint32_t& x, uint32_t& y, uint32_t& z);
+    error_code get_vec3f(std::string key, float& x, float& y, float& z);
+    error_code get_vec3d(std::string key, double& x, double& y, double& z);
 
 private:
 
