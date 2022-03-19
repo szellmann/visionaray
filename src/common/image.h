@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "export.h"
 #include "image_base.h"
 
 namespace visionaray
