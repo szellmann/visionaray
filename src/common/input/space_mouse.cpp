@@ -15,6 +15,11 @@
 
 #if VSNRAY_COMMON_HAVE_3DCONNEXIONCLIENT
 
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfour-char-constants"
+#endif
+
 // Import weak so we can later check if the
 // driver is loaded by checking for NULL
 extern int16_t SetConnexionHandlers(
@@ -140,6 +145,10 @@ void cleanup()
 
 } // space_mouse
 } // visionaray
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
 #else
 
