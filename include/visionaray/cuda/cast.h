@@ -9,9 +9,9 @@
 #include <cuda_runtime.h>
 #include <vector_functions.h>
 
-#include <visionaray/detail/macros.h>
-#include <visionaray/math/norm.h>
-#include <visionaray/math/vector.h>
+#include "../detail/macros.h"
+#include "../math/norm.h"
+#include "../math/vector.h"
 
 namespace visionaray
 {
