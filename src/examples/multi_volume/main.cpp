@@ -549,7 +549,7 @@ struct kernel
 
 
             // early-ray termination - don't traverse w/o a contribution
-            if ( visionaray::all(result.color.w >= 0.999) )
+            if ( visionaray::all(result.color.w >= 0.999f) )
             {
                 break;
             }
