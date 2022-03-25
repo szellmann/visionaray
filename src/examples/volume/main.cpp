@@ -155,7 +155,7 @@ void renderer::on_display()
                     );
 
             // early-ray termination - don't traverse w/o a contribution
-            if ( all(result.color.w >= 0.999) )
+            if ( all(result.color.w >= 0.999f) )
             {
                 break;
             }
