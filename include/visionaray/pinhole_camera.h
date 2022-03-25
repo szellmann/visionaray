@@ -53,7 +53,7 @@ public:
     void set_viewport(recti const& viewport);
     void set_viewport(int left, int bottom, int width, int height);
 
-    //! Depends on the perspective parameters (fovy) to be set
+    // Depends on the perspective parameters (fovy) to be set
     void view_all(aabb const& box, vec3 const& up = vec3(0.0f, 1.0f, 0.0f));
 
     void set_view_matrix(mat4 const& view) { view_ = view; }
@@ -95,7 +95,7 @@ private:
     vec3 center_;
     vec3 up_;
 
-    //! Distance between camera position and center of view
+    // Distance between camera position and center of view
     float distance_;
 
     float fovy_;
