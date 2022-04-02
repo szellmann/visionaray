@@ -472,107 +472,107 @@ public:
 // Disney's principled BRDF
 //
 
-template <typename T>
-class disney_brdf
-{
-public:
-
-    using scalar_type = T;
-
-public:
-
-    // Base color in linear color space
-    spectrum<T> base_color;
-
-    // Sheen
-    T sheen;
-
-    // Sheen tint
-    T sheen_tint;
-
-    // Surface roughness
-    T roughness;
-
-    template <typename U>
-    VSNRAY_FUNC
-    spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
-    {
-        auto schlick_fresnel_appr = [](float x)
-        {
-            x = U(1.0) - x;
-            return x * x * x * x * x;
-        };
-
-        auto h = normalize(wo + wi);
-//      auto hdotn = max( U(0.0), dot(h, n) );
-        auto ldotn = max( U(0.0), dot(wi, n) );
-        auto vdotn = max( U(0.0), dot(wo, n) );
-        auto ldoth = max( U(0.0), dot(wi, h) );
-
-        // Diffuse component
-        auto f_d90 = U(0.5) + U(2.0) * ldoth * ldoth * roughness;
-        auto schlick = (U(1.0) + (f_d90 - U(1.0)) * schlick_fresnel_appr(ldotn))
-                     * (U(1.0) + (f_d90 - U(1.0)) * schlick_fresnel_appr(vdotn));
-
-        auto f_d = spectrum<U>(base_color) * constants::inv_pi<U>() * schlick;
-
-        // Sheen component, for lack of better documentation,
-        // cf. Disney BRDF Explorer (brdf/src/brdfs/disney.brdf)
-
-        // Calculate luminance of base color using RGB luminance equation
-        auto base_lum = rgb_to_luminance(to_rgb(base_color));
-
-        auto tint_color = select(
-                base_lum > U(0.0),
-                spectrum<U>(base_color) / U(base_lum),
-                spectrum<U>(1.0)
-                );
-
-        auto sheen_color = lerp(spectrum<U>(1.0), tint_color, sheen_tint);
-
-        auto f_sheen = schlick_fresnel_appr(ldoth) * sheen * sheen_color;
-
-
-        return f_d + f_sheen;
-    }
-
-    template <typename U, typename Interaction, typename Generator>
-    VSNRAY_FUNC
-    spectrum<U> sample_f(
-            vector<3, T> const& n,
-            vector<3, U> const& wo,
-            vector<3, U>&       wi,
-            U&                  pdf,
-            Interaction&        inter,
-            Generator&          gen
-            ) const
-    {
-        auto w = n;
-        auto v = select(
-                abs(w.x) > abs(w.y),
-                normalize( vector<3, U>(-w.z, U(0.0), w.x) ),
-                normalize( vector<3, U>(U(0.0), w.z, -w.y) )
-                );
-        auto u = cross(v, w);
-
-        auto sp = cosine_sample_hemisphere(gen.next(), gen.next());
-        wi      = normalize( sp.x * u + sp.y * v + sp.z * w );
-
-        pdf     = this->pdf(n, wo, wi);
-
-        inter   = Interaction(surface_interaction::Diffuse);
-
-        return f(n, wo, wi);
-    }
-
-    template <typename U>
-    VSNRAY_FUNC
-    U pdf(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
-    {
-        VSNRAY_UNUSED(wo);
-        return dot(n, wi) * constants::inv_pi<U>();
-    }
-};
+// template <typename T>
+// class disney_brdf
+// {
+// public:
+// 
+//     using scalar_type = T;
+// 
+// public:
+// 
+//     // Base color in linear color space
+//     spectrum<T> base_color;
+// 
+//     // Sheen
+//     T sheen;
+// 
+//     // Sheen tint
+//     T sheen_tint;
+// 
+//     // Surface roughness
+//     T roughness;
+// 
+//     template <typename U>
+//     VSNRAY_FUNC
+//     spectrum<U> f(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+//     {
+//         auto schlick_fresnel_appr = [](float x)
+//         {
+//             x = U(1.0) - x;
+//             return x * x * x * x * x;
+//         };
+// 
+//         auto h = normalize(wo + wi);
+// //      auto hdotn = max( U(0.0), dot(h, n) );
+//         auto ldotn = max( U(0.0), dot(wi, n) );
+//         auto vdotn = max( U(0.0), dot(wo, n) );
+//         auto ldoth = max( U(0.0), dot(wi, h) );
+// 
+//         // Diffuse component
+//         auto f_d90 = U(0.5) + U(2.0) * ldoth * ldoth * roughness;
+//         auto schlick = (U(1.0) + (f_d90 - U(1.0)) * schlick_fresnel_appr(ldotn))
+//                      * (U(1.0) + (f_d90 - U(1.0)) * schlick_fresnel_appr(vdotn));
+// 
+//         auto f_d = spectrum<U>(base_color) * constants::inv_pi<U>() * schlick;
+// 
+//         // Sheen component, for lack of better documentation,
+//         // cf. Disney BRDF Explorer (brdf/src/brdfs/disney.brdf)
+// 
+//         // Calculate luminance of base color using RGB luminance equation
+//         auto base_lum = rgb_to_luminance(to_rgb(base_color));
+// 
+//         auto tint_color = select(
+//                 base_lum > U(0.0),
+//                 spectrum<U>(base_color) / U(base_lum),
+//                 spectrum<U>(1.0)
+//                 );
+// 
+//         auto sheen_color = lerp(spectrum<U>(1.0), tint_color, sheen_tint);
+// 
+//         auto f_sheen = schlick_fresnel_appr(ldoth) * sheen * sheen_color;
+// 
+// 
+//         return f_d + f_sheen;
+//     }
+// 
+//     template <typename U, typename Interaction, typename Generator>
+//     VSNRAY_FUNC
+//     spectrum<U> sample_f(
+//             vector<3, T> const& n,
+//             vector<3, U> const& wo,
+//             vector<3, U>&       wi,
+//             U&                  pdf,
+//             Interaction&        inter,
+//             Generator&          gen
+//             ) const
+//     {
+//         auto w = n;
+//         auto v = select(
+//                 abs(w.x) > abs(w.y),
+//                 normalize( vector<3, U>(-w.z, U(0.0), w.x) ),
+//                 normalize( vector<3, U>(U(0.0), w.z, -w.y) )
+//                 );
+//         auto u = cross(v, w);
+// 
+//         auto sp = cosine_sample_hemisphere(gen.next(), gen.next());
+//         wi      = normalize( sp.x * u + sp.y * v + sp.z * w );
+// 
+//         pdf     = this->pdf(n, wo, wi);
+// 
+//         inter   = Interaction(surface_interaction::Diffuse);
+// 
+//         return f(n, wo, wi);
+//     }
+// 
+//     template <typename U>
+//     VSNRAY_FUNC
+//     U pdf(vector<3, U> const& n, vector<3, U> const& wo, vector<3, U> const& wi) const
+//     {
+//         VSNRAY_UNUSED(wo);
+//         return dot(n, wi) * constants::inv_pi<U>();
+//     }
+// };
 
 } // visionaray
 
