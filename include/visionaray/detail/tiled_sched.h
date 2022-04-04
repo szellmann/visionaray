@@ -21,12 +21,19 @@ struct int2
     int y;
 };
 
+// These are enabled by the user, who is supposed to
+// define the flag
+// VSNRAY_TILED_SCHED_CUDA_STYLE_THREAD_INTROSPECTION
+// before including headers, if they desire to use this
+// feature
+#ifdef VSNRAY_TILED_SCHED_CUDA_STYLE_THREAD_INTROSPECTION
 static thread_local int2 threadIdx;
 static thread_local int2 blockIdx;
 static thread_local int2 launchIdx;
 static int2 blockDim;
 static int2 gridDim;
 static int2 launchDim;
+#endif
 
 struct tiled_sched_backend
 {
@@ -48,6 +55,7 @@ struct tiled_sched_backend
             Func const& func
             )
     {
+#ifdef VSNRAY_TILED_SCHED_CUDA_STYLE_THREAD_INTROSPECTION
         blockDim.x = tr.rows().tile_size();
         blockDim.y = tr.cols().tile_size();
 
@@ -56,6 +64,7 @@ struct tiled_sched_backend
 
         launchDim.x = tr.rows().length();
         launchDim.y = tr.cols().length();
+#endif
 
         visionaray::parallel_for(
             pool_,
@@ -69,11 +78,13 @@ struct tiled_sched_backend
                 {
                     for (int x = r.rows().begin(); x < r.rows().end(); x += packet_width)
                     {
+#ifdef VSNRAY_TILED_SCHED_CUDA_STYLE_THREAD_INTROSPECTION
                         threadIdx.x = x % r.rows().length();
                         threadIdx.y = y % r.cols().length();
 
                         launchIdx.x = x;
                         launchIdx.y = y;
+#endif
 
                         func(x, y);
                     }
