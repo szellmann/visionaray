@@ -23,8 +23,10 @@ struct int2
 
 static thread_local int2 threadIdx;
 static thread_local int2 blockIdx;
+static thread_local int2 launchIdx;
 static thread_local int2 blockDim;
 static thread_local int2 gridDim;
+static thread_local int2 launchDim;
 
 struct tiled_sched_backend
 {
@@ -52,6 +54,9 @@ struct tiled_sched_backend
         gridDim.x = div_up(tr.rows().length(), tr.rows().tile_size());
         gridDim.y = div_up(tr.cols().length(), tr.cols().tile_size());
 
+        launchDim.x = tr.rows().length();
+        launchDim.y = tr.cols().length();
+
         visionaray::parallel_for(
             pool_,
             tr,
@@ -66,6 +71,9 @@ struct tiled_sched_backend
                     {
                         threadIdx.x = x % r.rows().length();
                         threadIdx.y = y % r.cols().length();
+
+                        launchIdx.x = x;
+                        launchIdx.y = y;
 
                         func(x, y);
                     }
