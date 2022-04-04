@@ -14,6 +14,17 @@
 namespace visionaray
 {
 
+struct int2
+{
+    int x;
+    int y;
+};
+
+static thread_local int2 threadIdx;
+static thread_local int2 blockIdx;
+static thread_local int2 blockDim;
+static thread_local int2 gridDim;
+
 struct tiled_sched_backend
 {
     explicit tiled_sched_backend(unsigned num_threads)
@@ -34,15 +45,27 @@ struct tiled_sched_backend
             Func const& func
             )
     {
+        blockDim.x = tr.rows().tile_size();
+        blockDim.y = tr.cols().tile_size();
+
+        gridDim.x = tr.rows().length();
+        gridDim.y = tr.cols().length();
+
         visionaray::parallel_for(
             pool_,
             tr,
             [=](range2d<int> const& r)
             {
+                blockIdx.x = r.rows().begin() / r.rows().length();
+                blockIdx.y = r.cols().begin() / r.cols().length();
+
                 for (int y = r.cols().begin(); y < r.cols().end(); y += packet_height)
                 {
                     for (int x = r.rows().begin(); x < r.rows().end(); x += packet_width)
                     {
+                        threadIdx.x = x % r.rows().length();
+                        threadIdx.y = y % r.cols().length();
+
                         func(x, y);
                     }
                 }
