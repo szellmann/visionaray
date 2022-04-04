@@ -71,8 +71,10 @@ struct tiled_sched_backend
             tr,
             [=](range2d<int> const& r)
             {
+#ifdef VSNRAY_TILED_SCHED_CUDA_STYLE_THREAD_INTROSPECTION
                 blockIdx.x = r.rows().begin() / r.rows().length();
                 blockIdx.y = r.cols().begin() / r.cols().length();
+#endif
 
                 for (int y = r.cols().begin(); y < r.cols().end(); y += packet_height)
                 {
