@@ -161,8 +161,8 @@ struct kernel
                         gen
                         );
 
-                auto ld = length(ls.pos - hit_rec.isect_pos);
-                auto L = normalize(ls.pos - hit_rec.isect_pos);
+                auto ld = ls.dist;
+                auto L = normalize(ls.dir);
 
                 auto ln = select(ls.delta_light, -L, ls.normal);
 #if 1

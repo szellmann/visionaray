@@ -15,8 +15,11 @@ namespace visionaray
 template <typename T>
 struct light_sample
 {
-    // Sampled position
-    vector<3, T> pos;
+    // Sampled direction
+    vector<3, T> dir;
+
+    // Distance to sample
+    T dist;
 
     // Light intensity at pos
     vector<3, T> intensity;

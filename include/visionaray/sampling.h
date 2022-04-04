@@ -227,7 +227,8 @@ light_sample<T> sample_random_light(Lights begin, Lights end, vector<3, T> const
 
     auto rp = simd::unpack(reference_point);
 
-    array<vector<3, float>, simd::num_elements<T>::value> poss;
+    array<vector<3, float>, simd::num_elements<T>::value> dir;
+    float* dist = reinterpret_cast<float*>(&result.dist);
     array<vector<3, float>, simd::num_elements<T>::value> intensities;
     array<vector<3, float>, simd::num_elements<T>::value> normals;
     float* area = reinterpret_cast<float*>(&result.area);
@@ -239,14 +240,15 @@ light_sample<T> sample_random_light(Lights begin, Lights end, vector<3, T> const
 
         auto ls = begin[light_id].sample(rp[i], gen.get_generator(i));
 
-        poss[i] = ls.pos;
+        dir[i] = ls.dir;
+        dist[i] = ls.dist;
         intensities[i] = ls.intensity;
         normals[i] = ls.normal;
         area[i] = ls.area;
         delta_light[i] = ls.delta_light ? 0xFFFFFFFF : 0x00000000;
     }
 
-    result.pos = simd::pack(poss);
+    result.dir = simd::pack(dir);
     result.intensity = simd::pack(intensities);
     result.normal = simd::pack(normals);
 

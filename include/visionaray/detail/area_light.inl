@@ -37,7 +37,8 @@ inline light_sample<U> area_light<T, Geometry>::sample(vector<3, U> const& refer
     struct { vector<3, U> isect_pos; } hr;
     hr.isect_pos = pos;
 
-    result.pos = pos;
+    result.dir = pos - reference_point;
+    result.dist = length(result.dir);
     result.intensity = intensity(pos);
     result.normal = get_normal(hr, geometry_);
     result.area = U(area(geometry_));
