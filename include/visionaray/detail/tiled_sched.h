@@ -24,9 +24,9 @@ struct int2
 static thread_local int2 threadIdx;
 static thread_local int2 blockIdx;
 static thread_local int2 launchIdx;
-static thread_local int2 blockDim;
-static thread_local int2 gridDim;
-static thread_local int2 launchDim;
+static int2 blockDim;
+static int2 gridDim;
+static int2 launchDim;
 
 struct tiled_sched_backend
 {
