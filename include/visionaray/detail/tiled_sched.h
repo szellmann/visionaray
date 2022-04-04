@@ -6,6 +6,7 @@
 #ifndef VSNRAY_DETAIL_TILED_SCHED_H
 #define VSNRAY_DETAIL_TILED_SCHED_H 1
 
+#include "../math/detail/math.h"
 #include "basic_sched.h"
 #include "parallel_for.h"
 #include "range.h"
@@ -48,8 +49,8 @@ struct tiled_sched_backend
         blockDim.x = tr.rows().tile_size();
         blockDim.y = tr.cols().tile_size();
 
-        gridDim.x = tr.rows().length();
-        gridDim.y = tr.cols().length();
+        gridDim.x = div_up(tr.rows().length(), tr.rows().tile_size());
+        gridDim.y = div_up(tr.cols().length(), tr.cols().tile_size());
 
         visionaray::parallel_for(
             pool_,
