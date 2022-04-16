@@ -69,6 +69,7 @@ option(VSNRAY_ENABLE_VIEWER "Build the vsnray-viewer program" ON)
 option(VSNRAY_ENABLE_COMPILE_FAILURE_TESTS "Build compile failure tests" OFF)
 option(VSNRAY_ENABLE_UNITTESTS "Build unit tests" OFF)
 option(VSNRAY_MACOSX_BUNDLE "Build executables as application bundles on macOS" ON)
+option(VSNRAY_ENABLE_CUDA_STYLE_THREAD_INTROSPECTION "Define CUDA-style thread introspection variables in CPU scheduler headers" OFF)
 set(VSNRAY_GRAPHICS_API "GL" CACHE STRING "Graphics API used to display images in interactive mode: None, GL, GLES")
 
 
