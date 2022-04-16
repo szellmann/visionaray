@@ -21,6 +21,10 @@ if (VSNRAY_ENABLE_TBB)
     visionaray_use_package(TBB)
 endif()
 
+if (VSNRAY_ENABLE_CUDA_STYLE_THREAD_INTROSPECTION)
+    add_definitions(-DVSNRAY_TILED_SCHED_CUDA_STYLE_THREAD_INTROSPECTION=1)
+endif()
+
 visionaray_link_libraries(visionaray)
 visionaray_link_libraries(visionaray_common)
 
