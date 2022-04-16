@@ -3,6 +3,8 @@
 - Added cylinder as built-in primitive.
 
 ### Changed
+- Light sample struct has changed, to no longer store the position,
+but instead, a direction and distance.
 - An accumulation buffer was now added to the builtin render targets
 where colors are blended in. For blending kernels, the accumulation
 buffer pixel format needs to be specified.
