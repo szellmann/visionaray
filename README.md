@@ -72,6 +72,10 @@ The headers, libraries and viewer will then be located in the standard install p
 
 See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Getting-started) and the [Troubleshooting section](https://github.com/szellmann/visionaray/wiki/Troubleshooting) in the [Wiki](https://github.com/szellmann/visionaray/wiki) for further information.
 
+### Windows
+
+The "CMake -> Visual Studio Solution" code path is tested from time to time. Visionaray is primarily developed on Linux and Mac OS, though, so you may encounter the occasional "Commit XY breaks builds on Windows" etc.
+On Windows, use CMake to generate a Visual Studio solution file that can be loaded by the IDE, or compiled on the command line using `msbuild.exe`.
 
 Visionaray Viewer
 -----------------
