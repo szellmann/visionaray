@@ -481,7 +481,6 @@ private:
 
 } // visionaray
 
-//#include "detail/material/disney.inl"
 #include "detail/material/emissive.inl"
 #include "detail/material/glass.inl"
 #include "detail/material/matte.inl"
