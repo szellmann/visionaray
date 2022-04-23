@@ -75,61 +75,6 @@ namespace visionaray
 
 
 //-------------------------------------------------------------------------------------------------
-// Disney material
-//
-// WIP!
-//
-
-// template <typename T>
-// class disney
-// {
-// public:
-// 
-//     using scalar_type = T;
-// 
-// public:
-// 
-//     VSNRAY_FUNC spectrum<T> ambient() const;
-// 
-//     template <typename SR>
-//     VSNRAY_FUNC
-//     spectrum<typename SR::scalar_type> shade(SR const& sr) const;
-// 
-//     template <typename SR, typename U, typename Interaction, typename Generator>
-//     VSNRAY_FUNC spectrum<U> sample(
-//             SR const&       shade_rec,
-//             vector<3, U>&   refl_dir,
-//             U&              pdf,
-//             Interaction&    inter,
-//             Generator&      gen
-//             ) const;
-// 
-//     template <typename SR, typename Interaction>
-//     VSNRAY_FUNC typename SR::scalar_type pdf(
-//             SR const&          shared_rec,
-//             Interaction const& inter
-//             ) const;
-// 
-//     VSNRAY_FUNC spectrum<T>& base_color();
-//     VSNRAY_FUNC spectrum<T> const& base_color() const;
-// 
-//     VSNRAY_FUNC T& sheen();
-//     VSNRAY_FUNC T const& sheen() const;
-// 
-//     VSNRAY_FUNC T& sheen_tint();
-//     VSNRAY_FUNC T const& sheen_tint() const;
-// 
-//     VSNRAY_FUNC T& roughness();
-//     VSNRAY_FUNC T const& roughness() const;
-// 
-// private:
-// 
-//     disney_brdf<T> brdf_;
-// 
-// };
-
-
-//-------------------------------------------------------------------------------------------------
 // Emissive material, no BRDFs
 //
 // Parameters:
