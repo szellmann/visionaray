@@ -11,11 +11,11 @@
 #include <cstddef>
 #include <type_traits>
 
-#include <visionaray/math/simd/gather.h>
-#include <visionaray/math/simd/type_traits.h>
-#include <visionaray/aligned_vector.h>
-#include <visionaray/pixel_format.h>
-#include <visionaray/swizzle.h>
+#include "../../../math/simd/gather.h"
+#include "../../../math/simd/type_traits.h"
+#include "../../../aligned_vector.h"
+#include "../../../pixel_format.h"
+#include "../../../swizzle.h"
 
 namespace visionaray
 {
