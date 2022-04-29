@@ -46,6 +46,23 @@ inline unsigned morton_encode3D(unsigned x, unsigned y, unsigned z)
 }
 
 VSNRAY_FUNC
+inline unsigned long long morton_encode3D(unsigned long long x, unsigned long long y, unsigned long long z)
+{
+    auto separate_bits = [](unsigned long long n)
+    {
+        n &= 0b1111111111111111111111ull;
+        n = (n ^ (n << 32)) & 0b1111111111111111000000000000000000000000000000001111111111111111ull;
+        n = (n ^ (n << 16)) & 0b0000000011111111000000000000000011111111000000000000000011111111ull;
+        n = (n ^ (n <<  8)) & 0b1111000000001111000000001111000000001111000000001111000000001111ull;
+        n = (n ^ (n <<  4)) & 0b0011000011000011000011000011000011000011000011000011000011000011ull;
+        n = (n ^ (n <<  2)) & 0b1001001001001001001001001001001001001001001001001001001001001001ull;
+        return n;
+    };  
+
+    return separate_bits(x) | (separate_bits(y) << 1) | (separate_bits(z) << 2); 
+}
+
+VSNRAY_FUNC
 inline vec2ui morton_decode2D(unsigned index)
 {
     auto compact_bits = [](unsigned n)
