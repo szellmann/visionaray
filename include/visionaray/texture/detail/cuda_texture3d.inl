@@ -6,8 +6,8 @@
 #include <cstddef>
 #include <utility>
 
-#include <visionaray/cuda/array.h>
-#include <visionaray/cuda/texture_object.h>
+#include "../../cuda/array.h"
+#include "../../cuda/texture_object.h"
 
 namespace visionaray
 {

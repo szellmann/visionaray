@@ -8,10 +8,10 @@
 
 #include <cstddef>
 
-#include <visionaray/cuda/util.h>
-#include <visionaray/detail/macros.h>
-#include <visionaray/math/unorm.h>
-#include <visionaray/math/vector.h>
+#include "../../cuda/util.h"
+#include "../../detail/macros.h"
+#include "../../math/unorm.h"
+#include "../../math/vector.h"
 
 #include "texture_common.h"
 

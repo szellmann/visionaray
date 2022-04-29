@@ -12,8 +12,8 @@
 #include <algorithm>
 #include <array>
 
-#include <visionaray/math/detail/math.h>
-#include <visionaray/math/vector.h>
+#include "../../math/detail/math.h"
+#include "../../math/vector.h"
 
 #include "storage_types/aligned_storage.h"
 #include "storage_types/pointer_storage.h"

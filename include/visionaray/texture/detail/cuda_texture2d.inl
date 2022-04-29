@@ -6,8 +6,8 @@
 #include <cstddef>
 #include <utility>
 
-#include <visionaray/cuda/pitch2d.h>
-#include <visionaray/cuda/texture_object.h>
+#include "../../cuda/pitch2d.h"
+#include "../../cuda/texture_object.h"
 
 namespace visionaray
 {

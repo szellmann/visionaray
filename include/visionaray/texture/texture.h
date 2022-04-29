@@ -8,7 +8,7 @@
 
 #include <cassert>
 
-#include <visionaray/detail/macros.h>
+#include "../detail/macros.h"
 
 #ifdef __CUDACC__
 #include "detail/cuda_texture.h"

@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <utility>
 
-#include <visionaray/math/vector.h>
+#include "../math/vector.h"
 
 namespace visionaray
 {
