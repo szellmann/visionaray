@@ -540,9 +540,9 @@ struct lbvh_builder
 
             prim_refs[i].id = i;
             prim_refs[i].morton_code = morton_encode3D(
-                    static_cast<int>(centroid.x),
-                    static_cast<int>(centroid.y),
-                    static_cast<int>(centroid.z)
+                    static_cast<unsigned>(centroid.x),
+                    static_cast<unsigned>(centroid.y),
+                    static_cast<unsigned>(centroid.z)
                     );
         }
 
