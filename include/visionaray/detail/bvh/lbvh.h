@@ -248,9 +248,9 @@ static __global__ void assign_morton_codes(
 
         prim_refs[index].id = index;
         prim_refs[index].morton_code = morton_encode3D(
-                static_cast<int>(centroid.x),
-                static_cast<int>(centroid.y),
-                static_cast<int>(centroid.z)
+                static_cast<unsigned>(centroid.x),
+                static_cast<unsigned>(centroid.y),
+                static_cast<unsigned>(centroid.z)
                 );
     }
 }
