@@ -7,9 +7,8 @@
 
 #include <cuda_runtime_api.h>
 
-#include <visionaray/math/detail/math.h> // div_up
-#include <visionaray/make_generator.h>
-
+#include "../math/detail/math.h" // div_up
+#include "../make_generator.h"
 #include "../make_random_seed.h"
 #include "../packet_traits.h"
 #include "sched_common.h"
