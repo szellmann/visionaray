@@ -3,13 +3,13 @@
 
 #include <type_traits>
 
-#include <visionaray/math/vector.h>
-#include <visionaray/array.h>
-#include <visionaray/generic_material.h>
-#include <visionaray/get_surface.h>
-#include <visionaray/result_record.h>
-#include <visionaray/spectrum.h>
-#include <visionaray/traverse.h>
+#include "../math/vector.h"
+#include "../array.h"
+#include "../generic_material.h"
+#include "../get_surface.h"
+#include "../result_record.h"
+#include "../spectrum.h"
+#include "../traverse.h"
 
 namespace visionaray
 {
