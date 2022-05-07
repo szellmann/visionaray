@@ -1,11 +1,11 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/math/vector.h>
-#include <visionaray/get_surface.h>
-#include <visionaray/result_record.h>
-#include <visionaray/spectrum.h>
-#include <visionaray/traverse.h>
+#include "../math/vector.h"
+#include "../get_surface.h"
+#include "../result_record.h"
+#include "../spectrum.h"
+#include "../traverse.h"
 
 namespace visionaray
 {
