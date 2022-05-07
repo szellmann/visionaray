@@ -1,14 +1,14 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/math/vector.h>
-#include <visionaray/get_area.h>
-#include <visionaray/get_surface.h>
-#include <visionaray/result_record.h>
-#include <visionaray/sampling.h>
-#include <visionaray/spectrum.h>
-#include <visionaray/surface_interaction.h>
-#include <visionaray/traverse.h>
+#include "../math/vector.h"
+#include "../get_area.h"
+#include "../get_surface.h"
+#include "../result_record.h"
+#include "../sampling.h"
+#include "../spectrum.h"
+#include "../surface_interaction.h"
+#include "../traverse.h"
 
 // #define VSNRAY_PERF_DEBUG 1
 
