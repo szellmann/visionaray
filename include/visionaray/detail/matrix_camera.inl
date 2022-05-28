@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/math/limits.h>
+#include "../math/limits.h"
 
 namespace visionaray
 {
