@@ -9,12 +9,12 @@
 #include <cassert>
 #include <cstddef>
 
-#include <visionaray/math/detail/math.h>
-#include <visionaray/math/matrix.h>
-#include <visionaray/math/unorm.h>
-#include <visionaray/math/vector.h>
-#include <visionaray/pixel_format.h>
-#include <visionaray/spectrum.h>
+#include "../math/detail/math.h"
+#include "../math/matrix.h"
+#include "../math/unorm.h"
+#include "../math/vector.h"
+#include "../pixel_format.h"
+#include "../spectrum.h"
 
 #include "spd/blackbody.h"
 #include "macros.h"
