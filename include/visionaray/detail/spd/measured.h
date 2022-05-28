@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include <visionaray/math/detail/math.h>
+#include "../../math/detail/math.h"
 
 #include "../macros.h"
 
