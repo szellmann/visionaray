@@ -62,7 +62,7 @@ public:
     bool init(BVH const& b, display_config config = display_config())
     {
         std::vector<float> vertices;
-        auto func =  [&](typename BVH::node_type const& n)
+        auto func = [&](typename BVH::node_type const& n)
         {
             auto box = n.get_bounds();
 
