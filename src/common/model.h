@@ -55,13 +55,13 @@ public:
     model();
 
     // Load single file
-    VSNRAY_COMMON_EXPORT bool load(std::string const& filename);
+    bool load(std::string const& filename);
 
     // Save to file
-    VSNRAY_COMMON_EXPORT bool save(std::string const& filename, save_options const& options);
+    bool save(std::string const& filename, save_options const& options);
 
     // Load multiple files at once
-    VSNRAY_COMMON_EXPORT bool load(std::vector<std::string> const& filenames);
+    bool load(std::vector<std::string> const& filenames);
 
 public:
 
