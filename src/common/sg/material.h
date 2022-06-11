@@ -11,8 +11,6 @@
 #include <visionaray/math/forward.h>
 #include <visionaray/math/vector.h>
 
-#include "../export.h"
-
 namespace visionaray
 {
 namespace sg
@@ -22,7 +20,7 @@ namespace sg
 // Material base class
 //
 
-class VSNRAY_COMMON_EXPORT material
+class material
 {
 public:
     virtual ~material() {}
@@ -40,7 +38,7 @@ private:
 // Wavefront obj material
 //
 
-struct VSNRAY_COMMON_EXPORT obj_material : material
+struct obj_material : material
 {
     // Ambient color
     vec3 ca = { 0.2f, 0.2f, 0.2f };
@@ -78,7 +76,7 @@ struct VSNRAY_COMMON_EXPORT obj_material : material
 // Glass material
 //
 
-struct VSNRAY_COMMON_EXPORT glass_material : material
+struct glass_material : material
 {
     // Transmissive color
     vec3 ct = { 0.8f, 0.8f, 0.8f };
@@ -95,7 +93,7 @@ struct VSNRAY_COMMON_EXPORT glass_material : material
 // Metal material
 //
 
-struct VSNRAY_COMMON_EXPORT metal_material : material
+struct metal_material : material
 {
     // Roughness
     float roughness = 0.0f;
@@ -112,7 +110,7 @@ struct VSNRAY_COMMON_EXPORT metal_material : material
 // Disney principled material
 //
 
-struct VSNRAY_COMMON_EXPORT disney_material : material
+struct disney_material : material
 {
     // Base color
     vec4 base_color = vec4(0.0f);
