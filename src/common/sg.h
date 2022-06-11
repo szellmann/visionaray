@@ -27,8 +27,6 @@
 
 #include "sg/material.h"
 
-#include "export.h"
-
 #if VSNRAY_COMMON_HAVE_PTEX
 #include "ptex.h"
 #endif
