@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "export.h"
 #include "viewer_base.h"
 
 namespace visionaray
@@ -18,28 +17,28 @@ class viewer_glut : public viewer_base
 {
 public:
 
-    VSNRAY_COMMON_EXPORT viewer_glut(
+    viewer_glut(
             int width                   = 512,
             int height                  = 512,
             char const* window_title    = "Visionaray GLUT Viewer",
             display_mode_t display_mode = {}
             );
-    VSNRAY_COMMON_EXPORT virtual ~viewer_glut();
+    virtual ~viewer_glut();
 
-    VSNRAY_COMMON_EXPORT void init(int argc, char** argv);
+    void init(int argc, char** argv);
 
-    VSNRAY_COMMON_EXPORT void set_window_title(char const* window_title);
-    VSNRAY_COMMON_EXPORT void event_loop();
-    VSNRAY_COMMON_EXPORT void resize(int width, int height);
-    VSNRAY_COMMON_EXPORT void swap_buffers();
-    VSNRAY_COMMON_EXPORT void toggle_full_screen();
-    VSNRAY_COMMON_EXPORT void quit();
+    void set_window_title(char const* window_title);
+    void event_loop();
+    void resize(int width, int height);
+    void swap_buffers();
+    void toggle_full_screen();
+    void quit();
 
-    VSNRAY_COMMON_EXPORT static bool have_imgui_support();
+    static bool have_imgui_support();
 
 protected:
 
-    VSNRAY_COMMON_EXPORT virtual void on_idle();
+    virtual void on_idle();
 
 private:
 
