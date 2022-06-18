@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "export.h"
 #include "file_base.h"
 
 namespace visionaray
