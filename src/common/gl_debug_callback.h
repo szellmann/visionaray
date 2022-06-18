@@ -6,8 +6,6 @@
 #ifndef VSNRAY_COMMON_GL_DEBUG_CALLBACK_H
 #define VSNRAY_COMMON_GL_DEBUG_CALLBACK_H 1
 
-#include <visionaray/export.h>
-
 namespace visionaray
 {
 namespace gl
@@ -81,7 +79,7 @@ class debug_callback
 {
 public:
 
-    VSNRAY_EXPORT bool activate(debug_params params = debug_params());
+    bool activate(debug_params params = debug_params());
 
 private:
 
