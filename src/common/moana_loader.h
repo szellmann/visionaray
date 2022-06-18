@@ -9,15 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "export.h"
-
 namespace visionaray
 {
 
 class model;
 
-VSNRAY_COMMON_EXPORT void load_moana(std::string const& filename, model& mod);
-VSNRAY_COMMON_EXPORT void load_moana(std::vector<std::string> const& filenames, model& mod);
+void load_moana(std::string const& filename, model& mod);
+void load_moana(std::vector<std::string> const& filenames, model& mod);
 
 } // visionaray
 
