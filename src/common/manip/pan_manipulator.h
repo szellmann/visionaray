@@ -8,7 +8,6 @@
 
 #include "../input/keyboard.h"
 #include "../input/space_mouse.h"
-#include "../export.h"
 #include "camera_manipulator.h"
 
 
@@ -22,18 +21,18 @@ class pan_manipulator : public camera_manipulator
 {
 public:
 
-    VSNRAY_COMMON_EXPORT pan_manipulator(
+    pan_manipulator(
             pinhole_camera& cam,
             mouse::buttons buttons,
             keyboard::key_modifiers modifiers = keyboard::NoKey
             );
-    VSNRAY_COMMON_EXPORT ~pan_manipulator();
+    ~pan_manipulator();
 
-    VSNRAY_COMMON_EXPORT void handle_mouse_down(mouse_event const& event);
-    VSNRAY_COMMON_EXPORT void handle_mouse_up(mouse_event const& event);
+    void handle_mouse_down(mouse_event const& event);
+    void handle_mouse_up(mouse_event const& event);
     VSNRAY_COMMON_EXPORT void handle_mouse_move(mouse_event const& event);
 
-    VSNRAY_COMMON_EXPORT void handle_space_mouse_move(space_mouse_event const& event);
+    void handle_space_mouse_move(space_mouse_event const& event);
 
 private:
 
