@@ -19,7 +19,6 @@
 #include <visionaray/aligned_vector.h>
 
 #include "sg/material.h"
-#include "export.h"
 #include "file_base.h"
 
 namespace visionaray

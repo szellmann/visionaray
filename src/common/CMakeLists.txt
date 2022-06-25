@@ -199,7 +199,6 @@ set(COMMON_HEADERS
     bvh_outline_renderer.h
     cfile.h
     dds_image.h
-    export.h
     exr_image.h
     fbx_loader.h
     file_base.h
