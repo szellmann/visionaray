@@ -9,7 +9,6 @@
 #include "../input/keyboard.h"
 #include "../input/mouse.h"
 #include "../input/space_mouse.h"
-#include "../export.h"
 #include "arcball.h"
 #include "camera_manipulator.h"
 
@@ -24,18 +23,18 @@ class arcball_manipulator : public camera_manipulator
 {
 public:
 
-    VSNRAY_COMMON_EXPORT arcball_manipulator(
+    arcball_manipulator(
             pinhole_camera& cam,
             mouse::buttons buttons,
             keyboard::key_modifiers modifiers = keyboard::NoKey
             );
-    VSNRAY_COMMON_EXPORT ~arcball_manipulator();
+    ~arcball_manipulator();
 
-    VSNRAY_COMMON_EXPORT void handle_mouse_down(mouse_event const& event);
-    VSNRAY_COMMON_EXPORT void handle_mouse_up(mouse_event const& event);
-    VSNRAY_COMMON_EXPORT void handle_mouse_move(mouse_event const& event);
+    void handle_mouse_down(mouse_event const& event);
+    void handle_mouse_up(mouse_event const& event);
+    void handle_mouse_move(mouse_event const& event);
 
-    VSNRAY_COMMON_EXPORT void handle_space_mouse_move(space_mouse_event const& event);
+    void handle_space_mouse_move(space_mouse_event const& event);
 
 private:
 
