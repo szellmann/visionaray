@@ -22,16 +22,16 @@ class zoom_manipulator : public camera_manipulator
 {
 public:
 
-    VSNRAY_COMMON_EXPORT zoom_manipulator(
+    zoom_manipulator(
             pinhole_camera& cam,
             mouse::buttons buttons,
             keyboard::key_modifiers modifiers = keyboard::NoKey
             );
-    VSNRAY_COMMON_EXPORT ~zoom_manipulator();
+    ~zoom_manipulator();
 
-    VSNRAY_COMMON_EXPORT void handle_mouse_down(mouse_event const& event);
-    VSNRAY_COMMON_EXPORT void handle_mouse_up(mouse_event const& event);
-    VSNRAY_COMMON_EXPORT void handle_mouse_move(mouse_event const& event);
+    void handle_mouse_down(mouse_event const& event);
+    void handle_mouse_up(mouse_event const& event);
+    void handle_mouse_move(mouse_event const& event);
 
 private:
 

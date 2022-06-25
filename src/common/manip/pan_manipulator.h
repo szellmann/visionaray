@@ -30,7 +30,7 @@ public:
 
     void handle_mouse_down(mouse_event const& event);
     void handle_mouse_up(mouse_event const& event);
-    VSNRAY_COMMON_EXPORT void handle_mouse_move(mouse_event const& event);
+    void handle_mouse_move(mouse_event const& event);
 
     void handle_space_mouse_move(space_mouse_event const& event);
 
