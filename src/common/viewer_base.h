@@ -42,7 +42,7 @@ class viewer_base
 {
 public:
 
-    VSNRAY_COMMON_EXPORT viewer_base(
+    viewer_base(
             int width                   = 512,
             int height                  = 512,
             char const* window_title    = "",
