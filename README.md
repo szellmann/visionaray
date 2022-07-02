@@ -145,7 +145,7 @@ See the file [CHANGELOG.md](/CHANGELOG.md) for updates on feature addition and r
 Citation
 --------
 
-If you use Visionaray or some of its code for your scientific project, it would be nice if you cited this paper:
+If you use Visionaray or some of its code for your scientific project, please cite this paper:
 ```
 @inproceedings{zellmann:visionaray,
 author = {Zellmann, Stefan and Wickeroth, Daniel and Lang, Ulrich},
