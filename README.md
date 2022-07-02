@@ -81,7 +81,7 @@ Visionaray Viewer
 -----------------
 
 The viewer is optional but built by default. It supports a number of different 3D file formats. The viewer is primarily targeted at developers, as a tool for debugging and testing.
-Use the CMake variable `VSNRAY_ENABLE_VIEWER` to exclude the viewer from build. With a standard install, the viewer can be invoked using the following command:
+Use the CMake variable `VSNRAY_ENABLE_VIEWER` to exclude the viewer from building. With a standard install, the viewer can be invoked using the following command:
 
 ```Shell
 vsnray-viewer <file>
