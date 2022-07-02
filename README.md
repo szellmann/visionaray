@@ -39,7 +39,7 @@ Build requirements
 - Libraries need to ship with C/C++ header files (developer packages)
 - The OpenGL and GLEW dependency can optionally be deactivated by setting `VSNRAY_GRAPHICS_API=None` with CMake
 
-In order to compile the viewer and the [examples](/src/examples), the following additional packages are needed or recommended:
+To compile the viewer and the [examples](/src/examples), the following additional packages are needed or recommended:
 
 - [Boost][2]
 - [GLUT][5] or [FreeGLUT][6]
