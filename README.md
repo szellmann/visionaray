@@ -37,7 +37,7 @@ Build requirements
 - [NVIDIA CUDA Toolkit][4] (optional)
 
 - Libraries need to ship with C/C++ header files (developer packages)
-- The OpenGL and GLEW dependency can optionally be relaxed by setting `VSNRAY_GRAPHICS_API=None` with CMake
+- The OpenGL and GLEW dependency can optionally be deactivated by setting `VSNRAY_GRAPHICS_API=None` with CMake
 
 In order to compile the viewer and the [examples](/src/examples), the following additional packages are needed or recommended:
 
