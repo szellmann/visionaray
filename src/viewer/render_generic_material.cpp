@@ -14,10 +14,16 @@ void render_generic_material_cpp(
         aligned_vector<generic_material_t> const&                          materials,
         aligned_vector<texture_t> const&                                   textures,
         aligned_vector<area_light<float, basic_triangle<3, float>>> const& lights,
+        unsigned                                                           bounces,
+        float                                                              epsilon,
+        vec4                                                               bgcolor,
+        vec4                                                               ambient,
         host_device_rt&                                                    rt,
         host_sched_t<ray_type_cpu>&                                        sched,
+        camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
-        render_state                                                       state
+        algorithm                                                          algo,
+        unsigned                                                           ssaa_samples
         )
 {
     using bvh_ref = index_bvh<basic_triangle<3, float>>::bvh_ref;
@@ -37,13 +43,13 @@ void render_generic_material_cpp(
             textures.data(),
             lights.data(),
             lights.data() + lights.size(),
-            state.bounces,
-            state.epsilon,
-            state.bgcolor,
-            state.ambient
+            bounces,
+            epsilon,
+            bgcolor,
+            ambient
             );
 
-    call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, state.cam, rt);
+    call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
 }
 
 } // visionaray

@@ -94,21 +94,6 @@ using host_sched_t = tiled_sched<R>;
 #endif
 
 
-struct render_state
-{
-    unsigned  bounces;
-    float     epsilon;
-    vec4      bgcolor;
-    vec4      ambient;
-    algorithm algo;
-    camera_t  cam;
-    unsigned  num_samples;
-    // perf debugging
-    bool      show_perf;
-    float     heatmap_scale;
-};
-
-
 //-------------------------------------------------------------------------------------------------
 // Render from lists, only material is plastic
 //
@@ -121,10 +106,16 @@ void render_plastic_cpp(
         aligned_vector<plastic_t> const&           materials,
         aligned_vector<texture_t> const&           textures,
         aligned_vector<point_light<float>> const&  lights,
+        unsigned                                   bounces,
+        float                                      epsilon,
+        vec4                                       bgcolor,
+        vec4                                       ambient,
         host_device_rt&                            rt,
         host_sched_t<ray_type_cpu>&                sched,
+        camera_t const&                            cam,
         unsigned&                                  frame_num,
-        render_state                               state
+        algorithm                                  algo,
+        unsigned                                   ssaa_samples
         );
 
 #ifdef __CUDACC__
@@ -136,10 +127,16 @@ void render_plastic_cu(
         thrust::device_vector<plastic_t> const&           materials,
         thrust::device_vector<cuda_texture_t> const&      textures,
         aligned_vector<point_light<float>> const&         host_lights,
+        unsigned                                          bounces,
+        float                                             epsilon,
+        vec4                                              bgcolor,
+        vec4                                              ambient,
         host_device_rt&                                   rt,
         cuda_sched<ray_type_gpu>&                         sched,
+        camera_t const&                                   cam,
         unsigned&                                         frame_num,
-        render_state                                      state
+        algorithm                                         algo,
+        unsigned                                          ssaa_samples
         );
 #endif
 
@@ -156,10 +153,16 @@ void render_generic_material_cpp(
         aligned_vector<generic_material_t> const&                          materials,
         aligned_vector<texture_t> const&                                   textures,
         aligned_vector<area_light<float, basic_triangle<3, float>>> const& lights,
+        unsigned                                                           bounces,
+        float                                                              epsilon,
+        vec4                                                               bgcolor,
+        vec4                                                               ambient,
         host_device_rt&                                                    rt,
         host_sched_t<ray_type_cpu>&                                        sched,
+        camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
-        render_state                                                       state
+        algorithm                                                          algo,
+        unsigned                                                           ssaa_samples
         );
 
 #ifdef __CUDACC__
@@ -171,10 +174,16 @@ void render_generic_material_cu(
         thrust::device_vector<generic_material_t> const&                   materials,
         thrust::device_vector<cuda_texture_t> const&                       textures,
         aligned_vector<area_light<float, basic_triangle<3, float>>> const& lights,
+        unsigned                                                           bounces,
+        float                                                              epsilon,
+        vec4                                                               bgcolor,
+        vec4                                                               ambient,
         host_device_rt&                                                    rt,
         cuda_sched<ray_type_gpu>&                                          sched,
+        camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
-        render_state                                                       state
+        algorithm                                                          algo,
+        unsigned                                                           ssaa_samples
         );
 #endif
 
@@ -192,11 +201,17 @@ void render_instances_cpp(
         aligned_vector<vec3> const&                               colors,
         aligned_vector<texture_t> const&                          textures,
         aligned_vector<generic_light_t> const&                    lights,
+        unsigned                                                  bounces,
+        float                                                     epsilon,
+        vec4                                                      bgcolor,
+        vec4                                                      ambient,
         host_device_rt&                                           rt,
         host_sched_t<ray_type_cpu>&                               sched,
+        camera_t const&                                           cam,
         unsigned&                                                 frame_num,
-        host_environment_light const&                             env_light,
-        render_state                                              state
+        algorithm                                                 algo,
+        unsigned                                                  ssaa_samples,
+        host_environment_light const&                             env_light
         );
 
 #ifdef __CUDACC__
@@ -209,11 +224,17 @@ void render_instances_cu(
         thrust::device_vector<vec3> const&                                  colors,
         thrust::device_vector<cuda_texture_t> const&                        textures,
         aligned_vector<generic_light_t> const&                              lights,
+        unsigned                                                            bounces,
+        float                                                               epsilon,
+        vec4                                                                bgcolor,
+        vec4                                                                ambient,
         host_device_rt&                                                     rt,
         cuda_sched<ray_type_gpu>&                                           sched,
+        camera_t const&                                                     cam,
         unsigned&                                                           frame_num,
-        device_environment_light const&                                     env_light,
-        render_state                                                        state
+        algorithm                                                           algo,
+        unsigned                                                            ssaa_samples,
+        device_environment_light const&                                     env_light
         );
 #endif
 
@@ -228,11 +249,17 @@ void render_instances_ptex_cpp(
         aligned_vector<vec3> const&                               colors,
         aligned_vector<ptex::texture> const&                      textures,
         aligned_vector<generic_light_t> const&                    lights,
+        unsigned                                                  bounces,
+        float                                                     epsilon,
+        vec4                                                      bgcolor,
+        vec4                                                      ambient,
         host_device_rt&                                           rt,
         host_sched_t<ray_type_cpu>&                               sched,
+        camera_t const&                                           cam,
         unsigned&                                                 frame_num,
-        host_environment_light const&                             env_light,
-        render_state                                              state
+        algorithm                                                 algo,
+        unsigned                                                  ssaa_samples,
+        host_environment_light const&                             env_light
         );
 #endif
 

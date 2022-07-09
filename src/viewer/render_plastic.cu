@@ -16,10 +16,16 @@ void render_plastic_cu(
         thrust::device_vector<plastic_t> const&           materials,
         thrust::device_vector<cuda_texture_t> const&      textures,
         aligned_vector<point_light<float>> const&         host_lights,
+        unsigned                                          bounces,
+        float                                             epsilon,
+        vec4                                              bgcolor,
+        vec4                                              ambient,
         host_device_rt&                                   rt,
         cuda_sched<ray_type_gpu>&                         sched,
+        camera_t const&                                   cam,
         unsigned&                                         frame_num,
-        render_state                                      state
+        algorithm                                         algo,
+        unsigned                                          ssaa_samples
         )
 {
     using bvh_ref = cuda_index_bvh<basic_triangle<3, float>>::bvh_ref;
@@ -41,13 +47,13 @@ void render_plastic_cu(
             thrust::raw_pointer_cast(textures.data()),
             thrust::raw_pointer_cast(device_lights.data()),
             thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
-            state.bounces,
-            state.epsilon,
-            state.bgcolor,
-            state.ambient
+            bounces,
+            epsilon,
+            bgcolor,
+            ambient
             );
 
-    call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, state.cam, rt);
+    call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
 }
 
 } // visionaray

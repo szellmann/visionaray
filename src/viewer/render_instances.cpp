@@ -17,11 +17,17 @@ void render_instances_cpp(
         aligned_vector<vec3> const&                               colors,
         aligned_vector<texture_t> const&                          textures,
         aligned_vector<generic_light_t> const&                    lights,
+        unsigned                                                  bounces,
+        float                                                     epsilon,
+        vec4                                                      bgcolor,
+        vec4                                                      ambient,
         host_device_rt&                                           rt,
         host_sched_t<ray_type_cpu>&                               sched,
+        camera_t const&                                           cam,
         unsigned&                                                 frame_num,
-        host_environment_light const&                             env_light,
-        render_state                                              state
+        algorithm                                                 algo,
+        unsigned                                                  ssaa_samples,
+        host_environment_light const&                             env_light
         )
 {
     using bvh_ref = index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>::bvh_ref;
@@ -47,11 +53,11 @@ void render_instances_cpp(
                 lights.data() + lights.size(),
                 env_light,
                 env_light,
-                state.bounces,
-                state.epsilon
+                bounces,
+                epsilon
                 );
 
-        call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, state.cam, rt);
+        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
     }
     else
     {
@@ -68,13 +74,13 @@ void render_instances_cpp(
                 textures.data(),
                 lights.data(),
                 lights.data() + lights.size(),
-                state.bounces,
-                state.epsilon,
-                state.bgcolor,
-                state.ambient
+                bounces,
+                epsilon,
+                bgcolor,
+                ambient
                 );
 
-        call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, state.cam, rt);
+        call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
     }
 }
 
