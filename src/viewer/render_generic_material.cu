@@ -13,10 +13,9 @@ void render_generic_material_cu(
         thrust::device_vector<vec3> const&                                 geometric_normals,
         thrust::device_vector<vec3> const&                                 shading_normals,
         thrust::device_vector<vec2> const&                                 tex_coords,
-        thrust::device_vector<generic_material_t> const&                   materials,
+        thrust::device_vector<generic_material_t> const&                    materials,
         thrust::device_vector<cuda_texture_t> const&                       textures,
         aligned_vector<area_light<float, basic_triangle<3, float>>> const& host_lights,
-        camera_t const&                                                    cam,
         host_device_rt&                                                    rt,
         cuda_sched<ray_type_gpu>&                                          sched,
         unsigned&                                                          frame_num,
@@ -50,7 +49,7 @@ void render_generic_material_cu(
             state.ambient
             );
 
-    call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, cam, rt);
+    call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, state.cam, rt);
 #endif
 }
 

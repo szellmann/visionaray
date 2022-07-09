@@ -21,7 +21,6 @@ void render_instances_ptex_cpp(
         aligned_vector<vec3> const&                               colors,
         aligned_vector<ptex::texture> const&                      textures,
         aligned_vector<generic_light_t> const&                    lights,
-        camera_t const&                                           cam,
         host_device_rt&                                           rt,
         host_sched_t<ray_type_cpu>&                               sched,
         unsigned&                                                 frame_num,
@@ -56,7 +55,7 @@ void render_instances_ptex_cpp(
                 state.epsilon
                 );
 
-        call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, cam, rt);
+        call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, state.cam, rt);
     }
     else
     {
@@ -79,7 +78,7 @@ void render_instances_ptex_cpp(
                 state.ambient
                 );
 
-        call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, cam, rt);
+        call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, state.cam, rt);
     }
 }
 

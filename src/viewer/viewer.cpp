@@ -2356,6 +2356,7 @@ void renderer::render_impl()
     state.bgcolor     = vec4(background_color(), 1.0f);
     state.ambient     = amb;
     state.algo        = algo;
+    state.cam         = camx;
     state.num_samples = spp;
 
     if (rt.mode() == host_device_rt::CPU)
@@ -2388,7 +2389,6 @@ void renderer::render_impl()
                         mod.colors,
                         mod.textures,
                         temp_lights,
-                        cam,
                         rt,
                         host_sched,
                         frame_num,
@@ -2408,7 +2408,6 @@ void renderer::render_impl()
                         mod.colors,
                         ptex_textures,
                         temp_lights,
-                        cam,
                         rt,
                         host_sched,
                         frame_num,
@@ -2428,7 +2427,6 @@ void renderer::render_impl()
                     generic_materials,
                     mod.textures,
                     area_lights,
-                    cam,
                     rt,
                     host_sched,
                     frame_num,
@@ -2445,7 +2443,6 @@ void renderer::render_impl()
                     plastic_materials,
                     mod.textures,
                     point_lights,
-                    cam,
                     rt,
                     host_sched,
                     frame_num,
@@ -2486,7 +2483,6 @@ void renderer::render_impl()
                         device_colors,
                         device_textures,
                         temp_lights,
-                        cam,
                         rt,
                         device_sched,
                         frame_num,
@@ -2505,7 +2501,6 @@ void renderer::render_impl()
                     device_generic_materials,
                     device_textures,
                     area_lights,
-                    cam,
                     rt,
                     device_sched,
                     frame_num,
@@ -2522,7 +2517,6 @@ void renderer::render_impl()
                     device_plastic_materials,
                     device_textures,
                     point_lights,
-                    cam,
                     rt,
                     device_sched,
                     frame_num,
