@@ -16,6 +16,7 @@ void render_plastic_cpp(
         aligned_vector<plastic_t> const&           materials,
         aligned_vector<texture_t> const&           textures,
         aligned_vector<point_light<float>> const&  lights,
+        camera_t const&                            cam,
         host_device_rt&                            rt,
         host_sched_t<ray_type_cpu>&                sched,
         unsigned&                                  frame_num,
@@ -45,7 +46,7 @@ void render_plastic_cpp(
             state.ambient
             );
 
-    call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, state.cam, rt);
+    call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, cam, rt);
 }
 
 } // visionaray

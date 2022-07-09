@@ -101,7 +101,6 @@ struct render_state
     vec4      bgcolor;
     vec4      ambient;
     algorithm algo;
-    camera_t  cam;
     unsigned  num_samples;
     // perf debugging
     bool      show_perf;
@@ -121,6 +120,7 @@ void render_plastic_cpp(
         aligned_vector<plastic_t> const&           materials,
         aligned_vector<texture_t> const&           textures,
         aligned_vector<point_light<float>> const&  lights,
+        camera_t const&                            cam,
         host_device_rt&                            rt,
         host_sched_t<ray_type_cpu>&                sched,
         unsigned&                                  frame_num,
@@ -136,6 +136,7 @@ void render_plastic_cu(
         thrust::device_vector<plastic_t> const&           materials,
         thrust::device_vector<cuda_texture_t> const&      textures,
         aligned_vector<point_light<float>> const&         host_lights,
+        camera_t const&                                   cam,
         host_device_rt&                                   rt,
         cuda_sched<ray_type_gpu>&                         sched,
         unsigned&                                         frame_num,
@@ -156,6 +157,7 @@ void render_generic_material_cpp(
         aligned_vector<generic_material_t> const&                          materials,
         aligned_vector<texture_t> const&                                   textures,
         aligned_vector<area_light<float, basic_triangle<3, float>>> const& lights,
+        camera_t const&                                                    cam,
         host_device_rt&                                                    rt,
         host_sched_t<ray_type_cpu>&                                        sched,
         unsigned&                                                          frame_num,
@@ -171,6 +173,7 @@ void render_generic_material_cu(
         thrust::device_vector<generic_material_t> const&                   materials,
         thrust::device_vector<cuda_texture_t> const&                       textures,
         aligned_vector<area_light<float, basic_triangle<3, float>>> const& lights,
+        camera_t const&                                                    cam,
         host_device_rt&                                                    rt,
         cuda_sched<ray_type_gpu>&                                          sched,
         unsigned&                                                          frame_num,
@@ -192,6 +195,7 @@ void render_instances_cpp(
         aligned_vector<vec3> const&                               colors,
         aligned_vector<texture_t> const&                          textures,
         aligned_vector<generic_light_t> const&                    lights,
+        camera_t const&                                           cam,
         host_device_rt&                                           rt,
         host_sched_t<ray_type_cpu>&                               sched,
         unsigned&                                                 frame_num,
@@ -209,6 +213,7 @@ void render_instances_cu(
         thrust::device_vector<vec3> const&                                  colors,
         thrust::device_vector<cuda_texture_t> const&                        textures,
         aligned_vector<generic_light_t> const&                              lights,
+        camera_t const&                                                     cam,
         host_device_rt&                                                     rt,
         cuda_sched<ray_type_gpu>&                                           sched,
         unsigned&                                                           frame_num,
@@ -228,6 +233,7 @@ void render_instances_ptex_cpp(
         aligned_vector<vec3> const&                               colors,
         aligned_vector<ptex::texture> const&                      textures,
         aligned_vector<generic_light_t> const&                    lights,
+        camera_t const&                                           cam,
         host_device_rt&                                           rt,
         host_sched_t<ray_type_cpu>&                               sched,
         unsigned&                                                 frame_num,

@@ -14,6 +14,7 @@ void render_generic_material_cpp(
         aligned_vector<generic_material_t> const&                          materials,
         aligned_vector<texture_t> const&                                   textures,
         aligned_vector<area_light<float, basic_triangle<3, float>>> const& lights,
+        camera_t const&                                                    cam,
         host_device_rt&                                                    rt,
         host_sched_t<ray_type_cpu>&                                        sched,
         unsigned&                                                          frame_num,
@@ -43,7 +44,7 @@ void render_generic_material_cpp(
             state.ambient
             );
 
-    call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, state.cam, rt);
+    call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, cam, rt);
 }
 
 } // visionaray
