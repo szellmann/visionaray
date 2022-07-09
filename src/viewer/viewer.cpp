@@ -634,6 +634,8 @@ struct renderer : viewer_type
     bool                                        use_dof         = false;
     bool                                        show_hud        = true;
     bool                                        show_bvh        = false;
+    bool                                        show_perf       = false;
+    float                                       heatmap_scale   = 1.0f;
 
 
     std::set<std::string>                       filenames;
@@ -2348,6 +2350,15 @@ void renderer::render_impl()
         camx = static_cast<pinhole_camera>(cam);
     }
 
+    render_state state;
+    state.bounces     = bounces;
+    state.epsilon     = epsilon;
+    state.bgcolor     = vec4(background_color(), 1.0f);
+    state.ambient     = amb;
+    state.algo        = algo;
+    state.cam         = camx;
+    state.num_samples = spp;
+
     if (rt.mode() == host_device_rt::CPU)
     {
         if (host_top_level_bvh.num_primitives() > 0)
@@ -2378,17 +2389,11 @@ void renderer::render_impl()
                         mod.colors,
                         mod.textures,
                         temp_lights,
-                        bounces,
-                        epsilon,
-                        vec4(background_color(), 1.0f),
-                        amb,
                         rt,
                         host_sched,
-                        camx,
                         frame_num,
-                        algo,
-                        spp,
-                        env_light
+                        env_light,
+                        state
                         );
             }
 #if VSNRAY_COMMON_HAVE_PTEX
@@ -2403,17 +2408,11 @@ void renderer::render_impl()
                         mod.colors,
                         ptex_textures,
                         temp_lights,
-                        bounces,
-                        epsilon,
-                        vec4(background_color(), 1.0f),
-                        amb,
                         rt,
                         host_sched,
-                        camx,
                         frame_num,
-                        algo,
-                        spp,
-                        env_light
+                        env_light,
+                        state
                         );
             }
 #endif
@@ -2428,16 +2427,10 @@ void renderer::render_impl()
                     generic_materials,
                     mod.textures,
                     area_lights,
-                    bounces,
-                    epsilon,
-                    vec4(background_color(), 1.0f),
-                    amb,
                     rt,
                     host_sched,
-                    camx,
                     frame_num,
-                    algo,
-                    spp
+                    state
                     );
         }
         else
@@ -2450,16 +2443,10 @@ void renderer::render_impl()
                     plastic_materials,
                     mod.textures,
                     point_lights,
-                    bounces,
-                    epsilon,
-                    vec4(background_color(), 1.0f),
-                    amb,
                     rt,
                     host_sched,
-                    camx,
                     frame_num,
-                    algo,
-                    spp
+                    state
                     );
         }
     }
@@ -2496,17 +2483,11 @@ void renderer::render_impl()
                         device_colors,
                         device_textures,
                         temp_lights,
-                        bounces,
-                        epsilon,
-                        vec4(background_color(), 1.0f),
-                        amb,
                         rt,
                         device_sched,
-                        camx,
                         frame_num,
-                        algo,
-                        spp,
-                        device_env_light
+                        device_env_light,
+                        state
                         );
             }
         }
@@ -2520,16 +2501,10 @@ void renderer::render_impl()
                     device_generic_materials,
                     device_textures,
                     area_lights,
-                    bounces,
-                    epsilon,
-                    vec4(background_color(), 1.0f),
-                    amb,
                     rt,
                     device_sched,
-                    camx,
                     frame_num,
-                    algo,
-                    spp
+                    state
                     );
         }
         else
@@ -2542,16 +2517,10 @@ void renderer::render_impl()
                     device_plastic_materials,
                     device_textures,
                     point_lights,
-                    bounces,
-                    epsilon,
-                    vec4(background_color(), 1.0f),
-                    amb,
                     rt,
                     device_sched,
-                    camx,
                     frame_num,
-                    algo,
-                    spp
+                    state
                     );
         }
     }
@@ -2725,6 +2694,10 @@ void renderer::on_key_press(key_event const& event)
 
      case 'h':
         show_hud = !show_hud;
+        break;
+
+    case 'H':
+        show_perf = !show_perf;
         break;
 
     case 'l':

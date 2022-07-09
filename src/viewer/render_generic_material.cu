@@ -16,16 +16,10 @@ void render_generic_material_cu(
         thrust::device_vector<generic_material_t> const&                    materials,
         thrust::device_vector<cuda_texture_t> const&                       textures,
         aligned_vector<area_light<float, basic_triangle<3, float>>> const& host_lights,
-        unsigned                                                           bounces,
-        float                                                              epsilon,
-        vec4                                                               bgcolor,
-        vec4                                                               ambient,
         host_device_rt&                                                    rt,
         cuda_sched<ray_type_gpu>&                                          sched,
-        camera_t const&                                                    cam,
         unsigned&                                                          frame_num,
-        algorithm                                                          algo,
-        unsigned                                                           ssaa_samples
+        render_state                                                       state
         )
 {
     // For some reason, this function causes nvcc on OSX to run into an inf loop..
@@ -49,13 +43,13 @@ void render_generic_material_cu(
             thrust::raw_pointer_cast(textures.data()),
             thrust::raw_pointer_cast(device_lights.data()),
             thrust::raw_pointer_cast(device_lights.data()) + device_lights.size(),
-            bounces,
-            epsilon,
-            bgcolor,
-            ambient
+            state.bounces,
+            state.epsilon,
+            state.bgcolor,
+            state.ambient
             );
 
-    call_kernel( algo, sched, kparams, frame_num, ssaa_samples, cam, rt );
+    call_kernel(state.algo, sched, kparams, frame_num, state.num_samples, state.cam, rt);
 #endif
 }
 
