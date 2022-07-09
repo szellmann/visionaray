@@ -33,6 +33,7 @@ struct kernel
 
     Params params;
 
+    float heat_map_scale = 1.0f;
     bool perf_debug = false;
 
     template <typename Intersector, typename R, typename Generator>
@@ -224,7 +225,6 @@ struct kernel
         if (perf_debug)
         {
             uint64_t clock_end = CLOCK();
-            float heat_map_scale = 1.0f;
             float t = (clock_end - clock_begin) * heat_map_scale;
             result.color = over(vector<4, S>(vector<3, S>(temperature_to_rgb(t)), S(0.5)), result.color);
         }
