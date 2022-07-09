@@ -10,14 +10,10 @@
 #include "../surface_interaction.h"
 #include "../traverse.h"
 
-// #define VSNRAY_PERF_DEBUG 1
-
-#ifdef VSNRAY_PERF_DEBUG
 #ifdef __CUDACC__
 #define CLOCK clock
 #else
 #define CLOCK clock64
-#endif
 #endif
 
 namespace visionaray
@@ -25,19 +21,19 @@ namespace visionaray
 namespace pathtracing
 {
 
-#ifdef VSNRAY_PERF_DEBUG
 template <typename T>
 VSNRAY_FUNC inline vector<4, T> over(vector<4, T> const& a, vector<4, T> const& b)
 {
     return a + (T(1.0) - a.w) * b;
 }
-#endif
 
 template <typename Params>
 struct kernel
 {
 
     Params params;
+
+    bool perf_debug = false;
 
     template <typename Intersector, typename R, typename Generator>
     VSNRAY_FUNC result_record<typename R::scalar_type> operator()(
@@ -46,9 +42,8 @@ struct kernel
             Generator& gen
             ) const
     {
-#ifdef VSNRAY_PERF_DEBUG
         uint64_t clock_begin = CLOCK();
-#endif
+
         using S = typename R::scalar_type;
         using I = simd::int_type_t<S>;
         using V = vector<3, S>;
@@ -225,12 +220,14 @@ struct kernel
         }
 
         result.color = select( result.hit, to_rgba(intensity), result.color );
-#ifdef VSNRAY_PERF_DEBUG
-        uint64_t clock_end = CLOCK();
-        float heat_map_scale = 1.0f;
-        float t = (clock_end - clock_begin) * heat_map_scale;
-        result.color = over(vector<4, S>(vector<3, S>(temperature_to_rgb(t)), S(0.5)), result.color);
-#endif
+
+        if (perf_debug)
+        {
+            uint64_t clock_end = CLOCK();
+            float heat_map_scale = 1.0f;
+            float t = (clock_end - clock_begin) * heat_map_scale;
+            result.color = over(vector<4, S>(vector<3, S>(temperature_to_rgb(t)), S(0.5)), result.color);
+        }
 
         return result;
     }
