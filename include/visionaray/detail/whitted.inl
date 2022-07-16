@@ -3,6 +3,7 @@
 
 #include <type_traits>
 
+#include "../math/simd/type_traits.h"
 #include "../math/vector.h"
 #include "../array.h"
 #include "../generic_material.h"
