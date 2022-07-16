@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-#incluce "../math/simd/type_traits.h"
+#include "../math/simd/type_traits.h"
 #include "../math/vector.h"
 #include "../get_area.h"
 #include "../get_surface.h"
