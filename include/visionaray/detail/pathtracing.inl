@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cstdint>
+
 #include "../math/vector.h"
 #include "../get_area.h"
 #include "../get_surface.h"
