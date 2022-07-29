@@ -23,6 +23,7 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/translate_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/timer.h>
 #include <common/viewer_glut.h>
 
 using namespace visionaray;
@@ -188,6 +189,9 @@ struct renderer : viewer_type
     pinhole_camera                              cam;
     cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED, PF_RGBA32F> host_rt;
     tiled_sched<host_ray_type>                  host_sched;
+    frame_counter                               counter;
+    double                                      last_frame_time = 0.0;
+    bool                                        print_fps = true;
 
     unsigned frame_num = 0;
 
@@ -382,6 +386,13 @@ void renderer::on_display()
         return result;
     }, sparams);
 
+    last_frame_time = counter.register_frame();
+
+    if (print_fps)
+    {
+        std::cout << "FPS: " << last_frame_time << '\r';
+        std::cout << std::flush;
+    }
 
     // display the rendered image
 
