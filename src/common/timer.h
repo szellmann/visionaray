@@ -147,8 +147,8 @@ public:
 private:
 
     Timer timer_;
-    unsigned count_;
-    double fps_;
+    unsigned count_ = 0;
+    double fps_ = 0.0;
 
 };
 
