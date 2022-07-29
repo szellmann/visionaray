@@ -117,16 +117,21 @@ struct uniform_grid
         majorants.resize(dims.x * size_t(dims.y) * dims.z, 0.f);
         vec3 world_size = world_bounds.size();
 
+        // We try to use very fine sampling to make sure that
+        // our majorants are a relatively tight fit
+        vec3i sampling_rate(64);
+        vec3i sampling_dims = dims * sampling_rate;
+
         auto linear_index = [this](int x, int y, int z)
         {
             return z * dims.x * size_t(dims.y) + y * dims.x + x;
         };
 
-        auto to_world = [this, &world_bounds, &world_size](int x, int y, int z)
+        auto to_world = [&](int x, int y, int z)
         {
-            float fx = x / (float)(dims.x - 1);
-            float fy = y / (float)(dims.y - 1);
-            float fz = z / (float)(dims.z - 1);
+            float fx = x / (float)(sampling_dims.x - 1);
+            float fy = y / (float)(sampling_dims.y - 1);
+            float fz = z / (float)(sampling_dims.z - 1);
 
             fx *= world_size.x;
             fy *= world_size.y;
@@ -136,12 +141,8 @@ struct uniform_grid
             fy += world_bounds.min.y;
             fz += world_bounds.min.z;
 
-            return vec3(x, y, z);
+            return vec3(fx, fy, fz);
         };
-
-        // We try to use very fine sampling to make sure that
-        // our majorants are a relatively tight fit
-        vec3i sampling_rate(128);
 
         for (int z = 0; z < dims.z; ++z)
         {
@@ -259,12 +260,15 @@ struct renderer : viewer_type
                 vec3(1.0f),
                 mouse::Left
                 ) );
+
+        grid.build(vol, {16,16,16}, bbox);
     }
 
     aabb                                        bbox;
     pinhole_camera                              cam;
     cpu_buffer_rt<PF_RGBA8, PF_UNSPECIFIED, PF_RGBA32F> host_rt;
     tiled_sched<host_ray_type>                  host_sched;
+    uniform_grid                                grid;
     frame_counter                               counter;
     double                                      last_frame_time = 0.0;
     bool                                        print_fps = true;
