@@ -108,6 +108,82 @@ struct volume
 //
 //
 
+struct uniform_grid
+{
+    template <int Mode>
+    void build(::volume<Mode> const& vol, vec3i num_cells, aabb const& world_bounds)
+    {
+        dims = num_cells;
+        majorants.resize(dims.x * size_t(dims.y) * dims.z, 0.f);
+        vec3 world_size = world_bounds.size();
+
+        auto linear_index = [this](int x, int y, int z)
+        {
+            return z * dims.x * size_t(dims.y) + y * dims.x + x;
+        };
+
+        auto to_world = [this, &world_bounds, &world_size](int x, int y, int z)
+        {
+            float fx = x / (float)(dims.x - 1);
+            float fy = y / (float)(dims.y - 1);
+            float fz = z / (float)(dims.z - 1);
+
+            fx *= world_size.x;
+            fy *= world_size.y;
+            fz *= world_size.z;
+
+            fx += world_bounds.min.x;
+            fy += world_bounds.min.y;
+            fz += world_bounds.min.z;
+
+            return vec3(x, y, z);
+        };
+
+        // We try to use very fine sampling to make sure that
+        // our majorants are a relatively tight fit
+        vec3i sampling_rate(128);
+
+        for (int z = 0; z < dims.z; ++z)
+        {
+            for (int y = 0; y < dims.y; ++y)
+            {
+                for (int x = 0; x < dims.x; ++x)
+                {
+                    for (int zz = 0; zz < sampling_rate.z; ++zz)
+                    {
+                        for (int yy = 0; yy < sampling_rate.y; ++yy)
+                        {
+                            for (int xx = 0; xx < sampling_rate.x; ++xx)
+                            {
+                                vec3i cell(
+                                    x * sampling_rate.x + xx,
+                                    y * sampling_rate.y + yy,
+                                    z * sampling_rate.z + zz
+                                    );
+                                vec3 world_coord = to_world(cell.x, cell.y, cell.z);
+
+                                float extinction = vol.sigma_t(world_coord);
+
+                                size_t index = linear_index(cell.x, cell.y, cell.z);
+
+                                majorants[index] = max(majorants[index], extinction);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    std::vector<float> majorants;
+    vec3i              dims;
+};
+
+
+//-------------------------------------------------------------------------------------------------
+//
+//
+
 enum collision_type
 {
     Scattering,
