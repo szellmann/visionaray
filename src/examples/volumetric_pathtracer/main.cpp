@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <ostream>
+#include <vector>
 
 #include <GL/glew.h>
 
