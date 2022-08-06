@@ -1,5 +1,3 @@
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/szellmann/visionaray?svg=true&branch=master)](https://ci.appveyor.com/project/szellmann/visionaray/branch/master)
-
 Visionaray
 ==========
 
