@@ -68,7 +68,7 @@ make
 make install
 ```
 
-Headers, libraries and binaries will then be located in the standard install path of your operating system (usually `/usr/local`).
+Headers, libraries and binaries will then be located in the standard install path of your operating system (usually `/usr/local`). This path can be modified using the cmake variable `-DCMAKE_INSTALL_PREFIX`.
 
 See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Getting-started) and the [Troubleshooting section](https://github.com/szellmann/visionaray/wiki/Troubleshooting) in the [Wiki](https://github.com/szellmann/visionaray/wiki) for further information.
 
