@@ -115,7 +115,7 @@ struct uniform_grid
     void build(::volume<Mode> const& vol, vec3i num_cells, aabb const& world_bounds)
     {
         dims = num_cells;
-        value_ranges.resize(dims.x * size_t(dims.y) * dims.z, { -FLT_MAX, FLT_MAX });
+        value_ranges.resize(dims.x * size_t(dims.y) * dims.z, { FLT_MAX, -FLT_MAX });
         vec3 world_size = world_bounds.size();
 
         // We try to use very fine sampling to make sure that
