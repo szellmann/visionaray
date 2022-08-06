@@ -115,7 +115,7 @@ struct uniform_grid
     void build(::volume<Mode> const& vol, vec3i num_cells, aabb const& world_bounds)
     {
         dims = num_cells;
-        majorants.resize(dims.x * size_t(dims.y) * dims.z, 0.f);
+        value_ranges.resize(dims.x * size_t(dims.y) * dims.z, { -FLT_MAX, FLT_MAX });
         vec3 world_size = world_bounds.size();
 
         // We try to use very fine sampling to make sure that
@@ -168,7 +168,8 @@ struct uniform_grid
 
                                 size_t index = linear_index(cell.x, cell.y, cell.z);
 
-                                majorants[index] = max(majorants[index], extinction);
+                                value_ranges[index].x = min(value_ranges[index].x, extinction);
+                                value_ranges[index].y = max(value_ranges[index].y, extinction);
                             }
                         }
                     }
@@ -177,8 +178,8 @@ struct uniform_grid
         }
     }
 
-    std::vector<float> majorants;
-    vec3i              dims;
+    std::vector<vec2> value_ranges;
+    vec3i             dims;
 };
 
 
