@@ -26,7 +26,7 @@ Build requirements
 - C++14 compliant compiler
    (tested with g++-7.4.0 on Ubuntu 18.04 x86_64,
     tested with clang-902.0.39.1 on Mac OS X 10.13 (Apple LLVM version 9.1.0),
-    tested with clang-1200.0.32.28 on Mac OS X 11.0.1 arm-64 (M1),
+    tested with clang-1316.0.21.2.5 on Mac OS X 12.5.1 arm-64 (M1),
     tested with Microsoft Visual Studio 2015 VC14 for x64)
 
 - [CMake][1] version 3.1.3 or newer
