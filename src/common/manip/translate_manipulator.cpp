@@ -25,7 +25,7 @@ using namespace visionaray;
 // Projection
 //
 
-static vec2i get_projected_center(pinhole_camera const& cam, mat4 const& model_matrix, vec3 const& pos)
+static vec2i project_center(pinhole_camera const& cam, mat4 const& model_matrix, vec3 const& pos)
 {
     vec3 win;
     vec3 obj(pos);
@@ -43,7 +43,7 @@ static vec2i get_projected_center(pinhole_camera const& cam, mat4 const& model_m
 
 static recti get_projected_center_rect(pinhole_camera const& cam, mat4 const& model_matrix, vec3 const& pos)
 {
-    vec2i c = get_projected_center(cam, model_matrix, pos);
+    vec2i c = project_center(cam, model_matrix, pos);
     return recti(c.x - 10, c.y - 10, 20, 20);
 }
 
@@ -106,7 +106,7 @@ void translate_manipulator::render()
 
     auto size = max_element(get_scaling(model_matrix_)/* really? */ * vec4(size_, 1.0f));
 
-    vec2i c = get_projected_center(camera_, model_matrix_, pos_);
+    vec2i c = project_center(camera_, model_matrix_, pos_);
 
     vec4 color(0.0f, 1.0f, 1.0f, 1.0f);
     draw_line(c + vec2i(-10, -10), 20, color, cartesian_axis<2>::X, 1);
