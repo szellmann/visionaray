@@ -32,8 +32,8 @@ bool hdr_image::load(std::string const& filename)
         return false;
     }
 
-    //enum cformat { RGBE, XYZE };
-    //cformat format = RGBE;
+    enum cformat { RGBE, XYZE };
+    cformat format = RGBE;
 
     while (!line.empty())
     {
