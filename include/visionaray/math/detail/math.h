@@ -10,8 +10,14 @@
 #include <cstring>
 #include <type_traits>
 
+#ifdef _WIN32
+#include <xmmintrin.h>
+#include <mmintrin.h>
+#include <immintrin.h>
+#else
 #if !defined(__aarch64__)
 #include <x86intrin.h>
+#endif
 #endif
 
 #include "../config.h"
