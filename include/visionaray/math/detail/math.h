@@ -85,6 +85,7 @@ using std::sqrt;
 using std::tan;
 #endif
 
+#ifndef _WIN32
 #ifdef __CUDACC__
 using ::clock;
 #else
@@ -100,6 +101,7 @@ inline uint64_t clock64()
     return ((uint64_t)hi << 32) | lo;
 #endif
 }
+#endif
 #endif
 
 #ifdef __CUDACC__
