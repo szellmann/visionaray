@@ -128,11 +128,11 @@ next:
 
                 I sign((int)node.ordered_traversal_sign);
                 I sign_rd = reinterpret_as_int(ray.dir[node.ordered_traversal_axis]) >> 31;
-                unsigned near = any(M(sign ^ sign_rd));
-                unsigned far = !near;
+                unsigned near_addr = any(M(sign ^ sign_rd));
+                unsigned far_addr = !near_addr;
 
-                st.push(node.get_child(far));
-                node = b.node(node.get_child(near));
+                st.push(node.get_child(far_addr));
+                node = b.node(node.get_child(near_addr));
             }
         }
 
