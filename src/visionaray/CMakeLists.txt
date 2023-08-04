@@ -376,10 +376,11 @@ visionaray_add_library(visionaray
     ${VSNRAY_CUDA_SOURCES}
 )
 
-target_include_directories(visionaray
-  PUBLIC
-  ${PROJECT_SOURCE_DIR}/include
-  ${__VSNRAY_CONFIG_DIR})
+target_include_directories(visionaray PUBLIC
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<BUILD_INTERFACE:${__VSNRAY_CONFIG_DIR}>
+  $<INSTALL_INTERFACE:include>
+)
 
 # MSVC + CUDA: link with legacy stdio library
 
@@ -405,7 +406,13 @@ install(DIRECTORY ${HEADER_DIR} ${CONFIG_DIR}
 )
 
 install(TARGETS visionaray
-     RUNTIME DESTINATION bin COMPONENT libraries
-     LIBRARY DESTINATION lib COMPONENT libraries
-     ARCHIVE DESTINATION lib COMPONENT libraries
+    EXPORT visionarayConfig
+    RUNTIME DESTINATION bin COMPONENT libraries
+    LIBRARY DESTINATION lib COMPONENT libraries
+    ARCHIVE DESTINATION lib COMPONENT libraries
+)
+
+install(EXPORT visionarayConfig
+    NAMESPACE visionaray::
+    DESTINATION lib/cmake/visionaray
 )
