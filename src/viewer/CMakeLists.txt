@@ -124,7 +124,7 @@ visionaray_add_executable(viewer
 # Install viewer
 #
 
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/viewer
+install(TARGETS viewer
     DESTINATION bin
     RENAME vsnray-viewer
 )
