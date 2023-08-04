@@ -9,12 +9,17 @@
 function(visionaray_use_package name)
     string(TOLOWER ${name} lower_name)
     string(TOUPPER ${name} upper_name)
+    string(REPLACE "::" ";" names ${name})
+    list (GET names 0 first_name)
 
-    if(NOT ${name}_FOUND AND NOT ${upper_name}_FOUND)
+    if(NOT ${name}_FOUND AND NOT ${upper_name}_FOUND AND NOT ${first_name}_FOUND)
         return()
     endif()
 
+    # To assemble config header
     set(__VSNRAY_USED_PACKAGES ${__VSNRAY_USED_PACKAGES} ${upper_name} PARENT_SCOPE)
+    # Version where :: was stripped
+    set(__VSNRAY_USED_PACKAGES ${__VSNRAY_USED_PACKAGES} ${first_name} PARENT_SCOPE)
 
     #
     # search for cmake variables in the following order:
@@ -48,6 +53,8 @@ function(visionaray_use_package name)
             set(pkg_LIBS ${${upper_name}_LIBRARIES})
         elseif(${name}_LIBRARY)
             set(pkg_LIBS ${${name}_LIBRARY})
+        elseif(TARGET ${name})
+            set(pkg_LIBS ${name})
         elseif(${upper_name}_LIBRARY)
             set(pkg_LIBS ${${upper_name}_LIBRARY})
         elseif(TARGET ${upper_name}::${upper_name})
