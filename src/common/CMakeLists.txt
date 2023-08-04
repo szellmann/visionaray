@@ -18,7 +18,7 @@ find_package(TIFF)
 find_package(ZLIB)
 
 visionaray_use_package(Boost)
-visionaray_use_package(GLEW)
+visionaray_use_package(GLEW::GLEW)
 visionaray_use_package(GLUT)
 visionaray_use_package(JPEG)
 visionaray_use_package(OpenEXR)

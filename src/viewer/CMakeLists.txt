@@ -20,7 +20,7 @@ find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 
 visionaray_use_package(Boost)
-visionaray_use_package(GLEW)
+visionaray_use_package(GLEW::GLEW)
 visionaray_use_package(GLUT)
 visionaray_use_package(OpenGL)
 visionaray_use_package(Threads)
