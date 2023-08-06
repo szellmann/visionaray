@@ -115,8 +115,6 @@ struct VSNRAY_ALIGN(32) bvh_node
 
     VSNRAY_FUNC void set_leaf(aabb const& bounds, unsigned first_primitive_index, unsigned count)
     {
-        assert(count > 0);
-
         bbox = bounds;
         first_prim = first_primitive_index;
         num_prims = static_cast<unsigned short>(count);
