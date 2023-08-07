@@ -65,8 +65,8 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     VSNRAY_FUNC explicit hit_record_bvh_inst(hit_record_bvh<R, Base> const& base, int_type i, int inst_id)
         : hit_record_bvh<R, Base>(base)
         , primitive_list_index_inst(i)
-        , inst_id(inst_id)
     {
+      Base::inst_id = inst_id;
     }
 
     // Index into the primitive list stored by the bvh instance
@@ -74,9 +74,6 @@ struct hit_record_bvh_inst : hit_record_bvh<R, Base>
     // an indirect index by using BVH::primitive() - this index
     // is for *direct* access!)
     int_type primitive_list_index_inst;
-
-    // User-supplied instance ID; -1 means that it wasn't set
-    int_type inst_id = int_type(-1);
 };
 
 
