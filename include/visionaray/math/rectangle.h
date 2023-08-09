@@ -6,8 +6,6 @@
 #ifndef VSNRAY_MATH_RECTANGLE_H
 #define VSNRAY_MATH_RECTANGLE_H 1
 
-#include <cstddef>
-
 #include "vector.h"
 
 
@@ -18,7 +16,7 @@ namespace MATH_NAMESPACE
 // Layout policies
 //
 
-template <size_t Dim, typename T>
+template <int Dim, typename T>
 class min_max_layout
 {
 public:
@@ -109,8 +107,8 @@ public:
     MATH_FUNC T* data();
     MATH_FUNC T const* data() const;
 
-    MATH_FUNC T& operator[](size_t i);
-    MATH_FUNC T const& operator[](size_t i) const;
+    MATH_FUNC T& operator[](int i);
+    MATH_FUNC T const& operator[](int i) const;
 
     MATH_FUNC void invalidate();
 

@@ -61,7 +61,7 @@ class basic_triangle;
 template <typename Layout, typename T>
 class rectangle;
 
-template <size_t Dim, typename T>
+template <int Dim, typename T>
 class min_max_layout;
 
 template <typename T>
