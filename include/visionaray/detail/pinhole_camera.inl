@@ -104,16 +104,16 @@ template <typename R, typename T>
 VSNRAY_FUNC
 inline R pinhole_camera::primary_ray(R /* */, T const& x, T const& y, T const& width, T const& height) const
 {
-    T u = T(2.0) * (x + T(0.5)) / width  - T(1.0);
-    T v = T(2.0) * (y + T(0.5)) / height - T(1.0);
-
-    vector<2, T> screen(u, v);
+    vector<2, T> screen((x + T(0.5)) / width, (y + T(0.5)) / height);
     screen = (vector<2, T>(1.0) - screen) * vector<2, T>(image_region_.min)
                                  + screen * vector<2, T>(image_region_.max);
 
+    T u = T(2.0) * screen.x - T(1.0);
+    T v = T(2.0) * screen.y - T(1.0);
+
     R r;
     r.ori = vector<3, T>(eye_);
-    r.dir = normalize(vector<3, T>(U) * screen.x + vector<3, T>(V) * screen.y + vector<3, T>(W));
+    r.dir = normalize(vector<3, T>(U) * u + vector<3, T>(V) * v + vector<3, T>(W));
     r.tmin = T(0.0);
     r.tmax = numeric_limits<T>::max();
     return r;
