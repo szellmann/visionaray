@@ -90,11 +90,11 @@ void basic_sched<B, R>::frame(K kernel, SP sched_params)
     int dx = round_up(16, pw);
     int dy = round_up(16, ph);
 
-    int x0 = sched_params.scissor_box.x;
-    int y0 = sched_params.scissor_box.y;
+    int x0 = 0;
+    int y0 = 0;
 
-    int nx = x0 + sched_params.scissor_box.w;
-    int ny = y0 + sched_params.scissor_box.h;
+    int nx = sched_params.rt.width();
+    int ny = sched_params.rt.height();
 
     backend_.for_each_packet(
         tiled_range2d<int>(x0, nx, dx, y0, ny, dy), pw, ph,

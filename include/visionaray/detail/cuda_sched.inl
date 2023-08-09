@@ -25,14 +25,12 @@ namespace detail
 template <
     typename R,
     typename PxSamplerT,
-    typename Rect,
     typename RTRef,
     typename K,
     typename ...Args
     >
 __global__ void render(
         PxSamplerT      sample_params,
-        Rect            scissor_box,
         unsigned        frame_id,
         RTRef           rt_ref,
         K               kernel,
@@ -45,7 +43,7 @@ __global__ void render(
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
     auto y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x < scissor_box.x || y < scissor_box.y || x >= scissor_box.w || y >= scissor_box.h)
+    if (x >= rt_ref.width() || y >= rt_ref.height())
     {
         return;
     }
@@ -74,7 +72,6 @@ template <
     typename R,
     typename PxSamplerT,
     typename Intersector,
-    typename Rect,
     typename RTRef,
     typename K,
     typename ...Args
@@ -83,7 +80,6 @@ __global__ void render(
         detail::have_intersector_tag    /* */,
         PxSamplerT                      sample_params,
         Intersector                     intersector,
-        Rect                            scissor_box,
         unsigned                        frame_id,
         RTRef                           rt_ref,
         K                               kernel,
@@ -96,7 +92,7 @@ __global__ void render(
     auto x = blockIdx.x * blockDim.x + threadIdx.x;
     auto y = blockIdx.y * blockDim.y + threadIdx.y;
 
-    if (x < scissor_box.x || y < scissor_box.y || x >= scissor_box.w || y >= scissor_box.h)
+    if (x >= rt_ref.width() || y >= rt_ref.height())
     {
         return;
     }
@@ -129,7 +125,7 @@ __global__ void render(
 // Dispatch functions
 //
 
-template <typename R, typename SP, typename Rect, typename ...Args>
+template <typename R, typename SP, typename ...Args>
 inline void cuda_sched_impl_call_render(
         std::false_type     /* has intersector */,
         SP&                 sparams,
@@ -138,19 +134,17 @@ inline void cuda_sched_impl_call_render(
         dim3 const&         block_size,
         size_t              smem,
         cudaStream_t const& stream,
-        Rect const&         scissor_box,
         Args&&...           args
         )
 {
     render<R, typename SP::pixel_sampler_type><<<grid_size, block_size, smem, stream>>>(
             sparams.sample_params,
-            scissor_box,
             frame_id,
             std::forward<Args>(args)...
             );
 }
 
-template <typename R, typename SP, typename Rect, typename ...Args>
+template <typename R, typename SP, typename ...Args>
 inline void cuda_sched_impl_call_render(
         std::true_type      /* has intersector */,
         SP const&           sparams,
@@ -159,7 +153,6 @@ inline void cuda_sched_impl_call_render(
         dim3 const&         block_size,
         size_t              smem,
         cudaStream_t const& stream,
-        Rect const&         scissor_box,
         Args&&...           args
         )
 {
@@ -167,7 +160,6 @@ inline void cuda_sched_impl_call_render(
             detail::have_intersector_tag(),
             sparams.sample_params,
             sparams.intersector,
-            scissor_box,
             frame_id,
             std::forward<Args>(args)...
             );
@@ -202,7 +194,6 @@ inline void cuda_sched_impl_frame(
             block_size,
             smem,
             stream,
-            sparams.scissor_box,
             sparams.rt.ref(),
             kernel,
             sparams.rt.width(),

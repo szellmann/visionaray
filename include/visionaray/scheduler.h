@@ -14,7 +14,6 @@
 #include "detail/sched_common.h"
 #include "math/forward.h"
 #include "math/matrix.h"
-#include "math/rectangle.h"
 #include "matrix_camera.h"
 
 namespace visionaray
@@ -24,24 +23,17 @@ namespace visionaray
 // Base classes for scheduler params
 //
 
-template <typename Rect>
 struct sched_params_base
 {
-    sched_params_base(Rect sb)
-        : scissor_box(sb)
-    {
-    }
-
-    Rect scissor_box;
 };
 
-template <typename Rect, typename Intersector>
-struct sched_params_intersector_base : sched_params_base<Rect>
+template <typename Intersector>
+struct sched_params_intersector_base : sched_params_base
 {
     using has_intersector = void;
 
-    sched_params_intersector_base(Rect sb, Intersector& i)
-        : sched_params_base<Rect>(sb)
+    sched_params_intersector_base(Intersector& i)
+        : sched_params_base()
         , intersector(i)
     {
     }
@@ -121,9 +113,9 @@ auto make_sched_params(
         Camera const& cam,
         RT&           rt
         )
-    -> sched_params<sched_params_base<recti>, Camera, RT, PxSamplerT>
+    -> sched_params<sched_params_base, Camera, RT, PxSamplerT>
 {
-    return { cam, rt, sample_params, recti(0, 0, rt.width(), rt.height()) };
+    return { cam, rt, sample_params };
 }
 
 template <
@@ -139,9 +131,9 @@ auto make_sched_params(
         RT&           rt,
         Intersector&  isect
         )
-    -> sched_params<sched_params_intersector_base<recti, Intersector>, Camera, RT, PxSamplerT>
+    -> sched_params<sched_params_intersector_base<Intersector>, Camera, RT, PxSamplerT>
 {
-    return { cam, rt, sample_params, recti(0, 0, rt.width(), rt.height()), isect };
+    return { cam, rt, sample_params, isect };
 }
 
 template <
@@ -155,13 +147,12 @@ auto make_sched_params(
         mat4       proj_matrix,
         RT&        rt
         )
-    -> sched_params<sched_params_base<recti>, matrix_camera, RT, PxSamplerT>
+    -> sched_params<sched_params_base, matrix_camera, RT, PxSamplerT>
 {
     return {
         matrix_camera(view_matrix, proj_matrix),
         rt,
-        sample_params,
-        recti(0, 0, rt.width(), rt.height())
+        sample_params
         };
 }
 
@@ -178,13 +169,12 @@ auto make_sched_params(
         RT&          rt,
         Intersector& isect
         )
-    -> sched_params<sched_params_intersector_base<recti, Intersector>, matrix_camera, RT, PxSamplerT>
+    -> sched_params<sched_params_intersector_base<Intersector>, matrix_camera, RT, PxSamplerT>
 {
     return {
         matrix_camera(view_matrix, proj_matrix),
         rt,
         sample_params,
-        recti(0, 0, rt.width(), rt.height()),
         isect
         };
 }

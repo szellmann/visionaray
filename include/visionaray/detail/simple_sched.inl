@@ -26,17 +26,10 @@ void simple_sched<R>::frame(K kernel, SP sched_params)
     sched_params.rt.begin_frame();
 
 
-    auto scissor_box = sched_params.scissor_box;
-
     for (int y = 0; y < sched_params.rt.height(); ++y)
     {
         for (int x = 0; x < sched_params.rt.width(); ++x)
         {
-            if (x < scissor_box.x || y < scissor_box.y || x >= scissor_box.w || y >= scissor_box.h)
-            {
-                continue;
-            }
-
             expand_pixel<S> ep;
             auto seed = make_random_seed(
                 convert_to_int(ep.y(y)) * sched_params.rt.width() + convert_to_int(ep.x(x)),
