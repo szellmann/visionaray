@@ -62,7 +62,7 @@ using scalar_type_gpu           = float;
 using ray_type_cpu              = basic_ray<scalar_type_cpu>;
 using ray_type_gpu              = basic_ray<scalar_type_gpu>;
 
-using camera_t = variant<pinhole_camera, thin_lens_camera>;
+using camera_t = thin_lens_camera;
 using plastic_t = plastic<float>;
 using generic_light_t = generic_light<
         point_light<float>,

@@ -2338,14 +2338,10 @@ void renderer::render_impl()
                             : vec4(0.0)
                             ;
 
-    camera_t camx;
-    if (use_dof && algo == Pathtracing)
+    camera_t camx = cam;
+    if (!use_dof || algo != Pathtracing)
     {
-        camx = cam;
-    }
-    else
-    {
-        camx = static_cast<pinhole_camera>(cam);
+        camx.set_lens_radius(0.0f);
     }
 
     if (rt.mode() == host_device_rt::CPU)

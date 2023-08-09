@@ -52,6 +52,7 @@ public:
     void perspective(float fovy, float aspect, float z_near, float z_far);
     void set_viewport(recti const& viewport);
     void set_viewport(int left, int bottom, int width, int height);
+    void set_image_region(box2f const& image_region) { image_region_ = image_region; }
 
     // Depends on the perspective parameters (fovy) to be set
     void view_all(aabb const& box, vec3 const& up = vec3(0.0f, 1.0f, 0.0f));
@@ -62,16 +63,18 @@ public:
     mat4 const& get_view_matrix() const { return view_; }
     mat4 const& get_proj_matrix() const { return proj_; }
 
-    recti get_viewport() const { return viewport_; }
+    vec3 const& eye() const { return eye_; }
+    vec3 const& center() const { return center_; }
+    vec3 const& up() const { return up_; }
 
     float fovy() const { return fovy_; }
     float aspect() const { return aspect_; }
     float z_near() const { return z_near_; }
     float z_far() const { return z_far_; }
 
-    vec3 const& eye() const { return eye_; }
-    vec3 const& center() const { return center_; }
-    vec3 const& up() const { return up_; }
+    recti get_viewport() const { return viewport_; }
+
+    box2f get_image_region() const { return image_region_; }
 
     float distance() const { return distance_; }
 
@@ -104,6 +107,9 @@ private:
     float z_far_;
 
     recti viewport_;
+
+    // Image region in (0,0)--(1,1)
+    box2f image_region_{{0.f, 0.f}, {1.f, 1.f}};
 
     // Precalculated for rendering
     vec3 U;
