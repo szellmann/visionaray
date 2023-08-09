@@ -61,6 +61,9 @@ class basic_triangle;
 template <typename Layout, typename T>
 class rectangle;
 
+template <size_t Dim, typename T>
+class min_max_layout;
+
 template <typename T>
 class xywh_layout;
 
@@ -144,6 +147,11 @@ typedef rectangle<xywh_layout<float>, float>   rectf;
 typedef rectangle<xywh_layout<double>, double> rectd;
 typedef rectangle<xywh_layout<float>, float>   rect;
 
+
+typedef rectangle<min_max_layout<2, int>, int>       box2i;
+typedef rectangle<min_max_layout<2, float>, float>   box2f;
+typedef rectangle<min_max_layout<2, double>, double> box2d;
+typedef rectangle<min_max_layout<2, float>, float>   box2;
 
 } // MATH_NAMESPACE
 
