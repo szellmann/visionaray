@@ -271,6 +271,23 @@ inline bool operator!=(matrix<3, 3, T> const& a, matrix<3, 3, T> const& b)
 
 template <typename T>
 MATH_FUNC
+inline matrix<3, 3, T> determinant(matrix<3, 3, T> const& m)
+{
+    T a00 = det2(m(1, 1), m(1, 2), m(2, 1), m(2, 2));
+    T a01 = det2(m(1, 0), m(1, 2), m(2, 0), m(2, 2));
+    T a02 = det2(m(1, 0), m(1, 1), m(2, 0), m(2, 1));
+    T a10 = det2(m(0, 1), m(0, 2), m(2, 1), m(2, 2));
+    T a11 = det2(m(0, 0), m(0, 2), m(2, 0), m(2, 2));
+    T a12 = det2(m(0, 0), m(0, 1), m(2, 0), m(2, 1));
+    T a20 = det2(m(0, 1), m(0, 2), m(1, 1), m(1, 2));
+    T a21 = det2(m(0, 0), m(0, 2), m(1, 0), m(1, 2));
+    T a22 = det2(m(0, 0), m(0, 1), m(1, 0), m(1, 1));
+
+    return m(0, 0) * a00 - m(0, 1) * a01 + m(0, 2) * a02;
+}
+
+template <typename T>
+MATH_FUNC
 inline matrix<3, 3, T> inverse(matrix<3, 3, T> const& m)
 {
     T a00 = det2(m(1, 1), m(1, 2), m(2, 1), m(2, 2));
