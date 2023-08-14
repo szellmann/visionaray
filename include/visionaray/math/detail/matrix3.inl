@@ -271,7 +271,7 @@ inline bool operator!=(matrix<3, 3, T> const& a, matrix<3, 3, T> const& b)
 
 template <typename T>
 MATH_FUNC
-inline matrix<3, 3, T> determinant(matrix<3, 3, T> const& m)
+inline T determinant(matrix<3, 3, T> const& m)
 {
     T a00 = det2(m(1, 1), m(1, 2), m(2, 1), m(2, 2));
     T a01 = det2(m(1, 0), m(1, 2), m(2, 0), m(2, 2));
