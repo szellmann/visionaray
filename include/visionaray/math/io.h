@@ -14,6 +14,7 @@
 #include "simd/type_traits.h"
 #include "aabb.h"
 #include "fixed.h"
+#include "interval.h"
 #include "matrix.h"
 #include "norm.h"
 #include "quaternion.h"
@@ -324,6 +325,25 @@ operator<<(std::basic_ostream<CharT, Traits>& out, basic_aabb<T, Dim> const& box
     s.precision(out.precision());
 
     s << box.min << box.max;
+
+    return out << s.str();
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// interval
+//
+
+template <typename T, typename CharT, typename Traits>
+std::basic_ostream<CharT, Traits>&
+operator<<(std::basic_ostream<CharT, Traits>& out, interval<T> const& ival)
+{
+    std::basic_ostringstream<CharT, Traits> s;
+    s.flags(out.flags());
+    s.imbue(out.getloc());
+    s.precision(out.precision());
+
+    s << ival.min << ival.max;
 
     return out << s.str();
 }
