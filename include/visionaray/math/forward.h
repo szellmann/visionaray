@@ -151,10 +151,22 @@ typedef rectangle<xywh_layout<double>, double> rectd;
 typedef rectangle<xywh_layout<float>, float>   rect;
 
 
+typedef interval<int>                          box1i;
+typedef interval<float>                        box1f;
+typedef interval<double>                       box1d;
+typedef interval<float>                        box1;
+
+
 typedef interval<vec2i>                        box2i;
 typedef interval<vec2f>                        box2f;
 typedef interval<vec2d>                        box2d;
 typedef interval<vec2>                         box2;
+
+
+typedef interval<vec3i>                        box3i;
+typedef interval<vec3f>                        box3f;
+typedef interval<vec3d>                        box3d;
+typedef interval<vec3>                         box3;
 
 } // MATH_NAMESPACE
 
