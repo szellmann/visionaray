@@ -16,6 +16,7 @@
 #include "cylinder.h"
 #include "fixed.h"
 #include "intersect.h"
+#include "interval.h"
 #include "io.h"
 #include "limits.h"
 #include "matrix.h"

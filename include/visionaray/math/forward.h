@@ -67,6 +67,9 @@ class min_max_layout;
 template <typename T>
 class xywh_layout;
 
+template <typename T>
+class interval;
+
 
 //--------------------------------------------------------------------------------------------------
 // Most common typedefs
@@ -148,10 +151,10 @@ typedef rectangle<xywh_layout<double>, double> rectd;
 typedef rectangle<xywh_layout<float>, float>   rect;
 
 
-typedef rectangle<min_max_layout<2, int>, int>       box2i;
-typedef rectangle<min_max_layout<2, float>, float>   box2f;
-typedef rectangle<min_max_layout<2, double>, double> box2d;
-typedef rectangle<min_max_layout<2, float>, float>   box2;
+typedef interval<vec2i>                        box2i;
+typedef interval<vec2f>                        box2f;
+typedef interval<vec2d>                        box2d;
+typedef interval<vec2>                         box2;
 
 } // MATH_NAMESPACE
 

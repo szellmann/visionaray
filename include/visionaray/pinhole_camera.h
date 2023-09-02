@@ -8,6 +8,7 @@
 
 #include "math/aabb.h"
 #include "math/forward.h"
+#include "math/interval.h"
 #include "math/matrix.h"
 #include "math/rectangle.h"
 #include "math/vector.h"

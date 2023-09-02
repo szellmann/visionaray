@@ -158,6 +158,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/detail/aabb.inl
     ${HEADER_DIR}/math/detail/cylinder.inl
     ${HEADER_DIR}/math/detail/fixed.inl
+    ${HEADER_DIR}/math/detail/interval.inl
     ${HEADER_DIR}/math/detail/limits.inl
     ${HEADER_DIR}/math/detail/math.h
     ${HEADER_DIR}/math/detail/matrix.inl
@@ -220,6 +221,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/math/fixed.h
     ${HEADER_DIR}/math/forward.h
     ${HEADER_DIR}/math/intersect.h
+    ${HEADER_DIR}/math/interval.h
     ${HEADER_DIR}/math/io.h
     ${HEADER_DIR}/math/limits.h
     ${HEADER_DIR}/math/math.h
