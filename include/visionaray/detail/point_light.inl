@@ -34,8 +34,6 @@ template <typename Generator, typename U>
 VSNRAY_FUNC
 inline light_sample<U> point_light<T>::sample(vector<3, U> const& reference_point, Generator& gen) const
 {
-    VSNRAY_UNUSED(reference_point);
-
     light_sample<U> result;
 
     auto pos = position();
