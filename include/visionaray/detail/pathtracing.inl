@@ -185,15 +185,12 @@ struct kernel
 
                 // TODO: inv_pi / dot(n, wi) factor only valid for plastic and matte
                 auto src = surf.shade(view_dir, L, ls.intensity) * constants::inv_pi<S>() / ldotn;
-                auto solid_angle = (ldotln * ls.area);
-                solid_angle = select(!ls.delta_light, solid_angle / (ld * ld), solid_angle);
-                auto light_pdf = S(1.0) / solid_angle;
 
-                S mis_weight = power_heuristic(light_pdf / static_cast<float>(num_lights), brdf_pdf);
+                S mis_weight = power_heuristic(ls.pdf / static_cast<float>(num_lights), brdf_pdf);
 
                 intensity += select(
                     active_rays && !lhr.hit && ldotn > S(0.0) && ldotln > S(0.0),
-                    mis_weight * throughput * src * (ldotn / light_pdf) * S(static_cast<float>(num_lights)),
+                    mis_weight * throughput * src * (ldotn / ls.pdf) * S(static_cast<float>(num_lights)),
                     C(0.0)
                     );
             }
