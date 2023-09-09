@@ -242,6 +242,7 @@ light_sample<T> sample_random_light(Lights begin, Lights end, vector<3, T> const
     array<vector<3, float>, simd::num_elements<T>::value> normals;
     float* area = reinterpret_cast<float*>(&result.area);
     int* delta_light = reinterpret_cast<int*>(&result.delta_light);
+    float* pdf = reinterpret_cast<float*>(&result.pdf);
 
     for (unsigned i = 0; i < simd::num_elements<T>::value; ++i)
     {
@@ -255,6 +256,7 @@ light_sample<T> sample_random_light(Lights begin, Lights end, vector<3, T> const
         normals[i] = ls.normal;
         area[i] = ls.area;
         delta_light[i] = ls.delta_light ? 0xFFFFFFFF : 0x00000000;
+        pdf[i] = ls.pdf;
     }
 
     result.dir = simd::pack(dir);
