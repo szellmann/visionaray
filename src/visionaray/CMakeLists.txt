@@ -106,6 +106,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/cpu_buffer_rt.inl
     ${HEADER_DIR}/detail/cuda_sched.h
     ${HEADER_DIR}/detail/cuda_sched.inl
+    ${HEADER_DIR}/detail/directional_light.inl
     ${HEADER_DIR}/detail/environment_light.inl
     ${HEADER_DIR}/detail/exit_traversal.h
     ${HEADER_DIR}/detail/generic_light.inl
@@ -269,6 +270,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/brdf.h
     ${HEADER_DIR}/bvh.h
     ${HEADER_DIR}/cpu_buffer_rt.h
+    ${HEADER_DIR}/directional_light.h
     ${HEADER_DIR}/environment_light.h
     ${HEADER_DIR}/export.h
     ${HEADER_DIR}/fresnel.h
