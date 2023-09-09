@@ -39,20 +39,18 @@ inline light_sample<U> directional_light<T>::sample(vector<3, U> const& referenc
 
     const U cos_theta_max = cos(angular_diameter_ * constants::degrees_to_radians<T>());
 
-    if (visionaray::all(cos_theta_max == U(0.0)))
-    {
-        result.dir = directionU;
-        return result;
-    }
-    else
-    {
-        auto cone_sample = uniform_sample_cone(gen.next(), gen.next(), cos_theta_max);
-        result.dir = select(
-            cos_theta_max == U(0.0),
-            directionU,
-            u * cone_sample.x + v * cone_sample.y + directionU * cone_sample.z
-            );
-    }
+    auto cone_sample = uniform_sample_cone(gen.next(), gen.next(), cos_theta_max);
+    result.dir = select(
+        cos_theta_max == U(0.0),
+        directionU,
+        u * cone_sample.x + v * cone_sample.y + directionU * cone_sample.z
+        );
+
+    result.pdf = select(
+        cos_theta_max ==  U(0.0),
+        U(1.0),
+        cos_theta_max
+        );
 
     return result;
 }

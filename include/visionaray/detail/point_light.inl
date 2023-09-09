@@ -49,6 +49,10 @@ inline light_sample<U> point_light<T>::sample(vector<3, U> const& reference_poin
     result.area = U(1.0);
     result.delta_light = true;
 
+    // Compute PDF
+    auto ldotln = abs(dot(-result.dir, result.normal));
+    result.pdf = U(1.0) / ldotln;
+
     return result;
 }
 

@@ -18,6 +18,9 @@ struct light_sample
     // Sampled direction
     vector<3, T> dir;
 
+    // PDF for the sample
+    T pdf;
+
     // Distance to sample
     T dist;
 

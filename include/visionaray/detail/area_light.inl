@@ -44,6 +44,11 @@ inline light_sample<U> area_light<T, Geometry>::sample(vector<3, U> const& refer
     result.area = U(area(geometry_));
     result.delta_light = false;
 
+    // Compute PDF
+    auto ldotln = abs(dot(-result.dir, result.normal));
+    auto solid_angle = (ldotln * result.area) / (result.dist * result.dist);
+    result.pdf = U(1.0) / solid_angle;
+
     return result;
 }
 
