@@ -24,8 +24,8 @@ template <typename T>
 MATH_FUNC
 inline interval<T>& interval<T>::extend(T const& t)
 {
-    min = min(min, t);
-    max = max(max, t);
+    min = visionaray::min(min, t);
+    max = visionaray::max(max, t);
     return *this;
 }
 
@@ -33,8 +33,8 @@ template <typename T>
 MATH_FUNC
 inline interval<T>& interval<T>::extend(interval<T> const& t)
 {
-    min = min(min, t.min);
-    max = max(max, t.max);
+    min = visionaray::min(min, t.min);
+    max = visionaray::max(max, t.max);
     return *this;
 }
 
