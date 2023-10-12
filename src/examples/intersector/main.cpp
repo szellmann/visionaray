@@ -14,6 +14,7 @@
 
 #include <visionaray/aligned_vector.h>
 #include <visionaray/cpu_buffer_rt.h>
+#include <visionaray/intersector.h>
 #include <visionaray/kernels.h> // for make_kernel_params(...)
 #include <visionaray/material.h>
 #include <visionaray/pinhole_camera.h>
