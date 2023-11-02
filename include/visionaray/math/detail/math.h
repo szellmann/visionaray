@@ -7,6 +7,7 @@
 #define VSNRAY_MATH_DETAIL_MATH_H 1
 
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <type_traits>
 
