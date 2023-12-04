@@ -52,10 +52,10 @@ inline ReturnT cubic(
 
     decltype(convert_to_int(FloatT{})) pos[4] =
     {
-        convert_to_int(coord1[0] * texsizef[0]),
-        convert_to_int(coord2[0] * texsizef[0]),
-        convert_to_int(coord3[0] * texsizef[0]),
-        convert_to_int(coord4[0] * texsizef[0])
+        convert_to_int(round(coord1[0] * texsizef[0])),
+        convert_to_int(round(coord2[0] * texsizef[0])),
+        convert_to_int(round(coord3[0] * texsizef[0])),
+        convert_to_int(round(coord4[0] * texsizef[0]))
     };
 
     auto u = (coord2[0] * texsizef[0]) - FloatT(pos[1]);
@@ -104,10 +104,10 @@ inline ReturnT cubic(
     auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / texsizef);
 
     vector<2, decltype(convert_to_int(FloatT{}))> pos[4] = {
-        convert_to_int(coord1 * texsizef),
-        convert_to_int(coord2 * texsizef),
-        convert_to_int(coord3 * texsizef),
-        convert_to_int(coord4 * texsizef)
+        convert_to_int(round(coord1 * texsizef)),
+        convert_to_int(round(coord2 * texsizef)),
+        convert_to_int(round(coord3 * texsizef)),
+        convert_to_int(round(coord4 * texsizef))
         };
 
     auto uv = (coord2 * texsizef) - vector<2, FloatT>(pos[1]);
@@ -161,10 +161,10 @@ inline ReturnT cubic(
     auto coord4 = tex.remap_texture_coordinate(coord + FloatT(1.5) / texsizef);
 
     vector<3, decltype(convert_to_int(FloatT{}))> pos[4] = {
-        convert_to_int(coord1 * texsizef),
-        convert_to_int(coord2 * texsizef),
-        convert_to_int(coord3 * texsizef),
-        convert_to_int(coord4 * texsizef)
+        convert_to_int(round(coord1 * texsizef)),
+        convert_to_int(round(coord2 * texsizef)),
+        convert_to_int(round(coord3 * texsizef)),
+        convert_to_int(round(coord4 * texsizef))
         };
 
     auto uvw = (coord2 * texsizef) - vector<3, FloatT>(pos[1]);

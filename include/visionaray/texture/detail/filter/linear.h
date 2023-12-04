@@ -42,8 +42,8 @@ inline ReturnT linear(
     auto coord1 = tex.remap_texture_coordinate(coord - FloatT(0.5) / texsizef);
     auto coord2 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
 
-    auto lo = min(convert_to_int(coord1 * texsizef), texsize_minus_one);
-    auto hi = min(convert_to_int(coord2 * texsizef), texsize_minus_one);
+    auto lo = min(convert_to_int(round(coord1 * texsizef)), texsize_minus_one);
+    auto hi = min(convert_to_int(round(coord2 * texsizef)), texsize_minus_one);
 
     InternalT samples[2] = {
         InternalT(tex.value(ReturnT{}, lo[0])),
@@ -82,8 +82,8 @@ inline ReturnT linear(
     auto coord1 = tex.remap_texture_coordinate(coord - FloatT(0.5) / texsizef);
     auto coord2 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
 
-    auto lo = min(convert_to_int(coord1 * texsizef), texsize_minus_one);
-    auto hi = min(convert_to_int(coord2 * texsizef), texsize_minus_one);
+    auto lo = min(convert_to_int(round(coord1 * texsizef)), texsize_minus_one);
+    auto hi = min(convert_to_int(round(coord2 * texsizef)), texsize_minus_one);
 
     InternalT samples[4] = {
         InternalT(tex.value(ReturnT{}, lo.x, lo.y)),
@@ -128,8 +128,8 @@ inline ReturnT linear(
     auto coord1 = tex.remap_texture_coordinate(coord - FloatT(0.5) / texsizef);
     auto coord2 = tex.remap_texture_coordinate(coord + FloatT(0.5) / texsizef);
 
-    auto lo = min(convert_to_int(coord1 * texsizef), texsize_minus_one);
-    auto hi = min(convert_to_int(coord2 * texsizef), texsize_minus_one);
+    auto lo = min(convert_to_int(round(coord1 * texsizef)), texsize_minus_one);
+    auto hi = min(convert_to_int(round(coord2 * texsizef)), texsize_minus_one);
 
     InternalT samples[8] = {
         InternalT(tex.value(ReturnT{}, lo.x, lo.y, lo.z)),
