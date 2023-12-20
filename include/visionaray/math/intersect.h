@@ -398,6 +398,7 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_cylinder
     auto hit2 = valid && abs(k1 + k2 * t) < h;
 
     result.t = select(!hit1 && hit2, min_dist + t, result.t);
+    result.u = clamp(y / baba, T(0.0), T(1.0));
     result.hit = hit1 || hit2;
     result.prim_id = cylinder.prim_id;
     result.geom_id = cylinder.geom_id;
