@@ -1,5 +1,12 @@
 ## [Unreleased]
 
+## [0.3.2] - 2023-12-21
+### Added
+- visionarayConfigVersion.cmake to determine the version.
+
+### Fixed
+- Accidentally specified the wrong version.
+
 ## [0.3.1] - 2023-12-21
 ### Added
 - Version is (also) specified via CMake now.
