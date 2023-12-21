@@ -1,13 +1,23 @@
 ## [Unreleased]
+
+## [0.3.1] - 2023-12-21
 ### Added
+- Version is (also) specified via CMake now.
+- Allow CMake install using config scripts.
 - Added cylinder as built-in primitive.
 
 ### Changed
+- Scheduler's scissorBox feature has been replaced with image_region
+on the camera.
 - Light sample struct has changed, to no longer store the position,
 but instead, a direction and distance.
 - An accumulation buffer was now added to the builtin render targets
 where colors are blended in. For blending kernels, the accumulation
 buffer pixel format needs to be specified.
+
+### Fixed
+- Fixed an issue where texture coordinates close to an integer were
+accidentally truncated to the next lower integer.
 
 ## [0.3.0] - 2021-12-25
 ### Added
