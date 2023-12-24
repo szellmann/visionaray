@@ -240,7 +240,8 @@ public:
 
         auto D = mdf.d(n, h);
 
-        auto fr = (F * G * D) / (U(4) * ldotn * vdotn);
+        auto denom = (U(4.0) * ldotn * vdotn);
+        auto fr = select(denom != U(0.0), (F * G * D) / denom, spectrum<U>(0.0));
 
         return select(active, fr, spectrum<U>(0.0));
     }
