@@ -1,4 +1,7 @@
 ## [Unreleased]
+### Fixed
+- Fixed a potential division by zero in th Cook-Torrance BRDF
+implementation.
 
 ## [0.3.2] - 2023-12-21
 ### Added
