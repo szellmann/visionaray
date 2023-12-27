@@ -31,11 +31,10 @@ inline void safe_call(cudaError_t code, char const* file, int line, bool fatal =
     if (code != cudaSuccess)
     {
         fprintf(stderr, "CUDA error: %s %s:%i\n", cudaGetErrorString(code), file, line);
-    }
-
-    if (fatal)
-    {
-        exit(code);
+        if (fatal)
+        {
+            exit(code);
+        }
     }
 }
 
