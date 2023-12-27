@@ -3,7 +3,7 @@
 
 include(CMakePackageConfigHelpers)
 cmake_minimum_required(VERSION 3.1.3)
-project(visionaray VERSION 0.3.3 LANGUAGES C CXX)
+project(visionaray VERSION 0.3.4 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

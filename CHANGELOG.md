@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.3.4] - 2023-12-27
+### Added
+- Convert from PF_RG8 to PF_RGBA8, to support RG textures.
+
 ## [0.3.3] - 2023-12-27
 ### Added
 - Macro CUDA_SAFE_CALL_X() terminates the app if code != cudaSucess.
