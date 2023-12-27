@@ -205,7 +205,7 @@ inline void swizzle_R8_to_RGBA8(
     for (size_t i = 0; i < len; ++i)
     {
         auto r = src[i];
-        dst[i] = vector<4, unorm<8>>( r, r, r, a );
+        dst[i] = vector<4, unorm<8>>( r, 0U, 0U, a );
     }
 }
 
