@@ -3,6 +3,7 @@
 - Macro CUDA_SAFE_CALL_X() terminates the app if code != cudaSucess.
 
 ### Fixed
+- When swizzling from PF_Rxx to PF_RGByy, set G and B to 0, not R.
 - Fixed a potential division by zero in th Cook-Torrance BRDF
 implementation.
 
