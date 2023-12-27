@@ -1,4 +1,6 @@
 ## [Unreleased]
+
+## [0.3.3] - 2023-12-27
 ### Added
 - Macro CUDA_SAFE_CALL_X() terminates the app if code != cudaSucess.
 
