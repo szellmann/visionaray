@@ -1,4 +1,7 @@
 ## [Unreleased]
+### Added
+- Macro CUDA_SAFE_CALL_X() terminates the app if code != cudaSucess.
+
 ### Fixed
 - Fixed a potential division by zero in th Cook-Torrance BRDF
 implementation.
