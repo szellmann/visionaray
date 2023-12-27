@@ -19,17 +19,23 @@
 #else
 #define CUDA_SAFE_CALL(FUNC) FUNC
 #endif
+#define CUDA_SAFE_CALL_X(FUNC) { visionaray::cuda::safe_call((FUNC), __FILE__, __LINE__, true); }
 
 namespace visionaray
 {
 namespace cuda
 {
 
-inline void safe_call(cudaError_t code, char const* file, int line)
+inline void safe_call(cudaError_t code, char const* file, int line, bool fatal = false)
 {
     if (code != cudaSuccess)
     {
         fprintf(stderr, "CUDA error: %s %s:%i\n", cudaGetErrorString(code), file, line);
+    }
+
+    if (fatal)
+    {
+        exit(code);
     }
 }
 
