@@ -395,6 +395,11 @@ static __global__ void collapse(
     int curr = static_cast<int>(num_inner + index);
 
     // Insert leaf
+    if (leaves[index].parent < 0)
+    {
+        return;
+    }
+
     int off_leaf = bvh_node_index(curr, leaves[index].parent);
     bvh_nodes[off_leaf].set_leaf(leaves[index].bbox, prim_refs[index].id, 1);
 
