@@ -629,6 +629,11 @@ struct lbvh_builder
 
         cuda_index_bvh<P> tree(primitives, num_prims);
 
+        if (primitives == nullptr || num_prims == 0)
+        {
+            return tree;
+        }
+
         P* first = primitives;
         P* last = primitives + num_prims;
 
