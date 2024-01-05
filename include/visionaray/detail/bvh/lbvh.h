@@ -400,6 +400,12 @@ static __global__ void collapse(
         int off_leaf = bvh_node_index(curr, leaves[index].parent);
         bvh_nodes[off_leaf].set_leaf(leaves[index].bbox, prim_refs[index].id, 1);
     }
+    else
+    {
+        // Leaf itself is the root node!
+        bvh_nodes[0].set_leaf(leaves[index].bbox, prim_refs[0].id, 1);
+        return;
+    }
 
     if (index >= num_inner)
     {
