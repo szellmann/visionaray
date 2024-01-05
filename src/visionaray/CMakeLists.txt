@@ -257,6 +257,7 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/texture/detail/filter.h
     ${HEADER_DIR}/texture/detail/tex_fetch.h
     ${HEADER_DIR}/texture/detail/texture_common.h
+    ${HEADER_DIR}/texture/cuda_texture.h
     ${HEADER_DIR}/texture/texture.h
     ${HEADER_DIR}/texture/texture_traits.h
 

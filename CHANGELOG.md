@@ -1,4 +1,7 @@
 ## [Unreleased]
+### Added
+- Public cuda_texture.h header, to include from CUDA code that
+uses the runtime API but is not compiled with nvcc.
 
 ## [0.3.4] - 2023-12-27
 ### Added
