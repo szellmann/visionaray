@@ -346,8 +346,10 @@ if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
 
         # CUDA
 
+        ${HEADER_DIR}/cuda/detail/device_vector.inl
         ${HEADER_DIR}/cuda/array.h
         ${HEADER_DIR}/cuda/cast.h
+        ${HEADER_DIR}/cuda/device_vector.h
         ${HEADER_DIR}/cuda/fill.h
         ${HEADER_DIR}/cuda/graphics_resource.h
         ${HEADER_DIR}/cuda/pitch2d.h

@@ -12,10 +12,10 @@
 
 #ifdef __CUDACC__
 #include <cuda_runtime.h>
-#include <thrust/device_vector.h>
 #endif
 
 #ifdef __CUDACC__
+#include "cuda/device_vector.h"
 #include "cuda/safe_call.h"
 #endif
 #include "detail/macros.h"
@@ -39,9 +39,9 @@ inline auto get_pointer(Container const& vec)
 
 #ifdef __CUDACC__
 template <typename T>
-inline T const* get_pointer(thrust::device_vector<T> const& vec)
+inline T const* get_pointer(cuda::device_vector<T> const& vec)
 {
-    return thrust::raw_pointer_cast(vec.data());
+    return vec.data();
 }
 #endif
 } // detail
@@ -646,16 +646,12 @@ private:
 
 #ifdef __CUDACC__
     template <typename T, typename SrcVector>
-    void copy(thrust::device_vector<T>& dst, SrcVector const& src)
+    void copy(cuda::device_vector<T>& dst, SrcVector const& src)
     {
-        // Make a trivial copy, thrust will allocate temporary
-        // storage on both host and device because host_vector::iterator
-        // is not the same type as device_vector::iterator and it thus
-        // thinks the copy is not trivial...     ¯\_(ツ)_/¯
         dst.resize(src.size());
 
         CUDA_SAFE_CALL(cudaMemcpy(
-            thrust::raw_pointer_cast(dst.data()),
+            dst.data(),
             src.data(),
             sizeof(T) * src.size(),
             cudaMemcpyHostToDevice
@@ -663,28 +659,26 @@ private:
     }
 
     template <typename DstVector, typename T>
-    void copy(DstVector& dst, thrust::device_vector<T> const& src)
+    void copy(DstVector& dst, cuda::device_vector<T> const& src)
     {
-        // Trivial copy. See copy(device_vector, host_vector)
         dst.resize(src.size());
 
         CUDA_SAFE_CALL(cudaMemcpy(
             dst.data(),
-            thrust::raw_pointer_cast(src.data()),
+            src.data(),
             sizeof(T) * src.size(),
             cudaMemcpyDeviceToHost
             ));
     }
 
     template <typename T>
-    void copy(thrust::device_vector<T>& dst, thrust::device_vector<T> const& src)
+    void copy(cuda::device_vector<T>& dst, cuda::device_vector<T> const& src)
     {
-        // Trivial copy. See copy(device_vector, host_vector)
         dst.resize(src.size());
 
         CUDA_SAFE_CALL(cudaMemcpy(
-            thrust::raw_pointer_cast(dst.data()),
-            thrust::raw_pointer_cast(src.data()),
+            dst.data(),
+            src.data(),
             sizeof(T) * src.size(),
             cudaMemcpyDeviceToDevice
             ));
@@ -752,9 +746,9 @@ using index_bvh         = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node
 
 #ifdef __CUDACC__
 template <typename P>
-using cuda_bvh          = bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>>;
+using cuda_bvh          = bvh_t<cuda::device_vector<P>, cuda::device_vector<bvh_node>>;
 template <typename P>
-using cuda_index_bvh    = index_bvh_t<thrust::device_vector<P>, thrust::device_vector<bvh_node>, thrust::device_vector<unsigned>>;
+using cuda_index_bvh    = index_bvh_t<cuda::device_vector<P>, cuda::device_vector<bvh_node>, cuda::device_vector<unsigned>>;
 #endif
 
 

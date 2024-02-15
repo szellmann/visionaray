@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <thrust/fill.h>
+#include "cuda/fill.h"
 
 namespace visionaray
 {
@@ -13,25 +13,25 @@ namespace visionaray
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename simple_gpu_buffer_rt<ColorFormat, DepthFormat>::color_type* simple_gpu_buffer_rt<ColorFormat, DepthFormat>::color()
 {
-    return thrust::raw_pointer_cast(color_buffer.data());
+    return color_buffer.data();
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename simple_gpu_buffer_rt<ColorFormat, DepthFormat>::depth_type* simple_gpu_buffer_rt<ColorFormat, DepthFormat>::depth()
 {
-    return thrust::raw_pointer_cast(depth_buffer.data());
+    return depth_buffer.data();
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename simple_gpu_buffer_rt<ColorFormat, DepthFormat>::color_type const* simple_gpu_buffer_rt<ColorFormat, DepthFormat>::color() const
 {
-    return thrust::raw_pointer_cast(color_buffer.data());
+    return color_buffer.data();
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
 typename simple_gpu_buffer_rt<ColorFormat, DepthFormat>::depth_type const* simple_gpu_buffer_rt<ColorFormat, DepthFormat>::depth() const
 {
-    return thrust::raw_pointer_cast(depth_buffer.data());
+    return depth_buffer.data();
 }
 
 
@@ -57,7 +57,7 @@ void simple_gpu_buffer_rt<ColorFormat, DepthFormat>::clear_color_buffer(vec4 con
         c
         );
 
-    thrust::fill(color_buffer.begin(), color_buffer.end(), cc);
+    cuda::fill(color(), width() * height() * sizeof(color_type), &cc, sizeof(color_type))
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>
@@ -72,7 +72,7 @@ void simple_gpu_buffer_rt<ColorFormat, DepthFormat>::clear_depth_buffer(float d)
         d
         );
 
-    thrust::fill(depth_buffer.begin(), depth_buffer.end(), dd);
+    cuda::fill(depth(), width() * height() * sizeof(depth_type), &dd, sizeof(depth_type))
 }
 
 template <pixel_format ColorFormat, pixel_format DepthFormat>

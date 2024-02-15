@@ -10,7 +10,7 @@
 #include <array>
 
 #ifdef __CUDACC__
-#include <thrust/device_vector.h>
+#include <visionaray/cuda/device_vector.h>
 #include <thrust/sort.h>
 #endif
 
@@ -625,8 +625,8 @@ struct lbvh_builder
     // of BVHs octrees and k-d trees (2012).
     //
 
-    thrust::device_vector<detail::lbvh::prim_ref> d_prim_refs;
-    thrust::device_vector<aabb> d_prim_bounds;
+    cuda::device_vector<detail::lbvh::prim_ref> d_prim_refs;
+    cuda::device_vector<aabb> d_prim_bounds;
 
     template <typename P>
     cuda_index_bvh<P> build(cuda_index_bvh<P> /* */, P* primitives, size_t num_prims)
@@ -647,22 +647,22 @@ struct lbvh_builder
         // Scene and centroid bounding boxes
         aabb invalid;
         invalid.invalidate();
-        thrust::device_vector<aabb> bounds(2, invalid);
+        cuda::device_vector<aabb> bounds(2, invalid);
 
-        aabb* scene_bounds_ptr = thrust::raw_pointer_cast(bounds.data());
-        aabb* centroid_bounds_ptr = thrust::raw_pointer_cast(bounds.data() + 1);
+        aabb* scene_bounds_ptr = bounds.data();
+        aabb* centroid_bounds_ptr = bounds.data() + 1;
 
 
         // Compute primitive bounding boxes and centroids
         d_prim_bounds.resize(last - first);
-        thrust::device_vector<vec3> centroids(last - first);
+        cuda::device_vector<vec3> centroids(last - first);
 
         {
             size_t num_threads = 1024;
 
             compute_bounds_and_centroids<<<div_up(num_prims, num_threads), num_threads>>>(
-                    thrust::raw_pointer_cast(d_prim_bounds.data()),
-                    thrust::raw_pointer_cast(centroids.data()),
+                    d_prim_bounds.data(),
+                    centroids.data(),
                     scene_bounds_ptr,
                     centroid_bounds_ptr,
                     primitives,
@@ -677,8 +677,8 @@ struct lbvh_builder
             size_t num_threads = 1024;
 
             assign_morton_codes<<<div_up(num_prims, num_threads), num_threads>>>(
-                    thrust::raw_pointer_cast(d_prim_refs.data()),
-                    thrust::raw_pointer_cast(centroids.data()),
+                    d_prim_refs.data(),
+                    centroids.data(),
                     centroid_bounds_ptr,
                     num_prims
                     );
@@ -688,16 +688,16 @@ struct lbvh_builder
         thrust::stable_sort(thrust::device, d_prim_refs.begin(), d_prim_refs.end());
 
         // Use Karras' radix tree algorithm to build hierarchy
-        thrust::device_vector<node> inner(num_prims - 1);
-        thrust::device_vector<node> leaves(num_prims);
+        cuda::device_vector<node> inner(num_prims - 1);
+        cuda::device_vector<node> leaves(num_prims);
 
         {
             size_t num_threads = 1024;
 
             build_hierarchy<<<div_up(num_prims, num_threads), num_threads>>>(
-                    thrust::raw_pointer_cast(inner.data()),
-                    thrust::raw_pointer_cast(leaves.data()),
-                    thrust::raw_pointer_cast(d_prim_refs.data()),
+                    inner.data(),
+                    leaves.data(),
+                    d_prim_refs.data(),
                     num_prims
                     );
         }
@@ -709,10 +709,10 @@ struct lbvh_builder
             size_t num_threads = 1024;
 
             assign_node_bounds<<<div_up(num_prims, num_threads), num_threads>>>(
-                    thrust::raw_pointer_cast(inner.data()),
-                    thrust::raw_pointer_cast(leaves.data()),
-                    thrust::raw_pointer_cast(d_prim_bounds.data()),
-                    thrust::raw_pointer_cast(d_prim_refs.data()),
+                    inner.data(),
+                    leaves.data(),
+                    d_prim_bounds.data(),
+                    d_prim_refs.data(),
                     num_prims
                     );
         }
@@ -723,10 +723,10 @@ struct lbvh_builder
             size_t num_threads = 1024;
 
             collapse<<<div_up(num_prims, num_threads), num_threads>>>(
-                    thrust::raw_pointer_cast(tree.nodes().data()),
-                    thrust::raw_pointer_cast(inner.data()),
-                    thrust::raw_pointer_cast(leaves.data()),
-                    thrust::raw_pointer_cast(d_prim_refs.data()),
+                    tree.nodes().data(),
+                    inner.data(),
+                    leaves.data(),
+                    d_prim_refs.data(),
                     num_prims
                     );
         }

@@ -15,7 +15,7 @@ namespace visionaray
 {
 
 // TODO: have a *single* buffered render target template
-// from either std::vector or thrust::device_vector???
+// from either std::vector or cuda::device_vector???
 template <
     pixel_format ColorFormat,
     pixel_format DepthFormat,
