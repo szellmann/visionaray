@@ -3,6 +3,9 @@
 - Public cuda_texture.h header, to include from CUDA code that
 uses the runtime API but is not compiled with nvcc.
 
+### Changed
+- Internally use own algos and data structures in favor of thrust.
+
 ### Removed
 - counting_sort functions that were never used.
 
