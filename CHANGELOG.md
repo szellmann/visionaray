@@ -3,6 +3,9 @@
 - Public cuda_texture.h header, to include from CUDA code that
 uses the runtime API but is not compiled with nvcc.
 
+### Removed
+- counting_sort functions that were never used.
+
 ## [0.3.4] - 2023-12-27
 ### Added
 - Convert from PF_RG8 to PF_RGBA8, to support RG textures.

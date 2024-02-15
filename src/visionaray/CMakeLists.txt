@@ -117,7 +117,6 @@ set(VSNRAY_HEADERS
     ${HEADER_DIR}/detail/material.inl
     ${HEADER_DIR}/detail/matrix_camera.inl
     ${HEADER_DIR}/detail/multi_hit.h
-    ${HEADER_DIR}/detail/parallel_algorithm.h
     ${HEADER_DIR}/detail/parallel_for.h
     ${HEADER_DIR}/detail/pathtracing.inl
     ${HEADER_DIR}/detail/pinhole_camera.inl
@@ -349,7 +348,6 @@ if(CUDA_FOUND AND VSNRAY_ENABLE_CUDA)
 
         ${HEADER_DIR}/cuda/array.h
         ${HEADER_DIR}/cuda/cast.h
-        ${HEADER_DIR}/cuda/counting_sort.h
         ${HEADER_DIR}/cuda/fill.h
         ${HEADER_DIR}/cuda/graphics_resource.h
         ${HEADER_DIR}/cuda/pitch2d.h
