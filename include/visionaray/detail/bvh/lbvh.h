@@ -733,7 +733,12 @@ struct lbvh_builder
 
         // Copy primitives to BVH (device to device copy!)
         tree.primitives().resize(num_prims);
-        thrust::copy(thrust::device, first, last, tree.primitives().begin());
+        CUDA_SAFE_CALL(cudaMemcpy(
+            tree.primitives().begin(),
+            first,
+            (last - first) * sizeof(P),
+            cudaMemcpyDefault
+            ));
 
         // Assign 0,1,2,3,.. indices
         thrust::sequence(thrust::device, tree.indices().begin(), tree.indices().end());
