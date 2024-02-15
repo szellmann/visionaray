@@ -4,10 +4,6 @@
 #include <stdexcept>
 #include <utility>
 
-#ifdef __CUDACC__
-#include <thrust/swap.h>
-#endif
-
 #include "compiler.h"
 
 #ifdef VSNRAY_CXX_HAS_CONSTEXPR
@@ -229,7 +225,11 @@ VSNRAY_FUNC
 inline void array<T, N>::swap(array<T, N>& rhs)
 {
 #ifdef __CUDA_ARCH__
-    using thrust::swap;
+    auto swap = [](T& a, T& b) {
+      T temp = a;
+      a = b;
+      b = temp;
+    };
 #else
     using std::swap;
 #endif
