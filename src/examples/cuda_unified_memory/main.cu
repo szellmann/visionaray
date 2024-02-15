@@ -187,8 +187,8 @@ int main(int argc, char** argv)
 
         // Create data in unified memory ------------------
 
-        cuda::timer t;
-        cuda::managed_vector<basic_sphere<float>> spheres(num_spheres);
+        visionaray::cuda::timer t;
+        visionaray::cuda::managed_vector<basic_sphere<float>> spheres(num_spheres);
 
         std::cout << "Creating " << num_spheres << " random spheres...\n";
         create_random_spheres(spheres, bbox, min_radius, max_radius);
@@ -201,15 +201,15 @@ int main(int argc, char** argv)
         std::cout << "Creating BVH...\n";
         t.reset();
         binned_sah_builder builder;
-        auto bvh = builder.build(cuda::managed_bvh<basic_sphere<float>>{}, spheres.data(), spheres.size(), true /* spatial splits */);
+        auto bvh = builder.build(visionaray::cuda::managed_bvh<basic_sphere<float>>{}, spheres.data(), spheres.size(), true /* spatial splits */);
         cudaDeviceSynchronize();
         std::cout << "Time elapsed: " << t.elapsed() << "s\n\n";
 
 
         // Prepare for ray tracing ------------------------
 
-        using bvh_ref_t = typename cuda::managed_bvh<basic_sphere<float>>::bvh_ref;
-        cuda::managed_vector<bvh_ref_t> bvh_refs(1);
+        using bvh_ref_t = typename visionaray::cuda::managed_bvh<basic_sphere<float>>::bvh_ref;
+        visionaray::cuda::managed_vector<bvh_ref_t> bvh_refs(1);
         bvh_refs[0] = bvh.ref();
 
         pinhole_camera cam;
@@ -291,7 +291,7 @@ int main(int argc, char** argv)
         // Ray tracing on the GPU -------------------------
 
         std::cout << "Calculating primary visibility with " << width << " x " << height << " rays...\n";
-        cuda::timer ct;
+        visionaray::cuda::timer ct;
         sched.frame(kern, sparams);
         std::cout << "Time eplased: " << ct.elapsed() << "s\n\n";
     }

@@ -360,7 +360,7 @@ void renderer::on_display()
                 vec4(0.0f)
                 );
 
-        cuda::timer t;
+        visionaray::cuda::timer t;
 
         pathtracing::kernel<decltype(kparams)> kernel;
         kernel.params = kparams;
