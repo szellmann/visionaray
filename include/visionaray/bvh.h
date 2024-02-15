@@ -682,6 +682,7 @@ private:
             sizeof(T) * src.size(),
             cudaMemcpyDeviceToDevice
             ));
+        CUDA_SAFE_CALL(cudaDeviceSynchronize());
     }
 #endif
 };

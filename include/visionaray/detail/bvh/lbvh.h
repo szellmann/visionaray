@@ -739,6 +739,7 @@ struct lbvh_builder
             (last - first) * sizeof(P),
             cudaMemcpyDefault
             ));
+        CUDA_SAFE_CALL(cudaDeviceSynchronize());
 
         // Assign 0,1,2,3,.. indices
         thrust::sequence(thrust::device, tree.indices().begin(), tree.indices().end());

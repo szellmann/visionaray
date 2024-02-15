@@ -30,6 +30,7 @@ device_vector<T>::device_vector(device_vector<T> const& rhs)
             sizeof(T) * size_,
             cudaMemcpyDeviceToDevice
             ));
+        CUDA_SAFE_CALL(cudaDeviceSynchronize());
     }
 }
 
@@ -98,6 +99,14 @@ device_vector<T>::device_vector(const T* begin, const T* end)
         sizeof(T) * size_,
         cudaMemcpyDefault
         ));
+
+  cudaPointerAttributes attributes;
+  CUDA_SAFE_CALL(cudaPointerGetAttributes(&attributes, begin));
+
+  if (attributes.type == cudaMemoryTypeDevice)
+  {
+      CUDA_SAFE_CALL(cudaDeviceSynchronize());
+  }
 }
 
 template <typename T>
@@ -113,6 +122,7 @@ device_vector<T>& device_vector<T>::operator=(device_vector<T> const& rhs)
             sizeof(T) * size_,
             cudaMemcpyDeviceToDevice
             ));
+        CUDA_SAFE_CALL(cudaDeviceSynchronize());
     }
     return *this;
 }
