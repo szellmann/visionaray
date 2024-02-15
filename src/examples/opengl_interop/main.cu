@@ -202,7 +202,10 @@ struct renderer : viewer_type
 
                         aabb box(vec3(-0.23), vec3(0.23));
                         auto boxverts = compute_vertices(box);
-                        mat3 rot = mat3::rotation(normalize(vec3(drand48(), drand48(), drand48())), drand48());
+                        mat3 rot = mat3::rotation(normalize(
+                            vec3((float)drand48(), (float)drand48(), (float)drand48())),
+                            (float)drand48()
+                            );
                         for (auto& v : boxverts)
                         {
                             v = rot * v;
@@ -217,12 +220,12 @@ struct renderer : viewer_type
                             vec2 texcoord;
                         };
 
-                        vec3 colors[6] = { { drand48(), drand48(), drand48() },
-                                           { drand48(), drand48(), drand48() },
-                                           { drand48(), drand48(), drand48() },
-                                           { drand48(), drand48(), drand48() },
-                                           { drand48(), drand48(), drand48() },
-                                           { drand48(), drand48(), drand48() } };
+                        vec3 colors[6] = { { (float)drand48(), (float)drand48(), (float)drand48() },
+                                           { (float)drand48(), (float)drand48(), (float)drand48() },
+                                           { (float)drand48(), (float)drand48(), (float)drand48() },
+                                           { (float)drand48(), (float)drand48(), (float)drand48() },
+                                           { (float)drand48(), (float)drand48(), (float)drand48() },
+                                           { (float)drand48(), (float)drand48(), (float)drand48() } };
 
                         vertex verts[24] = {
                             { center, boxverts[0], vec3(0,0,+1), colors[0], vec2(0,-0.21) },
