@@ -1,7 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <stdexcept>
+#include <iostream>
+#include <ostream>
 
 #include <visionaray/cuda/fill.h>
 #include <visionaray/math/detail/math.h>
@@ -34,7 +35,8 @@ void fill(void* ptr, size_t len, void* bytes, unsigned count)
 
     if (count > 1024)
     {
-        throw std::runtime_error("Fill: max. num bytes exceeded");
+        std::cerr << "Fill: max. num bytes exceeded\n";
+        return;
     }
 
     cudaMemcpyToSymbol(
