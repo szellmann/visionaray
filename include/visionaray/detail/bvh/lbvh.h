@@ -192,15 +192,18 @@ inline vec2i determine_range(prim_ref* refs, int num_prims, int i, int& split)
 
 struct node
 {
-    VSNRAY_GPU_FUNC node()
-        : bbox(vec3(numeric_limits<float>::max()), vec3(-numeric_limits<float>::max()))
+    VSNRAY_GPU_FUNC void init()
     {
+        bbox = aabb(vec3(numeric_limits<float>::max()), vec3(-numeric_limits<float>::max()));
+        left = -1;
+        right = -1;
+        parent = -1;
     }
 
     aabb bbox;
-    int left = -1;
-    int right = -1;
-    int parent = -1;
+    int left;
+    int right;
+    int parent;
 };
 
 
@@ -276,6 +279,16 @@ static __global__ void build_hierarchy(
 
     int index = blockIdx.x * blockDim.x + threadIdx.x;
 
+    if (index < num_leaves)
+    {
+        leaves[index].init();
+    }
+
+    if (index < num_inner)
+    {
+        inner[index].init();
+    }
+
     if (index < num_inner)
     {
         // NOTE: This is [first..last], not [first..last)!!
@@ -347,7 +360,7 @@ static __global__ void assign_node_bounds(
         atomicMax(&inner[next].bbox.max.y, leaves[index].bbox.max.y);
         atomicMax(&inner[next].bbox.max.z, leaves[index].bbox.max.z);
 
-        if (inner[next].parent == -1 || inner[next].parent == next)
+        if (inner[next].parent == -1)
         {
             break;
         }
