@@ -147,9 +147,35 @@ void device_vector<T>::resize(size_t size)
     if (size_ == size)
         return;
 
+    T* prev{nullptr};
+    size_t copy_size{0};
+    if (size_ > 0)
+    {
+        copy_size = std::min(size_, size);
+        CUDA_SAFE_CALL(cudaMalloc(&prev, copy_size * sizeof(T)));
+        CUDA_SAFE_CALL(cudaMemcpy(
+            prev,
+            data_,
+            copy_size * sizeof(T),
+            cudaMemcpyDeviceToDevice
+            ));
+        CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    }
+
     size_ = size;
     CUDA_SAFE_CALL(cudaFree(data_));
     CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * size_));
+
+    if (prev && copy_size > 0)
+    {
+        CUDA_SAFE_CALL(cudaMemcpy(
+            data_,
+            prev,
+            copy_size * sizeof(T),
+            cudaMemcpyDeviceToDevice
+            ));
+        CUDA_SAFE_CALL(cudaDeviceSynchronize());
+    }
 }
 
 template <typename T>
