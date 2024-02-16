@@ -338,7 +338,7 @@ static __global__ void assign_node_bounds(
     // Atomically combine child bounding boxes and update parents
     int next = leaves[index].parent;
 
-    while (next >= 0)
+    while (inner && next >= 0)
     {
         atomicMin(&inner[next].bbox.min.x, leaves[index].bbox.min.x);
         atomicMin(&inner[next].bbox.min.y, leaves[index].bbox.min.y);
@@ -746,7 +746,6 @@ struct lbvh_builder
         // Expand nodes' bounding boxes by inserting leaves' bounding boxes
         tree.nodes().resize(inner.size() + leaves.size());
 
-        if (!inner.empty())
         {
             size_t num_threads = 1024;
 
