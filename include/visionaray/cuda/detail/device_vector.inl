@@ -175,6 +175,7 @@ void device_vector<T>::resize(size_t size)
             cudaMemcpyDeviceToDevice
             ));
         CUDA_SAFE_CALL(cudaDeviceSynchronize());
+        CUDA_SAFE_CALL(cudaFree(prev));
     }
 }
 
