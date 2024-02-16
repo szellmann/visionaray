@@ -11,7 +11,7 @@
 
 #ifdef __CUDACC__
 #include <visionaray/cuda/device_vector.h>
-#include <thrust/sort.h>
+#include <cub/cub.cuh>
 #endif
 
 #include <visionaray/aligned_vector.h>
@@ -45,6 +45,15 @@ inline unsigned clz(unsigned val)
 }
 
 #ifdef __CUDACC__
+
+struct CustomLess
+{
+    template <typename DataType>
+    VSNRAY_GPU_FUNC bool operator()(DataType const& lhs, DataType const& rhs)
+    {
+        return lhs < rhs;
+    }
+};
 
 //-------------------------------------------------------------------------------------------------
 // Stolen from https://github.com/treecode/Bonsai/blob/master/runtime/profiling/derived_atomic_functions.h
@@ -427,6 +436,21 @@ static __global__ void collapse(
     auto bbox = bvh_nodes[off_inner].get_bounds();
 }
 
+static __global__ void sequence(
+        unsigned* indices,    // OUT: 0,1,2,.. indices
+        unsigned  num_indices // IN:  number of indices
+        )
+{
+    unsigned index = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (index >= num_indices)
+    {
+        return;
+    }
+
+    indices[index] = index;
+}
+
 #endif // __CUDACC__
 
 } // lbvh
@@ -685,7 +709,24 @@ struct lbvh_builder
         }
 
         // Sort prim refs by morton codes
-        thrust::stable_sort(thrust::device, d_prim_refs.begin(), d_prim_refs.end());
+        void* d_temp_storage = nullptr;
+        size_t temp_storage_bytes = 0;
+        cub::DeviceMergeSort::StableSortKeys(
+            d_temp_storage,
+            temp_storage_bytes,
+            d_prim_refs.data(),
+            d_prim_refs.size(),
+            detail::CustomLess()
+            );
+        CUDA_SAFE_CALL(cudaMalloc(&d_temp_storage, temp_storage_bytes));
+        cub::DeviceMergeSort::StableSortKeys(
+            d_temp_storage,
+            temp_storage_bytes,
+            d_prim_refs.data(),
+            d_prim_refs.size(),
+            detail::CustomLess()
+            );
+        CUDA_SAFE_CALL(cudaFree(d_temp_storage));
 
         // Use Karras' radix tree algorithm to build hierarchy
         cuda::device_vector<node> inner(num_prims - 1);
@@ -742,7 +783,15 @@ struct lbvh_builder
         CUDA_SAFE_CALL(cudaDeviceSynchronize());
 
         // Assign 0,1,2,3,.. indices
-        thrust::sequence(thrust::device, tree.indices().begin(), tree.indices().end());
+        {
+
+            size_t num_threads = 1024;
+
+            sequence<<<div_up(tree.indices().size(), num_threads), num_threads>>>(
+                    tree.indices().data(),
+                    tree.indices().size()
+                    );
+        }
 
         return tree;
     }
