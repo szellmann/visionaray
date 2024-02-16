@@ -347,7 +347,7 @@ static __global__ void assign_node_bounds(
         atomicMax(&inner[next].bbox.max.y, leaves[index].bbox.max.y);
         atomicMax(&inner[next].bbox.max.z, leaves[index].bbox.max.z);
 
-        if (inner[next].parent == -1)
+        if (inner[next].parent == -1 || inner[next].parent == next)
         {
             break;
         }
