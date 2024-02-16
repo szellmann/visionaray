@@ -404,7 +404,7 @@ static __global__ void collapse(
     int curr = static_cast<int>(num_inner + index);
 
     // Insert leaf
-    if (leaves[index].parent >= 0)
+    if (leaves[index].parent >= 0 && num_inner > 0)
     {
         int off_leaf = bvh_node_index(curr, leaves[index].parent);
         bvh_nodes[off_leaf].set_leaf(leaves[index].bbox, prim_refs[index].id, 1);
@@ -746,6 +746,7 @@ struct lbvh_builder
         // Expand nodes' bounding boxes by inserting leaves' bounding boxes
         tree.nodes().resize(inner.size() + leaves.size());
 
+        if (!inner.empty())
         {
             size_t num_threads = 1024;
 
@@ -777,7 +778,7 @@ struct lbvh_builder
         CUDA_SAFE_CALL(cudaMemcpy(
             tree.primitives().begin(),
             first,
-            (last - first) * sizeof(P),
+            num_prims * sizeof(P),
             cudaMemcpyDefault
             ));
         CUDA_SAFE_CALL(cudaDeviceSynchronize());
