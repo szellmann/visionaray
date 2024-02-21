@@ -343,7 +343,9 @@ operator<<(std::basic_ostream<CharT, Traits>& out, interval<T> const& ival)
     s.imbue(out.getloc());
     s.precision(out.precision());
 
-    s << ival.min << ival.max;
+    // TODO: distinguish between open and closed intervals?
+    // (() vs. [])
+    s << '[' << ival.min << ':' << ival.max << ']';
 
     return out << s.str();
 }
