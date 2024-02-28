@@ -3,6 +3,8 @@
 
 #include <common/config.h>
 
+#include <cstdint>
+
 #if VSNRAY_COMMON_HAVE_TIFF
 #include <tiffio.h>
 #endif
@@ -53,8 +55,8 @@ bool tiff_image::load(std::string const& filename)
         return false;
     }
 
-    uint32 w = 0;
-    uint32 h = 0;
+    uint32_t w = 0;
+    uint32_t h = 0;
     TIFFGetField(file.get(), TIFFTAG_IMAGEWIDTH, &w);
     TIFFGetField(file.get(), TIFFTAG_IMAGELENGTH, &h);
 
@@ -64,7 +66,7 @@ bool tiff_image::load(std::string const& filename)
 
     data_.resize(pitch * h);
 
-    if (TIFFReadRGBAImage(file.get(), w, h, reinterpret_cast<uint32*>(data_.data()), 0))
+    if (TIFFReadRGBAImage(file.get(), w, h, reinterpret_cast<uint32_t*>(data_.data()), 0))
     {
         width_ = static_cast<int>(w);
         height_ = static_cast<int>(h);
