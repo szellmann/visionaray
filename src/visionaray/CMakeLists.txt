@@ -410,6 +410,15 @@ install(DIRECTORY ${HEADER_DIR} ${CONFIG_DIR}
         PATTERN "*.inc"
 )
 
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+    "${PROJECT_SOURCE_DIR}/cmake/visionarayConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/visionarayConfig.cmake"
+  INSTALL_DESTINATION
+    ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-${PROJECT_VERSION}
+)
+
 write_basic_package_version_file(
     "visionarayConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}
@@ -417,18 +426,19 @@ write_basic_package_version_file(
 )
 
 install(TARGETS visionaray
-    EXPORT visionarayConfig
+    EXPORT visionaray_Exports
     RUNTIME DESTINATION bin COMPONENT libraries
     LIBRARY DESTINATION lib COMPONENT libraries
     ARCHIVE DESTINATION lib COMPONENT libraries
 )
 
-install(EXPORT visionarayConfig
+install(EXPORT visionaray_Exports
     NAMESPACE visionaray::
     DESTINATION lib/cmake/visionaray
 )
 
 install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/visionarayConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/visionarayConfigVersion.cmake
     DESTINATION lib/cmake/visionaray
 )
