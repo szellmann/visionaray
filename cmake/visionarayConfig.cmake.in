@@ -14,11 +14,11 @@ elseif ("@VSNRAY_GRAPHICS_API@" STREQUAL "GLES")
     find_dependency(OpenGLES)
 endif()
 
-if (@VSNRAY_ENABLE_CUDA@)
+if (@CUDA_FOUND@)
     find_dependency(CUDA)
 endif()
 
-if (@VSNRAY_ENABLE_TBB@)
+if (@TBB_FOUND@)
     find_dependency(TBB)
 endif()
 
