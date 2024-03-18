@@ -2,9 +2,13 @@
 # See the LICENSE file for details.
 
 find_package(Boost COMPONENTS chrono filesystem iostreams system thread REQUIRED)
-find_package(CUDA)
+if (VSNRAY_ENABLE_CUDA)
+    find_package(CUDA)
+endif()
 find_package(Git)
-find_package(TBB)
+if (VSNRAY_ENABLE_TBB)
+    find_package(TBB)
+endif()
 find_package(Threads)
 
 if (NOT GIT_FOUND)
