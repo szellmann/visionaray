@@ -380,13 +380,8 @@ install(DIRECTORY ${COMMON_HEADER_DIR} ${CONFIG_DIR}
 )
 
 install(TARGETS visionaray_common
-    EXPORT visionarayConfig
+    EXPORT visionaray_Exports
     RUNTIME DESTINATION bin COMPONENT libraries
     LIBRARY DESTINATION lib COMPONENT libraries
     ARCHIVE DESTINATION lib COMPONENT libraries
-)
-
-install(EXPORT visionarayConfig
-    NAMESPACE visionaray::
-    DESTINATION lib/cmake/visionaray
 )
