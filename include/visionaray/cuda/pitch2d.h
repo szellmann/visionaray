@@ -102,7 +102,7 @@ public:
                 sizeof(T) * width,
                 sizeof(T) * width,
                 height,
-                cudaMemcpyHostToDevice
+                cudaMemcpyDefault
                 );
     }
 
