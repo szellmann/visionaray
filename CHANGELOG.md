@@ -1,10 +1,13 @@
 ## [Unreleased]
+
+## [0.3.5] - 2024-04-17
 ### Added
 - Public cuda_texture.h header, to include from CUDA code that
 uses the runtime API but is not compiled with nvcc.
 
 ### Changed
 - Internally use own algos and data structures in favor of thrust.
+- CUDA 2D textures can now be reset using a device pointer.
 
 ### Removed
 - counting_sort functions that were never used.
