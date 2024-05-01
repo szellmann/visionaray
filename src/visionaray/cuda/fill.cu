@@ -5,7 +5,6 @@
 #include <ostream>
 
 #include <visionaray/cuda/fill.h>
-#include <visionaray/math/detail/math.h>
 
 __constant__ char cbytes[1024];
 
@@ -47,7 +46,8 @@ void fill(void* ptr, size_t len, void* bytes, unsigned count)
             cudaMemcpyHostToDevice
             );
 
-    kernel<<<div_up(len / count, num_threads), num_threads>>>(ptr, len, count);
+    size_t num_blocks = (len + count - 1) / count;
+    kernel<<<num_blocks, num_threads>>>(ptr, len, count);
 }
 
 } // cuda
