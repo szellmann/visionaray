@@ -9,10 +9,10 @@
 #include <ostream>
 
 #if VSNRAY_COMMON_HAVE_OPENEXR
-#include <ImfArray.h>
-#include <ImfFrameBuffer.h>
-#include <ImfRgba.h>
-#include <ImfRgbaFile.h>
+#include <OpenEXR/ImfArray.h>
+#include <OpenEXR/ImfFrameBuffer.h>
+#include <OpenEXR/ImfRgba.h>
+#include <OpenEXR/ImfRgbaFile.h>
 #endif
 
 #include <visionaray/math/forward.h>

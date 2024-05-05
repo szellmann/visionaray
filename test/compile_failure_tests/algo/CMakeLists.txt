@@ -1,7 +1,0 @@
-# This file is distributed under the MIT license.
-# See the LICENSE file for details.
-
-visionaray_test_compile_success(counting_sort.cpp counting_sort_integral_keys_simple      SORT_INTEGRAL_KEYS_SIMPLE)
-visionaray_test_compile_failure(counting_sort.cpp counting_sort_floating_keys_simple      SORT_FLOATING_KEYS_SIMPLE)
-visionaray_test_compile_success(counting_sort.cpp counting_sort_integral_keys_custom_type SORT_INTEGRAL_KEYS_CUSTOM_TYPE)
-visionaray_test_compile_failure(counting_sort.cpp counting_sort_floating_keys_custom_type SORT_FLOATING_KEYS_CUSTOM_TYPE)

@@ -2,24 +2,19 @@
 # See the LICENSE file for details.
 
 include(CMakePackageConfigHelpers)
-cmake_minimum_required(VERSION 3.1.3)
+cmake_minimum_required(VERSION 3.27)
 project(visionaray VERSION 0.3.5 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+list(APPEND CMAKE_MODULE_PATH
     ${PROJECT_SOURCE_DIR}/cmake
     ${PROJECT_SOURCE_DIR}/cmake/modules
 )
 
 include(CTest)
 enable_testing()
-include(VisionarayCompileFailureTest)
-
-include(VisionarayAddTarget)
-include(VisionarayUseFramework)
-include(VisionarayUsePackage)
 
 
 #--------------------------------------------------------------------------------------------------
@@ -54,18 +49,17 @@ set(__VSNRAY_COMMON_CONFIG_DIR "${__VSNRAY_CONFIG_DIR}/common")
 option(BUILD_SHARED_LIBS "Build all libraries as shared libraries instead of static" OFF)
 option(VSNRAY_ENABLE_WARNINGS "Enable all warnings" ON)
 option(VSNRAY_ENABLE_PEDANTIC "Compile with pedantic enabled (Ignored if warnings are disabled)" ON)
-option(VSNRAY_ENABLE_3DCONNEXIONCLIENT "Use 3DconnexionClient, if available" ON)
+option(VSNRAY_ENABLE_3DCONNEXIONCLIENT "Use 3DconnexionClient, if available" OFF)
 option(VSNRAY_ENABLE_COCOA "Use Cocoa, if available" OFF)
 option(VSNRAY_ENABLE_COMMON "Build the common library with several utils" ON)
 option(VSNRAY_ENABLE_CUDA "Use CUDA, if available" ON)
 option(VSNRAY_ENABLE_EXAMPLES "Build the programming examples" OFF)
 option(VSNRAY_ENABLE_PBRT_PARSER "Build with pbrtParser" OFF)
-option(VSNRAY_ENABLE_PTEX "Use Ptex, if available" ON)
+option(VSNRAY_ENABLE_PTEX "Use Ptex, if available" OFF)
 option(VSNRAY_ENABLE_QT5 "Use Qt5, if available" OFF)
 option(VSNRAY_ENABLE_SDL2 "Use SDL2, if available" OFF)
-option(VSNRAY_ENABLE_TBB "Use TBB, if available" ON)
+option(VSNRAY_ENABLE_TBB "Use TBB, if available" OFF)
 option(VSNRAY_ENABLE_VIEWER "Build the vsnray-viewer program" ON)
-option(VSNRAY_ENABLE_COMPILE_FAILURE_TESTS "Build compile failure tests" OFF)
 option(VSNRAY_ENABLE_UNITTESTS "Build unit tests" OFF)
 option(VSNRAY_MACOSX_BUNDLE "Build executables as application bundles on macOS" ON)
 option(VSNRAY_ENABLE_CUDA_STYLE_THREAD_INTROSPECTION "Define CUDA-style thread introspection variables in CPU scheduler headers" OFF)

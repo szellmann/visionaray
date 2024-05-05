@@ -11,11 +11,7 @@ if(APPLE)
     return()
 endif()
 
-find_package(CUDA)
-
-if(NOT CUDA_FOUND)
-    message(STATUS "Not building cuda_unified_memory example, CUDA not found") 
-    return()
-endif()
-
-visionaray_add_cuda_executable(cuda_unified_memory main.cu)
+enable_language(CUDA)
+add_executable(cuda_unified_memory)
+target_sources(cuda_unified_memory PRIVATE main.cu)
+target_link_libraries(cuda_unified_memory PUBLIC visionaray visionaray_common)

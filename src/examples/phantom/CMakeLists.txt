@@ -1,14 +1,6 @@
 # This file is distributed under the MIT license.
 # See the LICENSE file for details.
 
-find_package(GLUT REQUIRED)
-
-visionaray_use_package(GLUT)
-
-set(EX_PHANTOM_SOURCES
-    main.cpp
-)
-
-visionaray_add_executable(phantom
-    ${EX_PHANTOM_SOURCES}
-)
+add_executable(phantom)
+target_sources(phantom PRIVATE main.cpp)
+target_link_libraries(phantom PUBLIC visionaray visionaray_common)

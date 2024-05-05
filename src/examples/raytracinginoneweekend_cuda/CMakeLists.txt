@@ -1,11 +1,7 @@
-find_package(GLUT REQUIRED)
+# This file is distributed under the MIT license.
+# See the LICENSE file for details.
 
-visionaray_use_package(GLUT)
-
-set(EX_RAYTRACINGINONEWEEKEND_CUDA_SOURCES
-    main.cu
-)
-
-visionaray_add_cuda_executable(raytracinginoneweekend_cuda
-    ${EX_RAYTRACINGINONEWEEKEND_CUDA_SOURCES}
-)
+enable_language(CUDA)
+add_executable(raytracinginoneweekend_cuda)
+target_sources(raytracinginoneweekend_cuda PRIVATE main.cu)
+target_link_libraries(raytracinginoneweekend_cuda PUBLIC visionaray visionaray_common)
