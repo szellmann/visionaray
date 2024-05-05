@@ -1,14 +1,6 @@
 # This file is distributed under the MIT license.
 # See the LICENSE file for details.
 
-find_package(GLUT REQUIRED)
-
-visionaray_use_package(GLUT)
-
-set(EX_AO_SOURCES
-    main.cpp
-)
-
-visionaray_add_executable(ao
-    ${EX_AO_SOURCES}
-)
+add_executable(ao)
+target_sources(ao PRIVATE main.cpp)
+target_link_libraries(ao PUBLIC visionaray visionaray_common)

@@ -12,6 +12,7 @@
 #include <visionaray/gl/shader.h>
 #include <visionaray/gl/util.h>
 #include <visionaray/pixel_format.h>
+#include <visionaray/detail/macros.h>
 
 #define VSNRAY_OPENGL_LEGACY 0
 

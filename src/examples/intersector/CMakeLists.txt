@@ -1,11 +1,6 @@
-find_package(GLUT REQUIRED)
+# This file is distributed under the MIT license.
+# See the LICENSE file for details.
 
-visionaray_use_package(GLUT)
-
-set(EX_INTERSECTOR_SOURCES
-    main.cpp
-)
-
-visionaray_add_executable(intersector
-    ${EX_INTERSECTOR_SOURCES}
-)
+add_executable(intersector)
+target_sources(intersector PRIVATE main.cpp)
+target_link_libraries(intersector PUBLIC visionaray visionaray_common)

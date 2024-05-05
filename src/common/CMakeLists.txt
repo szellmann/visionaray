@@ -1,6 +1,77 @@
 # This file is distributed under the MIT license.
 # See the LICENSE file for details.
 
+#--------------------------------------------------------------------------------------------------
+# Add library target
+#
+
+add_library(visionaray_common)
+
+target_sources(visionaray_common PRIVATE
+  ../3rdparty/CmdLine/src/CmdLine.cpp
+  ../3rdparty/CmdLine/src/CmdLineUtil.cpp
+  ../3rdparty/imgui/imgui.cpp
+  ../3rdparty/imgui/imgui_draw.cpp
+  ../3rdparty/imgui/imgui_tables.cpp
+  ../3rdparty/imgui/imgui_widgets.cpp
+  ../3rdparty/tinyply/source/tinyply.cpp
+  async/connection.cpp
+  async/connection_manager.cpp
+  async/message.cpp
+  input/space_mouse.cpp
+  manip/arcball.cpp
+  manip/arcball_manipulator.cpp
+  manip/camera_manipulator.cpp
+  manip/first_person_manipulator.cpp
+  manip/model_manipulator.cpp
+  manip/pan_manipulator.cpp
+  manip/rotate_manipulator.cpp
+  manip/translate_manipulator.cpp
+  manip/zoom_manipulator.cpp
+  bvh_outline_renderer.cpp
+  dds_image.cpp
+  exr_image.cpp
+  fbx_loader.cpp
+  file_base.cpp
+  gl_debug_callback.cpp
+  hdr_image.cpp
+  image.cpp
+  image_base.cpp
+  inifile.cpp
+  jpeg_image.cpp
+  moana_loader.cpp
+  model.cpp
+  obj_grammar.cpp
+  obj_loader.cpp
+  pbrt_loader.cpp
+  ply_loader.cpp
+  png_image.cpp
+  pnm_image.cpp
+  sg.cpp
+  tga_image.cpp
+  tiff_image.cpp
+  viewer_base.cpp
+  vsnray_loader.cpp
+)
+
+if (VSNRAY_ENABLE_CUDA)
+  enable_language(CUDA)
+  set(VSNRAY_COMMON_HAVE_CUDA 1)
+  set(VSNRAY_COMMON_HAVE_THRUST 1)
+endif()
+
+target_include_directories(visionaray_common PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/3rdparty/CmdLine/include>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/3rdparty/imgui>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/3rdparty/rapidjson/include>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/3rdparty/tinyply/source>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_link_libraries(visionaray_common PUBLIC visionaray)
 
 #--------------------------------------------------------------------------------------------------
 # External libraries
@@ -8,130 +79,111 @@
 
 find_package(Boost COMPONENTS filesystem iostreams system REQUIRED)
 find_package(GLEW REQUIRED)
+find_package(OpenGL REQUIRED)
+find_package(Threads REQUIRED)
+
 find_package(GLUT)
 find_package(JPEG)
 find_package(OpenEXR)
-find_package(OpenGL REQUIRED)
 find_package(PNG)
-find_package(Threads REQUIRED)
+find_package(Ptex)
+find_package(Qt5Core)
+find_package(Qt5Gui)
+find_package(Qt5OpenGL)
+find_package(Qt5Widgets)
+find_package(SDL2)
+find_package(TBB)
 find_package(TIFF)
 find_package(ZLIB)
 
-visionaray_use_package(Boost)
-visionaray_use_package(GLEW::GLEW)
-visionaray_use_package(GLUT)
-visionaray_use_package(JPEG)
-visionaray_use_package(OpenEXR)
-visionaray_use_package(OpenGL)
-visionaray_use_package(PNG)
-visionaray_use_package(Threads)
-visionaray_use_package(TIFF)
-visionaray_use_package(ZLIB)
+target_link_libraries(visionaray_common PUBLIC
+    Boost::disable_autolinking
+    Boost::filesystem
+    Boost::iostreams
+    GLEW::GLEW
+    OpenGL::GL
+    Threads::Threads
+)
+set(VSNRAY_COMMON_HAVE_BOOST 1)
+set(VSNRAY_COMMON_HAVE_GLEW 1)
+set(VSNRAY_COMMON_HAVE_OPENGL 1)
+set(VSNRAY_COMMON_HAVE_THREADS 1)
 
-# CUDA
-
-if (VSNRAY_ENABLE_CUDA)
-    find_package(CUDA)
-    visionaray_use_package(CUDA)
-    set(VSNRAY_COMMON_HAVE_THRUST 1)
+if (TARGET GLUT::GLUT)
+  target_sources(visionaray_common PRIVATE viewer_glut.cpp)
+  target_link_libraries(visionaray_common PUBLIC GLUT::GLUT)
+  set(VSNRAY_COMMON_HAVE_GLUT 1)
 endif()
 
-# Cocoa
+if (TARGET OpenEXR::OpenEXR)
+  target_link_libraries(visionaray_common PUBLIC OpenEXR::OpenEXR)
+  set(VSNRAY_COMMON_HAVE_OPENEXR 1)
+endif()
+
+if (TARGET PNG::PNG)
+  target_link_libraries(visionaray_common PUBLIC PNG::PNG)
+  set(VSNRAY_COMMON_HAVE_PNG 1)
+endif()
+
+if (VSNRAY_ENABLE_PTEX AND TARGET Ptex::Ptex)
+  target_link_libraries(visionaray_common PUBLIC Ptex::Ptex)
+  set(VSNRAY_COMMON_HAVE_PTEX 1)
+endif()
+
+if (VSNRAY_ENABLE_QT AND TARGET Qt5::Core)
+  set(CMAKE_AUTOMOC ON)
+  target_sources(visionaray_common PRIVATE viewer_qt.cpp)
+  target_link_libraries(visionaray_common PUBLIC
+    Qt5::Core
+    Qt5::Gui
+    Qt5::OpenGL
+    Qt5::Widgets
+  )
+  set(VSNRAY_COMMON_HAVE_QT5 1)
+endif()
+
+if (VSNRAY_ENABLE_SDL2 AND TARGET SDL2::SDL)
+  target_sources(visionaray_common PRIVATE viewer_sdl2.cpp)
+  target_link_libraries(visionaray_common PUBLIC SDL2::SDL)
+  set(VSNRAY_COMMON_HAVE_SDL2 1)
+endif()
+
+if (VSNRAY_ENABLE_TBB AND TARGET TBB::TBB)
+  target_link_libraries(visionaray_common PUBLIC TBB::TBB)
+  set(VSNRAY_COMMON_HAVE_TBB 1)
+endif()
+
+if (TARGET TIFF::TIFF)
+  target_link_libraries(visionaray_common PUBLIC TIFF::TIFF)
+  set(VSNRAY_COMMON_HAVE_TIFF 1)
+endif()
+
+if (TARGET ZLIB::ZLIB)
+  target_link_libraries(visionaray_common PUBLIC ZLIB::ZLIB)
+  set(VSNRAY_COMMON_HAVE_ZLIB 1)
+endif()
 
 if (APPLE AND VSNRAY_ENABLE_COCOA)
-    find_library(COCOA_LIBRARY Cocoa)
-    find_library(CORE_VIDEO_LIBRARY CoreVideo)
-    visionaray_link_libraries(${COCOA_LIBRARY})
-    visionaray_link_libraries(${CORE_VIDEO_LIBRARY})
+  find_library(COCOA_LIBRARY Cocoa)
+  find_library(CORE_VIDEO_LIBRARY CoreVideo)
+  target_sources(visionaray_common PUBLIC viewer_cocoa.mm)
+  target_link_libraries(visionaray_common PUBLIC ${COCOA_LIBRARY})
+  target_link_libraries(visionaray_common PUBLIC ${CORE_VIDEO_LIBRARY})
 endif()
-
-# pbrtParser
 
 if (VSNRAY_ENABLE_PBRT_PARSER)
-    set(VSNRAY_COMMON_HAVE_PBRT_PARSER 1)
+  target_link_libraries(visionaray_common PUBLIC pbrtParser)
+  set(VSNRAY_COMMON_HAVE_PBRT_PARSER 1)
 endif()
-
-# Ptex
-
-if (VSNRAY_ENABLE_PTEX)
-    find_package(Ptex)
-    find_package(ZLIB)
-    visionaray_use_package(Ptex)
-    visionaray_use_package(ZLIB)
-endif()
-
-# Qt5
-
-if (VSNRAY_ENABLE_QT5)
-    find_package(Qt5Core)
-    find_package(Qt5Gui)
-    find_package(Qt5OpenGL)
-    find_package(Qt5Widgets)
-    visionaray_use_package(Qt5Core)
-    visionaray_use_package(Qt5Gui)
-    visionaray_use_package(Qt5OpenGL)
-    visionaray_use_package(Qt5Widgets)
-endif()
-
-# SDL2
-
-if (VSNRAY_ENABLE_SDL2)
-    find_package(SDL2)
-    visionaray_use_package(SDL2)
-endif()
-
-# TBB
-
-if (VSNRAY_ENABLE_TBB)
-    find_package(TBB)
-    visionaray_use_package(TBB)
-endif()
-
-# TODO
-set(3DCONNEXIONCLIENT_FOUND NOTFOUND)
 
 if (APPLE AND VSNRAY_ENABLE_3DCONNEXIONCLIENT)
-    include(CMakeFindFrameworks)
+  include(CMakeFindFrameworks)
 
-    CMAKE_FIND_FRAMEWORKS(3DconnexionClient)
+  CMAKE_FIND_FRAMEWORKS(3DconnexionClient)
 
-    if (3DconnexionClient_FRAMEWORKS)
-        set(__VSNRAY_LINK_LIBRARIES ${__VSNRAY_LINK_LIBRARIES} ${3DconnexionClient_FRAMEWORKS})
-        set(__VSNRAY_USED_PACKAGES ${__VSNRAY_USED_PACKAGES} 3DCONNEXIONCLIENT)
-        set(3DCONNEXIONCLIENT_FOUND FOUND)
-    endif()
+  target_link_libraries(visionaray_common PUBLIC ${3DconnexionClient_FRAMEWORKS})
+  set(VSNRAY_COMMON_HAVE_3DCONNEXIONCLIENT 1)
 endif()
-
-
-#--------------------------------------------------------------------------------------------------
-#
-#
-
-visionaray_link_libraries(visionaray)
-
-if (VSNRAY_ENABLE_PBRT_PARSER)
-    visionaray_link_libraries(pbrtParser)
-endif()
-
-if (WIN32)
-    add_definitions(-DBOOST_ALL_NO_LIB)
-    set(Boost_USE_STATIC_LIBS ON)
-endif()
-
-set(CMD_LINE_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/CmdLine)
-set(CMD_LINE_INCLUDE_DIR ${CMD_LINE_DIR}/include)
-
-set(IMGUI_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/imgui)
-set(IMGUI_INCLUDE_DIR ${IMGUI_DIR})
-
-set(PBRT_PARSER_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/pbrt-parser)
-set(PBRT_PARSER_INCLUDE_DIR ${PBRT_PARSER_DIR}/pbrtParser/include)
-
-set(RAPID_JSON_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/rapidjson)
-set(RAPID_JSON_INCLUDE_DIR ${RAPID_JSON_DIR}/include)
-
-set(TINYPLY_DIR ${PROJECT_SOURCE_DIR}/src/3rdparty/tinyply)
-set(TINYPLY_INCLUDE_DIR ${TINYPLY_DIR}/source)
 
 
 #---------------------------------------------------------------------------------------------------
@@ -139,235 +191,19 @@ set(TINYPLY_INCLUDE_DIR ${TINYPLY_DIR}/source)
 #
 
 
-foreach(p ${__VSNRAY_USED_PACKAGES})
-    set(VSNRAY_COMMON_HAVE_${p} 1)
-endforeach()
-
-set(CONFIG_DIR ${__VSNRAY_COMMON_CONFIG_DIR})
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CONFIG_DIR}/config.h)
+configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
+    ${CMAKE_CURRENT_BINARY_DIR}/config.h
+)
 
 include_directories(${__VSNRAY_CONFIG_DIR})
-
-
-#---------------------------------------------------------------------------------------------------
-# Visionaray common library
-#
-
-include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/src)
-include_directories(${CMD_LINE_INCLUDE_DIR})
-include_directories(${IMGUI_INCLUDE_DIR})
-include_directories(${PBRT_PARSER_INCLUDE_DIR})
-include_directories(${RAPID_JSON_INCLUDE_DIR})
-include_directories(${TINYPLY_INCLUDE_DIR})
-
-set(CMAKE_AUTOMOC ON)
-
-set(COMMON_HEADERS
-
-    ${CONFIG_DIR}/config.h
-
-    async/connection.h
-    async/connection_manager.h
-    async/message.h
-
-    input/cocoa.h
-    input/glut.h
-    input/key_event.h
-    input/keyboard.h
-    input/mouse.h
-    input/mouse_event.h
-    input/qt.h
-    input/sdl2.h
-    input/space_mouse.h
-
-    manip/arcball.h
-    manip/arcball_manipulator.h
-    manip/camera_manipulator.h
-    manip/first_person_manipulator.h
-    manip/model_manipulator.h
-    manip/pan_manipulator.h
-    manip/rotate_manipulator.h
-    manip/translate_manipulator.h
-    manip/zoom_manipulator.h
-
-    # Scene graph
-
-    sg/io.h
-    sg/material.h
-
-    bvh_outline_renderer.h
-    cfile.h
-    dds_image.h
-    exr_image.h
-    fbx_loader.h
-    file_base.h
-    gl_debug_callback.h
-    hdr_image.h
-    image.h
-    image_base.h
-    jpeg_image.h
-    make_materials.h
-    make_texture.h
-    moana_loader.h
-    model.h
-    obj_grammar.h
-    obj_loader.h
-    pbrt_loader.h
-    ply_loader.h
-    png_image.h
-    pnm_image.h
-    ptex.h
-    ptex.inl
-    sg.h
-    tga_image.h
-    tiff_image.h
-    timer.h
-    viewer_base.h
-    vsnray_loader.h
-
-)
-
-set(COMMON_SOURCES
-
-    async/connection.cpp
-    async/connection_manager.cpp
-    async/message.cpp
-
-    input/space_mouse.cpp
-
-    manip/arcball.cpp
-    manip/arcball_manipulator.cpp
-    manip/camera_manipulator.cpp
-    manip/first_person_manipulator.cpp
-    manip/model_manipulator.cpp
-    manip/pan_manipulator.cpp
-    manip/rotate_manipulator.cpp
-    manip/translate_manipulator.cpp
-    manip/zoom_manipulator.cpp
-
-    bvh_outline_renderer.cpp
-    dds_image.cpp
-    exr_image.cpp
-    fbx_loader.cpp
-    file_base.cpp
-    gl_debug_callback.cpp
-    hdr_image.cpp
-    image.cpp
-    image_base.cpp
-    inifile.cpp
-    jpeg_image.cpp
-    moana_loader.cpp
-    model.cpp
-    obj_grammar.cpp
-    obj_loader.cpp
-    pbrt_loader.cpp
-    ply_loader.cpp
-    png_image.cpp
-    pnm_image.cpp
-    sg.cpp
-    tga_image.cpp
-    tiff_image.cpp
-    viewer_base.cpp
-    vsnray_loader.cpp
-
-)
-
-if (GLUT_FOUND)
-    set(COMMON_HEADERS ${COMMON_HEADERS} viewer_glut.h)
-    set(COMMON_SOURCES ${COMMON_SOURCES} viewer_glut.cpp)
-endif()
-
-if (APPLE AND VSNRAY_ENABLE_COCOA)
-    set(COMMON_HEADERS ${COMMON_HEADERS} viewer_cocoa.h)
-    set(COMMON_SOURCES ${COMMON_SOURCES} viewer_cocoa.mm)
-endif()
-
-if (VSNRAY_ENABLE_QT5)
-    set(COMMON_HEADERS ${COMMON_HEADERS} viewer_qt.h)
-    set(COMMON_SOURCES ${COMMON_SOURCES} viewer_qt.cpp)
-endif()
-
-if (VSNRAY_ENABLE_SDL2 AND SDL2_FOUND)
-    set(COMMON_HEADERS ${COMMON_HEADERS} viewer_sdl2.h)
-    set(COMMON_SOURCES ${COMMON_SOURCES} viewer_sdl2.cpp)
-endif()
-
-set(CMD_LINE_HEADERS
-
-    ${CMD_LINE_INCLUDE_DIR}/Support/CmdLine.h
-    ${CMD_LINE_INCLUDE_DIR}/Support/CmdLineUtil.h
-    ${CMD_LINE_INCLUDE_DIR}/Support/StringRef.h
-    ${CMD_LINE_INCLUDE_DIR}/Support/StringRefStream.h
-    ${CMD_LINE_INCLUDE_DIR}/Support/StringSplit.h
-
-)
-
-set(CMD_LINE_SOURCES
-
-    ${CMD_LINE_DIR}/src/CmdLine.cpp
-    ${CMD_LINE_DIR}/src/CmdLineUtil.cpp
-
-)
-
-
-set(IMGUI_HEADERS
-    ${IMGUI_INCLUDE_DIR}/imconfig.h
-    ${IMGUI_INCLUDE_DIR}/imgui.h
-    ${IMGUI_INCLUDE_DIR}/imgui_internal.h
-    ${IMGUI_INCLUDE_DIR}/imstb_rectpack.h
-    ${IMGUI_INCLUDE_DIR}/imstb_textedit.h
-    ${IMGUI_INCLUDE_DIR}/imstb_truetype.h
-)
-
-set(IMGUI_SOURCES
-    ${IMGUI_DIR}/imgui.cpp
-    ${IMGUI_DIR}/imgui_draw.cpp
-    ${IMGUI_DIR}/imgui_tables.cpp
-    ${IMGUI_DIR}/imgui_widgets.cpp
-)
-
-
-set(TINYPLY_HEADERS
-    ${TINYPLY_INCLUDE_DIR}/tinyply.h
-)
-
-set(TINYPLY_SOURCES
-    ${TINYPLY_INCLUDE_DIR}/tinyply.cpp
-)
-
-
-#--------------------------------------------------------------------------------------------------
-# Add library target
-#
-
-visionaray_add_library(visionaray_common
-    ${COMMON_HEADERS}
-    ${COMMON_SOURCES}
-    ${CMD_LINE_HEADERS}
-    ${CMD_LINE_SOURCES}
-    ${IMGUI_HEADERS}
-    ${IMGUI_SOURCES}
-    ${TINYPLY_HEADERS}
-    ${TINYPLY_SOURCES}
-)
-
-
-#--------------------------------------------------------------------------------------------------
-# Use Qt5 components - probably similar to visionaray_use_package(...)
-#
-
-if (VSNRAY_ENABLE_QT5)
-    qt5_use_modules(visionaray_common Core Gui OpenGL Widgets)
-endif()
 
 
 #--------------------------------------------------------------------------------------------------
 # Install headers and library
 #
 
-set(COMMON_HEADER_DIR ${PROJECT_SOURCE_DIR}/src/common)
-install(DIRECTORY ${COMMON_HEADER_DIR} ${CONFIG_DIR}
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
     DESTINATION include
     COMPONENT headers
     FILES_MATCHING

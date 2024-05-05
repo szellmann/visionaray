@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <visionaray/gl/shader.h>
+#include <visionaray/detail/macros.h>
 
 namespace visionaray
 {

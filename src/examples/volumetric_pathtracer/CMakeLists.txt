@@ -1,14 +1,6 @@
 # This file is distributed under the MIT license.
 # See the LICENSE file for details.
 
-find_package(GLUT REQUIRED)
-
-visionaray_use_package(GLUT)
-
-set(EX_VOLUMETRIC_PATHTRACER_SOURCES
-    main.cpp
-)
-
-visionaray_add_executable(volumetric_pathtracer
-    ${EX_VOLUMETRIC_PATHTRACER_SOURCES}
-)
+add_executable(volumetric_pathtracer)
+target_sources(volumetric_pathtracer PRIVATE main.cpp)
+target_link_libraries(volumetric_pathtracer PUBLIC visionaray visionaray_common)
