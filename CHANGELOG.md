@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+### Changed
+- Update build system to adopt modern cmake. Now everything's a
+target.
+
 ## [0.3.5] - 2024-04-17
 ### Added
 - Public cuda_texture.h header, to include from CUDA code that
