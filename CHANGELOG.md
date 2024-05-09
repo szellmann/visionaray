@@ -1,6 +1,8 @@
 ## [Unreleased]
 
 ### Changed
+- Optimized BVH traversal on GPU (simpler, and seemingly faster
+box test; box test manually inlined into intersect())
 - Update build system to adopt modern cmake. Now everything's a
 target.
 
