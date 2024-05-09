@@ -252,27 +252,45 @@ next:
     {
         while (!is_leaf(node))
         {
-            auto children = &b.node(node.get_child(0));
+            auto children = b.nodes() + node.get_child(0);
 
-            auto hr1 = isect(ray, children[0].get_bounds(), inv_dir);
-            auto hr2 = isect(ray, children[1].get_bounds(), inv_dir);
+            aabb box1 = children[0].get_bounds();
+            aabb box2 = children[1].get_bounds();
 
-            auto b1 = any(is_closer(hr1, result, ray.tmin, ray.tmax));
-            auto b2 = any(is_closer(hr2, result, ray.tmin, ray.tmax));
+            const vec3 t_lo1 = (box1.min - ray.ori) * inv_dir;
+            const vec3 t_hi1 = (box1.max - ray.ori) * inv_dir;
+
+            const vec3 t_lo2 = (box2.min - ray.ori) * inv_dir;
+            const vec3 t_hi2 = (box2.max - ray.ori) * inv_dir;
+
+            const vec3 t_nr1 = min(t_lo1, t_hi1);
+            const vec3 t_nr2 = min(t_lo2, t_hi2);
+
+            const vec3 t_fr1 = max(t_lo1, t_hi1);
+            const vec3 t_fr2 = max(t_lo2, t_hi2);
+
+            const float tnear1 = max(ray.tmin, max_element(t_nr1));
+            const float tnear2 = max(ray.tmin, max_element(t_nr2));
+
+            const float tfar1 = min(ray.tmax, min_element(t_fr1));
+            const float tfar2 = min(ray.tmax, min_element(t_fr2));
+
+            const bool b1 = tfar1 >= tnear1 && tnear1 < result.t;
+            const bool b2 = tfar2 >= tnear2 && tnear2 < result.t;
 
             if (b1 && b2)
             {
-                unsigned near_addr = all( hr1.tnear < hr2.tnear ) ? 0 : 1;
+                unsigned near_addr = tnear1 < tnear2 ? 0 : 1;
                 unsigned far_addr = !near_addr;
                 level >>= 1;
                 if ((trail & level) != 0)
                 {
-                    node = b.node(node.get_child(far_addr));
+                    node = children[far_addr];
                 }
                 else
                 {
                     push(node.get_child(far_addr));
-                    node = b.node(node.get_child(near_addr));
+                    node = children[near_addr];
                 }
             }
             else if (b1 || b2)
@@ -281,7 +299,7 @@ next:
                 if (level != pop_level)
                 {
                     trail |= level;
-                    node = b1 ? b.node(node.get_child(0)) : b.node(node.get_child(1));
+                    node = b1 ? children[0] : children[1];
                 }
                 else
                 {

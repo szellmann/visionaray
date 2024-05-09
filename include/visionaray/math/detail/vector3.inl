@@ -424,6 +424,29 @@ inline T hmul(vector<3, T> const& u)
 }
 
 
+//--------------------------------------------------------------------------------------------------
+// vec3f
+//
+
+MATH_FUNC
+inline float min_element(vector<3, float> const& u)
+{
+    float result = u.x;
+    if (u.y < result) result = u.y;
+    if (u.z < result) result = u.z;
+    return result;
+}
+
+MATH_FUNC
+inline float max_element(vector<3, float> const& u)
+{
+    float result = u.x;
+    if (u.y > result) result = u.y;
+    if (u.z > result) result = u.z;
+    return result;
+}
+
+
 namespace simd
 {
 
