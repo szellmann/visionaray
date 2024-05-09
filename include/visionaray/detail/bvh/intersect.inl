@@ -262,8 +262,13 @@ next:
 
             if (b1 && b2)
             {
-                unsigned near_addr = all( hr1.tnear < hr2.tnear ) ? 0 : 1;
+                using I = typename simd::int_type_t<T>;
+                using M = typename simd::mask_type_t<T>;
+                I sign((int)node.ordered_traversal_sign);
+                I sign_rd = reinterpret_as_int(ray.dir[node.ordered_traversal_axis]) >> 31;
+                unsigned near_addr = any(M(sign ^ sign_rd));
                 unsigned far_addr = !near_addr;
+
                 level >>= 1;
                 if ((trail & level) != 0)
                 {
