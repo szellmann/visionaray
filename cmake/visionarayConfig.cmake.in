@@ -12,9 +12,9 @@ unset(CMAKE_MODULE_PATH)
 
 # required
 find_dependency(Threads)
+find_dependency(GLEW)
 # optional
 find_package(OpenGL COMPONENTS OpenGL QUIET)
-#find_package(GLEW QUIET)
 find_package(OpenGL COMPONENTS GLES2 QUIET)
 find_package(CUDAToolkit QUIET)
 find_package(TBB QUIET)
