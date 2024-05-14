@@ -357,6 +357,7 @@ MATH_FUNC inline unorm<Bits> numeric_limits<unorm<Bits>>::max()
     return unorm<Bits>(1.0f);
 }
 
+#ifndef VSNRAY_NO_SIMD
 
 //-------------------------------------------------------------------------------------------------
 // simd::floatN
@@ -408,5 +409,7 @@ MATH_FUNC inline simd::basic_int<T> numeric_limits<simd::basic_int<T>>::max()
 {
     return simd::basic_int<T>(INT_MAX);
 }
+
+#endif // VSNRAY_NO_SIMD
 
 } // MATH_NAMESPACE
