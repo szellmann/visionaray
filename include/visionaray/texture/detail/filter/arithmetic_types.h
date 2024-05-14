@@ -8,10 +8,7 @@
 
 #include <cstddef>
 
-#ifndef VSNRAY_NO_SIMD
 #include <visionaray/math/simd/simd.h>
-#endif
-
 #include <visionaray/math/vector.h>
 
 namespace visionaray
@@ -42,8 +39,6 @@ struct arithmetic_types<vector<Dim, T>, CoordinateType>
     // Type returned by the filter functions
     using return_type = vector<Dim, T>;
 };
-
-#ifndef VSNRAY_NO_SIMD
 
 // Scalar texture, but calculations are simd, therefore the
 // return type is simd, too!
@@ -90,8 +85,6 @@ struct arithmetic_types<vector<Dim, T>, simd::float8>
     // Type returned by the filter functions
     using return_type = vector<Dim, simd::float8>;
 };
-
-#endif // VSNRAY_NO_SIMD
 
 } // visionaray
 
