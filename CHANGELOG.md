@@ -8,6 +8,9 @@ target.
 
 ## [0.3.5] - 2024-04-17
 ### Added
+- Compile option VSNRAY_NO_SIMD that the user can set. Then, the
+public visionaray headers will not include any gcc intrinsic header
+files. Useful in cases where these cause compiler issues.
 - Public cuda_texture.h header, to include from CUDA code that
 uses the runtime API but is not compiled with nvcc.
 
