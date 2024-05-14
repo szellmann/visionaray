@@ -8,6 +8,10 @@
 #ifdef _WIN32
 #include <windows.h> // APIENTRY
 #endif
+
+#if VSNRAY_HAVE_GLEW
+#include <GL/glew.h>
+#endif
 #include <cuda_gl_interop.h>
 
 #include <visionaray/cuda/graphics_resource.h>
