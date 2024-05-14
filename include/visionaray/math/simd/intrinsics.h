@@ -51,7 +51,6 @@
 #define VSNRAY_SIMD_ISA_NEON    1010
 #define VSNRAY_SIMD_ISA_NEON_FP 1020
 
-#ifndef VSNRAY_NO_SIMD
 #ifndef VSNRAY_SIMD_ISA_
 #if defined(__AVX512F__)                            && !defined(__CUDACC__) // nvcc does not support AVX intrinsics
 #define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_AVX512F
@@ -76,9 +75,6 @@
 #else
 #define VSNRAY_SIMD_ISA_ 0
 #endif
-#endif
-#else
-#define VSNRAY_SIMD_ISA_ 0
 #endif
 
 // Undef VSNRAY_SIMD_ISA_ when compiling GPU device code
