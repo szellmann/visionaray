@@ -14,6 +14,10 @@
 #include "detail/cuda_texture.h"
 #endif
 
+#ifdef __HIPCC__
+#include "detail/hip_texture.h"
+#endif
+
 #include "detail/tex_fetch.h"
 #include "detail/texture_common.h"
 
@@ -64,5 +68,10 @@ inline auto tex3D(Tex const& tex, vector<3, FloatT> const& coord)
 #ifdef __CUDACC__
 #include "cuda_texture.h"
 #endif // __CUDACC__
+
+
+#ifdef __HIPCC__
+#include "hip_texture.h"
+#endif // __HIPCC__
 
 #endif // VSNRAY_TEXTURE_H
