@@ -1,8 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/config.h>
-
 #include <GL/glew.h>
 
 #include "gl/handle.h"

@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/config.h>
+#include <common/config.h>
 
 #include <cassert>
 #include <utility>
@@ -10,7 +10,7 @@
 
 #include <common/cpu_buffer_rt.h>
 
-#if VSNRAY_HAVE_CUDA
+#if VSNRAY_COMMON_HAVE_CUDA
 #include <common/gpu_buffer_rt.h>
 #include <common/pixel_unpack_buffer_rt.h>
 #endif

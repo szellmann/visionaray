@@ -5,20 +5,17 @@
 # Add library target
 #
 
-add_library(visionaray)
+add_library(visionaray INTERFACE)
 
 if (VSNRAY_ENABLE_CUDA)
   enable_language(CUDA)
   find_package(CUDAToolkit)
   set(VSNRAY_HAVE_CUDA 1)
   set(VSNRAY_HAVE_THRUST 1)
-  target_sources(visionaray PRIVATE
-      cuda/fill.cu
-  )
-  target_link_libraries(visionaray PUBLIC CUDA::cudart)
+  target_link_libraries(visionaray INTERFACE CUDA::cudart)
 endif()
 
-target_include_directories(visionaray PUBLIC
+target_include_directories(visionaray INTERFACE
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   $<INSTALL_INTERFACE:include>
@@ -29,28 +26,19 @@ target_include_directories(visionaray PUBLIC
 #
 
 find_package(Threads REQUIRED)
-target_link_libraries(visionaray PUBLIC Threads::Threads)
+target_link_libraries(visionaray INTERFACE Threads::Threads)
 
 # TBB
 
 if (VSNRAY_ENABLE_TBB)
   find_package(TBB REQUIRED)
-  target_link_libraries(visionaray PUBLIC TBB::tbb)
+  target_link_libraries(visionaray INTERFACE TBB::tbb)
   set(VSNRAY_HAVE_TBB 1)
 endif()
 
-#---------------------------------------------------------------------------------------------------
-# Create config file
-
-
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
-    ${CMAKE_CURRENT_BINARY_DIR}/visionaray/config.h
-)
-
 
 #--------------------------------------------------------------------------------------------------
-# Install headers and library
+# Install
 #
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/visionaray ${PROJECT_SOURCE_DIR}/include/visionaray

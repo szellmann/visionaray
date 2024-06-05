@@ -6,8 +6,6 @@
 #ifndef VSNRAY_SCHEDULER_H
 #define VSNRAY_SCHEDULER_H 1
 
-#include <visionaray/config.h>
-
 #include <type_traits>
 #include <utility>
 
