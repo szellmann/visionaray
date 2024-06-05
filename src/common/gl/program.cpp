@@ -7,9 +7,10 @@
 #include <string>
 #include <vector>
 
-#include <visionaray/gl/program.h>
-#include <visionaray/gl/shader.h>
 #include <visionaray/detail/macros.h>
+
+#include "program.h"
+#include "shader.h"
 
 namespace visionaray
 {

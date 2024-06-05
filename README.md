@@ -30,21 +30,20 @@ Build requirements
     tested with Microsoft Visual Studio 2015 VC14 for x64)
 
 - [CMake][1] version 3.1.3 or newer
-- [OpenGL][12]
-- [GLEW][3]
 - [NVIDIA CUDA Toolkit][4] (optional)
 
 - Libraries need to ship with C/C++ header files (developer packages)
-- The OpenGL and GLEW dependency can optionally be deactivated by setting `VSNRAY_GRAPHICS_API=None` with CMake
 
 To compile the viewer and the [examples](/src/examples), the following additional packages are needed or recommended:
 
 - [Boost][2]
+- [GLEW][3]
 - [GLUT][5] or [FreeGLUT][6]
 - [Libjpeg][7] (optional)
 - [Libpng][8] (optional)
 - [LibTIFF][9] (optional)
 - [OpenEXR][10] (optional)
+- [OpenGL][12]
 - [Ptex][13] (optional)
 
 

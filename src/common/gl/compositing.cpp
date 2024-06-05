@@ -6,13 +6,14 @@
 #include <ostream>
 #include <vector>
 
-#include <visionaray/gl/compositing.h>
-#include <visionaray/gl/handle.h>
-#include <visionaray/gl/program.h>
-#include <visionaray/gl/shader.h>
-#include <visionaray/gl/util.h>
 #include <visionaray/pixel_format.h>
 #include <visionaray/detail/macros.h>
+
+#include "compositing.h"
+#include "handle.h"
+#include "program.h"
+#include "shader.h"
+#include "util.h"
 
 #define VSNRAY_OPENGL_LEGACY 0
 

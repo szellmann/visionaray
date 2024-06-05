@@ -17,7 +17,6 @@
 #include <visionaray/texture/texture_traits.h>
 
 #include <visionaray/bvh.h>
-#include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/generic_primitive.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
@@ -30,6 +29,7 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 #include <common/bvh_outline_renderer.h>
+#include <common/cpu_buffer_rt.h>
 #include <common/timer.h>
 #include <common/viewer_glut.h>
 

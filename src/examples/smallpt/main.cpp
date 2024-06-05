@@ -50,20 +50,20 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <visionaray/math/sphere.h>
 
 #include <visionaray/area_light.h>
-#include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
 #include <visionaray/scheduler.h>
 
-#ifdef __CUDACC__
-#include <visionaray/pixel_unpack_buffer_rt.h>
-#endif
-
 #include <common/input/key_event.h>
+#include <common/cpu_buffer_rt.h>
 #include <common/make_materials.h>
 #include <common/timer.h>
 #include <common/viewer_glut.h>
+
+#ifdef __CUDACC__
+#include <common/pixel_unpack_buffer_rt.h>
+#endif
 
 using namespace visionaray;
 

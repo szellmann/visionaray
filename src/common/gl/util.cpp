@@ -2,7 +2,8 @@
 // See the LICENSE file for details.
 
 #include <visionaray/detail/macros.h>
-#include <visionaray/gl/util.h>
+
+#include "util.h"
 
 namespace gl = visionaray::gl;
 

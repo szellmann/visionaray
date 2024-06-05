@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-#include "color_conversion.h"
+#include <visionaray/detail/color_conversion.h>
 
 
 namespace visionaray

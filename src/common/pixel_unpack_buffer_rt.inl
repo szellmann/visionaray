@@ -4,10 +4,10 @@
 #include <cassert>
 #include <stdexcept>
 
-#include "../cuda/fill.h"
-#include "../gl/util.h"
-#include "color_conversion.h"
+#include <visionaray/cuda/fill.h>
+#include <visionaray/detail/color_conversion.h>
 
+#include "gl/util.h"
 
 namespace visionaray
 {

@@ -15,13 +15,13 @@
 
 #include <visionaray/texture/texture.h>
 
-#include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/scheduler.h>
 
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/cpu_buffer_rt.h>
 #include <common/viewer_glut.h>
 
 using namespace visionaray;

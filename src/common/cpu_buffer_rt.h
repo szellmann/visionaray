@@ -3,17 +3,18 @@
 
 #pragma once
 
-#ifndef VSNRAY_CPU_BUFFER_RT_H
-#define VSNRAY_CPU_BUFFER_RT_H 1
+#ifndef VSNRAY_COMMON_CPU_BUFFER_RT_H
+#define VSNRAY_COMMON_CPU_BUFFER_RT_H 1
 
 #include <memory>
 
+#include <visionaray/math/forward.h>
+#include <visionaray/math/vector.h>
+#include <visionaray/aligned_vector.h>
+#include <visionaray/pixel_traits.h>
+#include <visionaray/render_target.h>
+
 #include "gl/compositing.h"
-#include "math/forward.h"
-#include "math/vector.h"
-#include "aligned_vector.h"
-#include "pixel_traits.h"
-#include "render_target.h"
 
 namespace visionaray
 {
@@ -56,7 +57,7 @@ public:
     void resize(int w, int h);
     void display_color_buffer() const;
 
-private:
+protected:
 
     std::unique_ptr<gl::depth_compositor> compositor;
 
@@ -68,6 +69,6 @@ private:
 
 } // visionaray
 
-#include "detail/cpu_buffer_rt.inl"
+#include "cpu_buffer_rt.inl"
 
-#endif // VSNRAY_CPU_BUFFER_RT_H
+#endif // VSNRAY_COMMON_CPU_BUFFER_RT_H

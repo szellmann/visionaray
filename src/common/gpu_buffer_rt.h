@@ -3,13 +3,13 @@
 
 #pragma once
 
-#ifndef VSNRAY_GPU_BUFFER_RT_H
-#define VSNRAY_GPU_BUFFER_RT_H 1
+#ifndef VSNRAY_COMMON_GPU_BUFFER_RT_H
+#define VSNRAY_COMMON_GPU_BUFFER_RT_H 1
 
-#include "math/forward.h"
-#include "math/vector.h"
-#include "pixel_traits.h"
-#include "render_target.h"
+#include <visionaray/math/forward.h>
+#include <visionaray/math/vector.h>
+#include <visionaray/pixel_traits.h>
+#include <visionaray/render_target.h>
 
 namespace visionaray
 {
@@ -61,6 +61,6 @@ private:
 
 } // visionaray
 
-#include "detail/gpu_buffer_rt.inl"
+#include "gpu_buffer_rt.inl"
 
-#endif // VSNRAY_GPU_BUFFER_RT_H
+#endif // VSNRAY_COMMON_GPU_BUFFER_RT_H

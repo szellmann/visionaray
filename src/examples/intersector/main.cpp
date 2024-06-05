@@ -13,7 +13,6 @@
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/aligned_vector.h>
-#include <visionaray/cpu_buffer_rt.h>
 //#include <visionaray/intersector.h>
 #include <visionaray/kernels.h> // for make_kernel_params(...)
 #include <visionaray/material.h>
@@ -25,6 +24,7 @@
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/cpu_buffer_rt.h>
 #include <common/viewer_glut.h>
 
 using namespace visionaray;

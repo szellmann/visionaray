@@ -8,11 +8,6 @@
 add_library(visionaray)
 
 target_sources(visionaray PRIVATE
-    gl/compositing.cpp
-    gl/handle.cpp
-    gl/program.cpp
-    gl/shader.cpp
-    gl/util.cpp
     pixel_format.cpp
 )
 
@@ -41,20 +36,6 @@ target_include_directories(visionaray PUBLIC
 
 find_package(Threads REQUIRED)
 target_link_libraries(visionaray PUBLIC Threads::Threads)
-
-# Graphics API
-
-if (${VSNRAY_GRAPHICS_API} STREQUAL "GL")
-  find_package(GLEW REQUIRED)
-  find_package(OpenGL REQUIRED COMPONENTS OpenGL)
-  target_link_libraries(visionaray PUBLIC GLEW::GLEW OpenGL::GL)
-  set(VSNRAY_HAVE_GLEW 1)
-  set(VSNRAY_HAVE_OPENGL 1)
-elseif (${VSNRAY_GRAPHICS_API} STREQUAL "GLES")
-  find_package(OpenGL REQUIRED COMPONENTS GLES2)
-  target_link_libraries(visionaray PUBLIC OpenGL::GLES2)
-  set(VSNRAY_HAVE_OPENGLES 1)
-endif()
 
 # TBB
 

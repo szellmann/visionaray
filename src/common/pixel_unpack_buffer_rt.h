@@ -3,25 +3,22 @@
 
 #pragma once
 
-#ifndef VSNRAY_PIXEL_UNPACK_BUFFER_RT
-#define VSNRAY_PIXEL_UNPACK_BUFFER_RT 1
-
-#include <visionaray/config.h>
+#ifndef VSNRAY_COMMON_PIXEL_UNPACK_BUFFER_RT
+#define VSNRAY_COMMON_PIXEL_UNPACK_BUFFER_RT 1
 
 #include <memory>
 
-#if VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
-#endif
 
-#include "cuda/graphics_resource.h"
+#include <visionaray/cuda/graphics_resource.h>
+#include <visionaray/math/forward.h>
+#include <visionaray/math/vector.h>
+#include <visionaray/detail/macros.h>
+#include <visionaray/pixel_traits.h>
+#include <visionaray/render_target.h>
+
 #include "gl/compositing.h"
 #include "gl/handle.h"
-#include "math/forward.h"
-#include "math/vector.h"
-#include "detail/macros.h"
-#include "pixel_traits.h"
-#include "render_target.h"
 
 namespace visionaray
 {
@@ -80,6 +77,6 @@ private:
 
 } // visionaray
 
-#include "detail/pixel_unpack_buffer_rt.inl"
+#include "pixel_unpack_buffer_rt.inl"
 
-#endif // VSNRAY_PIXEL_UNPACK_BUFFER_RT
+#endif // VSNRAY_COMMON_PIXEL_UNPACK_BUFFER_RT

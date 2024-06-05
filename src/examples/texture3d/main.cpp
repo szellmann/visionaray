@@ -15,7 +15,6 @@
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/bvh.h>
-#include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
 #include <visionaray/pinhole_camera.h>
@@ -25,6 +24,7 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 
+#include <common/cpu_buffer_rt.h>
 #include <common/make_materials.h>
 #include <common/model.h>
 #include <common/obj_loader.h>

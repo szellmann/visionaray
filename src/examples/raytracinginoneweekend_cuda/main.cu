@@ -22,7 +22,6 @@
 #include <visionaray/detail/platform.h>
 
 #include <visionaray/bvh.h>
-#include <visionaray/pixel_unpack_buffer_rt.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
@@ -32,6 +31,7 @@
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/pixel_unpack_buffer_rt.h>
 #include <common/viewer_glut.h>
 
 #ifdef _WIN32

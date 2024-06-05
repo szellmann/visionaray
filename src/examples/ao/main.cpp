@@ -17,7 +17,6 @@
 
 #include <visionaray/math/io.h>
 #include <visionaray/bvh.h>
-#include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/get_normal.h>
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/random_generator.h>
@@ -29,6 +28,7 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 
+#include <common/cpu_buffer_rt.h>
 #include <common/model.h>
 #include <common/obj_loader.h>
 #include <common/viewer_glut.h>

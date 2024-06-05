@@ -8,11 +8,11 @@
 
 #include <GL/glew.h>
 
-#include <visionaray/cpu_buffer_rt.h>
+#include <common/cpu_buffer_rt.h>
 
 #if VSNRAY_HAVE_CUDA
-#include <visionaray/gpu_buffer_rt.h>
-#include <visionaray/pixel_unpack_buffer_rt.h>
+#include <common/gpu_buffer_rt.h>
+#include <common/pixel_unpack_buffer_rt.h>
 #endif
 
 #include "host_device_rt.h"

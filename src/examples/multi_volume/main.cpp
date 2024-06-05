@@ -18,23 +18,23 @@
 
 #include <visionaray/texture/texture.h>
 
-#include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/material.h>
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/point_light.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/shade_record.h>
 
-#ifdef __CUDACC__
-#include <visionaray/pixel_unpack_buffer_rt.h>
-#endif
-
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/rotate_manipulator.h>
 #include <common/manip/translate_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/cpu_buffer_rt.h>
 #include <common/viewer_glut.h>
+
+#ifdef __CUDACC__
+#include <common/pixel_unpack_buffer_rt.h>
+#endif
 
 using namespace visionaray;
 

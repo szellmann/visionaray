@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/gl/handle.h>
+#include "handle.h"
 
 #if !(VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES)
 #define glGenBuffers(X,Y)

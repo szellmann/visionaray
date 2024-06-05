@@ -27,7 +27,6 @@
 #include <visionaray/gl/shader.h>
 
 #include <visionaray/bvh.h>
-#include <visionaray/pixel_unpack_buffer_rt.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
 #include <visionaray/material.h>
@@ -39,6 +38,7 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
 #include <common/gl_debug_callback.h>
+#include <common/pixel_unpack_buffer_rt.h>
 #include <common/png_image.h>
 #include <common/viewer_glut.h>
 

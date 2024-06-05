@@ -18,6 +18,11 @@ target_sources(visionaray_common PRIVATE
   async/connection.cpp
   async/connection_manager.cpp
   async/message.cpp
+  gl/compositing.cpp
+  gl/handle.cpp
+  gl/program.cpp
+  gl/shader.cpp
+  gl/util.cpp
   input/space_mouse.cpp
   manip/arcball.cpp
   manip/arcball_manipulator.cpp

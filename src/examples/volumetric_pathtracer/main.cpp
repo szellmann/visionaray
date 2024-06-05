@@ -13,7 +13,6 @@
 
 #include <visionaray/math/math.h>
 
-#include <visionaray/cpu_buffer_rt.h>
 #include <visionaray/phase_function.h>
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/random_generator.h>
@@ -24,6 +23,7 @@
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/translate_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/cpu_buffer_rt.h>
 #include <common/timer.h>
 #include <common/viewer_glut.h>
 

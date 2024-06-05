@@ -3,15 +3,11 @@
 
 #include <visionaray/config.h>
 
-#if VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
-#elif VSNRAY_HAVE_OPENGLES
-#include <GLES2/gl2.h>
-#endif
 
-#include <visionaray/gl/handle.h>
-#include <visionaray/gl/program.h>
-#include <visionaray/gl/shader.h>
+#include "gl/handle.h"
+#include "gl/program.h"
+#include "gl/shader.h"
 
 #include "bvh_outline_renderer.h"
 

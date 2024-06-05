@@ -3,8 +3,9 @@
 
 #include <cuda_runtime.h>
 
-#include "../cuda/fill.h"
-#include "../cpu_buffer_rt.h"
+#include <visionaray/cuda/fill.h>
+
+#include "cpu_buffer_rt.h"
 
 namespace visionaray
 {
