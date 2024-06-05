@@ -3,17 +3,6 @@
 
 #include "handle.h"
 
-#if !(VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES)
-#define glGenBuffers(X,Y)
-#define glGenFramebuffers(X,Y)
-#define glGenRenderbuffers(X,Y)
-#define glGenTextures(X,Y)
-#define glDeleteBuffers(X,Y)
-#define glDeleteFramebuffers(X,Y)
-#define glDeleteRenderbuffers(X,Y)
-#define glDeleteTextures(X,Y)
-#endif
-
 namespace visionaray
 {
 namespace gl

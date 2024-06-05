@@ -6,9 +6,9 @@
 #include <ostream>
 #include <vector>
 
-#include <visionaray/pixel_format.h>
 #include <visionaray/detail/macros.h>
 
+#include "../pixel_format.h"
 #include "compositing.h"
 #include "handle.h"
 #include "program.h"
@@ -61,7 +61,6 @@ struct color_program
 //
 
 color_program::color_program()
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     : prog(glCreateProgram())
     , vert(glCreateShader(GL_VERTEX_SHADER))
     , frag(glCreateShader(GL_FRAGMENT_SHADER))
@@ -114,10 +113,6 @@ color_program::color_program()
     tex_coord_loc = glGetAttribLocation(prog.get(), "tex_coord");
     color_loc     = glGetUniformLocation(prog.get(), "color_tex");
 }
-#else
-{
-}
-#endif
 
 color_program::~color_program()
 {
@@ -127,15 +122,11 @@ color_program::~color_program()
 
 void color_program::enable(gl::texture const& color_texture) const
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     prog.enable();
 
     glUniform1i(color_loc, 0);
     glActiveTexture(GL_TEXTURE0 + 0);
     glBindTexture(GL_TEXTURE_2D, color_texture.get());
-#else
-    VSNRAY_UNUSED(color_texture);
-#endif
 }
 
 void color_program::disable() const
@@ -184,7 +175,6 @@ struct depth_program
 //
 
 depth_program::depth_program()
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     : prog(glCreateProgram())
     , vert(glCreateShader(GL_VERTEX_SHADER))
     , frag(glCreateShader(GL_FRAGMENT_SHADER))
@@ -240,10 +230,6 @@ depth_program::depth_program()
     color_loc     = glGetUniformLocation(prog.get(), "color_tex");
     depth_loc     = glGetUniformLocation(prog.get(), "depth_tex");
 }
-#else
-{
-}
-#endif
 
 depth_program::~depth_program()
 {
@@ -255,7 +241,6 @@ void depth_program::enable(
         gl::texture const& depth_texture
         ) const
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     prog.enable();
 
     glUniform1i(color_loc, 0);
@@ -265,10 +250,6 @@ void depth_program::enable(
     glUniform1i(depth_loc, 1);
     glActiveTexture(GL_TEXTURE0 + 1);
     glBindTexture(GL_TEXTURE_2D, depth_texture.get());
-#else
-    VSNRAY_UNUSED(color_texture);
-    VSNRAY_UNUSED(depth_texture);
-#endif
 }
 
 void depth_program::disable() const
@@ -285,7 +266,6 @@ void depth_program::disable() const
 
 struct depth_compositor::impl
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
 #if !VSNRAY_OPENGL_LEGACY
     impl()
         : vertex_buffer(create_buffer())
@@ -350,11 +330,9 @@ struct depth_compositor::impl
     int width;
     int height;
 #endif
-#endif
 };
 
 
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
 #if !VSNRAY_OPENGL_LEGACY
 void depth_compositor::impl::set_texture_params() const
 {
@@ -363,7 +341,6 @@ void depth_compositor::impl::set_texture_params() const
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
-#endif
 #endif
 
 
@@ -380,7 +357,6 @@ depth_compositor::~depth_compositor() = default;
 
 void depth_compositor::composite_textures() const
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
 #if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLint active_texture = GL_TEXTURE0;
@@ -465,12 +441,10 @@ void depth_compositor::composite_textures() const
 
     glPopAttrib();
 #endif
-#endif
 }
 
 void depth_compositor::display_color_texture() const
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
 #if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLint array_buffer = 0;
@@ -533,12 +507,10 @@ void depth_compositor::display_color_texture() const
             impl_->color_buffer
             );
 #endif
-#endif
 }
 
 void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
 #if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLuint bound_texture = 0;
@@ -560,16 +532,10 @@ void depth_compositor::setup_color_texture(pixel_format_info info, GLsizei w, GL
     impl_->width = w;
     impl_->height = h;
 #endif
-#else
-    VSNRAY_UNUSED(info);
-    VSNRAY_UNUSED(w);
-    VSNRAY_UNUSED(h);
-#endif
 }
 
 void depth_compositor::setup_depth_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
 #if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLuint bound_texture = 0;
@@ -591,11 +557,6 @@ void depth_compositor::setup_depth_texture(pixel_format_info info, GLsizei w, GL
     impl_->width = w;
     impl_->height = h;
 #endif
-#else
-    VSNRAY_UNUSED(info);
-    VSNRAY_UNUSED(w);
-    VSNRAY_UNUSED(h);
-#endif
 }
 
 void depth_compositor::update_color_texture(
@@ -605,7 +566,6 @@ void depth_compositor::update_color_texture(
         GLvoid const*       data
         ) const
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
 #if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLuint bound_texture = 0;
@@ -625,12 +585,6 @@ void depth_compositor::update_color_texture(
     impl_->height = h;
     impl_->color_buffer = data;
 #endif
-#else
-    VSNRAY_UNUSED(info);
-    VSNRAY_UNUSED(w);
-    VSNRAY_UNUSED(h);
-    VSNRAY_UNUSED(data);
-#endif
 }
 
 void depth_compositor::update_depth_texture(
@@ -640,7 +594,6 @@ void depth_compositor::update_depth_texture(
         GLvoid const*       data
         ) const
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
 #if !VSNRAY_OPENGL_LEGACY
     // Store OpenGL state
     GLuint bound_texture = 0;
@@ -659,12 +612,6 @@ void depth_compositor::update_depth_texture(
     impl_->width = w;
     impl_->height = h;
     impl_->depth_buffer = data;
-#endif
-#else
-    VSNRAY_UNUSED(info);
-    VSNRAY_UNUSED(w);
-    VSNRAY_UNUSED(h);
-    VSNRAY_UNUSED(data);
 #endif
 }
 

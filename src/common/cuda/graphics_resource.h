@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef VSNRAY_CUDA_GRAPHICS_RESOURCE_H
-#define VSNRAY_CUDA_GRAPHICS_RESOURCE_H 1
+#ifndef VSNRAY_COMMON_CUDA_GRAPHICS_RESOURCE_H
+#define VSNRAY_COMMON_CUDA_GRAPHICS_RESOURCE_H 1
 
 #include <cuda_runtime_api.h>
 
@@ -48,4 +48,4 @@ private:
 } // cuda
 } // visionaray
 
-#endif // VSNRAY_CUDA_GRAPHICS_RESOURCE_H
+#endif // VSNRAY_COMMON_CUDA_GRAPHICS_RESOURCE_H

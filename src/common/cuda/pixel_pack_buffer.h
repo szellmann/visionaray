@@ -3,14 +3,15 @@
 
 #pragma once
 
-#ifndef VSNRAY_CUDA_PIXEL_PACK_BUFFER_H
-#define VSNRAY_CUDA_PIXEL_PACK_BUFFER_H 1
+#ifndef VSNRAY_COMMON_CUDA_PIXEL_PACK_BUFFER_H
+#define VSNRAY_COMMON_CUDA_PIXEL_PACK_BUFFER_H 1
 
 #include <memory>
 
 #include <visionaray/math/forward.h>
 #include <visionaray/math/rectangle.h>
-#include <visionaray/pixel_format.h>
+
+#include "../pixel_format.h"
 
 namespace visionaray
 {
@@ -39,4 +40,4 @@ private:
 } // cuda
 } // visionaray
 
-#endif // VSNRAY_CUDA_PIXEL_PACK_BUFFER_H
+#endif // VSNRAY_COMMON_CUDA_PIXEL_PACK_BUFFER_H

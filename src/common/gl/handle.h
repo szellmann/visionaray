@@ -6,15 +6,7 @@
 #ifndef VSNRAY_GL_HANDLE_H
 #define VSNRAY_GL_HANDLE_H 1
 
-#include <visionaray/config.h>
-
-#if VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
-#elif VSNRAY_HAVE_OPENGLES
-#include <GLES2/gl2.h>
-#else
-#include "types.h"
-#endif
 
 #include <visionaray/detail/platform.h>
 #include <visionaray/export.h>

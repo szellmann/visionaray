@@ -13,23 +13,16 @@ namespace visionaray
 
 std::string gl::last_error()
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     GLenum err = glGetError();
     if (err != GL_NO_ERROR)
     {
-#if VSNRAY_HAVE_GLEW
         return std::string(reinterpret_cast<char const*>(glewGetErrorString(err)));
-#endif
     }
     return std::to_string(err);
-#else
-    return "Not compiled with OpenGL support";
-#endif
 }
 
 void gl::alloc_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
 #if defined(GL_VERSION_4_2) && GL_VERSION_4_2 || defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0
     if (glTexStorage2D)
     {
@@ -40,11 +33,6 @@ void gl::alloc_texture(pixel_format_info info, GLsizei w, GLsizei h)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, info.internal_format, w, h, 0, info.format, info.type, 0);
     }
-#else
-    VSNRAY_UNUSED(info);
-    VSNRAY_UNUSED(w);
-    VSNRAY_UNUSED(h);
-#endif
 }
 
 void gl::update_texture(
@@ -56,7 +44,6 @@ void gl::update_texture(
         GLvoid const*       pixels
         )
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     glTexSubImage2D(
             GL_TEXTURE_2D,
             0, // TODO
@@ -68,14 +55,6 @@ void gl::update_texture(
             info.type,
             pixels
             );
-#else
-    VSNRAY_UNUSED(info);
-    VSNRAY_UNUSED(x);
-    VSNRAY_UNUSED(y);
-    VSNRAY_UNUSED(w);
-    VSNRAY_UNUSED(h);
-    VSNRAY_UNUSED(pixels);
-#endif
 }
 
 void gl::update_texture(
@@ -85,7 +64,6 @@ void gl::update_texture(
         GLvoid const*       pixels
         )
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     glTexSubImage2D(
             GL_TEXTURE_2D,
             0, // TODO
@@ -97,12 +75,6 @@ void gl::update_texture(
             info.type,
             pixels
             );
-#else
-    VSNRAY_UNUSED(info);
-    VSNRAY_UNUSED(w);
-    VSNRAY_UNUSED(h);
-    VSNRAY_UNUSED(pixels);
-#endif
 }
 
 void gl::draw_full_screen_quad()

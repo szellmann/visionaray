@@ -22,10 +22,6 @@
 
 #include <visionaray/detail/platform.h>
 
-#include <visionaray/gl/handle.h>
-#include <visionaray/gl/program.h>
-#include <visionaray/gl/shader.h>
-
 #include <visionaray/bvh.h>
 #include <visionaray/generic_material.h>
 #include <visionaray/kernels.h>
@@ -37,6 +33,9 @@
 #include <common/manip/arcball_manipulator.h>
 #include <common/manip/pan_manipulator.h>
 #include <common/manip/zoom_manipulator.h>
+#include <common/gl/handle.h>
+#include <common/gl/program.h>
+#include <common/gl/shader.h>
 #include <common/gl_debug_callback.h>
 #include <common/pixel_unpack_buffer_rt.h>
 #include <common/png_image.h>

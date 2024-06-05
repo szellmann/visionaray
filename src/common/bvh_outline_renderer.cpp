@@ -43,7 +43,6 @@ bvh_outline_renderer::~bvh_outline_renderer() = default;
 
 void bvh_outline_renderer::frame(mat4 const& view, mat4 const& proj) const
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     // Store OpenGL state
     GLint array_buffer_binding = 0;
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer_binding);
@@ -78,10 +77,6 @@ void bvh_outline_renderer::frame(mat4 const& view, mat4 const& proj) const
         glDisable(GL_DEPTH_CLAMP);
     }
     glBindBuffer(GL_ARRAY_BUFFER, array_buffer_binding);
-#else
-    VSNRAY_UNUSED(view);
-    VSNRAY_UNUSED(proj);
-#endif
 }
 
 void bvh_outline_renderer::destroy()
@@ -101,7 +96,6 @@ void bvh_outline_renderer::destroy()
 
 bool bvh_outline_renderer::init_gl(float const* data, size_t size)
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     // Store OpenGL state
     GLint array_buffer_binding = 0;
     glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &array_buffer_binding);
@@ -169,11 +163,6 @@ bool bvh_outline_renderer::init_gl(float const* data, size_t size)
     glBindBuffer(GL_ARRAY_BUFFER, array_buffer_binding);
 
     return true;
-#else
-    VSNRAY_UNUSED(data);
-    VSNRAY_UNUSED(size);
-    return false;
-#endif
 }
 
 } // visionaray

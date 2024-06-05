@@ -21,12 +21,12 @@
 #include <visionaray/math/aabb.h>
 #include <visionaray/math/sphere.h>
 #include <visionaray/bvh.h>
-#include <visionaray/gpu_buffer_rt.h>
 #include <visionaray/pinhole_camera.h>
 #include <visionaray/result_record.h>
 #include <visionaray/scheduler.h>
 #include <visionaray/traverse.h>
 
+#include <common/gpu_buffer_rt.h>
 #include <common/timer.h>
 
 using namespace support;

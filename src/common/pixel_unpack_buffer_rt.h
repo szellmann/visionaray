@@ -10,12 +10,13 @@
 
 #include <GL/glew.h>
 
-#include <visionaray/cuda/graphics_resource.h>
 #include <visionaray/math/forward.h>
 #include <visionaray/math/vector.h>
 #include <visionaray/detail/macros.h>
 #include <visionaray/pixel_traits.h>
 #include <visionaray/render_target.h>
+
+#include "cuda/graphics_resource.h"
 
 #include "gl/compositing.h"
 #include "gl/handle.h"

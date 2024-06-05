@@ -18,6 +18,8 @@ target_sources(visionaray_common PRIVATE
   async/connection.cpp
   async/connection_manager.cpp
   async/message.cpp
+  cuda/graphics_resource.cpp
+  cuda/pixel_pack_buffer.cpp
   gl/compositing.cpp
   gl/handle.cpp
   gl/program.cpp
@@ -49,6 +51,7 @@ target_sources(visionaray_common PRIVATE
   obj_grammar.cpp
   obj_loader.cpp
   pbrt_loader.cpp
+  pixel_format.cpp
   ply_loader.cpp
   png_image.cpp
   pnm_image.cpp

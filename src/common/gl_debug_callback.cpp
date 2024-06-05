@@ -18,13 +18,7 @@
 #include <windows.h>
 #endif
 
-#include <visionaray/config.h>
-
-#if VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
-#else
-#error "Extension library required"
-#endif
 
 #include "gl_debug_callback.h"
 

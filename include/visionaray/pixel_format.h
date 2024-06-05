@@ -6,10 +6,6 @@
 #ifndef VSNRAY_PIXEL_FORMAT_H
 #define VSNRAY_PIXEL_FOMRAT_H 1
 
-#include <type_traits>
-
-#include "export.h"
-
 namespace visionaray
 {
 
@@ -72,27 +68,12 @@ enum pixel_format
     PF_COUNT // last
 };
 
-
-struct pixel_format_info
-{
-    unsigned internal_format;
-    unsigned format;
-    unsigned type;
-    unsigned components;
-    unsigned size;
-};
-
-
 //-------------------------------------------------------------------------------------------------
 // pixel_format_constant e.g. for use with tag dispatch
 //
 
 template <pixel_format PF>
 using pixel_format_constant = std::integral_constant<pixel_format, PF>;
-
-
-VSNRAY_EXPORT pixel_format      map_gl_format(unsigned format, unsigned type, unsigned size);
-VSNRAY_EXPORT pixel_format_info map_pixel_format(pixel_format format);
 
 } // visionaray
 

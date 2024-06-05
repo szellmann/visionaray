@@ -11,9 +11,9 @@
 #include <vector>
 
 #include <visionaray/aligned_vector.h>
-#include <visionaray/pixel_format.h>
 
 #include "file_base.h"
+#include "pixel_format.h"
 
 namespace visionaray
 {

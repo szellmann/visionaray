@@ -7,18 +7,12 @@
 
 add_library(visionaray)
 
-target_sources(visionaray PRIVATE
-    pixel_format.cpp
-)
-
 if (VSNRAY_ENABLE_CUDA)
   enable_language(CUDA)
   find_package(CUDAToolkit)
   set(VSNRAY_HAVE_CUDA 1)
   set(VSNRAY_HAVE_THRUST 1)
   target_sources(visionaray PRIVATE
-      cuda/graphics_resource.cpp
-      cuda/pixel_pack_buffer.cpp
       cuda/fill.cu
   )
   target_link_libraries(visionaray PUBLIC CUDA::cudart)

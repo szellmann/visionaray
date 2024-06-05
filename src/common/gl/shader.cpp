@@ -29,9 +29,7 @@ shader::~shader()
 
 void shader::destroy()
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     glDeleteShader(name_);
-#endif
 }
 
 void shader::reset(GLuint name)
@@ -51,25 +49,18 @@ GLuint shader::get() const
 
 void shader::set_source(char const* source) const
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     GLint len = static_cast<GLint>(std::strlen(source));
 
     glShaderSource(name_, 1, &source, &len);
-#else
-    VSNRAY_UNUSED(source);
-#endif
 }
 
 void shader::compile() const
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     glCompileShader(name_);
-#endif
 }
 
 bool shader::check_compiled() const
 {
-#if VSNRAY_HAVE_GLEW || VSNRAY_HAVE_OPENGLES
     GLint success = GL_FALSE;
     glGetShaderiv(name_, GL_COMPILE_STATUS, &success);
 
@@ -89,9 +80,6 @@ bool shader::check_compiled() const
     }
 
     return true;
-#else
-    return false;
-#endif
 }
 
 } // gl

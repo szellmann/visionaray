@@ -1,19 +1,17 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <visionaray/config.h>
+#include <common/config.h>
 
-#if VSNRAY_HAVE_CUDA
+#if VSNRAY_COMMON_HAVE_CUDA
 
 #include <stdexcept>
 
-#if VSNRAY_HAVE_GLEW
 #include <GL/glew.h>
-#endif
 
-#include <visionaray/cuda/graphics_resource.h>
-#include <visionaray/cuda/pixel_pack_buffer.h>
-#include <visionaray/gl/handle.h>
+#include "../gl/handle.h"
+#include "graphics_resource.h"
+#include "pixel_pack_buffer.h"
 
 
 namespace visionaray
