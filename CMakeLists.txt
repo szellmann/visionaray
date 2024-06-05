@@ -3,7 +3,7 @@
 
 include(CMakePackageConfigHelpers)
 cmake_minimum_required(VERSION 3.27)
-project(visionaray VERSION 0.3.5 LANGUAGES C CXX)
+project(visionaray VERSION 0.4.0 LANGUAGES C CXX)
 
 include(GNUInstallDirs)
 

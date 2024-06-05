@@ -1,6 +1,10 @@
 ## [Unreleased]
 
+## [0.4.0] - 2024-06-05
 ### Changed
+- Getting rid of OpenGL in the core library, moved to common
+(apps who use cpu_buffer_rt, pixel_unpack_buffer_rt, etc. now
+have to use visionaray::common).
 - Optimized BVH traversal on GPU (simpler, and seemingly faster
 box test; box test manually inlined into intersect())
 - Update build system to adopt modern cmake. Now everything's a
