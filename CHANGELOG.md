@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.4.1] - 2024-06-05
+### Changed
+- The Visionaray library is header only now.
+
 ## [0.4.0] - 2024-06-05
 ### Changed
 - Getting rid of OpenGL in the core library, moved to common

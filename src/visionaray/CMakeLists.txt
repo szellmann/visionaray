@@ -42,7 +42,7 @@ endif()
 #
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/visionaray ${PROJECT_SOURCE_DIR}/include/visionaray
-    DESTINATION include
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     COMPONENT headers
     FILES_MATCHING
         PATTERN "*.h"
@@ -70,18 +70,18 @@ write_basic_package_version_file(
 
 install(TARGETS visionaray
     EXPORT visionaray_Exports
-    RUNTIME DESTINATION bin COMPONENT libraries
-    LIBRARY DESTINATION lib COMPONENT libraries
-    ARCHIVE DESTINATION lib COMPONENT libraries
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT libraries
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libraries
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libraries
 )
 
 install(EXPORT visionaray_Exports
     NAMESPACE visionaray::
-    DESTINATION lib/cmake/visionaray
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/visionarayConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/visionarayConfigVersion.cmake
-    DESTINATION lib/cmake/visionaray
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
