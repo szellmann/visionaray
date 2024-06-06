@@ -87,4 +87,4 @@ void const* pixel_pack_buffer::data() const
 } // cuda
 } // visionaray
 
-#endif // VSNRAY_HAVE_CUDA
+#endif // VSNRAY_COMMON_HAVE_CUDA

@@ -10,8 +10,6 @@ add_library(visionaray INTERFACE)
 if (VSNRAY_ENABLE_CUDA)
   enable_language(CUDA)
   find_package(CUDAToolkit)
-  set(VSNRAY_HAVE_CUDA 1)
-  set(VSNRAY_HAVE_THRUST 1)
   target_link_libraries(visionaray INTERFACE CUDA::cudart)
 endif()
 
@@ -33,7 +31,6 @@ target_link_libraries(visionaray INTERFACE Threads::Threads)
 if (VSNRAY_ENABLE_TBB)
   find_package(TBB REQUIRED)
   target_link_libraries(visionaray INTERFACE TBB::tbb)
-  set(VSNRAY_HAVE_TBB 1)
 endif()
 
 

@@ -103,4 +103,4 @@ void* graphics_resource::dev_ptr() const
 } // cuda
 } // visionaray
 
-#endif // VSNRAY_HAVE_CUDA
+#endif // VSNRAY_COMMON_HAVE_CUDA
