@@ -3,6 +3,7 @@
 ## [0.4.1] - 2024-06-05
 ### Changed
 - The Visionaray library is header only now.
+- Software texture types and functions can be compiled for device.
 
 ## [0.4.0] - 2024-06-05
 ### Changed
