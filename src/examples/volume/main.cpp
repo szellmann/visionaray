@@ -1,7 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <exception>
 #include <iostream>
 #include <memory>
@@ -67,7 +66,7 @@ struct renderer : viewer_type
         : viewer_type(512, 512, "Visionaray Volume Rendering Example")
         , bbox({ -1.0f, -1.0f, -1.0f }, { 1.0f, 1.0f, 1.0f })
         , host_sched(8)
-        , volume(std::array<unsigned, 3>{{2, 2, 2}})
+        , volume(array<unsigned, 3>{{2, 2, 2}})
         , transfunc(4)
     {
         volume.reset(voldata);
