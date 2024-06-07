@@ -7,7 +7,6 @@
 #define VSNRAY_TEXTURE_DETAIL_STORAGE_TYPES_BRICKED_STORAGE_H 1
 
 #include <algorithm>
-#include <array>
 #include <cstddef>
 #include <type_traits>
 
@@ -15,6 +14,7 @@
 #include "../../../math/simd/gather.h"
 #include "../../../math/simd/type_traits.h"
 #include "../../../aligned_vector.h"
+#include "../../../array.h"
 #include "../../../pixel_format.h"
 #include "../../../swizzle.h"
 
@@ -40,7 +40,7 @@ public:
 
     bricked_storage() = default;
 
-    explicit bricked_storage(std::array<unsigned, 3> size)
+    explicit bricked_storage(array<unsigned, 3> size)
     {
         realloc(size[0], size[1], size[2]);
     }
@@ -50,7 +50,7 @@ public:
         realloc(w, h, d);
     }
 
-    std::array<unsigned, 3> size() const
+    array<unsigned, 3> size() const
     {
         return size_;
     }
@@ -209,9 +209,9 @@ protected:
     }
 
     aligned_vector<T, A> data_;
-    std::array<unsigned, 3> size_;
-    std::array<unsigned, 3> rounded_size_;
-    std::array<unsigned, 3> num_bricks_;
+    array<unsigned, 3> size_;
+    array<unsigned, 3> rounded_size_;
+    array<unsigned, 3> num_bricks_;
 
 };
 

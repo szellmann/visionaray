@@ -28,6 +28,7 @@ template <
     typename Tex,
     typename FloatT
     >
+VSNRAY_FUNC
 inline ReturnT choose_filter(
         ReturnT       /* */,
         InternalT     /* */,

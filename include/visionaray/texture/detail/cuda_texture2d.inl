@@ -1,13 +1,13 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <cassert>
 #include <cstddef>
 #include <utility>
 
 #include "../../cuda/pitch2d.h"
 #include "../../cuda/texture_object.h"
+#include "../../array.h"
 
 namespace visionaray
 {
@@ -52,13 +52,13 @@ public:
     // Construct from pointer to host data
     template <typename U>
     cuda_texture(
-            U const*                                data,
-            size_t                                  w,
-            size_t                                  h,
-            std::array<tex_address_mode, 2> const&  address_mode,
-            tex_filter_mode const&                  filter_mode,
-            tex_color_space const&                  color_space = RGB,
-            bool                                    normalized_coords = true
+            U const*                           data,
+            size_t                             w,
+            size_t                             h,
+            array<tex_address_mode, 2> const&  address_mode,
+            tex_filter_mode const&             filter_mode,
+            tex_color_space const&             color_space = RGB,
+            bool                               normalized_coords = true
             )
         : width_(w)
         , height_(h)
@@ -277,7 +277,7 @@ public:
         init_texture_object();
     }
 
-    void set_address_mode(std::array<tex_address_mode, 2> const& mode)
+    void set_address_mode(array<tex_address_mode, 2> const& mode)
     {
         address_mode_ = mode;
 
@@ -291,7 +291,7 @@ public:
         return address_mode_[index];
     }
 
-    std::array<tex_address_mode, 2> const& get_address_mode() const
+    array<tex_address_mode, 2> const& get_address_mode() const
     {
         return address_mode_;
     }
@@ -339,17 +339,17 @@ public:
 
 private:
 
-    cuda::pitch2d<cuda_type>        pitch_;
+    cuda::pitch2d<cuda_type>   pitch_;
 
-    cuda::texture_object            texture_obj_;
+    cuda::texture_object       texture_obj_;
 
-    size_t                          width_;
-    size_t                          height_;
+    size_t                     width_;
+    size_t                     height_;
 
-    std::array<tex_address_mode, 2> address_mode_;
-    tex_filter_mode                 filter_mode_;
-    tex_color_space                 color_space_ = RGB;
-    bool                            normalized_coords_ = true;
+    array<tex_address_mode, 2> address_mode_;
+    tex_filter_mode            filter_mode_;
+    tex_color_space            color_space_ = RGB;
+    bool                       normalized_coords_ = true;
 
 
     cudaError_t upload_data(T const* data)

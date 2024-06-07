@@ -25,6 +25,7 @@ namespace bspline
 struct w0_func
 {
     template <typename T>
+    VSNRAY_FUNC
     inline T operator()(T const& a)
     {
         return (T(1.0) / T(6.0)) * (-(a * a * a) + T(3.0) * a * a - T(3.0) * a + T(1.0));
@@ -34,6 +35,7 @@ struct w0_func
 struct w1_func
 {
     template <typename T>
+    VSNRAY_FUNC
     inline T operator()(T const& a)
     {
         return (T(1.0) / T(6.0)) * (T(3.0) * a * a * a - T(6.0) * a * a + T(4.0));
@@ -43,6 +45,7 @@ struct w1_func
 struct w2_func
 {
     template <typename T>
+    VSNRAY_FUNC
     inline T operator()(T const& a)
     {
         return (T(1.0) / T(6.0)) * (T(-3.0) * a * a * a + T(3.0) * a * a + T(3.0) * a + 1.0);
@@ -52,6 +55,7 @@ struct w2_func
 struct w3_func
 {
     template <typename T>
+    VSNRAY_FUNC
     inline T operator()(T const& a)
     {
         return (T(1.0) / T(6.0)) * (a * a * a);
@@ -68,6 +72,7 @@ namespace cspline
 struct w0_func
 {
     template <typename T>
+    VSNRAY_FUNC
     inline T operator()(T const& a)
     {
         return T(-0.5) * a * a * a + a * a - T(0.5) * a;
@@ -77,6 +82,7 @@ struct w0_func
 struct w1_func
 {
     template <typename T>
+    VSNRAY_FUNC
     inline T operator()(T const& a)
     {
         return T(1.5) * a * a * a - T(2.5) * a * a + T(1.0);
@@ -86,6 +92,7 @@ struct w1_func
 struct w2_func
 {
     template <typename T>
+    VSNRAY_FUNC
     inline T operator()(T const& a)
     {
         return T(-1.5) * a * a * a + T(2.0) * a * a + T(0.5) * a;
@@ -95,6 +102,7 @@ struct w2_func
 struct w3_func
 {
     template <typename T>
+    VSNRAY_FUNC
     inline T operator()(T const& a)
     {
         return T(0.5) * a * a * a - T(0.5) * a * a;
@@ -105,6 +113,7 @@ struct w3_func
 
 // helper functions for cubic interpolation
 template <typename T>
+VSNRAY_FUNC
 inline T g0(T const& x)
 {
     bspline::w0_func w0;
@@ -113,6 +122,7 @@ inline T g0(T const& x)
 }
 
 template <typename T>
+VSNRAY_FUNC
 inline T g1(T const& x)
 {
     bspline::w2_func w2;
@@ -121,6 +131,7 @@ inline T g1(T const& x)
 }
 
 template <typename T>
+VSNRAY_FUNC
 inline T h0(T const& x)
 {
     bspline::w0_func w0;
@@ -129,6 +140,7 @@ inline T h0(T const& x)
 }
 
 template <typename T>
+VSNRAY_FUNC
 inline T h1(T const& x)
 {
     bspline::w2_func w2;

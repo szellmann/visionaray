@@ -10,8 +10,8 @@
 #include <cstddef>
 
 #include <algorithm>
-#include <array>
 
+#include "../../array.h"
 #include "../../math/detail/math.h"
 #include "../../math/vector.h"
 
@@ -68,6 +68,7 @@ public:
     // guarantees that this might work!
     // This is e.g. used for ref()'ing
     template <typename OtherStorage>
+    VSNRAY_FUNC
     explicit texture_base(texture_base<Dim, OtherStorage> const& other)
         : TextureStorage(other.data(), other.size())
         , address_mode_(other.get_address_mode())
@@ -77,15 +78,16 @@ public:
     {
     }
 
-    texture_base(texture_base<Dim, TextureStorage> const& other) = default;
-    texture_base(texture_base<Dim, TextureStorage>&& other) = default;
+    VSNRAY_FUNC texture_base(texture_base<Dim, TextureStorage> const& other) = default;
+    VSNRAY_FUNC texture_base(texture_base<Dim, TextureStorage>&& other) = default;
 
-    texture_base& operator=(texture_base<Dim, TextureStorage> const& other) = default;
-    texture_base& operator=(texture_base<Dim, TextureStorage>&& other) = default;
+    VSNRAY_FUNC texture_base& operator=(texture_base<Dim, TextureStorage> const& other) = default;
+    VSNRAY_FUNC texture_base& operator=(texture_base<Dim, TextureStorage>&& other) = default;
 
     // Applies the appropriate texture address mode to
     // boundary texture coordinates
     template <typename CoordType>
+    VSNRAY_FUNC
     CoordType remap_texture_coordinate(CoordType coord) const
     {
         using F = typename CoordType::value_type;
@@ -124,27 +126,32 @@ public:
     }
 
     // For compatibility
+    VSNRAY_FUNC
     inline unsigned width() const
     {
         return TextureStorage::size()[0];
     }
 
+    VSNRAY_FUNC
     inline unsigned height() const
     {
         return TextureStorage::size()[1];
     }
 
+    VSNRAY_FUNC
     inline unsigned depth() const
     {
         return TextureStorage::size()[2];
     }
 
+    VSNRAY_FUNC
     void set_address_mode(unsigned index, tex_address_mode mode)
     {
         assert(index < Dim);
         address_mode_[index] = mode;
     }
 
+    VSNRAY_FUNC
     void set_address_mode(tex_address_mode mode)
     {
         for (unsigned d = 0; d < Dim; ++d)
@@ -153,47 +160,56 @@ public:
         }
     }
 
-    void set_address_mode(std::array<tex_address_mode, Dim> const& mode)
+    VSNRAY_FUNC
+    void set_address_mode(array<tex_address_mode, Dim> const& mode)
     {
         address_mode_ = mode;
     }
 
+    VSNRAY_FUNC
     tex_address_mode get_address_mode(unsigned index) const
     {
         assert(index < Dim);
         return address_mode_[index];
     }
 
-    std::array<tex_address_mode, Dim> const& get_address_mode() const
+    VSNRAY_FUNC
+    array<tex_address_mode, Dim> const& get_address_mode() const
     {
         return address_mode_;
     }
 
+    VSNRAY_FUNC
     void set_filter_mode(tex_filter_mode mode)
     {
         filter_mode_ = mode;
     }
 
+    VSNRAY_FUNC
     tex_filter_mode get_filter_mode() const
     {
         return filter_mode_;
     }
 
+    VSNRAY_FUNC
     void set_color_space(tex_color_space cs)
     {
         color_space_ = cs;
     }
 
+    VSNRAY_FUNC
     tex_color_space get_color_space() const
     {
         return color_space_;
     }
 
+    VSNRAY_FUNC
     void set_normalized_coords(bool nc)
     {
         normalized_coords_ = nc;
     }
 
+    VSNRAY_FUNC
     bool get_normalized_coords() const
     {
         return normalized_coords_;
@@ -201,10 +217,10 @@ public:
 
 protected:
 
-    std::array<tex_address_mode, Dim> address_mode_;
-    tex_filter_mode                   filter_mode_;
-    tex_color_space                   color_space_ = RGB;
-    bool                              normalized_coords_ = true;
+    array<tex_address_mode, Dim> address_mode_;
+    tex_filter_mode              filter_mode_;
+    tex_color_space              color_space_ = RGB;
+    bool                         normalized_coords_ = true;
 
 };
 

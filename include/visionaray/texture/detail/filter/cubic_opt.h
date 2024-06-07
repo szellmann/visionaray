@@ -27,6 +27,7 @@ template <
     typename Tex,
     typename FloatT
     >
+VSNRAY_FUNC
 inline ReturnT cubic_opt(
         ReturnT           /* */,
         InternalT         /* */,
@@ -70,6 +71,7 @@ template <
     typename Tex,
     typename FloatT
     >
+VSNRAY_FUNC
 inline ReturnT cubic_opt(
         ReturnT           /* */,
         InternalT         /* */,
@@ -130,6 +132,7 @@ template <
     typename Tex,
     typename FloatT
     >
+VSNRAY_FUNC
 inline ReturnT cubic_opt(
         ReturnT           /* */,
         InternalT         /* */,

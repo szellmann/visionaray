@@ -7,7 +7,6 @@
 #define VSNRAY_TEXTURE_DETAIL_STORAGE_TYPES_BRICKED_ACCESSOR_H 1
 
 #include <algorithm>
-#include <array>
 #include <cstddef>
 #include <type_traits>
 
@@ -15,6 +14,7 @@
 #include "../../../math/simd/gather.h"
 #include "../../../math/simd/type_traits.h"
 #include "../../../aligned_vector.h"
+#include "../../../array.h"
 #include "../../../pixel_format.h"
 #include "../../../swizzle.h"
 
@@ -40,7 +40,7 @@ public:
 
     bricked_accessor() = default;
 
-    explicit bricked_accessor(std::array<unsigned, 3> size)
+    explicit bricked_accessor(array<unsigned, 3> size)
         : data_(nullptr)
         , size_(size)
     {
@@ -53,7 +53,7 @@ public:
         num_bricks_[2] = div_up(size_[2], BD);
     }
 
-    explicit bricked_accessor(T const* data, std::array<unsigned, 3> size)
+    explicit bricked_accessor(T const* data, array<unsigned, 3> size)
         : data_(data)
         , size_(size)
     {
@@ -81,7 +81,7 @@ public:
         num_bricks_[2] = div_up(size_[2], BD);
     }
 
-    std::array<unsigned, 3> size() const
+    array<unsigned, 3> size() const
     {
         return size_;
     }
@@ -141,9 +141,9 @@ protected:
     }
 
     T const* data_ = nullptr;
-    std::array<unsigned, 3> size_;
-    std::array<unsigned, 3> rounded_size_;
-    std::array<unsigned, 3> num_bricks_;
+    array<unsigned, 3> size_;
+    array<unsigned, 3> rounded_size_;
+    array<unsigned, 3> num_bricks_;
 
 };
 

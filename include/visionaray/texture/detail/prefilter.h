@@ -25,6 +25,7 @@ namespace detail
 
 static float const Pole = sqrt(3.0f) - 2.0f;
 
+VSNRAY_FUNC
 inline float init_causal_coeff(short* c, unsigned len, unsigned stride)
 {
 
@@ -45,18 +46,21 @@ inline float init_causal_coeff(short* c, unsigned len, unsigned stride)
     return sum;
 }
 
+VSNRAY_FUNC
 inline float init_anticausal_coeff(short* c)
 {
     typedef float float_type;
     return (Pole / (Pole - float_type(1.0))) * float_type(*c);
 }
 
-template <typename T>
+template <typename T
+VSNRAY_FUNC>
 inline void convert_to_bspline_coeffs(T*, unsigned, unsigned)
 {
     throw std::runtime_error("not implemented yet");
 }
 
+VSNRAY_FUNC
 inline void convert_to_bspline_coeffs(short* c, unsigned len, unsigned stride)
 {
 
@@ -90,7 +94,8 @@ inline void convert_to_bspline_coeffs(short* c, unsigned len, unsigned stride)
 } // detail
 
 
-template <typename T>
+template <typename T
+VSNRAY_FUNC>
 inline void convert_for_bspline_interpol(texture_ref<T, 1> const* tex)
 {
     using namespace detail;
@@ -99,7 +104,8 @@ inline void convert_for_bspline_interpol(texture_ref<T, 1> const* tex)
     convert_to_bspline_coeffs(ptr, tex->size(), 1);
 }
 
-template <typename T>
+template <typename T
+VSNRAY_FUNC>
 inline void convert_for_bspline_interpol(texture_ref<T, 2> const* tex)
 {
     using namespace detail;
@@ -119,7 +125,8 @@ inline void convert_for_bspline_interpol(texture_ref<T, 2> const* tex)
     }
 }
 
-template <typename T>
+template <typename T
+VSNRAY_FUNC>
 inline void convert_for_bspline_interpol(texture_ref<T, 3> const* tex)
 {
     using namespace detail;

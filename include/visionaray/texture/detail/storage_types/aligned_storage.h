@@ -7,13 +7,13 @@
 #define VSNRAY_TEXTURE_DETAIL_STORAGE_TYPES_ALIGNED_STORAGE_H 1
 
 #include <algorithm>
-#include <array>
 #include <cstddef>
 #include <type_traits>
 
 #include "../../../math/simd/gather.h"
 #include "../../../math/simd/type_traits.h"
 #include "../../../aligned_vector.h"
+#include "../../../array.h"
 #include "../../../pixel_format.h"
 #include "../../../swizzle.h"
 
@@ -35,7 +35,7 @@ public:
 
     aligned_storage() = default;
 
-    explicit aligned_storage(std::array<unsigned, Dim> size)
+    explicit aligned_storage(array<unsigned, Dim> size)
         : data_(linear_size(size))
         , size_(size)
     {
@@ -56,7 +56,7 @@ public:
         realloc(w, h, d);
     }
 
-    std::array<unsigned, Dim> size() const
+    array<unsigned, Dim> size() const
     {
         return size_;
     }
@@ -164,17 +164,17 @@ public:
 
 protected:
 
-    inline size_t linear_size(std::array<unsigned, 1> size)
+    inline size_t linear_size(array<unsigned, 1> size)
     {
         return size_t(size[0]);
     }
 
-    inline size_t linear_size(std::array<unsigned, 2> size)
+    inline size_t linear_size(array<unsigned, 2> size)
     {
         return size[0] * size_t(size[1]);
     }
 
-    inline size_t linear_size(std::array<unsigned, 3> size)
+    inline size_t linear_size(array<unsigned, 3> size)
     {
         return size[0] * size[1] * size_t(size[2]);
     }
@@ -196,7 +196,7 @@ protected:
     }
 
     aligned_vector<T, A> data_;
-    std::array<unsigned, Dim> size_;
+    array<unsigned, Dim> size_;
 
 };
 

@@ -30,6 +30,7 @@ template <
     typename W2,
     typename W3
     >
+VSNRAY_FUNC
 inline ReturnT cubic(
         ReturnT           /* */,
         InternalT         /* */,
@@ -83,6 +84,7 @@ template <
     typename W2,
     typename W3
     >
+VSNRAY_FUNC
 inline ReturnT cubic(
         ReturnT           /* */,
         InternalT         /* */,
@@ -140,6 +142,7 @@ template <
     typename W2,
     typename W3
     >
+VSNRAY_FUNC
 inline ReturnT cubic(
         ReturnT           /* */,
         InternalT         /* */,

@@ -21,6 +21,7 @@ namespace visionaray
 {
 
 template <typename Tex, typename FloatT>
+VSNRAY_FUNC
 inline auto tex1D(Tex const& tex, FloatT const& coord)
     -> decltype( detail::tex_fetch_impl(tex, vector<1, FloatT>(coord)) )
 {
@@ -33,6 +34,7 @@ inline auto tex1D(Tex const& tex, FloatT const& coord)
 
 
 template <typename Tex, typename FloatT>
+VSNRAY_FUNC
 inline auto tex2D(Tex const& tex, vector<2, FloatT> const& coord)
     -> decltype( detail::tex_fetch_impl(tex, coord) )
 {
@@ -45,6 +47,7 @@ inline auto tex2D(Tex const& tex, vector<2, FloatT> const& coord)
 
 
 template <typename Tex, typename FloatT>
+VSNRAY_FUNC
 inline auto tex3D(Tex const& tex, vector<3, FloatT> const& coord)
     -> decltype( detail::tex_fetch_impl(tex, coord) )
 {

@@ -37,6 +37,7 @@ template <
     typename CoordinateType,
     typename AT = arithmetic_types<T, typename CoordinateType::value_type>
     >
+VSNRAY_FUNC
 inline typename AT::return_type texND_impl_expand_types(
         T              /* */,
         Tex const&     tex,
@@ -63,6 +64,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
+VSNRAY_FUNC
 inline FloatT texND_impl_expand_types(
         unorm<Bits>                 /* */,
         Tex const&                  tex,
@@ -95,6 +97,7 @@ template <
     typename = typename std::enable_if<std::is_floating_point<FloatT>::value>::type,
     typename = typename std::enable_if<!simd::is_simd_vector<FloatT>::value>::type
     >
+VSNRAY_FUNC
 inline vector<Dim1, FloatT> texND_impl_expand_types(
         vector<Dim1, unorm<Bits>>   /* */,
         Tex const&                  tex,
@@ -132,6 +135,7 @@ template <
     typename FloatT,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
+VSNRAY_FUNC
 inline FloatT texND_impl_expand_types(
         unorm<Bits>                /* */,
         Tex const&                 tex,
@@ -164,6 +168,7 @@ template <
     typename = typename std::enable_if<std::is_integral<T>::value>::type,
     typename = typename std::enable_if<simd::is_simd_vector<FloatT>::value>::type
     >
+VSNRAY_FUNC
 inline simd::int_type_t<FloatT> texND_impl_expand_types(
         T                          /* */,
         Tex const&                 tex,
@@ -187,6 +192,7 @@ inline simd::int_type_t<FloatT> texND_impl_expand_types(
 //
 
 template <typename Tex, typename FloatT>
+VSNRAY_FUNC
 inline auto tex_fetch_impl(Tex const& tex, vector<Tex::dimensions, FloatT> coord)
     -> decltype(texND_impl_expand_types(typename Tex::value_type{}, tex, coord))
 {

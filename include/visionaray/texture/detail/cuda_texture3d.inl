@@ -1,13 +1,13 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <array>
 #include <cassert>
 #include <cstddef>
 #include <utility>
 
 #include "../../cuda/array.h"
 #include "../../cuda/texture_object.h"
+#include "../../array.h"
 
 namespace visionaray
 {
@@ -56,14 +56,14 @@ public:
     // Construct from pointer to host data
     template <typename U>
     cuda_texture(
-            U const*                                data,
-            size_t                                  w,
-            size_t                                  h,
-            size_t                                  d,
-            std::array<tex_address_mode, 3> const&  address_mode,
-            tex_filter_mode const&                  filter_mode,
-            tex_color_space const&                  color_space = RGB,
-            bool                                    normalized_coords = true
+            U const*                           data,
+            size_t                             w,
+            size_t                             h,
+            size_t                             d,
+            array<tex_address_mode, 3> const&  address_mode,
+            tex_filter_mode const&             filter_mode,
+            tex_color_space const&             color_space = RGB,
+            bool                               normalized_coords = true
             )
         : width_(w)
         , height_(h)
@@ -310,7 +310,7 @@ public:
         init_texture_object();
     }
 
-    void set_address_mode(std::array<tex_address_mode, 3> const& mode)
+    void set_address_mode(array<tex_address_mode, 3> const& mode)
     {
         address_mode_ = mode;
 
@@ -366,18 +366,18 @@ public:
 
 private:
 
-    cuda::array                     array_;
+    cuda::array                array_;
 
-    cuda::texture_object            texture_obj_;
+    cuda::texture_object       texture_obj_;
 
-    size_t                          width_;
-    size_t                          height_;
-    size_t                          depth_;
+    size_t                     width_;
+    size_t                     height_;
+    size_t                     depth_;
 
-    std::array<tex_address_mode, 3> address_mode_;
-    tex_filter_mode                 filter_mode_;
-    tex_color_space                 color_space_ = RGB;
-    bool                            normalized_coords_ = true;
+    array<tex_address_mode, 3> address_mode_;
+    tex_filter_mode            filter_mode_;
+    tex_color_space            color_space_ = RGB;
+    bool                       normalized_coords_ = true;
 
 
     cudaError_t upload_data(T const* data)

@@ -26,6 +26,7 @@ template <
     typename Tex,
     typename FloatT
     >
+VSNRAY_FUNC
 inline ReturnT linear(
         ReturnT           /* */,
         InternalT         /* */,
@@ -66,6 +67,7 @@ template <
     typename Tex,
     typename FloatT
     >
+VSNRAY_FUNC
 inline ReturnT linear(
         ReturnT                  /* */,
         InternalT                /* */,
@@ -112,6 +114,7 @@ template <
     typename Tex,
     typename FloatT
     >
+VSNRAY_FUNC
 inline ReturnT linear(
         ReturnT                  /* */,
         InternalT                /* */,

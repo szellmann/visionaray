@@ -26,6 +26,7 @@ template <
     typename Tex,
     typename FloatT
     >
+VSNRAY_FUNC
 inline ReturnT nearest(
         ReturnT           /* */,
         InternalT         /* */,
@@ -55,6 +56,7 @@ template <
     typename Tex,
     typename FloatT
     >
+VSNRAY_FUNC
 inline ReturnT nearest(
         ReturnT           /* */,
         InternalT         /* */,
@@ -84,6 +86,7 @@ template <
     typename Tex,
     typename FloatT
     >
+VSNRAY_FUNC
 inline ReturnT nearest(
         ReturnT           /* */,
         InternalT         /* */,
