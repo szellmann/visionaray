@@ -76,12 +76,24 @@ inline T spectrum<T>::operator()(float lambda) const
         return T(0.0);
     }
 
+#if defined(__CUDA_ARCH__) || defined(__HIP_DEVICE_COMPILE__)
+    // Untested...:
+    float coord = lambda - lambda_min + 0.5f;
+    float frac = coord - floor(frac);
+    int i1(coord);
+    int i2 = max(int(num_samples-1), i1 + 1);
+    T v1 = samples_[i1];
+    T v2 = samples_[i2];
+    return lerp(v1, v2, frac);
+#else
+
     texture_ref<T, 1> tex(num_samples);
     tex.reset( samples_.data() );
     tex.set_filter_mode( Linear );
 
     float coord = (lambda - lambda_min) / (lambda_max - lambda_min);
     return tex1D(tex, coord);
+#endif
 }
 
 
