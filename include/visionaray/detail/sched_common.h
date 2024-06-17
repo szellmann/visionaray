@@ -331,7 +331,7 @@ inline void sample_pixel_impl(
             rt_ref.color()
             );
 
-    if (RenderTargetRef::depth_format != PF_UNSPECIFIED && visionaray::any(rr.hit))
+    if (RenderTargetRef::depth_format != PF_UNSPECIFIED)
     {
         pixel_access::store(
                 pixel_format_constant<RenderTargetRef::depth_format>{},
@@ -510,7 +510,7 @@ inline void sample_pixel_impl(
             rt_ref.color()
             );
 
-    if (RenderTargetRef::depth_format != PF_UNSPECIFIED && visionaray::any(rr.hit))
+    if (RenderTargetRef::depth_format != PF_UNSPECIFIED)
     {
         pixel_access::store(
                 pixel_format_constant<RenderTargetRef::depth_format>{},
