@@ -56,7 +56,7 @@
 // Mark CPU and GPU functions
 //
 
-#if defined(__CUDACC__)
+#if defined(__CUDACC__) || defined(__HIPCC__)
 #define VSNRAY_FUNC __device__ __host__
 #define VSNRAY_GPU_FUNC __device__
 #define VSNRAY_CPU_FUNC __host__

@@ -16,7 +16,7 @@
 #include "../traversal_result.h"
 #include "hit_record.h"
 
-#ifdef __CUDA_ARCH__
+#if defined( __CUDA_ARCH__) || defined(__HIP_DEVICE_COMPILE__)
 #define VSNRAY_FULL_STACK_TRAVERSAL_ 0
 #else
 #define VSNRAY_FULL_STACK_TRAVERSAL_ 1

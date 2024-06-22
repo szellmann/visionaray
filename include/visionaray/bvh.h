@@ -14,10 +14,20 @@
 #include <cuda_runtime.h>
 #endif
 
+#ifdef __HIPCC__
+#include <hip/hip_runtime.h>
+#endif
+
 #ifdef __CUDACC__
 #include "cuda/device_vector.h"
 #include "cuda/safe_call.h"
 #endif
+
+#ifdef __HIPCC__
+#include "hip/device_vector.h"
+#include "hip/safe_call.h"
+#endif
+
 #include "detail/macros.h"
 #include "math/aabb.h"
 #include "math/forward.h"
@@ -40,6 +50,12 @@ inline auto get_pointer(Container const& vec)
 #ifdef __CUDACC__
 template <typename T>
 inline T const* get_pointer(cuda::device_vector<T> const& vec)
+{
+    return vec.data();
+}
+#elif defined(__HIPCC__)
+template <typename T>
+inline T const* get_pointer(hip::device_vector<T> const& vec)
 {
     return vec.data();
 }
@@ -770,6 +786,13 @@ template <typename P>
 using cuda_bvh          = bvh_t<cuda::device_vector<P>, cuda::device_vector<bvh_node>>;
 template <typename P>
 using cuda_index_bvh    = index_bvh_t<cuda::device_vector<P>, cuda::device_vector<bvh_node>, cuda::device_vector<unsigned>>;
+#endif
+
+#ifdef __HIPCC__
+template <typename P>
+using hip_bvh           = bvh_t<hip::device_vector<P>, hip::device_vector<bvh_node>>;
+template <typename P>
+using hip_index_bvh     = index_bvh_t<hip::device_vector<P>, hip::device_vector<bvh_node>, hip::device_vector<unsigned>>;
 #endif
 
 

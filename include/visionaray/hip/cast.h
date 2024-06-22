@@ -3,17 +3,16 @@
 
 #pragma once
 
-#ifndef VSNRAY_CUDA_CAST_H
-#define VSNRAY_CUDA_CAST_H 1
+#ifndef VSNRAY_HIP_CAST_H
+#define VSNRAY_HIP_CAST_H 1
 
-#include <cuda_runtime.h>
-#include <vector_functions.h>
+#include <hip/hip_runtime.h>
 
 #include "../gpu/cast.h"
 
 namespace visionaray
 {
-namespace cuda
+namespace hip
 {
 
 template <typename Dest, typename Source>
@@ -23,7 +22,7 @@ inline Dest cast(Source const& value)
     return ::visionaray::gpu::cast<Dest>(value);
 }
 
-} // cuda
+} // hip
 } // visionaray
 
-#endif // VSNRAY_CUDA_CAST_H
+#endif // VSNRAY_HIP_CAST_H

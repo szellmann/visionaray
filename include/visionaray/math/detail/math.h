@@ -87,7 +87,7 @@ using std::tan;
 #endif
 
 #ifndef _WIN32
-#ifdef __CUDACC__
+#if defined(__CUDACC__) || defined(__HIPCC__)
 using ::clock;
 #else
 inline uint64_t clock64()
