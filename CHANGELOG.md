@@ -1,4 +1,7 @@
 ## [Unreleased]
+### Added
+- Experimental support for AMD's HIP GPGPU language. Tested with
+the anari-visionaray ANARI device.
 
 ## [0.4.1] - 2024-06-05
 ### Changed
