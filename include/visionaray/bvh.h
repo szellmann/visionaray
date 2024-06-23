@@ -317,6 +317,7 @@ public:
         : ref_(ref)
         , affine_inv_(inverse(top_left(transform)))
         , trans_inv_(-transform(3))
+        , inst_id_(~0u)
     {
     }
 
@@ -392,7 +393,7 @@ private:
     vec3 trans_inv_;
 
     // Instance ID
-    int inst_id_ = -1;
+    int inst_id_;
 
 };
 
@@ -416,6 +417,7 @@ public:
         : ref_(ref)
         , affine_inv_(inverse(top_left(transform)))
         , trans_inv_(-transform(3))
+        , inst_id_(~0u)
     {
     }
 
@@ -496,7 +498,7 @@ private:
     vec3 trans_inv_;
 
     // Instance ID
-    int inst_id_ = -1;
+    int inst_id_;
 };
 
 
