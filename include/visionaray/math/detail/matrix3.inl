@@ -197,6 +197,17 @@ inline matrix<3, 3, T> matrix<3, 3, T>::scaling(T const& x, T const& y, T const&
 
 template <typename T>
 MATH_FUNC
+inline matrix<3, 3, T> operator+(matrix<3, 3, T> const& a, matrix<3, 3, T> const& b)
+{
+    return matrix<3, 3, T>(
+            a(0, 0) + b(0, 0), a(1, 0) + b(1, 0), a(2, 0) + b(2, 0),
+            a(0, 1) + b(0, 1), a(1, 1) + b(1, 1), a(2, 1) + b(2, 1),
+            a(0, 2) + b(0, 2), a(1, 2) + b(1, 2), a(2, 2) + b(2, 2)
+            );
+}
+
+template <typename T>
+MATH_FUNC
 inline matrix<3, 3, T> operator*(matrix<3, 3, T> const& a, matrix<3, 3, T> const& b)
 {
     return matrix<3, 3, T>(
