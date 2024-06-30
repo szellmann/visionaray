@@ -1,7 +1,13 @@
 ## [Unreleased]
+
+## [0.4.2] - 2024-06-30
 ### Added
 - Experimental support for AMD's HIP GPGPU language. Tested with
 the anari-visionaray ANARI device.
+
+### Fixed
+- On BVH traversal, hit_record's isect_pos member gets updated.
+This is crucial for correctly implementing local shading operations.
 
 ## [0.4.1] - 2024-06-05
 ### Changed
