@@ -23,13 +23,14 @@ VSNRAY_FUNC
 HR select(M const& m, HR const& hr1, HR const& hr2)
 {
     HR result;
-    result.hit     = select(m, hr1.hit, hr2.hit);
-    result.t       = select(m, hr1.t, hr2.t);
-    result.prim_id = select(m, hr1.prim_id, hr2.prim_id);
-    result.geom_id = select(m, hr1.geom_id, hr2.geom_id);
-    result.inst_id = select(m, hr1.inst_id, hr2.inst_id);
-    result.u       = select(m, hr1.u, hr2.v);
-    result.v       = select(m, hr1.u, hr2.v);
+    result.hit       = select(m, hr1.hit, hr2.hit);
+    result.t         = select(m, hr1.t, hr2.t);
+    result.isect_pos = select(m, hr1.isect_pos, hr2.isect_pos);
+    result.prim_id   = select(m, hr1.prim_id, hr2.prim_id);
+    result.geom_id   = select(m, hr1.geom_id, hr2.geom_id);
+    result.inst_id   = select(m, hr1.inst_id, hr2.inst_id);
+    result.u         = select(m, hr1.u, hr2.v);
+    result.v         = select(m, hr1.u, hr2.v);
     return result;
 }
 
@@ -45,13 +46,14 @@ template <typename HR, typename Cond>
 VSNRAY_FUNC
 void update_if(HR& dst, HR const& src, Cond const& cond)
 {
-    dst.hit     |= cond;
-    dst.t        = select(cond, src.t, dst.t);
-    dst.prim_id  = select(cond, src.prim_id, dst.prim_id);
-    dst.geom_id  = select(cond, src.geom_id, dst.geom_id);
-    dst.inst_id  = select(cond, src.inst_id, dst.inst_id);
-    dst.u        = select(cond, src.u, dst.u);
-    dst.v        = select(cond, src.v, dst.v);
+    dst.hit      |= cond;
+    dst.t         = select(cond, src.t, dst.t);
+    dst.isect_pos = select(cond, src.isect_pos, dst.isect_pos);
+    dst.prim_id   = select(cond, src.prim_id, dst.prim_id);
+    dst.geom_id   = select(cond, src.geom_id, dst.geom_id);
+    dst.inst_id   = select(cond, src.inst_id, dst.inst_id);
+    dst.u         = select(cond, src.u, dst.u);
+    dst.v         = select(cond, src.v, dst.v);
 }
 
 
