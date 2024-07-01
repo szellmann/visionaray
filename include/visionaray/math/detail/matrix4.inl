@@ -443,6 +443,7 @@ inline matrix<4, 4, T> frustum(
 
     return M;
 }
+
 // Return top-left 3x3 matrix
 template <typename T>
 MATH_FUNC
@@ -454,7 +455,7 @@ inline matrix<3, 3, T> top_left(matrix<4, 4, T> const& m)
     {
         for (size_t x = 0; x < 3; ++x)
         {
-            result(x, y) = m(y, x);
+            result(x, y) = m(x, y);
         }
     }
 
