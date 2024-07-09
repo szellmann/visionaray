@@ -1,4 +1,6 @@
 ## [Unreleased]
+### Changed
+- Made pointer_storage and texture_ref trivially constructible.
 
 ## [0.4.2] - 2024-06-30
 ### Added
