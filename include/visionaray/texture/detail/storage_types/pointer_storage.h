@@ -164,8 +164,8 @@ public:
 
 protected:
 
-    T const* data_ = nullptr;
-    array<unsigned, Dim> size_ {{ 0 }};
+    T const* data_;
+    array<unsigned, Dim> size_;
 
     template <typename U>
     VSNRAY_FUNC

@@ -232,25 +232,175 @@ protected:
 //
 
 template <typename T, unsigned Dim>
-struct texture_ref : texture_base<Dim, pointer_storage<T, Dim>>
+struct texture_ref : pointer_storage<T, Dim>
 {
     using value_type = T;
-    using base_type = texture_base<Dim, pointer_storage<T, Dim>>;
+    using base_type = pointer_storage<T, Dim>;
     enum { dimensions = Dim };
     using base_type::base_type;
-};
 
-// Specialization, uses tiling (TODO..)
+    texture_ref() = default;
 
+    texture_ref(unsigned size[Dim])
+        : base_type(size)
+    {
+    }
 
-// Specialization, uses bricking
-template <typename T>
-struct texture_ref<T, 3> : texture_base<3, pointer_storage<T, 3>>
-{
-    using value_type = T;
-    using base_type = texture_base<3, pointer_storage<T, 3>>;
-    enum { dimensions = 3 };
-    using base_type::base_type;
+    // Conversion from another texture type;
+    // This is e.g. used for ref()'ing
+    template <typename OtherStorage>
+    VSNRAY_FUNC
+    explicit texture_ref(texture_base<Dim, OtherStorage> const& other)
+        : base_type(other.data(), other.size())
+        , address_mode_(other.get_address_mode())
+        , filter_mode_(other.get_filter_mode())
+        , color_space_(other.get_color_space())
+        , normalized_coords_(other.get_normalized_coords())
+    {
+    }
+
+    VSNRAY_FUNC texture_ref(texture_ref<T, Dim> const& other) = default;
+    VSNRAY_FUNC texture_ref(texture_ref<T, Dim>&& other) = default;
+
+    VSNRAY_FUNC texture_ref& operator=(texture_ref<T, Dim> const& other) = default;
+    VSNRAY_FUNC texture_ref& operator=(texture_ref<T, Dim>&& other) = default;
+
+    // Applies the appropriate texture address mode to
+    // boundary texture coordinates
+    template <typename CoordType>
+    VSNRAY_FUNC
+    CoordType remap_texture_coordinate(CoordType coord) const
+    {
+        using F = typename CoordType::value_type;
+        using I = decltype(convert_to_int(F{}));
+
+        CoordType result;
+
+        for (unsigned d = 0; d < Dim; ++d)
+        {
+            int texsize = static_cast<int>(base_type::size()[d]);
+            F N = convert_to_float((int)texsize);
+
+            switch (address_mode_[d])
+            {
+            case Mirror:
+                result[d] = select(
+                    (convert_to_int(floor(coord[d])) & I(1)) == 1, // if is odd
+                    convert_to_float(texsize - 1) / convert_to_float(texsize) - (coord[d] - floor(coord[d])),
+                    coord[d] - floor(coord[d])
+                    );
+                break;
+
+            case Wrap:
+                result[d] = coord[d] - floor(coord[d]);
+                break;
+
+            case Clamp:
+                // fall-through
+            default:
+                result[d] = clamp(coord[d], F(0.0), F(1.0) - F(1.0) / N);
+                break;
+            }
+        }
+
+        return result;
+    }
+
+    // For compatibility
+    VSNRAY_FUNC
+    inline unsigned width() const
+    {
+        return base_type::size()[0];
+    }
+
+    VSNRAY_FUNC
+    inline unsigned height() const
+    {
+        return base_type::size()[1];
+    }
+
+    VSNRAY_FUNC
+    inline unsigned depth() const
+    {
+        return base_type::size()[2];
+    }
+
+    VSNRAY_FUNC
+    void set_address_mode(unsigned index, tex_address_mode mode)
+    {
+        assert(index < Dim);
+        address_mode_[index] = mode;
+    }
+
+    VSNRAY_FUNC
+    void set_address_mode(tex_address_mode mode)
+    {
+        for (unsigned d = 0; d < Dim; ++d)
+        {
+            address_mode_[d] = mode;
+        }
+    }
+
+    VSNRAY_FUNC
+    void set_address_mode(array<tex_address_mode, Dim> const& mode)
+    {
+        address_mode_ = mode;
+    }
+
+    VSNRAY_FUNC
+    tex_address_mode get_address_mode(unsigned index) const
+    {
+        assert(index < Dim);
+        return address_mode_[index];
+    }
+
+    VSNRAY_FUNC
+    array<tex_address_mode, Dim> const& get_address_mode() const
+    {
+        return address_mode_;
+    }
+
+    VSNRAY_FUNC
+    void set_filter_mode(tex_filter_mode mode)
+    {
+        filter_mode_ = mode;
+    }
+
+    VSNRAY_FUNC
+    tex_filter_mode get_filter_mode() const
+    {
+        return filter_mode_;
+    }
+
+    VSNRAY_FUNC
+    void set_color_space(tex_color_space cs)
+    {
+        color_space_ = cs;
+    }
+
+    VSNRAY_FUNC
+    tex_color_space get_color_space() const
+    {
+        return color_space_;
+    }
+
+    VSNRAY_FUNC
+    void set_normalized_coords(bool nc)
+    {
+        normalized_coords_ = nc;
+    }
+
+    VSNRAY_FUNC
+    bool get_normalized_coords() const
+    {
+        return normalized_coords_;
+    }
+private:
+
+    array<tex_address_mode, Dim> address_mode_;
+    tex_filter_mode              filter_mode_;
+    tex_color_space              color_space_;
+    bool                         normalized_coords_;
 };
 
 //-------------------------------------------------------------------------------------------------
@@ -271,15 +421,15 @@ struct texture : texture_base<Dim, aligned_storage<T, Dim, 16>>
 
 
 // Specialization, uses bricking
-template <typename T>
-struct texture<T, 3> : texture_base<3, aligned_storage<T, 3, 16>>
-{
-    using value_type = T;
-    using base_type = texture_base<3, aligned_storage<T, 3, 16>>;
-    enum { dimensions = 3 };
-    using base_type::base_type;
-    using ref_type = texture_ref<T, 3>;
-};
+// template <typename T>
+// struct texture<T, 3> : texture_base<3, aligned_storage<T, 3, 16>>
+// {
+//     using value_type = T;
+//     using base_type = texture_base<3, aligned_storage<T, 3, 16>>;
+//     enum { dimensions = 3 };
+//     using base_type::base_type;
+//     using ref_type = texture_ref<T, 3>;
+// };
 
 
 template <typename T>
