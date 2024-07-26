@@ -6,6 +6,7 @@
 #ifndef VSNRAY_CUDA_SAFE_CALL_H
 #define VSNRAY_CUDA_SAFE_CALL_H 1
 
+#include <cstdlib>
 #include <cstdio>
 
 #include <cuda_runtime_api.h>
