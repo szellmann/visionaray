@@ -2,7 +2,7 @@
 # See the LICENSE file for details.
 
 include(CMakePackageConfigHelpers)
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.22)
 project(visionaray VERSION 0.4.2 LANGUAGES C CXX)
 
 include(GNUInstallDirs)
