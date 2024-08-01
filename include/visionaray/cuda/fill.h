@@ -19,15 +19,15 @@ namespace cuda
 
 inline void fill(void* ptr, size_t len, void* bytes, unsigned count)
 {
-    char* host_array = new char[len * count];
-    for (size_t i = 0; i < len; ++i)
+    char* host_array = new char[len];
+    for (size_t i = 0; i < len / count; ++i)
     {
         for (unsigned c = 0; c < count; ++c)
         {
             host_array[i * count + c] = ((char*)bytes)[c];
         }
     }
-    CUDA_SAFE_CALL(cudaMemcpy(ptr, host_array, len * count, cudaMemcpyHostToDevice));
+    CUDA_SAFE_CALL(cudaMemcpy(ptr, host_array, len, cudaMemcpyHostToDevice));
     delete[] host_array;
 }
 
