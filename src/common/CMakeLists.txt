@@ -204,8 +204,6 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/config.h
 )
 
-include_directories(${__VSNRAY_CONFIG_DIR})
-
 
 #--------------------------------------------------------------------------------------------------
 # Install headers and library
