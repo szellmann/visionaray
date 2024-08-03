@@ -267,6 +267,16 @@ static __global__ void assign_morton_codes(
     }
 }
 
+static __global__ void init_nodes(node* nodes, size_t num_nodes)
+{
+    size_t index = blockIdx.x * size_t(blockDim.x) + threadIdx.x;
+
+    if (index < num_nodes)
+    {
+        nodes[index].init();
+    }
+}
+
 static __global__ void build_hierarchy(
         node*     inner,     // OUT: all inner nodes with pointers assigned
         node*     leaves,    // OUT: all leaf nodes with parent pointers assigned
@@ -278,16 +288,6 @@ static __global__ void build_hierarchy(
     int num_inner = num_leaves - 1;
 
     int index = blockIdx.x * blockDim.x + threadIdx.x;
-
-    if (index < num_leaves)
-    {
-        leaves[index].init();
-    }
-
-    if (index < num_inner)
-    {
-        inner[index].init();
-    }
 
     if (index < num_inner)
     {
@@ -744,6 +744,22 @@ struct lbvh_builder
         // Use Karras' radix tree algorithm to build hierarchy
         cuda::device_vector<node> inner(num_prims - 1);
         cuda::device_vector<node> leaves(num_prims);
+
+        {
+            size_t num_threads = 1024;
+
+            size_t num_inner = inner.size();
+            init_nodes<<<div_up(num_inner, num_threads), num_threads>>>(
+                    inner.data(),
+                    num_inner
+                    );
+
+            size_t num_leaves = leaves.size();
+            init_nodes<<<div_up(num_leaves, num_threads), num_threads>>>(
+                    leaves.data(),
+                    num_leaves
+                    );
+        }
 
         {
             size_t num_threads = 1024;
