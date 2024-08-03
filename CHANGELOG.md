@@ -1,6 +1,8 @@
 ## [Unreleased]
 ### Changed
 - Made pointer_storage and texture_ref trivially constructible.
+- Fixed some bugs in the GPU LBVH builder that would cause data
+races otherwise.
 
 ## [0.4.2] - 2024-06-30
 ### Added
