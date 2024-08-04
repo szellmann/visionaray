@@ -11,6 +11,7 @@
 
 #ifdef __CUDACC__
 #include <visionaray/cuda/device_vector.h>
+#include <visionaray/cuda/safe_call.h>
 #include <cub/cub.cuh>
 #endif
 
@@ -665,6 +666,18 @@ struct lbvh_builder
     cuda::device_vector<detail::lbvh::prim_ref> d_prim_refs;
     cuda::device_vector<aabb> d_prim_bounds;
 
+    cudaStream_t copy_stream{0};
+
+    lbvh_builder()
+    {
+        CUDA_SAFE_CALL(cudaStreamCreate(&copy_stream));
+    }
+
+    ~lbvh_builder()
+    {
+        CUDA_SAFE_CALL(cudaStreamDestroy(copy_stream));
+    }
+
     template <typename P>
     cuda_index_bvh<P> build(cuda_index_bvh<P> /* */, P* primitives, size_t num_prims)
     {
@@ -803,13 +816,14 @@ struct lbvh_builder
 
         // Copy primitives to BVH (device to device copy!)
         tree.primitives().resize(num_prims);
-        CUDA_SAFE_CALL(cudaMemcpy(
+        CUDA_SAFE_CALL(cudaMemcpyAsync(
             tree.primitives().begin(),
             first,
             num_prims * sizeof(P),
-            cudaMemcpyDefault
+            cudaMemcpyDefault,
+            copy_stream
             ));
-        CUDA_SAFE_CALL(cudaDeviceSynchronize());
+        CUDA_SAFE_CALL(cudaStreamSynchronize(copy_stream));
 
         // Assign 0,1,2,3,.. indices
         {
