@@ -762,12 +762,16 @@ struct lbvh_builder
             size_t num_threads = 1024;
 
             size_t num_inner = inner.size();
-            init_nodes<<<div_up(num_inner, num_threads), num_threads>>>(
-                    inner.data(),
-                    num_inner
-                    );
+            if (num_inner > 0)
+            {
+                init_nodes<<<div_up(num_inner, num_threads), num_threads>>>(
+                        inner.data(),
+                        num_inner
+                        );
+            }
 
             size_t num_leaves = leaves.size();
+            assert(num_leaves > 0); // should have at least one leaf node!
             init_nodes<<<div_up(num_leaves, num_threads), num_threads>>>(
                     leaves.data(),
                     num_leaves
