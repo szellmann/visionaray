@@ -1,7 +1,9 @@
 # This file is distributed under the MIT license.
 # See the LICENSE file for details.
 
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.22)
+
+include(CMakeFindDependencyMacro)
 
 if (TARGET visionaray::visionaray)
   return()
