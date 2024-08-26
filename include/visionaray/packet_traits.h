@@ -7,11 +7,12 @@
 #define VSNRAY_PACKET_TRAITS_H 1
 
 #include "detail/macros.h"
-#include "math/simd/avx.h"
-#include "math/simd/avx512.h"
-#include "math/simd/builtin.h"
-#include "math/simd/neon.h"
-#include "math/simd/sse.h"
+#include "math/simd/simd.h"
+//#include "math/simd/avx.h"
+//#include "math/simd/avx512.h"
+//#include "math/simd/builtin.h"
+//#include "math/simd/neon.h"
+//#include "math/simd/sse.h"
 
 namespace visionaray
 {

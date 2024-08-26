@@ -69,10 +69,10 @@
 #define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_SSE3
 #elif defined(__SSE2__) || VSNRAY_ARCH == VSNRAY_ARCH_X86_64 // SSE2 is always available on 64-bit Intel compatible platforms
 #define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_SSE2
-#elif defined(__ARM_NEON) && (defined(__ARM_NEON_FP) || defined(__ARM_FP)) // Compiler on Jetson Nano doesn't define __ARM_NEON_FP although supported.
-#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_NEON_FP
-#elif defined(__ARM_NEON)
-#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_NEON
+//#elif defined(__ARM_NEON) && (defined(__ARM_NEON_FP) || defined(__ARM_FP)) // Compiler on Jetson Nano doesn't define __ARM_NEON_FP although supported.
+//#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_NEON_FP
+//#elif defined(__ARM_NEON)
+//#define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_NEON
 #else
 #define VSNRAY_SIMD_ISA_ 0
 #endif

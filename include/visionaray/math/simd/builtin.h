@@ -35,6 +35,7 @@ public:
     MATH_FUNC basic_float(float x, float y, float z, float w);
     MATH_FUNC basic_float(float const v[4]);
     MATH_FUNC basic_float(float s);
+    MATH_FUNC basic_float(basic_int<int[4]> const i);
 };
 
 
@@ -73,6 +74,7 @@ public:
     MATH_FUNC basic_mask(bool x, bool y, bool z, bool w);
     MATH_FUNC basic_mask(bool const v[4]);
     MATH_FUNC basic_mask(bool b);
+    MATH_FUNC basic_mask(basic_int<int[4]> const i);
 };
 
 } // simd

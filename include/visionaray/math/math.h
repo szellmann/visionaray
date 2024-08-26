@@ -6,7 +6,9 @@
 #ifndef VSNRAY_MATH_H
 #define VSNRAY_MATH_H 1
 
+#ifndef VSNRAY_NO_SIMD
 #include "simd/simd.h"
+#endif
 #include "detail/math.h"
 
 #include "aabb.h"

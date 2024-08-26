@@ -28,6 +28,15 @@ VSNRAY_FORCE_INLINE mask4::basic_mask(bool b)
 {
 }
 
+MATH_FUNC
+VSNRAY_FORCE_INLINE mask4::basic_mask(basic_int<int[4]> const i)
+    : value{static_cast<bool>(i.value[0]),
+            static_cast<bool>(i.value[1]),
+            static_cast<bool>(i.value[2]),
+            static_cast<bool>(i.value[3])}
+{
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Static cast

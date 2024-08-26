@@ -737,6 +737,7 @@ struct lbvh_builder
         // Sort prim refs by morton codes
         void* d_temp_storage = nullptr;
         size_t temp_storage_bytes = 0;
+        /*
         cub::DeviceMergeSort::StableSortKeys(
             d_temp_storage,
             temp_storage_bytes,
@@ -753,6 +754,7 @@ struct lbvh_builder
             detail::CustomLess()
             );
         CUDA_SAFE_CALL(cudaFree(d_temp_storage));
+        */
 
         // Use Karras' radix tree algorithm to build hierarchy
         cuda::device_vector<node> inner(num_prims - 1);

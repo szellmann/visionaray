@@ -6,13 +6,17 @@
 #ifndef VSNRAY_VIEWER_RENDER_H
 #define VSNRAY_VIEWER_RENDER_H 1
 
+#define VSNRAY_NO_SIMD 1
+
 #include <common/config.h>
 
 #ifdef __CUDACC__
 #include <thrust/device_vector.h>
 #endif
 
+#ifndef __CUDACC__
 #include <visionaray/math/simd/simd.h>
+#endif
 #include <visionaray/math/forward.h>
 #include <visionaray/math/ray.h>
 //#include <visionaray/math/sphere.h>
@@ -54,8 +58,8 @@ namespace visionaray
 // Helper types
 //
 
-//using scalar_type_cpu           = float;
-using scalar_type_cpu           = simd::float4;
+using scalar_type_cpu           = float;
+//using scalar_type_cpu           = simd::float4;
 //using scalar_type_cpu           = simd::float8;
 //using scalar_type_cpu           = simd::float16;
 using scalar_type_gpu           = float;

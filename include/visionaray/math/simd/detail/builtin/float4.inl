@@ -30,6 +30,15 @@ VSNRAY_FORCE_INLINE float4::basic_float(float s)
 {
 }
 
+MATH_FUNC
+VSNRAY_FORCE_INLINE float4::basic_float(basic_int<int[4]> const i)
+    : value{static_cast<float>(i.value[0]),
+            static_cast<float>(i.value[1]),
+            static_cast<float>(i.value[2]),
+            static_cast<float>(i.value[3])}
+{
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Bitwise cast

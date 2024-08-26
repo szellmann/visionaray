@@ -8,7 +8,9 @@
 
 #include <cstddef>
 
+#ifndef VSNRAY_NO_SIMD
 #include <visionaray/math/simd/simd.h>
+#endif
 #include <visionaray/math/vector.h>
 
 namespace visionaray
