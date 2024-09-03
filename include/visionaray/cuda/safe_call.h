@@ -27,7 +27,7 @@
 // Macro to print last cuda error except if it was `Success'
 //
 
-#define CUDA_PRINT_LAST_ERROR() { visionaray::cuda::print_last_error(__FILE__, __LINE__); }
+#define CUDA_PRINT_LAST_ERROR() { visionaray::cuda::print_last_error(__FILE__, __LINE__, true); }
 
 namespace visionaray
 {
@@ -46,8 +46,13 @@ inline void safe_call(cudaError_t code, char const* file, int line, bool fatal =
     }
 }
 
-inline void print_last_error(char const* file, int line)
+inline void print_last_error(char const* file, int line, bool sync = true)
 {
+    if (sync)
+    {
+        cudaDeviceSynchronize();
+    }
+
     cudaError_t code = cudaGetLastError();
     if (code != cudaSuccess)
     {
