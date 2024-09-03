@@ -250,6 +250,47 @@ public:
         }
     }
 
+    // reset from host texture:
+    template <typename U>
+    void reset(texture<U, 1> const& host_tex)
+    {
+        if (!(*this) ||
+            width_ != host_tex.width() ||
+            address_mode_ !=  host_tex.get_address_mode() ||
+            filter_mode_ !=  host_tex.get_filter_mode() ||
+            color_space_ !=  host_tex.get_color_space() ||
+            normalized_coords_ !=  host_tex.get_normalized_coords())
+        {
+            width_ = host_tex.width();
+            address_mode_ =  host_tex.get_address_mode();
+            filter_mode_ =  host_tex.get_filter_mode();
+            color_space_ =  host_tex.get_color_space();
+            normalized_coords_ =  host_tex.get_normalized_coords();
+
+            if (width_ == 0)
+            {
+                return;
+            }
+
+            cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+
+            if ( array_.allocate(desc, width_) != cudaSuccess )
+            {
+                return;
+            }
+        }
+
+        if ( upload_data(host_tex.data()) != cudaSuccess )
+        {
+            return;
+        }
+
+        if ( init_texture_object() != cudaSuccess )
+        {
+            return;
+        }
+    }
+
     template <typename U>
     void reset(U const* data)
     {
