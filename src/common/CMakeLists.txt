@@ -221,6 +221,22 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
         PATTERN "*.inc"
 )
 
+option(VSNRAY_COMMON_INSTALL_IMGUI "Install ImGUI headers" ON)
+set(IMGUI_DIR ../3rdparty/imgui)
+if (VSNRAY_COMMON_INSTALL_IMGUI)
+  install(DIRECTORY ${IMGUI_DIR}
+      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/common
+      COMPONENT headers
+      FILES_MATCHING
+          PATTERN "*.h"
+          PATTERN "*.hh"
+          PATTERN "*.hpp"
+          PATTERN "*.hxx"
+          PATTERN "*.inl"
+          PATTERN "*.inc"
+  )
+endif()
+
 install(TARGETS visionaray_common
     EXPORT visionaray_Exports
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT libraries
