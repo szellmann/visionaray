@@ -28,6 +28,8 @@ public:
 
     MATH_FUNC interval& extend(T const &t);
     MATH_FUNC interval& extend(interval<T> const& t);
+
+    MATH_FUNC bool contains(T const& t) const;
 };
 
 } // MATH_NAMESPACE

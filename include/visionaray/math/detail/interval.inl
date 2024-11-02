@@ -40,6 +40,13 @@ inline interval<T>& interval<T>::extend(interval<T> const& t)
 
 template <typename T>
 MATH_FUNC
+inline bool interval<T>::contains(T const& t) const
+{
+    return t >= min && t <= max;
+}
+
+template <typename T>
+MATH_FUNC
 inline bool operator==(interval<T> const& a, interval<T> const& b)
 {
     return a.min == b.min && a.max == b.max;
