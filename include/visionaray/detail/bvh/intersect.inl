@@ -80,7 +80,7 @@ next:
             //     traverse to the next node
 
             while (!is_leaf(node))
-            {   
+            {
                 auto children = &b.node(node.get_child(0));
 
                 auto hr1 = isect(ray, children[0].get_bounds(), inv_dir);
