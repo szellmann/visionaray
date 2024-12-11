@@ -69,6 +69,8 @@ inline T const* get_pointer(hip::device_vector<T> const& vec)
 
 struct VSNRAY_ALIGN(32) bvh_node
 {
+    enum { Width = 2 };
+
     aabb bbox;
     union
     {
@@ -159,20 +161,107 @@ inline bool operator==(bvh_node const& a, bvh_node const& b)
 
 
 //--------------------------------------------------------------------------------------------------
+// bvh_multi_node
+//
+
+template <int W>
+struct bvh_multi_node
+{
+    enum { Width = W };
+
+    aabb bbox[Width];
+    unsigned children[Width];
+    unsigned first_prim;
+    unsigned num_prims;
+    unsigned child_count;
+
+    void init(unsigned id, bvh_node const* nodes)
+    {
+        for (int i = 0; i < Width; ++i)
+        {
+            children[i] = ~0u;
+            bbox[i].invalidate();
+        }
+
+        const bvh_node& n = nodes[id];
+
+        if (n.is_inner())
+        {
+            children[0] = n.first_child;
+            children[1] = n.first_child + 1;
+
+            bbox[0] = nodes[children[0]].get_bounds();
+            bbox[1] = nodes[children[1]].get_bounds();
+
+            child_count = 2;
+        }
+        else
+        {
+            child_count = 0;
+            first_prim = n.get_first_primitive();
+            num_prims = n.get_num_primitives();
+        }
+    }
+
+    VSNRAY_FUNC bool is_inner() const { return child_count != 0; }
+    VSNRAY_FUNC bool is_leaf() const { return child_count == 0; }
+    VSNRAY_FUNC bool is_valid() const { return child_count != ~0u; }
+
+    VSNRAY_FUNC aabb const& get_child_bounds(unsigned i) const
+    {
+        return bbox[i];
+    }
+
+    VSNRAY_FUNC unsigned get_child(unsigned i = 0) const
+    {
+        assert(is_inner());
+        assert(i < Width);
+        return children[i];
+    }
+
+    struct index_range
+    {
+        unsigned first;
+        unsigned last;
+    };
+
+    VSNRAY_FUNC index_range get_indices() const
+    {
+        assert(is_leaf());
+        return { first_prim, first_prim + num_prims };
+    }
+
+    VSNRAY_FUNC unsigned get_first_primitive() const
+    {
+        assert(is_leaf());
+        return first_prim;
+    }
+
+    VSNRAY_FUNC unsigned get_num_primitives() const
+    {
+        assert(is_leaf());
+        return num_prims;
+    }
+};
+
+
+//--------------------------------------------------------------------------------------------------
 // [index_]bvh_ref_t
 //
 
-template <typename PrimitiveType>
+template <typename PrimitiveType, typename Node = bvh_node>
 class bvh_ref_t
 {
 public:
 
     using primitive_type = PrimitiveType;
 
+    enum { Width = Node::Width };
+
 private:
 
     using P = const PrimitiveType;
-    using N = const bvh_node;
+    using N = const Node;
 
     P* primitives_first;
     P* primitives_last;
@@ -223,17 +312,19 @@ public:
     }
 };
 
-template <typename PrimitiveType>
+template <typename PrimitiveType, typename Node = bvh_node>
 class index_bvh_ref_t
 {
 public:
 
     using primitive_type = PrimitiveType;
 
+    enum { Width = Node::Width };
+
 private:
 
     using P = const PrimitiveType;
-    using N = const bvh_node;
+    using N = const Node;
     using I = const unsigned;
 
     P* primitives_first;
@@ -271,6 +362,11 @@ public:
         return nodes_first;
     }
 
+    VSNRAY_FUNC I* indices() const
+    {
+        return indices_first;
+    }
+
     VSNRAY_FUNC P& primitive(size_t indirect_index) const
     {
         return primitives_first[indices_first[indirect_index]];
@@ -297,23 +393,25 @@ public:
 // [index_]bvh_inst_t
 //
 
-template <typename PrimitiveType>
+template <typename PrimitiveType, typename Node = bvh_node>
 class bvh_inst_t
 {
 public:
 
     using primitive_type = PrimitiveType;
 
+    enum { Width = Node::Width };
+
 private:
 
     using P = const PrimitiveType;
-    using N = const bvh_node;
+    using N = const Node;
 
 public:
 
     bvh_inst_t() = default;
 
-    bvh_inst_t(bvh_ref_t<PrimitiveType> const& ref, mat4x3 const& transform)
+    bvh_inst_t(bvh_ref_t<PrimitiveType, Node> const& ref, mat4x3 const& transform)
         : ref_(ref)
         , affine_inv_(inverse(top_left(transform)))
         , trans_inv_(-transform(3))
@@ -341,7 +439,7 @@ public:
         return ref_.node(index);
     }
 
-    VSNRAY_FUNC bvh_ref_t<PrimitiveType> get_ref() const
+    VSNRAY_FUNC bvh_ref_t<PrimitiveType, Node> get_ref() const
     {
         return ref_;
     }
@@ -384,7 +482,7 @@ public:
 private:
 
     // BVH ref
-    bvh_ref_t<PrimitiveType> ref_;
+    bvh_ref_t<PrimitiveType, Node> ref_;
 
     // Inverse affine transformation matrix
     mat3 affine_inv_;
@@ -397,23 +495,25 @@ private:
 
 };
 
-template <typename PrimitiveType>
+template <typename PrimitiveType, typename Node = bvh_node>
 class index_bvh_inst_t
 {
 public:
 
     using primitive_type = PrimitiveType;
 
+    enum { Width = Node::Width };
+
 private:
 
     using P = const PrimitiveType;
-    using N = const bvh_node;
+    using N = const Node;
 
 public:
 
     index_bvh_inst_t() = default;
 
-    index_bvh_inst_t(index_bvh_ref_t<PrimitiveType> const& ref, mat4x3 const& transform)
+    index_bvh_inst_t(index_bvh_ref_t<PrimitiveType, Node> const& ref, mat4x3 const& transform)
         : ref_(ref)
         , affine_inv_(inverse(top_left(transform)))
         , trans_inv_(-transform(3))
@@ -446,7 +546,7 @@ public:
         return ref_.node(index);
     }
 
-    VSNRAY_FUNC index_bvh_ref_t<PrimitiveType> get_ref() const
+    VSNRAY_FUNC index_bvh_ref_t<PrimitiveType, Node> get_ref() const
     {
         return ref_;
     }
@@ -489,7 +589,7 @@ public:
 private:
 
     // BVH ref
-    index_bvh_ref_t<PrimitiveType> ref_;
+    index_bvh_ref_t<PrimitiveType, Node> ref_;
 
     // Inverse affine transformation matrix
     mat3 affine_inv_;
@@ -506,7 +606,7 @@ private:
 // [index_]bvh_t
 //
 
-template <typename PrimitiveVector, typename NodeVector>
+template <typename PrimitiveVector, typename NodeVector, int W = 2>
 class bvh_t
 {
 public:
@@ -516,8 +616,10 @@ public:
     using node_type         = typename NodeVector::value_type;
     using node_vector       = NodeVector;
 
-    using bvh_ref  = bvh_ref_t<primitive_type>;
-    using bvh_inst = bvh_inst_t<primitive_type>;
+    using bvh_ref  = bvh_ref_t<primitive_type, node_type>;
+    using bvh_inst = bvh_inst_t<primitive_type, node_type>;
+
+    enum { Width = W };
 
 public:
 
@@ -585,7 +687,7 @@ private:
 
 };
 
-template <typename PrimitiveVector, typename NodeVector, typename IndexVector>
+template <typename PrimitiveVector, typename NodeVector, typename IndexVector, int W = 2>
 class index_bvh_t
 {
 public:
@@ -596,8 +698,10 @@ public:
     using node_vector       = NodeVector;
     using index_vector      = IndexVector;
 
-    using bvh_ref  = index_bvh_ref_t<primitive_type>;
-    using bvh_inst = index_bvh_inst_t<primitive_type>;
+    using bvh_ref  = index_bvh_ref_t<primitive_type, node_type>;
+    using bvh_inst = index_bvh_inst_t<primitive_type, node_type>;
+
+    enum { Width = W };
 
 public:
 
@@ -782,6 +886,10 @@ template <typename P>
 using bvh               = bvh_t<aligned_vector<P>, aligned_vector<bvh_node, 32>>;
 template <typename P>
 using index_bvh         = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node, 32>, aligned_vector<unsigned>>;
+template <typename P>
+using index_bvh4        = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<4>, 32>, aligned_vector<unsigned>, 4>;
+template <typename P>
+using index_bvh8        = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<8>, 32>, aligned_vector<unsigned>, 8>;
 
 #ifdef __CUDACC__
 template <typename P>
@@ -815,12 +923,14 @@ void traverse_parents(B const& b, N const& n, F func);
 
 } // visionaray
 
+#include "detail/bvh/collapse.h"
 #include "detail/bvh/get_bounds.inl"
 #include "detail/bvh/get_color.h"
 #include "detail/bvh/get_normal.h"
 #include "detail/bvh/get_tex_coord.h"
 #include "detail/bvh/hit_record.h"
 #include "detail/bvh/intersect.inl"
+#include "detail/bvh/intersect_wide.inl"
 #include "detail/bvh/lbvh.h"
 #include "detail/bvh/prim_traits.h"
 #include "detail/bvh/refit.h"
