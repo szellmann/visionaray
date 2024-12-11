@@ -6,7 +6,6 @@
 #ifndef VSNRAY_INTERSECTOR_H
 #define VSNRAY_INTERSECTOR_H 1
 
-#include <cstddef>
 #include <type_traits>
 #include <utility>
 
