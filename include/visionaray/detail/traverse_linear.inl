@@ -1,7 +1,6 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <cstddef>
 #include <iterator>
 #include <type_traits>
 #include <utility>
@@ -12,8 +11,6 @@
 
 #include "exit_traversal.h"
 #include "macros.h"
-#include "multi_hit.h"
-#include "traversal_result.h"
 
 namespace visionaray
 {
@@ -26,7 +23,6 @@ namespace detail
 
 template <
     traversal_type Traversal,
-    size_t MultiHitMax = 1,             // Max hits for multi-hit traversal
     typename R,
     typename P,
     typename Intersector
@@ -40,7 +36,7 @@ inline auto traverse(
         Intersector&                    isect
         )
 {
-    using RT = typename traversal_result<decltype( isect(r, *begin) ), Traversal, MultiHitMax>::type;
+    using RT = decltype(isect(r, *begin));
 
     RT result;
 
@@ -67,7 +63,6 @@ inline auto traverse(
 
 template <
     traversal_type Traversal,
-    size_t MultiHitMax = 1,             // Max hits for multi-hit traversal
     typename R,
     typename P,
     typename Intersector
@@ -83,7 +78,6 @@ inline auto traverse(
 {
     using RT = decltype( isect(
             std::integral_constant<int, Traversal>{},
-            std::integral_constant<size_t, MultiHitMax>{},
             r,
             *begin
             ) );
@@ -94,7 +88,6 @@ inline auto traverse(
     {
         auto hr = isect(
                 std::integral_constant<int, Traversal>{},
-                std::integral_constant<size_t, MultiHitMax>{},
                 r,
                 *it
                 );
@@ -113,7 +106,6 @@ inline auto traverse(
 
 template <
     traversal_type Traversal,
-    size_t MultiHitMax = 1,
     typename IsAnyBVH,
     typename R,
     typename Primitives,
@@ -127,7 +119,7 @@ inline auto traverse(
         Primitives      end,
         Intersector&    isect
         )
-    -> decltype( traverse<Traversal, MultiHitMax>(
+    -> decltype( traverse<Traversal>(
             IsAnyBVH{},
             r,
             begin,
@@ -136,7 +128,7 @@ inline auto traverse(
             isect
             ) )
 {
-    return traverse<Traversal, MultiHitMax>(
+    return traverse<Traversal>(
             IsAnyBVH{},
             r,
             begin,
@@ -219,48 +211,6 @@ inline auto closest_hit(R const& r, Primitives begin, Primitives end)
 {
     default_intersector ignore;
     return closest_hit(r, begin, end, ignore);
-}
-
-
-//-------------------------------------------------------------------------------------------------
-// multi hit
-//
-
-template <
-    size_t   N = 16,
-    typename R,
-    typename Primitives,
-    typename Intersector,
-    typename Primitive = typename std::iterator_traits<Primitives>::value_type
-    >
-VSNRAY_FUNC
-inline auto multi_hit(
-        R const&        r,
-        Primitives      begin,
-        Primitives      end,
-        Intersector&    isect
-        )
-{
-    return detail::traverse<detail::MultiHit, N>(
-            is_any_bvh<Primitive>{},
-            r,
-            begin,
-            end,
-            isect
-            );
-}
-
-template <
-    size_t N = 16,
-    typename R,
-    typename Primitives,
-    typename Primitive = typename std::iterator_traits<Primitives>::value_type
-    >
-VSNRAY_FUNC
-inline auto multi_hit(R const& r, Primitives begin, Primitives end)
-{
-    default_intersector ignore;
-    return multi_hit<N>(r, begin, end, ignore);
 }
 
 } // visionaray

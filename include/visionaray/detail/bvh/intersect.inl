@@ -13,7 +13,6 @@
 #include "../exit_traversal.h"
 #include "../stack.h"
 #include "../tags.h"
-#include "../traversal_result.h"
 #include "hit_record.h"
 
 #if defined( __CUDA_ARCH__) || defined(__HIP_DEVICE_COMPILE__)
@@ -31,7 +30,6 @@ namespace visionaray
 
 template <
     detail::traversal_type Traversal,
-    size_t MultiHitMax = 1,             // Max hits for multi-hit traversal
     typename R,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
@@ -45,21 +43,19 @@ inline auto intersect(
         BVH const&   b,
         Intersector& isect
         )
-    -> typename detail::traversal_result< hit_record_bvh<
+    -> hit_record_bvh<
             R,
             decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
-            >, Traversal, MultiHitMax>::type
+            >
 {
 #if VSNRAY_FULL_STACK_TRAVERSAL_
     using namespace detail;
     using HR = hit_record_bvh<R, decltype(isect(ray, std::declval<typename BVH::primitive_type>()))>;
 
-    using RT = typename detail::traversal_result<HR, Traversal, MultiHitMax>::type;
-
     using I = typename simd::int_type_t<T>;
     using M = typename simd::mask_type_t<T>;
 
-    RT result;
+    HR result;
 
     stack<32> st;
     st.push(0); // address of root node
@@ -167,9 +163,7 @@ next:
     using namespace detail;
     using HR = hit_record_bvh<R, decltype(isect(ray, std::declval<typename BVH::primitive_type>()))>;
 
-    using RT = typename detail::traversal_result<HR, Traversal, MultiHitMax>::type;
-
-    RT result;
+    HR result;
 
     auto inv_dir = T(1.0) / ray.dir;
 
@@ -359,7 +353,6 @@ next:
 
 template <
     detail::traversal_type Traversal,
-    size_t MultiHitMax = 1,             // Max hits for multi-hit traversal
     typename R,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh_inst<BVH>::value>::type,
@@ -372,26 +365,24 @@ inline auto intersect(
         BVH const&   b,
         Intersector& isect
         )
-    -> typename detail::traversal_result< hit_record_bvh_inst<
+    -> hit_record_bvh_inst<
             R,
             decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
-            >, Traversal, MultiHitMax>::type
+            >
 {
     using namespace detail;
     using HR = hit_record_bvh_inst<R, decltype(isect(ray, std::declval<typename BVH::primitive_type>()))>;
 
-    using RT = typename detail::traversal_result<HR, Traversal, MultiHitMax>::type;
-
     R transformed_ray = ray;
     b.transform_ray(transformed_ray);
 
-    auto hr = intersect<Traversal, MultiHitMax>(
+    auto hr = intersect<Traversal>(
             transformed_ray,
             b.get_ref(),
             isect
             );
 
-    return RT(hr, hr.primitive_list_index, b.get_inst_id());
+    return HR(hr, hr.primitive_list_index, b.get_inst_id());
 }
 
 

@@ -24,10 +24,6 @@ namespace visionaray
 template <typename Derived>
 struct basic_intersector
 {
-    template <size_t N>
-    using multi_hit_max = std::integral_constant<size_t, N>;
-
-
     template <typename R, typename P, typename ...Args>
     VSNRAY_FUNC
     auto operator()(R const& ray, P const& prim, Args&&... args)
@@ -58,7 +54,6 @@ struct basic_intersector
     VSNRAY_FUNC
     auto operator()(
             detail::any_hit_tag     /* */,
-            multi_hit_max<1>        /* */,
             R const&                ray,
             P const&                prim
             )
@@ -78,34 +73,12 @@ struct basic_intersector
     VSNRAY_FUNC
     auto operator()(
             detail::closest_hit_tag /* */,
-            multi_hit_max<1>        /* */,
             R const&                ray,
             P const&                prim
             )
         -> decltype( intersect<detail::ClosestHit>(ray, prim, std::declval<Derived&>()) )
     {
         return intersect<detail::ClosestHit>(ray, prim, *static_cast<Derived*>(this));
-    }
-
-
-    // BVH multi hit --------------------------------------
-
-    template <
-        size_t   N,
-        typename R,
-        typename P,
-        typename = typename std::enable_if<is_any_bvh<P>::value>::type
-        >
-    VSNRAY_FUNC
-    auto operator()(
-            detail::multi_hit_tag   /* */,
-            multi_hit_max<N>        /* */,
-            R const&                ray,
-            P const&                prim
-            )
-        -> decltype( intersect<detail::MultiHit, N>(ray, prim, std::declval<Derived&>()) )
-    {
-        return intersect<detail::MultiHit, N>(ray, prim, *static_cast<Derived*>(this));
     }
 };
 
