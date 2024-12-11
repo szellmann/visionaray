@@ -4,6 +4,12 @@
 - Fixed some bugs in the GPU LBVH builder that would cause data
 races otherwise.
 
+### Removed
+- Support for multi-hit BVH traversal was dropped, in favor of less
+complicated traversal routines.
+- Support for custom update conditions in trafversal routine was
+dropped.
+
 ## [0.4.2] - 2024-06-30
 ### Added
 - Experimental support for AMD's HIP GPGPU language. Tested with
