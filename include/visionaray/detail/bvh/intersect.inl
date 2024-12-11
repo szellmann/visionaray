@@ -37,15 +37,13 @@ template <
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
     typename = typename std::enable_if<!is_any_bvh_inst<BVH>::value>::type,
     typename Intersector,
-    typename T = typename R::scalar_type,
-    typename Cond = is_closer_t
+    typename T = typename R::scalar_type
     >
 VSNRAY_FUNC
 inline auto intersect(
         R const&     ray,
         BVH const&   b,
-        Intersector& isect,
-        Cond         update_cond = Cond()
+        Intersector& isect
         )
     -> typename detail::traversal_result< hit_record_bvh<
             R,
@@ -145,7 +143,7 @@ next:
             auto prim = b.primitive(i);
 
             auto hr = HR(isect(ray, prim), i);
-            auto closer = update_cond(hr, result, ray.tmin, ray.tmax);
+            auto closer = is_closer(hr, result, ray.tmin, ray.tmax);
 
 #ifndef __CUDA_ARCH__
             if (!any(closer))
@@ -329,7 +327,7 @@ next:
             auto prim = b.primitive(i);
 
             auto hr = HR(isect(ray, prim), i);
-            auto closer = update_cond(hr, result, ray.tmin, ray.tmax);
+            auto closer = is_closer(hr, result, ray.tmin, ray.tmax);
 
 #ifndef __CUDA_ARCH__
             if (!any(closer))
@@ -366,15 +364,13 @@ template <
     typename BVH,
     typename = typename std::enable_if<is_any_bvh_inst<BVH>::value>::type,
     typename Intersector,
-    typename T = typename R::scalar_type,
-    typename Cond = is_closer_t
+    typename T = typename R::scalar_type
     >
 VSNRAY_FUNC
 inline auto intersect(
         R const&     ray,
         BVH const&   b,
-        Intersector& isect,
-        Cond         update_cond = Cond()
+        Intersector& isect
         )
     -> typename detail::traversal_result< hit_record_bvh_inst<
             R,
@@ -392,8 +388,7 @@ inline auto intersect(
     auto hr = intersect<Traversal, MultiHitMax>(
             transformed_ray,
             b.get_ref(),
-            isect,
-            update_cond
+            isect
             );
 
     return RT(hr, hr.primitive_list_index, b.get_inst_id());
@@ -410,19 +405,17 @@ template <
     typename R,
     typename BVH,
     typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
-    typename Intersector,
-    typename Cond = is_closer_t
+    typename Intersector
     >
 VSNRAY_FUNC
 inline auto intersect(
         R const&     ray,
         BVH const&   b,
-        Intersector& isect,
-        Cond         update_cond = Cond()
+        Intersector& isect
         )
-    -> decltype(intersect<detail::ClosestHit>(ray, b, isect, update_cond))
+    -> decltype(intersect<detail::ClosestHit>(ray, b, isect))
 {
-    return intersect<detail::ClosestHit>(ray, b, isect, update_cond);
+    return intersect<detail::ClosestHit>(ray, b, isect);
 }
 
 // overload w/ default intersector ------------------------
@@ -430,23 +423,18 @@ inline auto intersect(
 template <
     typename R,
     typename BVH,
-    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
-    typename Cond = is_closer_t
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type
     >
 VSNRAY_FUNC
-inline auto intersect(
-        R const&   ray,
-        BVH const& b,
-        Cond       update_cond = Cond()
-        )
+inline auto intersect(R const& ray, BVH const& b)
     -> decltype(intersect<detail::ClosestHit>(
             ray,
             b,
-            std::declval<default_intersector&>(), update_cond)
+            std::declval<default_intersector&>())
             )
 {
     default_intersector isect;
-    return intersect<detail::ClosestHit>(ray, b, isect, update_cond);
+    return intersect<detail::ClosestHit>(ray, b, isect);
 }
 
 

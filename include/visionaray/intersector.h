@@ -53,7 +53,6 @@ struct basic_intersector
     template <
         typename R,
         typename P,
-        typename Cond,
         typename = typename std::enable_if<is_any_bvh<P>::value>::type
         >
     VSNRAY_FUNC
@@ -61,12 +60,11 @@ struct basic_intersector
             detail::any_hit_tag     /* */,
             multi_hit_max<1>        /* */,
             R const&                ray,
-            P const&                prim,
-            Cond                    update_cond = Cond()
+            P const&                prim
             )
-        -> decltype( intersect<detail::AnyHit>(ray, prim, std::declval<Derived&>(), update_cond) )
+        -> decltype( intersect<detail::AnyHit>(ray, prim, std::declval<Derived&>()) )
     {
-        return intersect<detail::AnyHit>(ray, prim, *static_cast<Derived*>(this), update_cond);
+        return intersect<detail::AnyHit>(ray, prim, *static_cast<Derived*>(this));
     }
 
 
@@ -75,7 +73,6 @@ struct basic_intersector
     template <
         typename R,
         typename P,
-        typename Cond,
         typename = typename std::enable_if<is_any_bvh<P>::value>::type
         >
     VSNRAY_FUNC
@@ -83,12 +80,11 @@ struct basic_intersector
             detail::closest_hit_tag /* */,
             multi_hit_max<1>        /* */,
             R const&                ray,
-            P const&                prim,
-            Cond                    update_cond = Cond()
+            P const&                prim
             )
-        -> decltype( intersect<detail::ClosestHit>(ray, prim, std::declval<Derived&>(), update_cond) )
+        -> decltype( intersect<detail::ClosestHit>(ray, prim, std::declval<Derived&>()) )
     {
-        return intersect<detail::ClosestHit>(ray, prim, *static_cast<Derived*>(this), update_cond);
+        return intersect<detail::ClosestHit>(ray, prim, *static_cast<Derived*>(this));
     }
 
 
@@ -98,7 +94,6 @@ struct basic_intersector
         size_t   N,
         typename R,
         typename P,
-        typename Cond,
         typename = typename std::enable_if<is_any_bvh<P>::value>::type
         >
     VSNRAY_FUNC
@@ -106,12 +101,11 @@ struct basic_intersector
             detail::multi_hit_tag   /* */,
             multi_hit_max<N>        /* */,
             R const&                ray,
-            P const&                prim,
-            Cond                    update_cond = Cond()
+            P const&                prim
             )
-        -> decltype( intersect<detail::MultiHit, N>(ray, prim, std::declval<Derived&>(), update_cond) )
+        -> decltype( intersect<detail::MultiHit, N>(ray, prim, std::declval<Derived&>()) )
     {
-        return intersect<detail::MultiHit, N>(ray, prim, *static_cast<Derived*>(this), update_cond);
+        return intersect<detail::MultiHit, N>(ray, prim, *static_cast<Derived*>(this));
     }
 };
 
