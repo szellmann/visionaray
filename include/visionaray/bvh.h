@@ -164,52 +164,248 @@ inline bool operator==(bvh_node const& a, bvh_node const& b)
 // bvh_multi_node
 //
 
+// #define QUANTIZE
+
 template <int W>
 struct bvh_multi_node
 {
     enum { Width = W };
 
-    aabb bbox[Width];
-    unsigned children[Width];
-    unsigned first_prim;
-    unsigned num_prims;
-    unsigned child_count;
+#ifdef QUANTIZE
+    struct {
+        unsigned char minx[W];
+        unsigned char miny[W];
+        unsigned char minz[W];
+        unsigned char maxx[W];
+        unsigned char maxy[W];
+        unsigned char maxz[W];
+    } child_bounds;
+    vec3 origin;
+    vec3 scale;
+
+    template <int I>
+    unsigned char quantize(float f) const
+    {
+        return (f - origin[I]) / scale[I] * 255;
+    }
+
+    template <int I>
+    float unquantize(unsigned char u) const
+    {
+        return (u / 255.f) * scale[I] + origin[I];
+    }
+#else
+    struct {
+        float minx[W];
+        float miny[W];
+        float minz[W];
+        float maxx[W];
+        float maxy[W];
+        float maxz[W];
+    } child_bounds;
+#endif
+    int64_t children[Width]; // child[0]: neg(first_prim), child[1]: neg(num_prims)
 
     void init(unsigned id, bvh_node const* nodes)
     {
+        bvh_node const& n = nodes[id];
+
         for (int i = 0; i < Width; ++i)
         {
-            children[i] = ~0u;
-            bbox[i].invalidate();
+            children[i] = INT64_MAX;
+#ifdef QUANTIZE
+            child_bounds.minx[i] = 255;
+            child_bounds.miny[i] = 255;
+            child_bounds.minz[i] = 255;
+            child_bounds.maxx[i] = 0;
+            child_bounds.maxy[i] = 0;
+            child_bounds.maxz[i] = 0;
+#else
+            child_bounds.minx[i] = FLT_MAX;
+            child_bounds.miny[i] = FLT_MAX;
+            child_bounds.minz[i] = FLT_MAX;
+            child_bounds.maxx[i] = -FLT_MAX;
+            child_bounds.maxy[i] = -FLT_MAX;
+            child_bounds.maxz[i] = -FLT_MAX;
+#endif
         }
-
-        const bvh_node& n = nodes[id];
 
         if (n.is_inner())
         {
             children[0] = n.first_child;
             children[1] = n.first_child + 1;
 
-            bbox[0] = nodes[children[0]].get_bounds();
-            bbox[1] = nodes[children[1]].get_bounds();
+#ifdef QUANTIZE
+            aabb bounds;
+            bounds.invalidate();
+            for (int i = 0; i < 2; ++i)
+            {
+                bounds.insert(nodes[children[i]].get_bounds());
+            }
 
-            child_count = 2;
+            origin = bounds.min;
+            scale = bounds.max - bounds.min;
+#endif
+
+            for (int i = 0; i < 2; ++i)
+            {
+#ifdef QUANTIZE
+                child_bounds.minx[i] = quantize<0>(nodes[children[i]].get_bounds().min.x);
+                child_bounds.miny[i] = quantize<1>(nodes[children[i]].get_bounds().min.y);
+                child_bounds.minz[i] = quantize<2>(nodes[children[i]].get_bounds().min.z);
+                child_bounds.maxx[i] = quantize<0>(nodes[children[i]].get_bounds().max.x);
+                child_bounds.maxy[i] = quantize<1>(nodes[children[i]].get_bounds().max.y);
+                child_bounds.maxz[i] = quantize<2>(nodes[children[i]].get_bounds().max.z);
+#else
+                child_bounds.minx[i] = nodes[children[i]].get_bounds().min.x;
+                child_bounds.miny[i] = nodes[children[i]].get_bounds().min.y;
+                child_bounds.minz[i] = nodes[children[i]].get_bounds().min.z;
+                child_bounds.maxx[i] = nodes[children[i]].get_bounds().max.x;
+                child_bounds.maxy[i] = nodes[children[i]].get_bounds().max.y;
+                child_bounds.maxz[i] = nodes[children[i]].get_bounds().max.z;
+#endif
+
+                if (nodes[children[i]].is_leaf())
+                {
+                    bvh_node const& c = nodes[children[i]];
+                    uint64_t first_prim = c.get_first_primitive();
+                    uint64_t num_prims  = c.get_num_primitives();
+
+                    if (num_prims > 32767)
+                    {
+                        fprintf(stderr, "ERROR: ignoring leaf with %u prims\n", num_prims);
+                        continue;
+                    }
+
+                    children[i] = encode_leaf(first_prim, num_prims);
+                }
+              }
         }
-        else
+        else if (id == 0 && n.is_leaf())
         {
-            child_count = 0;
-            first_prim = n.get_first_primitive();
-            num_prims = n.get_num_primitives();
+            // special handling for root node that is a leaf
+            // (would be unreachable otherwise)
+#ifdef QUANTIZE
+            child_bounds.minx[0] = quantize<0>(nodes[0].get_bounds().min.x);
+            child_bounds.miny[0] = quantize<1>(nodes[0].get_bounds().min.y);
+            child_bounds.minz[0] = quantize<2>(nodes[0].get_bounds().min.z);
+            child_bounds.maxx[0] = quantize<0>(nodes[0].get_bounds().max.x);
+            child_bounds.maxy[0] = quantize<1>(nodes[0].get_bounds().max.y);
+            child_bounds.maxz[0] = quantize<2>(nodes[0].get_bounds().max.z);
+#else
+            child_bounds.minx[0] = nodes[0].get_bounds().min.x;
+            child_bounds.miny[0] = nodes[0].get_bounds().min.y;
+            child_bounds.minz[0] = nodes[0].get_bounds().min.z;
+            child_bounds.maxx[0] = nodes[0].get_bounds().max.x;
+            child_bounds.maxy[0] = nodes[0].get_bounds().max.y;
+            child_bounds.maxz[0] = nodes[0].get_bounds().max.z;
+#endif
+            uint64_t first_prim = n.get_first_primitive();
+            uint64_t num_prims  = n.get_num_primitives();
+            children[0] = encode_leaf(first_prim, num_prims);
         }
     }
 
-    VSNRAY_FUNC bool is_inner() const { return child_count != 0; }
-    VSNRAY_FUNC bool is_leaf() const { return child_count == 0; }
-    VSNRAY_FUNC bool is_valid() const { return child_count != ~0u; }
-
-    VSNRAY_FUNC aabb const& get_child_bounds(unsigned i) const
+    static uint64_t encode_leaf(uint64_t first_prim, uint64_t num_prims)
     {
-        return bbox[i];
+        return ~(num_prims << 48 | (first_prim & 0xFFFFFFFFFFFFll));
+    }
+
+    static void decode_leaf(uint64_t addr, uint64_t& first_prim, uint64_t& num_prims)
+    {
+        addr = ~addr;
+        first_prim = addr & 0xFFFFFFFFFFFFll;
+        num_prims = addr >> 48;
+    }
+
+    void collapse_child(bvh_multi_node& child, unsigned dest_id, unsigned source_id)
+    {
+        children[dest_id] = child.children[source_id];
+#ifdef QUANTIZE
+        float minx = child.unquantize<0>(child.child_bounds.minx[source_id]);
+        float miny = child.unquantize<1>(child.child_bounds.miny[source_id]);
+        float minz = child.unquantize<2>(child.child_bounds.minz[source_id]);
+        float maxx = child.unquantize<0>(child.child_bounds.maxx[source_id]);
+        float maxy = child.unquantize<1>(child.child_bounds.maxy[source_id]);
+        float maxz = child.unquantize<2>(child.child_bounds.maxz[source_id]);
+#else
+        child_bounds.minx[dest_id] = child.child_bounds.minx[source_id];
+        child_bounds.miny[dest_id] = child.child_bounds.miny[source_id];
+        child_bounds.minz[dest_id] = child.child_bounds.minz[source_id];
+        child_bounds.maxx[dest_id] = child.child_bounds.maxx[source_id];
+        child_bounds.maxy[dest_id] = child.child_bounds.maxy[source_id];
+        child_bounds.maxz[dest_id] = child.child_bounds.maxz[source_id];
+#endif
+        //child.children[source_id] = INT64_MAX;
+    }
+
+    void bounds_as_float(float* dest)
+    {
+#ifdef QUANTIZE
+        for (int i = 0; i < Width; ++i)
+        {
+            dest[i]             = unquantize<0>(child_bounds.minx[i]);
+            dest[i + Width]     = unquantize<1>(child_bounds.miny[i]);
+            dest[i + Width * 2] = unquantize<2>(child_bounds.minz[i]);
+            dest[i + Width * 3] = unquantize<0>(child_bounds.maxx[i]);
+            dest[i + Width * 4] = unquantize<1>(child_bounds.maxy[i]);
+            dest[i + Width * 5] = unquantize<2>(child_bounds.maxz[i]);
+        }
+#else
+        memcpy(dest, &child_bounds, sizeof(child_bounds));
+#endif
+    }
+
+    VSNRAY_FUNC int get_num_children() const
+    {
+        for (int i = 0; i < Width; ++i)
+        {
+            if (children[i] == INT64_MAX)
+            {
+                return i;
+            }
+        }
+
+        return Width;
+    }
+
+    VSNRAY_FUNC aabb get_bounds() const
+    {
+        aabb result;
+        result.invalidate();
+
+        for (int i = 0; i < Width; ++i)
+        {
+            result.insert(get_child_bounds(i));
+        }
+
+        return result;
+    }
+
+    VSNRAY_FUNC bool is_inner() const { return children[0] >= 0; }
+    VSNRAY_FUNC bool is_leaf() const { return !is_inner(); }
+
+    VSNRAY_FUNC aabb get_child_bounds(unsigned i) const
+    {
+#ifdef QUANTIZE
+        return aabb(
+            vec3(
+                unquantize<0>(child_bounds.minx[i]),
+                unquantize<1>(child_bounds.miny[i]),
+                unquantize<2>(child_bounds.minz[i])
+                ),
+            vec3(
+                unquantize<0>(child_bounds.maxx[i]),
+                unquantize<1>(child_bounds.maxy[i]),
+                unquantize<2>(child_bounds.maxz[i])
+                )
+            );
+#else
+        return aabb(
+            vec3(child_bounds.minx[i], child_bounds.miny[i], child_bounds.minz[i]),
+            vec3(child_bounds.maxx[i], child_bounds.maxy[i], child_bounds.maxz[i])
+            );
+#endif
     }
 
     VSNRAY_FUNC unsigned get_child(unsigned i = 0) const
@@ -217,6 +413,18 @@ struct bvh_multi_node
         assert(is_inner());
         assert(i < Width);
         return children[i];
+    }
+
+    VSNRAY_FUNC unsigned get_first_primitive() const
+    {
+        assert(is_leaf());
+        return ~children[0];
+    }
+
+    VSNRAY_FUNC unsigned get_num_primitives() const
+    {
+        assert(is_leaf());
+        return ~children[1];
     }
 
     struct index_range
@@ -228,19 +436,7 @@ struct bvh_multi_node
     VSNRAY_FUNC index_range get_indices() const
     {
         assert(is_leaf());
-        return { first_prim, first_prim + num_prims };
-    }
-
-    VSNRAY_FUNC unsigned get_first_primitive() const
-    {
-        assert(is_leaf());
-        return first_prim;
-    }
-
-    VSNRAY_FUNC unsigned get_num_primitives() const
-    {
-        assert(is_leaf());
-        return num_prims;
+        return { get_first_primitive(), get_first_primitive() + get_num_primitives() };
     }
 };
 
@@ -930,7 +1126,7 @@ void traverse_parents(B const& b, N const& n, F func);
 #include "detail/bvh/get_tex_coord.h"
 #include "detail/bvh/hit_record.h"
 #include "detail/bvh/intersect.inl"
-#include "detail/bvh/intersect_wide.inl"
+#include "detail/bvh/intersect_ray1_bvh4.inl"
 #include "detail/bvh/lbvh.h"
 #include "detail/bvh/prim_traits.h"
 #include "detail/bvh/refit.h"

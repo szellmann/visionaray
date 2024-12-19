@@ -1,0 +1,282 @@
+// This file is distributed under the MIT license.
+// See the LICENSE file for details.
+
+#pragma once
+
+#include <cstddef>
+#include <type_traits>
+#include <utility>
+
+#include <visionaray/math/simd/type_traits.h>
+#include <visionaray/math/matrix.h>
+#include <visionaray/intersector.h>
+#include <visionaray/update_if.h>
+
+#include "../exit_traversal.h"
+#include "../stack.h"
+#include "../tags.h"
+#include "hit_record.h"
+
+namespace visionaray
+{
+
+template <typename It, typename Comp>
+inline void bubble_sort(It first, It last, Comp comp)
+{
+    int n = last - first;
+
+    for (int i = 0; i < n - 1; ++i)
+    {
+        bool swapped = false;
+        for (int j = 0; j < n - i - 1; ++j)
+        {
+            if (comp(first[j + 1], first[j]))
+            {
+                auto temp = first[j];
+                first[j] = first[j + 1];
+                first[j + 1] = temp;
+                swapped = true;
+            }
+        }
+
+        if (!swapped)
+        {
+            break;
+        }
+    }
+}
+
+// From SSE2Neon:
+inline int _mm_movemask_ps(float32x4_t a)
+{
+    uint32x4_t input = vreinterpretq_u32_f32(a);
+    static const int32_t shift[4] = {0, 1, 2, 3};
+    uint32x4_t tmp = vshrq_n_u32(input, 31);
+    return vaddvq_u32(vshlq_u32(tmp, vld1q_s32(shift)));
+}
+
+//-----------------------------------------------------------------------------
+// SSE and NEON traversal based on:
+// https://afra.dev/publications/Afra2013Incoherent.pdf
+//
+
+template <
+    detail::traversal_type Traversal,
+    typename R,
+    typename BVH,
+    typename Intersector,
+    typename T = typename R::scalar_type
+    >
+VSNRAY_FUNC
+inline auto intersect_ray1_bvh4(
+        R const&     ray,
+        BVH const&   b,
+        Intersector& isect
+        )
+    -> hit_record_bvh<
+            R,
+            decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+            >
+{
+    using namespace detail;
+    using HR = hit_record_bvh<R, decltype(isect(ray, std::declval<typename BVH::primitive_type>()))>;
+
+    HR result;
+
+    int64_t stack[32];
+    char ptr = 0;
+    stack[ptr++] = 0; // address of root node
+
+    auto inv_dir = T(1.0) / ray.dir;
+
+    // while ray not terminated
+next:
+    while (ptr > 0)
+    {
+        int64_t addr = stack[--ptr];
+
+        // while node does not contain primitives
+        //     traverse to the next node
+
+        while (addr >= 0)
+        {
+            auto node = b.node(addr);
+
+            using F = simd::float4;
+
+            float float_bounds[6 * BVH::Width];
+            node.bounds_as_float(float_bounds);
+            basic_aabb<F> aabbN = *reinterpret_cast<basic_aabb<F>*>(&float_bounds[0]);
+
+            auto hrN = intersect(ray, aabbN);
+
+            hrN.hit &= aabbN.min.x <= aabbN.max.x;
+            hrN.hit &= hrN.tnear < F(result.t);
+            hrN.hit &= hrN.tfar >= F(ray.tmin) && hrN.tnear <= F(ray.tmax);
+
+            auto mask = _mm_movemask_ps(vreinterpretq_f32_u32(hrN.hit.i));
+
+            if (!mask)
+            {
+                goto next;
+            }
+
+            unsigned* tnear = reinterpret_cast<unsigned*>(&hrN.tnear);
+
+#if 1
+            auto bsf = [](int& m) {
+                int i =  __builtin_ctz(m);
+                m &= m-1;
+                return i;
+            };
+
+            int i1 = bsf(mask);
+            if (mask == 0)
+            {
+                addr = node.children[i1];
+                continue;
+            }
+
+            int i2 = bsf(mask);
+            if (mask == 0)
+            {
+                if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
+
+                stack[ptr++] = node.children[i2];
+                addr = node.children[i1];
+                continue;
+            }
+
+            int i3 = bsf(mask);
+            if (mask == 0)
+            {
+                if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
+                if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
+                if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
+
+                stack[ptr++] = node.children[i3];
+                stack[ptr++] = node.children[i2];
+                addr = node.children[i1];
+                continue;
+            }
+
+            int i4 = bsf(mask);
+            if (mask == 0)
+            {
+                if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
+                if (tnear[i4] < tnear[i3]) std::swap(i4,i3);
+                if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
+                if (tnear[i4] < tnear[i2]) std::swap(i4,i2);
+                if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
+
+                stack[ptr++] = node.children[i4];
+                stack[ptr++] = node.children[i3];
+                stack[ptr++] = node.children[i2];
+                addr = node.children[i1];
+                continue;
+            }
+#else
+            // Unoptimized code path, keeping this around for the
+            // moment so we can compare:
+
+            unsigned child_count = node.get_num_children();
+
+            unsigned* hit = reinterpret_cast<unsigned*>(&hrN.hit);
+
+            int idx[BVH::Width];
+            for (int i = 0; i < BVH::Width; ++i)
+            {
+                idx[i] = i;
+            }
+
+            bubble_sort(idx, idx + child_count,
+                [&](int i, int j) {
+                    return (hit[i] && hit[j] && tnear[i] < tnear[j]) ||
+                           (hit[i] && !hit[j]);
+                });
+
+            for (int i = 1; i < child_count; ++i)
+            {
+                if (!hit[idx[i]])
+                {
+                    break;
+                }
+
+                stack[ptr++] = node.children[idx[i]];
+            }
+
+            addr = node.children[idx[0]];
+#endif
+        }
+
+        // while node contains untested primitives
+        //     perform a ray-primitive intersection test
+
+        uint64_t first;
+        uint64_t num_prims;
+
+        bvh_multi_node<4>::decode_leaf(addr, first, num_prims);
+
+        uint64_t last = first + num_prims;
+
+        for (auto i = first; i != last; ++i)
+        {
+            auto prim = b.primitive(i);
+
+            auto hr = HR(isect(ray, prim), i);
+            auto closer = is_closer(hr, result, ray.tmin, ray.tmax);
+
+#ifndef __CUDA_ARCH__
+            if (!any(closer))
+            {
+                continue;
+            }
+#endif
+
+            update_if(result, hr, closer);
+
+            exit_traversal<Traversal> early_exit;
+            if (early_exit.check(result))
+            {
+                return result;
+            }
+        }
+    }
+
+    return result;
+}
+
+//-------------------------------------------------------------------------------------------------
+// Default intersect returns closest hit!
+//
+
+// overload w/ custom intersector -------------------------
+
+template <typename R, typename BVH, typename Intersector>
+VSNRAY_FUNC
+inline auto intersect_ray1_bvh4(
+        R const&     ray,
+        BVH const&   b,
+        Intersector& isect
+        )
+    -> decltype(intersect_ray1_bvh4<detail::ClosestHit>(ray, b, isect))
+{
+    return intersect_ray1_bvh4<detail::ClosestHit>(ray, b, isect);
+}
+
+// overload w/ default intersector ------------------------
+
+template <typename R, typename BVH>
+VSNRAY_FUNC
+inline auto intersect_ray1_bvh4(R const& ray, BVH const& b)
+    -> decltype(intersect_ray1_bvh4<detail::ClosestHit>(
+            ray,
+            b,
+            std::declval<default_intersector&>())
+            )
+{
+    default_intersector isect;
+    return intersect_ray1_bvh4<detail::ClosestHit>(ray, b, isect);
+}
+
+} // visionaray

@@ -6,7 +6,6 @@
 #ifndef VSNRAY_DETAIL_BVH_COLLAPSE_H
 #define VSNRAY_DETAIL_BVH_COLLAPSE_H 1
 
-#include <iostream>
 #include "../stack.h"
 #include "../thread_pool.h"
 
@@ -37,24 +36,39 @@ struct bvh_collapser
 #if 1
         detail::stack<64> st;
 
-        unsigned addr = 0;
-        st.push(addr);
+        st.push(0);
 
         while (!st.empty())
         {
-            addr = st.pop();
-            auto node = multi_nodes[addr];
+            unsigned addr = st.pop();
+            auto& node = multi_nodes[addr];
 
-            while (node.child_count < WideTree::Width)
+            while (node.get_num_children() < WideTree::Width)
             {
                 int best_child_id = -1;
                 float best_sa = 0.0f;
 
-                for (int i = 0; i < node.child_count; ++i)
+                for (int i = 0; i < node.get_num_children(); ++i)
                 {
+                    if (node.children[i] < 0)
+                    {
+                        continue;
+                    }
+
                     const auto& child = multi_nodes[node.children[i]];
 
-                    if (!child.is_valid() || child.is_leaf())
+                    int inner_nodes = 0;
+                    for (int c = 0; c < child.get_num_children(); ++c)
+                    {
+                        if (child.children[c] > 0)
+                        {
+                            inner_nodes++;
+                        }
+                    }
+
+                    // Don't collapse leaves into root; multi-nodes
+                    // cannot be leaves!
+                    if (inner_nodes == 0 && addr == 0)
                     {
                         continue;
                     }
@@ -63,7 +77,7 @@ struct bvh_collapser
                     const aabb& child_bounds = node.get_child_bounds(i);
 
                     // Check if we can accommodate all grand children:
-                    if (node.child_count -1 + child.child_count <= WideTree::Width)
+                    if (node.get_num_children() - 1 + child.get_num_children() <= WideTree::Width)
                     {
                         float sa = surface_area(child_bounds);
                         if (sa > best_sa)
@@ -84,29 +98,25 @@ struct bvh_collapser
                 auto& best_child = multi_nodes[node.children[best_child_id]];
 
                 // move best child's first child up into its new slot:
-                node.children[best_child_id] = best_child.children[0];
-                node.bbox[best_child_id] = best_child.get_child_bounds(0);
+                node.collapse_child(best_child, best_child_id, 0);
                 // Append the remaining children to the end of the list (if any):
-                for (int i = 1; i < best_child.child_count; ++i)
+                unsigned child_id = node.get_num_children();
+                for (int i = 1; i < best_child.get_num_children(); ++i)
                 {
-                    node.children[node.child_count] = best_child.children[i];
-                    node.bbox[node.child_count] = best_child.get_child_bounds(i);
-                    node.child_count++;
+                    node.collapse_child(best_child, child_id++, i);
                 }
             }
 
             // Recurse:
-            for (int i = 0; i < node.child_count; ++i)
+            for (int i = 0; i < node.get_num_children(); ++i)
             {
-                unsigned child_id = node.children[i];
-                const auto& child = multi_nodes[child_id];
-                if (!child.is_valid() || child.is_leaf())
+                if (node.children[i] > 0)
                 {
-                    continue;
+                    st.push(node.children[i]);
                 }
-                st.push(child_id);
             }
         }
+#endif
 
         // multi_nodes.erase(std::remove_if(
         //         multi_nodes.begin(),
@@ -115,8 +125,6 @@ struct bvh_collapser
         //         ),
         //     multi_nodes.end()
         //     );
-#endif
-        
         wide_tree.primitives() = tree.primitives();
         wide_tree.indices() = tree.indices();
     }
