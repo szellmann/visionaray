@@ -195,11 +195,11 @@ struct binned_sah_builder
     using prim_refs = aligned_vector<prim_ref>;
 
     template <typename Tree, typename P>
-    Tree build(Tree /* */, P* primitives, size_t num_prims, int max_leaf_size = -1)
+    Tree build(Tree /* */, P* primitives, size_t num_prims, int min_leaf_size = -1)
     {
         Tree tree(primitives, num_prims);
 
-        detail::build_top_down(tree, *this, primitives, primitives + num_prims, max_leaf_size);
+        detail::build_top_down(tree, *this, primitives, primitives + num_prims, min_leaf_size);
 
         return tree;
     }
@@ -718,7 +718,7 @@ struct binned_sah_builder
     // sr.leaves contains the information of the left/right leaves and the
     // method returns true. If the leaf should not be split, returns false.
     template <typename Data>
-    split_record split(leaf_infos& childs, leaf_info const& leaf, Data const& data, int max_leaf_size)
+    split_record split(leaf_infos& childs, leaf_info const& leaf, Data const& data, int min_leaf_size)
     {
         // FIXME:
         // Create a leaf if max_depth is reached...
@@ -726,7 +726,7 @@ struct binned_sah_builder
 
         auto leaf_size = static_cast<int>(refs.size() - leaf.first);
 
-        if (leaf_size <= max_leaf_size)
+        if (leaf_size < min_leaf_size)
         {
             return { false, 0, 0 };
         }
