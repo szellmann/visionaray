@@ -31,12 +31,12 @@ inline void build_top_down_impl(
         Builder&        builder,
         LeafInfo const& leaf,
         Data const&     data,
-        int             min_leaf_size
+        int             max_leaf_size
         )
 {
     typename Builder::leaf_infos childs;
 
-    auto split = builder.split(childs, leaf, data, min_leaf_size);
+    auto split = builder.split(childs, leaf, data, max_leaf_size);
 
     if (split.do_split)
     {
@@ -55,7 +55,7 @@ inline void build_top_down_impl(
                 builder,
                 childs[1],
                 data,
-                min_leaf_size
+                max_leaf_size
                 );
 
         // Construct left subtree
@@ -66,7 +66,7 @@ inline void build_top_down_impl(
                 builder,
                 childs[0],
                 data,
-                min_leaf_size
+                max_leaf_size
                 );
     }
     else
@@ -90,7 +90,7 @@ inline void build_top_down_work(
         Root           root,
         I              first,
         I              /*last*/,
-        int            min_leaf_size,
+        int            max_leaf_size,
         std::true_type /*is_index_bvh*/
         )
 {
@@ -101,7 +101,7 @@ inline void build_top_down_work(
             builder,
             root,
             first, // primitive data
-            min_leaf_size
+            max_leaf_size
             );
 }
 
@@ -112,7 +112,7 @@ inline void build_top_down_work(
         Root            root,
         I               first,
         I               /*last*/,
-        int             min_leaf_size,
+        int             max_leaf_size,
         std::false_type /*is_index_bvh*/
         )
 {
@@ -134,7 +134,7 @@ inline void build_top_down_work(
             builder,
             root,
             first, // primitive data
-            min_leaf_size
+            max_leaf_size
             );
 
     builder.use_spatial_splits = uss;
@@ -146,11 +146,11 @@ inline void build_top_down_work(
 }
 
 template <typename Tree, typename Builder, typename I>
-inline void build_top_down(Tree& tree, Builder& builder, I first, I last, int min_leaf_size = -1)
+inline void build_top_down(Tree& tree, Builder& builder, I first, I last, int max_leaf_size = -1)
 {
-    if (min_leaf_size <= 0)
+    if (max_leaf_size <= 0)
     {
-        min_leaf_size = 1;
+        max_leaf_size = 4;
     }
 
     // Precompute primitive data needed by the builder
@@ -162,14 +162,14 @@ inline void build_top_down(Tree& tree, Builder& builder, I first, I last, int mi
 
     auto count = std::distance(first, last);
 
-    tree.clear(2 * (count / min_leaf_size));
+    tree.clear(2 * (count / max_leaf_size));
 
     // Build the tree
 
     // Create root node
     tree.nodes().emplace_back();
 
-    build_top_down_work(tree, builder, root, first, last, min_leaf_size, is_index_bvh<Tree>());
+    build_top_down_work(tree, builder, root, first, last, max_leaf_size, is_index_bvh<Tree>());
 }
 
 } // detail
