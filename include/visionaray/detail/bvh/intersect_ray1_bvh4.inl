@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <iostream>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -83,9 +84,15 @@ inline auto intersect_ray1_bvh4(
 
     HR result;
 
-    int64_t stack[32];
+    struct stack_entry
+    {
+        int64_t addr;
+        unsigned dist;
+    };
+
+    stack_entry stack[32];
     char ptr = 0;
-    stack[ptr++] = 0; // address of root node
+    stack[ptr++] = { 0, 0 }; // root node
 
     auto inv_dir = T(1.0) / ray.dir;
 
@@ -93,13 +100,20 @@ inline auto intersect_ray1_bvh4(
 next:
     while (ptr > 0)
     {
-        int64_t addr = stack[--ptr];
+        auto se = stack[--ptr];
+        int64_t addr = se.addr;
+        unsigned dist = se.dist;
 
         // while node does not contain primitives
         //     traverse to the next node
 
         while (addr >= 0)
         {
+            while (*((unsigned*)&result.t) < dist)
+            {
+                goto next;
+            }
+
             auto node = b.node(addr);
 
             using F = simd::float4;
@@ -133,7 +147,7 @@ next:
             int i1 = bsf(mask);
             if (mask == 0)
             {
-                addr = node.children[i1];
+                addr = node.children[i1]; dist = tnear[i1];
                 continue;
             }
 
@@ -142,8 +156,8 @@ next:
             {
                 if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
 
-                stack[ptr++] = node.children[i2];
-                addr = node.children[i1];
+                stack[ptr++] = { node.children[i2], tnear[i2] };
+                addr = node.children[i1]; dist = tnear[i1];
                 continue;
             }
 
@@ -154,9 +168,9 @@ next:
                 if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
                 if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
 
-                stack[ptr++] = node.children[i3];
-                stack[ptr++] = node.children[i2];
-                addr = node.children[i1];
+                stack[ptr++] = { node.children[i3], tnear[i3] };
+                stack[ptr++] = { node.children[i2], tnear[i2] };
+                addr = node.children[i1]; dist = tnear[i1];
                 continue;
             }
 
@@ -169,10 +183,10 @@ next:
                 if (tnear[i4] < tnear[i2]) std::swap(i4,i2);
                 if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
 
-                stack[ptr++] = node.children[i4];
-                stack[ptr++] = node.children[i3];
-                stack[ptr++] = node.children[i2];
-                addr = node.children[i1];
+                stack[ptr++] = { node.children[i4], tnear[i4] };
+                stack[ptr++] = { node.children[i3], tnear[i3] };
+                stack[ptr++] = { node.children[i2], tnear[i2] };
+                addr = node.children[i1]; dist = tnear[i1];
                 continue;
             }
 #else
