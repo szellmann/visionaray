@@ -100,7 +100,7 @@ inline auto intersect_ray1_bvh4(
         unsigned dist;
     };
 
-    stack_entry stack[32];
+    stack_entry stack[64];
     char ptr = 0;
     stack[ptr++] = { 0, 0 }; // root node
 
