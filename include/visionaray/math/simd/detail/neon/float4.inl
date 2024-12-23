@@ -54,6 +54,11 @@ VSNRAY_FORCE_INLINE int4 reinterpret_as_int(float4 const& a)
     return vreinterpretq_s32_f32(a);
 }
 
+VSNRAY_FORCE_INLINE uint32x4_t reinterpret_as_uint(float4 const& a)
+{
+    return vreinterpretq_u32_f32(a);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Static cast

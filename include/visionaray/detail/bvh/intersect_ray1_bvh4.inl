@@ -48,9 +48,8 @@ inline void bubble_sort(It first, It last, Comp comp)
 }
 
 // From SSE2Neon:
-inline int _mm_movemask_ps(float32x4_t a)
+inline int movemask(uint32x4_t const& input)
 {
-    uint32x4_t input = vreinterpretq_u32_f32(a);
     static const int32_t shift[4] = {0, 1, 2, 3};
     uint32x4_t tmp = vshrq_n_u32(input, 31);
     return vaddvq_u32(vshlq_u32(tmp, vld1q_s32(shift)));
@@ -125,10 +124,11 @@ next:
             auto hrN = intersect(ray, aabbN);
 
             hrN.hit &= aabbN.min.x <= aabbN.max.x;
-            hrN.hit &= hrN.tnear < F(result.t);
-            hrN.hit &= hrN.tfar >= F(ray.tmin) && hrN.tnear <= F(ray.tmax);
+            hrN.hit &= reinterpret_as_uint(hrN.tnear) < reinterpret_as_uint(F(result.t));
+            hrN.hit &= reinterpret_as_uint(hrN.tfar) >= reinterpret_as_uint(F(ray.tmin)) &&
+                       reinterpret_as_uint(hrN.tnear) <= reinterpret_as_uint(F(ray.tmax));
 
-            auto mask = _mm_movemask_ps(vreinterpretq_f32_u32(hrN.hit.i));
+            auto mask = movemask(hrN.hit.i);
 
             if (!mask)
             {
