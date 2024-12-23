@@ -1,4 +1,9 @@
 ## [Unreleased]
+### Added
+- Added support for 4-wide BVHs on the CPU. This currently only
+works with index_bvh<>. Uses the SIMD traversal algorithm from Afra
+2013, yet (so far) only for 4-wide simd only.
+
 ### Changed
 - Made pointer_storage and texture_ref trivially constructible.
 - Fixed some bugs in the GPU LBVH builder that would cause data
