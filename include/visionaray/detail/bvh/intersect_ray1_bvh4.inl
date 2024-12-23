@@ -124,7 +124,7 @@ next:
                 goto next;
             }
 
-            auto node = b.node(addr);
+            const auto &node = b.node(addr);
 
             using F = simd::float4;
 

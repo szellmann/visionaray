@@ -342,7 +342,7 @@ struct bvh_multi_node
         }
     }
 
-    void bounds_as_float(float* dest)
+    void bounds_as_float(float* dest) const
     {
 #ifdef QUANTIZE
         for (int i = 0; i < Width; ++i)
