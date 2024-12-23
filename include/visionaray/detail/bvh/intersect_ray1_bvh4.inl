@@ -108,7 +108,7 @@ next:
 
         while (addr >= 0)
         {
-            while (*((unsigned*)&result.t) < dist)
+            if (*((unsigned*)&result.t) < dist)
             {
                 goto next;
             }
