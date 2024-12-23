@@ -118,13 +118,38 @@ struct bvh_collapser
         }
 #endif
 
-        // multi_nodes.erase(std::remove_if(
-        //         multi_nodes.begin(),
-        //         multi_nodes.end(),
-        //         [](const auto& node) { return !node.is_valid(); }
-        //         ),
-        //     multi_nodes.end()
-        //     );
+        // Remove empty nodes
+        std::vector<int64_t> prefix(multi_nodes.size());
+        prefix[0] = 0;
+
+        for (size_t i = 1; i < prefix.size(); ++i)
+        {
+            int has_children = multi_nodes[i].is_empty() ? 0 : 1;
+            prefix[i] = prefix[i - 1] + has_children;
+        }
+
+        multi_nodes.erase(std::remove_if(
+                multi_nodes.begin(),
+                multi_nodes.end(),
+                [](const auto& node) { return node.is_empty(); }
+                ),
+            multi_nodes.end()
+            );
+
+        for (size_t i = 0; i < multi_nodes.size(); ++i)
+        {
+            auto& node = multi_nodes[i];
+
+            for (int c = 0; c < node.get_num_children(); ++c)
+            {
+                if (node.children[c] >= 0)
+                {
+                    node.children[c] = prefix[node.children[c]];
+                }
+            }
+        }
+
+        // Assign rest of the tree
         wide_tree.primitives() = tree.primitives();
         wide_tree.indices() = tree.indices();
     }

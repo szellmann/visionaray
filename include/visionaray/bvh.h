@@ -336,7 +336,10 @@ struct bvh_multi_node
         child_bounds.maxy[dest_id] = child.child_bounds.maxy[source_id];
         child_bounds.maxz[dest_id] = child.child_bounds.maxz[source_id];
 #endif
-        //child.children[source_id] = INT64_MAX;
+        if (source_id != 0)
+        {
+            child.children[source_id] = INT64_MAX;
+        }
     }
 
     void bounds_as_float(float* dest)
@@ -384,6 +387,7 @@ struct bvh_multi_node
 
     VSNRAY_FUNC bool is_inner() const { return children[0] >= 0; }
     VSNRAY_FUNC bool is_leaf() const { return !is_inner(); }
+    VSNRAY_FUNC bool is_empty() const { return children[0] == INT64_MAX; }
 
     VSNRAY_FUNC aabb get_child_bounds(unsigned i) const
     {
