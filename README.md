@@ -74,6 +74,11 @@ See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Get
 The "CMake -> Visual Studio Solution" code path is tested from time to time. Visionaray is primarily developed on Linux and Mac OS, though, so you may encounter the occasional "Commit XY breaks builds on Windows" etc.
 On Windows, use CMake to generate a Visual Studio solution file that can be loaded by the IDE, or compiled on the command line using `msbuild.exe`.
 
+ANARI "Device" (separate repo!)
+-------------------------------
+
+There's a new, under heavy development ANARI back-end (a.k.a. "device") now, which lives on a separate repo, under [https://github.com/szellmann/anari-visionaray](https://github.com/szellmann/anari-visionaray). ANARI allows one to use the renderer within 3rd-party apps such as ParaView.
+
 Visionaray Viewer
 -----------------
 
