@@ -47,6 +47,8 @@ inline void bubble_sort(It first, It last, Comp comp)
     }
 }
 
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
+
 // From SSE2Neon:
 inline int movemask(uint32x4_t const& input)
 {
@@ -54,6 +56,15 @@ inline int movemask(uint32x4_t const& input)
     uint32x4_t tmp = vshrq_n_u32(input, 31);
     return vaddvq_u32(vshlq_u32(tmp, vld1q_s32(shift)));
 }
+
+#elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
+
+inline int movemask(__m128i const& input)
+{
+    return _mm_movemask_ps(_mm_castsi128_ps(input));
+}
+
+#endif
 
 //-----------------------------------------------------------------------------
 // SSE and NEON traversal based on:
@@ -124,9 +135,16 @@ next:
             auto hrN = intersect(ray, aabbN);
 
             hrN.hit &= aabbN.min.x <= aabbN.max.x;
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
             hrN.hit &= reinterpret_as_uint(hrN.tnear) < reinterpret_as_uint(F(result.t));
             hrN.hit &= reinterpret_as_uint(hrN.tfar) >= reinterpret_as_uint(F(ray.tmin)) &&
                        reinterpret_as_uint(hrN.tnear) <= reinterpret_as_uint(F(ray.tmax));
+#else
+            // TODO: unsigned comparisons with SSE, and check if this is worth it..
+            hrN.hit &= hrN.tnear < F(result.t);
+            hrN.hit &= hrN.tfar >= F(ray.tmin) &&
+                       hrN.tnear <= F(ray.tmax);
+#endif
 
             auto mask = movemask(hrN.hit.i);
 
