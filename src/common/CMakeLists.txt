@@ -15,9 +15,6 @@ target_sources(visionaray_common PRIVATE
   ../3rdparty/imgui/imgui_tables.cpp
   ../3rdparty/imgui/imgui_widgets.cpp
   ../3rdparty/tinyply/source/tinyply.cpp
-  async/connection.cpp
-  async/connection_manager.cpp
-  async/message.cpp
   cuda/graphics_resource.cpp
   cuda/pixel_pack_buffer.cpp
   gl/compositing.cpp
