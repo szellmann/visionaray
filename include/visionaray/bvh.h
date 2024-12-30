@@ -164,37 +164,11 @@ inline bool operator==(bvh_node const& a, bvh_node const& b)
 // bvh_multi_node
 //
 
-// #define QUANTIZE
-
 template <int W>
 struct bvh_multi_node
 {
     enum { Width = W };
 
-#ifdef QUANTIZE
-    struct {
-        unsigned char minx[W];
-        unsigned char miny[W];
-        unsigned char minz[W];
-        unsigned char maxx[W];
-        unsigned char maxy[W];
-        unsigned char maxz[W];
-    } child_bounds;
-    vec3 origin;
-    vec3 scale;
-
-    template <int I>
-    unsigned char quantize(float f) const
-    {
-        return (f - origin[I]) / scale[I] * 255;
-    }
-
-    template <int I>
-    float unquantize(unsigned char u) const
-    {
-        return (u / 255.f) * scale[I] + origin[I];
-    }
-#else
     struct {
         float minx[W];
         float miny[W];
@@ -203,7 +177,7 @@ struct bvh_multi_node
         float maxy[W];
         float maxz[W];
     } child_bounds;
-#endif
+
     int64_t children[Width]; // child[0]: neg(first_prim), child[1]: neg(num_prims)
 
     void init(unsigned id, bvh_node const* nodes)
@@ -213,21 +187,12 @@ struct bvh_multi_node
         for (int i = 0; i < Width; ++i)
         {
             children[i] = INT64_MAX;
-#ifdef QUANTIZE
-            child_bounds.minx[i] = 255;
-            child_bounds.miny[i] = 255;
-            child_bounds.minz[i] = 255;
-            child_bounds.maxx[i] = 0;
-            child_bounds.maxy[i] = 0;
-            child_bounds.maxz[i] = 0;
-#else
             child_bounds.minx[i] = FLT_MAX;
             child_bounds.miny[i] = FLT_MAX;
             child_bounds.minz[i] = FLT_MAX;
             child_bounds.maxx[i] = -FLT_MAX;
             child_bounds.maxy[i] = -FLT_MAX;
             child_bounds.maxz[i] = -FLT_MAX;
-#endif
         }
 
         if (n.is_inner())
@@ -235,35 +200,14 @@ struct bvh_multi_node
             children[0] = n.first_child;
             children[1] = n.first_child + 1;
 
-#ifdef QUANTIZE
-            aabb bounds;
-            bounds.invalidate();
             for (int i = 0; i < 2; ++i)
             {
-                bounds.insert(nodes[children[i]].get_bounds());
-            }
-
-            origin = bounds.min;
-            scale = bounds.max - bounds.min;
-#endif
-
-            for (int i = 0; i < 2; ++i)
-            {
-#ifdef QUANTIZE
-                child_bounds.minx[i] = quantize<0>(nodes[children[i]].get_bounds().min.x);
-                child_bounds.miny[i] = quantize<1>(nodes[children[i]].get_bounds().min.y);
-                child_bounds.minz[i] = quantize<2>(nodes[children[i]].get_bounds().min.z);
-                child_bounds.maxx[i] = quantize<0>(nodes[children[i]].get_bounds().max.x);
-                child_bounds.maxy[i] = quantize<1>(nodes[children[i]].get_bounds().max.y);
-                child_bounds.maxz[i] = quantize<2>(nodes[children[i]].get_bounds().max.z);
-#else
                 child_bounds.minx[i] = nodes[children[i]].get_bounds().min.x;
                 child_bounds.miny[i] = nodes[children[i]].get_bounds().min.y;
                 child_bounds.minz[i] = nodes[children[i]].get_bounds().min.z;
                 child_bounds.maxx[i] = nodes[children[i]].get_bounds().max.x;
                 child_bounds.maxy[i] = nodes[children[i]].get_bounds().max.y;
                 child_bounds.maxz[i] = nodes[children[i]].get_bounds().max.z;
-#endif
 
                 if (nodes[children[i]].is_leaf())
                 {
@@ -285,21 +229,12 @@ struct bvh_multi_node
         {
             // special handling for root node that is a leaf
             // (would be unreachable otherwise)
-#ifdef QUANTIZE
-            child_bounds.minx[0] = quantize<0>(nodes[0].get_bounds().min.x);
-            child_bounds.miny[0] = quantize<1>(nodes[0].get_bounds().min.y);
-            child_bounds.minz[0] = quantize<2>(nodes[0].get_bounds().min.z);
-            child_bounds.maxx[0] = quantize<0>(nodes[0].get_bounds().max.x);
-            child_bounds.maxy[0] = quantize<1>(nodes[0].get_bounds().max.y);
-            child_bounds.maxz[0] = quantize<2>(nodes[0].get_bounds().max.z);
-#else
             child_bounds.minx[0] = nodes[0].get_bounds().min.x;
             child_bounds.miny[0] = nodes[0].get_bounds().min.y;
             child_bounds.minz[0] = nodes[0].get_bounds().min.z;
             child_bounds.maxx[0] = nodes[0].get_bounds().max.x;
             child_bounds.maxy[0] = nodes[0].get_bounds().max.y;
             child_bounds.maxz[0] = nodes[0].get_bounds().max.z;
-#endif
             uint64_t first_prim = n.get_first_primitive();
             uint64_t num_prims  = n.get_num_primitives();
             children[0] = encode_leaf(first_prim, num_prims);
@@ -321,21 +256,12 @@ struct bvh_multi_node
     void collapse_child(bvh_multi_node& child, unsigned dest_id, unsigned source_id)
     {
         children[dest_id] = child.children[source_id];
-#ifdef QUANTIZE
-        float minx = child.unquantize<0>(child.child_bounds.minx[source_id]);
-        float miny = child.unquantize<1>(child.child_bounds.miny[source_id]);
-        float minz = child.unquantize<2>(child.child_bounds.minz[source_id]);
-        float maxx = child.unquantize<0>(child.child_bounds.maxx[source_id]);
-        float maxy = child.unquantize<1>(child.child_bounds.maxy[source_id]);
-        float maxz = child.unquantize<2>(child.child_bounds.maxz[source_id]);
-#else
         child_bounds.minx[dest_id] = child.child_bounds.minx[source_id];
         child_bounds.miny[dest_id] = child.child_bounds.miny[source_id];
         child_bounds.minz[dest_id] = child.child_bounds.minz[source_id];
         child_bounds.maxx[dest_id] = child.child_bounds.maxx[source_id];
         child_bounds.maxy[dest_id] = child.child_bounds.maxy[source_id];
         child_bounds.maxz[dest_id] = child.child_bounds.maxz[source_id];
-#endif
         if (source_id != 0)
         {
             child.children[source_id] = INT64_MAX;
@@ -345,19 +271,7 @@ struct bvh_multi_node
     template <typename AABB>
     void bounds_as_floatN(AABB& dest) const
     {
-#ifdef QUANTIZE
-        for (int i = 0; i < Width; ++i)
-        {
-            dest[i]             = unquantize<0>(child_bounds.minx[i]);
-            dest[i + Width]     = unquantize<1>(child_bounds.miny[i]);
-            dest[i + Width * 2] = unquantize<2>(child_bounds.minz[i]);
-            dest[i + Width * 3] = unquantize<0>(child_bounds.maxx[i]);
-            dest[i + Width * 4] = unquantize<1>(child_bounds.maxy[i]);
-            dest[i + Width * 5] = unquantize<2>(child_bounds.maxz[i]);
-        }
-#else
         memcpy(&dest, &child_bounds, sizeof(child_bounds));
-#endif
     }
 
     VSNRAY_FUNC int get_num_children() const
@@ -392,56 +306,10 @@ struct bvh_multi_node
 
     VSNRAY_FUNC aabb get_child_bounds(unsigned i) const
     {
-#ifdef QUANTIZE
-        return aabb(
-            vec3(
-                unquantize<0>(child_bounds.minx[i]),
-                unquantize<1>(child_bounds.miny[i]),
-                unquantize<2>(child_bounds.minz[i])
-                ),
-            vec3(
-                unquantize<0>(child_bounds.maxx[i]),
-                unquantize<1>(child_bounds.maxy[i]),
-                unquantize<2>(child_bounds.maxz[i])
-                )
-            );
-#else
         return aabb(
             vec3(child_bounds.minx[i], child_bounds.miny[i], child_bounds.minz[i]),
             vec3(child_bounds.maxx[i], child_bounds.maxy[i], child_bounds.maxz[i])
             );
-#endif
-    }
-
-    VSNRAY_FUNC unsigned get_child(unsigned i = 0) const
-    {
-        assert(is_inner());
-        assert(i < Width);
-        return children[i];
-    }
-
-    VSNRAY_FUNC unsigned get_first_primitive() const
-    {
-        assert(is_leaf());
-        return ~children[0];
-    }
-
-    VSNRAY_FUNC unsigned get_num_primitives() const
-    {
-        assert(is_leaf());
-        return ~children[1];
-    }
-
-    struct index_range
-    {
-        unsigned first;
-        unsigned last;
-    };
-
-    VSNRAY_FUNC index_range get_indices() const
-    {
-        assert(is_leaf());
-        return { get_first_primitive(), get_first_primitive() + get_num_primitives() };
     }
 };
 
