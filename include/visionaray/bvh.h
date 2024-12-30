@@ -300,8 +300,6 @@ struct bvh_multi_node
         return result;
     }
 
-    VSNRAY_FUNC bool is_inner() const { return children[0] >= 0; }
-    VSNRAY_FUNC bool is_leaf() const { return !is_inner(); }
     VSNRAY_FUNC bool is_empty() const { return children[0] == INT64_MAX; }
 
     VSNRAY_FUNC aabb get_child_bounds(unsigned i) const
