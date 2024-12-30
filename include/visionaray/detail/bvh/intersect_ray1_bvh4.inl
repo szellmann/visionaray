@@ -128,9 +128,8 @@ next:
 
             using F = simd::float4;
 
-            float float_bounds[6 * BVH::Width];
-            node.bounds_as_float(float_bounds);
-            basic_aabb<F> aabbN = *reinterpret_cast<basic_aabb<F>*>(&float_bounds[0]);
+            basic_aabb<F> aabbN;
+            node.bounds_as_floatN(aabbN);
 
             auto hrN = intersect(ray, aabbN);
 

@@ -342,7 +342,8 @@ struct bvh_multi_node
         }
     }
 
-    void bounds_as_float(float* dest) const
+    template <typename AABB>
+    void bounds_as_floatN(AABB& dest) const
     {
 #ifdef QUANTIZE
         for (int i = 0; i < Width; ++i)
@@ -355,7 +356,7 @@ struct bvh_multi_node
             dest[i + Width * 5] = unquantize<2>(child_bounds.maxz[i]);
         }
 #else
-        memcpy(dest, &child_bounds, sizeof(child_bounds));
+        memcpy(&dest, &child_bounds, sizeof(child_bounds));
 #endif
     }
 
