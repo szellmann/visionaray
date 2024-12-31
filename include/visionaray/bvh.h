@@ -246,7 +246,7 @@ struct bvh_multi_node
         return ~(num_prims << 48 | (first_prim & 0xFFFFFFFFFFFFll));
     }
 
-    static void decode_leaf(uint64_t addr, uint64_t& first_prim, uint64_t& num_prims)
+    static void decode_leaf(int64_t addr, uint64_t& first_prim, uint64_t& num_prims)
     {
         addr = ~addr;
         first_prim = addr & 0xFFFFFFFFFFFFll;
