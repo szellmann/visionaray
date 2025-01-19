@@ -18,6 +18,9 @@
 #include "../tags.h"
 #include "hit_record.h"
 
+#define likely(x)   __builtin_expect(!!(x), 1)
+#define unlikely(x) __builtin_expect(!!(x), 0)
+
 namespace visionaray
 {
 
@@ -162,14 +165,14 @@ next:
             };
 
             int i1 = bsf(mask);
-            if (mask == 0)
+            if (likely(mask == 0))
             {
                 addr = node.children[i1]; dist = tnear[i1];
                 continue;
             }
 
             int i2 = bsf(mask);
-            if (mask == 0)
+            if (likely(mask == 0))
             {
                 if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
 
@@ -179,7 +182,7 @@ next:
             }
 
             int i3 = bsf(mask);
-            if (mask == 0)
+            if (likely(mask == 0))
             {
                 if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
                 if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
@@ -192,7 +195,7 @@ next:
             }
 
             int i4 = bsf(mask);
-            if (mask == 0)
+            if (likely(mask == 0))
             {
                 if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
                 if (tnear[i4] < tnear[i3]) std::swap(i4,i3);
