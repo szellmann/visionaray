@@ -223,7 +223,7 @@ struct bvh_multi_node
 
                     children[i] = encode_leaf(first_prim, num_prims);
                 }
-              }
+            }
         }
         else if (id == 0 && n.is_leaf())
         {
@@ -308,6 +308,110 @@ struct bvh_multi_node
             vec3(child_bounds.minx[i], child_bounds.miny[i], child_bounds.minz[i]),
             vec3(child_bounds.maxx[i], child_bounds.maxy[i], child_bounds.maxz[i])
             );
+    }
+};
+
+
+//--------------------------------------------------------------------------------------------------
+// bvh_compressed_node (simple layout, *not* (quite) Ylitie et al.!)
+//
+
+template <int W>
+struct VSNRAY_ALIGN(16) bvh_compressed_node
+{
+    enum { Width = W };
+
+    struct {
+        unsigned char minx[W];
+        unsigned char miny[W];
+        unsigned char minz[W];
+        unsigned char maxx[W];
+        unsigned char maxy[W];
+        unsigned char maxz[W];
+    } child_bounds;
+
+    struct __attribute__((packed)) Child
+    {
+        int id;
+        short num_prims; // unused for inner nodes!
+    };
+    Child children[Width];
+
+    vec3 origin;
+    // Compact power-of-two scale exponents as in Ylitie paper:
+    char e[3];
+
+    void init(bvh_multi_node<W> const& wide_node)
+    {
+        aabb bbox = wide_node.get_bounds();
+
+        origin = bbox.min;
+
+        constexpr int N_q = 8;
+        e[0] = (char)(ceilf(log2f((bbox.max.x - origin.x) / (powf(2, N_q) - 1))));
+		e[1] = (char)(ceilf(log2f((bbox.max.y - origin.y) / (powf(2, N_q) - 1))));
+		e[2] = (char)(ceilf(log2f((bbox.max.z - origin.z) / (powf(2, N_q) - 1))));
+
+        for (int i = 0; i < W; ++i)
+        {
+            // quantize:
+            child_bounds.minx[i] = floorf((wide_node.child_bounds.minx[i] - origin.x) / powf(2, e[0]));
+            child_bounds.miny[i] = floorf((wide_node.child_bounds.miny[i] - origin.y) / powf(2, e[1]));
+            child_bounds.minz[i] = floorf((wide_node.child_bounds.minz[i] - origin.z) / powf(2, e[2]));
+
+            child_bounds.maxx[i] = ceilf((wide_node.child_bounds.maxx[i] - origin.x) / powf(2, e[0]));
+            child_bounds.maxy[i] = ceilf((wide_node.child_bounds.maxy[i] - origin.y) / powf(2, e[1]));
+            child_bounds.maxz[i] = ceilf((wide_node.child_bounds.maxz[i] - origin.z) / powf(2, e[2]));
+
+            // encode ids:
+            int64_t addr = wide_node.children[i];
+            if (addr < 0) // leaf!
+            {
+                uint64_t first_prim;
+                uint64_t num_prims;
+                bvh_multi_node<W>::decode_leaf(addr, first_prim, num_prims);
+                children[i].id = int(first_prim);
+                children[i].num_prims = short(num_prims);
+            }
+            else
+            {
+                children[i].id = int(addr);
+                children[i].num_prims = 0;
+            }
+        }
+    }
+
+    VSNRAY_FUNC aabb get_bounds() const
+    {
+        aabb result;
+        result.invalidate();
+
+        for (int i = 0; i < Width; ++i)
+        {
+            result.insert(get_child_bounds(i));
+        }
+
+        return result;
+    }
+
+    VSNRAY_FUNC aabb get_child_bounds(unsigned i) const
+    {
+        vec3 lower(FLT_MAX);
+        vec3 upper(-FLT_MAX);
+
+        lower = vec3(
+            origin.x + (float)child_bounds.minx[i] * powf(2, e[0]),
+            origin.y + (float)child_bounds.miny[i] * powf(2, e[1]),
+            origin.z + (float)child_bounds.minz[i] * powf(2, e[2])
+            );
+
+        upper = vec3(
+            origin.x + (float)child_bounds.maxx[i] * powf(2, e[0]),
+            origin.y + (float)child_bounds.maxy[i] * powf(2, e[1]),
+            origin.z + (float)child_bounds.maxz[i] * powf(2, e[2])
+            );
+
+        return aabb(lower, upper);
     }
 };
 
@@ -958,6 +1062,9 @@ using index_bvh4        = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_mult
 template <typename P>
 using index_bvh8        = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<8>, 32>, aligned_vector<unsigned>, 8>;
 
+template <typename P>
+using compressed_index_bvh4 = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_compressed_node<4>, 32>, aligned_vector<unsigned>, 4>;
+
 #ifdef __CUDACC__
 template <typename P>
 using cuda_bvh          = bvh_t<cuda::device_vector<P>, cuda::device_vector<bvh_node>>;
@@ -991,6 +1098,7 @@ void traverse_parents(B const& b, N const& n, F func);
 } // visionaray
 
 #include "detail/bvh/collapse.h"
+#include "detail/bvh/compress.h"
 #include "detail/bvh/get_bounds.inl"
 #include "detail/bvh/get_color.h"
 #include "detail/bvh/get_normal.h"
@@ -998,6 +1106,7 @@ void traverse_parents(B const& b, N const& n, F func);
 #include "detail/bvh/hit_record.h"
 #include "detail/bvh/intersect.inl"
 #include "detail/bvh/intersect_ray1_bvh4.inl"
+#include "detail/bvh/intersect_ray1_bvh4_compressed.inl"
 #include "detail/bvh/lbvh.h"
 #include "detail/bvh/prim_traits.h"
 #include "detail/bvh/refit.h"
