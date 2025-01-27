@@ -134,7 +134,7 @@ next:
             basic_aabb<F> aabbN;
             node.bounds_as_floatN(aabbN);
 
-            auto hrN = intersect(ray, aabbN);
+            auto hrN = intersect(ray, aabbN, inv_dir);
 
             hrN.hit &= aabbN.min.x <= aabbN.max.x;
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
