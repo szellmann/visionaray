@@ -83,6 +83,17 @@ VSNRAY_FORCE_INLINE int4 sign_extend(char const* a4)
     return vreinterpretq_s64_s32(s32x4);
 }
 
+VSNRAY_FORCE_INLINE int4 sign_extend(unsigned char const* a4)
+{
+    int4 a;
+    memcpy(&a, a4, 4 * sizeof(unsigned char));
+    // _mm_cvtepu8_epi32 from SSE2Neon:
+    uint8x16_t u8x16 = vreinterpretq_u8_s32(a);
+    uint16x8_t u16x8 = vmovl_u8(vget_low_u8(u8x16));
+    uint32x4_t u32x4 = vmovl_u16(vget_low_u16(u16x8));
+    return vreinterpretq_s32_u32(u32x4);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // select intrinsic

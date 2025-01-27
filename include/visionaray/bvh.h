@@ -415,6 +415,7 @@ struct VSNRAY_ALIGN(16) bvh_compressed_node
     }
 };
 
+static_assert( sizeof(bvh_compressed_node<4>) == 64, "Size mismatch" );
 
 //--------------------------------------------------------------------------------------------------
 // [index_]bvh_ref_t

@@ -84,24 +84,14 @@ next:
             using F = simd::float4;
 
             basic_aabb<F> aabbN;
-            float *minx = (float*)&aabbN.min.x;
-            float *miny = (float*)&aabbN.min.y;
-            float *minz = (float*)&aabbN.min.z;
 
-            float *maxx = (float*)&aabbN.max.x;
-            float *maxy = (float*)&aabbN.max.y;
-            float *maxz = (float*)&aabbN.max.z;
+            aabbN.min.x = convert_to_float(simd::sign_extend(node.child_bounds.minx));
+            aabbN.min.y = convert_to_float(simd::sign_extend(node.child_bounds.miny));
+            aabbN.min.z = convert_to_float(simd::sign_extend(node.child_bounds.minz));
 
-            for (int i = 0; i < 4; ++i)
-            {
-                minx[i] = (float)node.child_bounds.minx[i];
-                miny[i] = (float)node.child_bounds.miny[i];
-                minz[i] = (float)node.child_bounds.minz[i];
-
-                maxx[i] = (float)node.child_bounds.maxx[i];
-                maxy[i] = (float)node.child_bounds.maxy[i];
-                maxz[i] = (float)node.child_bounds.maxz[i];
-            }
+            aabbN.max.x = convert_to_float(simd::sign_extend(node.child_bounds.maxx));
+            aabbN.max.y = convert_to_float(simd::sign_extend(node.child_bounds.maxy));
+            aabbN.max.z = convert_to_float(simd::sign_extend(node.child_bounds.maxz));
 
             auto pow2 = [](char e) {
                 unsigned u((e + 127) << 23);

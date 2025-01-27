@@ -77,6 +77,13 @@ VSNRAY_FORCE_INLINE int4 sign_extend(char const* a4)
     return _mm_cvtepi8_epi32(a);
 }
 
+VSNRAY_FORCE_INLINE int4 sign_extend(unsigned char const* a4)
+{
+    int4 a;
+    memcpy(&a, a4, 4 * sizeof(unsigned char));
+    return _mm_cvtepu8_epi32(a);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // select intrinsic
