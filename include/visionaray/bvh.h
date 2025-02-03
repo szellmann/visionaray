@@ -1109,6 +1109,7 @@ void traverse_parents(B const& b, N const& n, F func);
 #include "detail/bvh/intersect_ray1_bvh4.inl"
 #include "detail/bvh/intersect_ray1_bvh4_compressed.inl"
 #include "detail/bvh/lbvh.h"
+#include "detail/bvh/optimize.h"
 #include "detail/bvh/prim_traits.h"
 #include "detail/bvh/refit.h"
 #include "detail/bvh/sah.h"
