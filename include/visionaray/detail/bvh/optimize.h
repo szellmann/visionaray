@@ -257,7 +257,7 @@ struct bvh_optimizer
             }
         }
 
-        printf("rotation count: %i\n", count);
+        // printf("rotation count: %i\n", count);
 
         #undef SA
     }
