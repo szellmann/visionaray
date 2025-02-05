@@ -224,6 +224,10 @@ struct bvh_optimizer
                         aabb bounds01 = tree.node(tree.node(node.get_child(0)).get_child(1)).get_bounds();
                         aabb bounds0 = bounds00; bounds0.insert(bounds01);
                         tree.nodes()[node.get_child(0)].bbox = bounds0;
+
+                        aabb bounds1 = tree.node(node.get_child(1)).get_bounds();
+                        aabb bounds = bounds0; bounds.insert(bounds1);
+                        tree.nodes()[addr].bbox = bounds;
                     }
 
                     if (rotation == _11 || rotation == _10)
@@ -232,6 +236,10 @@ struct bvh_optimizer
                         aabb bounds11 = tree.node(tree.node(node.get_child(1)).get_child(1)).get_bounds();
                         aabb bounds1 = bounds10; bounds1.insert(bounds11);
                         tree.nodes()[node.get_child(1)].bbox = bounds1;
+
+                        aabb bounds0 = tree.node(node.get_child(0)).get_bounds();
+                        aabb bounds = bounds0; bounds.insert(bounds1);
+                        tree.nodes()[addr].bbox = bounds;
                     }
 
                     count++;
@@ -249,7 +257,7 @@ struct bvh_optimizer
             }
         }
 
-        // printf("rotation count: %i\n", count);
+        printf("rotation count: %i\n", count);
 
         #undef SA
     }
