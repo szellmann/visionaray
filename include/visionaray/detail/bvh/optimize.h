@@ -21,8 +21,9 @@ namespace visionaray
 
 struct bvh_optimizer
 {
+    // return value: number of rotations performed
     template <typename Tree>
-    void optimize_tree_rotations(Tree& tree, thread_pool& /*pool*/)
+    int optimize_tree_rotations(Tree& tree, thread_pool& /*pool*/)
     {
         static_assert(Tree::Width == 2, "Type mismatch");
 
@@ -257,9 +258,9 @@ struct bvh_optimizer
             }
         }
 
-        // printf("rotation count: %i\n", count);
-
         #undef SA
+
+        return count;
     }
 };
 
