@@ -1057,6 +1057,10 @@ struct is_any_bvh_inst : std::integral_constant<bool, is_bvh_inst<T>::value || i
 template <typename P>
 using bvh               = bvh_t<aligned_vector<P>, aligned_vector<bvh_node, 32>>;
 template <typename P>
+using bvh4              = bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<4>, 32>, 4>;
+template <typename P>
+using bvh8              = bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<8>, 32>, 8>;
+template <typename P>
 using index_bvh         = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node, 32>, aligned_vector<unsigned>>;
 template <typename P>
 using index_bvh4        = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<4>, 32>, aligned_vector<unsigned>, 4>;

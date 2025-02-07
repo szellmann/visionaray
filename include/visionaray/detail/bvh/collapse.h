@@ -150,6 +150,19 @@ struct bvh_collapser
         }
 
         // Assign rest of the tree
+        init_primitives(tree, wide_tree);
+    }
+
+private:
+    template <typename Tree, typename P, typename N, int W>
+    void init_primitives(Tree const& tree, bvh_t<P, N, W>& wide_tree)
+    {
+        wide_tree.primitives() = tree.primitives();
+    }
+
+    template <typename Tree, typename P, typename N, typename U, int W>
+    void init_primitives(Tree const& tree, index_bvh_t<P, N, U, W>& wide_tree)
+    {
         wide_tree.primitives() = tree.primitives();
         wide_tree.indices() = tree.indices();
     }
