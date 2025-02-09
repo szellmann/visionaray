@@ -42,6 +42,11 @@ VSNRAY_FORCE_INLINE int4::basic_int(int32x4_t const& v)
 {
 }
 
+VSNRAY_FORCE_INLINE int4::basic_int(uint32x4_t const& v)
+    : value(vreinterpretq_s32_u32(v))
+{
+}
+
 VSNRAY_FORCE_INLINE int4::operator int32x4_t() const
 {
     return value;
