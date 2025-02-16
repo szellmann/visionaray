@@ -135,7 +135,11 @@ inline hit_record<basic_ray<T>, basic_aabb<U>> intersect(
         basic_aabb<U> const& aabb
         )
 {
-    vector<3, T> inv_dir = T(1.0) / ray.dir;
+    vector<3, T> inv_dir(
+        select(ray.dir.x != T(0.0), T(1.0) / ray.dir.x, T(0.0)),
+        select(ray.dir.y != T(0.0), T(1.0) / ray.dir.y, T(0.0)),
+        select(ray.dir.z != T(0.0), T(1.0) / ray.dir.z, T(0.0))
+        );
     return intersect(ray, aabb, inv_dir);
 }
 
