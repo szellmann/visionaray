@@ -108,9 +108,9 @@ inline auto intersect_ray1_bvh4(
     stack[ptr++] = { 0, 0 }; // root node
 
     vector<3, T> inv_dir(
-        select(ray.dir.x != T(0.0), T(1.0) / ray.dir.x, T(0.0)),
-        select(ray.dir.y != T(0.0), T(1.0) / ray.dir.y, T(0.0)),
-        select(ray.dir.z != T(0.0), T(1.0) / ray.dir.z, T(0.0))
+        select(ray.dir.x != T(0.0), T(1.0) / ray.dir.x, T(FLT_MAX)),
+        select(ray.dir.y != T(0.0), T(1.0) / ray.dir.y, T(FLT_MAX)),
+        select(ray.dir.z != T(0.0), T(1.0) / ray.dir.z, T(FLT_MAX))
         );
     if (ray.debug()) {
         std::cout << ray.dir << '\n';

@@ -61,9 +61,9 @@ inline auto intersect(
     st.push(0); // address of root node
 
     vector<3, T> inv_dir(
-        select(ray.dir.x != T(0.0), T(1.0) / ray.dir.x, T(0.0)),
-        select(ray.dir.y != T(0.0), T(1.0) / ray.dir.y, T(0.0)),
-        select(ray.dir.z != T(0.0), T(1.0) / ray.dir.z, T(0.0))
+        select(ray.dir.x != T(0.0), T(1.0) / ray.dir.x, T(FLT_MAX)),
+        select(ray.dir.y != T(0.0), T(1.0) / ray.dir.y, T(FLT_MAX)),
+        select(ray.dir.z != T(0.0), T(1.0) / ray.dir.z, T(FLT_MAX))
         );
 
     // while ray not terminated
@@ -170,9 +170,9 @@ next:
     HR result;
 
     vector<3, T> inv_dir(
-        select(ray.dir.x != T(0.0), T(1.0) / ray.dir.x, T(0.0)),
-        select(ray.dir.y != T(0.0), T(1.0) / ray.dir.y, T(0.0)),
-        select(ray.dir.z != T(0.0), T(1.0) / ray.dir.z, T(0.0))
+        select(ray.dir.x != T(0.0), T(1.0) / ray.dir.x, T(FLT_MAX)),
+        select(ray.dir.y != T(0.0), T(1.0) / ray.dir.y, T(FLT_MAX)),
+        select(ray.dir.z != T(0.0), T(1.0) / ray.dir.z, T(FLT_MAX))
         );
 
     bvh_node node = b.node(0);
