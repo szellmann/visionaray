@@ -112,9 +112,6 @@ inline auto intersect_ray1_bvh4(
         select(ray.dir.y != T(0.0), T(1.0) / ray.dir.y, T(FLT_MAX)),
         select(ray.dir.z != T(0.0), T(1.0) / ray.dir.z, T(FLT_MAX))
         );
-    if (ray.debug()) {
-        std::cout << ray.dir << '\n';
-    }
 
     // while ray not terminated
 next:
