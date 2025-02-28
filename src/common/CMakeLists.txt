@@ -74,6 +74,7 @@ target_include_directories(visionaray_common PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>
   $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:include/common/imgui>
 )
 
 target_link_libraries(visionaray_common PUBLIC visionaray)
