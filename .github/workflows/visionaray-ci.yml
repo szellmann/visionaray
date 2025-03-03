@@ -37,6 +37,10 @@ jobs:
         matrix.cuda == 'ON'
       run: sudo apt-get install -y cuda-toolkit-12-6
 
+    - name: Install other dependencies
+      if: matrix.os == 'ubuntu-24.04'
+      run: sudo apt install -y libboost-all-dev libglew-dev freeglut3-dev libxi-dev libxmu-dev
+
     - name: Setup CUDA
       if: >-
         matrix.os == 'ubuntu-24.04' &&
