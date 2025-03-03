@@ -11,9 +11,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-24.04]
+        os: [ubuntu-24.04, macos-15]
         config: [Release, Debug]
         cuda: [ON, OFF]
+        exclude:
+          - os: macos-15
+            cuda: ON
 
     name: config ${{ matrix.config }} - CUDA ${{ matrix.cuda }}
 
@@ -39,9 +42,13 @@ jobs:
         matrix.cuda == 'ON'
       run: sudo apt-get install -y cuda-toolkit-12-6
 
-    - name: Install other dependencies
+    - name: Install apt packages
       if: matrix.os == 'ubuntu-24.04'
       run: sudo apt install -y libboost-all-dev libglew-dev freeglut3-dev libxi-dev libxmu-dev
+
+    - name: Install homebrew packages
+      if: matrix.os == 'macos-15'
+      run: brew install boost glew
 
     - name: Setup CUDA
       if: >-
