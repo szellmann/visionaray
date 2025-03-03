@@ -61,7 +61,6 @@ public:
     basic_int(unsigned s);
     basic_int(basic_float<float32x4_t> const& f);
     basic_int(int32x4_t const& v);
-    basic_int(uint32x4_t const& v);
 
     operator int32x4_t() const;
 };
@@ -80,7 +79,6 @@ public:
 
     basic_mask() = default;
     basic_mask(uint32x4_t const& m);
-    basic_mask(int32x4_t const& m);
     basic_mask(bool x, bool y, bool z, bool w);
     basic_mask(bool const v[4]);
     basic_mask(bool b);
