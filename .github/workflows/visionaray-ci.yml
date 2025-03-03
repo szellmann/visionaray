@@ -18,7 +18,7 @@ jobs:
           - os: macos-15
             cuda: ON
 
-    name: config ${{ matrix.config }} - CUDA ${{ matrix.cuda }}
+    name: OS ${{ matrix.os }} - config ${{ matrix.config }} - CUDA ${{ matrix.cuda }}
 
     steps:
     - uses: actions/checkout@v3
