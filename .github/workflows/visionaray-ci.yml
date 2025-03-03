@@ -52,9 +52,9 @@ jobs:
         cmake -LA -B ${{github.workspace}}/build
         -DCMAKE_BUILD_TYPE=${{ matrix.config }}
         -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/build/install
-        -DVSNRAY_ENABLE_EXAMPLES:BOOL=ON \
-        -DVSNRAY_ENABLE_VIEWER:BOOL=ON \
-        -DVSNRAY_ENABLE_COMMON:BOOL=ON \
+        -DVSNRAY_ENABLE_EXAMPLES:BOOL=ON
+        -DVSNRAY_ENABLE_VIEWER:BOOL=ON
+        -DVSNRAY_ENABLE_COMMON:BOOL=ON
         -DVSNRAY_ENABLE_CUDA:BOOL=${{ matrix.cuda }}
 
     - name: Build
