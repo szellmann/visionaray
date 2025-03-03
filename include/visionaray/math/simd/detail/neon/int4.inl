@@ -85,7 +85,7 @@ VSNRAY_FORCE_INLINE int4 sign_extend(char const* a4)
     int8x16_t s8x16 = vreinterpretq_s8_s64(a);
     int16x8_t s16x8 = vmovl_s8(vget_low_s8(s8x16));
     int32x4_t s32x4 = vmovl_s16(vget_low_s16(s16x8));
-    return vreinterpretq_s64_s32(s32x4);
+    return (int32x4_t)vreinterpretq_s64_s32(s32x4);
 }
 
 VSNRAY_FORCE_INLINE int4 sign_extend(unsigned char const* a4)
