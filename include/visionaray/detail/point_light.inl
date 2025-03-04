@@ -36,11 +36,11 @@ inline light_sample<U> point_light<T>::sample(vector<3, U> const& reference_poin
 {
     light_sample<U> result;
 
-    auto pos = position();
+    vector<3, U> pos(position());
 
     result.dir = pos - reference_point;
     result.dist = length(result.dir);
-    result.intensity = intensity(vector<3, U>(pos)) * constants::pi<U>();
+    result.intensity = intensity(pos) * constants::pi<U>();
     result.normal = normalize( vector<3, U>(
             gen.next() * U(2.0) - U(1.0),
             gen.next() * U(2.0) - U(1.0),
