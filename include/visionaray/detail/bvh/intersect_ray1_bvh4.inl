@@ -18,8 +18,28 @@
 #include "../tags.h"
 #include "hit_record.h"
 
+#ifdef _MSC_VER
+// TODO:
+#define likely(x) x
+#define unlikely(x) x
+#include <intrin.h>
+inline unsigned ctz(unsigned v)
+{
+    unsigned long tz = 0;
+    if (_BitScanForward(&tz, v))
+    {
+        return tz;
+    }
+    else
+    {
+        return 32u;
+    }
+}
+#else
 #define likely(x)   __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect(!!(x), 0)
+#define ctz(x) __builtin_ctz(x)
+#endif
 
 namespace visionaray
 {
@@ -163,7 +183,7 @@ next:
 
 #if 1
             auto bsf = [](int& m) {
-                int i =  __builtin_ctz(m);
+                int i =  ctz(m);
                 m &= m-1;
                 return i;
             };

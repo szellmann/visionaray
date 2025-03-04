@@ -330,11 +330,19 @@ struct VSNRAY_ALIGN(16) bvh_compressed_node
         unsigned char maxz[W];
     } child_bounds;
 
+#ifdef _MSC_VER
+    __pragma(pack(push, 1))
+    struct Child
+#else
     struct __attribute__((packed)) Child
+#endif
     {
         int id;
         short num_prims; // unused for inner nodes!
     };
+#ifdef _MSC_VER
+    __pragma(pack(pop))
+#endif
     Child children[Width];
 
     vec3 origin;

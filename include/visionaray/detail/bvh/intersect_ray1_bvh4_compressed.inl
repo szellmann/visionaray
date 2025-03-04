@@ -18,8 +18,8 @@
 #include "../tags.h"
 #include "hit_record.h"
 
-#define likely(x)   __builtin_expect(!!(x), 1)
-#define unlikely(x) __builtin_expect(!!(x), 0)
+// #define likely(x)   __builtin_expect(!!(x), 1)
+// #define unlikely(x) __builtin_expect(!!(x), 0)
 
 namespace visionaray
 {
@@ -142,7 +142,7 @@ next:
             unsigned* tnear = reinterpret_cast<unsigned*>(&hrN.tnear);
 
             auto bsf = [](int& m) {
-                int i =  __builtin_ctz(m);
+                int i =  ctz(m);
                 m &= m-1;
                 return i;
             };
