@@ -9,6 +9,8 @@
 #include <tiffio.h>
 #endif
 
+#include <visionaray/detail/macros.h>
+
 #include "tiff_image.h"
 
 namespace visionaray

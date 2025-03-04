@@ -15,6 +15,7 @@
 #include <OpenEXR/ImfRgbaFile.h>
 #endif
 
+#include <visionaray/detail/macros.h>
 #include <visionaray/math/forward.h>
 #include <visionaray/math/vector.h>
 #include <visionaray/aligned_vector.h>

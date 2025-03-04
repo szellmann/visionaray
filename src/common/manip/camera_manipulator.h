@@ -6,6 +6,8 @@
 #ifndef VSNRAY_COMMON_MANIP_CAMERA_MANIPULATOR_H
 #define VSNRAY_COMMON_MANIP_CAMERA_MANIPULATOR_H 1
 
+#include <visionaray/detail/macros.h>
+
 #include "../input/key_event.h"
 #include "../input/mouse_event.h"
 #include "../input/space_mouse.h"

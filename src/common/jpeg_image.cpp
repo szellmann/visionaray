@@ -10,6 +10,8 @@
 #include <jpeglib.h>
 #endif
 
+#include <visionaray/detail/macros.h>
+
 #include "cfile.h"
 #include "jpeg_image.h"
 

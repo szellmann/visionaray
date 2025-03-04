@@ -18,6 +18,7 @@
 
 #include <visionaray/detail/spd/blackbody.h>
 #include <visionaray/detail/spd/measured.h>
+#include <visionaray/detail/macros.h>
 #include <visionaray/math/forward.h>
 #include <visionaray/math/io.h>
 #include <visionaray/math/matrix.h>

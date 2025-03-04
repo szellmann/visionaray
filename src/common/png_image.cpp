@@ -7,6 +7,8 @@
 #include <png.h>
 #endif
 
+#include <visionaray/detail/macros.h>
+
 #include "cfile.h"
 #include "png_image.h"
 
