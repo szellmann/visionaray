@@ -14,30 +14,7 @@
 #include "macros.h"
 
 #if VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
-#if VSNRAY_BASE_ARCH == VSNRAY_BASE_ARCH_ARM
-
-// TODO:!!!
-
-#include <cstdlib>
-
-namespace visionaray
-{
-
-inline void* _mm_malloc(size_t s, size_t aln)
-{
-    return aligned_alloc(aln, s);
-}
-
-inline void _mm_free(void* ptr)
-{
-    free(ptr);
-}
-
-} // visionaray
-
-#else
 #include <mm_malloc.h>
-#endif
 #else
 #include <malloc.h>
 #endif
