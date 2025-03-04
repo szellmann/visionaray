@@ -7,18 +7,13 @@
 #define VSNRAY_DETAIL_ALIGNED_ALLOCATOR_H 1
 
 #include <cstddef>
+#include <cstdlib>
 #include <new>
 
-#include <visionaray/math/simd/intrinsics.h> // VSNRAY_ARCH
-
-#include "macros.h"
-
-#if VSNRAY_CXX_GCC || VSNRAY_CXX_CLANG
-#include <mm_malloc.h>
-#else
+#include "compiler.h"
+#if VSNRAY_CXX_MSVC
 #include <malloc.h>
 #endif
-
 
 namespace visionaray
 {
@@ -52,12 +47,26 @@ public:
 
     pointer allocate(size_type n, void* /* hint */ = 0)
     {
+#if VSNRAY_CXX_MSVC
         return (pointer)_mm_malloc(n * sizeof(T), A);
+#else
+        value_type* ptr{nullptr};
+        auto ret = posix_memalign((void**)&ptr, A, sizeof(T) * n);
+        if (ret != 0)
+        {
+            throw std::bad_alloc();
+        }
+        return ptr;
+#endif
     }
 
     void deallocate(pointer p, size_type /* n */)
     {
+#if VSNRAY_CXX_MSVC
         _mm_free(p);
+#else
+        std::free(p);
+#endif
     }
 
     bool operator==(aligned_allocator const& /* rhs */) const
