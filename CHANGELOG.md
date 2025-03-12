@@ -11,6 +11,7 @@ works with index_bvh<>. Uses the SIMD traversal algorithm from Afra
 - Made pointer_storage and texture_ref trivially constructible.
 - Fixed some bugs in the GPU LBVH builder that would cause data
 races otherwise.
+- Function lerp() becomes deprecated, use lerp_r() instead.
 
 ### Removed
 - Support for multi-hit BVH traversal was dropped, in favor of less
