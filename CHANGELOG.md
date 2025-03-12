@@ -1,4 +1,6 @@
 ## [Unreleased]
+
+## [0.5.0] - 2025-03-12
 ### Added
 - Quantized 4-wide BVH for CPU. Uncompressed is faster to traverse,
 so this is primarily a memory optimization.
