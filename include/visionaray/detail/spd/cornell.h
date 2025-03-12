@@ -62,7 +62,7 @@ public:
 
         assert( ptr );
 
-        return lerp( ptr[i], ptr[i + 1], f );
+        return lerp_r( ptr[i], ptr[i + 1], f );
     }
 
 private:

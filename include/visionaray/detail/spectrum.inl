@@ -318,7 +318,7 @@ inline spectrum<T> from_spd(SPD spd)
     for (unsigned i = 0; i < spectrum<T>::num_samples; ++i)
     {
         float f = i / static_cast<float>(spectrum<T>::num_samples - 1);
-        float lambda = lerp( lambda_min, lambda_max, f );
+        float lambda = lerp_r( lambda_min, lambda_max, f );
         result.samples()[i] = spd(lambda);
     }
 

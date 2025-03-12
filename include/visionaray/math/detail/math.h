@@ -539,16 +539,36 @@ inline T saturate(T const& x)
     return max(T(0.0), min(x, T(1.0)));
 }
 
+// DEPRECATED: use lerp_r instead!
 template <typename T, typename S>
 MATH_FUNC
-inline T lerp(T const& a, T const& b, S const& x)
+inline T VSNRAY_DEPRECATED lerp(T const& a, T const& b, S const& x)
 {
     return (S(1.0f) - x) * a + x * b;
 }
 
 template <typename T, typename S>
 MATH_FUNC
-inline T lerp(T const& a, T const& b, T const& c, S const& u, S const& v)
+inline T lerp_r(T const& a, T const& b, S const& x)
+{
+    return (S(1.0f) - x) * a + x * b;
+}
+
+// DEPRECATED: use lerp_r instead!
+template <typename T, typename S>
+MATH_FUNC
+inline T VSNRAY_DEPRECATED lerp(T const& a, T const& b, T const& c, S const& u, S const& v)
+{
+    auto s2 = c * v;
+    auto s3 = b * u;
+    auto s1 = a * (S(1.0f) - (u + v));
+
+    return s1 + s2 + s3;
+}
+
+template <typename T, typename S>
+MATH_FUNC
+inline T lerp_r(T const& a, T const& b, T const& c, S const& u, S const& v)
 {
     auto s2 = c * v;
     auto s3 = b * u;

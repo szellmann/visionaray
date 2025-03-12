@@ -72,7 +72,7 @@ public:
         }
 
         float x = (lambda - values_[ival].first) / (values_[ival + 1].first - values_[ival].first);
-        return lerp(values_[ival].second, values_[ival + 1].second, x);
+        return lerp_r(values_[ival].second, values_[ival + 1].second, x);
     }
 
 private:

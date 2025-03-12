@@ -51,7 +51,7 @@ VSNRAY_FUNC
 inline auto get_tex_coord(TexCoords tex_coords, HR const& hr, basic_triangle<3, T> /* */)
     -> typename std::iterator_traits<TexCoords>::value_type
 {
-    return lerp(
+    return lerp_r(
             tex_coords[hr.prim_id * 3],
             tex_coords[hr.prim_id * 3 + 1],
             tex_coords[hr.prim_id * 3 + 2],
@@ -109,7 +109,7 @@ inline auto get_tex_coord(TexCoords tex_coords, HR const& hr, basic_triangle<3, 
     vector<2, U> tc2(x2, y2);
     vector<2, U> tc3(x3, y3);
 
-    return lerp( tc1, tc2, tc3, hr.u, hr.v );
+    return lerp_r( tc1, tc2, tc3, hr.u, hr.v );
 }
 
 

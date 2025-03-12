@@ -90,7 +90,7 @@ inline auto get_shading_normal(
         normals_per_vertex_binding  /* */
         )
 {
-    return normalize( lerp(
+    return normalize( lerp_r(
             normals[hr.prim_id * 3],
             normals[hr.prim_id * 3 + 1],
             normals[hr.prim_id * 3 + 2],
@@ -165,7 +165,7 @@ inline auto get_shading_normal(
     vector<3, U> n2(x2, y2, z2);
     vector<3, U> n3(x3, y3, z3);
 
-    return normalize( lerp(n1, n2, n3, hr.u, hr.v) );
+    return normalize( lerp_r(n1, n2, n3, hr.u, hr.v) );
 }
 
 } // visionaray

@@ -41,7 +41,7 @@ inline void split_edge(aabb& L, aabb& R, vec3 const& v0, vec3 const& v1, float p
 
     if ((t0 < plane && plane < t1) || (t1 < plane && plane < t0))
     {
-        auto x = lerp(v0, v1, (plane - t0) / (t1 - t0));
+        auto x = lerp_r(v0, v1, (plane - t0) / (t1 - t0));
 
         x[axis] = plane; // Fix numerical inaccuracies...
 
@@ -299,7 +299,7 @@ struct binned_sah_builder
         // Returns the left plane of the given bin
         float unproject(int i) const
         {
-            return i / k1 + k0; // lerp(bounds.min, bounds.max, i/NumBins)
+            return i / k1 + k0; // lerp_r(bounds.min, bounds.max, i/NumBins)
         }
     };
 

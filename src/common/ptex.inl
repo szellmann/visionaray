@@ -126,12 +126,12 @@ inline auto get_tex_coord(
 
     if (result.face_id >= 0)
     {
-        uv = lerp(tc1, tc2, tc3, hr.u, hr.v);
+        uv = lerp_r(tc1, tc2, tc3, hr.u, hr.v);
     }
     else
     {
         result.face_id = ~result.face_id;
-        uv = lerp(tc1, tc3, tc4, hr.u, hr.v);
+        uv = lerp_r(tc1, tc3, tc4, hr.u, hr.v);
     }
 
     result.u = uv.x;

@@ -90,7 +90,7 @@ public:
 
         i -= 30;
 
-        return lerp(table[i], table[i + 1], s);
+        return lerp_r(table[i], table[i + 1], s);
     }
 };
 

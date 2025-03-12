@@ -259,7 +259,7 @@ void renderer::build_scene()
     {
         float alpha = i / static_cast<float>(shank.size() - 1);
         shank[i].center = vec3f(0.0f, foot_radius * 2.0f * i, 0.0f);
-        shank[i].radius = lerp(foot_radius, knee_radius, alpha);
+        shank[i].radius = lerp_r(foot_radius, knee_radius, alpha);
         shank[i].geom_id = SkinId;
     }
 
@@ -278,7 +278,7 @@ void renderer::build_scene()
     {
         float alpha = i / static_cast<float>(torso.size() - 1);
         torso[i].center = vec3f(0.0f, 0.07f * i, 0.0f);
-        torso[i].radius = lerp(hip_radius, shoulder_radius, alpha);
+        torso[i].radius = lerp_r(hip_radius, shoulder_radius, alpha);
         torso[i].geom_id = TorsoId;
     }
 
@@ -298,7 +298,7 @@ void renderer::build_scene()
     {
         float alpha = i / static_cast<float>(forearm.size() - 1);
         forearm[i].center = vec3f(0.0f, -0.09f * i, 0.0f);
-        forearm[i].radius = lerp(ellbow_radius, hand_radius, alpha);
+        forearm[i].radius = lerp_r(ellbow_radius, hand_radius, alpha);
         forearm[i].geom_id = SkinId;
     }
 
@@ -354,13 +354,13 @@ void renderer::generate_frame(float t)
         mat4 trans = mat4::translation(0.3f * sgn, 0.0f, 0.0f);
 
         // Outward motion of knee, center of rotation is the foot
-        float zrot = t < 0.5f ? lerp(3.0f, 5.0f, t)
-                             : lerp(5.0f, 3.0f, t);
+        float zrot = t < 0.5f ? lerp_r(3.0f, 5.0f, t)
+                              : lerp_r(5.0f, 3.0f, t);
         trans = trans * mat4::rotation(vec3f(0.0f, 0.0f, 1.0f), -zrot * sgn * constants::degrees_to_radians<float>());
 
         // Forward motion of knee, center of rotation is the foot
-        float xrot = t < 0.5f ? lerp(10.0f, 25.0f, t)
-                              : lerp(25.0f, 10.0f, t);
+        float xrot = t < 0.5f ? lerp_r(10.0f, 25.0f, t)
+                              : lerp_r(25.0f, 10.0f, t);
         trans = trans * mat4::rotation(vec3f(1.0f, 0.0f, 0.0f), xrot * constants::degrees_to_radians<float>());
 
         for (auto const& sph : shank)
@@ -389,8 +389,8 @@ void renderer::generate_frame(float t)
         trans = trans * mat4::rotation(vec3f(0.0f, 0.0f, 1.0f), zrot * sgn * constants::degrees_to_radians<float>());
 
         // Backward motion of hips, center of rotation is the knee
-        float xrot = t < 0.5f ? lerp(0.0f, -50.0f, t)
-                              : lerp(-50.0f, 0.0f, t);
+        float xrot = t < 0.5f ? lerp_r(0.0f, -50.0f, t)
+                              : lerp_r(-50.0f, 0.0f, t);
         trans = trans * mat4::rotation(vec3f(1.0f, 0.0f, 0.0f), xrot * constants::degrees_to_radians<float>());
 
         // Perform rotations around knee
@@ -444,13 +444,13 @@ void renderer::generate_frame(float t)
         mat4 trans = mat4::identity();
 
         // Outward motion of upper arm, center of rotation is the shoulder
-        float zrot = t < 0.5f ? lerp(20.0f, 40.0f, t)
-                              : lerp(40.0f, 20.0f, t);
+        float zrot = t < 0.5f ? lerp_r(20.0f, 40.0f, t)
+                              : lerp_r(40.0f, 20.0f, t);
         trans = trans * mat4::rotation(vec3f(0.0f, 0.0f, 1.0f), zrot * sgn * constants::degrees_to_radians<float>());
 
         // Backward motion of upper arm, center of rotation is the shoulder
-        float xrot = t < 0.5f ? lerp(10.0f, 30.0f, t)
-                              : lerp(30.0f, 10.0f, t);
+        float xrot = t < 0.5f ? lerp_r(10.0f, 30.0f, t)
+                              : lerp_r(30.0f, 10.0f, t);
         trans = trans * mat4::rotation(vec3f(1.0f, 0.0f, 0.0f), xrot * constants::degrees_to_radians<float>());
 
         // Perform rotations around knee
@@ -484,13 +484,13 @@ void renderer::generate_frame(float t)
         mat4 trans = mat4::translation(0.02f * sgn, -ellbow_radius, 0.0f);
 
         // Outward motion of forearm, center of rotation is the ellbow
-        float zrot = t < 0.5f ? lerp(0.0f, 10.0f, t)
-                              : lerp(10.0f, 0.0f, t);
+        float zrot = t < 0.5f ? lerp_r(0.0f, 10.0f, t)
+                              : lerp_r(10.0f, 0.0f, t);
         trans = trans * mat4::rotation(vec3f(0.0f, 0.0f, 1.0f), zrot * sgn * constants::degrees_to_radians<float>());
 
         // Upward motion of forearm, center of rotation is the ellbow
-        float xrot = t < 0.5f ? lerp(-60.0f, -110.0f, t)
-                              : lerp(-110.0f, -60.0f, t);
+        float xrot = t < 0.5f ? lerp_r(-60.0f, -110.0f, t)
+                              : lerp_r(-110.0f, -60.0f, t);
         trans = trans * mat4::rotation(vec3f(1.0f, 0.0f, 0.0f), xrot * constants::degrees_to_radians<float>());
 
         // Perform rotations around knee
@@ -548,7 +548,7 @@ void renderer::generate_frame(float t)
         {
             tt -= 1.0f;
         }
-        float x = lerp(-1.0f, 1.0f, tt);
+        float x = lerp_r(-1.0f, 1.0f, tt);
         float fx =  -0.4f * (x * x) + 0.4f;
 
         balls[0].center = start_pos;
@@ -568,7 +568,7 @@ void renderer::generate_frame(float t)
         {
             tt -= 2.0f;
         }
-        float x = lerp(1.0f, -1.0f, tt/2);//std::cout << x << '\n';
+        float x = lerp_r(1.0f, -1.0f, tt/2);//std::cout << x << '\n';
         float fx =  -1.8f * (x * x) + 1.8f;
 
         balls[1].center = start_pos;
@@ -588,7 +588,7 @@ void renderer::generate_frame(float t)
         {
             tt -= 2.0f;
         }
-        float x = lerp(1.0f, -1.0f, tt/2);//std::cout << x << '\n';
+        float x = lerp_r(1.0f, -1.0f, tt/2);//std::cout << x << '\n';
         float fx =  -1.8f * (x * x) + 1.8f;
 
         balls[1].center = start_pos;

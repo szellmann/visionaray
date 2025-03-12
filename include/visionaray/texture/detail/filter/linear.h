@@ -53,7 +53,7 @@ inline ReturnT linear(
 
     auto u = coord1[0] * FloatT(texsize[0]) - FloatT(lo[0]);
 
-    return ReturnT(lerp(samples[0], samples[1], u));
+    return ReturnT(lerp_r(samples[0], samples[1], u));
 }
 
 
@@ -97,10 +97,10 @@ inline ReturnT linear(
 
     auto uv = coord1 * texsizef - vector<2, FloatT>(lo);
 
-    auto p1 = lerp(samples[0], samples[1], uv[0]);
-    auto p2 = lerp(samples[2], samples[3], uv[0]);
+    auto p1 = lerp_r(samples[0], samples[1], uv[0]);
+    auto p2 = lerp_r(samples[2], samples[3], uv[0]);
 
-    return ReturnT(lerp(p1, p2, uv[1]));
+    return ReturnT(lerp_r(p1, p2, uv[1]));
 }
 
 
@@ -148,15 +148,15 @@ inline ReturnT linear(
 
     auto uvw = coord1 * texsizef - vector<3, FloatT>(lo);
 
-    auto p1  = lerp(samples[0], samples[1], uvw[0]);
-    auto p2  = lerp(samples[2], samples[3], uvw[0]);
-    auto p3  = lerp(samples[4], samples[5], uvw[0]);
-    auto p4  = lerp(samples[6], samples[7], uvw[0]);
+    auto p1  = lerp_r(samples[0], samples[1], uvw[0]);
+    auto p2  = lerp_r(samples[2], samples[3], uvw[0]);
+    auto p3  = lerp_r(samples[4], samples[5], uvw[0]);
+    auto p4  = lerp_r(samples[6], samples[7], uvw[0]);
 
-    auto p12 = lerp(p1, p2, uvw[1]);
-    auto p34 = lerp(p3, p4, uvw[1]);
+    auto p12 = lerp_r(p1, p2, uvw[1]);
+    auto p34 = lerp_r(p3, p4, uvw[1]);
 
-    return ReturnT(lerp(p12, p34, uvw[2]));
+    return ReturnT(lerp_r(p12, p34, uvw[2]));
 }
 
 } // detail

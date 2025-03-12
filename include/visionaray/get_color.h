@@ -85,7 +85,7 @@ inline auto get_color(
         )
     -> typename std::iterator_traits<Colors>::value_type
 {
-    return lerp(
+    return lerp_r(
             colors[hr.prim_id * 3],
             colors[hr.prim_id * 3 + 1],
             colors[hr.prim_id * 3 + 2],
@@ -204,7 +204,7 @@ inline auto get_color(
     vector<3, U> c2(x2, y2, z2);
     vector<3, U> c3(x3, y3, z3);
 
-    return lerp( c1, c2, c3, hr.u, hr.v );
+    return lerp_r( c1, c2, c3, hr.u, hr.v );
 }
 
 
