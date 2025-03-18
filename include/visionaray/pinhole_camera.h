@@ -90,7 +90,7 @@ public:
     VSNRAY_FUNC
     R primary_ray(R /* */, T const& x, T const& y, T const& width, T const& height) const;
 
-private:
+protected:
 
     mat4 view_;
     mat4 proj_;
