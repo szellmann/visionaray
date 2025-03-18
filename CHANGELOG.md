@@ -1,4 +1,6 @@
 ## [Unreleased]
+### Fixed
+- Fixed precision issues with thin-lense camera (DoF).
 
 ## [0.5.0] - 2025-03-12
 ### Added
