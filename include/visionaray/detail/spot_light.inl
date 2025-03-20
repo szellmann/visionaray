@@ -42,10 +42,27 @@ inline vector<3, U> spot_light<T>::intensity(vector<3, U> const& pos) const
 template <typename T>
 template <typename Generator, typename U>
 VSNRAY_FUNC
-inline light_sample<U> spot_light<T>::sample(vector<3, U> const& /*reference_point*/, Generator& /*gen*/) const
+inline light_sample<U> spot_light<T>::sample(vector<3, U> const& reference_point, Generator& gen) const
 {
-    // Not implemented yet!
-    return {};
+    light_sample<U> result;
+
+    vector<3, U> pos(position());
+
+    result.dir = pos - reference_point;
+    result.dist = length(result.dir);
+    result.intensity = intensity(pos) * constants::pi<U>();
+    result.normal = normalize( vector<3, U>(
+            gen.next() * U(2.0) - U(1.0),
+            gen.next() * U(2.0) - U(1.0),
+            gen.next() * U(2.0) - U(1.0)
+            ) );
+    result.area = U(1.0);
+    result.delta_light = true;
+
+    // Compute PDF
+    result.pdf = U(1.0);
+
+    return result;
 }
 
 template <typename T>
