@@ -1,4 +1,7 @@
 ## [Unreleased]
+### Added
+- Texture wizzle from R32F to RGBA8 unorm.
+
 ### Fixed
 - Fixed precision issues with thin-lense camera (DoF).
 
