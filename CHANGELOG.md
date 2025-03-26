@@ -1,4 +1,6 @@
 ## [Unreleased]
+
+## [0.5.1] - 2025-03-26
 ### Added
 - Texture wizzle from R32F to RGBA8 unorm.
 
