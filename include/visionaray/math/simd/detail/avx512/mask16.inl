@@ -54,18 +54,6 @@ VSNRAY_FORCE_INLINE mask16::operator __mmask16() const
 
 
 //-------------------------------------------------------------------------------------------------
-// Static cast
-//
-
-VSNRAY_FORCE_INLINE int16 convert_to_int(mask16 const& a)
-{
-    VSNRAY_ALIGN(64) int arr[16];
-    store(arr, a);
-    return int16(arr);
-}
-
-
-//-------------------------------------------------------------------------------------------------
 // any / all intrinsics
 //
 
@@ -134,6 +122,19 @@ VSNRAY_FORCE_INLINE void store(S dst[16], mask16 const& mask)
     dst[14] = mask.value & 0x4000 ? S(0xFFFFFFFF) : S(0x00000000);
     dst[15] = mask.value & 0x8000 ? S(0xFFFFFFFF) : S(0x00000000);
 }
+
+
+//-------------------------------------------------------------------------------------------------
+// Static cast
+//
+
+VSNRAY_FORCE_INLINE int16 convert_to_int(mask16 const& a)
+{
+    VSNRAY_ALIGN(64) int arr[16];
+    store(arr, a);
+    return int16(arr);
+}
+
 
 // TODO: the following don't necessarily store masks!
 // TODO: FIXME for SSE and AVX!
