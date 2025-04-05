@@ -406,7 +406,7 @@ template <
     typename T = typename R::scalar_type
     >
 VSNRAY_FUNC
-inline auto intersect_rayN_bvh1(
+inline auto intersect_rayN_bvh2(
         R const&     ray,
         BVH const&   b,
         Intersector& isect
@@ -428,7 +428,7 @@ template <
     typename T = typename R::scalar_type
     >
 VSNRAY_FUNC
-inline auto intersect_rayN_bvh1(
+inline auto intersect_rayN_bvh2(
         R const&     ray,
         BVH const&   b,
         Intersector& isect
