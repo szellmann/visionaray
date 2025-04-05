@@ -394,6 +394,54 @@ inline auto intersect(
 }
 
 
+// Overloads with unique names ----------------------------
+
+template <
+    detail::traversal_type Traversal,
+    typename R,
+    typename BVH,
+    typename = typename std::enable_if<is_any_bvh<BVH>::value>::type,
+    typename = typename std::enable_if<!is_any_bvh_inst<BVH>::value>::type,
+    typename Intersector,
+    typename T = typename R::scalar_type
+    >
+VSNRAY_FUNC
+inline auto intersect_rayN_bvh1(
+        R const&     ray,
+        BVH const&   b,
+        Intersector& isect
+        )
+    -> hit_record_bvh<
+            R,
+            decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+            >
+{
+    return intersect<Traversal>(ray, b, isect);
+}
+
+template <
+    detail::traversal_type Traversal,
+    typename R,
+    typename BVH,
+    typename = typename std::enable_if<is_any_bvh_inst<BVH>::value>::type,
+    typename Intersector,
+    typename T = typename R::scalar_type
+    >
+VSNRAY_FUNC
+inline auto intersect_rayN_bvh1(
+        R const&     ray,
+        BVH const&   b,
+        Intersector& isect
+        )
+    -> hit_record_bvh_inst<
+            R,
+            decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
+            >
+{
+    return intersect<Traversal>(ray, b, isect);
+}
+
+
 //-------------------------------------------------------------------------------------------------
 // Default intersect returns closest hit!
 //
