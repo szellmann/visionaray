@@ -188,49 +188,64 @@ next:
                 return i;
             };
 
-            int i1 = bsf(mask);
-            if (likely(mask == 0))
+            if constexpr (Traversal == detail::ClosestHit)
             {
-                addr = node.children[i1]; dist = tnear[i1];
-                continue;
+                int i1 = bsf(mask);
+                if (likely(mask == 0))
+                {
+                    addr = node.children[i1]; dist = tnear[i1];
+                    continue;
+                }
+
+                int i2 = bsf(mask);
+                if (likely(mask == 0))
+                {
+                    if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
+
+                    stack[ptr++] = { node.children[i2], tnear[i2] };
+                    addr = node.children[i1]; dist = tnear[i1];
+                    continue;
+                }
+
+                int i3 = bsf(mask);
+                if (likely(mask == 0))
+                {
+                    if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
+                    if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
+                    if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
+
+                    stack[ptr++] = { node.children[i3], tnear[i3] };
+                    stack[ptr++] = { node.children[i2], tnear[i2] };
+                    addr = node.children[i1]; dist = tnear[i1];
+                    continue;
+                }
+
+                int i4 = bsf(mask);
+                if (likely(mask == 0))
+                {
+                    if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
+                    if (tnear[i4] < tnear[i3]) std::swap(i4,i3);
+                    if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
+                    if (tnear[i4] < tnear[i2]) std::swap(i4,i2);
+                    if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
+
+                    stack[ptr++] = { node.children[i4], tnear[i4] };
+                    stack[ptr++] = { node.children[i3], tnear[i3] };
+                    stack[ptr++] = { node.children[i2], tnear[i2] };
+                    addr = node.children[i1]; dist = tnear[i1];
+                    continue;
+                }
             }
-
-            int i2 = bsf(mask);
-            if (likely(mask == 0))
+            else if constexpr (Traversal == detail::AnyHit)
             {
-                if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
+                int i = bsf(mask);
+                addr = node.children[i]; dist = tnear[i];
 
-                stack[ptr++] = { node.children[i2], tnear[i2] };
-                addr = node.children[i1]; dist = tnear[i1];
-                continue;
-            }
-
-            int i3 = bsf(mask);
-            if (likely(mask == 0))
-            {
-                if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
-                if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
-                if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
-
-                stack[ptr++] = { node.children[i3], tnear[i3] };
-                stack[ptr++] = { node.children[i2], tnear[i2] };
-                addr = node.children[i1]; dist = tnear[i1];
-                continue;
-            }
-
-            int i4 = bsf(mask);
-            if (likely(mask == 0))
-            {
-                if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
-                if (tnear[i4] < tnear[i3]) std::swap(i4,i3);
-                if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
-                if (tnear[i4] < tnear[i2]) std::swap(i4,i2);
-                if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
-
-                stack[ptr++] = { node.children[i4], tnear[i4] };
-                stack[ptr++] = { node.children[i3], tnear[i3] };
-                stack[ptr++] = { node.children[i2], tnear[i2] };
-                addr = node.children[i1]; dist = tnear[i1];
+                while (unlikely(mask != 0))
+                {
+                    i = bsf(mask);
+                    stack[ptr++] = { node.children[i], tnear[i] };
+                }
                 continue;
             }
 #else
