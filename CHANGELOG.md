@@ -1,8 +1,13 @@
 ## [Unreleased]
+### Added
+- Shadow ray/any-hit optimization for four-wide SIMD ray/bvh
+intersection (both compressed and uncompressed formats). Brings
+around 5-10% performance for scenes with lots of occlusion or when
+using AO with many samples.
 
 ## [0.5.1] - 2025-03-26
 ### Added
-- Texture wizzle from R32F to RGBA8 unorm.
+- Texture swizzle from R32F to RGBA8 unorm.
 
 ### Fixed
 - Fixed precision issues with thin-lense camera (DoF).
