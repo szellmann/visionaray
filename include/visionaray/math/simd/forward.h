@@ -64,7 +64,6 @@ typedef basic_mask<uint32x4_t[2]>               mask8;
 #else
 typedef basic_int<int[8]>                       int8;
 typedef basic_float<float[8]>                   float8;
-typedef basic_float<float32x4_t[2]>             float8;
 typedef basic_mask<bool[8]>                     mask8;
 #endif
 
