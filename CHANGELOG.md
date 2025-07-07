@@ -1,9 +1,14 @@
 ## [Unreleased]
 ### Added
+- 8-wide simd types when using ARM NEON, now backed by two NEON
+variables, replacing the slow built-in code path.
 - Shadow ray/any-hit optimization for four-wide SIMD ray/bvh
 intersection (both compressed and uncompressed formats). Brings
 around 5-10% performance for scenes with lots of occlusion or when
 using AO with many samples.
+
+### Changed
+- Made wide BVH intersector compatible with N-ary BVHs.
 
 ## [0.5.1] - 2025-03-26
 ### Added
