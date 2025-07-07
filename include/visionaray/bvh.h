@@ -1118,7 +1118,7 @@ void traverse_parents(B const& b, N const& n, F func);
 #include "detail/bvh/get_tex_coord.h"
 #include "detail/bvh/hit_record.h"
 #include "detail/bvh/intersect.inl"
-#include "detail/bvh/intersect_ray1_bvh4.inl"
+#include "detail/bvh/intersect_ray1_bvhN.inl"
 #include "detail/bvh/intersect_ray1_bvh4_compressed.inl"
 #include "detail/bvh/lbvh.h"
 #include "detail/bvh/optimize.h"

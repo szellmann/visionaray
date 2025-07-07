@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <iostream>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -80,11 +79,21 @@ inline int movemask(uint32x4_t const& input)
     return vaddvq_u32(vshlq_u32(tmp, vld1q_s32(shift)));
 }
 
+inline int movemask(uint32x4_t const input[2])
+{
+    return (movemask(input[1]) << 4) | movemask(input[0]);
+}
+
 #elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2)
 
 inline int movemask(__m128i const& input)
 {
     return _mm_movemask_ps(_mm_castsi128_ps(input));
+}
+
+inline int movemask(__m256i const& input)
+{
+    return _mm256_movemask_ps(_mm_castsi256_ps(input));
 }
 
 #endif
@@ -102,7 +111,7 @@ template <
     typename T = typename R::scalar_type
     >
 VSNRAY_FUNC
-inline auto intersect_ray1_bvh4(
+inline auto intersect_ray1_bvhN(
         R const&     ray,
         BVH const&   b,
         Intersector& isect
@@ -153,7 +162,7 @@ next:
 
             const auto &node = b.node(addr);
 
-            using F = simd::float4;
+            using F = simd::float_from_simd_width_t<BVH::Width>;
 
             basic_aabb<F> aabbN;
             node.bounds_as_floatN(aabbN);
@@ -235,6 +244,32 @@ next:
                     addr = node.children[i1]; dist = tnear[i1];
                     continue;
                 }
+
+                if constexpr (BVH::Width > 4)
+                {
+                    char old = ptr;
+                    stack[ptr++] = { node.children[i4], tnear[i4] };
+                    stack[ptr++] = { node.children[i3], tnear[i3] };
+                    stack[ptr++] = { node.children[i2], tnear[i2] };
+                    stack[ptr++] = { node.children[i1], tnear[i1] };
+
+                    do
+                    {
+                        int i = bsf(mask);
+                        stack[ptr++] = { node.children[i], tnear[i] };
+                    }
+                    while (unlikely(mask != 0));
+
+                    bubble_sort(stack + old, stack + ptr,
+                        [](stack_entry const& s1, stack_entry const& s2) {
+                            return s1.dist > s2.dist;
+                        });
+
+                    se = stack[--ptr];
+                    addr = se.addr;
+                    dist = se.dist;
+                    continue;
+                }
             }
             else if constexpr (Traversal == detail::AnyHit)
             {
@@ -288,7 +323,7 @@ next:
         uint64_t first;
         uint64_t num_prims;
 
-        bvh_multi_node<4>::decode_leaf(addr, first, num_prims);
+        bvh_multi_node<BVH::Width>::decode_leaf(addr, first, num_prims);
 
         uint64_t last = first + num_prims;
 
@@ -327,29 +362,29 @@ next:
 
 template <typename R, typename BVH, typename Intersector>
 VSNRAY_FUNC
-inline auto intersect_ray1_bvh4(
+inline auto intersect_ray1_bvhN(
         R const&     ray,
         BVH const&   b,
         Intersector& isect
         )
-    -> decltype(intersect_ray1_bvh4<detail::ClosestHit>(ray, b, isect))
+    -> decltype(intersect_ray1_bvhN<detail::ClosestHit>(ray, b, isect))
 {
-    return intersect_ray1_bvh4<detail::ClosestHit>(ray, b, isect);
+    return intersect_ray1_bvhN<detail::ClosestHit>(ray, b, isect);
 }
 
 // overload w/ default intersector ------------------------
 
 template <typename R, typename BVH>
 VSNRAY_FUNC
-inline auto intersect_ray1_bvh4(R const& ray, BVH const& b)
-    -> decltype(intersect_ray1_bvh4<detail::ClosestHit>(
+inline auto intersect_ray1_bvhN(R const& ray, BVH const& b)
+    -> decltype(intersect_ray1_bvhN<detail::ClosestHit>(
             ray,
             b,
             std::declval<default_intersector&>())
             )
 {
     default_intersector isect;
-    return intersect_ray1_bvh4<detail::ClosestHit>(ray, b, isect);
+    return intersect_ray1_bvhN<detail::ClosestHit>(ray, b, isect);
 }
 
 } // visionaray
