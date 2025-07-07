@@ -27,6 +27,9 @@ class basic_float;
 template <typename T>
 class basic_int;
 
+template <typename T>
+class basic_uint;
+
 template <typename... Args>
 union basic_mask;
 
@@ -53,9 +56,15 @@ typedef basic_mask<bool[4]>                     mask4;
 typedef basic_int<__m256i>                      int8;
 typedef basic_float<__m256>                     float8;
 typedef basic_mask<__m256, __m256i>             mask8;
+#elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
+typedef basic_int<int32x4_t[2]>                 int8;
+typedef basic_uint<uint32x4_t[2]>               uint8;
+typedef basic_float<float32x4_t[2]>             float8;
+typedef basic_mask<uint32x4_t[2]>               mask8;
 #else
 typedef basic_int<int[8]>                       int8;
 typedef basic_float<float[8]>                   float8;
+typedef basic_float<float32x4_t[2]>             float8;
 typedef basic_mask<bool[8]>                     mask8;
 #endif
 

@@ -20,9 +20,9 @@ inline vector<3, U> point_light<T>::intensity(vector<3, U> const& pos) const
 #if 1 // use attenuation
     auto dist = length(vector<3, U>(position_) - pos);
     att = U(
-        1.0 / (constant_attenuation_
-             + linear_attenuation_    * dist
-             + quadratic_attenuation_ * dist * dist)
+        1.0 / (U(constant_attenuation_)
+             + U(linear_attenuation_)    * dist
+             + U(quadratic_attenuation_) * dist * dist)
         );
 #endif
 

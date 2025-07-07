@@ -152,7 +152,7 @@ VSNRAY_FORCE_INLINE int const& get(int4 const& v)
 
 VSNRAY_FORCE_INLINE int4 operator+(int4 const& v)
 {
-    return vaddq_s32(vdupq_n_s32(0.0f), v);
+    return vaddq_s32(vdupq_n_s32(0), v);
 }
 
 VSNRAY_FORCE_INLINE int4 operator-(int4 const& v)

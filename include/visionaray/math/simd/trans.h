@@ -517,7 +517,7 @@ VSNRAY_FORCE_INLINE FloatT log2(FloatT const& x)
     IntT n = 0;
     FloatT m = detail::frexp(x, &n);
     m *= 2.0f;
-    return convert_to_float(n - 1) + detail::log2(m - 1.0f);
+    return convert_to_float(n - 1) + detail::log2(m - FloatT(1.0f));
 }
 
 
@@ -547,7 +547,7 @@ VSNRAY_FORCE_INLINE float8 pow(float8 const& x, float8 const& y)
 {
 #if VSNRAY_SIMD_HAS_SVML
     return _mm256_pow_ps(x, y);
-#elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX)
+#elif VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_AVX) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     return exp( y * log(x) );
 #else
     // No dedicated simd instructions

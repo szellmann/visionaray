@@ -48,7 +48,7 @@ struct w2_func
     VSNRAY_FUNC
     inline T operator()(T const& a)
     {
-        return (T(1.0) / T(6.0)) * (T(-3.0) * a * a * a + T(3.0) * a * a + T(3.0) * a + 1.0);
+        return (T(1.0) / T(6.0)) * (T(-3.0) * a * a * a + T(3.0) * a * a + T(3.0) * a + T(1.0));
     }
 };
 
