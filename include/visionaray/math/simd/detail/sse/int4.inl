@@ -72,18 +72,18 @@ VSNRAY_FORCE_INLINE float4 convert_to_float(int4 const& a)
 // Sign-extend
 //
 
-VSNRAY_FORCE_INLINE int4 sign_extend(char const* a4)
+VSNRAY_FORCE_INLINE void sign_extend(int4& dst, char const* a4)
 {
     int4 a;
     memcpy(&a, a4, 4 * sizeof(char));
-    return _mm_cvtepi8_epi32(a);
+    dst = _mm_cvtepi8_epi32(a);
 }
 
-VSNRAY_FORCE_INLINE int4 sign_extend(unsigned char const* a4)
+VSNRAY_FORCE_INLINE void sign_extend(int4& dst, unsigned char const* a4)
 {
     int4 a;
     memcpy(&a, a4, 4 * sizeof(unsigned char));
-    return _mm_cvtepu8_epi32(a);
+    dst = _mm_cvtepu8_epi32(a);
 }
 
 

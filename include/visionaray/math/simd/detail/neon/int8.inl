@@ -69,6 +69,23 @@ VSNRAY_FORCE_INLINE float8 convert_to_float(int8 const& a)
 
 
 //-------------------------------------------------------------------------------------------------
+// Sign-extend
+//
+
+VSNRAY_FORCE_INLINE void sign_extend(int8& dst, char const* a8)
+{
+    sign_extend((int4&)dst.value[0], &a8[0]);
+    sign_extend((int4&)dst.value[1], &a8[4]);
+}
+
+VSNRAY_FORCE_INLINE void sign_extend(int8& dst, unsigned char const* a8)
+{
+    sign_extend((int4&)dst.value[0], &a8[0]);
+    sign_extend((int4&)dst.value[1], &a8[4]);
+}
+
+
+//-------------------------------------------------------------------------------------------------
 // select intrinsic
 //
 

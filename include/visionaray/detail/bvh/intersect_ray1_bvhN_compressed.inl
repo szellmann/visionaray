@@ -32,7 +32,7 @@ template <
     typename T = typename R::scalar_type
     >
 VSNRAY_FUNC
-inline auto intersect_ray1_bvh4_compressed(
+inline auto intersect_ray1_bvhN_compressed(
         R const&     ray,
         BVH const&   b,
         Intersector& isect
@@ -47,11 +47,11 @@ inline auto intersect_ray1_bvh4_compressed(
 
     HR result;
 
-    using N = bvh_compressed_node<4>;
+    using N = bvh_compressed_node<BVH::Width>;
 
     struct stack_entry
     {
-        N::Child addr;
+        typename N::Child addr;
         unsigned dist;
     };
 
@@ -70,7 +70,7 @@ next:
     while (ptr > 0)
     {
         auto se = stack[--ptr];
-        N::Child addr = se.addr;
+        typename N::Child addr = se.addr;
         unsigned dist = se.dist;
 
         // while node does not contain primitives
@@ -85,17 +85,26 @@ next:
 
             const auto &node = b.node(addr.id);
 
-            using F = simd::float4;
+            using F = simd::float_from_simd_width_t<BVH::Width>;
+            using I = simd::int_from_simd_width_t<BVH::Width>;
+
+            I minx_ext, miny_ext, minz_ext, maxx_ext, maxy_ext, maxz_ext;
+            simd::sign_extend(minx_ext, node.child_bounds.minx);
+            simd::sign_extend(miny_ext, node.child_bounds.miny);
+            simd::sign_extend(minz_ext, node.child_bounds.minz);
+            simd::sign_extend(maxx_ext, node.child_bounds.maxx);
+            simd::sign_extend(maxy_ext, node.child_bounds.maxy);
+            simd::sign_extend(maxz_ext, node.child_bounds.maxz);
 
             basic_aabb<F> aabbN;
 
-            aabbN.min.x = convert_to_float(simd::sign_extend(node.child_bounds.minx));
-            aabbN.min.y = convert_to_float(simd::sign_extend(node.child_bounds.miny));
-            aabbN.min.z = convert_to_float(simd::sign_extend(node.child_bounds.minz));
+            aabbN.min.x = convert_to_float(minx_ext);
+            aabbN.min.y = convert_to_float(miny_ext);
+            aabbN.min.z = convert_to_float(minz_ext);
 
-            aabbN.max.x = convert_to_float(simd::sign_extend(node.child_bounds.maxx));
-            aabbN.max.y = convert_to_float(simd::sign_extend(node.child_bounds.maxy));
-            aabbN.max.z = convert_to_float(simd::sign_extend(node.child_bounds.maxz));
+            aabbN.max.x = convert_to_float(maxx_ext);
+            aabbN.max.y = convert_to_float(maxy_ext);
+            aabbN.max.z = convert_to_float(maxz_ext);
 
             auto pow2 = [](char e) {
                 unsigned u((e + 127) << 23);
@@ -194,6 +203,32 @@ next:
                     addr = node.children[i1]; dist = tnear[i1];
                     continue;
                 }
+
+                if constexpr (BVH::Width > 4)
+                {
+                    char old = ptr;
+                    stack[ptr++] = { node.children[i4], tnear[i4] };
+                    stack[ptr++] = { node.children[i3], tnear[i3] };
+                    stack[ptr++] = { node.children[i2], tnear[i2] };
+                    stack[ptr++] = { node.children[i1], tnear[i1] };
+
+                    do
+                    {
+                        int i = bsf(mask);
+                        stack[ptr++] = { node.children[i], tnear[i] };
+                    }
+                    while (unlikely(mask != 0));
+
+                    bubble_sort(stack + old, stack + ptr,
+                        [](stack_entry const& s1, stack_entry const& s2) {
+                            return s1.dist > s2.dist;
+                        });
+
+                    se = stack[--ptr];
+                    addr = se.addr;
+                    dist = se.dist;
+                    continue;
+                }
             }
             else if constexpr (Traversal == detail::AnyHit)
             {
@@ -251,29 +286,29 @@ next:
 
 template <typename R, typename BVH, typename Intersector>
 VSNRAY_FUNC
-inline auto intersect_ray1_bvh4_compressed(
+inline auto intersect_ray1_bvhN_compressed(
         R const&     ray,
         BVH const&   b,
         Intersector& isect
         )
-    -> decltype(intersect_ray1_bvh4_compressed<detail::ClosestHit>(ray, b, isect))
+    -> decltype(intersect_ray1_bvhN_compressed<detail::ClosestHit>(ray, b, isect))
 {
-    return intersect_ray1_bvh4_compressed<detail::ClosestHit>(ray, b, isect);
+    return intersect_ray1_bvhN_compressed<detail::ClosestHit>(ray, b, isect);
 }
 
 // overload w/ default intersector ------------------------
 
 template <typename R, typename BVH>
 VSNRAY_FUNC
-inline auto intersect_ray1_bvh4_compressed(R const& ray, BVH const& b)
-    -> decltype(intersect_ray1_bvh4_compressed<detail::ClosestHit>(
+inline auto intersect_ray1_bvhN_compressed(R const& ray, BVH const& b)
+    -> decltype(intersect_ray1_bvhN_compressed<detail::ClosestHit>(
             ray,
             b,
             std::declval<default_intersector&>())
             )
 {
     default_intersector isect;
-    return intersect_ray1_bvh4_compressed<detail::ClosestHit>(ray, b, isect);
+    return intersect_ray1_bvhN_compressed<detail::ClosestHit>(ray, b, isect);
 }
 
 } // visionaray
