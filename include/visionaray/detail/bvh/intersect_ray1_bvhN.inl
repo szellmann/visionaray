@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cstring>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -42,6 +43,68 @@ inline unsigned ctz(unsigned v)
 
 namespace visionaray
 {
+
+//-------------------------------------------------------------------------------------------------
+// pull out ray/box intersection to safe us some conversions:
+//
+
+template <typename F>
+struct hit_record_ray1_boxN
+{
+    using M = simd::mask_from_simd_width_t<simd::num_elements<F>::value>;
+
+    F tnear;
+    F tfar;
+    M hit;
+};
+
+template <typename F>
+struct ray1
+{
+    vector<3, F> ori;
+    vector<3, F> inv_dir;
+    F tmin;
+    F tmax;
+};
+
+template <typename F>
+inline ray1<F> make_ray1(basic_ray<float> const& r)
+{
+    vec3 inv_dir;
+    inv_dir.x = r.dir.x != 0.0f ? 1.0f / r.dir.x : FLT_MAX;
+    inv_dir.y = r.dir.y != 0.0f ? 1.0f / r.dir.y : FLT_MAX;
+    inv_dir.z = r.dir.z != 0.0f ? 1.0f / r.dir.z : FLT_MAX;
+
+    ray1<F> res;
+    res.ori = vector<3, F>(r.ori);
+    res.inv_dir = vector<3, F>(inv_dir);
+    res.tmin = F(r.tmin);
+    res.tmax = F(r.tmax);
+    return res;
+}
+
+template <typename F>
+MATH_FUNC
+inline hit_record_ray1_boxN<F> intersect_ray1_boxN(ray1<F> const& r, basic_aabb<F> const& aabb)
+{
+    hit_record_ray1_boxN<F> result;
+
+    vector<3, F> t1 = (aabb.min - r.ori) * r.inv_dir;
+    vector<3, F> t2 = (aabb.max - r.ori) * r.inv_dir;
+
+    vector<3, F> tmin = min(t1, t2);
+    vector<3, F> tmax = max(t1, t2);
+
+    result.tnear = max(r.tmin, max(tmin.x, max(tmin.y, tmin.z)));
+    result.tfar  = min(r.tmax, min(tmax.x, min(tmax.y, tmax.z)));
+
+    // validity check:
+    result.hit = aabb.min.x <= aabb.max.x;
+
+    result.hit &= result.tfar >= result.tnear;
+
+    return result;
+}
 
 template <typename It, typename Comp>
 inline void bubble_sort(It first, It last, Comp comp)
@@ -136,11 +199,9 @@ inline auto intersect_ray1_bvhN(
     char ptr = 0;
     stack[ptr++] = { 0, 0 }; // root node
 
-    vector<3, T> inv_dir(
-        select(ray.dir.x != T(0.0), T(1.0) / ray.dir.x, T(FLT_MAX)),
-        select(ray.dir.y != T(0.0), T(1.0) / ray.dir.y, T(FLT_MAX)),
-        select(ray.dir.z != T(0.0), T(1.0) / ray.dir.z, T(FLT_MAX))
-        );
+    using F = simd::float_from_simd_width_t<BVH::Width>;
+
+    auto r1 = make_ray1<F>(ray);
 
     // while ray not terminated
 next:
@@ -162,23 +223,16 @@ next:
 
             const auto &node = b.node(addr);
 
-            using F = simd::float_from_simd_width_t<BVH::Width>;
-
             basic_aabb<F> aabbN;
             node.bounds_as_floatN(aabbN);
 
-            auto hrN = intersect(ray, aabbN, inv_dir);
+            auto hrN = intersect_ray1_boxN(r1, aabbN);
 
-            hrN.hit &= aabbN.min.x <= aabbN.max.x;
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
             hrN.hit &= reinterpret_as_uint(hrN.tnear) < reinterpret_as_uint(F(result.t));
-            hrN.hit &= reinterpret_as_uint(hrN.tfar) >= reinterpret_as_uint(F(ray.tmin)) &&
-                       reinterpret_as_uint(hrN.tnear) <= reinterpret_as_uint(F(ray.tmax));
 #else
             // TODO: unsigned comparisons with SSE, and check if this is worth it..
             hrN.hit &= hrN.tnear < F(result.t);
-            hrN.hit &= hrN.tfar >= F(ray.tmin) &&
-                       hrN.tnear <= F(ray.tmax);
 #endif
 
             auto mask = movemask(hrN.hit.i);

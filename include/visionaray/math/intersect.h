@@ -119,7 +119,7 @@ inline hit_record<basic_ray<float>, basic_aabb<T>> intersect(
     vector<3, T> t2 = (aabb.max - vector<3, T>(ray.ori)) * vector<3, T>(inv_dir);
 
     vector<3, T> tmin = min(t1, t2);
-    vector<3, T> tmax  = max(t1, t2);
+    vector<3, T> tmax = max(t1, t2);
 
     result.tnear = max(ray.tmin, max(tmin.x, max(tmin.y, tmin.z)));
     result.tfar  = min(ray.tmax, min(tmax.x, min(tmax.y, tmax.z)));
