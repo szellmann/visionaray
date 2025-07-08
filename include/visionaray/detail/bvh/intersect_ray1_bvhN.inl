@@ -385,6 +385,11 @@ next:
             auto hr = HR(isect(ray, prim), i);
             auto closer = is_closer(hr, result, ray.tmin, ray.tmax);
 
+            if (!closer)
+            {
+                continue;
+            }
+
             update_if(result, hr, closer);
 
             if constexpr (Traversal == detail::AnyHit)
