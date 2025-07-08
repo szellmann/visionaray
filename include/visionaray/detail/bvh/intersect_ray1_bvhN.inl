@@ -93,7 +93,7 @@ inline int movemask(__m128i const& input)
 
 inline int movemask(__m256i const& input)
 {
-    return _mm256_movemask_ps(_mm_castsi256_ps(input));
+    return _mm256_movemask_ps(_mm256_castsi256_ps(input));
 }
 
 #endif
