@@ -1076,7 +1076,15 @@ template <typename P>
 using index_bvh8        = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<8>, 32>, aligned_vector<unsigned>, 8>;
 
 template <typename P>
+using compressed_bvh4   = bvh_t<aligned_vector<P>, aligned_vector<bvh_compressed_node<4>, 32>, 4>;
+template <typename P>
+using compressed_bvh8   = bvh_t<aligned_vector<P>, aligned_vector<bvh_compressed_node<8>, 32>, 8>;
+
+template <typename P>
 using compressed_index_bvh4 = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_compressed_node<4>, 32>, aligned_vector<unsigned>, 4>;
+template <typename P>
+using compressed_index_bvh8 = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_compressed_node<8>, 32>, aligned_vector<unsigned>, 8>;
+
 
 #ifdef __CUDACC__
 template <typename P>
