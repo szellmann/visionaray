@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include <cstring>
 #include <cstddef>
 #include <type_traits>
 #include <utility>
@@ -13,8 +12,6 @@
 #include <visionaray/intersector.h>
 #include <visionaray/update_if.h>
 
-#include "../exit_traversal.h"
-#include "../stack.h"
 #include "../tags.h"
 #include "hit_record.h"
 
@@ -388,19 +385,14 @@ next:
             auto hr = HR(isect(ray, prim), i);
             auto closer = is_closer(hr, result, ray.tmin, ray.tmax);
 
-#ifndef __CUDA_ARCH__
-            if (!any(closer))
-            {
-                continue;
-            }
-#endif
-
             update_if(result, hr, closer);
 
-            exit_traversal<Traversal> early_exit;
-            if (early_exit.check(result))
+            if constexpr (Traversal == detail::AnyHit)
             {
-                return result;
+                if (result.hit)
+                {
+                    return result;
+                }
             }
         }
     }
