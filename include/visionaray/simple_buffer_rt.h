@@ -31,7 +31,7 @@ public:
     using depth_type    = typename pixel_traits<DepthFormat>::type;
     using accum_type    = typename pixel_traits<AccumFormat>::type;
 
-    using ref_type      = render_target_ref<ColorFormat, DepthFormat>;
+    using ref_type      = render_target_ref<ColorFormat, DepthFormat, AccumFormat>;
 
 public:
 
@@ -56,7 +56,7 @@ private:
 
     aligned_vector<color_type> color_buffer;
     aligned_vector<depth_type> depth_buffer;
-    aligned_vector<depth_type> accum_buffer;
+    aligned_vector<accum_type> accum_buffer;
 
 };
 
