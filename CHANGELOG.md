@@ -8,6 +8,9 @@ around 5-10% performance for scenes with lots of occlusion or when
 using AO with many samples.
 
 ### Changed
+- Use more robust (default) ray/triangle intersection tests as
+the previously used Moeller-Trumbore test can exhibit numerical
+issues.
 - Made wide BVH intersector compatible with N-ary BVHs.
 
 ## [0.5.1] - 2025-03-26
