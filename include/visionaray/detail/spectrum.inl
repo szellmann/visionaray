@@ -4,8 +4,6 @@
 #include <cstddef>
 #include <ostream>
 
-#include <visionaray/texture/texture.h>
-
 #include "../array.h"
 #include "color_conversion.h"
 
@@ -76,12 +74,16 @@ inline T spectrum<T>::operator()(float lambda) const
         return T(0.0);
     }
 
-    texture_ref<T, 1> tex(num_samples);
-    tex.reset( samples_.data() );
-    tex.set_filter_mode( Linear );
+    float coord = clamp((lambda - lambda_min) / (lambda_max - lambda_min), 0.0f, 1-1e-12f);
+    float l0 = floor(coord * num_samples);
+    float frac = (coord * num_samples) - l0;
 
-    float coord = (lambda - lambda_min) / (lambda_max - lambda_min);
-    return tex1D(tex, coord);
+    int coordi(l0);
+
+    const T s0 = samples_[coordi];
+    const T s1 = samples_[std::min(coordi + 1, (int)num_samples - 1)];
+
+    return lerp_r(s0, s1, frac);
 }
 
 
