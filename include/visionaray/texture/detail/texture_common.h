@@ -78,11 +78,11 @@ public:
     {
     }
 
-    VSNRAY_FUNC texture_base(texture_base<Dim, TextureStorage> const& other) = default;
-    VSNRAY_FUNC texture_base(texture_base<Dim, TextureStorage>&& other) = default;
+    texture_base(texture_base<Dim, TextureStorage> const& other) = default;
+    texture_base(texture_base<Dim, TextureStorage>&& other) = default;
 
-    VSNRAY_FUNC texture_base& operator=(texture_base<Dim, TextureStorage> const& other) = default;
-    VSNRAY_FUNC texture_base& operator=(texture_base<Dim, TextureStorage>&& other) = default;
+    texture_base& operator=(texture_base<Dim, TextureStorage> const& other) = default;
+    texture_base& operator=(texture_base<Dim, TextureStorage>&& other) = default;
 
     // Applies the appropriate texture address mode to
     // boundary texture coordinates
@@ -259,11 +259,11 @@ struct texture_ref : pointer_storage<T, Dim>
     {
     }
 
-    VSNRAY_FUNC texture_ref(texture_ref<T, Dim> const& other) = default;
-    VSNRAY_FUNC texture_ref(texture_ref<T, Dim>&& other) = default;
+    texture_ref(texture_ref<T, Dim> const& other) = default;
+    texture_ref(texture_ref<T, Dim>&& other) = default;
 
-    VSNRAY_FUNC texture_ref& operator=(texture_ref<T, Dim> const& other) = default;
-    VSNRAY_FUNC texture_ref& operator=(texture_ref<T, Dim>&& other) = default;
+    texture_ref& operator=(texture_ref<T, Dim> const& other) = default;
+    texture_ref& operator=(texture_ref<T, Dim>&& other) = default;
 
     // Applies the appropriate texture address mode to
     // boundary texture coordinates
