@@ -1,4 +1,6 @@
 ## [Unreleased]
+### Changed
+- C++17 is now required.
 
 ## [0.6.0] - 2025-08-21
 ### Added
