@@ -179,6 +179,9 @@ struct map_texel_type<vector<4, unorm<8>>, ReadMode>
 {
     using cuda_type   = uchar4;
     using vsnray_type = vector<4, unorm<8>>;
+
+    using cuda_return_type   = float4;
+    using vsnray_return_type = vector<4, unorm<8>>;
 };
 
 template <cudaTextureReadMode ReadMode>
@@ -221,6 +224,9 @@ struct map_texel_type<vector<4, float>, ReadMode>
 {
     using cuda_type   = float4;
     using vsnray_type = vector<4, float>;
+
+    using cuda_return_type   = float4;
+    using vsnray_return_type = vector<4, float>;
 };
 
 } // cuda

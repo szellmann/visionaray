@@ -23,21 +23,11 @@ namespace visionaray
 // useful host implementation though!
 //-----------------------------------------------------------------------------
 
-template <
-    typename T,
-    cudaTextureReadMode ReadMode = cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)
-    >
 VSNRAY_FUNC
-inline typename cuda::map_texel_type<typename cuda_texture_ref<T, 1>::cuda_type, ReadMode>::vsnray_return_type
-tex1D(cuda_texture_ref<T, 1> const& tex, float coord)
+inline float tex1D(cuda_texture_ref<float, 1> const& tex, float coord)
 {
 #ifdef __CUDA_ARCH__
-    using tex_type          = cuda_texture_ref<T, 1>;
-    using cuda_type         = typename tex_type::cuda_type;
-    using return_type       = typename cuda::map_texel_type<cuda_type, ReadMode>::vsnray_return_type;
-    using cuda_return_type  = typename cuda::map_texel_type<cuda_type, ReadMode>::cuda_return_type;
-
-    cuda_return_type retval;
+    float retval;
 
     ::tex1D(
             &retval,
@@ -45,27 +35,38 @@ tex1D(cuda_texture_ref<T, 1> const& tex, float coord)
             coord
             );
 
-    return cuda::cast<return_type>(retval);
+    return retval;
 #else
     // ERROR
+    return {};
 #endif
 }
 
-template <
-    typename T,
-    cudaTextureReadMode ReadMode = cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)
-    >
+template <typename T>
 VSNRAY_FUNC
-inline typename cuda::map_texel_type<typename cuda_texture_ref<T, 2>::cuda_type, ReadMode>::vsnray_return_type
-tex2D(cuda_texture_ref<T, 2> const& tex, vector<2, float> coord)
+vector<4, float> tex1D(cuda_texture_ref<vector<4, T>, 1> const& tex, float coord)
 {
 #ifdef __CUDA_ARCH__
-    using tex_type          = cuda_texture_ref<T, 2>;
-    using cuda_type         = typename tex_type::cuda_type;
-    using return_type       = typename cuda::map_texel_type<cuda_type, ReadMode>::vsnray_return_type;
-    using cuda_return_type  = typename cuda::map_texel_type<cuda_type, ReadMode>::cuda_return_type;
+    ::float4 retval;
 
-    cuda_return_type retval;
+    ::tex1D(
+            &retval,
+            tex.texture_object(),
+            coord
+            );
+
+    return cuda::cast<vector<4, float>>(retval);
+#else
+    // ERROR
+    return {};
+#endif
+}
+
+VSNRAY_FUNC
+inline float tex2D(cuda_texture_ref<float, 2> const& tex, vector<2, float> coord)
+{
+#ifdef __CUDA_ARCH__
+    float retval;
 
     ::tex2D(
             &retval,
@@ -74,27 +75,39 @@ tex2D(cuda_texture_ref<T, 2> const& tex, vector<2, float> coord)
             coord.y
             );
 
-    return cuda::cast<return_type>(retval);
+    return retval;
 #else
     // ERROR
+    return {};
 #endif
 }
 
-template <
-    typename T,
-    cudaTextureReadMode ReadMode = cudaTextureReadMode(detail::tex_read_mode_from_type<T>::value)
-    >
+template <typename T>
 VSNRAY_FUNC
-inline typename cuda::map_texel_type<typename cuda_texture_ref<T, 3>::cuda_type, ReadMode>::vsnray_return_type
-tex3D(cuda_texture_ref<T, 3> const& tex, vector<3, float> coord)
+vector<4, float> tex2D(cuda_texture_ref<vector<4, T>, 2> const& tex, vector<2, float> coord)
 {
 #ifdef __CUDA_ARCH__
-    using tex_type          = cuda_texture_ref<T, 3>;
-    using cuda_type         = typename tex_type::cuda_type;
-    using return_type       = typename cuda::map_texel_type<cuda_type, ReadMode>::vsnray_return_type;
-    using cuda_return_type  = typename cuda::map_texel_type<cuda_type, ReadMode>::cuda_return_type;
+    ::float4 retval;
 
-    cuda_return_type retval;
+    ::tex2D(
+            &retval,
+            tex.texture_object(),
+            coord.x,
+            coord.y
+            );
+
+    return cuda::cast<vector<4, float>>(retval);
+#else
+    // ERROR
+    return {};
+#endif
+}
+
+VSNRAY_FUNC
+inline float tex3D(cuda_texture_ref<float, 3> const& tex, vector<3, float> coord)
+{
+#ifdef __CUDA_ARCH__
+    float retval;
 
     ::tex3D(
             &retval,
@@ -104,9 +117,32 @@ tex3D(cuda_texture_ref<T, 3> const& tex, vector<3, float> coord)
             coord.z
             );
 
-    return cuda::cast<return_type>(retval);
+    return retval;
 #else
     // ERROR
+    return {};
+#endif
+}
+
+template <typename T>
+VSNRAY_FUNC
+vector<4, float> tex3D(cuda_texture_ref<vector<4, T>, 3> const& tex, vector<3, float> coord)
+{
+#ifdef __CUDA_ARCH__
+    ::float4 retval;
+
+    ::tex3D(
+            &retval,
+            tex.texture_object(),
+            coord.x,
+            coord.y,
+            coord.z
+            );
+
+    return cuda::cast<vector<4, float>>(retval);
+#else
+    // ERROR
+    return {};
 #endif
 }
 
