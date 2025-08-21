@@ -177,6 +177,77 @@ template <typename R, typename U>
 MATH_FUNC
 inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_triangle<3, U, unsigned> const& tri)
 {
+#if 1
+    using T = typename R::scalar_type;
+    using vec_type = vector<3, T>;
+
+    hit_record<R, primitive<unsigned>> result;
+    result.t = T(-1.0);
+
+    // case T != U
+    const vec_type v1(tri.v1);
+    const vec_type e1(tri.e1);
+    const vec_type e2(tri.e2);
+
+    const vec_type ori(ray.ori);
+    const vec_type dir(ray.dir);
+
+    const vec_type N = cross(e1, e2);
+    result.hit = (N != vec_type(T(0.0)));
+    if (!any(result.hit))
+    {
+        return result;
+    }
+
+    result.hit &= abs(dot(dir, N)) >= T(1e-12);
+    if (!any(result.hit))
+    {
+        return result;
+    }
+
+    const T t = -dot(ori - v1, N) / dot(dir, N);
+    result.hit &= (t >= T(ray.tmin) && t <= T(ray.tmax));
+    if (!any(result.hit))
+    {
+        return result;
+    }
+
+    const vec_type P = ori - v1 + t * dir;
+
+    const auto in_x = abs(N.x) >= max(abs(N.y), abs(N.z));
+    const auto in_y = !in_x && (abs(N.y) > abs(N.z));
+    const auto in_z = !in_x && !in_y;
+
+    const T e1u = select(in_x, e1.y, e1.x);
+    const T e2u = select(in_x, e2.y, e2.x);
+    const T Pu  = select(in_x, P.y, P.x);
+
+    const T e1v = select(in_z, e1.y, e1.z);
+    const T e2v = select(in_z, e2.y, e2.z);
+    const T Pv  = select(in_z, P.y, P.z);
+
+    const T det = det2(e1u, e1v, e2u, e2v);
+    result.hit &= (det != T(0.0));
+    if (!any(result.hit))
+    {
+        return result;
+    }
+
+    const T u = det2(Pu, e2u, Pv, e2v) / det2(e1u, e2u, e1v, e2v);
+    const T v = det2(e1u, Pu, e1v, Pv) / det2(e1u, e2u, e1v, e2v);
+    result.hit &= (u >= T(0.0) && v >= T(0.0) && (u + v) <= T(1.0));
+    if (!any(result.hit))
+    {
+        return result;
+    }
+
+    result.prim_id = tri.prim_id;
+    result.geom_id = tri.geom_id;
+    result.t = t;
+    result.u = u;
+    result.v = v;
+    return result;
+#else
     using T = typename R::scalar_type;
     using vec_type = vector<3, T>;
 
@@ -226,6 +297,7 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_triangle
     result.u = b1;
     result.v = b2;
     return result;
+#endif
 }
 
 //-------------------------------------------------------------------------------------------------
