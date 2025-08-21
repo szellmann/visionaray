@@ -1,4 +1,6 @@
 ## [Unreleased]
+
+## [0.6.0] - 2025-08-21
 ### Added
 - 8-wide simd types when using ARM NEON, now backed by two NEON
 variables, replacing the slow built-in code path.
