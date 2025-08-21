@@ -2936,26 +2936,6 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    std::vector<vec3> vertices;
-    std::vector<vec3i> indices;
-    int curr;
-    for (auto t : rend.mod.primitives) {
-        vertices.push_back(t.v1);
-        vertices.push_back(t.v1+t.e1);
-        vertices.push_back(t.v1+t.e2);
-        indices.push_back({curr,curr+1,curr+2});
-        curr += 3;
-    }
-
-    std::ofstream out("teapot.tri");
-    uint64_t numVertices = vertices.size();
-    out.write((const char *)&numVertices,sizeof(numVertices));
-    out.write((const char *)vertices.data(),vertices.size()*sizeof(vertices[0]));
-    uint64_t numIndices = indices.size();
-    out.write((const char *)&numIndices,sizeof(numIndices));
-    out.write((const char *)indices.data(),indices.size()*sizeof(indices[0]));
-    out.close();
-
     if (rend.use_groundplane)
     {
         vec3 size = rend.mod.bbox.size();
