@@ -482,7 +482,7 @@ struct binned_sah_builder
         for (int i = leaf.first; i != refs.size(); ++i)
         {
             int c = 0;
-            if (i >= pivot)
+            if (i >= leaf.first + pivot)
             {
                 c = 1;
             }
