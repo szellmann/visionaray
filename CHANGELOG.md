@@ -1,4 +1,8 @@
 ## [Unreleased]
+### Added
+- Enforce a (real) max allowed leaf size on top down BVH builds
+(only supported by the SAH builder for now).
+
 ### Changed
 - C++17 is now required.
 
