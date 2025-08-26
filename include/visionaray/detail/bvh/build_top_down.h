@@ -172,7 +172,7 @@ inline void build_top_down(
         leaf_threshold = 4;
     }
 
-    if (leaf_threshold < max_allowed_leaf_size)
+    if (leaf_threshold > max_allowed_leaf_size)
     {
         // TODO: warn?!
         leaf_threshold = max_allowed_leaf_size;
