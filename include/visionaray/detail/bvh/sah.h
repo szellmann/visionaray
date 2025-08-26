@@ -195,11 +195,19 @@ struct binned_sah_builder
     using prim_refs = aligned_vector<prim_ref>;
 
     template <typename Tree, typename P>
-    Tree build(Tree /* */, P* primitives, size_t num_prims, int leaf_threshold = -1)
+    Tree build(
+        Tree /* */, P* primitives, size_t num_prims, int max_allowed_leaf_size = -1, int leaf_threshold = -1)
     {
         Tree tree(primitives, num_prims);
 
-        detail::build_top_down(tree, *this, primitives, primitives + num_prims, leaf_threshold);
+        detail::build_top_down(
+            tree,
+            *this,
+            primitives,
+            primitives + num_prims,
+            max_allowed_leaf_size,
+            leaf_threshold
+            );
 
         return tree;
     }
@@ -457,6 +465,34 @@ struct binned_sah_builder
 
         childs[0].first = leaf.first;
         childs[1].first = static_cast<int>(pivot - refs.begin());
+    }
+
+    // Perform a naive object split using an equal primitive partitioning
+    static void perform_naive_partition(leaf_infos& childs, prim_refs& refs, leaf_info const& leaf)
+    {
+        auto leaf_size = static_cast<int>(refs.size() - leaf.first);
+
+        auto pivot = leaf_size / 2;
+
+        childs[0].prim_bounds.invalidate();
+        childs[0].cent_bounds.invalidate();
+        childs[1].prim_bounds.invalidate();
+        childs[1].cent_bounds.invalidate();
+
+        for (int i = leaf.first; i != refs.size(); ++i)
+        {
+            int c = 0;
+            if (i >= pivot)
+            {
+                c = 1;
+            }
+
+            childs[c].prim_bounds.insert(refs[i].bounds);
+            childs[c].cent_bounds.insert(refs[i].bounds.center());
+        }
+
+        childs[0].first = leaf.first;
+        childs[1].first = leaf.first + static_cast<int>(pivot);
     }
 
     //--------------------------------------------------------------------------
@@ -718,7 +754,13 @@ struct binned_sah_builder
     // sr.leaves contains the information of the left/right leaves and the
     // method returns true. If the leaf should not be split, returns false.
     template <typename Data>
-    split_record split(leaf_infos& childs, leaf_info const& leaf, Data const& data, int leaf_threshold)
+    split_record split(
+            leaf_infos& childs,
+            leaf_info const& leaf,
+            Data const& data,
+            int max_allowed_leaf_size,
+            int leaf_threshold
+            )
     {
         // FIXME:
         // Create a leaf if max_depth is reached...
@@ -733,13 +775,24 @@ struct binned_sah_builder
 
         // Find the split axis (TODO: Test all axes...)
 
-        // Using centroid bounds for object partitioning...
+        // Using centroid bounds for object partitioning (if possible...)
         auto size = leaf.cent_bounds.size();
         auto axis = max_index(size);
 
         if (size[axis] <= 0.0f)
         {
-            return { false, 0, 0 };
+            if (leaf_size <= max_allowed_leaf_size)
+            {
+                return { false, 0, 0 };
+            }
+
+            // Cannot find a good split => naive partition (equal prim)
+            perform_naive_partition(childs, refs, leaf);
+
+            axis = max_index(leaf.prim_bounds.size());
+
+            unsigned char sign = childs[0].prim_bounds.min[axis] < childs[1].prim_bounds.min[axis] ? 0 : 1;
+            return { true, static_cast<unsigned char>(axis), sign };
         }
 
         // Object split --------------------------------------------------------
@@ -764,7 +817,18 @@ struct binned_sah_builder
 
                 if (size[axis] <= 0.0f)
                 {
-                    return { false, 0, 0 };
+                    if (leaf_size <= max_allowed_leaf_size)
+                    {
+                        return { false, 0, 0 };
+                    }
+
+                    // Cannot find a good split => naive partition (equal prim)
+                    perform_naive_partition(childs, refs, leaf);
+
+                    axis = max_index(leaf.prim_bounds.size());
+
+                    unsigned char sign = childs[0].prim_bounds.min[axis] < childs[1].prim_bounds.min[axis] ? 0 : 1;
+                    return { true, static_cast<unsigned char>(axis), sign };
                 }
 
                 projection pr2(leaf.prim_bounds, static_cast<int>(axis));
@@ -784,7 +848,7 @@ struct binned_sah_builder
 
         auto leaf_costs = compute_leaf_cost(leaf_size);
 
-        if (sr.cost > leaf_costs)
+        if (leaf_size <= max_allowed_leaf_size && sr.cost > leaf_costs)
         {
             return { false, 0, 0, };
         }
