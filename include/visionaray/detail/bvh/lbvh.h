@@ -532,11 +532,11 @@ struct lbvh_builder
     }
 
     template <typename Tree, typename P>
-    Tree build(Tree /* */, P* primitives, size_t num_prims, int max_leaf_size = -1)
+    Tree build(Tree /* */, P* primitives, size_t num_prims, int leaf_threshold = -1)
     {
         Tree tree(primitives, num_prims);
 
-        detail::build_top_down(tree, *this, primitives, primitives + num_prims, max_leaf_size);
+        detail::build_top_down(tree, *this, primitives, primitives + num_prims, leaf_threshold);
 
         return tree;
     }
@@ -621,9 +621,9 @@ struct lbvh_builder
     // sr.leaves contains the information of the left/right leaves and the
     // method returns true. If the leaf should not be split, returns false.
     template <typename Data>
-    split_record split(leaf_infos& childs, leaf_info const& leaf, Data const& /*data*/, int max_leaf_size)
+    split_record split(leaf_infos& childs, leaf_info const& leaf, Data const& /*data*/, int leaf_threshold)
     {
-        if (leaf.last - leaf.first <= max_leaf_size)
+        if (leaf.last - leaf.first <= leaf_threshold)
         {
             return { false, 0, 0 };
         }
