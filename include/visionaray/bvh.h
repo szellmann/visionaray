@@ -253,7 +253,7 @@ struct bvh_multi_node
         num_prims = addr >> 48;
     }
 
-    void collapse_child(bvh_multi_node& child, unsigned dest_id, unsigned source_id)
+    void collapse_child(bvh_multi_node const& child, unsigned dest_id, unsigned source_id)
     {
         children[dest_id] = child.children[source_id];
         child_bounds.minx[dest_id] = child.child_bounds.minx[source_id];
@@ -262,10 +262,6 @@ struct bvh_multi_node
         child_bounds.maxx[dest_id] = child.child_bounds.maxx[source_id];
         child_bounds.maxy[dest_id] = child.child_bounds.maxy[source_id];
         child_bounds.maxz[dest_id] = child.child_bounds.maxz[source_id];
-        if (source_id != 0)
-        {
-            child.children[source_id] = INT64_MAX;
-        }
     }
 
     template <typename AABB>
