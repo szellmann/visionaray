@@ -83,7 +83,7 @@ target_link_libraries(visionaray_common PUBLIC visionaray)
 # External libraries
 #
 
-find_package(Boost CONFIG COMPONENTS filesystem iostreams system REQUIRED)
+find_package(Boost CONFIG COMPONENTS filesystem iostreams REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
