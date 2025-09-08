@@ -2,6 +2,9 @@
 ### Added
 - Enforce a (real) max allowed leaf size on top down BVH builds
 (only supported by the SAH builder for now).
+- Setters for pos/up/dir for pinhole camera; using look_at() is
+sometimes too imprecise if eye pos and center of interest are too
+far apart.
 
 ### Changed
 - C++17 is now required.
