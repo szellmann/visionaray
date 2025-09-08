@@ -1,4 +1,6 @@
 ## [Unreleased]
+
+## [0.6.1] - 2025-09-09
 ### Added
 - Enforce a (real) max allowed leaf size on top down BVH builds
 (only supported by the SAH builder for now).
