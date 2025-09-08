@@ -64,9 +64,15 @@ public:
     mat4 const& get_view_matrix() const { return view_; }
     mat4 const& get_proj_matrix() const { return proj_; }
 
+    void set_eye(vec3 const& eye);
+    void set_dir(vec3 const& dir);
+    void set_up(vec3 const& up);
+
     vec3 const& eye() const { return eye_; }
-    vec3 const& center() const { return center_; }
+    vec3 const& dir() const { return dir_; }
     vec3 const& up() const { return up_; }
+
+    vec3 center() const { return eye_ + dir_; }
 
     float fovy() const { return fovy_; }
     float aspect() const { return aspect_; }
@@ -92,11 +98,13 @@ public:
 
 protected:
 
+    void compute_view_matrix();
+
     mat4 view_;
     mat4 proj_;
 
     vec3 eye_;
-    vec3 center_;
+    vec3 dir_;
     vec3 up_;
 
     // Distance between camera position and center of view

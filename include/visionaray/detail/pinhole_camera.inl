@@ -12,20 +12,10 @@ namespace visionaray
 inline void pinhole_camera::look_at(vec3 const& eye, vec3 const& center, vec3 const& up)
 {
     eye_      = eye;
-    center_   = center;
+    dir_      = center - eye;
     up_       = up;
-    distance_ = length(eye - center);
 
-    vec3 f = normalize(eye - center);
-    vec3 s = normalize(cross(up, f));
-    vec3 u = cross(f, s);
-
-    view_ = mat4(
-        s.x, u.x, f.x, 0.0f,
-        s.y, u.y, f.y, 0.0f,
-        s.z, u.z, f.z, 0.0f,
-        -dot(eye, s), -dot(eye, u), -dot(eye, f), 1.0f
-        );
+    compute_view_matrix();
 }
 
 inline void pinhole_camera::perspective(float fovy, float aspect, float z_near, float z_far)
@@ -83,11 +73,28 @@ inline void pinhole_camera::view_all(aabb const& box, vec3 const& up)
     look_at(eye, box.center(), up);
 }
 
-  
+inline void pinhole_camera::set_eye(vec3 const& eye)
+{
+    eye_ = eye;
+    compute_view_matrix();
+}
+
+inline void pinhole_camera::set_up(vec3 const& up)
+{
+    up_ = up;
+    compute_view_matrix();
+}
+
+inline void pinhole_camera::set_dir(vec3 const& dir)
+{
+    dir_ = dir;
+    compute_view_matrix();
+}
+
 inline void pinhole_camera::begin_frame()
 {
     // front, side, and up vectors form an orthonormal basis
-    vec3 f = normalize(eye_ - center_);
+    vec3 f = normalize(-dir_);
     vec3 s = normalize(cross(up_, f));
     vec3 u =           cross(f, s);
 
@@ -117,6 +124,22 @@ inline R pinhole_camera::primary_ray(R /* */, T const& x, T const& y, T const& w
     r.tmin = T(0.0);
     r.tmax = numeric_limits<T>::max();
     return r;
+}
+
+inline void pinhole_camera::compute_view_matrix()
+{
+    distance_ = length(eye_ - center());
+
+    vec3 f = normalize(-dir_);
+    vec3 s = normalize(cross(up_, f));
+    vec3 u = cross(f, s);
+
+    view_ = mat4(
+        s.x, u.x, f.x, 0.0f,
+        s.y, u.y, f.y, 0.0f,
+        s.z, u.z, f.z, 0.0f,
+        -dot(eye_, s), -dot(eye_, u), -dot(eye_, f), 1.0f
+        );
 }
 
 inline bool operator==(pinhole_camera const& a, pinhole_camera const& b)
