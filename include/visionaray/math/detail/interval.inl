@@ -22,6 +22,14 @@ inline interval<T>::interval(T const& lo, T const& up)
 
 template <typename T>
 MATH_FUNC
+inline void interval<T>::invalidate()
+{
+    min = numeric_limits<T>::max();
+    max = numeric_limits<T>::lowest();
+}
+
+template <typename T>
+MATH_FUNC
 inline interval<T>& interval<T>::extend(T const& t)
 {
     min = visionaray::min(min, t);

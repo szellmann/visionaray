@@ -26,6 +26,8 @@ public:
     MATH_FUNC interval(T const& t);
     MATH_FUNC interval(T const& lo, T const& up);
 
+    MATH_FUNC void invalidate();
+
     MATH_FUNC interval& extend(T const &t);
     MATH_FUNC interval& extend(interval<T> const& t);
 
