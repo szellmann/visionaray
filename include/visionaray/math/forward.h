@@ -168,6 +168,12 @@ typedef interval<vec3f>                        box3f;
 typedef interval<vec3d>                        box3d;
 typedef interval<vec3>                         box3;
 
+
+typedef interval<vec4i>                        box4i;
+typedef interval<vec4f>                        box4f;
+typedef interval<vec4d>                        box4d;
+typedef interval<vec4>                         box4;
+
 } // MATH_NAMESPACE
 
 
