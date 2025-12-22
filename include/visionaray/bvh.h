@@ -353,8 +353,8 @@ struct VSNRAY_ALIGN(16) bvh_compressed_node
 
         constexpr int N_q = 8;
         e[0] = (char)(ceilf(log2f((bbox.max.x - origin.x) / (powf(2, N_q) - 1))));
-		e[1] = (char)(ceilf(log2f((bbox.max.y - origin.y) / (powf(2, N_q) - 1))));
-		e[2] = (char)(ceilf(log2f((bbox.max.z - origin.z) / (powf(2, N_q) - 1))));
+        e[1] = (char)(ceilf(log2f((bbox.max.y - origin.y) / (powf(2, N_q) - 1))));
+        e[2] = (char)(ceilf(log2f((bbox.max.z - origin.z) / (powf(2, N_q) - 1))));
 
         for (int i = 0; i < W; ++i)
         {
