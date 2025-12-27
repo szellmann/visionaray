@@ -21,7 +21,7 @@ if (@VSNRAY_ENABLE_COMMON@)
     # required
     find_dependency(OpenGL COMPONENTS OpenGL)
     find_dependency(GLEW)
-    find_dependency(Boost CONFIG COMPONENTS filesystem iostreams system)
+    find_dependency(Boost CONFIG COMPONENTS filesystem iostreams OPTIONAL_COMPONENTS system)
     find_dependency(Threads)
     # optional
     find_package(GLUT QUIET)
