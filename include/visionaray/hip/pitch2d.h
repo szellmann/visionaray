@@ -10,6 +10,8 @@
 
 #include <hip/hip_runtime_api.h>
 
+#include "safe_call.h"
+
 namespace visionaray
 {
 namespace hip
@@ -31,7 +33,7 @@ public:
 
     pitch2d(size_t width, size_t height)
     {
-        allocate(width, height);
+        HIP_SAFE_CALL(allocate(width, height));
     }
 
     pitch2d(pitch2d&& rhs)
@@ -76,7 +78,7 @@ public:
 
     hipError_t allocate(size_t width, size_t height)
     {
-        hipFree(device_ptr_);
+        HIP_SAFE_CALL(hipFree(device_ptr_));
 
         auto err = hipMallocPitch(
                 (void**)&device_ptr_,
@@ -122,7 +124,7 @@ private:
     {
         if (device_ptr_)
         {
-            hipFree(device_ptr_);
+            HIP_SAFE_CALL(hipFree(device_ptr_));
         }
 
         device_ptr_ = ptr;

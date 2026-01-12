@@ -11,6 +11,8 @@
 
 #include <cuda_runtime_api.h>
 
+#include "safe_call.h"
+
 namespace visionaray
 {
 namespace cuda
@@ -31,12 +33,12 @@ public:
 
     array(cudaChannelFormatDesc const& desc, size_t width, size_t height = 0, unsigned flags = 0)
     {
-        allocate(desc, width, height, flags);
+        CUDA_SAFE_CALL(allocate(desc, width, height, flags));
     }
 
     array(cudaChannelFormatDesc const& desc, size_t width, size_t height, size_t depth, unsigned flags)
     {
-        allocate3D(desc, width, height, depth, flags);
+        CUDA_SAFE_CALL(allocate3D(desc, width, height, depth, flags));
     }
 
     array(array&& rhs)
@@ -69,7 +71,7 @@ public:
 
     cudaError_t allocate(cudaChannelFormatDesc const& desc, size_t width, size_t height = 0, unsigned flags = 0)
     {
-        cudaFree(array_ptr_);
+        CUDA_SAFE_CALL(cudaFree(array_ptr_));
 
         auto err = cudaMallocArray(
                 &array_ptr_,
@@ -89,7 +91,7 @@ public:
 
     cudaError_t allocate3D(cudaChannelFormatDesc const& desc, size_t width, size_t height, size_t depth, unsigned int flags = 0)
     {
-        cudaFree(array_ptr_);
+        CUDA_SAFE_CALL(cudaFree(array_ptr_));
 
         cudaExtent extent { width, height, depth };
 

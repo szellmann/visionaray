@@ -10,6 +10,8 @@
 
 #include <cuda_runtime_api.h>
 
+#include "safe_call.h"
+
 namespace visionaray
 {
 namespace cuda
@@ -31,7 +33,7 @@ public:
 
     pitch2d(size_t width, size_t height)
     {
-        allocate(width, height);
+        CUDA_SAFE_CALL(allocate(width, height));
     }
 
     pitch2d(pitch2d&& rhs)
@@ -76,7 +78,7 @@ public:
 
     cudaError_t allocate(size_t width, size_t height)
     {
-        cudaFree(device_ptr_);
+        CUDA_SAFE_CALL(cudaFree(device_ptr_));
 
         auto err = cudaMallocPitch(
                 &device_ptr_,
@@ -122,7 +124,7 @@ private:
     {
         if (device_ptr_)
         {
-            cudaFree(device_ptr_);
+            CUDA_SAFE_CALL(cudaFree(device_ptr_));
         }
 
         device_ptr_ = ptr;

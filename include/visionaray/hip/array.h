@@ -11,6 +11,8 @@
 
 #include <hip/hip_runtime_api.h>
 
+#include "safe_call.h"
+
 namespace visionaray
 {
 namespace hip
@@ -31,12 +33,12 @@ public:
 
     array(hipChannelFormatDesc const& desc, size_t width, size_t height = 0, unsigned flags = 0)
     {
-        allocate(desc, width, height, flags);
+        HIP_SAFE_CALL(allocate(desc, width, height, flags));
     }
 
     array(hipChannelFormatDesc const& desc, size_t width, size_t height, size_t depth, unsigned flags)
     {
-        allocate3D(desc, width, height, depth, flags);
+        HIP_SAFE_CALL(allocate3D(desc, width, height, depth, flags));
     }
 
     array(array&& rhs)
@@ -69,7 +71,7 @@ public:
 
     hipError_t allocate(hipChannelFormatDesc const& desc, size_t width, size_t height = 0, unsigned flags = 0)
     {
-        hipFree(array_ptr_);
+        HIP_SAFE_CALL(hipFree(array_ptr_));
 
         auto err = hipMallocArray(
                 &array_ptr_,
@@ -89,7 +91,7 @@ public:
 
     hipError_t allocate3D(hipChannelFormatDesc const& desc, size_t width, size_t height, size_t depth, unsigned int flags = 0)
     {
-        hipFree(array_ptr_);
+        HIP_SAFE_CALL(hipFree(array_ptr_));
 
         hipExtent extent { width, height, depth };
 
@@ -149,7 +151,7 @@ private:
     {
         if (array_ptr_)
         {
-            hipFree(array_ptr_);
+            HIP_SAFE_CALL(hipFree(array_ptr_));
         }
 
         array_ptr_ = ptr;

@@ -8,6 +8,8 @@
 
 #include <hip/hip_runtime_api.h>
 
+#include "safe_call.h"
+
 namespace visionaray
 {
 namespace hip
@@ -56,7 +58,7 @@ public:
     {
         if (texture_object_)
         {
-            hipDestroyTextureObject( texture_object_ );
+            HIP_SAFE_CALL(hipDestroyTextureObject( texture_object_ ));
         }
 
         texture_object_ = obj;

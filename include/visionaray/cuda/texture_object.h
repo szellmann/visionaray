@@ -8,6 +8,8 @@
 
 #include <cuda_runtime_api.h>
 
+#include "safe_call.h"
+
 namespace visionaray
 {
 namespace cuda
@@ -56,7 +58,7 @@ public:
     {
         if (texture_object_)
         {
-            cudaDestroyTextureObject( texture_object_ );
+            CUDA_SAFE_CALL(cudaDestroyTextureObject( texture_object_ ));
         }
 
         texture_object_ = obj;
