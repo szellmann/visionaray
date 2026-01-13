@@ -421,24 +421,13 @@ private:
         
         cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
         
-        #ifndef NDEBUG
-        printf("[CUDA Texture1D] Creating channel descriptor for cuda_type:\n");
-        printf("  Type size: %zu bytes\n", sizeof(cuda_type));
-        printf("  Alignment: %zu bytes\n", alignof(cuda_type));
-        printf("  Returned desc: x=%d, y=%d, z=%d, w=%d, f=%d\n", 
-               desc.x, desc.y, desc.z, desc.w, desc.f);
-        #endif
-        
         // Check if descriptor is valid (non-zero)
         if (desc.x == 0 && desc.y == 0 && desc.z == 0 && desc.w == 0)
         {
-            printf("  WARNING: cudaCreateChannelDesc returned zero descriptor!\n");
-            printf("  This usually means cuda_type is not a standard CUDA type.\n");
-            
             // For 16-byte types, try assuming it's a 4-component float type
             if (sizeof(cuda_type) == 16)
             {
-                printf("  Attempting fallback: creating descriptor for 4x32-bit floats\n");
+                fprintf(stderr, "%s\n", "Attempting fallback: creating descriptor for 4x32-bit floats");
                 desc = cudaCreateChannelDesc(32, 32, 32, 32, cudaChannelFormatKindFloat);
             }
         }

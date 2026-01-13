@@ -407,15 +407,6 @@ private:
         
         cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
 
-        // Print debug info about the template type
-        #ifndef NDEBUG
-        printf("[CUDA Texture3D] Creating channel descriptor for cuda_type:\n");
-        printf("  Type size: %zu bytes\n", sizeof(cuda_type));
-        printf("  Alignment: %zu bytes\n", alignof(cuda_type));
-        printf("  Returned desc: x=%d, y=%d, z=%d, w=%d, f=%d\n", 
-               desc.x, desc.y, desc.z, desc.w, desc.f);        
-        #endif
-        
         return desc;
     }
 
