@@ -43,7 +43,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate(desc, width_) != cudaSuccess )
         {
@@ -73,7 +73,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate(desc, width_) != cudaSuccess )
         {
@@ -113,7 +113,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate(desc, width_) != cudaSuccess )
         {
@@ -146,7 +146,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate(desc, width_) != cudaSuccess )
         {
@@ -179,7 +179,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate(desc, width_) != cudaSuccess )
         {
@@ -242,7 +242,7 @@ public:
             return;
         }
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate(desc, width_) != cudaSuccess )
         {
@@ -272,7 +272,7 @@ public:
                 return;
             }
 
-            cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+            cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
             if ( array_.allocate(desc, width_) != cudaSuccess )
             {
@@ -412,6 +412,38 @@ private:
         }
 
         return upload_data( dst.data() );
+    }
+
+    cudaChannelFormatDesc create_channel_desc_with_validation()
+    {
+        // Validate cuda_type
+        static_assert(sizeof(cuda_type) > 0, "Invalid cuda_type: type must have non-zero size");
+        
+        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        
+        #ifndef NDEBUG
+        printf("[CUDA Texture1D] Creating channel descriptor for cuda_type:\n");
+        printf("  Type size: %zu bytes\n", sizeof(cuda_type));
+        printf("  Alignment: %zu bytes\n", alignof(cuda_type));
+        printf("  Returned desc: x=%d, y=%d, z=%d, w=%d, f=%d\n", 
+               desc.x, desc.y, desc.z, desc.w, desc.f);
+        #endif
+        
+        // Check if descriptor is valid (non-zero)
+        if (desc.x == 0 && desc.y == 0 && desc.z == 0 && desc.w == 0)
+        {
+            printf("  WARNING: cudaCreateChannelDesc returned zero descriptor!\n");
+            printf("  This usually means cuda_type is not a standard CUDA type.\n");
+            
+            // For 16-byte types, try assuming it's a 4-component float type
+            if (sizeof(cuda_type) == 16)
+            {
+                printf("  Attempting fallback: creating descriptor for 4x32-bit floats\n");
+                desc = cudaCreateChannelDesc(32, 32, 32, 32, cudaChannelFormatKindFloat);
+            }
+        }
+        
+        return desc;
     }
 
     cudaError_t init_texture_object()

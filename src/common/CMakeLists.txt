@@ -79,6 +79,11 @@ target_include_directories(visionaray_common PUBLIC
 
 target_link_libraries(visionaray_common PUBLIC visionaray)
 
+# Enable multi-processor compilation for MSVC
+if(MSVC)
+  target_compile_options(visionaray_common PRIVATE /MP)
+endif()
+
 #--------------------------------------------------------------------------------------------------
 # External libraries
 #

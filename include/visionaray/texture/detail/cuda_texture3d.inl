@@ -45,7 +45,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate3D(desc, width_, height_, depth_) != cudaSuccess )
         {
@@ -79,7 +79,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate3D(desc, width_, height_, depth_) != cudaSuccess )
         {
@@ -123,7 +123,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate3D(desc, width_, height_, depth_) != cudaSuccess )
         {
@@ -158,7 +158,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate3D(desc, width_, height_, depth_) != cudaSuccess )
         {
@@ -193,7 +193,7 @@ public:
         }
 
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate3D(desc, width_, height_, depth_) != cudaSuccess )
         {
@@ -273,7 +273,7 @@ public:
             return;
         }
 
-        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+        cudaChannelFormatDesc desc = create_channel_desc_with_validation();
 
         if ( array_.allocate3D(desc, width_, height_, depth_) != cudaSuccess )
         {
@@ -398,6 +398,25 @@ private:
         }
 
         return upload_data( dst.data() );
+    }
+
+    cudaChannelFormatDesc create_channel_desc_with_validation()
+    {
+        // Validate cuda_type
+        static_assert(sizeof(cuda_type) > 0, "Invalid cuda_type: type must have non-zero size");
+        
+        cudaChannelFormatDesc desc = cudaCreateChannelDesc<cuda_type>();
+
+        // Print debug info about the template type
+        #ifndef NDEBUG
+        printf("[CUDA Texture3D] Creating channel descriptor for cuda_type:\n");
+        printf("  Type size: %zu bytes\n", sizeof(cuda_type));
+        printf("  Alignment: %zu bytes\n", alignof(cuda_type));
+        printf("  Returned desc: x=%d, y=%d, z=%d, w=%d, f=%d\n", 
+               desc.x, desc.y, desc.z, desc.w, desc.f);        
+        #endif
+        
+        return desc;
     }
 
     cudaError_t init_texture_object()

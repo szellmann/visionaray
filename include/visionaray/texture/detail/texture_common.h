@@ -126,19 +126,19 @@ public:
     }
 
     // For compatibility
-    VSNRAY_FUNC
+    VSNRAY_CPU_FUNC
     inline unsigned width() const
     {
         return TextureStorage::size()[0];
     }
 
-    VSNRAY_FUNC
+    VSNRAY_CPU_FUNC
     inline unsigned height() const
     {
         return TextureStorage::size()[1];
     }
 
-    VSNRAY_FUNC
+    VSNRAY_CPU_FUNC
     inline unsigned depth() const
     {
         return TextureStorage::size()[2];

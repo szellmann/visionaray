@@ -56,7 +56,7 @@ public:
         realloc(w, h, d);
     }
 
-    array<unsigned, Dim> size() const
+    VSNRAY_CPU_FUNC array<unsigned, Dim> size() const
     {
         return size_;
     }

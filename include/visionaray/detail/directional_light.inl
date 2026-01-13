@@ -25,7 +25,7 @@ inline light_sample<U> directional_light<T>::sample(vector<3, U> const& referenc
 {
     light_sample<U> result;
 
-    result.dist = U(HUGE_VAL);
+    result.dist = numeric_limits<U>::max();
     vector<3, U> u, v;
     vector<3, U> directionU(direction_);
     make_orthonormal_basis(u, v, directionU);
