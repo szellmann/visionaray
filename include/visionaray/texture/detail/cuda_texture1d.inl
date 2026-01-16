@@ -424,6 +424,9 @@ private:
         // Check if descriptor is valid (non-zero)
         if (desc.x == 0 && desc.y == 0 && desc.z == 0 && desc.w == 0)
         {
+            fprintf(stderr, "%s\n", "WARNING: cudaCreateChannelDesc returned zero descriptor!");
+            fprintf(stderr, "%s\n", "This usually means cuda_type is not a standard CUDA type.");
+
             // For 16-byte types, try assuming it's a 4-component float type
             if (sizeof(cuda_type) == 16)
             {
