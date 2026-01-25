@@ -18,6 +18,10 @@
 #include <hip/hip_runtime.h>
 #endif
 
+#ifdef SYCL_LANGUAGE_VERSION
+#include <sycl/sycl.hpp>
+#endif
+
 #ifdef __CUDACC__
 #include "cuda/device_vector.h"
 #include "cuda/safe_call.h"
@@ -26,6 +30,10 @@
 #ifdef __HIPCC__
 #include "hip/device_vector.h"
 #include "hip/safe_call.h"
+#endif
+
+#ifdef SYCL_LANGUAGE_VERSION
+#include "sycl/device_vector.h"
 #endif
 
 #include "detail/macros.h"
@@ -1094,6 +1102,13 @@ template <typename P>
 using hip_bvh           = bvh_t<hip::device_vector<P>, hip::device_vector<bvh_node>>;
 template <typename P>
 using hip_index_bvh     = index_bvh_t<hip::device_vector<P>, hip::device_vector<bvh_node>, hip::device_vector<unsigned>>;
+#endif
+
+#ifdef SYCL_LANGUAGE_VERSION
+template <typename P>
+using sycl_bvh          = bvh_t<sycl::device_vector<P>, sycl::device_vector<bvh_node>>;
+template <typename P>
+using sycl_index_bvh    = index_bvh_t<sycl::device_vector<P>, sycl::device_vector<bvh_node>, sycl::device_vector<unsigned>>;
 #endif
 
 
