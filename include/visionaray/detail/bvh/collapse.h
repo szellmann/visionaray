@@ -30,7 +30,7 @@ struct bvh_collapser
         for (size_t i = 0; i < tree.num_nodes(); ++i)
         {
             bvh_node n = tree.node(i);
-            multi_nodes[i].init(i, detail::get_pointer(tree.nodes()));
+            multi_nodes[i].init(i, tree.nodes().data());
         }
 
 #if 1

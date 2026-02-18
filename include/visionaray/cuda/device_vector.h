@@ -17,9 +17,6 @@ namespace cuda
 {
 
 template <typename T>
-using host_vector = std::vector<T>;
-
-template <typename T>
 class device_vector
 {
     static_assert(std::is_trivially_copyable<T>::value);
@@ -39,12 +36,15 @@ public:
 
     device_vector(size_t size);
     device_vector(size_t size, T const& value);
-    device_vector(host_vector<T> const& hv);
+    template <typename A>
+    device_vector(std::vector<T, A> const& hv);
     device_vector(const T* data, size_t size);
     device_vector(const T* begin, const T* end);
 
     device_vector& operator=(device_vector const& rhs);
     device_vector& operator=(device_vector&& rhs);
+    template <typename A>
+    device_vector& operator=(std::vector<T, A> const& hv);
 
     void resize(size_t size);
     void resize(size_t size, T const& value);

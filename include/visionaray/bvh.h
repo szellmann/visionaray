@@ -37,31 +37,6 @@
 
 namespace visionaray
 {
-namespace detail
-{
-
-template <typename Container>
-inline auto get_pointer(Container const& vec)
-    -> decltype(vec.data())
-{
-    return vec.data();
-}
-
-#ifdef __CUDACC__
-template <typename T>
-inline T const* get_pointer(cuda::device_vector<T> const& vec)
-{
-    return vec.data();
-}
-#elif defined(__HIPCC__)
-template <typename T>
-inline T const* get_pointer(hip::device_vector<T> const& vec)
-{
-    return vec.data();
-}
-#endif
-} // detail
-
 
 //--------------------------------------------------------------------------------------------------
 // bvh_node
@@ -826,10 +801,10 @@ public:
 
     bvh_ref ref() const
     {
-        auto p0 = detail::get_pointer(primitives());
+        auto p0 = primitives().data();
         auto p1 = p0 + primitives().size();
 
-        auto n0 = detail::get_pointer(nodes());
+        auto n0 = nodes().data();
         auto n1 = n0 + nodes().size();
 
         return { p0, p1, n0, n1 };
@@ -894,9 +869,9 @@ public:
     template <typename PV, typename NV, typename IV>
     explicit index_bvh_t(index_bvh_t<PV, NV, IV> const& rhs)
     {
-        copy(primitives_, rhs.primitives());
-        copy(nodes_, rhs.nodes());
-        copy(indices_, rhs.indices());
+        primitives_ = rhs.primitives();
+        nodes_ = rhs.nodes();
+        indices_ = rhs.indices();
     }
 
     primitive_vector const& primitives() const  { return primitives_; }
@@ -914,13 +889,13 @@ public:
 
     bvh_ref ref() const
     {
-        auto p0 = detail::get_pointer(primitives());
+        auto p0 = primitives().data();
         auto p1 = p0 + primitives().size();
 
-        auto n0 = detail::get_pointer(nodes());
+        auto n0 = nodes().data();
         auto n1 = n0 + nodes().size();
 
-        auto i0 = detail::get_pointer(indices());
+        auto i0 = indices().data();
         auto i1 = i0 + indices().size();
 
         return { p0, p1, n0, n1, i0, i1 };
@@ -961,48 +936,6 @@ private:
     {
         dst = src;
     }
-
-#ifdef __CUDACC__
-    template <typename T, typename SrcVector>
-    void copy(cuda::device_vector<T>& dst, SrcVector const& src)
-    {
-        dst.resize(src.size());
-
-        CUDA_SAFE_CALL(cudaMemcpy(
-            dst.data(),
-            src.data(),
-            sizeof(T) * src.size(),
-            cudaMemcpyHostToDevice
-            ));
-    }
-
-    template <typename DstVector, typename T>
-    void copy(DstVector& dst, cuda::device_vector<T> const& src)
-    {
-        dst.resize(src.size());
-
-        CUDA_SAFE_CALL(cudaMemcpy(
-            dst.data(),
-            src.data(),
-            sizeof(T) * src.size(),
-            cudaMemcpyDeviceToHost
-            ));
-    }
-
-    template <typename T>
-    void copy(cuda::device_vector<T>& dst, cuda::device_vector<T> const& src)
-    {
-        dst.resize(src.size());
-
-        CUDA_SAFE_CALL(cudaMemcpy(
-            dst.data(),
-            src.data(),
-            sizeof(T) * src.size(),
-            cudaMemcpyDeviceToDevice
-            ));
-        CUDA_SAFE_CALL(cudaDeviceSynchronize());
-    }
-#endif
 };
 
 

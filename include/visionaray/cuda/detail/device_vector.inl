@@ -63,7 +63,8 @@ device_vector<T>::device_vector(size_t size, T const& value)
 }
 
 template <typename T>
-device_vector<T>::device_vector(host_vector<T> const &hv)
+template <typename A>
+device_vector<T>::device_vector(std::vector<T, A> const &hv)
     : size_(hv.size())
 {
     CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * size_));
@@ -138,6 +139,21 @@ device_vector<T>& device_vector<T>::operator=(device_vector<T>&& rhs)
         rhs.data_ = nullptr;
         rhs.size_ = 0;
     }
+    return *this;
+}
+
+template <typename T>
+template <typename A>
+device_vector<T>& device_vector<T>::operator=(std::vector<T, A> const& rhs)
+{
+    size_ = rhs.size();
+    CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * size_));
+    CUDA_SAFE_CALL(cudaMemcpy(
+        data_,
+        rhs.data(),
+        sizeof(T) * size_,
+        cudaMemcpyHostToDevice
+        ));
     return *this;
 }
 
