@@ -7,6 +7,7 @@
 #define VSNRAY_CUDA_DEVICE_VECTOR_H 1
 
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "../detail/macros.h"
@@ -46,8 +47,16 @@ public:
     template <typename A>
     device_vector& operator=(std::vector<T, A> const& hv);
 
+    void reserve(size_t size);
     void resize(size_t size);
     void resize(size_t size, T const& value);
+
+    void push_back(T const& value);
+
+    template<typename... Args>
+    void emplace_back(Args&&... args);
+
+    void clear();
 
     T* data();
     T const* data() const;
@@ -70,6 +79,7 @@ public:
 private:
     T* data_{nullptr};
     size_t size_{0};
+    size_t capacity_{0};
 };
 
 } // cuda

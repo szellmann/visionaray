@@ -158,16 +158,18 @@ device_vector<T>& device_vector<T>::operator=(std::vector<T, A> const& rhs)
 }
 
 template <typename T>
-void device_vector<T>::resize(size_t size)
+void device_vector<T>::reserve(size_t size)
 {
-    if (size_ == size)
+    if (size <= capacity_)
+    {
         return;
+    }
 
     T* prev{nullptr};
     size_t copy_size{0};
-    if (size_ > 0)
+    if (capacity_ > 0)
     {
-        copy_size = std::min(size_, size);
+        copy_size = std::min(capacity_, size);
         CUDA_SAFE_CALL(cudaMalloc(&prev, copy_size * sizeof(T)));
         CUDA_SAFE_CALL(cudaMemcpy(
             prev,
@@ -178,9 +180,9 @@ void device_vector<T>::resize(size_t size)
         CUDA_SAFE_CALL(cudaDeviceSynchronize());
     }
 
-    size_ = size;
+    capacity_ = size;
     CUDA_SAFE_CALL(cudaFree(data_));
-    CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * size_));
+    CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * capacity_));
 
     if (prev && copy_size > 0)
     {
@@ -196,6 +198,16 @@ void device_vector<T>::resize(size_t size)
 }
 
 template <typename T>
+void device_vector<T>::resize(size_t size)
+{
+    if (size_ == size)
+        return;
+
+    reserve(size);
+    size_ = size;
+}
+
+template <typename T>
 void device_vector<T>::resize(size_t size, T const& value)
 {
     size_t prev_size = size_;
@@ -207,6 +219,41 @@ void device_vector<T>::resize(size_t size, T const& value)
         size_t more = size_ - prev_size;
         cuda::fill(data_ + prev_size, more * sizeof(T), &value, sizeof(value));
     }
+}
+
+template <typename T>
+void device_vector<T>::push_back(T const& value)
+{
+  resize(size_ + 1);
+
+  CUDA_SAFE_CALL(cudaMemcpy(
+        data_ + size_,
+        &value,
+        sizeof(T),
+        cudaMemcpyHostToDevice
+        ));
+}
+
+template <typename T>
+template <typename... Args>
+void device_vector<T>::emplace_back(Args&&... args)
+{
+  T value(std::forward<Args>(args)...);
+  resize(size_ + 1);
+
+  CUDA_SAFE_CALL(cudaMemcpy(
+        data_ + size_,
+        &value,
+        sizeof(T),
+        cudaMemcpyHostToDevice
+        ));
+}
+
+template <typename T>
+void device_vector<T>::clear()
+{
+    CUDA_SAFE_CALL(cudaFree(data_));
+    size_ = 0;
 }
 
 template <typename T>
