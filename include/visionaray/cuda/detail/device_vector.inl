@@ -77,6 +77,20 @@ device_vector<T>::device_vector(std::vector<T, A> const &hv)
 }
 
 template <typename T>
+template <typename A>
+device_vector<T>::operator std::vector<T, A>() const
+{
+    std::vector<T, A> hv(size_);
+    CUDA_SAFE_CALL(cudaMemcpy(
+        hv.data(),
+        data_,
+        sizeof(T) * size_,
+        cudaMemcpyDeviceToHost
+        ));
+    return hv;
+}
+
+template <typename T>
 device_vector<T>::device_vector(const T* data, size_t size)
     : size_(size)
 {

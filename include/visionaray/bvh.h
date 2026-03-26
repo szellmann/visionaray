@@ -869,9 +869,9 @@ public:
     template <typename PV, typename NV, typename IV>
     explicit index_bvh_t(index_bvh_t<PV, NV, IV> const& rhs)
     {
-        primitives_ = rhs.primitives();
-        nodes_ = rhs.nodes();
-        indices_ = rhs.indices();
+        primitives_ = static_cast<primitive_vector>(rhs.primitives());
+        nodes_ = static_cast<node_vector>(rhs.nodes());
+        indices_ = static_cast<index_vector>(rhs.indices());
     }
 
     primitive_vector const& primitives() const  { return primitives_; }
@@ -930,12 +930,6 @@ private:
     primitive_vector primitives_;
     node_vector nodes_;
     index_vector indices_;
-
-    template <typename DstVector, typename SrcVector>
-    void copy(DstVector& dst, SrcVector const& src)
-    {
-        dst = src;
-    }
 };
 
 

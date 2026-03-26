@@ -47,6 +47,9 @@ public:
     template <typename A>
     device_vector& operator=(std::vector<T, A> const& hv);
 
+    template <typename A>
+    explicit operator std::vector<T, A>() const;
+
     void reserve(size_t size);
     void resize(size_t size);
     void resize(size_t size, T const& value);
