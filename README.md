@@ -65,6 +65,8 @@ make
 make install
 ```
 
+When targeting `riscv64`, make sure the selected compiler flags match the target CPU instead of the build host. Visionaray currently falls back to its builtin no-SIMD implementation on RISC-V unless a dedicated backend is added.
+
 Headers, libraries and binaries will then be located in the standard install path of your operating system (usually `/usr/local`).
 
 See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Getting-started) and the [Troubleshooting section](https://github.com/szellmann/visionaray/wiki/Troubleshooting) in the [Wiki](https://github.com/szellmann/visionaray/wiki) for further information.
