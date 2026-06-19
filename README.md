@@ -80,9 +80,12 @@ Visionaray's GPU path also targets AMD GPUs through ROCm/HIP. Enable it with `-D
 cmake .. -DCMAKE_BUILD_TYPE=Release \
   -DVSNRAY_ENABLE_HIP=ON -DVSNRAY_ENABLE_CUDA=OFF \
   -DCMAKE_HIP_ARCHITECTURES=gfx90a \
-  -DCMAKE_HIP_COMPILER=/opt/rocm/llvm/bin/clang++
+  -DCMAKE_HIP_COMPILER=/opt/rocm/llvm/bin/clang++ \
+  -DCMAKE_PREFIX_PATH=/opt/rocm
 make
 ```
+
+If ROCm is not installed under the default prefix, or `/opt/rocm/bin` is not on your `PATH`, point `-DCMAKE_PREFIX_PATH` at your ROCm install so CMake can locate the hipCUB and rocThrust packages.
 
 ### Windows
 
