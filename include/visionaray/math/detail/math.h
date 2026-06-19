@@ -9,16 +9,15 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <ctime>
 #include <type_traits>
 
-#ifdef _WIN32
+#if defined(_WIN32) && (defined(_M_IX86) || defined(_M_X64) || defined(_M_AMD64))
 #include <xmmintrin.h>
 #include <mmintrin.h>
 #include <immintrin.h>
-#else
-#if !defined(__aarch64__)
+#elif defined(__i386__) || defined(__x86_64__) || defined(__amd64__)
 #include <x86intrin.h>
-#endif
 #endif
 
 #include "../config.h"
@@ -96,10 +95,12 @@ inline uint64_t clock64()
     uint64_t cnt;
     asm volatile("mrs %0, cntvct_el0" : "=r" (cnt));
     return cnt;
-#else
+#elif defined(__i386__) || defined(__x86_64__) || defined(__amd64__)
     unsigned int lo,hi;
     __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
     return ((uint64_t)hi << 32) | lo;
+#else
+    return static_cast<uint64_t>(std::clock());
 #endif
 }
 #endif

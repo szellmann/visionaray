@@ -11,22 +11,32 @@
 #define VSNRAY_BASE_ARCH_UNKNOWN  9999
 #define VSNRAY_BASE_ARCH_X86         0
 #define VSNRAY_BASE_ARCH_ARM      1000
+#define VSNRAY_BASE_ARCH_RISCV    2000
 
 #define VSNRAY_ARCH_UNKNOWN          0
 #define VSNRAY_ARCH_X86             10
 #define VSNRAY_ARCH_X86_64          11
 #define VSNRAY_ARCH_ARM             20
 #define VSNRAY_ARCH_ARM64           21
+#define VSNRAY_ARCH_RISCV32         30
+#define VSNRAY_ARCH_RISCV64         31
 
-#if defined(_M_X64) || defined(_M_AMD64) || defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
-#define VSNRAY_BASE_ARCH VSNRAY_BASE_ARCH_X86
-#define VSNRAY_ARCH VSNRAY_ARCH_X86_64
+#if defined(__riscv)
+#define VSNRAY_BASE_ARCH VSNRAY_BASE_ARCH_RISCV
+#if defined(__riscv_xlen) && (__riscv_xlen == 64)
+#define VSNRAY_ARCH VSNRAY_ARCH_RISCV64
+#else
+#define VSNRAY_ARCH VSNRAY_ARCH_RISCV32
+#endif
 #elif defined(__arm__) || defined(__arm) || defined(_ARM) || defined(_M_ARM)
 #define VSNRAY_BASE_ARCH VSNRAY_BASE_ARCH_ARM
 #define VSNRAY_ARCH VSNRAY_ARCH_ARM
 #elif defined(__aarch64__)
 #define VSNRAY_BASE_ARCH VSNRAY_BASE_ARCH_ARM
 #define VSNRAY_ARCH VSNRAY_ARCH_ARM64
+#elif defined(_M_X64) || defined(_M_AMD64) || defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64)
+#define VSNRAY_BASE_ARCH VSNRAY_BASE_ARCH_X86
+#define VSNRAY_ARCH VSNRAY_ARCH_X86_64
 #else
 #define VSNRAY_BASE_ARCH VSNRAY_BASE_ARCH_UNKNOWN
 #define VSNRAY_ARCH VSNRAY_ARCH_UNKNOWN
@@ -53,6 +63,7 @@
 
 #ifndef VSNRAY_NO_SIMD
 #ifndef VSNRAY_SIMD_ISA_
+#if VSNRAY_BASE_ARCH == VSNRAY_BASE_ARCH_X86
 #if defined(__AVX512F__)                            && !defined(__CUDACC__) // nvcc does not support AVX intrinsics
 #define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_AVX512F
 #elif defined(__AVX2__)                             && !defined(__CUDACC__)
@@ -69,10 +80,17 @@
 #define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_SSE3
 #elif defined(__SSE2__) || VSNRAY_ARCH == VSNRAY_ARCH_X86_64 // SSE2 is always available on 64-bit Intel compatible platforms
 #define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_SSE2
-#elif defined(__ARM_NEON) && (defined(__ARM_NEON_FP) || defined(__ARM_FP)) // Compiler on Jetson Nano doesn't define __ARM_NEON_FP although supported.
+#else
+#define VSNRAY_SIMD_ISA_ 0
+#endif
+#elif VSNRAY_BASE_ARCH == VSNRAY_BASE_ARCH_ARM
+#if defined(__ARM_NEON) && (defined(__ARM_NEON_FP) || defined(__ARM_FP)) // Compiler on Jetson Nano doesn't define __ARM_NEON_FP although supported.
 #define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_NEON_FP
 #elif defined(__ARM_NEON)
 #define VSNRAY_SIMD_ISA_ VSNRAY_SIMD_ISA_NEON
+#else
+#define VSNRAY_SIMD_ISA_ 0
+#endif
 #else
 #define VSNRAY_SIMD_ISA_ 0
 #endif

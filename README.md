@@ -66,6 +66,8 @@ make
 make install
 ```
 
+When cross-compiling, make sure the selected compiler flags match the target CPU instead of the build host.
+
 Headers, libraries and binaries will then be located in the standard install path of your operating system (usually `/usr/local`).
 
 See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Getting-started) and the [Troubleshooting section](https://github.com/szellmann/visionaray/wiki/Troubleshooting) in the [Wiki](https://github.com/szellmann/visionaray/wiki) for further information.
