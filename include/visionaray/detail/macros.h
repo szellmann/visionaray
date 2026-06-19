@@ -72,7 +72,7 @@
 // Determine if code is compiled for the CPU or the GPU
 //
 
-#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ > 0
+#if (defined(__CUDA_ARCH__) && __CUDA_ARCH__ > 0) || (defined(__HIP_DEVICE_COMPILE__) && __HIP_DEVICE_COMPILE__)
 #define VSNRAY_CPU_MODE 0
 #define VSNRAY_GPU_MODE 1
 #else

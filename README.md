@@ -31,6 +31,7 @@ Build requirements
 
 - [CMake][1] version 3.1.3 or newer
 - [NVIDIA CUDA Toolkit][4] (optional)
+- [AMD ROCm](https://rocm.docs.amd.com) with hipCUB and rocThrust (optional, for AMD GPU support via HIP)
 
 - Libraries need to ship with C/C++ header files (developer packages)
 
@@ -68,6 +69,18 @@ make install
 Headers, libraries and binaries will then be located in the standard install path of your operating system (usually `/usr/local`).
 
 See the [Getting Started Guide](https://github.com/szellmann/visionaray/wiki/Getting-started) and the [Troubleshooting section](https://github.com/szellmann/visionaray/wiki/Troubleshooting) in the [Wiki](https://github.com/szellmann/visionaray/wiki) for further information.
+
+#### AMD GPUs (ROCm/HIP)
+
+Visionaray's GPU path also targets AMD GPUs through ROCm/HIP. Enable it with `-DVSNRAY_ENABLE_HIP=ON` (mutually exclusive with the CUDA path) and select your GPU architecture, for example `gfx90a` (MI200), `gfx1100` (RDNA3), or `gfx1201` (RDNA4). It requires a ROCm install with hipCUB and rocThrust.
+
+```Shell
+cmake .. -DCMAKE_BUILD_TYPE=Release \
+  -DVSNRAY_ENABLE_HIP=ON -DVSNRAY_ENABLE_CUDA=OFF \
+  -DCMAKE_HIP_ARCHITECTURES=gfx90a \
+  -DCMAKE_HIP_COMPILER=/opt/rocm/llvm/bin/clang++
+make
+```
 
 ### Windows
 

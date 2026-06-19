@@ -8,7 +8,7 @@
 
 #include <type_traits>
 
-#if defined(__CUDACC__)
+#if defined(__CUDACC__) || defined(__HIPCC__)
 #include <thrust/random.h>
 #else
 #include <random>
@@ -34,7 +34,7 @@ public:
 
 public:
 
-#if defined(__CUDACC__)
+#if defined(__CUDACC__) || defined(__HIPCC__)
     typedef thrust::default_random_engine rand_engine;
     typedef thrust::uniform_real_distribution<T> uniform_dist;
 #else
