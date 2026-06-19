@@ -55,6 +55,7 @@ option(VSNRAY_ENABLE_3DCONNEXIONCLIENT "Use 3DconnexionClient, if available" OFF
 option(VSNRAY_ENABLE_COCOA "Use Cocoa, if available" OFF)
 option(VSNRAY_ENABLE_COMMON "Build the common library with several utils" ON)
 option(VSNRAY_ENABLE_CUDA "Use CUDA, if available" ON)
+option(VSNRAY_ENABLE_HIP "Use HIP for AMD GPUs" OFF)
 option(VSNRAY_ENABLE_EXAMPLES "Build the programming examples" OFF)
 option(VSNRAY_ENABLE_PBRT_PARSER "Build with pbrtParser" OFF)
 option(VSNRAY_ENABLE_PTEX "Use Ptex, if available" OFF)

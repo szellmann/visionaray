@@ -13,6 +13,19 @@ if (VSNRAY_ENABLE_CUDA)
   target_link_libraries(visionaray INTERFACE CUDA::cudart)
 endif()
 
+if (VSNRAY_ENABLE_HIP)
+  enable_language(HIP)
+  find_package(hip REQUIRED)
+  find_package(rocthrust REQUIRED)
+  find_package(hipcub REQUIRED)
+  # HIP libraries are available but NOT linked to the INTERFACE target
+  # Targets with HIP sources should link hip::host/device, roc::rocthrust, hip::hipcub
+  # directly to avoid leaking HIP compiler options to CXX-only targets
+  if(NOT DEFINED CMAKE_HIP_ARCHITECTURES OR CMAKE_HIP_ARCHITECTURES STREQUAL "")
+    set(CMAKE_HIP_ARCHITECTURES "gfx90a")
+  endif()
+endif()
+
 target_include_directories(visionaray INTERFACE
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>

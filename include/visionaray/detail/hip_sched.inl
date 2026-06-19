@@ -1,0 +1,250 @@
+// This file is distributed under the MIT license.
+// See the LICENSE file for details.
+//
+// Copyright (c) 2026 Advanced Micro Devices, Inc.
+
+#include <cassert>
+#include <type_traits>
+#include <utility>
+
+#include <hip/hip_runtime_api.h>
+
+#include "../math/detail/math.h" // div_up
+#include "../make_generator.h"
+#include "../make_random_seed.h"
+#include "../packet_traits.h"
+#include "sched_common.h"
+
+namespace visionaray
+{
+namespace detail
+{
+
+//-------------------------------------------------------------------------------------------------
+// HIP kernels
+//
+
+template <
+    typename R,
+    typename PxSamplerT,
+    typename RTRef,
+    typename K,
+    typename ...Args
+    >
+__global__ void hip_render(
+        PxSamplerT      sample_params,
+        unsigned        frame_id,
+        RTRef           rt_ref,
+        K               kernel,
+        Args...         args
+        )
+{
+    using S = typename R::scalar_type;
+    using I = typename simd::int_type<S>::type;
+
+    auto x = blockIdx.x * blockDim.x + threadIdx.x;
+    auto y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (x >= rt_ref.width() || y >= rt_ref.height())
+    {
+        return;
+    }
+
+    expand_pixel<S> ep;
+    auto seed = make_random_seed(
+        convert_to_int(ep.y(y)) * rt_ref.width() + convert_to_int(ep.x(x)),
+        I(frame_id)
+        );
+
+    auto gen = make_generator(S{}, sample_params, seed);
+
+    sample_pixel(
+            kernel,
+            sample_params,
+            R{},
+            gen,
+            rt_ref,
+            x,
+            y,
+            args...
+            );
+}
+
+template <
+    typename R,
+    typename PxSamplerT,
+    typename Intersector,
+    typename RTRef,
+    typename K,
+    typename ...Args
+    >
+__global__ void hip_render(
+        detail::have_intersector_tag    /* */,
+        PxSamplerT                      sample_params,
+        Intersector                     intersector,
+        unsigned                        frame_id,
+        RTRef                           rt_ref,
+        K                               kernel,
+        Args...                         args
+        )
+{
+    using S = typename R::scalar_type;
+    using I = typename simd::int_type<S>::type;
+
+    auto x = blockIdx.x * blockDim.x + threadIdx.x;
+    auto y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (x >= rt_ref.width() || y >= rt_ref.height())
+    {
+        return;
+    }
+
+    expand_pixel<S> ep;
+    auto seed = make_random_seed(
+        convert_to_int(ep.y(y)) * rt_ref.width() + convert_to_int(ep.x(x)),
+        I(frame_id)
+        );
+
+    // TODO: support any sampler
+    random_generator<typename R::scalar_type> gen(seed);
+
+    sample_pixel(
+            detail::have_intersector_tag(),
+            intersector,
+            kernel,
+            sample_params,
+            R{},
+            gen,
+            rt_ref,
+            x,
+            y,
+            args...
+            );
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Dispatch functions
+//
+
+template <typename R, typename SP, typename ...Args>
+inline void hip_sched_impl_call_render(
+        std::false_type     /* has intersector */,
+        SP&                 sparams,
+        unsigned            frame_id,
+        dim3 const&         grid_size,
+        dim3 const&         block_size,
+        size_t              smem,
+        hipStream_t const&  stream,
+        Args&&...           args
+        )
+{
+    hip_render<R, typename SP::pixel_sampler_type><<<grid_size, block_size, smem, stream>>>(
+            sparams.sample_params,
+            frame_id,
+            std::forward<Args>(args)...
+            );
+}
+
+template <typename R, typename SP, typename ...Args>
+inline void hip_sched_impl_call_render(
+        std::true_type      /* has intersector */,
+        SP const&           sparams,
+        unsigned            frame_id,
+        dim3 const&         grid_size,
+        dim3 const&         block_size,
+        size_t              smem,
+        hipStream_t const&  stream,
+        Args&&...           args
+        )
+{
+    hip_render<R, typename SP::pixel_sampler_type><<<grid_size, block_size, smem, stream>>>(
+            detail::have_intersector_tag(),
+            sparams.sample_params,
+            sparams.intersector,
+            frame_id,
+            std::forward<Args>(args)...
+            );
+}
+
+
+template <typename R, typename K, typename SP>
+inline void hip_sched_impl_frame(
+        K                   kernel,
+        SP                  sparams,
+        unsigned            frame_id,
+        dim3 const&         block_size,
+        size_t              smem,
+        hipStream_t const&  stream
+        )
+{
+    using hip_dim_t = decltype(block_size.x);
+
+    auto w = static_cast<hip_dim_t>(sparams.rt.width());
+    auto h = static_cast<hip_dim_t>(sparams.rt.height());
+
+    dim3 grid_size(
+            div_up(w, block_size.x),
+            div_up(h, block_size.y)
+            );
+
+    hip_sched_impl_call_render<R>(
+            typename detail::sched_params_has_intersector<SP>::type(),
+            sparams,
+            frame_id,
+            grid_size,
+            block_size,
+            smem,
+            stream,
+            sparams.rt.ref(),
+            kernel,
+            sparams.rt.width(),
+            sparams.rt.height(),
+            sparams.cam
+            );
+}
+
+} // detail
+
+
+//-------------------------------------------------------------------------------------------------
+// hip_sched implementation
+//
+
+template <typename R>
+hip_sched<R>::hip_sched(vec2ui block_size)
+    : block_size_(block_size)
+{
+}
+
+template <typename R>
+hip_sched<R>::hip_sched(unsigned block_size_x, unsigned block_size_y)
+    : block_size_(block_size_x, block_size_y)
+{
+}
+
+template <typename R>
+template <typename K, typename SP>
+void hip_sched<R>::frame(K kernel, SP sched_params, size_t smem, hipStream_t const& stream)
+{
+    sched_params.cam.begin_frame();
+
+    sched_params.rt.begin_frame();
+
+    detail::hip_sched_impl_frame<R>(
+            kernel,
+            sched_params,
+            frame_id_,
+            dim3(block_size_.x, block_size_.y),
+            smem,
+            stream
+            );
+
+    sched_params.rt.end_frame();
+
+    sched_params.cam.end_frame();
+
+    ++frame_id_;
+}
+
+} // visionaray
