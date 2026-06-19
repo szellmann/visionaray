@@ -87,14 +87,19 @@ jobs:
     # CUDA matrix entry above. Running the device tests needs a runner with an
     # AMD GPU.
     steps:
+    # git must be present before checkout, otherwise actions/checkout falls back
+    # to the REST API download, which cannot fetch submodules.
+    - name: Install git
+      run: |
+        apt-get update
+        apt-get install -y git
+
     - uses: actions/checkout@v3
       with:
         submodules: recursive
 
     - name: Install apt packages
-      run: |
-        apt-get update
-        apt-get install -y cmake git libboost-all-dev libglew-dev freeglut3-dev libxi-dev libxmu-dev
+      run: apt-get install -y cmake libboost-all-dev libglew-dev freeglut3-dev libxi-dev libxmu-dev
 
     - name: Configure CMake
       run: >
