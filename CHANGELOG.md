@@ -3,6 +3,7 @@
 - cuda::device_vector is a bit more versatile now; e.g., has
 support for reserving and reusing memory now. Also added push_back
 and emplace_back.
+- LBVH builder ported to HIP, by @jeffdaily.
 
 ## [0.6.1] - 2025-09-09
 ### Added
