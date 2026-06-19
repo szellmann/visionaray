@@ -72,3 +72,41 @@ jobs:
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{ matrix.config }} --target install
+
+  build-hip:
+    runs-on: ubuntu-24.04
+    container: rocm/dev-ubuntu-24.04:7.2.4-complete
+    strategy:
+      matrix:
+        config: [Release, Debug]
+
+    name: HIP build - config ${{ matrix.config }}
+
+    # GitHub-hosted runners have no AMD GPU, so this job is a compile-only gate
+    # (it builds the HIP device code offline but does not run it), mirroring the
+    # CUDA matrix entry above. Running the device tests needs a runner with an
+    # AMD GPU.
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Install apt packages
+      run: |
+        apt-get update
+        apt-get install -y cmake git libboost-all-dev libglew-dev freeglut3-dev libxi-dev libxmu-dev
+
+    - name: Configure CMake
+      run: >
+        cmake -LA -B ${{github.workspace}}/build
+        -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+        -DCMAKE_HIP_COMPILER=/opt/rocm/llvm/bin/clang++
+        -DCMAKE_HIP_ARCHITECTURES="gfx90a;gfx1100;gfx1201"
+        -DVSNRAY_ENABLE_HIP:BOOL=ON
+        -DVSNRAY_ENABLE_CUDA:BOOL=OFF
+        -DVSNRAY_ENABLE_COMMON:BOOL=ON
+        -DVSNRAY_ENABLE_VIEWER:BOOL=OFF
+        -DVSNRAY_ENABLE_EXAMPLES:BOOL=OFF
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{ matrix.config }}
