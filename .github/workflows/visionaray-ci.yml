@@ -105,6 +105,7 @@ jobs:
       run: >
         cmake -LA -B ${{github.workspace}}/build
         -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+        -DCMAKE_PREFIX_PATH=/opt/rocm
         -DCMAKE_HIP_COMPILER=/opt/rocm/llvm/bin/clang++
         -DCMAKE_HIP_ARCHITECTURES="gfx90a;gfx1100;gfx1201"
         -DVSNRAY_ENABLE_HIP:BOOL=ON
