@@ -135,19 +135,21 @@ inline T max(T const& x, T const& y)
 MATH_FUNC
 inline int reinterpret_as_int(float a)
 {
-    // Use memcpy bc. of strict-aliasing rules
-    int i;
-    memcpy(&i, &a, sizeof(i));
-    return i;
+    // Union-based type pun: valid in C, and works in __device__ code where
+    // memcpy is not available as a __device__ function.
+    union { float f; int i; } u;
+    u.f = a;
+    return u.i;
 }
 
 MATH_FUNC
 inline float reinterpret_as_float(int a)
 {
-    // Use memcpy bc. of strict-aliasing rules
-    float f;
-    memcpy(&f, &a, sizeof(f));
-    return f;
+    // Union-based type pun: valid in C, and works in __device__ code where
+    // memcpy is not available as a __device__ function.
+    union { int i; float f; } u;
+    u.i = a;
+    return u.f;
 }
 
 MATH_FUNC

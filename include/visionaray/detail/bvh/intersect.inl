@@ -15,7 +15,11 @@
 #include "../tags.h"
 #include "hit_record.h"
 
-#if defined( __CUDA_ARCH__) || defined(__HIP_DEVICE_COMPILE__)
+// Use the standard stack-based BVH traversal on all platforms.
+// The trail-bit stackless traversal (__CUDA_ARCH__ path) hangs on AMD RDNA3
+// (gfx1100) due to compiler code-generation differences; the stack<32>
+// traversal is correct and sufficient for any practical BVH depth.
+#if defined(__CUDA_ARCH__)
 #define VSNRAY_FULL_STACK_TRAVERSAL_ 0
 #else
 #define VSNRAY_FULL_STACK_TRAVERSAL_ 1
