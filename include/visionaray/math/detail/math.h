@@ -136,18 +136,22 @@ inline T max(T const& x, T const& y)
 MATH_FUNC
 inline int reinterpret_as_int(float a)
 {
-    // Use memcpy bc. of strict-aliasing rules
+    // __builtin_memcpy is strict-aliasing-safe and lowers to a bit
+    // reinterpretation. Unlike the libc memcpy it is available in __device__
+    // code: HIP provides no __device__ memcpy overload, so a plain memcpy here
+    // fails to compile for HIP device code.
     int i;
-    memcpy(&i, &a, sizeof(i));
+    __builtin_memcpy(&i, &a, sizeof(i));
     return i;
 }
 
 MATH_FUNC
 inline float reinterpret_as_float(int a)
 {
-    // Use memcpy bc. of strict-aliasing rules
+    // See reinterpret_as_int: __builtin_memcpy avoids the strict-aliasing UB of
+    // a union pun and is available in both HIP and CUDA __device__ code.
     float f;
-    memcpy(&f, &a, sizeof(f));
+    __builtin_memcpy(&f, &a, sizeof(f));
     return f;
 }
 

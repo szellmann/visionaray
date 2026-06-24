@@ -7,6 +7,7 @@
 #define VSNRAY_HIP_DEVICE_VECTOR_H 1
 
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "../detail/macros.h"
@@ -39,7 +40,8 @@ public:
 
     device_vector(size_t size);
     device_vector(size_t size, T const& value);
-    device_vector(host_vector<T> const& hv);
+    template <typename A>
+    device_vector(std::vector<T, A> const& hv);
     device_vector(const T* data, size_t size);
     device_vector(const T* begin, const T* end);
 
@@ -49,8 +51,19 @@ public:
     template <typename A>
     device_vector& operator=(std::vector<T, A> const& rhs);
 
+    template <typename A>
+    explicit operator std::vector<T, A>() const;
+
+    void reserve(size_t size);
     void resize(size_t size);
     void resize(size_t size, T const& value);
+
+    void push_back(T const& value);
+
+    template<typename... Args>
+    void emplace_back(Args&&... args);
+
+    void clear();
 
     T* data();
     T const* data() const;
@@ -73,6 +86,7 @@ public:
 private:
     T* data_{nullptr};
     size_t size_{0};
+    size_t capacity_{0};
 };
 
 } // hip

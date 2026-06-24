@@ -11,7 +11,7 @@
 #include <new>
 
 #include "compiler.h"
-#if VSNRAY_CXX_MSVC
+#if defined(_WIN32)
 #include <malloc.h>
 #endif
 
@@ -47,7 +47,7 @@ public:
 
     pointer allocate(size_type n, void* /* hint */ = 0)
     {
-#if VSNRAY_CXX_MSVC
+#if defined(_WIN32)
         return (pointer)_mm_malloc(n * sizeof(T), A);
 #else
         value_type* ptr{nullptr};
@@ -62,7 +62,7 @@ public:
 
     void deallocate(pointer p, size_type /* n */)
     {
-#if VSNRAY_CXX_MSVC
+#if defined(_WIN32)
         _mm_free(p);
 #else
         std::free(p);
