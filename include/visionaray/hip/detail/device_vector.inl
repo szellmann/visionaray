@@ -1,6 +1,9 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <algorithm>
+#include <utility>
+
 #include <hip/hip_runtime.h>
 
 #include "../fill.h"
@@ -63,7 +66,8 @@ device_vector<T>::device_vector(size_t size, T const& value)
 }
 
 template <typename T>
-device_vector<T>::device_vector(host_vector<T> const &hv)
+template <typename A>
+device_vector<T>::device_vector(std::vector<T, A> const &hv)
     : size_(hv.size())
 {
     HIP_SAFE_CALL(hipMalloc(&data_, sizeof(T) * size_));
@@ -73,6 +77,20 @@ device_vector<T>::device_vector(host_vector<T> const &hv)
         sizeof(T) * size_,
         hipMemcpyHostToDevice
         ));
+}
+
+template <typename T>
+template <typename A>
+device_vector<T>::operator std::vector<T, A>() const
+{
+    std::vector<T, A> hv(size_);
+    HIP_SAFE_CALL(hipMemcpy(
+        hv.data(),
+        data_,
+        sizeof(T) * size_,
+        hipMemcpyDeviceToHost
+        ));
+    return hv;
 }
 
 template <typename T>
@@ -157,16 +175,18 @@ device_vector<T>& device_vector<T>::operator=(std::vector<T, A> const& rhs)
 }
 
 template <typename T>
-void device_vector<T>::resize(size_t size)
+void device_vector<T>::reserve(size_t size)
 {
-    if (size_ == size)
+    if (size <= capacity_)
+    {
         return;
+    }
 
     T* prev{nullptr};
     size_t copy_size{0};
-    if (size_ > 0)
+    if (capacity_ > 0)
     {
-        copy_size = std::min(size_, size);
+        copy_size = std::min(capacity_, size);
         HIP_SAFE_CALL(hipMalloc(&prev, copy_size * sizeof(T)));
         HIP_SAFE_CALL(hipMemcpy(
             prev,
@@ -177,9 +197,9 @@ void device_vector<T>::resize(size_t size)
         HIP_SAFE_CALL(hipDeviceSynchronize());
     }
 
-    size_ = size;
+    capacity_ = size;
     HIP_SAFE_CALL(hipFree(data_));
-    HIP_SAFE_CALL(hipMalloc(&data_, sizeof(T) * size_));
+    HIP_SAFE_CALL(hipMalloc(&data_, sizeof(T) * capacity_));
 
     if (prev && copy_size > 0)
     {
@@ -195,6 +215,16 @@ void device_vector<T>::resize(size_t size)
 }
 
 template <typename T>
+void device_vector<T>::resize(size_t size)
+{
+    if (size_ == size)
+        return;
+
+    reserve(size);
+    size_ = size;
+}
+
+template <typename T>
 void device_vector<T>::resize(size_t size, T const& value)
 {
     size_t prev_size = size_;
@@ -206,6 +236,42 @@ void device_vector<T>::resize(size_t size, T const& value)
         size_t more = size_ - prev_size;
         hip::fill(data_ + prev_size, more * sizeof(T), &value, sizeof(value));
     }
+}
+
+template <typename T>
+void device_vector<T>::push_back(T const& value)
+{
+  resize(size_ + 1);
+
+  HIP_SAFE_CALL(hipMemcpy(
+        data_ + size_,
+        &value,
+        sizeof(T),
+        hipMemcpyHostToDevice
+        ));
+}
+
+template <typename T>
+template <typename... Args>
+void device_vector<T>::emplace_back(Args&&... args)
+{
+  T value(std::forward<Args>(args)...);
+  resize(size_ + 1);
+
+  HIP_SAFE_CALL(hipMemcpy(
+        data_ + size_,
+        &value,
+        sizeof(T),
+        hipMemcpyHostToDevice
+        ));
+}
+
+template <typename T>
+void device_vector<T>::clear()
+{
+    HIP_SAFE_CALL(hipFree(data_));
+    capacity_ = 0;
+    size_ = 0;
 }
 
 template <typename T>
