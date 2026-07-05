@@ -20,6 +20,10 @@
 #include <x86intrin.h>
 #endif
 
+#if defined(_MSC_VER) && !defined(__clang__)
+#define __builtin_memcpy memcpy
+#endif
+
 #include "../config.h"
 
 
