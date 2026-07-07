@@ -60,7 +60,6 @@ public:
         }
 
 	{
-		std::cout << "changes enforced\n" << std::endl;
 		std::lock_guard<std::mutex> lock(sync_params.mutex);
 		sync_params.start_threads = true;
         	sync_params.join_threads = true;
