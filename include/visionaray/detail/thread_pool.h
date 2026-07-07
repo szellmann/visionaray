@@ -59,12 +59,12 @@ public:
             return;
         }
 
-	{
-		std::lock_guard<std::mutex> lock(sync_params.mutex);
-		sync_params.start_threads = true;
-        	sync_params.join_threads = true;
-	}
-        sync_params.threads_start.notify_all();
+        sync_params.start_threads = true;
+        sync_params.join_threads = true;
+        {
+            std::unique_lock<std::mutex> lock(sync_params.mutex);
+            sync_params.threads_start.notify_all();
+        }
 
         for (unsigned i = 0; i < num_threads; ++i)
         {
@@ -106,21 +106,18 @@ public:
         sync_params.work_items_finished_counter = 0;
 
         // Activate persistent threads
-	{
-        	std::lock_guard<std::mutex> lock(sync_params.mutex);
-		sync_params.start_threads = true;
-	}
-        sync_params.threads_start.notify_all();
+        sync_params.start_threads = true;
+        {
+            std::unique_lock<std::mutex> lock(sync_params.mutex);
+            sync_params.threads_start.notify_all();
+        }
 
         // Wait for all threads to finish
         sync_params.threads_ready.wait();
 
         // Idle w/o work
-	{
 		
-		std::lock_guard<std::mutex> lock(sync_params.mutex);
-		sync_params.start_threads = false;
-	}
+	sync_params.start_threads = false;
     }
 
     std::unique_ptr<std::thread[]> threads;
