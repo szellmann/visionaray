@@ -117,7 +117,7 @@ public:
 
         // Idle w/o work
 		
-	sync_params.start_threads = false;
+        sync_params.start_threads = false;
     }
 
     std::unique_ptr<std::thread[]> threads;
