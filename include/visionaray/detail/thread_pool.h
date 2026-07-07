@@ -61,7 +61,10 @@ public:
 
         sync_params.start_threads = true;
         sync_params.join_threads = true;
-        sync_params.threads_start.notify_all();
+        {
+            std::unique_lock<std::mutex> lock(sync_params.mutex);
+            sync_params.threads_start.notify_all();
+        }
 
         for (unsigned i = 0; i < num_threads; ++i)
         {
@@ -104,13 +107,17 @@ public:
 
         // Activate persistent threads
         sync_params.start_threads = true;
-        sync_params.threads_start.notify_all();
+        {
+            std::unique_lock<std::mutex> lock(sync_params.mutex);
+            sync_params.threads_start.notify_all();
+        }
 
         // Wait for all threads to finish
         sync_params.threads_ready.wait();
 
         // Idle w/o work
-        sync_params.start_threads = false;
+		
+	sync_params.start_threads = false;
     }
 
     std::unique_ptr<std::thread[]> threads;
