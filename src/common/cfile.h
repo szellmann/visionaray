@@ -30,7 +30,10 @@ public:
 
    ~cfile()
     {
-        fclose(file_);
+        if (good())
+        {
+            fclose(file_);
+        }
     }
 
     FILE* get() const { return file_; }
