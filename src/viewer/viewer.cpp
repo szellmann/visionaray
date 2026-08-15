@@ -54,6 +54,10 @@
 #include <visionaray/spot_light.h>
 #include <visionaray/thin_lens_camera.h>
 
+#if VSNRAY_COMMON_HAVE_CUDA
+#include <visionaray/detail/bvh/cuda_lbvh.h>
+#endif
+
 #if defined(__INTEL_COMPILER) || defined(__MINGW32__) || defined(__MINGW64__)
 #include <visionaray/detail/tbb_sched.h>
 #endif
@@ -1457,7 +1461,7 @@ void renderer::build_scene()
         {
             device_bvhs.resize(1);
 
-            lbvh_builder builder;
+            visionaray::cuda::lbvh_builder builder;
 
             //cuda::timer t;
             thrust::device_vector<primitive_type> primitives(mod.primitives);
