@@ -4,6 +4,8 @@
 support for reserving and reusing memory now. Also added push_back
 and emplace_back.
 - LBVH builder ported to HIP, by @jeffdaily.
+- Refactored LBVH builder(s) into separate classes in namespaces
+hip and cuda, making it explicit that they have different types.
 
 ## [0.6.1] - 2025-09-09
 ### Added
