@@ -1,4 +1,6 @@
 ## [Unreleased]
+### Added
+- New pixel format PF_RGBA8_SRGB to support sRGB textures.
 
 ## [0.7.0] - 2026-08-15
 ### Changed
