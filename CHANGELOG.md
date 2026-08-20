@@ -1,4 +1,6 @@
 ## [Unreleased]
+
+## [0.7.0] - 2026-08-15
 ### Changed
 - cuda::device_vector is a bit more versatile now; e.g., has
 support for reserving and reusing memory now. Also added push_back
