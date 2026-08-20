@@ -8,6 +8,7 @@
 
 #include <cstddef>
 
+#include "detail/color_conversion.h"
 #include "math/unorm.h"
 #include "math/vector.h"
 #include "pixel_format.h"
@@ -364,6 +365,26 @@ inline void swizzle_RGBA8_to_BGRA8(vector<4, unorm<8>>* data, size_t len)
     return swizzle_BGRA8_to_RGBA8( data, len );
 }
 
+inline void swizzle_RGBA8_to_RGBA8_SRGB(vector<4, unorm<8>>* data, size_t len)
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        vec4 rgba32f(data[i].x, data[i].y, data[i].z, data[i].w);
+        vec3 srgb32f = linear_to_srgb(rgba32f.xyz());
+        data[i] = vector<4, unorm<8>>( srgb32f.x, srgb32f.y, srgb32f.z, rgba32f.w );
+    }
+}
+
+inline void swizzle_RGBA8_SRGB_to_RGBA8(vector<4, unorm<8>>* data, size_t len)
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        vec4 rgba32f(data[i].x, data[i].y, data[i].z, data[i].w);
+        vec3 rgb32f = srgb_to_linear(rgba32f.xyz());
+        data[i] = vector<4, unorm<8>>( rgb32f.x, rgb32f.y, rgb32f.z, rgba32f.w );
+    }
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Expand types for swizzling
@@ -688,7 +709,7 @@ inline void swizzle_expand_types(
     }
 }
 
-// RGBA8 <-> BGRA8, 8-bit type is unorm<8>
+// RGBA8 <-> BGRA8; RGBA8 <-> RGBA8_SRGB; 8-bit type is unorm<8>
 
 inline void swizzle_expand_types(
         vector<4, unorm<8>>*    data,
@@ -704,6 +725,14 @@ inline void swizzle_expand_types(
     else if (format_dst == PF_BGRA8 && format_src == PF_RGBA8)
     {
         detail::swizzle_RGBA8_to_BGRA8( data, len );
+    }
+    else if (format_dst == PF_RGBA8 && format_src == PF_RGBA8_SRGB)
+    {
+        detail::swizzle_RGBA8_SRGB_to_RGBA8( data, len );
+    }
+    else if (format_dst == PF_RGBA8_SRGB && format_src == PF_RGBA8)
+    {
+        detail::swizzle_RGBA8_to_RGBA8_SRGB( data, len );
     }
 }
 

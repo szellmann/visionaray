@@ -52,6 +52,8 @@ enum pixel_format
 
     PF_R11F_G11F_B10F,
 
+    PF_RGBA8_SRGB,
+
     // pixel formats for depth and stencil buffers
 
     PF_DEPTH16,
