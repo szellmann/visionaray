@@ -2,6 +2,10 @@
 ### Added
 - New pixel format PF_RGBA8_SRGB to support sRGB textures.
 
+### Changed
+- GPU LBVH builders can now also generate non-index BVHs. This is
+a first effort towards deprecating (explicit) index BVHs.
+
 ## [0.7.0] - 2026-08-15
 ### Changed
 - cuda::device_vector is a bit more versatile now; e.g., has
