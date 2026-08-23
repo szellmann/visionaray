@@ -54,12 +54,12 @@ struct lbvh_builder
         CUDA_SAFE_CALL(cudaStreamDestroy(copy_stream));
     }
 
-    template <typename P>
-    cuda_index_bvh<P> build(cuda_index_bvh<P> /* */, P* primitives, size_t num_prims)
+    template <typename BVH, typename P>
+    BVH build(BVH /* */, P* primitives, size_t num_prims)
     {
         using namespace detail::lbvh;
 
-        cuda_index_bvh<P> tree(primitives, num_prims);
+        BVH tree(primitives, num_prims);
 
         if (primitives == nullptr || num_prims == 0)
         {
@@ -205,7 +205,17 @@ struct lbvh_builder
             ));
         CUDA_SAFE_CALL(cudaStreamSynchronize(copy_stream));
 
-        // Assign 0,1,2,3,.. indices
+        assign_indices(tree);
+
+        return tree;
+    }
+
+    template <typename P>
+    void assign_indices(cuda_index_bvh<P>& tree)
+    {
+        using namespace detail::lbvh;
+
+        // assign 0,1,2,3,.. indices
         {
 
             size_t num_threads = 1024;
@@ -215,8 +225,12 @@ struct lbvh_builder
                     tree.indices().size()
                     );
         }
+    }
 
-        return tree;
+    template <typename P>
+    void assign_indices(cuda_bvh<P>&)
+    {
+      // no-op
     }
 
 
