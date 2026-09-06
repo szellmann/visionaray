@@ -398,16 +398,16 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_sphere<U
     r.ori -= vec_type( sphere.center );
 
     auto A = dot(r.dir, r.dir);
-    auto B = dot(r.dir, r.ori) * T(2.0);
+    auto B = dot(r.dir, r.ori);
     auto C = dot(r.ori, r.ori) - sphere.radius * sphere.radius;
 
     // solve Ax**2 + Bx + C
-    auto disc = B * B - T(4.0) * A * C;
+    auto disc = B * B - A * C;
     auto valid = disc >= T(0.0);
 
     auto root_disc = select(valid, sqrt(disc), disc);
 
-    auto q = select( B < T(0.0), T(-0.5) * (B - root_disc), T(-0.5) * (B + root_disc) );
+    auto q = select( B < T(0.0), -B - root_disc, -B + root_disc );
 
     auto t1 = q / A;
     auto t2 = C / q;
