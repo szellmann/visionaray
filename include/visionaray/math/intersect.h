@@ -389,37 +389,35 @@ inline hit_record<basic_ray<float>, primitive<I>> intersect(
 
 template <typename R, typename U>
 MATH_FUNC
-inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_sphere<U, unsigned> const& sphere)
+inline hit_record<R, primitive<unsigned>> intersect(R const& r, basic_sphere<U, unsigned> const& sphere)
 {
     using T = typename R::scalar_type;
     using vec_type = vector<3, T>;
 
-    R r = ray;
-    r.ori -= vec_type( sphere.center );
+    vec_type oc = r.ori - vec_type(sphere.center);
 
     auto A = dot(r.dir, r.dir);
-    auto B = dot(r.dir, r.ori);
-    auto C = dot(r.ori, r.ori) - sphere.radius * sphere.radius;
+    auto B = dot(r.dir, oc);
+    // numerically more stable version for large distance between ray origin and sphere center
+    auto t_local = -B / A;
+    auto p_local = oc + t_local * r.dir;
+    auto C_local = sphere.radius * sphere.radius - dot(p_local, p_local);
 
-    // solve Ax**2 + Bx + C
-    auto disc = B * B - A * C;
-    auto valid = disc >= T(0.0);
+    auto valid = C_local >= T(0.0);
 
-    auto root_disc = select(valid, sqrt(disc), disc);
+    auto root_disc = sqrt(max(T(0.0), C_local / A));
 
-    auto q = select( B < T(0.0), -B - root_disc, -B + root_disc );
+    auto t1 = t_local - root_disc;
+    auto t2 = t_local + root_disc;
 
-    auto t1 = q / A;
-    auto t2 = C / q;
+    auto t1_valid = valid && (t1 >= r.tmin) && (t1 <= r.tmax);
+    auto t2_valid = valid && (t2 >= r.tmin) && (t2 <= r.tmax);
 
     hit_record<R, primitive<unsigned>> result;
-    result.hit = valid && (t1 >= T(0.0) || t2 >= T(0.0));
     result.prim_id = sphere.prim_id;
     result.geom_id = sphere.geom_id;
-    result.t = T(-1.0);
-    result.t = select(t1 >= T(0.0) && t2 >= T(0.0), min(t1, t2), result.t);
-    result.t = select(t1 >= T(0.0) && t2 <  T(0.0), t1,          result.t);
-    result.t = select(t1 <  T(0.0) && t2 >= T(0.0), t2,          result.t);
+    result.t = select(t1_valid, t1, select(t2_valid, t2, T(-1.0)));
+    result.hit = result.t >= T(0.0);
     return result;
 }
 
