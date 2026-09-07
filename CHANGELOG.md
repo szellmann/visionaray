@@ -1,4 +1,10 @@
 ## [Unreleased]
+### Changed
+- Deprecated index_bvh_t: how primitives are accessed by the
+traversal function is something we want to decide internally; to
+the user there should only be a single bvh template hiding the
+details of internal traversal.
+
 ### Added
 - New pixel format PF_RGBA8_SRGB to support sRGB textures.
 
