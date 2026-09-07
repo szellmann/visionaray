@@ -464,7 +464,7 @@ public:
 };
 
 template <typename PrimitiveType, typename Node = bvh_node>
-class index_bvh_ref_t
+class VSNRAY_DEPRECATED index_bvh_ref_t
 {
 public:
 
@@ -839,7 +839,7 @@ private:
 };
 
 template <typename PrimitiveVector, typename NodeVector, typename IndexVector, int W = 2>
-class index_bvh_t
+class VSNRAY_DEPRECATED index_bvh_t
 {
 public:
 
