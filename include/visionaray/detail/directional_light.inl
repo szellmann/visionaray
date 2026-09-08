@@ -3,6 +3,7 @@
 
 #include "../math/constants.h"
 #include "../math/limits.h"
+#include "sampling.h"
 
 namespace visionaray
 {
