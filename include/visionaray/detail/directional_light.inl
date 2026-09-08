@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include "../math/constants.h"
+#include "../math/limits.h"
 
 namespace visionaray
 {
