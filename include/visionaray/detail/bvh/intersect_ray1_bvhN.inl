@@ -13,7 +13,6 @@
 #include <visionaray/update_if.h>
 
 #include "../tags.h"
-#include "hit_record.h"
 
 #ifdef _MSC_VER
 // TODO:
@@ -176,13 +175,10 @@ inline auto intersect_ray1_bvhN(
         BVH const&   b,
         Intersector& isect
         )
-    -> hit_record_bvh<
-            R,
-            decltype( isect(ray, std::declval<typename BVH::primitive_type>()) )
-            >
+    -> decltype(isect(ray, std::declval<typename BVH::primitive_type>()))
 {
     using namespace detail;
-    using HR = hit_record_bvh<R, decltype(isect(ray, std::declval<typename BVH::primitive_type>()))>;
+    using HR = decltype(isect(ray, std::declval<typename BVH::primitive_type>()));
 
     HR result;
 
@@ -382,7 +378,7 @@ next:
         {
             auto prim = b.primitive(i);
 
-            auto hr = HR(isect(ray, prim), i);
+            HR hr = isect(ray, prim);
             auto closer = is_closer(hr, result, ray.tmin, ray.tmax);
 
             if (!closer)
