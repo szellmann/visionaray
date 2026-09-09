@@ -226,9 +226,9 @@ struct renderer : viewer_type
     using normal_type               = model::normal_type;
     using tex_coord_type            = model::tex_coord_type;
     using color_type                = model::color_type;
-    using host_bvh_type             = index_bvh<primitive_type>;
+    using host_bvh_type             = bvh<primitive_type>;
 #if VSNRAY_COMMON_HAVE_CUDA
-    using device_bvh_type           = cuda_index_bvh<primitive_type>;
+    using device_bvh_type           = cuda_bvh<primitive_type>;
     using device_tex_type           = cuda_texture<vector<4, unorm<8>>, 2>;
     using device_tex_ref_type       = typename device_tex_type::ref_type;
 #endif
@@ -648,7 +648,7 @@ struct renderer : viewer_type
     model                                       mod;
     vec3                                        ambient         = vec3(-1.0f);
 
-    index_bvh<host_bvh_type::bvh_inst>          host_top_level_bvh;
+    bvh<host_bvh_type::bvh_inst>                host_top_level_bvh;
     aligned_vector<host_bvh_type>               host_bvhs;
     aligned_vector<host_bvh_type::bvh_inst>     host_instances;
     aligned_vector<plastic<float>>              plastic_materials;
@@ -662,7 +662,7 @@ struct renderer : viewer_type
     aligned_vector<ptex::texture>               ptex_textures;
 #endif
 #if VSNRAY_COMMON_HAVE_CUDA
-    cuda_index_bvh<device_bvh_type::bvh_inst>   device_top_level_bvh;
+    cuda_bvh<device_bvh_type::bvh_inst>         device_top_level_bvh;
     std::vector<device_bvh_type>                device_bvhs;
     thrust::device_vector<normal_type>          device_geometric_normals;
     thrust::device_vector<normal_type>          device_shading_normals;
@@ -1504,7 +1504,7 @@ void renderer::build_scene()
             lbvh_builder builder;
 
             host_top_level_bvh = builder.build(
-                    index_bvh<host_bvh_type::bvh_inst>{},
+                    bvh<host_bvh_type::bvh_inst>{},
                     host_instances.data(),
                     host_instances.size()
                     );
@@ -1549,7 +1549,7 @@ void renderer::build_scene()
             lbvh_builder builder;
 
             host_top_level_bvh = builder.build(
-                    index_bvh<host_bvh_type::bvh_inst>{},
+                    bvh<host_bvh_type::bvh_inst>{},
                     host_instances.data(),
                     host_instances.size()
                     );
@@ -1560,7 +1560,7 @@ void renderer::build_scene()
             builder.enable_spatial_splits(false);
 
             host_top_level_bvh = builder.build(
-                    index_bvh<host_bvh_type::bvh_inst>{},
+                    bvh<host_bvh_type::bvh_inst>{},
                     host_instances.data(),
                     host_instances.size()
                     );
@@ -1706,7 +1706,7 @@ void renderer::init_bvh_outlines()
     {
         if (device_top_level_bvh.num_nodes() > 0)
         {
-            index_bvh<host_bvh_type::bvh_inst> temp(device_top_level_bvh);
+            bvh<host_bvh_type::bvh_inst> temp(device_top_level_bvh);
             outlines.init(temp);
         }
         else

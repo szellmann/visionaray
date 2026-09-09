@@ -27,7 +27,7 @@ struct bvh_refitter
     template <typename Tree, typename P>
     void refit(Tree& tree, P* primitives, size_t num_prims, thread_pool& pool)
     {
-        static_assert(is_index_bvh<Tree>::value, "Type mismatch");
+        static_assert(is_bvh<Tree>::value, "Type mismatch");
 
         std::copy(primitives, primitives + num_prims, tree.primitives().data());
 
@@ -79,7 +79,7 @@ struct bvh_refitter
 
                             for (unsigned j = indices.first; j != indices.last; ++j)
                             {
-                                bbox.insert(prim_bounds[tree.indices()[j]]);
+                                bbox.insert(prim_bounds[j]);
                             }
 
                             addr = st.pop();

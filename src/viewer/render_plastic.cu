@@ -9,7 +9,7 @@ namespace visionaray
 {
 
 void render_plastic_cu(
-        cuda_index_bvh<basic_triangle<3, float>>&         bvh,
+        cuda_bvh<basic_triangle<3, float>>&               bvh,
         thrust::device_vector<vec3> const&                geometric_normals,
         thrust::device_vector<vec3> const&                shading_normals,
         thrust::device_vector<vec2> const&                tex_coords,
@@ -28,7 +28,7 @@ void render_plastic_cu(
         unsigned                                          ssaa_samples
         )
 {
-    using bvh_ref = cuda_index_bvh<basic_triangle<3, float>>::bvh_ref;
+    using bvh_ref = cuda_bvh<basic_triangle<3, float>>::bvh_ref;
 
     thrust::device_vector<bvh_ref> primitives;
 

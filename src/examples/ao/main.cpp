@@ -113,7 +113,7 @@ struct renderer : viewer_type
     std::string                                 initial_camera;
 
     model mod;
-    index_bvh<model::triangle_type>             host_bvh;
+    bvh<model::triangle_type>                   host_bvh;
     unsigned                                    frame_num       = 0;
 
     int                                         AO_Samples      = 8;
@@ -179,7 +179,7 @@ void renderer::on_display()
             );
 
 
-    using bvh_ref = index_bvh<model::triangle_type>::bvh_ref;
+    using bvh_ref = bvh<model::triangle_type>::bvh_ref;
 
     std::vector<bvh_ref> bvhs;
     bvhs.push_back(host_bvh.ref());
@@ -374,7 +374,7 @@ int main(int argc, char** argv)
     builder.enable_spatial_splits(rend.build_strategy == renderer::Split);
 
     rend.host_bvh = builder.build(
-            index_bvh<model::triangle_type>{},
+            bvh<model::triangle_type>{},
             rend.mod.primitives.data(),
             rend.mod.primitives.size()
             );

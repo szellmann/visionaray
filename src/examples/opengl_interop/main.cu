@@ -104,7 +104,7 @@ struct renderer : viewer_type
 
     // rendering data
 
-    index_bvh<basic_sphere<float>>                          sphere_bvh;
+    bvh<basic_sphere<float>>                                sphere_bvh;
     std::vector<basic_sphere<float>>                        list;
     std::vector<generic_material<
             glass<float>,
@@ -123,7 +123,7 @@ struct renderer : viewer_type
     // copies that are located on the device
     // (we build up the initial data structures on the host!)
 
-    cuda_index_bvh<basic_sphere<float>>                     device_bvh;
+    cuda_bvh<basic_sphere<float>>                           device_bvh;
     thrust::device_vector<generic_material<
             glass<float>,
             matte<float>,
@@ -333,10 +333,10 @@ struct renderer : viewer_type
         binned_sah_builder builder;
         builder.enable_spatial_splits(true);
 
-        sphere_bvh = builder.build(index_bvh<basic_sphere<float>>{}, list.data(), i);
+        sphere_bvh = builder.build(bvh<basic_sphere<float>>{}, list.data(), i);
 
         // Copy data to GPU
-        device_bvh = cuda_index_bvh<basic_sphere<float>>(sphere_bvh);
+        device_bvh = cuda_bvh<basic_sphere<float>>(sphere_bvh);
         device_materials = materials;
     }
 
@@ -665,7 +665,7 @@ void renderer::on_display()
             device_rt
             );
 
-    thrust::device_vector<cuda_index_bvh<basic_sphere<float>>::bvh_ref> device_primitives;
+    thrust::device_vector<cuda_bvh<basic_sphere<float>>::bvh_ref> device_primitives;
     device_primitives.push_back(device_bvh.ref());
 
     auto kparams = make_kernel_params(

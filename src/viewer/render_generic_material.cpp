@@ -7,7 +7,7 @@ namespace visionaray
 {
 
 void render_generic_material_cpp(
-        index_bvh<basic_triangle<3, float>> const&                         bvh,
+        bvh<basic_triangle<3, float>> const&                               bvh,
         aligned_vector<vec3> const&                                        geometric_normals,
         aligned_vector<vec3> const&                                        shading_normals,
         aligned_vector<vec2> const&                                        tex_coords,
@@ -26,7 +26,7 @@ void render_generic_material_cpp(
         unsigned                                                           ssaa_samples
         )
 {
-    using bvh_ref = index_bvh<basic_triangle<3, float>>::bvh_ref;
+    using bvh_ref = visionaray::bvh<basic_triangle<3, float>>::bvh_ref;
 
     aligned_vector<bvh_ref> primitives;
 

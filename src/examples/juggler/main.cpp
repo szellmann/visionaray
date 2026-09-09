@@ -121,7 +121,7 @@ struct renderer : viewer_type
     // rendering data
 
     aligned_vector<basic_sphere<float>>         primitives;
-    index_bvh<basic_sphere<float>>              bvh;
+    bvh<basic_sphere<float>>                    accel;
     aligned_vector<generic_material<plastic<float>, mirror<float>>> materials;
     aligned_vector<procedural_texture>          textures;
 
@@ -604,18 +604,18 @@ void renderer::generate_frame(float t)
         primitives[i].prim_id = i;
     }
 
-    if (bvh.num_nodes() == 0)
+    if (accel.num_nodes() == 0)
     {
         lbvh_builder builder;
-        bvh = builder.build(index_bvh<basic_sphere<float>>{}, primitives.data(), primitives.size());
+        accel = builder.build(bvh<basic_sphere<float>>{}, primitives.data(), primitives.size());
     }
     else
     {
         bvh_refitter refitter;
-        refitter.refit(bvh, primitives.data(), primitives.size(), pool);
+        refitter.refit(accel, primitives.data(), primitives.size(), pool);
     }
 
-    outlines.init(bvh);
+    outlines.init(accel);
 }
 
 
@@ -672,8 +672,8 @@ void renderer::on_display()
     vec3* dummies = nullptr;
     aligned_vector<vec2> tex_coords(1);
 
-    aligned_vector<index_bvh<basic_sphere<float>>::bvh_ref> refs;
-    refs.push_back(bvh.ref());
+    aligned_vector<bvh<basic_sphere<float>>::bvh_ref> refs;
+    refs.push_back(accel.ref());
 
     auto kparams = make_kernel_params(
             normal_binding{},           // has no normal binding

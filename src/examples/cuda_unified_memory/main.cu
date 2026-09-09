@@ -45,7 +45,7 @@ namespace cuda
 //
 
 template <typename P>
-using managed_bvh = index_bvh_t<managed_vector<P>, managed_vector<bvh_node>, managed_vector<unsigned>>;
+using managed_bvh = bvh_t<managed_vector<P>, managed_vector<bvh_node>>;
 
 } // cuda
 } // visionaray
@@ -255,18 +255,18 @@ int main(int argc, char** argv)
         std::cout << "Creating BVH...\n";
         t.reset();
         binned_sah_builder builder;
-        auto h_bvh = builder.build(index_bvh<basic_sphere<float>>{}, spheres.data(), spheres.size(), true /* spatial splits */);
+        auto h_bvh = builder.build(bvh<basic_sphere<float>>{}, spheres.data(), spheres.size(), true /* spatial splits */);
         std::cout << "Time elapsed: " << t.elapsed() << "s\n\n";
 
 
         // Upload data to GPU -----------------------------
 
-        cuda_index_bvh<basic_sphere<float>> d_bvh(h_bvh);
+        cuda_bvh<basic_sphere<float>> d_bvh(h_bvh);
 
 
         // Prepare for ray tracing ------------------------
 
-        using bvh_ref_t = typename cuda_index_bvh<basic_sphere<float>>::bvh_ref;
+        using bvh_ref_t = typename cuda_bvh<basic_sphere<float>>::bvh_ref;
         thrust::device_vector<bvh_ref_t> bvh_refs;
         bvh_refs.push_back(d_bvh.ref());
 

@@ -628,7 +628,7 @@ struct renderer : viewer_type
         builder.enable_spatial_splits(false);
 
         std::cout << "Building BVH...\n";
-        bvh = builder.build(index_bvh<Curve>{}, curves.data(), curves.size());
+        accel = builder.build(bvh<Curve>{}, curves.data(), curves.size());
         std::cout << "Done!\n";
 
         bbox.invalidate();
@@ -647,7 +647,7 @@ struct renderer : viewer_type
     std::vector<Curve>                          curves;
     std::vector<aabb>                           bboxes;
     std::vector<matte<float>>                   materials;
-    index_bvh<Curve>                            bvh;
+    bvh<Curve>                                  accel;
 
     aabb                                        bbox;
 
@@ -820,9 +820,9 @@ void renderer::on_display()
 
     // Create bvh "refs" that we can pass to the
     // path tracing kernel
-    using bvh_ref = index_bvh<Curve>::bvh_ref;
+    using bvh_ref = bvh<Curve>::bvh_ref;
     aligned_vector<bvh_ref> primitives;
-    primitives.push_back(bvh.ref());
+    primitives.push_back(accel.ref());
 
     // Construct a parameter object that is
     // compatible with the builtin path tracing kernel.

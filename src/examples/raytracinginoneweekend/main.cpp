@@ -94,7 +94,7 @@ struct renderer : viewer_type
 
     // rendering data
 
-    index_bvh<basic_sphere<float>>              sphere_bvh;
+    bvh<basic_sphere<float>>                    sphere_bvh;
     aligned_vector<basic_sphere<float>>         list;
     aligned_vector<generic_material<
             glass<float>,
@@ -200,7 +200,7 @@ struct renderer : viewer_type
         binned_sah_builder builder;
         builder.enable_spatial_splits(true);
 
-        sphere_bvh = builder.build(index_bvh<basic_sphere<float>>{}, list.data(), i);
+        sphere_bvh = builder.build(bvh<basic_sphere<float>>{}, list.data(), i);
     }
 
 
@@ -233,7 +233,7 @@ void renderer::on_display()
             host_rt
             );
 
-    aligned_vector<index_bvh<basic_sphere<float>>::bvh_ref> primitives;
+    aligned_vector<bvh<basic_sphere<float>>::bvh_ref> primitives;
     primitives.push_back(sphere_bvh.ref());
 
     auto kparams = make_kernel_params(

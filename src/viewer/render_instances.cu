@@ -9,7 +9,7 @@ namespace visionaray
 {
 
 void render_instances_cu(
-        cuda_index_bvh<cuda_index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
+        cuda_bvh<cuda_bvh<basic_triangle<3, float>>::bvh_inst>&             bvh,
         thrust::device_vector<vec3> const&                                  geometric_normals,
         thrust::device_vector<vec3> const&                                  shading_normals,
         thrust::device_vector<vec2> const&                                  tex_coords,
@@ -30,7 +30,7 @@ void render_instances_cu(
         device_environment_light const&                                     env_light
         )
 {
-    using bvh_ref = cuda_index_bvh<cuda_index_bvh<basic_triangle<3, float>>::bvh_inst>::bvh_ref;
+    using bvh_ref = cuda_bvh<cuda_bvh<basic_triangle<3, float>>::bvh_inst>::bvh_ref;
 
     thrust::device_vector<bvh_ref> primitives;
 

@@ -9,7 +9,7 @@ namespace visionaray
 {
 
 void render_instances_cpp(
-        index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
+        bvh<bvh<basic_triangle<3, float>>::bvh_inst>&             bvh,
         aligned_vector<vec3> const&                               geometric_normals,
         aligned_vector<vec3> const&                               shading_normals,
         aligned_vector<vec2> const&                               tex_coords,
@@ -30,7 +30,7 @@ void render_instances_cpp(
         host_environment_light const&                             env_light
         )
 {
-    using bvh_ref = index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>::bvh_ref;
+    using bvh_ref = visionaray::bvh<visionaray::bvh<basic_triangle<3, float>>::bvh_inst>::bvh_ref;
 
     aligned_vector<bvh_ref> primitives;
 

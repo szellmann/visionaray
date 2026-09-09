@@ -100,7 +100,7 @@ using host_sched_t = tiled_sched<R>;
 //
 
 void render_plastic_cpp(
-        index_bvh<basic_triangle<3, float>> const& bvh,
+        bvh<basic_triangle<3, float>> const&       bvh,
         aligned_vector<vec3> const&                geometric_normals,
         aligned_vector<vec3> const&                shading_normals,
         aligned_vector<vec2> const&                tex_coords,
@@ -121,7 +121,7 @@ void render_plastic_cpp(
 
 #ifdef __CUDACC__
 void render_plastic_cu(
-        cuda_index_bvh<basic_triangle<3, float>>&         bvh,
+        cuda_bvh<basic_triangle<3, float>>&               bvh,
         thrust::device_vector<vec3> const&                geometric_normals,
         thrust::device_vector<vec3> const&                shading_normals,
         thrust::device_vector<vec2> const&                tex_coords,
@@ -147,7 +147,7 @@ void render_plastic_cu(
 //
 
 void render_generic_material_cpp(
-        index_bvh<basic_triangle<3, float>> const&                         bvh,
+        bvh<basic_triangle<3, float>> const&                               bvh,
         aligned_vector<vec3> const&                                        geometric_normals,
         aligned_vector<vec3> const&                                        shading_normals,
         aligned_vector<vec2> const&                                        tex_coords,
@@ -168,7 +168,7 @@ void render_generic_material_cpp(
 
 #ifdef __CUDACC__
 void render_generic_material_cu(
-        cuda_index_bvh<basic_triangle<3, float>>&                          bvh,
+        cuda_bvh<basic_triangle<3, float>>&                                bvh,
         thrust::device_vector<vec3> const&                                 geometric_normals,
         thrust::device_vector<vec3> const&                                 shading_normals,
         thrust::device_vector<vec2> const&                                 tex_coords,
@@ -194,7 +194,7 @@ void render_generic_material_cu(
 //
 
 void render_instances_cpp(
-        index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
+        bvh<bvh<basic_triangle<3, float>>::bvh_inst>&             bvh,
         aligned_vector<vec3> const&                               /*geometric_normals*/,
         aligned_vector<vec3> const&                               shading_normals,
         aligned_vector<vec2> const&                               tex_coords,
@@ -217,7 +217,7 @@ void render_instances_cpp(
 
 #ifdef __CUDACC__
 void render_instances_cu(
-        cuda_index_bvh<cuda_index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
+        cuda_bvh<cuda_bvh<basic_triangle<3, float>>::bvh_inst>&             bvh,
         thrust::device_vector<vec3> const&                                  geometric_normals,
         thrust::device_vector<vec3> const&                                  shading_normals,
         thrust::device_vector<vec2> const&                                  tex_coords,
@@ -242,7 +242,7 @@ void render_instances_cu(
 #if VSNRAY_COMMON_HAVE_PTEX
 // With ptex textures
 void render_instances_ptex_cpp(
-        index_bvh<index_bvh<basic_triangle<3, float>>::bvh_inst>& bvh,
+        bvh<bvh<basic_triangle<3, float>>::bvh_inst>&             bvh,
         aligned_vector<vec3> const&                               /*geometric_normals*/,
         aligned_vector<vec3> const&                               shading_normals,
         aligned_vector<ptex::face_id_t> const&                    face_ids,
