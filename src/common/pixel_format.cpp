@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include "pixel_format.h"
 
@@ -116,7 +116,6 @@ static std::vector<std::pair<format_key, pixel_format>> gl_formats(
 
     { { GL_LUMINANCE8,              GL_UNSIGNED_BYTE,                   1 },                PF_LUMINANCE8           },
     { { GL_LUMINANCE16,             GL_UNSIGNED_SHORT,                  2 },                PF_LUMINANCE16          },
-    { { GL_LUMINANCE32F_ARB,        GL_FLOAT,                           4 },                PF_LUMINANCE32F         },
 
     { { GL_LUMINANCE,               GL_UNSIGNED_BYTE,                   1 },                PF_LUMINANCE8           },
     { { GL_LUMINANCE,               GL_UNSIGNED_SHORT,                  2 },                PF_LUMINANCE16          },
@@ -217,7 +216,6 @@ static const pixel_format_info color_formats[] =
 
     { GL_LUMINANCE8,            GL_LUMINANCE,           GL_UNSIGNED_BYTE,                   1,  1   },      // PF_LUMINANCE8
     { GL_LUMINANCE16,           GL_LUMINANCE,           GL_UNSIGNED_SHORT,                  1,  2   },      // PF_LUMINANCE16
-    { GL_LUMINANCE32F_ARB,      GL_LUMINANCE,           GL_FLOAT,                           1,  4   }       // PF_LUMINANCE32F
 
 #elif defined(GL_ES_VERSION_2_0) && GL_ES_VERSION_2_0
 

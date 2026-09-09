@@ -1,7 +1,7 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include "gl/handle.h"
 #include "gl/program.h"

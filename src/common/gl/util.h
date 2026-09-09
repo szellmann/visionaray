@@ -6,7 +6,7 @@
 #ifndef VSNRAY_GL_UTIL_H
 #define VSNRAY_GL_UTIL_H 1
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <string>
 
@@ -27,8 +27,6 @@ namespace visionaray
 {
 namespace gl
 {
-
-std::string last_error();
 
 void alloc_texture(pixel_format_info info, GLsizei w, GLsizei h);
 

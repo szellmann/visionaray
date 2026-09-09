@@ -6,7 +6,7 @@
 #include <iostream>
 #include <vector>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <visionaray/math/forward.h>
 #include <visionaray/math/project.h>

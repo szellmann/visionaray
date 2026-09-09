@@ -9,9 +9,7 @@
 #include <string>
 #include <vector>
 
-#if VSNRAY_COMMON_HAVE_GLEW
-#include <GL/glew.h>
-#endif
+#include <glad/glad.h>
 
 #include <imgui.h>
 
@@ -434,7 +432,6 @@ void viewer_base::on_resize(int w, int h)
 
 void viewer_base::imgui_draw_opengl2(ImDrawData* draw_data)
 {
-#if VSNRAY_COMMON_HAVE_GLEW
     ImGuiIO& io = ImGui::GetIO();
 
     int width = static_cast<int>(draw_data->DisplaySize.x * io.DisplayFramebufferScale.x);
@@ -584,12 +581,10 @@ void viewer_base::imgui_draw_opengl2(ImDrawData* draw_data)
         static_cast<GLsizei>(prev_scissor_box[2]),
         static_cast<GLsizei>(prev_scissor_box[3])
         );
-#endif
 }
 
 void viewer_base::imgui_create_font_texture_opengl2()
 {
-#if VSNRAY_COMMON_HAVE_GLEW
     ImGuiIO& io = ImGui::GetIO();
 
     unsigned char* pixels = nullptr;
@@ -611,12 +606,10 @@ void viewer_base::imgui_create_font_texture_opengl2()
             );
 
     glBindTexture(GL_TEXTURE_2D, prev_tex);
-#endif
 }
 
 void viewer_base::imgui_destroy_font_texture_opengl2()
 {
-#if VSNRAY_COMMON_HAVE_GLEW
     assert(impl_->imgui_font_texture);
 
     ImGuiIO& io = ImGui::GetIO();
@@ -624,5 +617,4 @@ void viewer_base::imgui_destroy_font_texture_opengl2()
     glDeleteTextures(1, &impl_->imgui_font_texture);
     io.Fonts->TexID = nullptr;
     impl_->imgui_font_texture = 0;
-#endif
 }

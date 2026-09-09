@@ -18,7 +18,7 @@
 #include <windows.h>
 #endif
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include "gl_debug_callback.h"
 
@@ -144,7 +144,7 @@ bool debug_callback::activate(debug_params params)
     params_ = params;
 
 #if defined(GL_KHR_debug)
-    if (GLEW_KHR_debug)
+    if (GLAD_GL_KHR_debug || GLAD_GL_VERSION_4_3)
     {
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -154,7 +154,7 @@ bool debug_callback::activate(debug_params params)
         return true;
     }
 #elif defined(GL_ARB_debug_output)
-    if (GLEW_ARB_debug_output)
+    if (GLAD_GL_ARB_debug_output)
     {
         return false; // TODO
     }

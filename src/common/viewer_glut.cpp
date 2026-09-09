@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <string>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <visionaray/detail/platform.h>
 
@@ -57,6 +57,14 @@
 #include "input/mouse_event.h"
 #include "viewer_glut.h"
 
+#if defined(__APPLE__)
+#include <dlfcn.h>
+static void* GlutGetProcAddress(const char* name)
+{
+    static void* image = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY);
+    return image ? dlsym(image, name) : nullptr;
+}
+#endif
 
 using namespace visionaray;
 
@@ -143,6 +151,11 @@ void viewer_glut::impl::init(
         glutFullScreen();
     }
 
+    if (!gladLoadGLLoader((GLADloadproc)glutGetProcAddress))
+    {
+        throw std::runtime_error("gladLoadGLLoader() failed");
+    }
+
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
     ImGui::GetStyle().WindowRounding = 8.0f;
@@ -188,14 +201,6 @@ void viewer_glut::impl::init(
 #else
     atexit(close_func);
 #endif
-
-    GLenum error = glewInit();
-    if (error != GLEW_OK)
-    {
-        std::string error_string("glewInit() failed: ");
-        error_string.append(reinterpret_cast<char const*>(glewGetErrorString(error)));
-        throw std::runtime_error(error_string);
-    }
 }
 
 void viewer_glut::impl::cleanup()

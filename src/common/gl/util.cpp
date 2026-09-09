@@ -11,16 +11,6 @@ namespace gl = visionaray::gl;
 namespace visionaray
 {
 
-std::string gl::last_error()
-{
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR)
-    {
-        return std::string(reinterpret_cast<char const*>(glewGetErrorString(err)));
-    }
-    return std::to_string(err);
-}
-
 void gl::alloc_texture(pixel_format_info info, GLsizei w, GLsizei h)
 {
 #if defined(GL_VERSION_4_2) && GL_VERSION_4_2 || defined(GL_ES_VERSION_3_0) && GL_ES_VERSION_3_0

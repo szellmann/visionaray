@@ -6,7 +6,7 @@
 #include <memory>
 #include <ostream>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <visionaray/detail/platform.h>
 

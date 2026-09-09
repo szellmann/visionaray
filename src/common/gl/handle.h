@@ -6,7 +6,7 @@
 #ifndef VSNRAY_GL_HANDLE_H
 #define VSNRAY_GL_HANDLE_H 1
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <visionaray/detail/platform.h>
 #include <visionaray/export.h>

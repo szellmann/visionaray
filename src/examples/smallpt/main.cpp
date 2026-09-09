@@ -37,7 +37,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <ostream>
 #include <thread>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #ifdef __CUDACC__
 #include <cuda_runtime_api.h>

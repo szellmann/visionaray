@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <string>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <SDL2/SDL.h>
 
@@ -228,14 +228,11 @@ void viewer_sdl2::init(int argc, char** argv)
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 
-    // GLEW
+    // GLAD
 
-    GLenum error = glewInit();
-    if (error != GLEW_OK)
+    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
     {
-        std::string error_string("glewInit() failed: ");
-        error_string.append(reinterpret_cast<char const*>(glewGetErrorString(error)));
-        throw std::runtime_error(error_string);
+        throw std::runtime_error("gladLoadGLLoader() failed to initialize OpenGL context");
     }
 
 

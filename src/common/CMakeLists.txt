@@ -10,6 +10,7 @@ add_library(visionaray_common)
 target_sources(visionaray_common PRIVATE
   ../3rdparty/CmdLine/src/CmdLine.cpp
   ../3rdparty/CmdLine/src/CmdLineUtil.cpp
+  ../3rdparty/glad/src/glad.c
   ../3rdparty/imgui/imgui.cpp
   ../3rdparty/imgui/imgui_draw.cpp
   ../3rdparty/imgui/imgui_tables.cpp
@@ -67,6 +68,7 @@ endif()
 
 target_include_directories(visionaray_common PUBLIC
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/3rdparty/CmdLine/include>
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/3rdparty/glad/include>
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/3rdparty/imgui>
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/3rdparty/rapidjson/include>
   $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/3rdparty/tinyply/source>
@@ -89,7 +91,6 @@ endif()
 #
 
 find_package(Boost CONFIG COMPONENTS filesystem iostreams REQUIRED)
-find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 
@@ -111,12 +112,10 @@ target_link_libraries(visionaray_common PUBLIC
     Boost::disable_autolinking
     Boost::filesystem
     Boost::iostreams
-    GLEW::GLEW
     OpenGL::GL
     Threads::Threads
 )
 set(VSNRAY_COMMON_HAVE_BOOST 1)
-set(VSNRAY_COMMON_HAVE_GLEW 1)
 set(VSNRAY_COMMON_HAVE_OPENGL 1)
 set(VSNRAY_COMMON_HAVE_THREADS 1)
 
@@ -141,18 +140,6 @@ if (VSNRAY_ENABLE_PTEX AND TARGET Ptex::Ptex)
   set(VSNRAY_COMMON_HAVE_PTEX 1)
 endif()
 
-if (VSNRAY_ENABLE_QT AND TARGET Qt5::Core)
-  set(CMAKE_AUTOMOC ON)
-  target_sources(visionaray_common PRIVATE viewer_qt.cpp)
-  target_link_libraries(visionaray_common PUBLIC
-    Qt5::Core
-    Qt5::Gui
-    Qt5::OpenGL
-    Qt5::Widgets
-  )
-  set(VSNRAY_COMMON_HAVE_QT5 1)
-endif()
-
 if (VSNRAY_ENABLE_SDL2 AND TARGET SDL2::SDL)
   target_sources(visionaray_common PRIVATE viewer_sdl2.cpp)
   target_link_libraries(visionaray_common PUBLIC SDL2::SDL)
@@ -172,14 +159,6 @@ endif()
 if (TARGET ZLIB::ZLIB)
   target_link_libraries(visionaray_common PUBLIC ZLIB::ZLIB)
   set(VSNRAY_COMMON_HAVE_ZLIB 1)
-endif()
-
-if (APPLE AND VSNRAY_ENABLE_COCOA)
-  find_library(COCOA_LIBRARY Cocoa)
-  find_library(CORE_VIDEO_LIBRARY CoreVideo)
-  target_sources(visionaray_common PRIVATE viewer_cocoa.mm)
-  target_link_libraries(visionaray_common PUBLIC ${COCOA_LIBRARY})
-  target_link_libraries(visionaray_common PUBLIC ${CORE_VIDEO_LIBRARY})
 endif()
 
 if (VSNRAY_ENABLE_PBRT_PARSER)

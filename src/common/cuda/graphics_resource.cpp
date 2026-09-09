@@ -9,7 +9,7 @@
 #include <windows.h> // APIENTRY
 #endif
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <cuda_gl_interop.h>
 

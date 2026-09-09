@@ -6,7 +6,7 @@
 #include <cassert>
 #include <utility>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <common/cpu_buffer_rt.h>
 

@@ -7,7 +7,7 @@
 #include <ostream>
 #include <string>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <Support/CmdLine.h>
 #include <Support/CmdLineUtil.h>

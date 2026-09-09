@@ -10,7 +10,7 @@
 #include <ostream>
 #include <memory>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <cuda_runtime_api.h>
 

@@ -6,7 +6,7 @@
 #ifndef VSNRAY_GL_SHADER_H
 #define VSNRAY_GL_SHADER_H 1
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 namespace visionaray
 {

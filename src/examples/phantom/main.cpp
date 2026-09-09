@@ -12,7 +12,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #if VSNRAY_COMMON_HAVE_PBRT_PARSER
 #include <pbrtParser/Scene.h>

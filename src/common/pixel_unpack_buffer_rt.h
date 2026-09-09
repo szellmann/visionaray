@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include <visionaray/math/forward.h>
 #include <visionaray/math/vector.h>
