@@ -124,7 +124,6 @@ static void copy_bvhs(
     {
         dest_top_level_bvh.primitives().resize(source_top_level_bvh.num_primitives());
         dest_top_level_bvh.nodes().resize(source_top_level_bvh.num_nodes());
-        dest_top_level_bvh.indices().resize(source_top_level_bvh.num_indices());
 
         // Linear search for each inst: This may obviously become fairly inefficient..
         for (size_t i = 0; i < source_top_level_bvh.num_primitives(); ++i)
@@ -142,7 +141,7 @@ static void copy_bvhs(
 
             assert(index < size_t(-1));
 
-            int indirect_index = source_top_level_bvh.indices()[i];
+            int indirect_index = i; // TODO: test if this still works, was bvh top_level.indices(i) before!!
 
             dest_top_level_bvh.primitives()[indirect_index] = {
                     dest_instance_bvhs[index].ref(),
@@ -153,7 +152,7 @@ static void copy_bvhs(
                     };
         }
 
-        // Copy nodes and indices
+        // Copy nodes
         if (ck == copy_kind::HostToHost)
         {
         }
@@ -166,13 +165,6 @@ static void copy_bvhs(
                     sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
                     cudaMemcpyHostToDevice
                     );
-
-            cudaMemcpy(
-                    (void*)dest_top_level_bvh.indices().data(),
-                    source_top_level_bvh.indices().data(),
-                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
-                    cudaMemcpyHostToDevice
-                    );
         }
         else if (ck == copy_kind::DeviceToHost)
         {
@@ -182,13 +174,6 @@ static void copy_bvhs(
                     sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
                     cudaMemcpyDeviceToHost
                     );
-
-            cudaMemcpy(
-                    (void*)dest_top_level_bvh.indices().data(),
-                    source_top_level_bvh.indices().data(),
-                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
-                    cudaMemcpyDeviceToHost
-                    );
         }
         else if (ck == copy_kind::DeviceToDevice)
         {
@@ -196,13 +181,6 @@ static void copy_bvhs(
                     (void*)dest_top_level_bvh.nodes().data(),
                     source_top_level_bvh.nodes().data(),
                     sizeof(bvh_node) * source_top_level_bvh.num_nodes(),
-                    cudaMemcpyDeviceToDevice
-                    );
-
-            cudaMemcpy(
-                    (void*)dest_top_level_bvh.indices().data(),
-                    source_top_level_bvh.indices().data(),
-                    sizeof(unsigned) * source_top_level_bvh.num_indices(),
                     cudaMemcpyDeviceToDevice
                     );
         }
