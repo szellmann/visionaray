@@ -11,14 +11,14 @@ namespace visionaray
 namespace cuda
 {
 
-template <typename T>
-device_vector<T>::~device_vector()
+template <typename T, typename Alloc>
+device_vector<T, Alloc>::~device_vector()
 {
     CUDA_SAFE_CALL(cudaFree(data_));
 }
 
-template <typename T>
-device_vector<T>::device_vector(device_vector<T> const& rhs)
+template <typename T, typename Alloc>
+device_vector<T, Alloc>::device_vector(device_vector<T, Alloc> const& rhs)
     : size_(rhs.size())
 {
     if (&rhs != this)
@@ -34,8 +34,8 @@ device_vector<T>::device_vector(device_vector<T> const& rhs)
     }
 }
 
-template <typename T>
-device_vector<T>::device_vector(device_vector<T>&& rhs)
+template <typename T, typename Alloc>
+device_vector<T, Alloc>::device_vector(device_vector<T, Alloc>&& rhs)
 {
     if (&rhs != this)
     {
@@ -47,24 +47,24 @@ device_vector<T>::device_vector(device_vector<T>&& rhs)
     }
 }
 
-template <typename T>
-device_vector<T>::device_vector(size_t size)
+template <typename T, typename Alloc>
+device_vector<T, Alloc>::device_vector(size_t size)
     : size_(size)
 {
     CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * size_));
 }
 
-template <typename T>
-device_vector<T>::device_vector(size_t size, T const& value)
+template <typename T, typename Alloc>
+device_vector<T, Alloc>::device_vector(size_t size, T const& value)
     : size_(size)
 {
     CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * size_));
     cuda::fill(data_, size_ * sizeof(T), (T*)&value, sizeof(value));
 }
 
-template <typename T>
+template <typename T, typename Alloc>
 template <typename A>
-device_vector<T>::device_vector(std::vector<T, A> const &hv)
+device_vector<T, Alloc>::device_vector(std::vector<T, A> const &hv)
     : size_(hv.size())
 {
     CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * size_));
@@ -76,9 +76,9 @@ device_vector<T>::device_vector(std::vector<T, A> const &hv)
         ));
 }
 
-template <typename T>
+template <typename T, typename Alloc>
 template <typename A>
-device_vector<T>::operator std::vector<T, A>() const
+device_vector<T, Alloc>::operator std::vector<T, A>() const
 {
     std::vector<T, A> hv(size_);
     CUDA_SAFE_CALL(cudaMemcpy(
@@ -90,8 +90,8 @@ device_vector<T>::operator std::vector<T, A>() const
     return hv;
 }
 
-template <typename T>
-device_vector<T>::device_vector(const T* data, size_t size)
+template <typename T, typename Alloc>
+device_vector<T, Alloc>::device_vector(const T* data, size_t size)
     : size_(size)
 {
     CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * size_));
@@ -103,8 +103,8 @@ device_vector<T>::device_vector(const T* data, size_t size)
         ));
 }
 
-template <typename T>
-device_vector<T>::device_vector(const T* begin, const T* end)
+template <typename T, typename Alloc>
+device_vector<T, Alloc>::device_vector(const T* begin, const T* end)
     : size_(end - begin)
 {
     CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * size_));
@@ -124,8 +124,8 @@ device_vector<T>::device_vector(const T* begin, const T* end)
   }
 }
 
-template <typename T>
-device_vector<T>& device_vector<T>::operator=(device_vector<T> const& rhs)
+template <typename T, typename Alloc>
+device_vector<T, Alloc>& device_vector<T, Alloc>::operator=(device_vector<T, Alloc> const& rhs)
 {
     if (&rhs != this)
     {
@@ -142,8 +142,8 @@ device_vector<T>& device_vector<T>::operator=(device_vector<T> const& rhs)
     return *this;
 }
 
-template <typename T>
-device_vector<T>& device_vector<T>::operator=(device_vector<T>&& rhs)
+template <typename T, typename Alloc>
+device_vector<T, Alloc>& device_vector<T, Alloc>::operator=(device_vector<T, Alloc>&& rhs)
 {
     if (&rhs != this)
     {
@@ -156,9 +156,9 @@ device_vector<T>& device_vector<T>::operator=(device_vector<T>&& rhs)
     return *this;
 }
 
-template <typename T>
+template <typename T, typename Alloc>
 template <typename A>
-device_vector<T>& device_vector<T>::operator=(std::vector<T, A> const& rhs)
+device_vector<T, Alloc>& device_vector<T, Alloc>::operator=(std::vector<T, A> const& rhs)
 {
     size_ = rhs.size();
     CUDA_SAFE_CALL(cudaMalloc(&data_, sizeof(T) * size_));
@@ -171,8 +171,8 @@ device_vector<T>& device_vector<T>::operator=(std::vector<T, A> const& rhs)
     return *this;
 }
 
-template <typename T>
-void device_vector<T>::reserve(size_t size)
+template <typename T, typename Alloc>
+void device_vector<T, Alloc>::reserve(size_t size)
 {
     if (size <= capacity_)
     {
@@ -211,8 +211,8 @@ void device_vector<T>::reserve(size_t size)
     }
 }
 
-template <typename T>
-void device_vector<T>::resize(size_t size)
+template <typename T, typename Alloc>
+void device_vector<T, Alloc>::resize(size_t size)
 {
     if (size_ == size)
         return;
@@ -221,8 +221,8 @@ void device_vector<T>::resize(size_t size)
     size_ = size;
 }
 
-template <typename T>
-void device_vector<T>::resize(size_t size, T const& value)
+template <typename T, typename Alloc>
+void device_vector<T, Alloc>::resize(size_t size, T const& value)
 {
     size_t prev_size = size_;
 
@@ -235,8 +235,8 @@ void device_vector<T>::resize(size_t size, T const& value)
     }
 }
 
-template <typename T>
-void device_vector<T>::push_back(T const& value)
+template <typename T, typename Alloc>
+void device_vector<T, Alloc>::push_back(T const& value)
 {
   resize(size_ + 1);
 
@@ -248,9 +248,9 @@ void device_vector<T>::push_back(T const& value)
         ));
 }
 
-template <typename T>
+template <typename T, typename Alloc>
 template <typename... Args>
-void device_vector<T>::emplace_back(Args&&... args)
+void device_vector<T, Alloc>::emplace_back(Args&&... args)
 {
   T value(std::forward<Args>(args)...);
   resize(size_ + 1);
@@ -263,83 +263,83 @@ void device_vector<T>::emplace_back(Args&&... args)
         ));
 }
 
-template <typename T>
-void device_vector<T>::clear()
+template <typename T, typename Alloc>
+void device_vector<T, Alloc>::clear()
 {
     CUDA_SAFE_CALL(cudaFree(data_));
     size_ = 0;
 }
 
-template <typename T>
-T* device_vector<T>::data()
+template <typename T, typename Alloc>
+T* device_vector<T, Alloc>::data()
 {
     return data_;
 }
 
-template <typename T>
-T const* device_vector<T>::data() const
+template <typename T, typename Alloc>
+T const* device_vector<T, Alloc>::data() const
 {
     return data_;
 }
 
-template <typename T>
-size_t device_vector<T>::size() const
+template <typename T, typename Alloc>
+size_t device_vector<T, Alloc>::size() const
 {
     return size_;
 }
 
-template <typename T>
-bool device_vector<T>::empty() const
+template <typename T, typename Alloc>
+bool device_vector<T, Alloc>::empty() const
 {
     return size_ == 0;
 }
 
-template <typename T>
-T* device_vector<T>::begin()
+template <typename T, typename Alloc>
+T* device_vector<T, Alloc>::begin()
 {
     return data_;
 }
 
-template <typename T>
-T* device_vector<T>::end()
+template <typename T, typename Alloc>
+T* device_vector<T, Alloc>::end()
 {
     return data_ + size_;
 }
 
-template <typename T>
-T const* device_vector<T>::begin() const
+template <typename T, typename Alloc>
+T const* device_vector<T, Alloc>::begin() const
 {
     return data_;
 }
 
-template <typename T>
-T const* device_vector<T>::end() const
+template <typename T, typename Alloc>
+T const* device_vector<T, Alloc>::end() const
 {
     return data_ + size_;
 }
 
-template <typename T>
-T const* device_vector<T>::cbegin() const
+template <typename T, typename Alloc>
+T const* device_vector<T, Alloc>::cbegin() const
 {
     return data_;
 }
 
-template <typename T>
-T const* device_vector<T>::cend() const
+template <typename T, typename Alloc>
+T const* device_vector<T, Alloc>::cend() const
 {
     return data_ + size_;
 }
 
-template <typename T>
+template <typename T, typename Alloc>
 VSNRAY_GPU_FUNC
-T& device_vector<T>::operator[](size_t pos)
+T& device_vector<T, Alloc>::operator[](size_t pos)
 {
     return data_[pos];
 }
 
-template <typename T>
+template <typename T, typename Alloc>
 VSNRAY_GPU_FUNC
-T const& device_vector<T>::operator[](size_t pos) const
+T const& device_vector<T, Alloc>::operator[](size_t pos) const
 {
     return data_[pos];
 }

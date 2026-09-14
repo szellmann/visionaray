@@ -17,7 +17,7 @@ namespace visionaray
 namespace cuda
 {
 
-template <typename T>
+template <typename T, typename Alloc = std::allocator<T>> // TODO: allocator is a dummy!
 class device_vector
 {
     static_assert(std::is_trivially_copyable<T>::value);

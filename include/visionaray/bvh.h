@@ -51,7 +51,6 @@ struct vector_traits;
 template <template <typename, typename...> class VectorTemplate, typename ValueType, typename Allocator, typename... Args>
 struct vector_traits<VectorTemplate<ValueType, Allocator, Args...>>
 {
-
     template <typename U>
     using rebound_alloc = typename std::allocator_traits<Allocator>::template rebind_alloc<U>;
 
