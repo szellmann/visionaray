@@ -29,6 +29,7 @@
 #endif
 
 #include "detail/macros.h"
+#include "detail/packed_primitive.h"
 #include "math/aabb.h"
 #include "math/forward.h"
 #include "math/matrix.h"
@@ -37,6 +38,29 @@
 
 namespace visionaray
 {
+
+namespace detail {
+
+//--------------------------------------------------------------------------------------------------
+// Helpers
+//
+
+template <typename T>
+struct vector_traits;
+
+template <template <typename, typename...> class VectorTemplate, typename ValueType, typename Allocator, typename... Args>
+struct vector_traits<VectorTemplate<ValueType, Allocator, Args...>>
+{
+
+    template <typename U>
+    using rebound_alloc = typename std::allocator_traits<Allocator>::template rebind_alloc<U>;
+
+    template <typename U>
+    using rebind = VectorTemplate<U, rebound_alloc<U>, Args...>;
+};
+
+} // detail
+
 
 //--------------------------------------------------------------------------------------------------
 // bvh_node
@@ -192,7 +216,7 @@ struct bvh_multi_node
 
                     if (num_prims > 32767)
                     {
-                        fprintf(stderr, "ERROR: ignoring leaf with %u prims\n", num_prims);
+                        fprintf(stderr, "ERROR: ignoring leaf with %u prims\n", (unsigned)num_prims);
                         continue;
                     }
 
@@ -762,8 +786,11 @@ class bvh_t
 {
 public:
 
-    using primitive_type    = typename PrimitiveVector::value_type;
-    using primitive_vector  = PrimitiveVector;
+    template <typename T>
+    using vector_type       = typename detail::vector_traits<PrimitiveVector>::template rebind<T>;
+
+    using primitive_type    = typename detail::packed_primitive<typename PrimitiveVector::value_type, W>::type;
+    using primitive_vector  = vector_type<primitive_type>;
     using node_type         = typename NodeVector::value_type;
     using node_vector       = NodeVector;
 
@@ -988,25 +1015,25 @@ struct is_any_bvh_inst : std::integral_constant<bool, is_bvh_inst<T>::value || i
 template <typename P>
 using bvh               = bvh_t<aligned_vector<P>, aligned_vector<bvh_node, 32>>;
 template <typename P>
-using bvh4              = bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<4>, 32>, 4>;
+using bvh4              = bvh_t<aligned_vector<P, 16>, aligned_vector<bvh_multi_node<4>, 32>, 4>;
 template <typename P>
-using bvh8              = bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<8>, 32>, 8>;
+using bvh8              = bvh_t<aligned_vector<P, 32>, aligned_vector<bvh_multi_node<8>, 32>, 8>;
 template <typename P>
 using index_bvh         = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_node, 32>, aligned_vector<unsigned>>;
 template <typename P>
-using index_bvh4        = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<4>, 32>, aligned_vector<unsigned>, 4>;
+using index_bvh4        = index_bvh_t<aligned_vector<P, 16>, aligned_vector<bvh_multi_node<4>, 32>, aligned_vector<unsigned>, 4>;
 template <typename P>
-using index_bvh8        = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_multi_node<8>, 32>, aligned_vector<unsigned>, 8>;
+using index_bvh8        = index_bvh_t<aligned_vector<P, 32>, aligned_vector<bvh_multi_node<8>, 32>, aligned_vector<unsigned>, 8>;
 
 template <typename P>
-using compressed_bvh4   = bvh_t<aligned_vector<P>, aligned_vector<bvh_compressed_node<4>, 32>, 4>;
+using compressed_bvh4   = bvh_t<aligned_vector<P, 16>, aligned_vector<bvh_compressed_node<4>, 32>, 4>;
 template <typename P>
-using compressed_bvh8   = bvh_t<aligned_vector<P>, aligned_vector<bvh_compressed_node<8>, 32>, 8>;
+using compressed_bvh8   = bvh_t<aligned_vector<P, 32>, aligned_vector<bvh_compressed_node<8>, 32>, 8>;
 
 template <typename P>
-using compressed_index_bvh4 = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_compressed_node<4>, 32>, aligned_vector<unsigned>, 4>;
+using compressed_index_bvh4 = index_bvh_t<aligned_vector<P, 16>, aligned_vector<bvh_compressed_node<4>, 32>, aligned_vector<unsigned>, 4>;
 template <typename P>
-using compressed_index_bvh8 = index_bvh_t<aligned_vector<P>, aligned_vector<bvh_compressed_node<8>, 32>, aligned_vector<unsigned>, 8>;
+using compressed_index_bvh8 = index_bvh_t<aligned_vector<P, 32>, aligned_vector<bvh_compressed_node<8>, 32>, aligned_vector<unsigned>, 8>;
 
 
 #ifdef __CUDACC__

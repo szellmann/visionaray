@@ -125,6 +125,19 @@ VSNRAY_FORCE_INLINE int const& get(int8 const& v)
     return reinterpret_cast<int const*>(&v)[I];
 }
 
+VSNRAY_FORCE_INLINE int get(int8 const& v, int lane)
+{
+    if (lane == 0) return _mm_cvtsi128_si32(_mm256_castsi256_si128(v));
+    if (lane == 1) return _mm_extract_epi32(_mm256_castsi256_si128(v), 1);
+    if (lane == 2) return _mm_extract_epi32(_mm256_castsi256_si128(v), 2);
+    if (lane == 3) return _mm_extract_epi32(_mm256_castsi256_si128(v), 3);
+    if (lane == 4) return _mm_cvtsi128_si32(_mm256_extractf128_si256(v, 1));
+    if (lane == 5) return _mm_extract_epi32(_mm256_extractf128_si256(v, 1), 1);
+    if (lane == 6) return _mm_extract_epi32(_mm256_extractf128_si256(v, 1), 2);
+    if (lane == 7) return _mm_extract_epi32(_mm256_extractf128_si256(v, 1), 3);
+    return {};
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Basic arithmetic

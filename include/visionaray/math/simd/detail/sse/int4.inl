@@ -17,6 +17,11 @@ VSNRAY_FORCE_INLINE int4::basic_int(int x, int y, int z, int w)
 {
 }
 
+VSNRAY_FORCE_INLINE int4::basic_int(uint64_t x, uint64_t y)
+    : value(_mm_set_epi64x(static_cast<long long>(y), static_cast<long long>(x)))
+{
+}
+
 VSNRAY_FORCE_INLINE int4::basic_int(int const v[4])
     : value(_mm_load_si128(reinterpret_cast<__m128i const*>(v)))
 {
@@ -141,6 +146,15 @@ VSNRAY_FORCE_INLINE int const& get(int4 const& v)
     static_assert(I < 4, "Index out of range for SIMD vector access");
 
     return reinterpret_cast<int const*>(&v)[I];
+}
+
+VSNRAY_FORCE_INLINE int get(int4 const& v, int lane)
+{
+    if (lane == 0) return _mm_cvtsi128_si32(v);
+    if (lane == 1) return _mm_extract_epi32(v, 1);
+    if (lane == 2) return _mm_extract_epi32(v, 2);
+    if (lane == 3) return _mm_extract_epi32(v, 3);
+    return {};
 }
 
 

@@ -17,6 +17,11 @@ VSNRAY_FORCE_INLINE int4::basic_int(int x, int y, int z, int w)
     value = vld1q_s32(data);
 }
 
+VSNRAY_FORCE_INLINE int4::basic_int(uint64_t x, uint64_t y)
+    : value(vreinterpretq_s32_u64(uint64x2_t{ x, y }))
+{
+}
+
 VSNRAY_FORCE_INLINE int4::basic_int(int const v[4])
     : value(vld1q_s32(v))
 {
@@ -129,6 +134,17 @@ VSNRAY_FORCE_INLINE void store(unsigned dst[4], int4 const& v)
     vst1q_s32(reinterpret_cast<int*>(dst), v);
 }
 
+template <int A0, int A1, int A2, int A3>
+VSNRAY_FORCE_INLINE int4 shuffle(int4 const& a)
+{
+    int32x4_t result;
+    result = vsetq_lane_s32(vgetq_lane_s32(a, A0), result, 0);
+    result = vsetq_lane_s32(vgetq_lane_s32(a, A1), result, 1);
+    result = vsetq_lane_s32(vgetq_lane_s32(a, A2), result, 2);
+    result = vsetq_lane_s32(vgetq_lane_s32(a, A3), result, 3);
+    return result;
+}
+
 template <unsigned I>
 VSNRAY_FORCE_INLINE int& get(int4& v)
 {
@@ -143,6 +159,15 @@ VSNRAY_FORCE_INLINE int const& get(int4 const& v)
     static_assert(I < 4, "Index out of range for SIMD vector access");
 
     return reinterpret_cast<int const*>(&v)[I];
+}
+
+VSNRAY_FORCE_INLINE int get(int4 const& v, int lane)
+{
+    if (lane == 0) return vgetq_lane_s32(v, 0);
+    if (lane == 1) return vgetq_lane_s32(v, 1);
+    if (lane == 2) return vgetq_lane_s32(v, 2);
+    if (lane == 3) return vgetq_lane_s32(v, 3);
+    return {};
 }
 
 

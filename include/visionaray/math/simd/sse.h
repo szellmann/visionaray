@@ -61,6 +61,7 @@ public:
 
     basic_int() = default;
     basic_int(int x, int y, int z, int w);
+    basic_int(uint64_t x, uint64_t y);
     basic_int(int const v[4]);
     basic_int(int s);
     basic_int(unsigned s);

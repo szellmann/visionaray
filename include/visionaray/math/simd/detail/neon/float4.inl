@@ -110,6 +110,15 @@ VSNRAY_FORCE_INLINE float const& get(float4 const& v)
     return reinterpret_cast<float const*>(&v)[I];
 }
 
+VSNRAY_FORCE_INLINE float get(float4 const& v, int lane)
+{
+    if (lane == 0) return vgetq_lane_f32(v, 0);
+    if (lane == 1) return vgetq_lane_f32(v, 1);
+    if (lane == 2) return vgetq_lane_f32(v, 2);
+    if (lane == 3) return vgetq_lane_f32(v, 3);
+    return {};
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Transposition
@@ -391,6 +400,27 @@ VSNRAY_FORCE_INLINE mask4 isnan(float4 const& v)
 VSNRAY_FORCE_INLINE mask4 isfinite(float4 const& v)
 {
     return !(isinf(v) | isnan(v));
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Horizontal
+//
+
+VSNRAY_FORCE_INLINE int min_index(float4 const& v, uint32x4_t const& mask)
+{
+    float4 inf = vdupq_n_f32(INFINITY);
+    float4 masked = vbslq_f32(mask, v, inf);
+
+    float minv = vminvq_f32(masked);
+    float4 min_vec = vdupq_n_f32(minv); // turn into vector
+    uint32x4_t cmp = vceqq_f32(masked, min_vec);
+    // bitmask to lane index:
+    const uint32_t arr[4] = { 0, 1, 2, 3 };
+    uint32x4_t indices = vld1q_u32(arr);
+    // matching lange: index, other: 0xFFFFFFFF
+    uint32x4_t masked_indices = vbslq_u32(cmp, indices, vdupq_n_u32(0xFFFFFFFF));
+    return (int)vminvq_u32(masked_indices);
 }
 
 } // simd

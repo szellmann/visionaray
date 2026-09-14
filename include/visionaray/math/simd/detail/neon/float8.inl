@@ -128,6 +128,11 @@ VSNRAY_FORCE_INLINE float const& get(float8 const& v)
     return reinterpret_cast<float const*>(&v)[I];
 }
 
+VSNRAY_FORCE_INLINE float get(float8 const& v, int lane)
+{
+    return (lane < 4) ? get(v.value[0], lane) : get(v.value[1], lane - 4);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Basic arithmetics
@@ -301,6 +306,26 @@ VSNRAY_FORCE_INLINE float8 floor(float8 const& u)
 VSNRAY_FORCE_INLINE float8 sqrt(float8 const& u)
 {
     return float8(sqrt(float4(u.value[0])), sqrt(float4(u.value[1])));
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Horizontal
+//
+
+VSNRAY_FORCE_INLINE int min_index(float8 const& v, mask8 const& mask)
+{
+    float4 inf = vdupq_n_f32(INFINITY);
+    float4 masked_lo = vbslq_f32(mask.i[0], v.value[0], inf);
+    float4 masked_hi = vbslq_f32(mask.i[1], v.value[1], inf);
+
+    float min_lo = vminvq_f32(masked_lo);
+    float min_hi = vminvq_f32(masked_hi);
+
+    if (min_lo <= min_hi)
+        return min_index(float4(v.value[0]), mask.i[0]);
+    else
+        return 4 + min_index(float4(v.value[1]), mask.i[1]);
 }
 
 } // simd

@@ -122,6 +122,15 @@ VSNRAY_FORCE_INLINE float const& get(float4 const& v)
     return reinterpret_cast<float const*>(&v)[I];
 }
 
+VSNRAY_FORCE_INLINE float get(float4 const& v, int lane)
+{
+    if (lane == 0) return _mm_cvtss_f32(v);
+    if (lane == 1) return _mm_cvtss_f32(_mm_shuffle_ps(v, v, _MM_SHUFFLE(1,1,1,1)));
+    if (lane == 2) return _mm_cvtss_f32(_mm_shuffle_ps(v, v, _MM_SHUFFLE(2,2,2,2)));
+    if (lane == 3) return _mm_cvtss_f32(_mm_shuffle_ps(v, v, _MM_SHUFFLE(3,3,3,3)));
+    return {};
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Transposition
@@ -363,6 +372,23 @@ VSNRAY_FORCE_INLINE mask4 isnan(float4 const& v)
 VSNRAY_FORCE_INLINE mask4 isfinite(float4 const& v)
 {
     return !(isinf(v) | isnan(v));
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Horizontal
+//
+
+VSNRAY_FORCE_INLINE int min_index(float4 const& v, __m128i const& mask)
+{
+    float4 inf = _mm_set1_ps(INFINITY);
+    __m128 mask_ps = _mm_castsi128_ps(mask);
+    __m128 masked = _mm_or_ps(_mm_and_ps(mask_ps, v), _mm_andnot_ps(mask_ps, inf));
+    __m128 min1 = _mm_min_ps(masked, _mm_shuffle_ps(masked, masked, _MM_SHUFFLE(1, 0, 3, 2)));
+    __m128 min2 = _mm_min_ps(min1,   _mm_shuffle_ps(min1,   min1,   _MM_SHUFFLE(0, 1, 0, 1)));
+    __m128 cmp = _mm_cmpeq_ps(v, min2);
+    int bitmask = _mm_movemask_ps(cmp);
+    return bitmask ? __builtin_ctz(bitmask) : -1; 
 }
 
 

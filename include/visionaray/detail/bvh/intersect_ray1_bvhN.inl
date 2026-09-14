@@ -157,6 +157,67 @@ inline int movemask(__m256i const& input)
 
 #endif
 
+inline void cmp_exchange(simd::int4 &a, simd::int4 &b)
+{
+    auto m0 = b < a;
+    simd::mask4 m;
+    m.i = simd::shuffle<2,2,2,2>(simd::int4(m0.i));
+    simd::int4 c = select(m, b, a);
+    simd::int4 d = select(m, a, b);
+    a = c;
+    b = d;
+}
+
+inline void sort(simd::int4& s0, simd::int4& s1, simd::int4& s2)
+{
+    cmp_exchange(s1, s0);
+    cmp_exchange(s2, s1);
+    cmp_exchange(s1, s0);
+}
+
+inline void sort(simd::int4& s0, simd::int4& s1, simd::int4& s2, simd::int4& s3)
+{
+    cmp_exchange(s1, s0);
+    cmp_exchange(s3, s2);
+    cmp_exchange(s2, s0);
+    cmp_exchange(s3, s1);
+    cmp_exchange(s2, s1);
+}
+
+
+namespace detail
+{
+
+template <typename HR>
+inline HR closest(HR const& hr)
+{
+    return hr;
+}
+
+template <typename R, typename I, typename = std::enable_if_t<simd::is_simd_vector<I>::value>>
+inline auto closest(hit_record<R, primitive<I>> const& hr)
+{
+    assert(any(hr.hit)); // !
+
+    int closest_index = min_index(hr.t, hr.hit.i);
+
+    hit_record<R, primitive<unsigned>> result;
+    result.hit = true;
+    result.prim_id = simd::get(hr.prim_id, closest_index);
+    result.geom_id = simd::get(hr.geom_id, closest_index);
+    result.inst_id = simd::get(hr.inst_id, closest_index);
+    result.t = simd::get(hr.t, closest_index);
+    result.isect_pos.x = simd::get(hr.isect_pos.x, closest_index);
+    result.isect_pos.y = simd::get(hr.isect_pos.y, closest_index);
+    result.isect_pos.z = simd::get(hr.isect_pos.z, closest_index);
+    result.u = simd::get(hr.u, closest_index);
+    result.v = simd::get(hr.v, closest_index);
+    return result;
+}
+
+}
+
+
 //-----------------------------------------------------------------------------
 // SSE and NEON traversal based on:
 // https://afra.dev/publications/Afra2013Incoherent.pdf
@@ -170,19 +231,18 @@ template <
     typename T = typename R::scalar_type
     >
 VSNRAY_FUNC
-inline auto intersect_ray1_bvhN(
+inline hit_record<R, primitive<unsigned>> intersect_ray1_bvhN(
         R const&     ray,
         BVH const&   b,
         Intersector& isect
         )
-    -> decltype(isect(ray, std::declval<typename BVH::primitive_type>()))
 {
     using namespace detail;
-    using HR = decltype(isect(ray, std::declval<typename BVH::primitive_type>()));
+    using HR = hit_record<R, primitive<unsigned>>;
 
     HR result;
 
-    struct stack_entry
+    VSNRAY_ALIGN(16) struct stack_entry
     {
         int64_t addr;
         unsigned dist;
@@ -221,13 +281,6 @@ next:
 
             auto hrN = intersect_ray1_boxN(r1, aabbN);
 
-#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
-            hrN.hit &= reinterpret_as_uint(hrN.tnear) < reinterpret_as_uint(F(result.t));
-#else
-            // TODO: unsigned comparisons with SSE, and check if this is worth it..
-            hrN.hit &= hrN.tnear < F(result.t);
-#endif
-
             auto mask = movemask(hrN.hit.i);
 
             if (!mask)
@@ -237,7 +290,6 @@ next:
 
             unsigned* tnear = reinterpret_cast<unsigned*>(&hrN.tnear);
 
-#if 1
             auto bsf = [](int& m) {
                 int i =  ctz(m);
                 m &= m-1;
@@ -256,39 +308,45 @@ next:
                 int i2 = bsf(mask);
                 if (likely(mask == 0))
                 {
-                    if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
-
-                    stack[ptr++] = { node.children[i2], tnear[i2] };
-                    addr = node.children[i1]; dist = tnear[i1];
+                    if (tnear[i1] < tnear[i2])
+                    {
+                        stack[ptr++] = { node.children[i2], tnear[i2] };
+                        addr = node.children[i1]; dist = tnear[i1];
+                    }
+                    else
+                    {
+                        stack[ptr++] = { node.children[i1], tnear[i1] };
+                        addr = node.children[i2]; dist = tnear[i2];
+                    }
                     continue;
                 }
 
                 int i3 = bsf(mask);
                 if (likely(mask == 0))
                 {
-                    if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
-                    if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
-                    if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
-
-                    stack[ptr++] = { node.children[i3], tnear[i3] };
-                    stack[ptr++] = { node.children[i2], tnear[i2] };
-                    addr = node.children[i1]; dist = tnear[i1];
+                    stack[ptr]     = { node.children[i1], tnear[i1] };
+                    stack[ptr + 1] = { node.children[i2], tnear[i2] };
+                    stack[ptr + 2] = { node.children[i3], tnear[i3] };
+                    sort((simd::int4&)stack[ptr], (simd::int4&)stack[ptr + 1], (simd::int4&)stack[ptr + 2]);
+                    ptr += 2;
+                    se = stack[ptr];
+                    addr = se.addr;
+                    dist = se.dist;
                     continue;
                 }
 
                 int i4 = bsf(mask);
                 if (likely(mask == 0))
                 {
-                    if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
-                    if (tnear[i4] < tnear[i3]) std::swap(i4,i3);
-                    if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
-                    if (tnear[i4] < tnear[i2]) std::swap(i4,i2);
-                    if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
-
-                    stack[ptr++] = { node.children[i4], tnear[i4] };
-                    stack[ptr++] = { node.children[i3], tnear[i3] };
-                    stack[ptr++] = { node.children[i2], tnear[i2] };
-                    addr = node.children[i1]; dist = tnear[i1];
+                    stack[ptr]     = { node.children[i1], tnear[i1] };
+                    stack[ptr + 1] = { node.children[i2], tnear[i2] };
+                    stack[ptr + 2] = { node.children[i3], tnear[i3] };
+                    stack[ptr + 3] = { node.children[i4], tnear[i4] };
+                    sort((simd::int4&)stack[ptr], (simd::int4&)stack[ptr + 1], (simd::int4&)stack[ptr + 2], (simd::int4&)stack[ptr + 3]);
+                    ptr += 3;
+                    se = stack[ptr];
+                    addr = se.addr;
+                    dist = se.dist;
                     continue;
                 }
 
@@ -330,38 +388,6 @@ next:
                 }
                 continue;
             }
-#else
-            // Unoptimized code path, keeping this around for the
-            // moment so we can compare:
-
-            unsigned child_count = node.get_num_children();
-
-            unsigned* hit = reinterpret_cast<unsigned*>(&hrN.hit);
-
-            int idx[BVH::Width];
-            for (int i = 0; i < BVH::Width; ++i)
-            {
-                idx[i] = i;
-            }
-
-            bubble_sort(idx, idx + child_count,
-                [&](int i, int j) {
-                    return (hit[i] && hit[j] && tnear[i] < tnear[j]) ||
-                           (hit[i] && !hit[j]);
-                });
-
-            for (int i = 1; i < child_count; ++i)
-            {
-                if (!hit[idx[i]])
-                {
-                    break;
-                }
-
-                stack[ptr++] = node.children[idx[i]];
-            }
-
-            addr = node.children[idx[0]];
-#endif
         }
 
         // while node contains untested primitives
@@ -372,28 +398,23 @@ next:
 
         bvh_multi_node<BVH::Width>::decode_leaf(addr, first, num_prims);
 
-        uint64_t last = first + num_prims;
+        auto prims = b.primitives() + first;
 
-        for (auto i = first; i != last; ++i)
+        for (uint64_t i = 0; i < num_prims; ++i)
         {
-            auto prim = b.primitive(i);
+            auto hrN = isect(ray, prims[i]);
 
-            HR hr = isect(ray, prim);
-            auto closer = is_closer(hr, result, ray.tmin, ray.tmax);
-
-            if (!closer)
+            if (!any(hrN.hit && hrN.t < r1.tmax))
             {
                 continue;
             }
 
-            update_if(result, hr, closer);
+            result = detail::closest(hrN);
+            r1.tmax = result.t;
 
             if constexpr (Traversal == detail::AnyHit)
             {
-                if (result.hit)
-                {
-                    return result;
-                }
+                return result;
             }
         }
     }

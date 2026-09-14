@@ -6,6 +6,7 @@
 #ifndef VSNRAY_DETAIL_BVH_COLLAPSE_H
 #define VSNRAY_DETAIL_BVH_COLLAPSE_H 1
 
+#include "../pack_primitives.h"
 #include "../stack.h"
 #include "../thread_pool.h"
 
@@ -29,7 +30,6 @@ struct bvh_collapser
         // create one multi-node for each bvh2 node
         for (size_t i = 0; i < tree.num_nodes(); ++i)
         {
-            bvh_node n = tree.node(i);
             multi_nodes[i].init(i, tree.nodes().data());
         }
 
@@ -157,7 +157,7 @@ private:
     template <typename Tree, typename P, typename N, int W>
     void init_primitives(Tree const& tree, bvh_t<P, N, W>& wide_tree)
     {
-        wide_tree.primitives() = tree.primitives();
+        wide_tree.primitives() = simd::pack_primitives<W>(tree.primitives(), wide_tree.nodes());
     }
 
     template <typename Tree, typename P, typename N, typename U, int W>

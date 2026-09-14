@@ -112,6 +112,19 @@ VSNRAY_FORCE_INLINE float const& get(float8 const& v)
     return reinterpret_cast<float const*>(&v)[I];
 }
 
+VSNRAY_FORCE_INLINE float get(float8 const& v, int lane)
+{
+    if (lane == 0) return _mm256_cvtss_f32(v);
+    if (lane == 1) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_castps256_ps128(v), _mm256_castps256_ps128(v), _MM_SHUFFLE(1,1,1,1)));
+    if (lane == 2) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_castps256_ps128(v), _mm256_castps256_ps128(v), _MM_SHUFFLE(2,2,2,2)));
+    if (lane == 3) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_castps256_ps128(v), _mm256_castps256_ps128(v), _MM_SHUFFLE(3,3,3,3)));
+    if (lane == 4) return _mm_cvtss_f32(_mm256_extractf128_ps(v, 1));
+    if (lane == 5) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_extractf128_ps(v, 1), _mm256_extractf128_ps(v, 1), _MM_SHUFFLE(1,1,1,1)));
+    if (lane == 6) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_extractf128_ps(v, 1), _mm256_extractf128_ps(v, 1), _MM_SHUFFLE(2,2,2,2)));
+    if (lane == 7) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_extractf128_ps(v, 1), _mm256_extractf128_ps(v, 1), _MM_SHUFFLE(3,3,3,3)));
+    return {};
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Transposition
@@ -302,6 +315,29 @@ VSNRAY_FORCE_INLINE mask8 isnan(float8 const& v)
 VSNRAY_FORCE_INLINE mask8 isfinite(float8 const& v)
 {
     return !(isinf(v) | isnan(v));
+}
+
+
+//-------------------------------------------------------------------------------------------------
+// Horizontal
+//
+
+VSNRAY_FORCE_INLINE int min_index(float8 const& v, __m256i const& mask)
+{
+    __m256 inf = _mm256_set1_ps(INFINITY);
+    __m256 mask_ps = _mm256_castsi256_ps(mask);
+    __m256 masked = _mm256_blendv_ps(inf, v, mask_ps);
+    __m128 lo  = _mm256_castps256_ps128(masked);
+    __m128 hi = _mm256_extractf128_ps(masked, 1);
+    // reduce:
+    __m128 min4 = _mm_min_ps(lo, hi);
+    __m128 min2 = _mm_min_ps(min4, _mm_shuffle_ps(min4, min4, _MM_SHUFFLE(1, 0, 3, 2)));
+    __m128 min1 = _mm_min_ps(min2, _mm_shuffle_ps(min2, min2, _MM_SHUFFLE(0, 1, 0, 1)));
+    __m256 min_all = _mm256_insertf128_ps(_mm256_castps128_ps256(min1), min1, 1);
+    min_all = _mm256_shuffle_ps(min_all, min_all, _MM_SHUFFLE(0, 0, 0, 0));
+    __m256 cmp = _mm256_and_ps(_mm256_cmp_ps(v, min_all, _CMP_EQ_OQ), mask_ps);
+    int bitmask = _mm256_movemask_ps(cmp);
+    return bitmask ? __builtin_ctz(bitmask) : -1;
 }
 
 

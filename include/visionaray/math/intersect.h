@@ -168,21 +168,78 @@ struct hit_record<R, primitive<unsigned>>
     T v                    = T(0.0);
 };
 
+template <typename R>
+struct hit_record<R, primitive<simd::int4>>
+{
+    using T = simd::float4;
+    using scalar_type = T;
+    using int_type = simd::int_type_t<T>;
+    using mask_type = simd::mask_type_t<T>;
+
+    mask_type hit          = mask_type(false);
+    int_type prim_id       = int_type(0);
+    int_type geom_id       = int_type(0);
+    int_type inst_id       = int_type(-1);
+
+    T t                    = numeric_limits<T>::max();
+    vector<3, T> isect_pos;
+
+    T u                    = T(0.0);
+    T v                    = T(0.0);
+};
+
+template <typename R>
+struct hit_record<R, primitive<simd::int8>>
+{
+    using T = simd::float8;
+    using scalar_type = T;
+    using int_type = simd::int_type_t<T>;
+    using mask_type = simd::mask_type_t<T>;
+
+    mask_type hit          = mask_type(false);
+    int_type prim_id       = int_type(0);
+    int_type geom_id       = int_type(0);
+    int_type inst_id       = int_type(-1);
+
+    T t                    = numeric_limits<T>::max();
+    vector<3, T> isect_pos;
+
+    T u                    = T(0.0);
+    T v                    = T(0.0);
+};
+
 
 //-------------------------------------------------------------------------------------------------
 // ray / triangle
 //
 
-template <typename R, typename U>
+namespace detail
+{
+
+// TODO: generalize
+template <typename T, typename U> struct pick_type { using type = T; };
+template <> struct pick_type<float, simd::float4> { using type = simd::float4; };
+template <> struct pick_type<simd::float4, float> { using type = simd::float4; };
+template <> struct pick_type<float, simd::float8> { using type = simd::float8; };
+template <> struct pick_type<simd::float8, float> { using type = simd::float8; };
+
+}
+
+template <typename R, typename U, typename PT>
 MATH_FUNC
-inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_triangle<3, U, unsigned> const& tri)
+inline auto intersect(R const& ray, basic_triangle<3, U, PT> const& tri)
 {
 #if 1
-    using T = typename R::scalar_type;
+    using T = typename detail::pick_type<typename R::scalar_type, U>::type;
     using vec_type = vector<3, T>;
+    using mask_type = simd::mask_type_t<T>;
 
-    hit_record<R, primitive<unsigned>> result;
-    result.t = T(-1.0);
+    using HR = hit_record<R, primitive<PT>>;
+    HR result;
+    result.hit = typename HR::mask_type(false);
+    result.t = FLT_MAX;
+
+    mask_type hit(true);
 
     // case T != U
     const vec_type v1(tri.v1);
@@ -193,21 +250,21 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_triangle
     const vec_type dir(ray.dir);
 
     const vec_type N = cross(e1, e2);
-    result.hit = (N != vec_type(T(0.0)));
-    if (!any(result.hit))
+    hit &= (N != vec_type(T(0.0)));
+    if (!any(hit))
     {
         return result;
     }
 
-    result.hit &= abs(dot(dir, N)) >= T(1e-12);
-    if (!any(result.hit))
+    hit &= abs(dot(dir, N)) >= T(1e-12);
+    if (!any(hit))
     {
         return result;
     }
 
     const T t = -dot(ori - v1, N) / dot(dir, N);
-    result.hit &= (t >= T(ray.tmin) && t <= T(ray.tmax));
-    if (!any(result.hit))
+    hit &= (t >= T(ray.tmin) && t <= T(ray.tmax));
+    if (!any(hit))
     {
         return result;
     }
@@ -227,20 +284,21 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_triangle
     const T Pv  = select(in_z, P.y, P.z);
 
     const T det = det2(e1u, e1v, e2u, e2v);
-    result.hit &= (det != T(0.0));
-    if (!any(result.hit))
+    hit &= (det != T(0.0));
+    if (!any(hit))
     {
         return result;
     }
 
     const T u = det2(Pu, e2u, Pv, e2v) / det2(e1u, e2u, e1v, e2v);
     const T v = det2(e1u, Pu, e1v, Pv) / det2(e1u, e2u, e1v, e2v);
-    result.hit &= (u >= T(0.0) && v >= T(0.0) && (u + v) <= T(1.0));
-    if (!any(result.hit))
+    hit &= (u >= T(0.0) && v >= T(0.0) && (u + v) <= T(1.0));
+    if (!any(hit))
     {
         return result;
     }
 
+    result.hit = hit;
     result.prim_id = tri.prim_id;
     result.geom_id = tri.geom_id;
     result.t = t;
@@ -298,88 +356,6 @@ inline hit_record<R, primitive<unsigned>> intersect(R const& ray, basic_triangle
     result.v = b2;
     return result;
 #endif
-}
-
-//-------------------------------------------------------------------------------------------------
-// simd overload: ray1 / triangleN
-//
-
-template <typename R>
-struct hit_record<R, primitive<simd::int4>>
-{
-    using T = simd::float4;
-    using scalar_type = T;
-    using int_type = simd::int_type_t<T>;
-    using mask_type = simd::mask_type_t<T>;
-
-    mask_type hit          = mask_type(false);
-    int_type prim_id       = int_type(0);
-    int_type geom_id       = int_type(0);
-
-    T t                    = numeric_limits<T>::max();
-    vector<3, T> isect_pos;
-
-    T u                    = T(0.0);
-    T v                    = T(0.0);
-};
-
-template <
-    typename T,
-    typename I = typename simd::int_type<T>::type,
-    typename = typename std::enable_if<simd::is_simd_vector<T>::value>::type
-    >
-MATH_FUNC
-inline hit_record<basic_ray<float>, primitive<I>> intersect(
-        basic_ray<float> const& ray,
-        basic_triangle<3, T, I> const& tri
-        )
-{
-    using vec_type = vector<3, T>;
-
-    hit_record<basic_ray<float>, primitive<I>> result;
-    result.t = T(-1.0);
-
-    vec_type ori(ray.ori);
-    vec_type dir(ray.dir);
-
-    vec_type s1 = cross(dir, tri.e2);
-    T div = dot(s1, tri.e1);
-
-    result.hit = ( div != T(0.0) );
-
-    if ( !any(result.hit) )
-    {
-        return result;
-    }
-
-    T inv_div = T(1.0) / div;
-
-    vec_type d = ori - tri.v1;
-    T b1 = dot(d, s1) * inv_div;
-
-    result.hit &= ( b1 >= T(0.0) && b1 <= T(1.0) );
-
-    if ( !any(result.hit) )
-    {
-        return result;
-    }
-
-    vec_type s2 = cross(d, tri.e1);
-    T b2 = dot(dir, s2) * inv_div;
-
-    result.hit &= ( b2 >= T(0.0) && b1 + b2 <= T(1.0) );
-
-    if ( !any(result.hit) )
-    {
-        return result;
-    }
-
-    result.prim_id = tri.prim_id;
-    result.geom_id = tri.geom_id;
-    result.t = dot(tri.e2, s2) * inv_div;
-    result.u = b1;
-    result.v = b2;
-    return result;
 }
 
 
