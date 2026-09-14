@@ -128,6 +128,26 @@ inline void bubble_sort(It first, It last, Comp comp)
     }
 }
 
+template <typename It, typename Comp>
+inline void insertion_sort(It first, It last, Comp comp)
+{
+    int n = last - first;
+
+    for (int i = 1; i < n; ++i)
+    {
+        auto item = first[i];
+        int j = i - 1;
+
+        while (j >= 0 && comp(item, first[j]))
+        {
+            first[j + 1] = first[j];
+            --j;
+        }
+
+        first[j + 1] = item;
+    }
+}
+
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // From SSE2Neon:
@@ -365,7 +385,7 @@ next:
                     }
                     while (unlikely(mask != 0));
 
-                    bubble_sort(stack + old, stack + ptr,
+                    insertion_sort(stack + old, stack + ptr,
                         [](stack_entry const& s1, stack_entry const& s2) {
                             return s1.dist > s2.dist;
                         });
