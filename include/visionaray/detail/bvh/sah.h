@@ -328,8 +328,18 @@ struct binned_sah_builder
     static float compute_split_cost(
         aabb const& bounds_left, int size_left, aabb const& bounds_right, int size_right, float hsa_parent)
     {
-        auto hsa_left = safe_half_surface_area(bounds_left);
-        auto hsa_right = safe_half_surface_area(bounds_right);
+        float hsa_left = safe_half_surface_area(bounds_left);
+        float hsa_right = safe_half_surface_area(bounds_right);
+
+        if (hsa_left <= 0.0f || hsa_right <= 0.0f)
+        {
+            // denegerate case, only one side of the bounding box is non-zero;
+            // use 1D linear span instead of surface area
+            hsa_left = max_element(bounds_left.size());
+            hsa_right = max_element(bounds_right.size());
+        }
+
+        assert(hsa_parent > 0.0f);
 
         return 1.0f + (hsa_left / hsa_parent) * compute_leaf_cost(size_left) +
                       (hsa_right / hsa_parent) * compute_leaf_cost(size_right);
@@ -352,7 +362,13 @@ struct binned_sah_builder
     static split_result find_split(bin_list const& bins, aabb const& bounds)
     {
         auto hsa_parent = safe_half_surface_area(bounds);
-        assert(hsa_parent > 0);
+        if (hsa_parent == 0.0f)
+        {
+            // denegerate case, only one side of the bounding box is non-zero;
+            // use 1D linear span instead
+            hsa_parent
+                = fmaxf(bounds.size().x, fmaxf(bounds.size().y, bounds.size().z));
+        }
 
         auto best_cost = std::numeric_limits<float>::max();
         int best_index = -1;
