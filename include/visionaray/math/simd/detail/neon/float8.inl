@@ -322,7 +322,7 @@ VSNRAY_FORCE_INLINE int min_index(float8 const& v, mask8 const& mask)
     float min_lo = vminvq_f32(masked_lo);
     float min_hi = vminvq_f32(masked_hi);
 
-    if (min_lo <= min_hi)
+    if (min_lo < INFINITY && min_lo <= min_hi)
         return min_index(float4(v.value[0]), mask.i[0]);
     else
         return 4 + min_index(float4(v.value[1]), mask.i[1]);

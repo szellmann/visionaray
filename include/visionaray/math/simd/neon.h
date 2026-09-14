@@ -178,6 +178,7 @@ public:
 
     basic_mask() = default;
     basic_mask(uint32x4_t const& i1, uint32x4_t const& i2);
+    basic_mask(uint32x4_t const* ii);
     basic_mask(int8 const& m);
     basic_mask(bool b);
 };

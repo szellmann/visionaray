@@ -18,6 +18,12 @@ VSNRAY_FORCE_INLINE mask8::basic_mask(uint32x4_t const& i1, uint32x4_t const& i2
     i[1] = i2;
 }
 
+VSNRAY_FORCE_INLINE mask8::basic_mask(uint32x4_t const* ii)
+{
+    i[0] = ii[0];
+    i[1] = ii[1];
+}
+
 VSNRAY_FORCE_INLINE mask8::basic_mask(int8 const& m)
 {
     i[0] = vreinterpretq_u32_s32(m.value[0]);
