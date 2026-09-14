@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+#include "../../../detail/math.h"
+
 namespace MATH_NAMESPACE
 {
 namespace simd
