@@ -165,6 +165,7 @@ inline int movemask(__m256i const& input)
 
 inline void cmp_exchange(simd::int4 &a, simd::int4 &b)
 {
+#if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_SSE2) || VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
     auto m0 = b < a;
     simd::mask4 m;
     m.i = simd::shuffle<2,2,2,2>(simd::int4(m0.i));
@@ -172,6 +173,9 @@ inline void cmp_exchange(simd::int4 &a, simd::int4 &b)
     simd::int4 d = select(m, a, b);
     a = c;
     b = d;
+#else
+    assert(0);
+#endif
 }
 
 inline void sort(simd::int4& s0, simd::int4& s1, simd::int4& s2)
