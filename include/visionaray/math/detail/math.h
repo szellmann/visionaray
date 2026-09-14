@@ -21,6 +21,7 @@
 #endif
 
 #if defined(_MSC_VER) && !defined(__clang__)
+#include <intrin.h>
 #define __builtin_memcpy memcpy
 #endif
 
@@ -87,6 +88,23 @@ using std::round;
 using std::sin;
 using std::sqrt;
 using std::tan;
+#endif
+
+#if defined(_MSC_VER) && !defined(__clang__)
+inline unsigned ctz(unsigned v)
+{
+    unsigned long tz = 0;
+    if (_BitScanForward(&tz, v))
+    {
+        return tz;
+    }
+    else
+    {
+        return 32u;
+    }
+}
+#else
+#define ctz(x) __builtin_ctz(x)
 #endif
 
 #ifndef _WIN32

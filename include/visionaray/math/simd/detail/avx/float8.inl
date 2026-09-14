@@ -337,7 +337,7 @@ VSNRAY_FORCE_INLINE int min_index(float8 const& v, __m256i const& mask)
     min_all = _mm256_shuffle_ps(min_all, min_all, _MM_SHUFFLE(0, 0, 0, 0));
     __m256 cmp = _mm256_and_ps(_mm256_cmp_ps(v, min_all, _CMP_EQ_OQ), mask_ps);
     int bitmask = _mm256_movemask_ps(cmp);
-    return bitmask ? __builtin_ctz(bitmask) : -1;
+    return bitmask ? ctz(bitmask) : -1;
 }
 
 
