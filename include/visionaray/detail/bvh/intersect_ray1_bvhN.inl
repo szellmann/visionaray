@@ -138,7 +138,7 @@ template <typename Dest, typename Source>
 inline Dest bitcast(Source const& src) noexcept
 {
 #if (defined(__cplusplus) && __cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
-    return std::bitcast<Dest>(src);
+    return std::bit_cast<Dest>(src);
 #else
     static_assert(sizeof(Dest) == sizeof(Source), "Size mismatch");
     static_assert(std::is_trivially_copyable_v<Source>, "Source not trivially copyable");
