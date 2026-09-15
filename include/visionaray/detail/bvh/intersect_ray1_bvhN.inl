@@ -247,8 +247,7 @@ template <
     detail::traversal_type Traversal,
     typename R,
     typename BVH,
-    typename Intersector,
-    typename T = typename R::scalar_type
+    typename Intersector
     >
 VSNRAY_FUNC
 inline hit_record<R, primitive<unsigned>> intersect_ray1_bvhN(
