@@ -343,29 +343,29 @@ next:
                 int i3 = bsf(mask);
                 if (likely(mask == 0))
                 {
-                    stack[ptr]     = { node.children[i1], tnear[i1] };
-                    stack[ptr + 1] = { node.children[i2], tnear[i2] };
-                    stack[ptr + 2] = { node.children[i3], tnear[i3] };
-                    sort((simd::int4&)stack[ptr], (simd::int4&)stack[ptr + 1], (simd::int4&)stack[ptr + 2]);
+                    simd::int4 s1(*(uint64_t*)&node.children[i1], *(uint64_t*)&tnear[i1]);
+                    simd::int4 s2(*(uint64_t*)&node.children[i2], *(uint64_t*)&tnear[i2]);
+                    simd::int4 s3(*(uint64_t*)&node.children[i3], *(uint64_t*)&tnear[i3]);
+                    sort(s1, s2, s3);
+                    *(simd::int4*)&stack[ptr] = s1; *(simd::int4*)&stack[ptr + 1] = s2;
                     ptr += 2;
-                    se = stack[ptr];
-                    addr = se.addr;
-                    dist = se.dist;
+                    addr = ((stack_entry*)&s3)->addr;
+                    dist = ((stack_entry*)&s3)->dist;
                     continue;
                 }
 
                 int i4 = bsf(mask);
                 if (likely(mask == 0))
                 {
-                    stack[ptr]     = { node.children[i1], tnear[i1] };
-                    stack[ptr + 1] = { node.children[i2], tnear[i2] };
-                    stack[ptr + 2] = { node.children[i3], tnear[i3] };
-                    stack[ptr + 3] = { node.children[i4], tnear[i4] };
-                    sort((simd::int4&)stack[ptr], (simd::int4&)stack[ptr + 1], (simd::int4&)stack[ptr + 2], (simd::int4&)stack[ptr + 3]);
+                    simd::int4 s1(*(uint64_t*)&node.children[i1], *(uint64_t*)&tnear[i1]);
+                    simd::int4 s2(*(uint64_t*)&node.children[i2], *(uint64_t*)&tnear[i2]);
+                    simd::int4 s3(*(uint64_t*)&node.children[i3], *(uint64_t*)&tnear[i3]);
+                    simd::int4 s4(*(uint64_t*)&node.children[i4], *(uint64_t*)&tnear[i4]);
+                    sort(s1, s2, s3, s4);
+                    *(simd::int4*)&stack[ptr] = s1; *(simd::int4*)&stack[ptr + 1] = s2; *(simd::int4*)&stack[ptr + 2] = s3;
                     ptr += 3;
-                    se = stack[ptr];
-                    addr = se.addr;
-                    dist = se.dist;
+                    addr = ((stack_entry*)&s4)->addr;
+                    dist = ((stack_entry*)&s4)->dist;
                     continue;
                 }
 
