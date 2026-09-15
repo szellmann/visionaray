@@ -134,6 +134,22 @@ inline void insertion_sort(It first, It last, Comp comp)
     }
 }
 
+template <typename Dest, typename Source>
+inline Dest bitcast(Source const& src) noexcept
+{
+#if (defined(__cplusplus) && __cplusplus >= 202002L) || (defined(_MSVC_LANG) && _MSVC_LANG >= 202002L)
+    return std::bitcast<Dest>(src);
+#else
+    static_assert(sizeof(Dest) == sizeof(Source), "Size mismatch");
+    static_assert(std::is_trivially_copyable_v<Source>, "Source not trivially copyable");
+    static_assert(std::is_trivially_copyable_v<Dest>, "Dest not trivially copyable");
+
+    Dest dst;
+    std::memcpy(&dst, &src, sizeof(dst));
+    return dst;
+#endif
+}
+
 #if VSNRAY_SIMD_ISA_GE(VSNRAY_SIMD_ISA_NEON_FP)
 
 // From SSE2Neon:
@@ -343,29 +359,43 @@ next:
                 int i3 = bsf(mask);
                 if (likely(mask == 0))
                 {
-                    simd::int4 s1(*(uint64_t*)&node.children[i1], *(uint64_t*)&tnear[i1]);
-                    simd::int4 s2(*(uint64_t*)&node.children[i2], *(uint64_t*)&tnear[i2]);
-                    simd::int4 s3(*(uint64_t*)&node.children[i3], *(uint64_t*)&tnear[i3]);
+                    stack_entry e1{ node.children[i1], tnear[i1] };
+                    stack_entry e2{ node.children[i2], tnear[i2] };
+                    stack_entry e3{ node.children[i3], tnear[i3] };
+                    auto s1 = bitcast<simd::int4>(e1);
+                    auto s2 = bitcast<simd::int4>(e2);
+                    auto s3 = bitcast<simd::int4>(e3);
                     sort(s1, s2, s3);
-                    *(simd::int4*)&stack[ptr] = s1; *(simd::int4*)&stack[ptr + 1] = s2;
+                    e1 = bitcast<stack_entry>(s1);
+                    e2 = bitcast<stack_entry>(s2);
+                    e3 = bitcast<stack_entry>(s3);
+                    stack[ptr] = e1; stack[ptr + 1] = e2;
                     ptr += 2;
-                    addr = ((stack_entry*)&s3)->addr;
-                    dist = ((stack_entry*)&s3)->dist;
+                    addr = e3.addr;
+                    dist = e3.dist;
                     continue;
                 }
 
                 int i4 = bsf(mask);
                 if (likely(mask == 0))
                 {
-                    simd::int4 s1(*(uint64_t*)&node.children[i1], *(uint64_t*)&tnear[i1]);
-                    simd::int4 s2(*(uint64_t*)&node.children[i2], *(uint64_t*)&tnear[i2]);
-                    simd::int4 s3(*(uint64_t*)&node.children[i3], *(uint64_t*)&tnear[i3]);
-                    simd::int4 s4(*(uint64_t*)&node.children[i4], *(uint64_t*)&tnear[i4]);
+                    stack_entry e1{ node.children[i1], tnear[i1] };
+                    stack_entry e2{ node.children[i2], tnear[i2] };
+                    stack_entry e3{ node.children[i3], tnear[i3] };
+                    stack_entry e4{ node.children[i4], tnear[i4] };
+                    auto s1 = bitcast<simd::int4>(e1);
+                    auto s2 = bitcast<simd::int4>(e2);
+                    auto s3 = bitcast<simd::int4>(e3);
+                    auto s4 = bitcast<simd::int4>(e4);
                     sort(s1, s2, s3, s4);
-                    *(simd::int4*)&stack[ptr] = s1; *(simd::int4*)&stack[ptr + 1] = s2; *(simd::int4*)&stack[ptr + 2] = s3;
+                    e1 = bitcast<stack_entry>(s1);
+                    e2 = bitcast<stack_entry>(s2);
+                    e3 = bitcast<stack_entry>(s3);
+                    e4 = bitcast<stack_entry>(s4);
+                    stack[ptr] = e1; stack[ptr + 1] = e2; stack[ptr + 2] = e3;
                     ptr += 3;
-                    addr = ((stack_entry*)&s4)->addr;
-                    dist = ((stack_entry*)&s4)->dist;
+                    addr = e4.addr;
+                    dist = e4.dist;
                     continue;
                 }
 
