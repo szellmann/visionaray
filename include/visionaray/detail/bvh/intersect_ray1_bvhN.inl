@@ -211,17 +211,27 @@ inline auto closest(hit_record<R, primitive<I>> const& hr)
 
     int closest_index = min_index(hr.t, hr.hit.i);
 
+    auto* prim_id = (int const*)&hr.prim_id;
+    auto* geom_id = (int const*)&hr.geom_id;
+    auto* inst_id = (int const*)&hr.inst_id;
+    auto* t = (float const*)&hr.t;
+    auto* isect_pos_x = (float const*)&hr.isect_pos.x;
+    auto* isect_pos_y = (float const*)&hr.isect_pos.y;
+    auto* isect_pos_z = (float const*)&hr.isect_pos.z;
+    auto* u = (float const*)&hr.u;
+    auto* v = (float const*)&hr.v;
+
     hit_record<R, primitive<unsigned>> result;
     result.hit = true;
-    result.prim_id = simd::get(hr.prim_id, closest_index);
-    result.geom_id = simd::get(hr.geom_id, closest_index);
-    result.inst_id = simd::get(hr.inst_id, closest_index);
-    result.t = simd::get(hr.t, closest_index);
-    result.isect_pos.x = simd::get(hr.isect_pos.x, closest_index);
-    result.isect_pos.y = simd::get(hr.isect_pos.y, closest_index);
-    result.isect_pos.z = simd::get(hr.isect_pos.z, closest_index);
-    result.u = simd::get(hr.u, closest_index);
-    result.v = simd::get(hr.v, closest_index);
+    result.prim_id = prim_id[closest_index];
+    result.geom_id = geom_id[closest_index];
+    result.inst_id = inst_id[closest_index];
+    result.t = t[closest_index];
+    result.isect_pos.x = isect_pos_x[closest_index];
+    result.isect_pos.y = isect_pos_y[closest_index];
+    result.isect_pos.z = isect_pos_z[closest_index];
+    result.u = u[closest_index];
+    result.v = v[closest_index];
     return result;
 }
 
