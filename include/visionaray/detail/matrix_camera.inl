@@ -9,17 +9,21 @@ namespace visionaray
 inline matrix_camera::matrix_camera(mat4 const& view, mat4 const& proj)
     : view_(view)
     , proj_(proj)
+    , view_inv_(inverse(view))
+    , proj_inv_(inverse(proj))
 {
 }
 
 inline void matrix_camera::set_view_matrix(mat4 const& view)
 {
     view_ = view;
+    view_inv_ = inverse(view_);
 }
 
 inline void matrix_camera::set_proj_matrix(mat4 const& proj)
 {
     proj_ = proj;
+    proj_inv_ = inverse(proj_);
 }
 
 VSNRAY_FUNC
@@ -36,8 +40,6 @@ inline mat4 const& matrix_camera::get_proj_matrix() const
 
 inline void matrix_camera::begin_frame()
 {
-    view_inv_ = inverse(view_);
-    proj_inv_ = inverse(proj_);
 }
 
 inline void matrix_camera::end_frame()

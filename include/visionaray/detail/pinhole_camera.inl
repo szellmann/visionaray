@@ -15,6 +15,7 @@ inline void pinhole_camera::look_at(vec3 const& eye, vec3 const& center, vec3 co
     dir_      = center - eye;
     up_       = up;
 
+    compute_basis();
     compute_view_matrix();
 }
 
@@ -48,6 +49,8 @@ inline void pinhole_camera::perspective(float fovy, float aspect, float z_near, 
     proj_(3, 1) = 0.0f;
     proj_(3, 2) = -1.0f;
     proj_(3, 3) = 0.0f;
+
+    compute_basis();
 }
 
 inline void pinhole_camera::set_viewport(recti const& viewport)
@@ -76,31 +79,26 @@ inline void pinhole_camera::view_all(aabb const& box, vec3 const& up)
 inline void pinhole_camera::set_eye(vec3 const& eye)
 {
     eye_ = eye;
+    compute_basis();
     compute_view_matrix();
 }
 
 inline void pinhole_camera::set_up(vec3 const& up)
 {
     up_ = up;
+    compute_basis();
     compute_view_matrix();
 }
 
 inline void pinhole_camera::set_dir(vec3 const& dir)
 {
     dir_ = dir;
+    compute_basis();
     compute_view_matrix();
 }
 
 inline void pinhole_camera::begin_frame()
 {
-    // front, side, and up vectors form an orthonormal basis
-    vec3 f = normalize(-dir_);
-    vec3 s = normalize(cross(up_, f));
-    vec3 u =           cross(f, s);
-
-    U = s * tan(fovy_ / 2.0f) * aspect_;
-    V = u * tan(fovy_ / 2.0f);
-    W = -f;
 }
 
 inline void pinhole_camera::end_frame()
@@ -124,6 +122,18 @@ inline R pinhole_camera::primary_ray(R /* */, T const& x, T const& y, T const& w
     r.tmin = T(0.0);
     r.tmax = numeric_limits<T>::max();
     return r;
+}
+
+inline void pinhole_camera::compute_basis()
+{
+    // front, side, and up vectors form an orthonormal basis
+    vec3 f = normalize(-dir_);
+    vec3 s = normalize(cross(up_, f));
+    vec3 u =           cross(f, s);
+
+    U = s * tan(fovy_ / 2.0f) * aspect_;
+    V = u * tan(fovy_ / 2.0f);
+    W = -f;
 }
 
 inline void pinhole_camera::compute_view_matrix()

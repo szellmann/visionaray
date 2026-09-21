@@ -98,6 +98,7 @@ public:
 
 protected:
 
+    void compute_basis();
     void compute_view_matrix();
 
     mat4 view_;

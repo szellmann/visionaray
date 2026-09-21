@@ -4,6 +4,8 @@
 traversal function is something we want to decide internally; to
 the user there should only be a single bvh template hiding the
 details of internal traversal.
+- Explicitly calling `Camera::{begin|end}_frame{}` is no longer
+necessary.
 
 ### Added
 - New pixel format PF_RGBA8_SRGB to support sRGB textures.
