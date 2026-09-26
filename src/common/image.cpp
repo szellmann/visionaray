@@ -4,9 +4,8 @@
 #include <common/config.h>
 
 #include <algorithm>
+#include <filesystem>
 #include <utility>
-
-#include <boost/filesystem.hpp>
 
 #include "dds_image.h"
 #include "exr_image.h"
@@ -26,7 +25,7 @@ enum image_type { DDS, EXR, HDR, JPEG, PNG, PNM, TGA, TIFF, Unknown };
 
 static image_type get_type(std::string const& filename)
 {
-    boost::filesystem::path p(filename);
+    std::filesystem::path p(filename);
 
 
     // DDS

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
+#include <filesystem>
 #include <iostream>
 #include <ostream>
 #include <map>
@@ -13,7 +14,6 @@
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
-#include <boost/filesystem.hpp>
 
 #include <visionaray/math/io.h>
 #include <visionaray/math/vector.h>
@@ -24,6 +24,7 @@
 #include "model.h"
 #include "obj_grammar.h"
 #include "obj_loader.h"
+#include "string_utils.h"
 
 namespace qi = boost::spirit::qi;
 
@@ -195,7 +196,7 @@ static void parse_mtl(std::string const& filename, std::map<std::string, mtl>& m
         if ( qi::phrase_parse(it, text.cend(), grammar.r_newmtl, qi::blank, mtl_name) )
         {
             std::string name(mtl_name.begin(), mtl_name.length());
-            boost::trim(name);
+            trim(name);
             auto r = matlib.insert({ name, mtl() });
             if (!r.second)
             {
@@ -347,7 +348,7 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
 
                 if (!already_parsed)
                 {
-                    boost::filesystem::path p(filename);
+                    std::filesystem::path p(filename);
                     std::string mtl_dir = p.parent_path().string();
 
                     std::string mtl_path = "";
@@ -360,7 +361,7 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
                         mtl_path = mtl_dir + "/" + std::string(mtl_file.begin(), mtl_file.length());
                     }
 
-                    if (boost::filesystem::exists(mtl_path))
+                    if (std::filesystem::exists(mtl_path))
                     {
                         parse_mtl(mtl_path, matlib, grammar);
                     }
@@ -379,7 +380,7 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
             else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
             {
                 std::string name(mtl_name.begin(), mtl_name.length());
-                boost::trim(name);
+                trim(name);
                 auto mat_it = matlib.find(name);
                 if (mat_it != matlib.end())
                 {
@@ -391,33 +392,33 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
                     {
                         std::string tex_filename;
 
-                        boost::filesystem::path kdp(mat_it->second.map_kd);
+                        std::filesystem::path kdp(mat_it->second.map_kd);
 
                         if (kdp.is_absolute())
                         {
                             tex_filename = kdp.string();
                         }
 
-                        // Maybe boost::filesystem was wrong and a relative path
+                        // Maybe std::filesystem was wrong and a relative path
                         // camouflaged as an absolute one (e.g. because it was
                         // erroneously prefixed with a '/' under Unix.
                         // Happens e.g. in the fairy forest model..
                         // Let's also check for that..
 
-                        if (!boost::filesystem::exists(tex_filename) || !kdp.is_absolute())
+                        if (!std::filesystem::exists(tex_filename) || !kdp.is_absolute())
                         {
                             // Find texture relative to the path the obj file is located in
-                            boost::filesystem::path p(filename);
+                            std::filesystem::path p(filename);
                             tex_filename = p.parent_path().string() + "/" + mat_it->second.map_kd;
                             std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
                         }
 
-                        if (!boost::filesystem::exists(tex_filename))
+                        if (!std::filesystem::exists(tex_filename))
                         {
-                            boost::trim(tex_filename);
+                            trim(tex_filename);
                         }
 
-                        if (boost::filesystem::exists(tex_filename))
+                        if (std::filesystem::exists(tex_filename))
                         {
                             // Load the texture if we haven't done so yet
                             auto tex_it = mod.texture_map.find(mat_it->second.map_kd);

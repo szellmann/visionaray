@@ -35,6 +35,28 @@ struct bvh_optimizer
         // compute SAH costs for each node
         std::vector<float> costs(tree.num_nodes(), FLT_MAX);
 
+        auto computeCostsFor = [&costs, &tree, C_t, C_i](unsigned nid) {
+            bvh_node const& n = tree.node(nid);
+            if (n.is_leaf())
+            {
+                costs[nid] = C_t + C_i * n.get_num_primitives();
+                return true;
+            }
+            else
+            {
+                unsigned c0 = n.get_child(0);
+                unsigned c1 = n.get_child(1);
+                if (costs[c0] < FLT_MAX && costs[c1] < FLT_MAX)
+                {
+                    float sa0 = SA(tree.node(c0).get_bounds());
+                    float sa1 = SA(tree.node(c1).get_bounds());
+                    costs[nid] = C_t + (sa0 * costs[c0] + sa1 * costs[c1]) / SA(n.get_bounds());
+                    return true;
+                }
+            }
+            return false;
+        };
+
         // do this from the bottom up implicitly: only nodes get assigned
         // costs if they're leaves, or if their children have costs assigned.
         // We stop once the root was assigned its costs:
@@ -43,32 +65,16 @@ struct bvh_optimizer
         {
             for (unsigned i = 0; i < tree.num_nodes(); ++i)
             {
-               bvh_node const& n = tree.node(i);
-               if (costs[i] < FLT_MAX)
-               {
-                   continue;
-               }
+                bvh_node const& n = tree.node(i);
+                if (costs[i] < FLT_MAX)
+                {
+                    continue;
+                }
 
-               if (n.is_leaf())
-               {
-                   costs[i] = C_t + C_i * n.get_num_primitives();
-               }
-               else
-               {
-                   unsigned c0 = n.get_child(0);
-                   unsigned c1 = n.get_child(1);
-                   if (costs[c0] < FLT_MAX && costs[c1] < FLT_MAX)
-                   {
-                       float sa0 = SA(tree.node(c0).get_bounds());
-                       float sa1 = SA(tree.node(c1).get_bounds());
-                       costs[i] = C_t + (sa0 * costs[c0] + sa1 * costs[c1]) / SA(n.get_bounds());
-
-                       if (i == 0)
-                       {
-                           root_costs_assigned = true;
-                       }
-                   }
-               }
+                if (computeCostsFor(i) && i == 0)
+                {
+                    root_costs_assigned = true;
+                }
             }
 
             if (root_costs_assigned)
@@ -242,6 +248,10 @@ struct bvh_optimizer
                         aabb bounds = bounds0; bounds.insert(bounds1);
                         tree.nodes()[addr].bbox = bounds;
                     }
+
+                    computeCostsFor(n0);
+                    computeCostsFor(n1);
+                    computeCostsFor(addr);
 
                     count++;
                 }

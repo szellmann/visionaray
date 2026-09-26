@@ -6,11 +6,10 @@
 #ifndef VSNRAY_COMMON_FILE_BASE_H
 #define VSNRAY_COMMOM_FILE_BASE_H 1
 
+#include <any>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <boost/any.hpp>
 
 namespace visionaray
 {
@@ -21,7 +20,7 @@ public:
 
     virtual ~file_base() = default;
 
-    using save_option  = std::pair<std::string, boost::any>;
+    using save_option  = std::pair<std::string, std::any>;
     using save_options = std::vector<save_option>;
 
     virtual bool load(std::string const& filename);

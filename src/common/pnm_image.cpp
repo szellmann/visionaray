@@ -12,9 +12,8 @@
 #include <string>
 #include <vector>
 
-#include <boost/algorithm/string.hpp>
-
 #include "pnm_image.h"
+#include "string_utils.h"
 
 namespace visionaray
 {
@@ -40,12 +39,11 @@ static void load_ascii(
         std::string line;
         std::getline(file, line);
 
-        std::vector<std::string> tokens;
-        boost::algorithm::split(
-                tokens,
-                line,
-                boost::algorithm::is_any_of(" \t")
-                );
+        std::vector<std::string> tokens = string_split(line, '\t');
+        for (auto& t : tokens)
+        {
+            t = trim(t);
+        }
 
         // Remove empty tokens and spaces
         tokens.erase(
@@ -193,12 +191,11 @@ bool pnm_image::load(std::string const& filename)
         }
         else
         {
-            std::vector<std::string> tokens;
-            boost::algorithm::split(
-                    tokens,
-                    line,
-                    boost::algorithm::is_any_of(" \t")
-                    );
+            std::vector<std::string> tokens = string_split(line, '\t');
+            for (auto& t : tokens)
+            {
+                t = trim(t);
+            }
 
             if (tokens.size() > 3)
             {
@@ -350,7 +347,7 @@ bool pnm_image::save(std::string const& filename, file_base::save_options const&
         return false;
     }
 
-    bool binary = boost::any_cast<bool>(it->second);
+    bool binary = std::any_cast<bool>(it->second);
 
     std::ofstream file(filename);
 

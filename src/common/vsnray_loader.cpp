@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -23,7 +24,6 @@
 #include <boost/utility/string_ref.hpp>
 #include <boost/assign.hpp>
 #include <boost/bimap.hpp>
-#include <boost/filesystem.hpp>
 
 #include <rapidjson/document.h>
 #include <rapidjson/filereadstream.h>
@@ -797,12 +797,12 @@ std::shared_ptr<sg::node> vsnray_parser::parse_include(Object const& obj)
             }
         }
 
-        boost::filesystem::path p(path_string);
+        std::filesystem::path p(path_string);
 
         if (!p.is_absolute())
         {
             // Extract base path
-            boost::filesystem::path bp(filename_);
+            std::filesystem::path bp(filename_);
             bp = bp.parent_path();
 
             // Append path to base path
@@ -1192,7 +1192,7 @@ std::shared_ptr<sg::node> vsnray_parser::parse_surface_properties(Object const& 
                 }
             }
 
-            can_load &= boost::filesystem::exists(filename);
+            can_load &= std::filesystem::exists(filename);
         }
 
         if (can_load)
@@ -2106,7 +2106,7 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
     // First try to write the actual data file
 
     // Don't overwrite
-    if (boost::filesystem::exists(md.path))
+    if (std::filesystem::exists(md.path))
     {
         throw std::runtime_error("File exists, not overwriting");
     }
@@ -2134,7 +2134,7 @@ void vsnray_writer::write_data_file(Object obj, data_file::meta_data md, Contain
         throw std::runtime_error("Failed to write to file");
     }
 
-    assert(boost::filesystem::exists(md.path));
+    assert(std::filesystem::exists(md.path));
 
 
     // Now store a JSON node containing meta data to the document
@@ -2242,7 +2242,7 @@ std::string vsnray_writer::make_inline_filename(std::string node_name, std::stri
             fn.append(suffix);
         }
 
-        if (!boost::filesystem::exists(fn))
+        if (!std::filesystem::exists(fn))
         {
             result = fn;
             break;

@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <exception>
+#include <filesystem>
 #include <fstream>
 #include <future>
 #include <iomanip>
@@ -26,8 +27,6 @@
 #include <string>
 #include <thread>
 #include <vector>
-
-#include <boost/filesystem.hpp>
 
 #if VSNRAY_COMMON_HAVE_CUDA
 #include <cuda_runtime_api.h>
@@ -1459,7 +1458,7 @@ void renderer::build_scene()
             //std::cout << t.elapsed() << '\n';
         }
 
-        if (!env_map_filename.empty() && boost::filesystem::exists(env_map_filename))
+        if (!env_map_filename.empty() && std::filesystem::exists(env_map_filename))
         {
             image img;
             if (img.load(env_map_filename))
@@ -1780,7 +1779,7 @@ void renderer::screenshot()
 
     std::string filename = screenshot_file_base + inc_str + screenshot_file_suffix;
 
-    while (boost::filesystem::exists(filename))
+    while (std::filesystem::exists(filename))
     {
         ++inc;
         inc_str = std::to_string(inc);
@@ -1868,7 +1867,7 @@ void renderer::render_hud()
 
     std::string filename = camera_file_base + inc_str + camera_file_suffix;
 
-    while (boost::filesystem::exists(filename))
+    while (std::filesystem::exists(filename))
     {
         camera_names.push_back(filename);
 
@@ -2175,7 +2174,7 @@ void renderer::render_hud()
                             counter.reset();
                             clear_frame();
                         }
-                        else if (boost::filesystem::exists(current_cam))
+                        else if (std::filesystem::exists(current_cam))
                         {
                             // From file
                             load_camera(current_cam);
@@ -2204,7 +2203,7 @@ void renderer::render_hud()
 
                 std::string filename = camera_file_base + inc_str + camera_file_suffix;
 
-                while (boost::filesystem::exists(filename))
+                while (std::filesystem::exists(filename))
                 {
                     ++inc;
                     inc_str = std::to_string(inc);
@@ -2778,7 +2777,7 @@ void renderer::on_key_press(key_event const& event)
 
             std::string filename = camera_file_base + inc_str + camera_file_suffix;
 
-            while (boost::filesystem::exists(filename))
+            while (std::filesystem::exists(filename))
             {
                 ++inc;
                 inc_str = std::to_string(inc);

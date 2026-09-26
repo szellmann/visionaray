@@ -90,7 +90,7 @@ endif()
 # External libraries
 #
 
-find_package(Boost CONFIG COMPONENTS filesystem iostreams REQUIRED)
+find_package(Boost CONFIG COMPONENTS iostreams REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 
@@ -110,7 +110,6 @@ find_package(ZLIB)
 
 target_link_libraries(visionaray_common PUBLIC
     Boost::disable_autolinking
-    Boost::filesystem
     Boost::iostreams
     OpenGL::GL
     Threads::Threads

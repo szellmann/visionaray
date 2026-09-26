@@ -7,11 +7,11 @@
 #include <fstream>
 #include <iostream>
 #include <ostream>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
+#include <sstream>
+#include <string>
 
 #include "hdr_image.h"
+#include "string_utils.h"
 
 namespace visionaray
 {
@@ -39,15 +39,19 @@ bool hdr_image::load(std::string const& filename)
     {
         std::getline(file, line);
 
-        std::vector<std::string> vars;
-        boost::split(vars, line, boost::is_any_of("="));
+        std::vector<std::string> vars = string_split(line, '=');
 
         if (vars.size() >= 2)
         {
             std::string key = vars[0];
-            boost::trim(vars[0]);
+            vars[0] = trim(vars[0]);
             vars.erase(vars.begin());
-            std::string value = boost::algorithm::join(vars, "");
+            std::stringstream istr;
+            for (auto v : vars)
+            {
+                istr << v;
+            }
+            std::string value = istr.str();
 
             if (key == "FORMAT" && value == "32-bit_rle_rgbe")
             {
@@ -71,8 +75,11 @@ bool hdr_image::load(std::string const& filename)
 
     std::getline(file, line);
 
-    std::vector<std::string> res;
-    boost::split(res, line, boost::is_any_of("\t "));
+    std::vector<std::string> res = string_split(line, '\t');
+    for (auto& r : res)
+    {
+        r = trim(r);
+    }
 
     if (res.size() != 4)
     {
@@ -82,8 +89,8 @@ bool hdr_image::load(std::string const& filename)
 
     if (res[0] == "-Y" && res[2] == "+X")
     {
-        width_  = boost::lexical_cast<int>(res[3]);
-        height_ = boost::lexical_cast<int>(res[1]);
+        width_  = std::stoi(res[3]);
+        height_ = std::stoi(res[1]);
     }
     else
     {

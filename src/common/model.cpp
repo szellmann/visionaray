@@ -3,12 +3,11 @@
 
 #include <common/config.h>
 
+#include <filesystem>
 #include <iostream>
 #include <ostream>
 #include <type_traits>
 #include <unordered_map>
-
-#include <boost/filesystem.hpp>
 
 #include "fbx_loader.h"
 #include "moana_loader.h"
@@ -41,7 +40,7 @@ static model_type get_type(std::string const& filename)
     ext2type.insert({ ".vsnray", VSNRAY });
     ext2type.insert({ ".VSNRAY", VSNRAY });
 
-    boost::filesystem::path p(filename);
+    std::filesystem::path p(filename);
 
     auto result = ext2type.find(p.extension().string());
 

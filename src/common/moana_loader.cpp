@@ -5,6 +5,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <ostream>
@@ -14,7 +15,6 @@
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
-#include <boost/filesystem.hpp>
 
 #if VSNRAY_COMMON_HAVE_PTEX
 #include <Ptexture.h>
@@ -42,12 +42,12 @@ namespace visionaray
 // Remove first element from path
 //
 
-boost::filesystem::path remove_first(boost::filesystem::path const& p)
+std::filesystem::path remove_first(std::filesystem::path const& p)
 {
     auto parent_path = p.parent_path();
     if (parent_path.empty())
     {
-        return boost::filesystem::path();
+        return std::filesystem::path();
     }
     else
     {
@@ -61,9 +61,9 @@ boost::filesystem::path remove_first(boost::filesystem::path const& p)
 // The parent folder of the latter is the base path
 //
 
-inline boost::filesystem::path get_base_path(std::string const& filename)
+inline std::filesystem::path get_base_path(std::string const& filename)
 {
-    boost::filesystem::path p(filename);
+    std::filesystem::path p(filename);
 
     while (p.stem().string() != "json" || p.empty())
     {
@@ -134,7 +134,7 @@ static void store_faces(
 //
 
 static std::shared_ptr<sg::texture> load_texture(
-        boost::filesystem::path const& texture_base_path,
+        std::filesystem::path const& texture_base_path,
         std::string const& filename,
 #if VSNRAY_COMMON_HAVE_PTEX
         std::shared_ptr<PtexPtr<PtexCache>> const& texture_cache
@@ -145,7 +145,7 @@ static std::shared_ptr<sg::texture> load_texture(
 {
     auto fn = (texture_base_path / filename).string();
 
-    if (!boost::filesystem::exists(fn))
+    if (!std::filesystem::exists(fn))
     {
         return nullptr;
     }
@@ -330,7 +330,7 @@ static void load_camera_file(std::string const& filename, std::shared_ptr<sg::no
 //
 
 static void load_light_file(
-        boost::filesystem::path const& island_base_path,
+        std::filesystem::path const& island_base_path,
         std::string const& filename,
         std::shared_ptr<sg::node> const& root
         )
@@ -372,7 +372,7 @@ static void load_light_file(
             {
                 std::shared_ptr<sg::texture2d<vec4>> tex = std::make_shared<sg::texture2d<vec4>>();
 
-                boost::filesystem::path image_filename = island_base_path; // remove leading "island"
+                std::filesystem::path image_filename = island_base_path; // remove leading "island"
                 image_filename /= remove_first(map);
 
                 image img;
@@ -401,7 +401,7 @@ static void load_light_file(
 //
 
 static void load_obj(
-        boost::filesystem::path const& island_base_path,
+        std::filesystem::path const& island_base_path,
         std::string const& filename,
         std::unordered_map<std::string, std::shared_ptr<sg::disney_material>> const& materials,
         std::unordered_map<std::string, std::string> const& color_maps, // [mtlName, colorMap]
@@ -483,7 +483,7 @@ static void load_obj(
             else
             {
                 // Assemble texture base directory
-                boost::filesystem::path texture_base_path;
+                std::filesystem::path texture_base_path;
 
                 // Directory is probably stored in color map (use mtl_name to look this up!)
                 auto cit = color_maps.find(std::string(mtl_name.begin(), mtl_name.length()));
@@ -497,9 +497,9 @@ static void load_obj(
                     // Not found in color maps!
 
                     // Extract element base name from obj file path
-                    boost::filesystem::path obj_path(filename);
+                    std::filesystem::path obj_path(filename);
                     // Remove obj file name
-                    boost::filesystem::path texture_base_path = obj_path.parent_path();
+                    std::filesystem::path texture_base_path = obj_path.parent_path();
                     // If archive, remove archives/
                     if (texture_base_path.filename().string() == "archives")
                     {
@@ -559,7 +559,7 @@ static void load_obj(
 }
 
 static void load_instanced_primitive_json_file(
-        boost::filesystem::path const& island_base_path,
+        std::filesystem::path const& island_base_path,
         std::string const& filename,
         std::shared_ptr<sg::node> const& root,
         std::unordered_map<std::string, std::shared_ptr<sg::disney_material>>& materials,
@@ -637,7 +637,7 @@ static void load_instanced_primitive_json_file(
 }
 
 void load_material_file(
-        boost::filesystem::path const& island_base_path,
+        std::filesystem::path const& island_base_path,
         std::string const& filename,
         std::unordered_map<std::string, std::shared_ptr<sg::disney_material>>& materials,
         std::unordered_map<std::string, std::string>& color_maps, // [name,colorMap]
@@ -910,7 +910,7 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
     for (auto filename : filenames)
     {
         // Extract base path
-        boost::filesystem::path island_base_path = get_base_path(filename);
+        std::filesystem::path island_base_path = get_base_path(filename);
 
         if (island_base_path.empty())
         {
@@ -919,8 +919,8 @@ void load_moana(std::vector<std::string> const& filenames, model& mod)
         }
 
         // Handle special files
-        boost::filesystem::path p(filename);
-        boost::filesystem::path pp = p.parent_path();
+        std::filesystem::path p(filename);
+        std::filesystem::path pp = p.parent_path();
         if (pp.filename().string() == "cameras")
         {
             load_camera_file(filename, root);

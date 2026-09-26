@@ -4,13 +4,12 @@
 #include <common/config.h>
 
 #include <exception>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <ostream>
 #include <string>
-
-#include <boost/filesystem.hpp>
 
 #include <glad/glad.h>
 
@@ -523,7 +522,7 @@ struct renderer : viewer_type
         {
             try
             {
-                boost::filesystem::path p(filename);
+                std::filesystem::path p(filename);
                 std::string ext = p.extension().string();
 
                 std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
@@ -751,7 +750,7 @@ void renderer::screenshot()
 
     std::string filename = screenshot_file_base + inc_str + screenshot_file_suffix;
 
-    while (boost::filesystem::exists(filename))
+    while (std::filesystem::exists(filename))
     {
         ++inc;
         inc_str = std::to_string(inc);
@@ -879,7 +878,7 @@ void renderer::on_key_press(visionaray::key_event const& event)
 
             std::string filename = camera_file_base + inc_str + camera_file_suffix;
 
-            while (boost::filesystem::exists(filename))
+            while (std::filesystem::exists(filename))
             {
                 ++inc;
                 inc_str = std::to_string(inc);

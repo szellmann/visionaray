@@ -1,85 +1,14 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
-#include <algorithm>
-#include <cctype>
 #include <cstddef>
 #include <sstream>
-#include <vector>
 
 #include "inifile.h"
+#include "string_utils.h"
 
 namespace visionaray
 {
-
-//-------------------------------------------------------------------------------------------------
-// Helpers
-//
-
-static std::string trim(std::string str, std::string ws = " \t")
-{
-    // Remove leading whitespace
-    auto first = str.find_first_not_of(ws);
-
-    // Only whitespace found
-    if (first == std::string::npos)
-    {
-        return "";
-    }
-
-    // Remove trailing whitespace
-    auto last = str.find_last_not_of(ws);
-
-    // No whitespace found
-    if (last == std::string::npos)
-    {
-        last = str.size() - 1;
-    }
-
-    // Skip if empty
-    if (first > last)
-    {
-        return "";
-    }
-
-    // Trim
-    return str.substr(first, last - first + 1);
-}
-
-static std::vector<std::string> string_split(std::string s, char delim)
-{
-    std::vector<std::string> result;
-
-    std::istringstream stream(s);
-
-    for (std::string token; std::getline(stream, token, delim); )
-    {
-        result.push_back(token);
-    }
-
-    return result;
-}
-
-static size_t count_whitespaces(std::string str)
-{
-    return std::count_if(
-            str.begin(),
-            str.end(),
-            [](unsigned char c) { return std::isspace(c); }
-            );
-}
-
-static std::string tolower(std::string str)
-{
-    std::transform(
-            str.begin(),
-            str.end(),
-            str.begin(),
-            [](unsigned char c) { return std::tolower(c); }
-            );
-
-    return str;
-}
 
 template <typename T>
 inline bool as_T(std::string in, T& out)

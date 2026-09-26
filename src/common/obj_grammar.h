@@ -6,6 +6,7 @@
 #ifndef VSNRAY_COMMON_OBJ_GRAMMAR_H
 #define VSNRAY_COMMON_OBJ_GRAMMAR_H 1
 
+#include <optional>
 #include <string>
 
 #include <boost/fusion/include/adapt_struct.hpp>
@@ -25,8 +26,8 @@ BOOST_FUSION_DEFINE_STRUCT
 (
     (visionaray), face_index_t,
     (int, vertex_index)
-    (boost::optional<int>, tex_coord_index)
-    (boost::optional<int>, normal_index)
+    (std::optional<int>, tex_coord_index)
+    (std::optional<int>, normal_index)
 )
 
 BOOST_FUSION_ADAPT_STRUCT

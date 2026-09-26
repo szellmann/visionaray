@@ -7,10 +7,8 @@
 #include <cctype>
 #include <cstring> // memcpy
 #include <stdexcept>
+#include <filesystem>
 #include <unordered_map>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/filesystem.hpp>
 
 #if VSNRAY_COMMON_HAVE_PBRT_PARSER
 #include <pbrtParser/Scene.h>
@@ -28,6 +26,7 @@
 #include "make_texture.h"
 #include "model.h"
 #include "sg.h"
+#include "string_utils.h"
 
 namespace visionaray
 {
@@ -46,33 +45,33 @@ static void add_diffuse_texture(
     {
         std::string tex_filename;
 
-        boost::filesystem::path kdp(t->fileName);
+        std::filesystem::path kdp(t->fileName);
 
         if (kdp.is_absolute())
         {
             tex_filename = kdp.string();
         }
 
-        // Maybe boost::filesystem was wrong and a relative path
+        // Maybe std::filesystem was wrong and a relative path
         // camouflaged as an absolute one (e.g. because it was
         // erroneously prefixed with a '/' under Unix.
         // Happens e.g. in the fairy forest model..
         // Let's also check for that..
 
-        if (!boost::filesystem::exists(tex_filename) || !kdp.is_absolute())
+        if (!std::filesystem::exists(tex_filename) || !kdp.is_absolute())
         {
             // Find texture relative to the path the obj file is located in
-            boost::filesystem::path p(base_filename);
+            std::filesystem::path p(base_filename);
             tex_filename = p.parent_path().string() + "/" + t->fileName;
             std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
         }
 
-        if (!boost::filesystem::exists(tex_filename))
+        if (!std::filesystem::exists(tex_filename))
         {
-            boost::trim(tex_filename);
+            trim(tex_filename);
         }
 
-        if (boost::filesystem::exists(tex_filename))
+        if (std::filesystem::exists(tex_filename))
         {
             image img;
             if (img.load(tex_filename))
@@ -516,33 +515,33 @@ static void make_scene_graph(
         {
             std::string tex_filename;
 
-            boost::filesystem::path kdp(ils->mapName);
+            std::filesystem::path kdp(ils->mapName);
 
             if (kdp.is_absolute())
             {
                 tex_filename = kdp.string();
             }
 
-            // Maybe boost::filesystem was wrong and a relative path
+            // Maybe std::filesystem was wrong and a relative path
             // camouflaged as an absolute one (e.g. because it was
             // erroneously prefixed with a '/' under Unix.
             // Happens e.g. in the fairy forest model..
             // Let's also check for that..
 
-            if (!boost::filesystem::exists(tex_filename) || !kdp.is_absolute())
+            if (!std::filesystem::exists(tex_filename) || !kdp.is_absolute())
             {
                 // Find texture relative to the path the obj file is located in
-                boost::filesystem::path p(base_filename);
+                std::filesystem::path p(base_filename);
                 tex_filename = p.parent_path().string() + "/" + ils->mapName;
                 std::replace(tex_filename.begin(), tex_filename.end(), '\\', '/');
             }
 
-            if (!boost::filesystem::exists(tex_filename))
+            if (!std::filesystem::exists(tex_filename))
             {
-                boost::trim(tex_filename);
+                trim(tex_filename);
             }
 
-            if (boost::filesystem::exists(tex_filename))
+            if (std::filesystem::exists(tex_filename))
             {
                 image img;
                 if (img.load(tex_filename))
@@ -587,7 +586,7 @@ void load_pbrt(std::string const& filename, model& mod)
 
     try
     {
-        boost::filesystem::path p(filename);
+        std::filesystem::path p(filename);
         std::string ext = p.extension().string();
 
         std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
