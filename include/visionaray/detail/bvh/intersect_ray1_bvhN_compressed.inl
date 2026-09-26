@@ -15,9 +15,6 @@
 
 #include "../tags.h"
 
-// #define likely(x)   __builtin_expect(!!(x), 1)
-// #define unlikely(x) __builtin_expect(!!(x), 0)
-
 namespace visionaray
 {
 
@@ -42,7 +39,7 @@ inline auto intersect_ray1_bvhN_compressed(
 
     using N = bvh_compressed_node<BVH::Width>;
 
-    struct stack_entry
+    struct VSNRAY_ALIGN(16) stack_entry
     {
         typename N::Child addr;
         unsigned dist;
@@ -164,39 +161,59 @@ next:
                 int i2 = bsf(mask);
                 if (likely(mask == 0))
                 {
-                    if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
-
-                    stack[ptr++] = { node.children[i2], tnear[i2] };
-                    addr = node.children[i1]; dist = tnear[i1];
+                    if (tnear[i1] < tnear[i2])
+                    {
+                        stack[ptr++] = { node.children[i2], tnear[i2] };
+                        addr = node.children[i1]; dist = tnear[i1];
+                    }
+                    else
+                    {
+                        stack[ptr++] = { node.children[i1], tnear[i1] };
+                        addr = node.children[i2]; dist = tnear[i2];
+                    }
                     continue;
                 }
 
                 int i3 = bsf(mask);
                 if (likely(mask == 0))
                 {
-                    if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
-                    if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
-                    if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
-
-                    stack[ptr++] = { node.children[i3], tnear[i3] };
-                    stack[ptr++] = { node.children[i2], tnear[i2] };
-                    addr = node.children[i1]; dist = tnear[i1];
+                    stack_entry e1{ node.children[i1], tnear[i1] };
+                    stack_entry e2{ node.children[i2], tnear[i2] };
+                    stack_entry e3{ node.children[i3], tnear[i3] };
+                    auto s1 = bitcast<simd::int4>(e1);
+                    auto s2 = bitcast<simd::int4>(e2);
+                    auto s3 = bitcast<simd::int4>(e3);
+                    sort(s1, s2, s3);
+                    e1 = bitcast<stack_entry>(s1);
+                    e2 = bitcast<stack_entry>(s2);
+                    e3 = bitcast<stack_entry>(s3);
+                    stack[ptr] = e1; stack[ptr + 1] = e2;
+                    ptr += 2;
+                    addr = e3.addr;
+                    dist = e3.dist;
                     continue;
                 }
 
                 int i4 = bsf(mask);
                 if (likely(mask == 0))
                 {
-                    if (tnear[i2] < tnear[i1]) std::swap(i2,i1);
-                    if (tnear[i4] < tnear[i3]) std::swap(i4,i3);
-                    if (tnear[i3] < tnear[i1]) std::swap(i3,i1);
-                    if (tnear[i4] < tnear[i2]) std::swap(i4,i2);
-                    if (tnear[i3] < tnear[i2]) std::swap(i3,i2);
-
-                    stack[ptr++] = { node.children[i4], tnear[i4] };
-                    stack[ptr++] = { node.children[i3], tnear[i3] };
-                    stack[ptr++] = { node.children[i2], tnear[i2] };
-                    addr = node.children[i1]; dist = tnear[i1];
+                    stack_entry e1{ node.children[i1], tnear[i1] };
+                    stack_entry e2{ node.children[i2], tnear[i2] };
+                    stack_entry e3{ node.children[i3], tnear[i3] };
+                    stack_entry e4{ node.children[i4], tnear[i4] };
+                    auto s1 = bitcast<simd::int4>(e1);
+                    auto s2 = bitcast<simd::int4>(e2);
+                    auto s3 = bitcast<simd::int4>(e3);
+                    auto s4 = bitcast<simd::int4>(e4);
+                    sort(s1, s2, s3, s4);
+                    e1 = bitcast<stack_entry>(s1);
+                    e2 = bitcast<stack_entry>(s2);
+                    e3 = bitcast<stack_entry>(s3);
+                    e4 = bitcast<stack_entry>(s4);
+                    stack[ptr] = e1; stack[ptr + 1] = e2; stack[ptr + 2] = e3;
+                    ptr += 3;
+                    addr = e4.addr;
+                    dist = e4.dist;
                     continue;
                 }
 
@@ -215,7 +232,7 @@ next:
                     }
                     while (unlikely(mask != 0));
 
-                    bubble_sort(stack + old, stack + ptr,
+                    insertion_sort(stack + old, stack + ptr,
                         [](stack_entry const& s1, stack_entry const& s2) {
                             return s1.dist > s2.dist;
                         });
