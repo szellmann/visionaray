@@ -9,8 +9,6 @@ namespace qi = boost::spirit::qi;
 
 using namespace visionaray;
 
-using boost::string_ref;
-
 namespace boost
 {
 namespace spirit
@@ -19,9 +17,9 @@ namespace traits
 {
 
 template <typename Iterator, typename Enable>
-struct assign_to_attribute_from_iterators<string_ref, Iterator, Enable>
+struct assign_to_attribute_from_iterators<std::string_view, Iterator, Enable>
 {
-    static void call(Iterator const& first, Iterator const& last, string_ref& attr)
+    static void call(Iterator const& first, Iterator const& last, std::string_view& attr)
     {
         attr = { first, static_cast<size_t>(last - first) };
     }

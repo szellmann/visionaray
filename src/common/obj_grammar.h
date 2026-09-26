@@ -12,7 +12,6 @@
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <boost/fusion/include/define_struct.hpp>
 #include <boost/spirit/include/qi.hpp>
-#include <boost/utility/string_ref.hpp>
 
 #include <visionaray/math/forward.h>
 #include <visionaray/math/vector.h>
@@ -64,9 +63,9 @@ using face_vector       = aligned_vector<face_index_t>;
 
 struct obj_grammar
 {
-    using It = boost::string_ref::const_iterator;
+    using It = std::string_view::const_iterator;
     using skip_t = boost::spirit::qi::blank_type;
-    using sref_t = boost::string_ref;
+    using sref_t = std::string_view;
     using string = std::string;
     using VV = vertex_vector;
     using TV = tex_coord_vector;

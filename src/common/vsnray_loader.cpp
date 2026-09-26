@@ -20,7 +20,6 @@
 #include <vector>
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/utility/string_ref.hpp>
 #include <boost/assign.hpp>
 #include <boost/bimap.hpp>
 
@@ -137,7 +136,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
 
         if (md.encoding == data_file::meta_data::Ascii)
         {
-            boost::string_ref text((char*)file.data(), file.nbytes());
+            std::string_view text((char*)file.data(), file.nbytes());
 
             parse_floats(text.cbegin(), text.cend(), floats, md.separator);
 

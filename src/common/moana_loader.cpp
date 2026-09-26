@@ -13,7 +13,6 @@
 #include <vector>
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/utility/string_ref.hpp>
 
 #if VSNRAY_COMMON_HAVE_PTEX
 #include <Ptexture.h>
@@ -417,13 +416,11 @@ static void load_obj(
 {
     namespace qi = boost::spirit::qi;
 
-    using boost::string_ref;
-
     file_mapping file((island_base_path / filename).string());
 
     obj_grammar grammar;
 
-    string_ref text((char*)file.data(), file.nbytes());
+    std::string_view text((char*)file.data(), file.nbytes());
     auto it = text.cbegin();
 
     // containers for parsing
@@ -432,10 +429,10 @@ static void load_obj(
     auto normals = std::make_shared<normal_vector>();
     face_vector faces;
 
-    //string_ref comment;
-    //string_ref mtl_file;
-    string_ref group_name;
-    string_ref mtl_name;
+    //std::string comment;
+    //std::string mtl_file;
+    std::string group_name;
+    std::string mtl_name;
 
     std::shared_ptr<sg::surface_properties> surf = nullptr;
     std::shared_ptr<sg::indexed_triangle_mesh> itm = nullptr;
@@ -448,7 +445,7 @@ static void load_obj(
         faces.clear();
         if ( qi::phrase_parse(it, text.cend(), grammar.r_g, qi::blank, group_name) )
         {
-            if (group_name != string_ref("default"))
+            if (group_name != "default")
             {
                 objs.push_back(std::make_shared<sg::surface_properties>());
                 objs.back()->add_child(std::make_shared<sg::indexed_triangle_mesh>());
@@ -460,7 +457,7 @@ static void load_obj(
                 itm->vertices = vertices;
                 itm->normals = normals;
 
-                surf->name() = std::string(group_name.begin(), group_name.length());
+                surf->name() = group_name;
             }
         }
         else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
@@ -474,7 +471,7 @@ static void load_obj(
             }
 
             // Color texture
-            std::string group(group_name.begin(), group_name.end());
+            std::string group = group_name;
             auto tit = textures.find(group);
             if (tit != textures.end())
             {
@@ -486,7 +483,7 @@ static void load_obj(
                 std::filesystem::path texture_base_path;
 
                 // Directory is probably stored in color map (use mtl_name to look this up!)
-                auto cit = color_maps.find(std::string(mtl_name.begin(), mtl_name.length()));
+                auto cit = color_maps.find(mtl_name);
 
                 if (cit != color_maps.end())
                 {

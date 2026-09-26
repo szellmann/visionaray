@@ -11,7 +11,6 @@
 #include <utility>
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/utility/string_ref.hpp>
 
 #include <visionaray/math/io.h>
 #include <visionaray/math/vector.h>
@@ -26,9 +25,6 @@
 #include "string_utils.h"
 
 namespace qi = boost::spirit::qi;
-
-using boost::string_ref;
-
 
 namespace visionaray
 {
@@ -185,16 +181,16 @@ static void parse_mtl(std::string const& filename, std::map<std::string, mtl>& m
 
     std::map<std::string, mtl>::iterator mtl_it = matlib.end();
 
-    string_ref text((char*)file.data(), file.nbytes());
+    std::string_view text((char*)file.data(), file.nbytes());
     auto it = text.cbegin();
 
-    string_ref mtl_name;
+    std::string mtl_name;
 
     while (it != text.cend())
     {
         if ( qi::phrase_parse(it, text.cend(), grammar.r_newmtl, qi::blank, mtl_name) )
         {
-            std::string name(mtl_name.begin(), mtl_name.length());
+            std::string name = mtl_name;
             trim(name);
             auto r = matlib.insert({ name, mtl() });
             if (!r.second)
@@ -246,7 +242,7 @@ static void parse_mtl(std::string const& filename, std::map<std::string, mtl>& m
 //
 
 template <typename Container>
-void add_material(Container& cont, mtl m, string_ref name)
+void add_material(Container& cont, mtl m, std::string_view name)
 {
     model::material_type mat;
     mat.name() = std::string(name.data(), name.length());
@@ -315,15 +311,15 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
 
     // containers for parsing
 
-    string_ref comment;
-    string_ref mtl_file;
-    string_ref mtl_name;
+    std::string comment;
+    std::string mtl_file;
+    std::string mtl_name;
 
     for (auto filename : filenames)
     {
         file_mapping file(filename);
 
-        string_ref text((char*)file.data(), file.nbytes());
+        std::string_view text((char*)file.data(), file.nbytes());
         auto it = text.cbegin();
 
         vertex_vector    vertices;
@@ -340,10 +336,8 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
             }
             else if ( qi::phrase_parse(it, text.cend(), grammar.r_mtllib, qi::blank, mtl_file) )
             {
-                std::string mtl_file_string(mtl_file.begin(), mtl_file.length());
-
                 // Some obj files repeat the same mtllib command over and over again..
-                bool already_parsed = std::find(parsed_matlibs.begin(), parsed_matlibs.end(), mtl_file_string) != parsed_matlibs.end();
+                bool already_parsed = std::find(parsed_matlibs.begin(), parsed_matlibs.end(), mtl_file) != parsed_matlibs.end();
 
                 if (!already_parsed)
                 {
@@ -353,11 +347,11 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
                     std::string mtl_path = "";
                     if (mtl_dir.empty())
                     {
-                        mtl_path = std::string(mtl_file.begin(), mtl_file.length());
+                        mtl_path = mtl_file;
                     }
                     else
                     {
-                        mtl_path = mtl_dir + "/" + std::string(mtl_file.begin(), mtl_file.length());
+                        mtl_path = mtl_dir + "/" + mtl_file;
                     }
 
                     if (std::filesystem::exists(mtl_path))
@@ -369,7 +363,7 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
                         std::cerr << "Warning: file does not exist: " << mtl_path << '\n';
                     }
 
-                    parsed_matlibs.push_back(mtl_file_string);
+                    parsed_matlibs.push_back(mtl_file);
                 }
                 else
                 {
@@ -378,7 +372,7 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
             }
             else if ( qi::phrase_parse(it, text.cend(), grammar.r_usemtl, qi::blank, mtl_name) )
             {
-                std::string name(mtl_name.begin(), mtl_name.length());
+                std::string name = mtl_name;
                 trim(name);
                 auto mat_it = matlib.find(name);
                 if (mat_it != matlib.end())
