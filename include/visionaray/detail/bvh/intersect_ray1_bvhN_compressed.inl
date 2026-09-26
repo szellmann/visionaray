@@ -34,10 +34,9 @@ inline auto intersect_ray1_bvhN_compressed(
         BVH const&   b,
         Intersector& isect
         )
-    -> decltype(isect(ray, std::declval<typename BVH::primitive_type>()))
 {
     using namespace detail;
-    using HR = decltype(isect(ray, std::declval<typename BVH::primitive_type>()));
+    using HR = hit_record<R, primitive<unsigned>>;
 
     HR result;
 
@@ -59,6 +58,10 @@ inline auto intersect_ray1_bvhN_compressed(
         select(ray.dir.z != T(0.0), T(1.0) / ray.dir.z, T(FLT_MAX))
         );
 
+    using F = simd::float_from_simd_width_t<BVH::Width>;
+
+    auto r1 = make_ray1<F>(ray);
+
     // while ray not terminated
 next:
     while (ptr > 0)
@@ -79,7 +82,6 @@ next:
 
             const auto &node = b.node(addr.id);
 
-            using F = simd::float_from_simd_width_t<BVH::Width>;
             using I = simd::int_from_simd_width_t<BVH::Width>;
 
             I minx_ext, miny_ext, minz_ext, maxx_ext, maxy_ext, maxz_ext;
@@ -244,28 +246,23 @@ next:
         uint64_t first = addr.id;
         uint64_t num_prims = addr.num_prims;
 
-        uint64_t last = first + num_prims;
+        auto prims = b.primitives() + first;
 
-        for (auto i = first; i != last; ++i)
+        for (uint64_t i = 0; i < num_prims; ++i)
         {
-            auto prim = b.primitive(i);
+            auto hrN = isect(ray, prims[i]);
 
-            HR hr = isect(ray, prim);
-            auto closer = is_closer(hr, result, ray.tmin, ray.tmax);
-
-            if (!closer)
+            if (!any(hrN.hit && hrN.t < r1.tmax))
             {
                 continue;
             }
 
-            update_if(result, hr, closer);
+            result = detail::closest(hrN);
+            r1.tmax = result.t;
 
             if constexpr (Traversal == detail::AnyHit)
             {
-                if (result.hit)
-                {
-                    return result;
-                }
+                return result;
             }
         }
     }
