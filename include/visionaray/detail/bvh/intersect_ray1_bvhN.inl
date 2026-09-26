@@ -277,7 +277,7 @@ inline hit_record<R, primitive<unsigned>> intersect_ray1_bvhN(
 
     HR result;
 
-    VSNRAY_ALIGN(16) struct stack_entry
+    struct VSNRAY_ALIGN(16) stack_entry
     {
         int64_t addr;
         unsigned dist;
