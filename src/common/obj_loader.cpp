@@ -10,7 +10,6 @@
 #include <map>
 #include <utility>
 
-#include <boost/algorithm/string.hpp>
 #include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
