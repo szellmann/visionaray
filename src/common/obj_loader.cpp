@@ -10,7 +10,6 @@
 #include <map>
 #include <utility>
 
-#include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
 
@@ -18,6 +17,7 @@
 #include <visionaray/math/vector.h>
 #include <visionaray/texture/texture.h>
 
+#include "file_mapping.h"
 #include "image.h"
 #include "make_texture.h"
 #include "model.h"
@@ -181,11 +181,11 @@ struct mtl
 
 static void parse_mtl(std::string const& filename, std::map<std::string, mtl>& matlib, obj_grammar const& grammar)
 {
-    boost::iostreams::mapped_file_source file(filename);
+    file_mapping file(filename);
 
     std::map<std::string, mtl>::iterator mtl_it = matlib.end();
 
-    string_ref text(file.data(), file.size());
+    string_ref text((char*)file.data(), file.nbytes());
     auto it = text.cbegin();
 
     string_ref mtl_name;
@@ -321,9 +321,9 @@ void load_obj(std::vector<std::string> const& filenames, model& mod)
 
     for (auto filename : filenames)
     {
-        boost::iostreams::mapped_file_source file(filename);
+        file_mapping file(filename);
 
-        string_ref text(file.data(), file.size());
+        string_ref text((char*)file.data(), file.nbytes());
         auto it = text.cbegin();
 
         vertex_vector    vertices;

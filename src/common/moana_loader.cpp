@@ -12,7 +12,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
 
@@ -28,6 +27,7 @@
 #include <visionaray/math/vector.h>
 
 #include "cfile.h"
+#include "file_mapping.h"
 #include "image.h"
 #include "make_texture.h"
 #include "moana_loader.h"
@@ -419,11 +419,11 @@ static void load_obj(
 
     using boost::string_ref;
 
-    boost::iostreams::mapped_file_source file((island_base_path / filename).string());
+    file_mapping file((island_base_path / filename).string());
 
     obj_grammar grammar;
 
-    string_ref text(file.data(), file.size());
+    string_ref text((char*)file.data(), file.nbytes());
     auto it = text.cbegin();
 
     // containers for parsing

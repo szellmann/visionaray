@@ -38,6 +38,7 @@ target_sources(visionaray_common PRIVATE
   exr_image.cpp
   fbx_loader.cpp
   file_base.cpp
+  file_mapping.cpp
   gl_debug_callback.cpp
   hdr_image.cpp
   image.cpp
@@ -90,7 +91,7 @@ endif()
 # External libraries
 #
 
-find_package(Boost CONFIG COMPONENTS iostreams REQUIRED)
+find_package(Boost CONFIG REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(Threads REQUIRED)
 
@@ -110,7 +111,7 @@ find_package(ZLIB)
 
 target_link_libraries(visionaray_common PUBLIC
     Boost::disable_autolinking
-    Boost::iostreams
+    Boost::headers
     OpenGL::GL
     Threads::Threads
 )

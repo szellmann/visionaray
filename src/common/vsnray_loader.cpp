@@ -19,7 +19,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <boost/iostreams/device/mapped_file.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/utility/string_ref.hpp>
 #include <boost/assign.hpp>
@@ -37,6 +36,7 @@
 #include <visionaray/texture/texture.h>
 
 #include "cfile.h"
+#include "file_mapping.h"
 #include "image.h"
 #include "make_texture.h"
 #include "model.h"
@@ -124,7 +124,7 @@ bool parse_floats(It first, It last, Vector& vec, char separator = ' ')
 template <size_t N, typename Container>
 bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
 {
-    boost::iostreams::mapped_file_source file(md.path);
+    file_mapping file(md.path);
 
     if (md.data_type == data_file::meta_data::Float)
     {
@@ -137,7 +137,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
 
         if (md.encoding == data_file::meta_data::Ascii)
         {
-            boost::string_ref text(file.data(), file.size());
+            boost::string_ref text((char*)file.data(), file.nbytes());
 
             parse_floats(text.cbegin(), text.cend(), floats, md.separator);
 
@@ -151,7 +151,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
             floats.resize(md.num_items);
             std::copy(
                 file.data(),
-                file.data() + file.size(),
+                file.data() + file.nbytes(),
                 reinterpret_cast<char*>(floats.data())
                 );
         }
@@ -182,7 +182,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
             vecNs.resize(md.num_items);
             std::copy(
                 file.data(),
-                file.data() + file.size(),
+                file.data() + file.nbytes(),
                 reinterpret_cast<char*>(vecNs.data())
                 );
         }
@@ -204,7 +204,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
             vecNs.resize(md.num_items);
             std::copy(
                 file.data(),
-                file.data() + file.size(),
+                file.data() + file.nbytes(),
                 reinterpret_cast<char*>(vecNs.data())
                 );
         }
@@ -226,7 +226,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
             vecNs.resize(md.num_items);
             std::copy(
                 file.data(),
-                file.data() + file.size(),
+                file.data() + file.nbytes(),
                 reinterpret_cast<char*>(vecNs.data())
                 );
         }
@@ -248,7 +248,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
             vecNs.resize(md.num_items);
             std::copy(
                 file.data(),
-                file.data() + file.size(),
+                file.data() + file.nbytes(),
                 reinterpret_cast<char*>(vecNs.data())
                 );
         }
@@ -270,7 +270,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
             vecNs.resize(md.num_items);
             std::copy(
                 file.data(),
-                file.data() + file.size(),
+                file.data() + file.nbytes(),
                 reinterpret_cast<char*>(vecNs.data())
                 );
         }
@@ -292,7 +292,7 @@ bool parse_as_vecN(data_file::meta_data md, Container& vecNs)
             vecNs.resize(md.num_items);
             std::copy(
                 file.data(),
-                file.data() + file.size(),
+                file.data() + file.nbytes(),
                 reinterpret_cast<char*>(vecNs.data())
                 );
         }
