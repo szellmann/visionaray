@@ -6,6 +6,7 @@
 #ifndef VSNRAY_COMMON_FILE_MAPPING_H
 #define VSNRAY_COMMOM_FILE_MAPPING_H 1
 
+#include <cstdint>
 #include <string>
 
 #ifdef _WIN32
