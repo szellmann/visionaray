@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [ master ]
 
+# Every job here only reads the repository. The simulator's action uses no
+# token or secrets.
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -82,10 +87,11 @@ jobs:
 
     name: HIP build - config ${{ matrix.config }}
 
-    # GitHub-hosted runners have no AMD GPU, so this job is a compile-only gate
-    # (it builds the HIP device code offline but does not run it), mirroring the
-    # CUDA matrix entry above. Running the device tests needs a runner with an
-    # AMD GPU.
+    # GitHub-hosted runners have no AMD GPU, so the device tests run on
+    # simulated ones (PantheonSim), one for each architecture built below:
+    # gfx90a (MI250X), gfx1100 (RX 7900 XTX) and gfx1201 (RX 9070 XT). The
+    # simulator runs the compiled code objects on the CPU; it checks results,
+    # not speed.
     steps:
     # git must be present before checkout, otherwise actions/checkout falls back
     # to the REST API download, which cannot fetch submodules.
@@ -116,3 +122,18 @@ jobs:
 
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{ matrix.config }}
+
+    # After the build, so the build sees exactly the toolchain it does today.
+    - name: Simulated AMD GPUs
+      uses: pantheongpu/setup-pantheonsim@052a0ac31bf6ec72a471d51aae29b7cbd090c6bf # v0.1.1
+      with:
+        gpu: amd/mi250x
+        cuda-toolkit: none
+
+    - name: Run the HIP device tests on gfx90a, gfx1100 and gfx1201
+      run: |
+        for gpu in amd/mi250x amd/rx7900xtx amd/rx9070xt; do
+          echo "::group::$gpu"
+          VGPU_GPU=$gpu ctest --test-dir ${{github.workspace}}/build -R hip -V
+          echo "::endgroup::"
+        done
