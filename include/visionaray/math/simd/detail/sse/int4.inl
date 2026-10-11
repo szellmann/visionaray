@@ -3,6 +3,8 @@
 
 #include <cstring>
 
+#include "../../../simd/type_traits.h"
+
 namespace MATH_NAMESPACE
 {
 namespace simd
@@ -150,11 +152,9 @@ VSNRAY_FORCE_INLINE int const& get(int4 const& v)
 
 VSNRAY_FORCE_INLINE int get(int4 const& v, int lane)
 {
-    if (lane == 0) return _mm_cvtsi128_si32(v);
-    if (lane == 1) return _mm_extract_epi32(v, 1);
-    if (lane == 2) return _mm_extract_epi32(v, 2);
-    if (lane == 3) return _mm_extract_epi32(v, 3);
-    return {};
+    aligned_array_t<int4> arr;
+    memcpy(arr, &v, sizeof(v));
+    return arr[lane];
 }
 
 

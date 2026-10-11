@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "../../../detail/math.h"
+#include "../../../simd/type_traits.h"
 
 namespace MATH_NAMESPACE
 {
@@ -126,11 +127,9 @@ VSNRAY_FORCE_INLINE float const& get(float4 const& v)
 
 VSNRAY_FORCE_INLINE float get(float4 const& v, int lane)
 {
-    if (lane == 0) return _mm_cvtss_f32(v);
-    if (lane == 1) return _mm_cvtss_f32(_mm_shuffle_ps(v, v, _MM_SHUFFLE(1,1,1,1)));
-    if (lane == 2) return _mm_cvtss_f32(_mm_shuffle_ps(v, v, _MM_SHUFFLE(2,2,2,2)));
-    if (lane == 3) return _mm_cvtss_f32(_mm_shuffle_ps(v, v, _MM_SHUFFLE(3,3,3,3)));
-    return {};
+    aligned_array_t<float4> arr;
+    memcpy(arr, &v, sizeof(v));
+    return arr[lane];
 }
 
 

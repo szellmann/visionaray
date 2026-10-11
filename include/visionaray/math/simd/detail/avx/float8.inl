@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "../../../detail/math.h"
+#include "../../../simd/type_traits.h"
 
 namespace MATH_NAMESPACE
 {
@@ -116,15 +117,9 @@ VSNRAY_FORCE_INLINE float const& get(float8 const& v)
 
 VSNRAY_FORCE_INLINE float get(float8 const& v, int lane)
 {
-    if (lane == 0) return _mm256_cvtss_f32(v);
-    if (lane == 1) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_castps256_ps128(v), _mm256_castps256_ps128(v), _MM_SHUFFLE(1,1,1,1)));
-    if (lane == 2) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_castps256_ps128(v), _mm256_castps256_ps128(v), _MM_SHUFFLE(2,2,2,2)));
-    if (lane == 3) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_castps256_ps128(v), _mm256_castps256_ps128(v), _MM_SHUFFLE(3,3,3,3)));
-    if (lane == 4) return _mm_cvtss_f32(_mm256_extractf128_ps(v, 1));
-    if (lane == 5) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_extractf128_ps(v, 1), _mm256_extractf128_ps(v, 1), _MM_SHUFFLE(1,1,1,1)));
-    if (lane == 6) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_extractf128_ps(v, 1), _mm256_extractf128_ps(v, 1), _MM_SHUFFLE(2,2,2,2)));
-    if (lane == 7) return _mm_cvtss_f32(_mm_shuffle_ps(_mm256_extractf128_ps(v, 1), _mm256_extractf128_ps(v, 1), _MM_SHUFFLE(3,3,3,3)));
-    return {};
+    aligned_array_t<float8> arr;
+    memcpy(arr, &v, sizeof(v));
+    return arr[lane];
 }
 
 
