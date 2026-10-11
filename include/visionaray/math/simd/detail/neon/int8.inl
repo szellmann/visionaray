@@ -108,6 +108,11 @@ VSNRAY_FORCE_INLINE void store(int dst[8], int8 const& v)
     vst1q_s32(&dst[4], v.value[1]);
 }
 
+VSNRAY_FORCE_INLINE int get(int8 const& v, int lane)
+{
+    return (lane < 4) ? get(v.value[0], lane) : get(v.value[1], lane - 4);
+}
+
 
 //-------------------------------------------------------------------------------------------------
 // Basic arithmethic
