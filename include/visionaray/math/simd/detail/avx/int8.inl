@@ -1,6 +1,8 @@
 // This file is distributed under the MIT license.
 // See the LICENSE file for details.
 
+#include <cstring>
+
 #include "../../../simd/type_traits.h"
 
 namespace MATH_NAMESPACE

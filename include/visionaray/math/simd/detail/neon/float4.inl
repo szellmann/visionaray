@@ -2,6 +2,7 @@
 // See the LICENSE file for details.
 
 #include <cmath>
+#include <cstring>
 
 #include "../../../simd/type_traits.h"
 
