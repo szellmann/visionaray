@@ -110,7 +110,7 @@ VSNRAY_FORCE_INLINE void store(int dst[8], int8 const& v)
 
 VSNRAY_FORCE_INLINE int get(int8 const& v, int lane)
 {
-    return (lane < 4) ? get(v.value[0], lane) : get(v.value[1], lane - 4);
+    return (lane < 4) ? get((int4 const& )v.value[0], lane) : get((int4 const& )v.value[1], lane - 4);
 }
 
 
