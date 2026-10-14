@@ -1069,6 +1069,7 @@ void traverse_parents(B const& b, N const& n, F func);
 
 #include "detail/bvh/collapse.h"
 #include "detail/bvh/compress.h"
+#include "detail/bvh/cwbvh.h"
 #include "detail/bvh/get_bounds.inl"
 #include "detail/bvh/get_color.h"
 #include "detail/bvh/get_normal.h"
@@ -1077,6 +1078,7 @@ void traverse_parents(B const& b, N const& n, F func);
 #include "detail/bvh/intersect.inl"
 #include "detail/bvh/intersect_ray1_bvhN.inl"
 #include "detail/bvh/intersect_ray1_bvhN_compressed.inl"
+#include "detail/bvh/intersect_ray1_cwbvh.inl"
 #include "detail/bvh/lbvh.h"
 #include "detail/bvh/optimize.h"
 #include "detail/bvh/prim_traits.h"
