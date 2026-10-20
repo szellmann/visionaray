@@ -26,7 +26,11 @@ inline uint32_t find_first_set_bit(uint32_t val)
     asm ("bfind.u32 %0, %1;" : "=r"(ret) : "r"(val));
     return ret;
 #else
+# if defined(_WIN32)
+    return 31 ^ __lzcnt(val)
+# else
     return 31 ^ __builtin_clz(val);
+# endif
 #endif
 }
 
