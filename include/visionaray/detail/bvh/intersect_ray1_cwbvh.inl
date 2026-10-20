@@ -27,7 +27,7 @@ inline uint32_t find_first_set_bit(uint32_t val)
     return ret;
 #else
 # if defined(_WIN32)
-    return 31 ^ __lzcnt(val)
+    return 31 ^ __lzcnt(val);
 # else
     return 31 ^ __builtin_clz(val);
 # endif
