@@ -127,12 +127,6 @@ inline void build_top_down_work(
 
     aligned_vector<unsigned> indices;
 
-    //assert(builder.use_spatial_splits == false);
-
-    auto uss = builder.use_spatial_splits;
-
-    builder.use_spatial_splits = false;
-
     build_top_down_impl(
             0, // root node index
             tree.nodes(),
@@ -144,12 +138,17 @@ inline void build_top_down_work(
             leaf_threshold
             );
 
-    builder.use_spatial_splits = uss;
+    // Build new index vector, ordered by indices
+    // NOTE: SBVH builder may generate additional primitive references
+    using P = typename Tree::primitive_type;
+    aligned_vector<P> primitives(indices.size());
 
-    assert(indices.size() == tree.primitives().size());
+    for (size_t i = 0; i < indices.size(); ++i)
+    {
+        primitives[i] = tree.primitives()[indices[i]];
+    }
 
-    // Reorder the primitives according to the indices.
-    algo::reorder_n(indices.begin(), tree.primitives().begin(), indices.size());
+    tree.primitives() = std::move(primitives);
 }
 
 template <typename Tree, typename Builder, typename I>
