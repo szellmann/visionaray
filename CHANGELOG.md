@@ -1,4 +1,8 @@
 ## [Unreleased]
+### Added
+- New pixel format PF_RGBA8_SRGB to support sRGB textures.
+- Compressed-wide BVH traversal based on Ylitie's paper.
+
 ### Changed
 - Deprecated index_bvh_t: how primitives are accessed by the
 traversal function is something we want to decide internally; to
@@ -6,13 +10,9 @@ the user there should only be a single bvh template hiding the
 details of internal traversal.
 - Explicitly calling `Camera::{begin|end}_frame{}` is no longer
 necessary.
-
-### Added
-- New pixel format PF_RGBA8_SRGB to support sRGB textures.
-
-### Changed
 - GPU LBVH builders can now also generate non-index BVHs. This is
 a first effort towards deprecating (explicit) index BVHs.
+- SBVH is now also enabled for non-index BVHs.
 
 ## [0.7.0] - 2026-08-15
 ### Changed
